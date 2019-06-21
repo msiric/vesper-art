@@ -17,7 +17,7 @@ router
         req.flash('errors', 'Account with that email address already exists.');
         return res.redirect('/signup');
       } else {
-        var user = new User();
+        let user = new User();
         user.name = req.body.username;
         user.email = req.body.email;
         user.photo = user.gravatar();
