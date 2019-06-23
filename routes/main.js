@@ -77,7 +77,6 @@ router.post('/promocode', (req, res, next) => {
       newPrice = totalPrice - newPrice;
       let subtotal = newPrice - 3.15;
       req.session.price = newPrice;
-      req.session.subtotal = subtotal;
       res.json({ newPrice, subtotal });
     } else {
       res.json(0);
