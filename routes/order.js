@@ -62,8 +62,21 @@ router.get('/users/:userId/orders/:orderId', (req, res, next) => {
     .populate('buyer')
     .populate('seller')
     .populate('gig')
+    .deepPopulate('messages.owner')
     .exec(function(err, order) {
-      res.render('order/order-room', { layout: 'chat_layout', order: order });
+      res.render('order/order-room', {
+        layout: 'chat_layout',
+        order: order,
+        helpers: {
+          if_equals: function(a, b, opts) {
+            if (a.equals(b)) {
+              return opts.fn(this);
+            } else {
+              return opts.inverse(this);
+            }
+          }
+        }
+      });
     });
 });
 

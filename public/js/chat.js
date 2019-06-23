@@ -18,13 +18,13 @@ $(function() {
     if (data.senderId === userId) {
       html += '<div class="message right">';
       html += '<span class="pic"><img src="' + data.senderImage + '"/></span>';
-      html += 'div class="bubble right">';
+      html += '<div class="bubble right">';
       html += '<p> ' + data.message + '</p>';
       html += '</div></div>';
     } else {
       html += '<div class="message left">';
       html += '<span class="pic"><img src="' + data.senderImage + '"/></span>';
-      html += 'div class="bubble left">';
+      html += '<div class="bubble left">';
       html += '<p> ' + data.message + '</p>';
       html += '</div></div>';
     }

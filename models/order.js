@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const deepPopulate = require('mongoose-deep-populate')(mongoose);
 const Schema = mongoose.Schema;
 
 const OrderSchema = new Schema({
@@ -7,12 +8,13 @@ const OrderSchema = new Schema({
   gig: { type: Schema.Types.ObjectId, ref: 'Gig' },
   messages: [
     {
-      message: { type: String },
-      creator: { type: Schema.Types.ObjectId, ref: 'User' },
-      date: { type: Date }
+      type: Schema.Types.ObjectId,
+      ref: 'Message'
     }
   ],
   created: { type: Date, default: Date.now }
 });
+
+OrderSchema.plugin(deepPopulate);
 
 module.exports = mongoose.model('Order', OrderSchema);
