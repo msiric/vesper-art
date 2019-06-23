@@ -51,9 +51,24 @@ router
   );
 
 /* PROFILE ROUTE */
-router.get('/profile', passportConfig.isAuthenticated, (req, res, next) => {
-  res.render('accounts/profile');
-});
+router
+  .route('/profile')
+  .get(passportConfig.isAuthenticated, (req, res, next) => {
+    res.render('accounts/profile', { message: req.flash('success') });
+  })
+  .post((req, res, next) => {
+    User.findOne({ _id: req.user._id }, function(err, user) {
+      if (user) {
+        if (req.body.name) user.name = req.body.name;
+        if (req.body.email) user.email = req.body.email;
+        if (req.body.about) user.about = req.body.about;
+        user.save(function(err) {
+          req.flash('success', 'Your details have been updated');
+          res.redirect('/profile');
+        });
+      }
+    });
+  });
 
 router.get('/logout', (req, res) => {
   req.logout();
