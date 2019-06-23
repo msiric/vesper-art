@@ -2,6 +2,7 @@ const router = require('express').Router();
 const async = require('async');
 const Gig = require('../models/gig');
 const User = require('../models/user');
+const Promocode = require('../models/promocode');
 
 router.get('/', (req, res) => {
   Gig.find({}, function(err, gigs) {
@@ -56,6 +57,32 @@ router.get('/service_detail/:id', (req, res, next) => {
     .exec(function(err, gig) {
       res.render('main/service_detail', { gig: gig });
     });
+});
+
+router.get('/api/add-promocode', (req, res, next) => {
+  let promocode = new Promocode();
+  promocode.name = 'testcoupon';
+  promocode.discount = 0.4;
+  promocode.save(function(err) {
+    res.json('Successful');
+  });
+});
+
+router.post('/promocode', (req, res, next) => {
+  let promocode = req.body.promocode;
+  let totalPrice = req.session.price;
+  Promocode.findOne({ name: promocode }, function(err, foundCode) {
+    if (foundCode) {
+      let newPrice = foundCode.discount * totalPrice;
+      newPrice = totalPrice - newPrice;
+      let subtotal = newPrice - 3.15;
+      req.session.price = newPrice;
+      req.session.subtotal = subtotal;
+      res.json({ newPrice, subtotal });
+    } else {
+      res.json(0);
+    }
+  });
 });
 
 module.exports = router;

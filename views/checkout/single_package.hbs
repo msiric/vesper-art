@@ -19,22 +19,17 @@
               </span>
               <p class="text-center" id="promocodeResponse"></p>
             </div>
-
             <hr>
             <div class="space-between">
-              <h4><span>Subtotal:</span><span class="dollar fee">{{ gig.price }}</span></h4>
+              <h4><span>Subtotal:</span><span class="dollar fee"><span id="subtotal">{{ gig.price }}</span></span></h4>
             </div>
-
             <div class="space-between">
               <h4><span>Fee:</span><span class="dollar fee">$3.15</span></h4>
             </div>
-
             <hr>
-
             <div class="space-between">
-              <h3><span>Total:</span><span class="dollar fee">${{totalPrice}}</span></h3>
+              <h3><span>Total:</span><span class="dollar fee">$<span id="totalPrice">{{ totalPrice }}</span></span></h3>
             </div>
-
             <a href="/payment" class="btn btn-success proceed-btn">Proceed to payment</a>
           </div>
         </div>

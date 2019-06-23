@@ -10,7 +10,10 @@ router.get('/checkout/single_package/:id', (req, res, next) => {
     let totalPrice = gig.price + fee;
     req.session.gig = gig;
     req.session.price = totalPrice;
-    res.render('checkout/single_package', { gig: gig, totalPrice: totalPrice });
+    res.render('checkout/single_package', {
+      gig: gig,
+      totalPrice: totalPrice
+    });
   });
 });
 
