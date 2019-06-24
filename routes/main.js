@@ -4,11 +4,31 @@ const Gig = require('../models/gig');
 const User = require('../models/user');
 const Promocode = require('../models/promocode');
 
+const algoliasearch = require('algoliasearch');
+let client = algoliasearch('P9R2R1LI94', '2b949398099e9ee44619187ca4ea9809');
+let index = client.initIndex('GigSchema');
+
 router.get('/', (req, res) => {
   Gig.find({}, function(err, gigs) {
     res.render('main/home', { gigs: gigs });
   });
 });
+
+router
+  .route('/search')
+  .get((req, res, next) => {
+    if (req.query.q) {
+      index.search(req.query.q, function(err, content) {
+        res.render('main/search_results', {
+          content: content,
+          search_results: req.query.q
+        });
+      });
+    }
+  })
+  .post((req, res, next) => {
+    res.redirect('/search/?q=' + req.body.search_input);
+  });
 
 router.get('/my-gigs', (req, res, next) => {
   Gig.find({ owner: req.user._id }, function(err, gigs) {

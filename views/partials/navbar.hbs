@@ -2,7 +2,8 @@
   <div class="container">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -13,15 +14,43 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <div class="aa-input-container" id="aa-input-container" style="margin-top: 3px;">
+      <form novalidate="novalidate" onsubmit="return false;" class="searchbox">
+        <div role="search" class="searchbox__wrapper">
+          <input id="search-input" type="search" name="search" placeholder="Search" autocomplete="off"
+            required="required" class="searchbox__input">
+          <button type="submit" title="Submit your search query." class="searchbox__submit">
+            <svg role="img" aria-label="Search">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#sbx-icon-search-13"></use>
+            </svg>
+          </button>
+          <button type="reset" title="Clear the search query." class="searchbox__reset hide">
+            <svg role="img" aria-label="Reset">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#sbx-icon-clear-3"></use>
+            </svg>
+          </button>
+        </div>
+      </form>
 
-      </div>
+      <div class="svg-icons" style="height: 0; width: 0; position: absolute; visibility: hidden">
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <symbol id="sbx-icon-clear-3" viewBox="0 0 40 40">
+            <path
+              d="M16.228 20L1.886 5.657 0 3.772 3.772 0l1.885 1.886L20 16.228 34.343 1.886 36.228 0 40 3.772l-1.886 1.885L23.772 20l14.342 14.343L40 36.228 36.228 40l-1.885-1.886L20 23.772 5.657 38.114 3.772 40 0 36.228l1.886-1.885L16.228 20z"
+              fill-rule="evenodd" />
+          </symbol>
+          <symbol id="sbx-icon-search-13" viewBox="0 0 40 40">
+            <path
+              d="M26.806 29.012a16.312 16.312 0 0 1-10.427 3.746C7.332 32.758 0 25.425 0 16.378 0 7.334 7.333 0 16.38 0c9.045 0 16.378 7.333 16.378 16.38 0 3.96-1.406 7.593-3.746 10.426L39.547 37.34c.607.608.61 1.59-.004 2.203a1.56 1.56 0 0 1-2.202.004L26.807 29.012zm-10.427.627c7.322 0 13.26-5.938 13.26-13.26 0-7.324-5.938-13.26-13.26-13.26-7.324 0-13.26 5.936-13.26 13.26 0 7.322 5.936 13.26 13.26 13.26z"
+              fill-rule="evenodd" />
+          </symbol>
+        </svg>
+      </div><!-- /.navbar-collapse -->
+
       <ul class="nav navbar-nav navbar-right">
         {{#if user}}
-
-
         <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+            aria-expanded="false">
             Selling
           </a>
           <ul class="dropdown-menu">
@@ -30,7 +59,8 @@
           </ul>
         </li>
         <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+            aria-expanded="false">
             Buying
           </a>
           <ul class="dropdown-menu">
@@ -39,7 +69,8 @@
         </li>
 
         <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+            aria-expanded="false">
             <img class="img-circle" style="width: 32px; height: 32px; margin-top: -7px;" src="{{ user.photo }}">
           </a>
           <ul class="dropdown-menu">
@@ -52,12 +83,11 @@
         {{else }}
         <li><a href="/login">Sign In</a></li>
         <li>
-                <p class="navbar-btn">
-                    <a href="/signup" class="btn btn-success">Join</a>
-                </p>
-            </li>
+          <p class="navbar-btn">
+            <a href="/signup" class="btn btn-success">Join</a>
+          </p>
+        </li>
         {{/if}}
       </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
+    </div><!-- /.container-fluid -->
 </nav>
