@@ -204,3 +204,21 @@ h3 {
 textarea {
   resize: none;
 }
+
+.cart-card {
+  background-color: #fff;
+  width: 100%;
+  height: 250px;
+  border: 1px #e5e5e5 solid;
+}
+
+.cart-summary {
+  background-color: #fff;
+  width: 100%;
+  height: 550px;
+  border: 1px #e5e5e5 solid;
+}
+
+#cart_items {
+  margin-left: 5px;
+}

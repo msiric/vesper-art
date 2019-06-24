@@ -2,6 +2,7 @@ const router = require('express').Router();
 const stripe = require('stripe')('sk_test_gBneokmqdbgLUsAQcHZuR4h500k4P1wiBq');
 const Gig = require('../models/gig');
 const Order = require('../models/order');
+const User = require('../models/user');
 
 const fee = 3.15;
 
@@ -15,6 +16,33 @@ router.get('/checkout/single_package/:id', (req, res, next) => {
       totalPrice: totalPrice
     });
   });
+});
+
+router.get('/checkout/process_cart', (req, res, next) => {
+  User.findOne({ _id: req.user._id })
+    .populate('cart')
+    .exec(function(err, user) {
+      let price = 0;
+      let cartIsEmpty = true;
+      let totalPrice = 0;
+      if (user.cart.length > 0) {
+        user.cart.map(function(item) {
+          price += item.price;
+        });
+        totalPrice = price + fee;
+      } else {
+        cartIsEmpty = false;
+      }
+
+      req.session.price = totalPrice;
+      req.session.gig = user.cart;
+      res.render('order/cart', {
+        foundUser: user,
+        totalPrice: totalPrice,
+        sub_total: price,
+        cartIsEmpty: cartIsEmpty
+      });
+    });
 });
 
 router
@@ -101,6 +129,21 @@ router.get('/users/:id/orders', (req, res, next) => {
     .exec(function(err, order) {
       res.render('order/order-buyer', { order: order });
     });
+});
+
+router.post('/add-to-cart', (req, res, next) => {
+  const gigId = req.body.gig_id;
+  User.update(
+    {
+      _id: req.user._id
+    },
+    {
+      $push: { cart: gigId }
+    },
+    function(err, count) {
+      res.json('Added to cart');
+    }
+  );
 });
 
 module.exports = router;
