@@ -50,6 +50,20 @@ router
     })
   );
 
+router.get(
+  '/auth/facebook',
+  passport.authenticate('facebook', { scope: 'email' })
+);
+
+router.get(
+  '/auth/facebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect: '/profile',
+    failureRedirect: '/login',
+    failureFlash: true
+  })
+);
+
 /* PROFILE ROUTE */
 router
   .route('/profile')
@@ -70,9 +84,10 @@ router
     });
   });
 
-router.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect('/');
+router.get('/logout', function(req, res) {
+  req.session.destroy(function(err) {
+    res.redirect('/');
+  });
 });
 
 module.exports = router;

@@ -1,15 +1,15 @@
-
 <div class="container">
   <div class="row">
     <div class="col-md-6 col-md-offset-3">
-    <h1 class="space-top text-center">Login</h1>
+      <h1 class="space-top text-center">Login</h1>
 
-    {{#if message }}
-    <div class="alert alert-danger alert-dismissible">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      {{ message  }}
-    </div>
-    {{/if}}
+      {{#if message }}
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        {{ message  }}
+      </div>
+      {{/if}}
 
       <hr />
 
@@ -24,11 +24,13 @@
           <input type="password" class="form-control" name="password" id="password">
         </div>
 
-      <button type="submit" class="btn btn-success">Submit</button>
+        <button type="submit" class="btn btn-success">Submit</button>
 
-    </form>
-    <hr />
+      </form>
+      <hr />
 
+      <a href="/auth/facebook" class="btn btn-block btn-social btn-facebook"><i class="fa fa-facebook">Sign in with
+          Facebook</i></a>
+    </div>
   </div>
-</div>
 </div>

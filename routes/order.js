@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const async = require('async');
 const stripe = require('stripe')('sk_test_gBneokmqdbgLUsAQcHZuR4h500k4P1wiBq');
 const Gig = require('../models/gig');
 const Order = require('../models/order');
@@ -87,6 +88,58 @@ router
       });
   });
 
+router
+  .route('/payment/cart')
+  .get((req, res, next) => {
+    res.render('checkout/payment');
+  })
+  .post((req, res, next) => {
+    let gigs = req.session.gig;
+    let price = req.session.price;
+    price *= 100;
+    price = Math.round(price);
+    stripe.customers
+      .create({
+        email: req.user.email
+      })
+      .then(customer => {
+        return stripe.customers.createSource(customer.id, {
+          source: req.body.stripeToken
+        });
+      })
+      .then(source => {
+        return stripe.charges.create({
+          amount: price,
+          currency: 'usd',
+          customer: source.customer
+        });
+      })
+      .then(function(charge) {
+        // New charge created on a new customer
+        gigs.map(function(gig) {
+          let order = new Order();
+          order.buyer = req.user._id;
+          order.seller = gig.owner;
+          order.gig = gig._id;
+          order.save(function(err) {
+            req.session.gig = null;
+            req.session.price = null;
+          });
+        });
+        User.update({ _id: req.user._id }, { $set: { cart: [] } }, function(
+          err,
+          updated
+        ) {
+          if (updated) {
+            res.redirect('/users/' + req.user._id + '/orders');
+          }
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  });
+
 router.get('/users/:userId/orders/:orderId', (req, res, next) => {
   req.session.orderId = req.params.orderId;
   Order.findOne({ _id: req.params.orderId })
@@ -133,17 +186,51 @@ router.get('/users/:id/orders', (req, res, next) => {
 
 router.post('/add-to-cart', (req, res, next) => {
   const gigId = req.body.gig_id;
-  User.update(
-    {
-      _id: req.user._id
+  if (req.user.cart.indexOf(gigId) > -1) {
+    res.json({ warning: 'Item already in cart' });
+    return false;
+  } else {
+    User.update(
+      {
+        _id: req.user._id
+      },
+      {
+        $push: { cart: gigId }
+      },
+      function(err, count) {
+        res.json({ message: 'Added to cart' });
+      }
+    );
+  }
+});
+
+router.post('/remove-from-cart', (req, res, next) => {
+  const gigId = req.body.gig_id;
+  async.waterfall([
+    function(callback) {
+      Gig.findOne({ _id: gigId }, function(err, gig) {
+        callback(err, gig);
+      });
     },
-    {
-      $push: { cart: gigId }
-    },
-    function(err, count) {
-      res.json('Added to cart');
+    function(gig, callback) {
+      User.update(
+        {
+          _id: req.user._id
+        },
+        {
+          $pull: { cart: gigId }
+        },
+        function(err, count) {
+          let totalPrice = req.session.price - gig.price;
+          res.json({
+            totalPrice: parseFloat(totalPrice.toFixed(12)),
+            price: gig.price,
+            message: 'Removed from cart'
+          });
+        }
+      );
     }
-  );
+  ]);
 });
 
 module.exports = router;

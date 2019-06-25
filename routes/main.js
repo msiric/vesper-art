@@ -72,10 +72,17 @@ router
   });
 
 router.get('/service_detail/:id', (req, res, next) => {
+  let gigId = req.params.id;
   Gig.findOne({ _id: req.params.id })
     .populate('owner')
     .exec(function(err, gig) {
-      res.render('main/service_detail', { gig: gig });
+      let inCart = false;
+      if (req.user) {
+        if (req.user.cart.indexOf(gigId) > -1) {
+          inCart = true;
+        }
+      }
+      res.render('main/service_detail', { gig: gig, inCart: inCart });
     });
 });
 
