@@ -3,6 +3,7 @@ const async = require('async');
 const stripe = require('stripe')('sk_test_gBneokmqdbgLUsAQcHZuR4h500k4P1wiBq');
 const Gig = require('../models/gig');
 const Order = require('../models/order');
+const Promocode = require('../models/promocode');
 const User = require('../models/user');
 
 const fee = 3.15;
@@ -12,10 +13,37 @@ router.get('/checkout/single_package/:id', (req, res, next) => {
     let totalPrice = gig.price + fee;
     req.session.gig = gig;
     req.session.price = totalPrice;
-    res.render('checkout/single_package', {
-      gig: gig,
-      totalPrice: totalPrice
-    });
+    if (req.user) {
+      User.findOne({ _id: req.user._id }, function(err, user) {
+        if (user.promos.length > 0) {
+          Promocode.findOne({ _id: user.promos[0] }, function(err, promo) {
+            let subtotal = gig.price * (1 - promo.discount);
+            let discount = promo.discount * 100;
+            totalPrice = gig.price * (1 - promo.discount) + fee;
+            req.session.price = totalPrice;
+            res.render('checkout/single_package', {
+              gig: gig,
+              subtotal: subtotal,
+              totalPrice: totalPrice,
+              discount: discount,
+              promo: promo._id
+            });
+          });
+        } else {
+          res.render('checkout/single_package', {
+            gig: gig,
+            subtotal: gig.price,
+            totalPrice: totalPrice
+          });
+        }
+      });
+    } else {
+      res.render('checkout/single_package', {
+        gig: gig,
+        subtotal: gig.price,
+        totalPrice: totalPrice
+      });
+    }
   });
 });
 

@@ -8,6 +8,8 @@ const algoliasearch = require('algoliasearch');
 let client = algoliasearch('P9R2R1LI94', '2b949398099e9ee44619187ca4ea9809');
 let index = client.initIndex('GigSchema');
 
+const fee = 3.15;
+
 router.get('/', (req, res) => {
   Gig.find({}, function(err, gigs) {
     res.render('main/home', { gigs: gigs });
@@ -100,15 +102,63 @@ router.post('/promocode', (req, res, next) => {
   let totalPrice = req.session.price;
   Promocode.findOne({ name: promocode }, function(err, foundCode) {
     if (foundCode) {
-      let newPrice = foundCode.discount * totalPrice;
-      newPrice = totalPrice - newPrice;
-      let subtotal = newPrice - 3.15;
-      req.session.price = newPrice;
-      res.json({ newPrice, subtotal });
+      User.findOne({ _id: req.user._id }, function(err, user) {
+        if (user.promos.length > 0) {
+          res.json({ warningUsed: 'You already used a promo code' });
+        } else {
+          User.update(
+            { _id: req.user._id },
+            {
+              $push: {
+                promos: foundCode._id
+              }
+            },
+            function(err, count) {
+              let discount = foundCode.discount * 100;
+              let promo = foundCode._id;
+              let subtotal = (totalPrice - fee) * (1 - foundCode.discount);
+              let newPrice = subtotal + fee;
+              req.session.price = newPrice;
+              res.json({ newPrice, subtotal, discount, promo });
+            }
+          );
+        }
+      });
     } else {
-      res.json(0);
+      res.json({ warningUnfound: 'Promo code does not exist' });
     }
   });
+});
+
+router.post('/remove-promocode', (req, res, next) => {
+  let promocode = req.body.promocode;
+  let totalPrice = req.session.price;
+  async.waterfall([
+    function(callback) {
+      Promocode.findOne({ _id: promocode }, function(err, promo) {
+        callback(err, promo);
+      });
+    },
+    function(promo, callback) {
+      User.update(
+        {
+          _id: req.user._id
+        },
+        {
+          $pull: { promos: promo._id }
+        },
+        function(err, count) {
+          if (err) throw err;
+          let discount = promo.discount;
+          let subtotal = totalPrice - fee;
+          subtotal = subtotal / (1 - discount);
+          let newPrice = subtotal + fee;
+          req.session.price = newPrice;
+          res.json({ newPrice, subtotal });
+        }
+      );
+    }
+  ]);
 });
 
 module.exports = router;
