@@ -11,6 +11,12 @@ const UserSchema = new Schema({
   about: String,
   facebookId: String,
   googleId: String,
+  promos: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Promocode'
+    }
+  ],
   gigs: [
     {
       type: Schema.Types.ObjectId,

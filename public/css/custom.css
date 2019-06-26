@@ -130,3 +130,15 @@ select {
   color: green;
   text-decoration: underline;
 }
+
+#promocodeResponse {
+  margin: 15px 0 0 0;
+}
+
+.notif {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 99999;
+  text-align: center;
+}

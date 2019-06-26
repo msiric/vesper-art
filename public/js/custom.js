@@ -2,7 +2,7 @@ $(function() {
   let badge = $('#cart_items')
     .eq(0)
     .html();
-  $('#promocodeButton').on('click', function() {
+  $('.promocode-panel').on('click', '#promocodeButton', function() {
     let input = $('#code').val();
 
     if (input === '') {
@@ -15,12 +15,26 @@ $(function() {
           promocode: input
         },
         success: function(data) {
-          if (data === 0) {
-            $('#promocodeResponse').html("Code doesn't exist");
+          if (data.warningUnfound) {
+            $('.single-package-message')
+              .addClass('alert alert-danger')
+              .html(data.warningUnfound);
+          } else if (data.warningUsed) {
+            $('.single-package-message')
+              .addClass('alert alert-danger')
+              .html(data.warningUsed);
           } else {
             $('#promocodeButton').html('Applied');
             $('#promocodeButton').prop('disabled', true);
-            $('#promocodeResponse').html('Successfully applied');
+            $('.promocode').remove();
+            $('.promocode-panel').append(
+              '<p class="promocode-amount">Discount: ' + data.discount + '%</p>'
+            );
+            $('.promocode-panel').append(
+              '<a class="btn btn-danger remove-promocode" id="' +
+                data.promo +
+                '">Remove promo code</a>'
+            );
             $('#subtotal').html(data.subtotal);
             $('#totalPrice').html(data.newPrice);
           }
@@ -98,6 +112,30 @@ $(function() {
       });
     }
   });
+});
+
+$('.promocode-panel').on('click', '.remove-promocode', function() {
+  let promo_id = $(this).attr('id');
+  if (promo_id === '') {
+    return false;
+  } else {
+    $.ajax({
+      type: 'POST',
+      url: '/remove-promocode',
+      data: {
+        promocode: promo_id
+      },
+      success: function(data) {
+        $('.promocode-amount').remove();
+        $('.remove-promocode').remove();
+        $('.promocode-panel').append(
+          '<div class="input-group promocode"><input type="text" class="form-control" placeholder="Enter promocode" id="code"><span class="input-group-btn"><button class="btn btn-success btn-block" id="promocodeButton">Apply</button></span></div>'
+        );
+        $('#subtotal').html(data.subtotal);
+        $('#totalPrice').html(data.newPrice);
+      }
+    });
+  }
 });
 
 // Facebook ugly url appendix removal
