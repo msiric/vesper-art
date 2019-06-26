@@ -64,6 +64,17 @@ router.get(
   })
 );
 
+router.get('/auth/google', passport.authenticate('google', { scope: 'email' }));
+
+router.get(
+  '/auth/google/callback',
+  passport.authenticate('google', {
+    successRedirect: '/profile',
+    failureRedirect: '/login',
+    failureFlash: true
+  })
+);
+
 /* PROFILE ROUTE */
 router
   .route('/profile')

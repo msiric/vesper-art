@@ -10,6 +10,7 @@ const UserSchema = new Schema({
   photo: String,
   about: String,
   facebookId: String,
+  googleId: String,
   gigs: [
     {
       type: Schema.Types.ObjectId,
