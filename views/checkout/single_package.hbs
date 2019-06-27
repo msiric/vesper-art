@@ -10,11 +10,11 @@
             <div class="inner">
               <img src="{{ gig.picture }}" class="img-circle">
               <br>
-              <p class="text-center">{{gig.title}}</p>
+              <p class="text-center">{{ gig.title }}</p>
             </div>
             <hr>
             <div class="promocode-panel">
-              {{# if discount}}
+              {{#if discount}}
               <p class="promocode-amount">Discount: {{ discount }}%</p>
               <a class="btn btn-danger remove-promocode" id="{{ promo }}">Remove promo code</a>
               {{ else }}

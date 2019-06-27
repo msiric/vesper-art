@@ -11,39 +11,32 @@ const fee = 3.15;
 router.get('/checkout/single_package/:id', (req, res, next) => {
   Gig.findOne({ _id: req.params.id }, function(err, gig) {
     let totalPrice = gig.price + fee;
+    let subtotal = gig.price;
+    let discount = null;
+    let promo = null;
     req.session.gig = gig;
     req.session.price = totalPrice;
     if (req.user) {
       User.findOne({ _id: req.user._id }, function(err, user) {
         if (user.promos.length > 0) {
           Promocode.findOne({ _id: user.promos[0] }, function(err, promo) {
-            let subtotal = gig.price * (1 - promo.discount);
-            let discount = promo.discount * 100;
+            subtotal = gig.price * (1 - promo.discount);
+            discount = promo.discount * 100;
             totalPrice = gig.price * (1 - promo.discount) + fee;
-            req.session.price = totalPrice;
-            res.render('checkout/single_package', {
-              gig: gig,
-              subtotal: subtotal,
-              totalPrice: totalPrice,
-              discount: discount,
-              promo: promo._id
-            });
-          });
-        } else {
-          res.render('checkout/single_package', {
-            gig: gig,
-            subtotal: gig.price,
-            totalPrice: totalPrice
+            promo = promo._id;
           });
         }
       });
-    } else {
-      res.render('checkout/single_package', {
-        gig: gig,
-        subtotal: gig.price,
-        totalPrice: totalPrice
-      });
     }
+    req.session.gig = gig;
+    req.session.price = totalPrice;
+    res.render('checkout/single_package', {
+      gig: gig,
+      subtotal: subtotal,
+      totalPrice: totalPrice,
+      discount: discount,
+      promo: promo
+    });
   });
 });
 
@@ -54,22 +47,41 @@ router.get('/checkout/process_cart', (req, res, next) => {
       let price = 0;
       let cartIsEmpty = true;
       let totalPrice = 0;
+      let subtotal = 0;
+      let foundUser = null;
+      let discount = null;
+      let promo = null;
       if (user.cart.length > 0) {
+        foundUser = user;
         user.cart.map(function(item) {
           price += item.price;
         });
+        subtotal = price;
         totalPrice = price + fee;
+        if (user.promos.length > 0) {
+          Promocode.findOne({ _id: user.promos[0] }, function(err, promo) {
+            subtotal = price * (1 - promo.discount);
+            discount = promo.discount * 100;
+            totalPrice = subtotal + fee;
+            promo = promo._id;
+          });
+        }
       } else {
         cartIsEmpty = false;
       }
-
       req.session.price = totalPrice;
-      req.session.gig = user.cart;
+      if (foundUser) {
+        req.session.gig = foundUser.cart;
+      } else {
+        req.session.gig = null;
+      }
       res.render('order/cart', {
-        foundUser: user,
+        foundUser: foundUser,
         totalPrice: totalPrice,
-        sub_total: price,
-        cartIsEmpty: cartIsEmpty
+        subtotal: subtotal,
+        cartIsEmpty: cartIsEmpty,
+        discount: discount,
+        promo: promo
       });
     });
 });
