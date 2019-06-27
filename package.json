@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^2.3.0",
+    "aws-sdk": "^2.484.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.17.1",
     "bootstrap": "^4.3.1",
@@ -25,6 +26,8 @@
     "mongoose-algolia": "^1.8.0",
     "mongoose-deep-populate": "^3.1.1",
     "morgan": "^1.8.1",
+    "multer": "^1.4.1",
+    "multer-s3": "^2.9.0",
     "nodemon": "^1.19.1",
     "passport": "^0.3.2",
     "passport-facebook": "^3.0.0",

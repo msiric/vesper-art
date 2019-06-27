@@ -100,39 +100,46 @@ router.get('/api/add-promocode', (req, res, next) => {
 router.post('/promocode', (req, res, next) => {
   let promocode = req.body.promocode;
   let totalPrice = req.session.price;
-  Promocode.findOne({ name: promocode }, function(err, foundCode) {
-    if (foundCode) {
-      User.findOne({ _id: req.user._id }, function(err, user) {
-        if (user.promos.length > 0) {
-          res.json({ warningUsed: 'You already used a promo code' });
-        } else {
-          User.update(
-            { _id: req.user._id },
-            {
-              $push: {
-                promos: foundCode._id
+  let subtotal = totalPrice - fee;
+  if (!req.session.discount) {
+    Promocode.findOne({ name: promocode }, function(err, foundCode) {
+      if (foundCode) {
+        User.findOne({ _id: req.user._id }, function(err, user) {
+          if (user.promos.length > 0) {
+            res.json({ warningUsed: 'You already used a promo code' });
+          } else {
+            User.update(
+              { _id: req.user._id },
+              {
+                $push: {
+                  promos: foundCode._id
+                }
+              },
+              function(err, count) {
+                let discount = foundCode.discount * 100;
+                let promo = foundCode._id;
+                subtotal = (totalPrice - fee) * (1 - foundCode.discount);
+                totalPrice = subtotal + fee;
+                req.session.price = totalPrice;
+                req.session.discount = true;
+                res.json({ totalPrice, subtotal, discount, promo });
               }
-            },
-            function(err, count) {
-              let discount = foundCode.discount * 100;
-              let promo = foundCode._id;
-              let subtotal = (totalPrice - fee) * (1 - foundCode.discount);
-              let newPrice = subtotal + fee;
-              req.session.price = newPrice;
-              res.json({ newPrice, subtotal, discount, promo });
-            }
-          );
-        }
-      });
-    } else {
-      res.json({ warningUnfound: 'Promo code does not exist' });
-    }
-  });
+            );
+          }
+        });
+      } else {
+        res.json({ warningUnfound: 'Promo code does not exist' });
+      }
+    });
+  } else {
+    res.json({ warningMulti: 'You already have an active promo code' });
+  }
 });
 
 router.post('/remove-promocode', (req, res, next) => {
   let promocode = req.body.promocode;
   let totalPrice = req.session.price;
+  let subtotal = totalPrice - fee;
   async.waterfall([
     function(callback) {
       Promocode.findOne({ _id: promocode }, function(err, promo) {
@@ -147,14 +154,14 @@ router.post('/remove-promocode', (req, res, next) => {
         {
           $pull: { promos: promo._id }
         },
-        function(err, count) {
-          if (err) throw err;
+        function(err, user) {
           let discount = promo.discount;
-          let subtotal = totalPrice - fee;
+          subtotal = totalPrice - fee;
           subtotal = subtotal / (1 - discount);
-          let newPrice = subtotal + fee;
-          req.session.price = newPrice;
-          res.json({ newPrice, subtotal });
+          totalPrice = subtotal + fee;
+          req.session.price = totalPrice;
+          req.session.discount = false;
+          res.json({ totalPrice, subtotal });
         }
       );
     }

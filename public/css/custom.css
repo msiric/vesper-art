@@ -9,29 +9,6 @@ body {
   margin-bottom: 0px;
 }
 
-.btn-success,
-.btn-success:active,
-.btn.active,
-.btn-success:focus,
-.btn-success:hover {
-  background-color: #00b22d;
-  background: linear-gradient(#35c350, #03b525);
-  transition: color 0.2s, background-color 0.2s, box-shadow 0.2s, border 0.2s;
-  border-radius: 3px;
-  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.2);
-  box-sizing: border-box;
-  color: #fff !important;
-  border: 1px solid #00b22d;
-}
-
-.btn-primary {
-  font-size: 16px;
-  font-weight: 700;
-  padding: 15px 35px;
-  margin: 0;
-  display: inline-block;
-}
-
 label {
   font-size: 17px;
   font-weight: 500;
@@ -141,4 +118,23 @@ select {
   width: 100%;
   z-index: 99999;
   text-align: center;
+}
+
+.cart-remove-promocode,
+.package-remove-promocode {
+  width: 100%;
+}
+
+#cart_items {
+  margin-left: 5px;
+}
+
+.gig-title {
+  margin-left: 10px;
+}
+
+.name button,
+.name a {
+  width: 100%;
+  margin: 5px 0;
 }

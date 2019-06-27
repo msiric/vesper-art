@@ -35,23 +35,24 @@
                 <p class="text-center">{{ gig.title }}</p>
               </div>
               <hr>
-              <div class="promocode-panel">
+              <div class="cart-promocode-panel">
                 {{#if discount}}
-                <p class="promocode-amount">Discount: {{ discount }}%</p>
-                <a class="btn btn-danger remove-promocode" id="{{ promo }}">Remove promo code</a>
+                <p class="cart-promocode-text">Discount: {{ discount }}%</p>
+                <a class="btn btn-danger cart-remove-promocode" id="{{ promo }}">Remove promo code</a>
                 {{ else }}
-                <div class="input-group promocode">
-                  <input type="text" class="form-control" placeholder="Enter promocode" id="code">
+                <div class="input-group cart-promocode">
+                  <input type="text" class="form-control" placeholder="Enter promocode" id="cart-promocode-amount">
                   <span class="input-group-btn">
-                    <button class="btn btn-success btn-block" id="promocodeButton">Apply</button>
+                    <button class="btn btn-success btn-block" id="cart-apply-promocode">Apply</button>
                   </span>
                 </div>
-                <p class="text-center" id="promocodeResponse"></p>
+                <p class="text-center" id="cart-promocode-response"></p>
                 {{/if}}
               </div>
               <hr>
               <div class="space-between">
-                <h4><span>Subtotal:</span><span class="dollar fee">$<span id="subtotal">{{ subtotal }}</span></span>
+                <h4><span>Subtotal:</span><span class="dollar fee">$<span
+                      id="cart-subtotal">{{ subtotal }}</span></span>
                 </h4>
               </div>
               <div class="space-between">
@@ -59,7 +60,7 @@
               </div>
               <hr>
               <div class="space-between">
-                <h3><span>Total:</span><span class="dollar fee">$<span id="totalPrice">{{ totalPrice }}</span></span>
+                <h3><span>Total:</span><span class="dollar fee">$<span id="cart-total">{{ totalPrice }}</span></span>
                 </h3>
               </div>
               <a href="/payment/cart" class="btn btn-success proceed-btn">Proceed to payment</a>

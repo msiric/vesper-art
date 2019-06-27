@@ -78,12 +78,22 @@ require('./realtime/io')(io);
 const mainRoutes = require('./routes/main');
 const userRoutes = require('./routes/user');
 const orderRoutes = require('./routes/order');
+const uploadRoutes = require('./routes/upload');
 
 app.use(mainRoutes);
 app.use(userRoutes);
 app.use(orderRoutes);
+app.use(uploadRoutes);
 
 http.listen(config.port, err => {
   if (err) console.log(err);
   console.log(`Running on port ${config.port}`);
+});
+
+app.use(function(req, res, next) {
+  res.set(
+    'Cache-Control',
+    'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0'
+  );
+  next();
 });

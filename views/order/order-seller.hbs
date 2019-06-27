@@ -10,12 +10,14 @@
                 <th scope="col">Gig</th>
                 <th scope="col">Price</th>
                 <th scope="col">Status</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {{#each gigs}}
+              {{#each order}}
               <tr>
-                <td><img class="order-image-my-gig" src="{{ gig.picture }}"><span>{{ gig.title }}</span></td>
+                <td><img class="order-image-my-gig" src="{{ gig.picture }}"><span
+                    class="gig-title">{{ gig.title }}</span></td>
                 <td>${{ gig.price }}</td>
                 <td><button class="btn btn-warning">In progress</button></td>
                 <td><a href="/users/{{ seller._id }}/orders/{{ _id }}" class="btn btn-primary">Chat with buyer</a>

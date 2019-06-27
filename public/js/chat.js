@@ -1,8 +1,8 @@
 $(function() {
-  let socket = io();
+  var socket = io();
 
   $('#sendMessage').submit(function() {
-    let input = $('#message').val();
+    var input = $('#message').val();
     if (input === '') {
       return false;
     } else {
@@ -13,8 +13,8 @@ $(function() {
   });
 
   socket.on('incomingChat', function(data) {
-    let userId = $('#userId').val();
-    let html = '';
+    var userId = $('#userId').val();
+    var html = '';
     if (data.senderId === userId) {
       html += '<div class="message right">';
       html += '<span class="pic"><img src="' + data.senderImage + '"/></span>';
@@ -29,7 +29,10 @@ $(function() {
       html += '</div></div>';
     }
 
-    $('.chat-mgsg').append(html);
+    $('.chat-messages').append(html);
     $('#chatMsgs').scrollTop($('#chatMsgs')[0].scrollHeight);
+    $('.no-messages').hide();
   });
 });
+
+$('.chat-messages').scrollTop($('.chat-messages')[0].scrollHeight);

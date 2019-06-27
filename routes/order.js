@@ -9,87 +9,125 @@ const User = require('../models/user');
 const fee = 3.15;
 
 router.get('/checkout/single_package/:id', (req, res, next) => {
-  Gig.findOne({ _id: req.params.id }, function(err, gig) {
-    let totalPrice = gig.price + fee;
-    let subtotal = gig.price;
-    let discount = null;
-    let promo = null;
-    req.session.gig = gig;
-    req.session.price = totalPrice;
-    if (req.user) {
-      User.findOne({ _id: req.user._id }, function(err, user) {
-        if (user.promos.length > 0) {
-          Promocode.findOne({ _id: user.promos[0] }, function(err, promo) {
-            subtotal = gig.price * (1 - promo.discount);
-            discount = promo.discount * 100;
-            totalPrice = gig.price * (1 - promo.discount) + fee;
-            promo = promo._id;
+  let gigInfo = {
+    totalPrice: req.session.price,
+    subtotal: this.totalPrice - fee,
+    discount: null,
+    promo: null,
+    gig: null
+  };
+  async.waterfall(
+    [
+      function(callback) {
+        if (req.user) {
+          Gig.findOne({ _id: req.params.id }).exec(function(err, gig) {
+            gigInfo.gig = gig;
+            gigInfo.totalPrice = gig.price + fee;
+            gigInfo.subtotal = gig.price;
+            callback(err, gig);
           });
         }
+      },
+      function(gig, callback) {
+        User.findOne({ _id: req.user._id }, function(err, user) {
+          callback(err, user);
+        });
+      },
+      function(user, callback) {
+        if (user.promos.length > 0) {
+          Promocode.findOne({ _id: user.promos[0] }, function(err, promo) {
+            gigInfo.subtotal = gigInfo.gig.price * (1 - promo.discount);
+            gigInfo.discount = promo.discount * 100;
+            gigInfo.totalPrice = gigInfo.gig.price * (1 - promo.discount) + fee;
+            gigInfo.promo = promo._id;
+            callback(err, gigInfo);
+          });
+        } else {
+          callback(null, gigInfo);
+        }
+      }
+    ],
+    function(err, result) {
+      req.session.gig = result.gig;
+      req.session.price = result.totalPrice;
+      res.render('checkout/single_package', {
+        gig: result.gig,
+        subtotal: parseFloat(result.subtotal.toFixed(12)),
+        totalPrice: parseFloat(result.totalPrice.toFixed(12)),
+        discount: result.discount,
+        promo: result.promo
       });
     }
-    req.session.gig = gig;
-    req.session.price = totalPrice;
-    res.render('checkout/single_package', {
-      gig: gig,
-      subtotal: subtotal,
-      totalPrice: totalPrice,
-      discount: discount,
-      promo: promo
-    });
-  });
+  );
 });
 
 router.get('/checkout/process_cart', (req, res, next) => {
-  User.findOne({ _id: req.user._id })
-    .populate('cart')
-    .exec(function(err, user) {
-      let price = 0;
-      let cartIsEmpty = true;
-      let totalPrice = 0;
-      let subtotal = 0;
-      let foundUser = null;
-      let discount = null;
-      let promo = null;
-      if (user.cart.length > 0) {
-        foundUser = user;
-        user.cart.map(function(item) {
-          price += item.price;
-        });
-        subtotal = price;
-        totalPrice = price + fee;
+  let gigInfo = {
+    price: 0,
+    cartIsEmpty: true,
+    totalPrice: req.session.price,
+    subtotal: this.totalPrice - fee,
+    foundUser: null,
+    discount: null,
+    promo: null,
+    gig: null
+  };
+  async.waterfall(
+    [
+      function(callback) {
+        User.findOne({ _id: req.user._id })
+          .populate('cart')
+          .exec(function(err, user) {
+            if (user.cart.length > 0) {
+              gigInfo.foundUser = user;
+              user.cart.map(function(item) {
+                gigInfo.price += item.price;
+              });
+              gigInfo.subtotal = gigInfo.price;
+              gigInfo.totalPrice = gigInfo.price + fee;
+            } else {
+              gigInfo.cartIsEmpty = false;
+            }
+            callback(err, user);
+          });
+      },
+      function(user, callback) {
         if (user.promos.length > 0) {
           Promocode.findOne({ _id: user.promos[0] }, function(err, promo) {
-            subtotal = price * (1 - promo.discount);
-            discount = promo.discount * 100;
-            totalPrice = subtotal + fee;
-            promo = promo._id;
+            gigInfo.subtotal = gigInfo.price * (1 - promo.discount);
+            gigInfo.discount = promo.discount * 100;
+            gigInfo.totalPrice = gigInfo.subtotal + fee;
+            gigInfo.promo = promo._id;
+            callback(err, gigInfo);
           });
+        } else {
+          callback(null, gigInfo);
         }
-      } else {
-        cartIsEmpty = false;
       }
-      req.session.price = totalPrice;
-      if (foundUser) {
-        req.session.gig = foundUser.cart;
+    ],
+    function(err, result) {
+      req.session.price = result.totalPrice;
+      if (result.foundUser) {
+        req.session.gig = result.foundUser.cart;
       } else {
         req.session.gig = null;
       }
       res.render('order/cart', {
-        foundUser: foundUser,
-        totalPrice: totalPrice,
-        subtotal: subtotal,
-        cartIsEmpty: cartIsEmpty,
-        discount: discount,
-        promo: promo
+        foundUser: result.foundUser,
+        totalPrice: parseFloat(result.totalPrice.toFixed(12)),
+        subtotal: parseFloat(result.subtotal.toFixed(12)),
+        cartIsEmpty: result.cartIsEmpty,
+        discount: result.discount,
+        promo: result.promo
       });
-    });
+    }
+  );
 });
 
 router
   .route('/payment')
   .get((req, res, next) => {
-    res.render('checkout/payment');
+    res.render('checkout/payment', { amount: req.session.price });
   })
   .post((req, res, next) => {
     let gig = req.session.gig;
@@ -118,6 +156,7 @@ router
         order.seller = gig.owner;
         order.gig = gig._id;
         order.save(function(err) {
+          if (err) console.log(err);
           req.session.gig = null;
           req.session.price = null;
           res.redirect('/users/' + req.user._id + '/orders/' + order._id);
@@ -131,7 +170,7 @@ router
 router
   .route('/payment/cart')
   .get((req, res, next) => {
-    res.render('checkout/payment');
+    res.render('checkout/payment', { amount: req.session.price });
   })
   .post((req, res, next) => {
     let gigs = req.session.gig;
@@ -188,6 +227,7 @@ router.get('/users/:userId/orders/:orderId', (req, res, next) => {
     .populate('gig')
     .deepPopulate('messages.owner')
     .exec(function(err, order) {
+      console.log(order);
       res.render('order/order-room', {
         layout: 'chat_layout',
         order: order,
@@ -210,6 +250,7 @@ router.get('/users/:id/manage_orders', (req, res, next) => {
     .populate('seller')
     .populate('gig')
     .exec(function(err, order) {
+      console.log(order);
       res.render('order/order-seller', { order: order });
     });
 });
@@ -220,6 +261,7 @@ router.get('/users/:id/orders', (req, res, next) => {
     .populate('seller')
     .populate('gig')
     .exec(function(err, order) {
+      console.log(order);
       res.render('order/order-buyer', { order: order });
     });
 });

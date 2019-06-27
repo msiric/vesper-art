@@ -2,17 +2,45 @@ $(function() {
   let badge = $('#cart_items')
     .eq(0)
     .html();
-  $('.promocode-panel').on('click', '#promocodeButton', function() {
-    let input = $('#code').val();
+  $('.cart-promocode-panel').on('click', '#cart-apply-promocode', function() {
+    applyPromocode(
+      'cart',
+      '#cart-promocode-amount',
+      '#cart-apply-promocode',
+      '.cart-promocode',
+      '.cart-promocode-panel',
+      '#cart-subtotal',
+      '#cart-total'
+    );
+  });
 
-    if (input === '') {
+  $('.package-promocode-panel').on(
+    'click',
+    '#package-apply-promocode',
+    function() {
+      applyPromocode(
+        'package',
+        '#package-promocode-amount',
+        '#package-apply-promocode',
+        '.package-promocode',
+        '.package-promocode-panel',
+        '#package-subtotal',
+        '#package-total'
+      );
+    }
+  );
+
+  function applyPromocode(type, input, button, layout, panel, subtotal, total) {
+    let amount = $(input).val();
+
+    if (amount === '') {
       return false;
     } else {
       $.ajax({
         type: 'POST',
         url: '/promocode',
         data: {
-          promocode: input
+          promocode: amount
         },
         success: function(data) {
           if (data.warningUnfound) {
@@ -23,25 +51,105 @@ $(function() {
             $('.single-package-message')
               .addClass('alert alert-danger')
               .html(data.warningUsed);
+          } else if (data.warningMulti) {
+            $('.single-package-message')
+              .addClass('alert alert-danger')
+              .html(data.warningMulti);
           } else {
-            $('#promocodeButton').html('Applied');
-            $('#promocodeButton').prop('disabled', true);
-            $('.promocode').remove();
-            $('.promocode-panel').append(
-              '<p class="promocode-amount">Discount: ' + data.discount + '%</p>'
+            $(button).html('Applied');
+            $(button).prop('disabled', true);
+            $(layout).remove();
+            $(panel).append(
+              '<p class="' +
+                type +
+                '-promocode-text">Discount: ' +
+                data.discount +
+                '%</p>'
             );
-            $('.promocode-panel').append(
-              '<a class="btn btn-danger remove-promocode" id="' +
+            $(panel).append(
+              '<a class="btn btn-danger ' +
+                type +
+                '-remove-promocode" id="' +
                 data.promo +
                 '">Remove promo code</a>'
             );
-            $('#subtotal').html(data.subtotal);
-            $('#totalPrice').html(data.newPrice);
+            window.location.reload(true);
           }
         }
       });
     }
+  }
+
+  $('.cart-promocode-panel').on('click', '.cart-remove-promocode', function() {
+    removePromocode(
+      'cart',
+      '.cart-remove-promocode',
+      '.cart-promocode-text',
+      '.cart-remove-promocode',
+      '.cart-promocode-panel',
+      'cart-promocode-amount',
+      'cart-apply-promocode',
+      '#cart-subtotal',
+      '#cart-total'
+    );
   });
+
+  $('.package-promocode-panel').on(
+    'click',
+    '.package-remove-promocode',
+    function() {
+      removePromocode(
+        'package',
+        '.package-remove-promocode',
+        '.package-promocode-text',
+        '.package-remove-promocode',
+        '.package-promocode-panel',
+        'package-promocode-amount',
+        'package-apply-promocode',
+        '#package-subtotal',
+        '#package-total'
+      );
+    }
+  );
+
+  function removePromocode(
+    type,
+    promo,
+    text,
+    remove,
+    panel,
+    amount,
+    apply,
+    subtotal,
+    total
+  ) {
+    let promo_id = $(promo).attr('id');
+    if (promo_id === '') {
+      return false;
+    } else {
+      $.ajax({
+        type: 'POST',
+        url: '/remove-promocode',
+        data: {
+          promocode: promo_id
+        },
+        success: function(data) {
+          $(text).remove();
+          $(remove).remove();
+          $(panel).append(
+            '<div class="input-group ' +
+              type +
+              '-promocode"><input type="text" class="form-control" placeholder="Enter promocode" id="' +
+              amount +
+              '"><span class="input-group-btn"><button class="btn btn-success btn-block" id="' +
+              apply +
+              '">Apply</button></span></div>'
+          );
+          window.location.reload(true);
+        }
+      });
+    }
+  }
 
   $('#add-to-cart').on('click', function() {
     let gig_id = $('#gig_id').val();
@@ -94,8 +202,8 @@ $(function() {
             $('.cart').empty();
             $('.cart').html('Cart is empty');
           } else {
-            $('#subtotal').html(subtotal);
-            $('#totalPrice').html(data.totalPrice);
+            $('#subtotal').html(parseFloat(data.subtotal.toFixed(12)));
+            $('#totalPrice').html(parseFloat(data.totalPrice.toFixed(12)));
           }
 
           badge--;
@@ -112,30 +220,6 @@ $(function() {
       });
     }
   });
-});
-
-$('.promocode-panel').on('click', '.remove-promocode', function() {
-  let promo_id = $(this).attr('id');
-  if (promo_id === '') {
-    return false;
-  } else {
-    $.ajax({
-      type: 'POST',
-      url: '/remove-promocode',
-      data: {
-        promocode: promo_id
-      },
-      success: function(data) {
-        $('.promocode-amount').remove();
-        $('.remove-promocode').remove();
-        $('.promocode-panel').append(
-          '<div class="input-group promocode"><input type="text" class="form-control" placeholder="Enter promocode" id="code"><span class="input-group-btn"><button class="btn btn-success btn-block" id="promocodeButton">Apply</button></span></div>'
-        );
-        $('#subtotal').html(data.subtotal);
-        $('#totalPrice').html(data.newPrice);
-      }
-    });
-  }
 });
 
 // Facebook ugly url appendix removal

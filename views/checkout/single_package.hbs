@@ -13,29 +13,30 @@
               <p class="text-center">{{ gig.title }}</p>
             </div>
             <hr>
-            <div class="promocode-panel">
+            <div class="package-promocode-panel">
               {{#if discount}}
-              <p class="promocode-amount">Discount: {{ discount }}%</p>
-              <a class="btn btn-danger remove-promocode" id="{{ promo }}">Remove promo code</a>
+              <p class="package-promocode-text">Discount: {{ discount }}%</p>
+              <a class="btn btn-danger package-remove-promocode" id="{{ promo }}">Remove promo code</a>
               {{ else }}
-              <div class="input-group promocode">
-                <input type="text" class="form-control" placeholder="Enter promocode" id="code">
+              <div class="input-group package-promocode">
+                <input type="text" class="form-control" placeholder="Enter promocode" id="package-promocode-amount">
                 <span class="input-group-btn">
-                  <button class="btn btn-success btn-block" id="promocodeButton">Apply</button>
+                  <button class="btn btn-success btn-block" id="package-apply-promocode">Apply</button>
                 </span>
               </div>
               {{/if}}
             </div>
             <hr>
             <div class="space-between">
-              <h4><span>Subtotal:</span><span class="dollar fee"><span id="subtotal">{{ subtotal }}</span></span></h4>
+              <h4><span>Subtotal:</span><span class="dollar fee"><span
+                    id="package-subtotal">{{ subtotal }}</span></span></h4>
             </div>
             <div class="space-between">
               <h4><span>Fee:</span><span class="dollar fee">$3.15</span></h4>
             </div>
             <hr>
             <div class="space-between">
-              <h3><span>Total:</span><span class="dollar fee">$<span id="totalPrice">{{ totalPrice }}</span></span>
+              <h3><span>Total:</span><span class="dollar fee">$<span id="package-total">{{ totalPrice }}</span></span>
               </h3>
             </div>
             <a href="/payment" class="btn btn-success proceed-btn">Proceed to payment</a>
