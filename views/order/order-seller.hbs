@@ -20,7 +20,7 @@
                 <td><img class="order-image-my-artwork" src="{{ artwork.picture }}"><span
                     class="artwork-title">{{ artwork.title }}</span></td>
                 <td>${{ artwork.price }}</td>
-                <td><button class="btn btn-warning">In progress</button></td>
+                <td><button class="btn btn-warning">{{ formatStatus status }}</button></td>
                 <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>
                 <td><a href="/users/{{ seller._id }}/orders/{{ _id }}" class="btn btn-primary">Chat with buyer</a>
                 </td>

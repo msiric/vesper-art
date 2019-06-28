@@ -12,7 +12,8 @@ const OrderSchema = new Schema({
       ref: 'Message'
     }
   ],
-  created: { type: Date, default: Date.now }
+  created: { type: Date, default: Date.now },
+  status: Number
 });
 
 OrderSchema.plugin(deepPopulate);

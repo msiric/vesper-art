@@ -159,6 +159,7 @@ router
         order.buyer = req.user._id;
         order.seller = artwork.owner;
         order.artwork = artwork._id;
+        order.status = 1;
         order.save(function(err) {
           if (err) console.log(err);
           req.session.artwork = null;
@@ -206,6 +207,7 @@ router
           order.buyer = req.user._id;
           order.seller = artwork.owner;
           order.artwork = artwork._id;
+          order.status = 1;
           order.save(function(err) {
             req.session.artwork = null;
             req.session.price = null;
@@ -256,7 +258,20 @@ router.get('/users/:id/manage_orders', (req, res, next) => {
     .populate('artwork')
     .exec(function(err, order) {
       res.render('order/order-seller', {
-        order: order
+        order: order,
+        helpers: {
+          formatStatus: function(status) {
+            if (status == 0) {
+              return 'Cancelled';
+            } else if (status == 1) {
+              return 'In progress';
+            } else if (status == 2) {
+              return 'Completed';
+            } else {
+              return 'Error';
+            }
+          }
+        }
       });
     });
 });
@@ -268,7 +283,20 @@ router.get('/users/:id/orders', (req, res, next) => {
     .populate('artwork')
     .exec(function(err, order) {
       res.render('order/order-buyer', {
-        order: order
+        order: order,
+        helpers: {
+          formatStatus: function(status) {
+            if (status == 0) {
+              return 'Cancelled';
+            } else if (status == 1) {
+              return 'In progress';
+            } else if (status == 2) {
+              return 'Completed';
+            } else {
+              return 'Error';
+            }
+          }
+        }
       });
     });
 });

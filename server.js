@@ -24,6 +24,17 @@ hbsEngine = expressHbs.create({
   helpers: {
     formatDate: function(date, format) {
       return moment(date).format(format);
+    },
+    formatStatus: function(status) {
+      if (status == 0) {
+        return 'Cancelled';
+      } else if (status == 1) {
+        return 'In progress';
+      } else if (status == 2) {
+        return 'Completed';
+      } else {
+        return 'Error';
+      }
     }
   }
 });

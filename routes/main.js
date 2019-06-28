@@ -16,20 +16,20 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/creative-writing', (req, res) => {
-  Artwork.find({}, function(err, artwork) {
+router.get('/categories/creative-writing', (req, res) => {
+  Artwork.find({ category: 'cw' }, function(err, artwork) {
     res.render('main/creative-writing', { artwork: artwork });
   });
 });
 
-router.get('/music', (req, res) => {
-  Artwork.find({}, function(err, artwork) {
+router.get('/categories/music', (req, res) => {
+  Artwork.find({ category: 'm' }, function(err, artwork) {
     res.render('main/music', { artwork: artwork });
   });
 });
 
-router.get('/visual-arts', (req, res) => {
-  Artwork.find({}, function(err, artwork) {
+router.get('/categories/visual-arts', (req, res) => {
+  Artwork.find({ category: 'va' }, function(err, artwork) {
     res.render('main/visual-arts', { artwork: artwork });
   });
 });
