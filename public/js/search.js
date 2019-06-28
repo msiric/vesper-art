@@ -1,5 +1,5 @@
 var client = algoliasearch('P9R2R1LI94', '2b949398099e9ee44619187ca4ea9809');
-var index = client.initIndex('GigSchema');
+var index = client.initIndex('ArtworkSchema');
 var myAutocomplete = autocomplete('#search-input', { hint: false }, [
   {
     source: autocomplete.sources.hits(index, { hitsPerPage: 5 }),
@@ -7,7 +7,7 @@ var myAutocomplete = autocomplete('#search-input', { hint: false }, [
     templates: {
       suggestion: function(suggestion) {
         var sugTemplate =
-          "<a href='/service_detail/" +
+          "<a href='/artwork_details/" +
           suggestion.objectID +
           "'><img src='" +
           suggestion.picture +

@@ -7,19 +7,21 @@
           <table class="table">
             <thead>
               <tr>
-                <th scope="col">Gig</th>
+                <th scope="col">Artwork</th>
                 <th scope="col">Price</th>
                 <th scope="col">Status</th>
+                <th scope="col">Time</th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
               {{#each order}}
               <tr>
-                <td><img class="order-image-my-gig" src="{{ gig.picture }}"><span
-                    class="gig-title">{{ gig.title }}</span></td>
-                <td>${{ gig.price }}</td>
+                <td><img class="order-image-my-artwork" src="{{ artwork.picture }}"><span
+                    class="artwork-title">{{ artwork.title }}</span></td>
+                <td>${{ artwork.price }}</td>
                 <td><button class="btn btn-warning">In progress</button></td>
+                <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>
                 <td><a href="/users/{{ seller._id }}/orders/{{ _id }}" class="btn btn-primary">Chat with buyer</a>
                 </td>
               </tr>

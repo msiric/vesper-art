@@ -23,60 +23,13 @@
 </div>
 <div class="container section">
 	<h1>
-		Newest Gigs
+		Newest artworks
 	</h1>
 	<div class="row">
+		{{#each artwork}}
 		<div class="col-md-3">
-			<div class="gig-card">
-				<img src="/img/blog.jpg" />
-				<h4>
-					I will write 600 words blog posts
-				</h4>
-				<h3>
-					$3
-				</h3>
-			</div>
-		</div>
-		<div class="col-md-3">
-			<div class="gig-card">
-
-				<img src="/img/data.jpg" />
-				<h4>
-					I will be your virtual assistant for data entry
-				</h4>
-				<h3>
-					$3
-				</h3>
-			</div>
-		</div>
-		<div class="col-md-3">
-			<div class="gig-card">
-
-				<img src="/img/copywrite.jpg" />
-				<h4>
-					I will copywrite for your website
-				</h4>
-				<h3>
-					$3
-				</h3>
-			</div>
-		</div>
-		<div class="col-md-3">
-			<div class="gig-card">
-
-				<img src="/img/lyrics.jpg" />
-				<h4>
-					I will create a song for your lyrics
-				</h4>
-				<h3>
-					$3
-				</h3>
-			</div>
-		</div>
-		{{#each gigs}}
-		<div class="col-md-3">
-			<div class="gig-card">
-				<a href="/service_detail/{{ _id }}"><img src="{{ picture }}" /></a>
+			<div class="artwork-card">
+				<a href="/artwork_details/{{ _id }}"><img src="{{ picture }}" /></a>
 				<h4>
 					{{ title }}
 				</h4>

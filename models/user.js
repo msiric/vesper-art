@@ -17,16 +17,16 @@ const UserSchema = new Schema({
       ref: 'Promocode'
     }
   ],
-  gigs: [
+  artworks: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Gig'
+      ref: 'Artwork'
     }
   ],
   cart: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Gig'
+      ref: 'Artwork'
     }
   ]
 });

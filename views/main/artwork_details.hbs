@@ -3,12 +3,12 @@
   <div class="row">
     <div class="col-md-8">
       <div class="overview">
-        <input type="hidden" value="{{ gig._id }}" id="gig_id">
+        <input type="hidden" value="{{ artwork._id }}" id="artwork_id">
         <div class="template-card">
           <div class="name">
-            <h2 class="h2-size">{{gig.title}}</h2>
+            <h2 class="h2-size">{{ artwork.title }}</h2>
             <hr>
-            <img src="{{gig.picture}}" class="image-test">
+            <img src="{{ artwork.picture }}" class="image-test">
           </div>
         </div>
       </div>
@@ -16,9 +16,9 @@
       <div class="overview">
         <div class="about-card">
           <div class="name">
-            <h2 class="h2-size">About gig</h2>
+            <h2 class="h2-size">About artwork</h2>
             <hr>
-            <h4>{{gig.about}}</h4>
+            <h4>{{ artwork.about }}</h4>
           </div>
         </div>
       </div>
@@ -28,10 +28,10 @@
       <div class="overview">
         <div class="order-card">
           <div class="name">
-            <h3>${{gig.price}} Order details</h3>
-            <a href="/checkout/single_package/{{gig._id}}" class="btn btn-success">Proceed to order</a>
+            <h3>${{ artwork.price }} Order details</h3>
+            <a href="/checkout/single_package/{{artwork._id}}" class="btn btn-success">Proceed to order</a>
             {{#if inCart}}
-            <a href="/checkout/process_cart" class="btn btn-success space-left" id="in-cart">In cart</a>
+            <a href="/checkout/process_cart" class="btn btn-success" id="in-cart">In cart</a>
             {{ else }}
             <button class="btn btn-success" id="add-to-cart"><i class="fa fa-shopping-cart"></i></button>
             {{/if}}

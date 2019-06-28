@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const OrderSchema = new Schema({
   buyer: { type: Schema.Types.ObjectId, ref: 'User' },
   seller: { type: Schema.Types.ObjectId, ref: 'User' },
-  gig: { type: Schema.Types.ObjectId, ref: 'Gig' },
+  artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
   messages: [
     {
       type: Schema.Types.ObjectId,

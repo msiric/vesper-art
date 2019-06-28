@@ -1,18 +1,36 @@
 const router = require('express').Router();
 const async = require('async');
-const Gig = require('../models/gig');
+const Artwork = require('../models/artwork');
 const User = require('../models/user');
 const Promocode = require('../models/promocode');
 
 const algoliasearch = require('algoliasearch');
 let client = algoliasearch('P9R2R1LI94', '2b949398099e9ee44619187ca4ea9809');
-let index = client.initIndex('GigSchema');
+let index = client.initIndex('ArtworkSchema');
 
 const fee = 3.15;
 
 router.get('/', (req, res) => {
-  Gig.find({}, function(err, gigs) {
-    res.render('main/home', { gigs: gigs });
+  Artwork.find({}, function(err, artwork) {
+    res.render('main/home', { artwork: artwork });
+  });
+});
+
+router.get('/creative-writing', (req, res) => {
+  Artwork.find({}, function(err, artwork) {
+    res.render('main/creative-writing', { artwork: artwork });
+  });
+});
+
+router.get('/music', (req, res) => {
+  Artwork.find({}, function(err, artwork) {
+    res.render('main/music', { artwork: artwork });
+  });
+});
+
+router.get('/visual-arts', (req, res) => {
+  Artwork.find({}, function(err, artwork) {
+    res.render('main/visual-arts', { artwork: artwork });
   });
 });
 
@@ -32,59 +50,59 @@ router
     res.redirect('/search/?q=' + req.body.search_input);
   });
 
-router.get('/my-gigs', (req, res, next) => {
-  Gig.find({ owner: req.user._id }, function(err, gigs) {
-    res.render('main/my-gigs', { gigs: gigs });
+router.get('/my-artwork', (req, res, next) => {
+  Artwork.find({ owner: req.user._id }, function(err, artwork) {
+    res.render('main/my-artwork', { artwork: artwork });
   });
 });
 
 router
-  .route('/add-new-gig')
+  .route('/add-new-artwork')
   .get((req, res, next) => {
-    res.render('main/add-new-gig');
+    res.render('main/add-new-artwork');
   })
   .post((req, res, next) => {
     async.waterfall([
       function(callback) {
-        let gig = new Gig();
-        gig.owner = req.user._id;
-        gig.title = req.body.gig_title;
-        gig.category = req.body.gig_category;
-        gig.about = req.body.gig_about;
-        gig.price = req.body.gig_price;
-        gig.save(function(err) {
-          callback(err, gig);
+        let artwork = new Artwork();
+        artwork.owner = req.user._id;
+        artwork.title = req.body.artwork_title;
+        artwork.category = req.body.artwork_category;
+        artwork.about = req.body.artwork_about;
+        artwork.price = req.body.artwork_price;
+        artwork.save(function(err) {
+          callback(err, artwork);
         });
       },
 
-      function(gig, callback) {
+      function(artwork, callback) {
         User.update(
           {
             _id: req.user._id
           },
           {
-            $push: { gigs: gig._id }
+            $push: { artwork: artwork._id }
           },
           function(err, count) {
-            res.redirect('/my-gigs');
+            res.redirect('/my-artwork');
           }
         );
       }
     ]);
   });
 
-router.get('/service_detail/:id', (req, res, next) => {
-  let gigId = req.params.id;
-  Gig.findOne({ _id: req.params.id })
+router.get('/artwork_details/:id', (req, res, next) => {
+  let artwork_id = req.params.id;
+  Artwork.findOne({ _id: req.params.id })
     .populate('owner')
-    .exec(function(err, gig) {
+    .exec(function(err, artwork) {
       let inCart = false;
       if (req.user) {
-        if (req.user.cart.indexOf(gigId) > -1) {
+        if (req.user.cart.indexOf(artwork_id) > -1) {
           inCart = true;
         }
       }
-      res.render('main/service_detail', { gig: gig, inCart: inCart });
+      res.render('main/artwork_details', { artwork: artwork, inCart: inCart });
     });
 });
 

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const mongooseAlgolia = require('mongoose-algolia');
 const Schema = mongoose.Schema;
 
-const GigSchema = new Schema({
+const ArtworkSchema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
   title: String,
   category: String,
@@ -12,10 +12,10 @@ const GigSchema = new Schema({
   created: { type: Date, default: Date.now }
 });
 
-GigSchema.plugin(mongooseAlgolia, {
+ArtworkSchema.plugin(mongooseAlgolia, {
   appId: 'P9R2R1LI94',
   apiKey: 'a34d14a54aa9d16c44914324bf41076b',
-  indexName: 'GigSchema', //The name of the index in Algolia, you can also pass in a function
+  indexName: 'ArtworkSchema', //The name of the index in Algolia, you can also pass in a function
   selector: 'title _id owner category about price picture', //You can decide which field that are getting synced to Algolia (same as selector in mongoose)
   populate: {
     path: 'owner',
@@ -28,7 +28,7 @@ GigSchema.plugin(mongooseAlgolia, {
   debug: true // Default: false -> If true operations are logged out in your console
 });
 
-let Model = mongoose.model('Gig', GigSchema);
+let Model = mongoose.model('Artwork', ArtworkSchema);
 
 Model.SyncToAlgolia(); //Clears the Algolia index for this schema and synchronizes all documents to Algolia (based on the settings defined in your plugin settings)
 Model.SetAlgoliaSettings({

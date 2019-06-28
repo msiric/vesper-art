@@ -8,6 +8,7 @@ const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const flash = require('express-flash');
 const hbs = require('hbs');
+const moment = require('moment');
 const expressHbs = require('express-handlebars');
 const passportSocketIo = require('passport.socketio');
 
@@ -15,6 +16,16 @@ const config = require('./config/secret');
 const sessionStore = new MongoStore({
   url: config.database,
   autoReconnect: true
+});
+
+hbsEngine = expressHbs.create({
+  extname: 'hbs',
+  defaultLayout: 'layout.hbs',
+  helpers: {
+    formatDate: function(date, format) {
+      return moment(date).format(format);
+    }
+  }
 });
 
 const app = express();
@@ -33,7 +44,18 @@ mongoose.connect(config.database, function(err) {
   console.log('Connected to the database');
 });
 
-app.engine('.hbs', expressHbs({ defaultLayout: 'layout', extname: '.hbs' }));
+app.engine(
+  '.hbs',
+  expressHbs({
+    defaultLayout: 'layout',
+    extname: '.hbs',
+    helpers: {
+      formatDate: function(date, format) {
+        return moment(date).format(format);
+      }
+    }
+  })
+);
 app.set('view engine', 'hbs');
 app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));

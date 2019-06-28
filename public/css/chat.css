@@ -14,7 +14,7 @@ img {
   box-sizing: border-box;
 }
 
-.pic img:not(.gig-image) {
+.pic img:not(.artwork-image) {
   width: 40px;
   height: auto;
   border-radius: 50%;
@@ -217,7 +217,7 @@ i.material-icons.sent {
   overflow-y: auto;
 }
 
-.gig-image {
+.artwork-image {
   display: block;
   margin: 0 auto;
   width: 100px;

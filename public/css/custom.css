@@ -72,7 +72,7 @@ select {
   text-align: center;
 }
 
-.gig-card {
+.artwork-card {
   background-color: #fff;
   display: inline-block;
   margin: 10px 20px;
@@ -82,28 +82,28 @@ select {
   padding: 0;
 }
 
-.gig-card img {
+.artwork-card img {
   width: 226px;
   height: 139px;
 }
 
-.gig-card h4 {
+.artwork-card h4 {
   padding: 10px;
   font-weight: 400;
 }
 
-.gig-card h3 {
+.artwork-card h3 {
   color: #00b22d;
   padding: 0px 10px;
   font-size: 19px;
 }
 
-.gig-card .text-linking {
+.artwork-card .text-linking {
   color: #333333;
   text-decoration: none;
 }
 
-.gig-card .text-linking:hover {
+.artwork-card .text-linking:hover {
   color: green;
   text-decoration: underline;
 }
@@ -129,7 +129,7 @@ select {
   margin-left: 5px;
 }
 
-.gig-title {
+.artwork-title {
   margin-left: 10px;
 }
 

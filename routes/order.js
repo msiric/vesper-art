@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const async = require('async');
 const stripe = require('stripe')('sk_test_gBneokmqdbgLUsAQcHZuR4h500k4P1wiBq');
-const Gig = require('../models/gig');
+const Artwork = require('../models/artwork');
 const Order = require('../models/order');
 const Promocode = require('../models/promocode');
 const User = require('../models/user');
@@ -9,26 +9,26 @@ const User = require('../models/user');
 const fee = 3.15;
 
 router.get('/checkout/single_package/:id', (req, res, next) => {
-  let gigInfo = {
-    totalPrice: req.session.price,
-    subtotal: this.totalPrice - fee,
+  let artworkInfo = {
+    totalPrice: 0,
+    subtotal: 0,
     discount: null,
     promo: null,
-    gig: null
+    artwork: null
   };
   async.waterfall(
     [
       function(callback) {
         if (req.user) {
-          Gig.findOne({ _id: req.params.id }).exec(function(err, gig) {
-            gigInfo.gig = gig;
-            gigInfo.totalPrice = gig.price + fee;
-            gigInfo.subtotal = gig.price;
-            callback(err, gig);
+          Artwork.findOne({ _id: req.params.id }).exec(function(err, artwork) {
+            artworkInfo.artwork = artwork;
+            artworkInfo.totalPrice = artwork.price + fee;
+            artworkInfo.subtotal = artwork.price;
+            callback(err, artwork);
           });
         }
       },
-      function(gig, callback) {
+      function(artwork, callback) {
         User.findOne({ _id: req.user._id }, function(err, user) {
           callback(err, user);
         });
@@ -36,22 +36,24 @@ router.get('/checkout/single_package/:id', (req, res, next) => {
       function(user, callback) {
         if (user.promos.length > 0) {
           Promocode.findOne({ _id: user.promos[0] }, function(err, promo) {
-            gigInfo.subtotal = gigInfo.gig.price * (1 - promo.discount);
-            gigInfo.discount = promo.discount * 100;
-            gigInfo.totalPrice = gigInfo.gig.price * (1 - promo.discount) + fee;
-            gigInfo.promo = promo._id;
-            callback(err, gigInfo);
+            artworkInfo.subtotal =
+              artworkInfo.artwork.price * (1 - promo.discount);
+            artworkInfo.discount = promo.discount * 100;
+            artworkInfo.totalPrice =
+              artworkInfo.artwork.price * (1 - promo.discount) + fee;
+            artworkInfo.promo = promo._id;
+            callback(err, artworkInfo);
           });
         } else {
-          callback(null, gigInfo);
+          callback(null, artworkInfo);
         }
       }
     ],
     function(err, result) {
-      req.session.gig = result.gig;
+      req.session.artwork = result.artwork;
       req.session.price = result.totalPrice;
       res.render('checkout/single_package', {
-        gig: result.gig,
+        artwork: result.artwork,
         subtotal: parseFloat(result.subtotal.toFixed(12)),
         totalPrice: parseFloat(result.totalPrice.toFixed(12)),
         discount: result.discount,
@@ -62,15 +64,15 @@ router.get('/checkout/single_package/:id', (req, res, next) => {
 });
 
 router.get('/checkout/process_cart', (req, res, next) => {
-  let gigInfo = {
+  let artworkInfo = {
     price: 0,
     cartIsEmpty: true,
-    totalPrice: req.session.price,
-    subtotal: this.totalPrice - fee,
+    totalPrice: 0,
+    subtotal: 0,
     foundUser: null,
     discount: null,
     promo: null,
-    gig: null
+    artwork: null
   };
   async.waterfall(
     [
@@ -79,14 +81,14 @@ router.get('/checkout/process_cart', (req, res, next) => {
           .populate('cart')
           .exec(function(err, user) {
             if (user.cart.length > 0) {
-              gigInfo.foundUser = user;
+              artworkInfo.foundUser = user;
               user.cart.map(function(item) {
-                gigInfo.price += item.price;
+                artworkInfo.price += item.price;
               });
-              gigInfo.subtotal = gigInfo.price;
-              gigInfo.totalPrice = gigInfo.price + fee;
+              artworkInfo.subtotal = artworkInfo.price;
+              artworkInfo.totalPrice = artworkInfo.price + fee;
             } else {
-              gigInfo.cartIsEmpty = false;
+              artworkInfo.cartIsEmpty = false;
             }
             callback(err, user);
           });
@@ -94,23 +96,23 @@ router.get('/checkout/process_cart', (req, res, next) => {
       function(user, callback) {
         if (user.promos.length > 0) {
           Promocode.findOne({ _id: user.promos[0] }, function(err, promo) {
-            gigInfo.subtotal = gigInfo.price * (1 - promo.discount);
-            gigInfo.discount = promo.discount * 100;
-            gigInfo.totalPrice = gigInfo.subtotal + fee;
-            gigInfo.promo = promo._id;
-            callback(err, gigInfo);
+            artworkInfo.subtotal = artworkInfo.price * (1 - promo.discount);
+            artworkInfo.discount = promo.discount * 100;
+            artworkInfo.totalPrice = artworkInfo.subtotal + fee;
+            artworkInfo.promo = promo._id;
+            callback(err, artworkInfo);
           });
         } else {
-          callback(null, gigInfo);
+          callback(null, artworkInfo);
         }
       }
     ],
     function(err, result) {
       req.session.price = result.totalPrice;
       if (result.foundUser) {
-        req.session.gig = result.foundUser.cart;
+        req.session.artwork = result.foundUser.cart;
       } else {
-        req.session.gig = null;
+        req.session.artwork = null;
       }
       res.render('order/cart', {
         foundUser: result.foundUser,
@@ -127,10 +129,12 @@ router.get('/checkout/process_cart', (req, res, next) => {
 router
   .route('/payment')
   .get((req, res, next) => {
-    res.render('checkout/payment', { amount: req.session.price });
+    res.render('checkout/payment', {
+      amount: parseFloat(req.session.price.toFixed(12))
+    });
   })
   .post((req, res, next) => {
-    let gig = req.session.gig;
+    let artwork = req.session.artwork;
     let price = req.session.price;
     price *= 100;
     stripe.customers
@@ -153,11 +157,11 @@ router
         // New charge created on a new customer
         let order = new Order();
         order.buyer = req.user._id;
-        order.seller = gig.owner;
-        order.gig = gig._id;
+        order.seller = artwork.owner;
+        order.artwork = artwork._id;
         order.save(function(err) {
           if (err) console.log(err);
-          req.session.gig = null;
+          req.session.artwork = null;
           req.session.price = null;
           res.redirect('/users/' + req.user._id + '/orders/' + order._id);
         });
@@ -170,10 +174,12 @@ router
 router
   .route('/payment/cart')
   .get((req, res, next) => {
-    res.render('checkout/payment', { amount: req.session.price });
+    res.render('checkout/payment', {
+      amount: parseFloat(req.session.price.toFixed(12))
+    });
   })
   .post((req, res, next) => {
-    let gigs = req.session.gig;
+    let artworks = req.session.artwork;
     let price = req.session.price;
     price *= 100;
     price = Math.round(price);
@@ -195,13 +201,13 @@ router
       })
       .then(function(charge) {
         // New charge created on a new customer
-        gigs.map(function(gig) {
+        artworks.map(function(artwork) {
           let order = new Order();
           order.buyer = req.user._id;
-          order.seller = gig.owner;
-          order.gig = gig._id;
+          order.seller = artwork.owner;
+          order.artwork = artwork._id;
           order.save(function(err) {
-            req.session.gig = null;
+            req.session.artwork = null;
             req.session.price = null;
           });
         });
@@ -224,10 +230,9 @@ router.get('/users/:userId/orders/:orderId', (req, res, next) => {
   Order.findOne({ _id: req.params.orderId })
     .populate('buyer')
     .populate('seller')
-    .populate('gig')
+    .populate('artwork')
     .deepPopulate('messages.owner')
     .exec(function(err, order) {
-      console.log(order);
       res.render('order/order-room', {
         layout: 'chat_layout',
         order: order,
@@ -248,10 +253,11 @@ router.get('/users/:id/manage_orders', (req, res, next) => {
   Order.find({ seller: req.user._id })
     .populate('buyer')
     .populate('seller')
-    .populate('gig')
+    .populate('artwork')
     .exec(function(err, order) {
-      console.log(order);
-      res.render('order/order-seller', { order: order });
+      res.render('order/order-seller', {
+        order: order
+      });
     });
 });
 
@@ -259,16 +265,17 @@ router.get('/users/:id/orders', (req, res, next) => {
   Order.find({ buyer: req.user._id })
     .populate('buyer')
     .populate('seller')
-    .populate('gig')
+    .populate('artwork')
     .exec(function(err, order) {
-      console.log(order);
-      res.render('order/order-buyer', { order: order });
+      res.render('order/order-buyer', {
+        order: order
+      });
     });
 });
 
 router.post('/add-to-cart', (req, res, next) => {
-  const gigId = req.body.gig_id;
-  if (req.user.cart.indexOf(gigId) > -1) {
+  const artworkId = req.body.artwork_id;
+  if (req.user.cart.indexOf(artworkId) > -1) {
     res.json({ warning: 'Item already in cart' });
     return false;
   } else {
@@ -277,7 +284,7 @@ router.post('/add-to-cart', (req, res, next) => {
         _id: req.user._id
       },
       {
-        $push: { cart: gigId }
+        $push: { cart: artworkId }
       },
       function(err, count) {
         res.json({ message: 'Added to cart' });
@@ -287,26 +294,26 @@ router.post('/add-to-cart', (req, res, next) => {
 });
 
 router.post('/remove-from-cart', (req, res, next) => {
-  const gigId = req.body.gig_id;
+  const artworkId = req.body.artwork_id;
   async.waterfall([
     function(callback) {
-      Gig.findOne({ _id: gigId }, function(err, gig) {
-        callback(err, gig);
+      artwork.findOne({ _id: artworkId }, function(err, artwork) {
+        callback(err, artwork);
       });
     },
-    function(gig, callback) {
+    function(artwork, callback) {
       User.update(
         {
           _id: req.user._id
         },
         {
-          $pull: { cart: gigId }
+          $pull: { cart: artworkId }
         },
         function(err, count) {
-          let totalPrice = req.session.price - gig.price;
+          let totalPrice = req.session.price - artwork.price;
           res.json({
             totalPrice: parseFloat(totalPrice.toFixed(12)),
-            price: gig.price,
+            price: artwork.price,
             message: 'Removed from cart'
           });
         }

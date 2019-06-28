@@ -152,20 +152,20 @@ $(function() {
   }
 
   $('#add-to-cart').on('click', function() {
-    let gig_id = $('#gig_id').val();
+    let artwork_id = $('#artwork_id').val();
 
-    if (gig_id === '') {
+    if (artwork_id === '') {
       return false;
     } else {
       $.ajax({
         type: 'POST',
         url: '/add-to-cart',
         data: {
-          gig_id: gig_id
+          artwork_id: artwork_id
         },
         success: function(data) {
           $('.order-card .name').append(
-            '<a href="/checkout/process_cart" class="btn btn-success space-left" id="in-cart">In cart</a>'
+            '<a href="/checkout/process_cart" class="btn btn-success" id="in-cart">In cart</a>'
           );
           $('#add-to-cart').remove();
           if (data.warning) {
@@ -185,15 +185,15 @@ $(function() {
   });
 
   $('.remove-from-cart').on('click', function() {
-    let gig_id = $(this).attr('id');
-    if (gig_id === '') {
+    let artwork_id = $(this).attr('id');
+    if (artwork_id === '') {
       return false;
     } else {
       $.ajax({
         type: 'POST',
         url: '/remove-from-cart',
         data: {
-          gig_id: gig_id
+          artwork_id: artwork_id
         },
         success: function(data) {
           let subtotal = parseInt($('#subtotal').html());
@@ -208,7 +208,7 @@ $(function() {
 
           badge--;
           $('.badge').html(badge);
-          $('#' + gig_id).remove();
+          $('#' + artwork_id).remove();
           $('.cart-message')
             .addClass('alert alert-success')
             .html(data.message);

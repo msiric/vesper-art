@@ -90,21 +90,21 @@
   margin-right: 20px;
 }
 
-.add-gig-card {
+.add-artwork-card {
   background-color: #fff;
   width: 100%;
   height: 150px;
   border: 1px #e5e5e5 solid;
 }
 
-.new-gig-card {
+.new-artwork-card {
   background-color: #fff;
   width: 100%;
   height: 500px;
   border: 1px #e5e5e5 solid;
 }
 
-.new-gig-card form {
+.new-artwork-card form {
   margin-left: 20px;
   margin-right: 20px;
   margin-top: 20px;
@@ -117,14 +117,14 @@
   border: 1px #e5e5e5 solid;
 }
 
-.my-gigs-card {
+.my-artworks-card {
   background-color: #fff;
   width: 600px;
   height: 600px;
   border: 1px #e5e5e5 solid;
 }
 
-.order-image-my-gig {
+.order-image-my-artwork {
   width: 40px;
   height: 40px;
 }
