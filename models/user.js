@@ -11,6 +11,7 @@ const UserSchema = new Schema({
   about: String,
   facebookId: String,
   googleId: String,
+  customWork: Boolean,
   promos: [
     {
       type: Schema.Types.ObjectId,

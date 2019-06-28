@@ -22,6 +22,7 @@ router
         user.email = req.body.email;
         user.photo = user.gravatar();
         user.password = req.body.password;
+        user.customWork = true;
         user.save(function(err) {
           if (err) return next(err);
           req.logIn(user, function(err) {

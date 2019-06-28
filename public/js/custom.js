@@ -174,7 +174,7 @@ $(function() {
               .html(data.warning);
           } else {
             badge++;
-            $('.badge').html(badge);
+            $('.cart-badge').html(badge);
             $('.service-details-message')
               .addClass('alert alert-success')
               .html(data.message);
@@ -207,7 +207,7 @@ $(function() {
           }
 
           badge--;
-          $('.badge').html(badge);
+          $('.cart-badge').html(badge);
           $('#' + artwork_id).remove();
           $('.cart-message')
             .addClass('alert alert-success')
