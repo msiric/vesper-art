@@ -1,18 +1,18 @@
 $(function() {
   var socket = io();
 
-  $('#sendMessage').submit(function() {
-    var input = $('#message').val();
+  $('#order-message-form').submit(function() {
+    var input = $('#order-message').val();
     if (input === '') {
       return false;
     } else {
-      socket.emit('chatTo', { message: input });
-      $('#message').val('');
+      socket.emit('orderChatTo', { message: input });
+      $('#order-message').val('');
       return false;
     }
   });
 
-  socket.on('incomingChat', function(data) {
+  socket.on('orderIncomingChat', function(data) {
     var userId = $('#userId').val();
     var html = '';
     if (data.senderId === userId) {
@@ -30,7 +30,7 @@ $(function() {
     }
 
     $('.chat-messages').append(html);
-    $('#chatMsgs').scrollTop($('#chatMsgs')[0].scrollHeight);
+    $('#order-messages').scrollTop($('#order-messages')[0].scrollHeight);
     $('.no-messages').hide();
   });
 });

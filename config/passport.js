@@ -7,10 +7,12 @@ const config = require('./secret');
 const User = require('../models/user');
 
 passport.serializeUser(function(user, done) {
+  console.log(8);
   done(null, user.id);
 });
 
 passport.deserializeUser(function(id, done) {
+  console.log(9);
   User.findById(id, function(err, user) {
     done(err, user);
   });
@@ -27,29 +29,48 @@ passport.use(
       passReqToCallback: true // allows us to pass back the entire request to the callback
     },
     function(req, email, password, done) {
+      console.log(1);
       // callback with email and password from our form
 
       // find a user whose email is the same as the forms email
       // we are checking to see if the user trying to login already exists
-      User.findOne({ email: email }, function(err, user) {
-        // if there are any errors, return the error before anything else
-        if (err) return done(err);
-
-        // if no user is found, return the message
-        if (!user)
-          return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
-
-        // if the user is found but the password is wrong
-        if (!user.comparePassword(password))
-          return done(
+      User.findOne({ email: email })
+        .then(user => {
+          console.log(2);
+          // if no user is found, return the message
+          if (!user) {
+            console.log(4);
+            return done(null, false, req.flash('error', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
+          }
+          // if the user is found but the password is wrong
+          else if (!user.comparePassword(password)) {
+            console.log(5);
+            return done(
+              null,
+              false,
+              req.flash('error', 'Oops! Wrong password.')
+            ); // create the loginMessage and save it to session as flashdata
+          }
+          // if account is not verified
+          else if (!user.verified) {
+            console.log(6);
+            return done(
+              null,
+              false,
+              req.flash('error', 'Please verify your e-mail.')
+            );
+          } else {
+            console.log(7);
+            return done(null, user);
+          }
+        })
+        .catch(() =>
+          done(
             null,
             false,
-            req.flash('loginMessage', 'Oops! Wrong password.')
-          ); // create the loginMessage and save it to session as flashdata
-
-        // all is well, return successful user
-        return done(null, user);
-      });
+            req.flash('error', 'Something went wrong. Please try again')
+          )
+        );
     }
   )
 );
@@ -112,6 +133,7 @@ passport.use(
 );
 
 exports.isAuthenticated = function(req, res, next) {
+  console.log(10);
   if (req.isAuthenticated()) {
     return next();
   }

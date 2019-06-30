@@ -12,12 +12,10 @@ const UserSchema = new Schema({
   facebookId: String,
   googleId: String,
   customWork: Boolean,
-  promos: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Promocode'
-    }
-  ],
+  secretToken: String,
+  verified: Boolean,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
   artworks: [
     {
       type: Schema.Types.ObjectId,
@@ -28,6 +26,12 @@ const UserSchema = new Schema({
     {
       type: Schema.Types.ObjectId,
       ref: 'Artwork'
+    }
+  ],
+  messages: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Message'
     }
   ]
 });

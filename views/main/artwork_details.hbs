@@ -49,7 +49,7 @@
             <hr>
             <h4>{{ artwork.owner.name }}</h4>
             <i class="fa fa-briefcase"></i>
-            <i class="fa fa-envelope"></i>
+            <i class="fa fa-envelope" data-toggle="modal" data-target="#contact-artist-modal"></i>
             <img class="img-circle" src="{{ artwork.owner.photo }}" />
             <br>
             {{#if artwork.owner.about}}
@@ -60,6 +60,33 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<button type="button" class="btn btn-primary">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="contact-artist-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Contact artist</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="#" id="modal-message-form" class="form-group">
+        <div class="modal-body">
+          <textarea id="modal-message-input" class="form-control" cols="30" rows="10"></textarea>
+          <input type="hidden" id="modal-user-id" value="{{ artwork.owner._id }}">
+        </div>
+        <div class="modal-footer">
+          <input type="submit" class="form-control" value="Send">
+        </div>
+      </form>
     </div>
   </div>
 </div>

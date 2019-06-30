@@ -2,6 +2,8 @@ const router = require('express').Router();
 const async = require('async');
 const Artwork = require('../models/artwork');
 const User = require('../models/user');
+const Conversation = require('../models/conversation');
+const Message = require('../models/message');
 const Promocode = require('../models/promocode');
 
 const algoliasearch = require('algoliasearch');
@@ -123,26 +125,16 @@ router.post('/promocode', (req, res, next) => {
     Promocode.findOne({ name: promocode }, function(err, foundCode) {
       if (foundCode) {
         User.findOne({ _id: req.user._id }, function(err, user) {
-          if (user.promos.length > 0) {
+          if (req.session.discount) {
             res.json({ warningUsed: 'You already used a promo code' });
           } else {
-            User.update(
-              { _id: req.user._id },
-              {
-                $push: {
-                  promos: foundCode._id
-                }
-              },
-              function(err, count) {
-                let discount = foundCode.discount * 100;
-                let promo = foundCode._id;
-                subtotal = (totalPrice - fee) * (1 - foundCode.discount);
-                totalPrice = subtotal + fee;
-                req.session.price = totalPrice;
-                req.session.discount = true;
-                res.json({ totalPrice, subtotal, discount, promo });
-              }
-            );
+            let discount = foundCode.discount * 100;
+            let promo = foundCode._id;
+            subtotal = (totalPrice - fee) * (1 - foundCode.discount);
+            totalPrice = subtotal + fee;
+            req.session.price = totalPrice;
+            req.session.discount = foundCode._id;
+            res.json({ totalPrice, subtotal, discount, promo });
           }
         });
       } else {
@@ -178,12 +170,94 @@ router.post('/remove-promocode', (req, res, next) => {
           subtotal = subtotal / (1 - discount);
           totalPrice = subtotal + fee;
           req.session.price = totalPrice;
-          req.session.discount = false;
+          req.session.discount = null;
           res.json({ totalPrice, subtotal });
         }
       );
     }
   ]);
+});
+
+router.post('/send-message', (req, res, next) => {
+  let userId = req.body.user;
+  let messageVal = req.body.message;
+  async.waterfall([
+    function(callback) {
+      var message = new Message();
+      message.owner = req.user._id;
+      message.content = messageVal;
+      message.save(function(err) {
+        callback(err, message);
+      });
+    },
+    function(message, callback) {
+      Conversation.findOne(
+        {
+          $and: [
+            {
+              $or: [{ first: userId }, { first: req.user._id }]
+            },
+            {
+              $or: [{ second: userId }, { second: req.user._id }]
+            }
+          ]
+        },
+        function(err, conversation) {
+          if (conversation) {
+            Conversation.update(
+              { _id: conversation._id },
+              {
+                $push: { messages: message._id }
+              },
+              function(err, count) {
+                if (err) return err;
+                res.json(conversation._id);
+              }
+            );
+          } else {
+            callback(err, message);
+          }
+        }
+      );
+    },
+    function(message, callback) {
+      let conversation = new Conversation();
+      conversation.first = req.user._id;
+      conversation.second = userId;
+      conversation.messages.push(message._id);
+      conversation.save(function(err) {
+        if (err) return err;
+        res.json(conversation._id);
+      });
+    }
+  ]);
+});
+
+router.get('/conversations', (req, res) => {
+  res.render('accounts/convo_room', { layout: 'convo_chat' });
+});
+
+router.get('/conversations/:convoId', (req, res, next) => {
+  req.session.convoId = req.params.convoId;
+  Conversation.findOne({ _id: req.params.convoId })
+    .populate('first')
+    .populate('second')
+    .deepPopulate('messages.owner')
+    .exec(function(err, conversation) {
+      res.render('accounts/convo_room', {
+        layout: 'convo_chat',
+        conversation: conversation,
+        helpers: {
+          if_equals: function(a, b, opts) {
+            if (a.equals(b)) {
+              return opts.fn(this);
+            } else {
+              return opts.inverse(this);
+            }
+          }
+        }
+      });
+    });
 });
 
 module.exports = router;

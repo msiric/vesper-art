@@ -49,51 +49,6 @@
       <ul class="nav navbar-nav navbar-right">
         {{#if user}}
         <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
-            aria-expanded="false">
-            Selling
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="/users/{{ user._id }}/manage_orders">Orders</a></li>
-            <li><a href="/my-artwork">Artwork</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
-            aria-expanded="false">
-            Buying
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="/users/{{ user._id }}/orders">Orders</a></li>
-          </ul>
-        </li>
-
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
-            aria-expanded="false">
-            <img class="img-circle" style="width: 32px; height: 32px; margin-top: -7px;" src="{{ user.photo }}">
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="/profile">{{ user.name }}</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="/logout">Logout</a></li>
-          </ul>
-        </li>
-
-        <li><a href="/checkout/process_cart"><i class="fa fa-shopping-cart"><span class="cart-badge badge"
-                id="cart_items">{{ user.cart.length }}</span></i></a></li>
-
-        {{else }}
-        <li><a href="/login">Sign In</a></li>
-        <li>
-          <p class="navbar-btn">
-            <a href="/signup" class="btn btn-success">Join</a>
-          </p>
-        </li>
-        {{/if}}
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
             aria-expanded="false"><i class="fa fa-bell"></i> <b class="notification-badge badge">2</b></a>
           <ul class="dropdown-menu notify-drop">
@@ -168,15 +123,14 @@
             </div>
           </ul>
         </li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
             aria-expanded="false"><i class="fa fa-envelope"></i> <b class="message-badge badge">2</b></a>
           <ul class="dropdown-menu notify-drop">
             <div class="notify-drop-title">
               <div class="row">
-                <div class="col-md-6 col-sm-6 col-xs-6">Messages <b class="message-badge">(2)</b></div>
+                <div class="col-md-6 col-sm-6 col-xs-6"><a href="/conversations">Messages <b
+                      class="message-badge">(2)</b></a></div>
                 <div class="col-md-6 col-sm-6 col-xs-6 text-right"><a href="" class="rIcon allRead"
                     data-tooltip="tooltip" data-placement="bottom" title=""><i class="fa fa-close"></i></a></div>
               </div>
@@ -245,6 +199,50 @@
             </div>
           </ul>
         </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+            aria-expanded="false">
+            Selling
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="/users/{{ user._id }}/manage_orders">Orders</a></li>
+            <li><a href="/my-artwork">Artwork</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+            aria-expanded="false">
+            Buying
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="/users/{{ user._id }}/orders">Orders</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+            aria-expanded="false">
+            <img class="img-circle" style="width: 32px; height: 32px; margin-top: -7px;" src="{{ user.photo }}">
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="/profile">{{ user.name }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="/settings">Settings</a></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+        </li>
+
+        <li><a href="/checkout/process_cart"><i class="fa fa-shopping-cart"><span class="cart-badge badge"
+                id="cart_items">{{ user.cart.length }}</span></i></a></li>
+
+        {{else }}
+        <li><a href="/login">Sign In</a></li>
+        <li>
+          <p class="navbar-btn">
+            <a href="/signup" class="btn btn-success">Join</a>
+          </p>
+        </li>
+        {{/if}}
       </ul>
     </div><!-- /.container-fluid -->
 </nav>

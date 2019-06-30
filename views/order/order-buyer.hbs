@@ -20,9 +20,9 @@
                 <td><img class="order-image-my-artwork" src="{{ artwork.picture }}"><span
                     class="artwork-title">{{ artwork.title }}</span></td>
                 <td>${{ artwork.price }}</td>
-                <td><button class="btn btn-warning">{{ formatStatus status }}</button></td>
+                <td><button class="btn btn-{{ formatButton status }}">{{ formatStatus status }}</button></td>
                 <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>
-                <td><a href="/users/{{ buyer._id }}/orders/{{ _id }}" class="btn btn-primary">Chat with seller</a>
+                <td><a href="/users/{{ buyer._id }}/orders/{{ _id }}" class="btn btn-primary">Order page</a>
                 </td>
               </tr>
               {{/each}}

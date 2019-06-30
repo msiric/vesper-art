@@ -34,8 +34,11 @@ router.get('/checkout/single_package/:id', (req, res, next) => {
         });
       },
       function(user, callback) {
-        if (user.promos.length > 0) {
-          Promocode.findOne({ _id: user.promos[0] }, function(err, promo) {
+        if (req.session.discount) {
+          Promocode.findOne({ _id: req.session.discount }, function(
+            err,
+            promo
+          ) {
             artworkInfo.subtotal =
               artworkInfo.artwork.price * (1 - promo.discount);
             artworkInfo.discount = promo.discount * 100;
@@ -94,8 +97,11 @@ router.get('/checkout/process_cart', (req, res, next) => {
           });
       },
       function(user, callback) {
-        if (user.promos.length > 0) {
-          Promocode.findOne({ _id: user.promos[0] }, function(err, promo) {
+        if (req.session.discount) {
+          Promocode.findOne({ _id: req.session.discount }, function(
+            err,
+            promo
+          ) {
             artworkInfo.subtotal = artworkInfo.price * (1 - promo.discount);
             artworkInfo.discount = promo.discount * 100;
             artworkInfo.totalPrice = artworkInfo.subtotal + fee;
@@ -119,7 +125,8 @@ router.get('/checkout/process_cart', (req, res, next) => {
         totalPrice: parseFloat(result.totalPrice.toFixed(12)),
         subtotal: parseFloat(result.subtotal.toFixed(12)),
         cartIsEmpty: result.cartIsEmpty,
-        discount: result.discount,
+        discount: req.session.discount,
+        discountPercentage: result.discount,
         promo: result.promo
       });
     }
@@ -159,6 +166,7 @@ router
         order.buyer = req.user._id;
         order.seller = artwork.owner;
         order.artwork = artwork._id;
+        order.amount = price;
         order.status = 1;
         order.save(function(err) {
           if (err) console.log(err);
@@ -207,6 +215,7 @@ router
           order.buyer = req.user._id;
           order.seller = artwork.owner;
           order.artwork = artwork._id;
+          order.amount = price;
           order.status = 1;
           order.save(function(err) {
             req.session.artwork = null;
@@ -236,7 +245,7 @@ router.get('/users/:userId/orders/:orderId', (req, res, next) => {
     .deepPopulate('messages.owner')
     .exec(function(err, order) {
       res.render('order/order-room', {
-        layout: 'chat_layout',
+        layout: 'order_chat',
         order: order,
         helpers: {
           if_equals: function(a, b, opts) {
@@ -258,20 +267,7 @@ router.get('/users/:id/manage_orders', (req, res, next) => {
     .populate('artwork')
     .exec(function(err, order) {
       res.render('order/order-seller', {
-        order: order,
-        helpers: {
-          formatStatus: function(status) {
-            if (status == 0) {
-              return 'Cancelled';
-            } else if (status == 1) {
-              return 'In progress';
-            } else if (status == 2) {
-              return 'Completed';
-            } else {
-              return 'Error';
-            }
-          }
-        }
+        order: order
       });
     });
 });
@@ -283,20 +279,7 @@ router.get('/users/:id/orders', (req, res, next) => {
     .populate('artwork')
     .exec(function(err, order) {
       res.render('order/order-buyer', {
-        order: order,
-        helpers: {
-          formatStatus: function(status) {
-            if (status == 0) {
-              return 'Cancelled';
-            } else if (status == 1) {
-              return 'In progress';
-            } else if (status == 2) {
-              return 'Completed';
-            } else {
-              return 'Error';
-            }
-          }
-        }
+        order: order
       });
     });
 });
@@ -325,7 +308,7 @@ router.post('/remove-from-cart', (req, res, next) => {
   const artworkId = req.body.artwork_id;
   async.waterfall([
     function(callback) {
-      artwork.findOne({ _id: artworkId }, function(err, artwork) {
+      Artwork.findOne({ _id: artworkId }, function(err, artwork) {
         callback(err, artwork);
       });
     },
@@ -338,11 +321,11 @@ router.post('/remove-from-cart', (req, res, next) => {
           $pull: { cart: artworkId }
         },
         function(err, count) {
-          let totalPrice = req.session.price - artwork.price;
+          if (req.user.cart.length === 1) {
+            req.session.discount = null;
+          }
           res.json({
-            totalPrice: parseFloat(totalPrice.toFixed(12)),
-            price: artwork.price,
-            message: 'Removed from cart'
+            success: true
           });
         }
       );

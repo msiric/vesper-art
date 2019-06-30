@@ -13,6 +13,7 @@ const OrderSchema = new Schema({
     }
   ],
   created: { type: Date, default: Date.now },
+  amount: Number,
   status: Number
 });
 

@@ -63,6 +63,28 @@ app.engine(
     helpers: {
       formatDate: function(date, format) {
         return moment(date).format(format);
+      },
+      formatStatus: function(status) {
+        if (status == 0) {
+          return 'Cancelled';
+        } else if (status == 1) {
+          return 'In progress';
+        } else if (status == 2) {
+          return 'Completed';
+        } else {
+          return 'Error';
+        }
+      },
+      formatButton: function(status) {
+        if (status == 0) {
+          return 'danger';
+        } else if (status == 1) {
+          return 'warning';
+        } else if (status == 2) {
+          return 'success';
+        } else {
+          return 'light';
+        }
       }
     }
   })
@@ -112,11 +134,13 @@ const mainRoutes = require('./routes/main');
 const userRoutes = require('./routes/user');
 const orderRoutes = require('./routes/order');
 const uploadRoutes = require('./routes/upload');
+const emailRoutes = require('./routes/email');
 
 app.use(mainRoutes);
 app.use(userRoutes);
 app.use(orderRoutes);
 app.use(uploadRoutes);
+app.use(emailRoutes);
 
 http.listen(config.port, err => {
   if (err) console.log(err);

@@ -196,26 +196,30 @@ $(function() {
           artwork_id: artwork_id
         },
         success: function(data) {
-          let subtotal = parseInt($('#subtotal').html());
-          subtotal -= data.price;
-          if (subtotal === 0) {
-            $('.cart').empty();
-            $('.cart').html('Cart is empty');
-          } else {
-            $('#subtotal').html(parseFloat(data.subtotal.toFixed(12)));
-            $('#totalPrice').html(parseFloat(data.totalPrice.toFixed(12)));
+          if (data.success) {
+            window.location.reload();
           }
+        }
+      });
+    }
+  });
 
-          badge--;
-          $('.cart-badge').html(badge);
-          $('#' + artwork_id).remove();
-          $('.cart-message')
-            .addClass('alert alert-success')
-            .html(data.message);
-          $('.order-card .name').append(
-            '<button class="btn btn-success space-left" id="add-to-cart"><i class="fa fa-shopping-cart"></i></button>'
-          );
-          $('#in-cart').remove();
+  $('#modal-message-form').submit(function() {
+    var input = $('#modal-message-input').val();
+    var userId = $('#modal-user-id').val();
+    if (input === '') {
+      return false;
+    } else {
+      $.ajax({
+        type: 'POST',
+        url: '/send-message',
+        data: {
+          user: userId,
+          message: input
+        },
+        success: function(data) {
+          $('#modal-message-input').val('');
+          window.location.href = '/conversations/' + data;
         }
       });
     }
