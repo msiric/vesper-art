@@ -114,7 +114,7 @@
 .new-artwork-card {
   background-color: #fff;
   width: 100%;
-  height: 500px;
+  height: auto;
   border: 1px #e5e5e5 solid;
 }
 

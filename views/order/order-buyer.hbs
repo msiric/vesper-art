@@ -15,9 +15,10 @@
               </tr>
             </thead>
             <tbody>
+              {{#if order}}
               {{#each order}}
               <tr>
-                <td><img class="order-image-my-artwork" src="{{ artwork.picture }}"><span
+                <td><img class="order-image-my-artwork" src="{{ artwork.cover }}"><span
                     class="artwork-title">{{ artwork.title }}</span></td>
                 <td>${{ artwork.price }}</td>
                 <td><button class="btn btn-{{ formatButton status }}">{{ formatStatus status }}</button></td>
@@ -26,6 +27,14 @@
                 </td>
               </tr>
               {{/each}}
+              {{ else }}
+              <tr>
+                <td class="no-orders" colspan="5"><br><br>No orders at the moment <br><br> Browse artwork and get in
+                  touch
+                  with
+                  artists!</td>
+              </tr>
+              {{/if}}
             </tbody>
           </table>
         </div>

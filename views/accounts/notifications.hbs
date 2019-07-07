@@ -1,0 +1,41 @@
+<div class="container">
+  <h1 class="text-center">Notifications</h1>
+  <div class="app row clearfix">
+    <div class="col-sm-12">
+      <input type="hidden" id="userId" value="">
+      <div class="row">
+        {{#if notifications}}
+        {{#each notifications }}
+        <div id="{{ _id }}" class="notification-card">
+          <a href="/notification/{{ link }}">
+            <div class="pic">
+              <img src="{{ sender.photo }}" class="user-image">
+            </div>
+            <div class="info">
+              <h3 class="title name">{{ sender.name }}</h3>
+              <p class="bio">
+                {{ message }}
+              </p>
+            </div>
+          </a>
+        </div>
+        {{/each}}
+        {{ else }}
+        <div class="col-md-12">
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <div class="no-notifications">
+            <p>No notifications</p>
+            <br>
+            <p>Engage with other artists!</p>
+          </div>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

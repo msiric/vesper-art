@@ -61,15 +61,11 @@ router.get('/verify/:token', (req, res, next) => {
       user.verified = true;
       user.save(function(err) {
         req.flash('success', 'Thank you for verifying your account.');
-        res.render('accounts/signup', {
-          success: req.flash('success')
-        });
+        res.redirect('/login');
       });
     } else {
       req.flash('error', 'Verification token could not be found.');
-      res.render('accounts/signup', {
-        error: req.flash('error')
-      });
+      res.redirect('/signup');
     }
   });
 });

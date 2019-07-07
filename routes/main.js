@@ -5,6 +5,7 @@ const User = require('../models/user');
 const Conversation = require('../models/conversation');
 const Message = require('../models/message');
 const Promocode = require('../models/promocode');
+const Notification = require('../models/notification');
 
 const algoliasearch = require('algoliasearch');
 let client = algoliasearch('P9R2R1LI94', '2b949398099e9ee44619187ca4ea9809');
@@ -41,72 +42,21 @@ router
   .get((req, res, next) => {
     if (req.query.q) {
       index.search(req.query.q, function(err, content) {
-        res.render('main/search_results', {
+        res.render('main/search-results', {
           content: content,
-          search_results: req.query.q
+          searchResults: req.query.q
         });
       });
     }
   })
   .post((req, res, next) => {
-    res.redirect('/search/?q=' + req.body.search_input);
+    if (req.body.search_input.trim()) {
+      res.redirect('/search/?q=' + req.body.search_input);
+    } else {
+      req.flash('error', 'Search cannot be empty');
+      res.redirect('/');
+    }
   });
-
-router.get('/my-artwork', (req, res, next) => {
-  Artwork.find({ owner: req.user._id }, function(err, artwork) {
-    res.render('main/my-artwork', { artwork: artwork });
-  });
-});
-
-router
-  .route('/add-new-artwork')
-  .get((req, res, next) => {
-    res.render('main/add-new-artwork');
-  })
-  .post((req, res, next) => {
-    async.waterfall([
-      function(callback) {
-        let artwork = new Artwork();
-        artwork.owner = req.user._id;
-        artwork.title = req.body.artwork_title;
-        artwork.category = req.body.artwork_category;
-        artwork.about = req.body.artwork_about;
-        artwork.price = req.body.artwork_price;
-        artwork.save(function(err) {
-          callback(err, artwork);
-        });
-      },
-
-      function(artwork, callback) {
-        User.update(
-          {
-            _id: req.user._id
-          },
-          {
-            $push: { artwork: artwork._id }
-          },
-          function(err, count) {
-            res.redirect('/my-artwork');
-          }
-        );
-      }
-    ]);
-  });
-
-router.get('/artwork_details/:id', (req, res, next) => {
-  let artwork_id = req.params.id;
-  Artwork.findOne({ _id: req.params.id })
-    .populate('owner')
-    .exec(function(err, artwork) {
-      let inCart = false;
-      if (req.user) {
-        if (req.user.cart.indexOf(artwork_id) > -1) {
-          inCart = true;
-        }
-      }
-      res.render('main/artwork_details', { artwork: artwork, inCart: inCart });
-    });
-});
 
 router.get('/api/add-promocode', (req, res, next) => {
   let promocode = new Promocode();
@@ -183,12 +133,20 @@ router.post('/send-message', (req, res, next) => {
   let messageVal = req.body.message;
   async.waterfall([
     function(callback) {
-      var message = new Message();
-      message.owner = req.user._id;
-      message.content = messageVal;
-      message.save(function(err) {
-        callback(err, message);
-      });
+      if (messageVal) {
+        if (req.body.user != req.user._id) {
+          let message = new Message();
+          message.owner = req.user._id;
+          message.content = messageVal;
+          message.save(function(err) {
+            callback(err, message);
+          });
+        } else {
+          res.json({ error: 'You cannot send a message to yourself' });
+        }
+      } else {
+        res.json({ error: 'Message cannot be empty' });
+      }
     },
     function(message, callback) {
       Conversation.findOne(
@@ -211,7 +169,7 @@ router.post('/send-message', (req, res, next) => {
               },
               function(err, count) {
                 if (err) return err;
-                res.json(conversation._id);
+                res.json({ success: conversation._id });
               }
             );
           } else {
@@ -227,37 +185,92 @@ router.post('/send-message', (req, res, next) => {
       conversation.messages.push(message._id);
       conversation.save(function(err) {
         if (err) return err;
-        res.json(conversation._id);
+        res.json({ success: conversation._id });
       });
     }
   ]);
 });
 
 router.get('/conversations', (req, res) => {
-  res.render('accounts/convo_room', { layout: 'convo_chat' });
+  if (req.user) {
+    Conversation.find({
+      $or: [{ first: req.user._id }, { second: req.user._id }]
+    })
+      .populate('first')
+      .populate('second')
+      .deepPopulate('messages.owner')
+      .exec(function(err, conversations) {
+        console.log(conversations);
+        res.render('accounts/convo-room', {
+          layout: 'convo-chat',
+          conversations: conversations
+        });
+      });
+  } else {
+    res.redirect('/login');
+  }
 });
 
 router.get('/conversations/:convoId', (req, res, next) => {
-  req.session.convoId = req.params.convoId;
-  Conversation.findOne({ _id: req.params.convoId })
-    .populate('first')
-    .populate('second')
-    .deepPopulate('messages.owner')
-    .exec(function(err, conversation) {
-      res.render('accounts/convo_room', {
-        layout: 'convo_chat',
-        conversation: conversation,
-        helpers: {
-          if_equals: function(a, b, opts) {
-            if (a.equals(b)) {
-              return opts.fn(this);
-            } else {
-              return opts.inverse(this);
+  if (req.user) {
+    req.session.convoId = req.params.convoId;
+    async.series(
+      [
+        function(callback) {
+          Conversation.find({
+            $or: [{ first: req.user._id }, { second: req.user._id }]
+          })
+            .populate('first')
+            .populate('second')
+            .deepPopulate('messages.owner')
+            .exec(function(err, conversations) {
+              console.log(conversations);
+              callback(err, conversations);
+            });
+        },
+        function(callback) {
+          Conversation.findOne({ _id: req.params.convoId })
+            .populate('first')
+            .populate('second')
+            .deepPopulate('messages.owner')
+            .exec(function(err, conversation) {
+              callback(err, conversation);
+            });
+        }
+      ],
+      function(err, results) {
+        if (err) return err;
+        res.render('accounts/convo-room', {
+          layout: 'convo-chat',
+          conversations: results[0],
+          conversation: results[1],
+          helpers: {
+            if_equals: function(a, b, opts) {
+              if (a.equals(b)) {
+                return opts.fn(this);
+              } else {
+                return opts.inverse(this);
+              }
             }
           }
-        }
+        });
+      }
+    );
+  } else {
+    res.redirect('/login');
+  }
+});
+
+router.get('/notifications', (req, res, next) => {
+  if (req.user) {
+    Notification.find({ receiver: req.user._id })
+      .populate('sender')
+      .exec(function(err, notifications) {
+        res.render('accounts/notifications', { notifications: notifications });
       });
-    });
+  } else {
+    res.redirect('/login');
+  }
 });
 
 module.exports = router;

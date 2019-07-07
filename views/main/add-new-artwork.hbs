@@ -5,8 +5,16 @@
         <h2 class="text-center">Enter your artwork details</h2>
         <br>
         <div class="new-artwork-card">
-          <form action="" method="post">
-            <div class="form-group">
+          <form id="artwork-upload-form">
+            <div class="form-group text-center">
+              <img id="artwork-cover" class="img-circle"
+                src="https://via.placeholder.com/150/000000/FFFFFF/?text=Artwork" />
+              <br>
+              <div class="btn btn-rounded float-left">
+                <span>Add photo</span>
+                <input id="artwork-cover-upload" type="file" class="form-control" name="artwork_cover">
+              </div>
+              <br>
               <label>Artwork title</label>
               <input type="text" class="form-control" placeholder="Title of your artwork" name="artwork_title">
             </div>

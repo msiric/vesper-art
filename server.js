@@ -39,6 +39,12 @@ hbsEngine = expressHbs.create({
   }
 });
 
+hbs.registerHelper('formatCheckbox', function(a) {
+  if (a) {
+    return 'checked';
+  }
+});
+
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
@@ -50,7 +56,7 @@ const sessionMiddleware = session({
   store: new MongoStore({ url: config.database, autoReconnect: true })
 });
 
-mongoose.connect(config.database, function(err) {
+mongoose.connect(config.database, { useNewUrlParser: true }, function(err) {
   if (err) console.log(err);
   console.log('Connected to the database');
 });
@@ -84,6 +90,25 @@ app.engine(
           return 'success';
         } else {
           return 'light';
+        }
+      },
+      formatCheckbox: function(a) {
+        if (a) {
+          return 'checked';
+        }
+      },
+      formatChatName: function(a, b, c, d) {
+        if (a == b) {
+          return c;
+        } else {
+          return d;
+        }
+      },
+      formatChatPhoto: function(a, b, c, d) {
+        if (a == b) {
+          return c;
+        } else {
+          return d;
         }
       }
     }
@@ -135,12 +160,14 @@ const userRoutes = require('./routes/user');
 const orderRoutes = require('./routes/order');
 const uploadRoutes = require('./routes/upload');
 const emailRoutes = require('./routes/email');
+const artworkRoutes = require('./routes/artwork');
 
 app.use(mainRoutes);
 app.use(userRoutes);
 app.use(orderRoutes);
 app.use(uploadRoutes);
 app.use(emailRoutes);
+app.use(artworkRoutes);
 
 http.listen(config.port, err => {
   if (err) console.log(err);

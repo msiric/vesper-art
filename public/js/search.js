@@ -7,10 +7,10 @@ var myAutocomplete = autocomplete('#search-input', { hint: false }, [
     templates: {
       suggestion: function(suggestion) {
         var sugTemplate =
-          "<a href='/artwork_details/" +
+          "<a href='/artwork-details/" +
           suggestion.objectID +
           "'><img src='" +
-          suggestion.picture +
+          suggestion.cover +
           "'/><span>" +
           suggestion._highlightResult.title.value +
           '</span></a>';

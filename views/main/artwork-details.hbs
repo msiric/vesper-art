@@ -8,7 +8,7 @@
           <div class="name">
             <h2 class="h2-size">{{ artwork.title }}</h2>
             <hr>
-            <img src="{{ artwork.picture }}" class="image-test">
+            <img src="{{ artwork.cover }}" class="image-test">
           </div>
         </div>
       </div>
@@ -26,11 +26,17 @@
 
     <div class="col-md-4">
       <div class="overview">
+        {{#if_equals artwork.owner._id id }}
+        <div class="edit-card">
+          <a href="/edit-artwork/{{ artwork._id }}" class="btn btn-success" id="edit-artwork"><i
+              class="fa fa-edit"></i></a>
+        </div>
+        {{ else }}
         <div class="order-card">
           <div class="name">
             <h3>Artwork price</h3>
             <h4>${{ artwork.price }}</h4>
-            <a href="/checkout/single_package/{{artwork._id}}" class="btn btn-success">Proceed to order</a>
+            <a href="/checkout/single-package/{{ artwork._id }}" class="btn btn-success">Proceed to order</a>
             {{#if inCart}}
             <a href="/checkout/process_cart" class="btn btn-success" id="in-cart">In cart</a>
             {{ else }}
@@ -38,6 +44,7 @@
             {{/if}}
           </div>
         </div>
+        {{/if_equals}}
       </div>
     </div>
 
@@ -64,11 +71,6 @@
   </div>
 </div>
 
-<button type="button" class="btn btn-primary">
-  Launch demo modal
-</button>
-
-<!-- Modal -->
 <div class="modal fade" id="contact-artist-modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">

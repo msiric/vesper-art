@@ -8,7 +8,7 @@ const ArtworkSchema = new Schema({
   category: String,
   about: String,
   price: Number,
-  picture: { type: String, default: 'http://placehold.it/350x150' },
+  cover: { type: String, default: 'http://placehold.it/350x150' },
   created: { type: Date, default: Date.now }
 });
 
@@ -16,7 +16,7 @@ ArtworkSchema.plugin(mongooseAlgolia, {
   appId: 'P9R2R1LI94',
   apiKey: 'a34d14a54aa9d16c44914324bf41076b',
   indexName: 'ArtworkSchema', //The name of the index in Algolia, you can also pass in a function
-  selector: 'title _id owner category about price picture', //You can decide which field that are getting synced to Algolia (same as selector in mongoose)
+  selector: 'title _id owner category about price cover', //You can decide which field that are getting synced to Algolia (same as selector in mongoose)
   populate: {
     path: 'owner',
     select: 'name'

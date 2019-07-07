@@ -8,7 +8,7 @@ const User = require('../models/user');
 
 const fee = 3.15;
 
-router.get('/checkout/single_package/:id', (req, res, next) => {
+router.get('/checkout/single-package/:id', (req, res, next) => {
   let artworkInfo = {
     totalPrice: 0,
     subtotal: 0,
@@ -55,7 +55,7 @@ router.get('/checkout/single_package/:id', (req, res, next) => {
     function(err, result) {
       req.session.artwork = result.artwork;
       req.session.price = result.totalPrice;
-      res.render('checkout/single_package', {
+      res.render('checkout/single-package', {
         artwork: result.artwork,
         subtotal: parseFloat(result.subtotal.toFixed(12)),
         totalPrice: parseFloat(result.totalPrice.toFixed(12)),
@@ -245,7 +245,7 @@ router.get('/users/:userId/orders/:orderId', (req, res, next) => {
     .deepPopulate('messages.owner')
     .exec(function(err, order) {
       res.render('order/order-room', {
-        layout: 'order_chat',
+        layout: 'order-chat',
         order: order,
         helpers: {
           if_equals: function(a, b, opts) {
@@ -304,7 +304,7 @@ router.post('/add-to-cart', (req, res, next) => {
   }
 });
 
-router.post('/remove-from-cart', (req, res, next) => {
+router.delete('/remove-from-cart', (req, res, next) => {
   const artworkId = req.body.artwork_id;
   async.waterfall([
     function(callback) {

@@ -190,7 +190,7 @@ $(function() {
       return false;
     } else {
       $.ajax({
-        type: 'POST',
+        type: 'DELETE',
         url: '/remove-from-cart',
         data: {
           artwork_id: artwork_id
@@ -218,15 +218,175 @@ $(function() {
           message: input
         },
         success: function(data) {
-          $('#modal-message-input').val('');
-          window.location.href = '/conversations/' + data;
+          if (data.success) {
+            $('#modal-message-input').val('');
+            window.location.href = '/conversations/' + data.success;
+          } else if (data.error) {
+            alert(data.error);
+          } else {
+            alert(data.error);
+          }
         }
       });
     }
   });
-});
 
-// Facebook ugly url appendix removal
-if (window.location.hash && window.location.hash == '#_=_') {
-  window.location.hash = '';
-}
+  $('#profile-photo-upload').on('change', function() {
+    const fileInput = $('#profile-photo-upload')[0];
+    const file = fileInput.files[0];
+    const imageType = /image.*/;
+
+    if (!file.type.match(imageType)) {
+      return false;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+    if (formData) {
+      $.ajax({
+        type: 'POST',
+        url: '/profile-image-upload',
+        processData: false,
+        contentType: false,
+        cache: false,
+        data: formData,
+        success: function(data) {
+          $('#profile-photo').attr('src', data.imageUrl);
+          $('#profile-nav-photo').attr('src', data.imageUrl);
+        },
+        error: function(err) {
+          console.log(err);
+        }
+      });
+    }
+  });
+
+  $('#artwork-upload-form').on('submit', function(e) {
+    e.preventDefault();
+    const fileInput = $('#artwork-cover-upload')[0];
+    const file = fileInput.files[0];
+    const imageType = /image.*/;
+
+    if (!file.type.match(imageType)) {
+      return false;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+    if (formData) {
+      $.ajax({
+        type: 'POST',
+        url: '/artwork-cover-upload',
+        processData: false,
+        contentType: false,
+        cache: false,
+        data: formData,
+        success: function(data) {
+          console.log(data);
+          const artwork_cover = data.imageUrl;
+          const artwork_title = $('input[name=artwork_title]').val();
+          const artwork_category = $('select[name=artwork_category]').val();
+          const artwork_about = $('textarea[name=artwork_about]').val();
+          const artwork_price = $('input[name=artwork_price]').val();
+          $.ajax({
+            type: 'POST',
+            url: '/add-new-artwork',
+            data: {
+              artwork_cover,
+              artwork_title,
+              artwork_category,
+              artwork_about,
+              artwork_price
+            },
+            success: function(url) {
+              window.location.href = url;
+            },
+            error: function(err) {
+              console.log(err);
+            }
+          });
+        },
+        error: function(err) {
+          console.log(err);
+        }
+      });
+    }
+  });
+
+  $('#artwork-edit-form').on('submit', function(e) {
+    e.preventDefault();
+    const artworkId = window.location.href.substring(
+      window.location.href.lastIndexOf('/') + 1
+    );
+    const fileInput = $('#artwork-cover-edit')[0];
+    const file = fileInput.files[0];
+    const imageType = /image.*/;
+
+    if (!file.type.match(imageType)) {
+      return false;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+    if (formData) {
+      $.ajax({
+        type: 'POST',
+        url: '/artwork-cover-edit/' + artworkId,
+        processData: false,
+        contentType: false,
+        cache: false,
+        data: formData,
+        success: function(data) {
+          console.log(data);
+          const artwork_cover = data.imageUrl;
+          const artwork_title = $('input[name=artwork_title]').val();
+          const artwork_category = $('select[name=artwork_category]').val();
+          const artwork_about = $('textarea[name=artwork_about]').val();
+          const artwork_price = $('input[name=artwork_price]').val();
+          $.ajax({
+            type: 'POST',
+            url: '/edit-artwork/' + artworkId,
+            data: {
+              artwork_cover,
+              artwork_title,
+              artwork_category,
+              artwork_about,
+              artwork_price
+            },
+            success: function(url) {
+              console.log(url);
+              window.location.href = url;
+            },
+            error: function(err) {
+              console.log(err);
+            }
+          });
+        },
+        error: function(err) {
+          console.log(err);
+        }
+      });
+    }
+  });
+
+  $('#artwork-delete-button').on('click', function(e) {
+    e.preventDefault();
+    if (confirm('Are you sure you want to delete this artwork?')) {
+      const artworkId = window.location.href.substring(
+        window.location.href.lastIndexOf('/') + 1
+      );
+      $.ajax({
+        type: 'DELETE',
+        url: '/edit-artwork/' + artworkId,
+        success: function(url) {
+          window.location.href = url;
+        }
+      });
+    }
+  });
+
+  // Facebook ugly url appendix removal
+  if (window.location.hash && window.location.hash == '#_=_') {
+    window.location.hash = '';
+  }
+});

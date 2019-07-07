@@ -1,6 +1,20 @@
 <div class="hero">
 	<div class="container">
 		<div class="row">
+			{{#if error }}
+			<div class="alert alert-danger alert-dismissible">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+						aria-hidden="true">&times;</span></button>
+				{{ error  }}
+			</div>
+			{{/if}}
+			{{#if success }}
+			<div class="alert alert-success alert-dismissible">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+						aria-hidden="true">&times;</span></button>
+				{{ success  }}
+			</div>
+			{{/if}}
 			<div class="hero-heading">
 				Service for lean entrepreneur <br />
 				Find it on Threely.
@@ -26,10 +40,11 @@
 		Newest artwork
 	</h1>
 	<div class="row">
+		{{#if artwork}}
 		{{#each artwork}}
 		<div class="col-md-3">
 			<div class="artwork-card">
-				<a href="/artwork_details/{{ _id }}"><img src="{{ picture }}" /></a>
+				<a href="/artwork-details/{{ _id }}"><img src="{{ cover }}" /></a>
 				<h4>
 					{{ title }}
 				</h4>
@@ -39,5 +54,17 @@
 			</div>
 		</div>
 		{{/each}}
+		{{ else }}
+		<div class="col-md-12">
+			<br>
+			<br>
+			<br>
+			<div class="no-artwork">
+				<p>No artwork to display at the moment</p>
+				<br>
+				<p>Try again later!</p>
+			</div>
+		</div>
+		{{/if}}
 	</div>
 </div>

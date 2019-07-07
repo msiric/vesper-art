@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const MessageSchema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
   content: String,
+  read: Boolean,
   created: { type: Date, default: Date.now }
 });
 

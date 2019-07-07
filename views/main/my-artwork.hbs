@@ -1,6 +1,20 @@
 <div class="container">
   <h1 class="text-center">
     <div class="row">
+      {{#if error }}
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        {{ error }}
+      </div>
+      {{/if}}
+      {{#if success }}
+      <div class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        {{ success }}
+      </div>
+      {{/if}}
       <div class="col-md-8 col-md-offset-2">
         <div class="overview">
           <div class="add-artwork-card">
@@ -21,12 +35,19 @@
                   </tr>
                 </thead>
                 <tbody>
+                  {{#if artwork}}
                   {{#each artwork}}
                   <tr>
-                    <td><img class="order-image-my-artwork" src="{{ picture }}"></td>
+                    <td><img class="order-image-my-artwork" src="{{ cover }}"></td>
                     <td>{{ title }}</td>
                   </tr>
                   {{/each}}
+                  {{ else }}
+                  <tr>
+                    <td class="no-added-artwork" colspan="5"><br><br>No artwork to display <br><br> Add new art and
+                      start selling!</td>
+                  </tr>
+                  {{/if}}
                 </tbody>
               </table>
             </div>

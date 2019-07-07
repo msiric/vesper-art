@@ -41,6 +41,15 @@ passport.use(
           if (!user) {
             console.log(4);
             return done(null, false, req.flash('error', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
+          } else if (!user.password) {
+            return done(
+              null,
+              false,
+              req.flash(
+                'error',
+                'Please use your social media account to log in.'
+              )
+            );
           }
           // if the user is found but the password is wrong
           else if (!user.comparePassword(password)) {
@@ -64,7 +73,7 @@ passport.use(
             return done(null, user);
           }
         })
-        .catch(() =>
+        .catch(err =>
           done(
             null,
             false,

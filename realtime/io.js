@@ -21,9 +21,10 @@ module.exports = function(io) {
             senderImage: user.photo,
             senderId: user._id
           });
-          var message = new Message();
+          const message = new Message();
           message.owner = user._id;
           message.content = data.message;
+          message.read = false;
           message.save(function(err) {
             callback(err, message);
           });
@@ -54,9 +55,10 @@ module.exports = function(io) {
             senderImage: user.photo,
             senderId: user._id
           });
-          var message = new Message();
+          const message = new Message();
           message.owner = user._id;
           message.content = data.message;
+          message.read = false;
           message.save(function(err) {
             callback(err, message);
           });

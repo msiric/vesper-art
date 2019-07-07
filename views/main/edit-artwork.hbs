@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="row">
+    <div class="col-lg-6 col-md-offset-3">
+      <div class="overview">
+        <h2 class="text-center">Edit your artwork</h2>
+        <br>
+        <div class="edit-artwork-card">
+          <form id="artwork-edit-form">
+            <div class="form-group text-center">
+              <img id="artwork-cover" class="img-circle" src="{{ artwork.cover }}" />
+              <br>
+              <div class="btn btn-rounded float-left">
+                <span>Edit photo</span>
+                <input id="artwork-cover-edit" type="file" class="form-control" name="artwork_cover">
+                <input id="artwork-cover-path" type="hidden" class="form-control" name="artwork_path">
+              </div>
+              <br>
+              <label>Artwork title</label>
+              <input type="text" class="form-control" placeholder="{{ artwork.title }}" name="artwork_title">
+            </div>
+
+            <div class="form-group">
+              <label>Artwork price</label>
+              <input type="text" class="form-control" placeholder="{{ artwork.price }}" name="artwork_price">
+            </div>
+
+            <div class="form-group">
+              <label>Artwork category</label>
+              <select class="form-control" name="artwork_category">
+                <option value="cw" {{#formatSelection artwork.category 'cw'}}{{/formatSelection}}>Creative Writing
+                </option>
+                <option value="m" {{#formatSelection artwork.category 'm'}}{{/formatSelection}}>Music</option>
+                <option value="va" {{#formatSelection artwork.category 'va'}}{{/formatSelection}}>Visual Arts</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Artwork description</label>
+              <textarea type="text" class="form-control" placeholder="{{ artwork.about }}"
+                name="artwork_about"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">Save</button>
+            <button id="artwork-delete-button" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

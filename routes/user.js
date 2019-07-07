@@ -131,7 +131,8 @@ router.get('/settings', function(req, res) {
   if (req.user) {
     res.render('accounts/settings', {
       error: req.flash('error'),
-      success: req.flash('success')
+      success: req.flash('success'),
+      customWork: req.user.customWork
     });
   } else {
     res.redirect('/login');
@@ -144,32 +145,53 @@ router.post('/new-password', (req, res, next) => {
       let current = req.body.current;
       let change = req.body.password;
       let confirm = req.body.confirm;
+      console.log(current, change, confirm);
       if (current && change && confirm) {
-        if (current === user.password) {
+        if (user.comparePassword(current)) {
           if (change === confirm) {
             user.password = change;
             user.save(function(err) {
               req.flash('success', 'Your details have been updated');
-              res.redirect('/settings');
+              res.render('accounts/settings', {
+                success: req.flash('success')
+              });
             });
           } else {
-            req.flash(
-              'error',
-              'New password does not match with the confirmation'
-            );
-            res.redirect('/settings');
+            req.flash('error', 'New passwords do not match');
+            res.render('accounts/settings', { error: req.flash('error') });
           }
         } else {
-          req.flash('error', 'Current password does not match');
-          res.redirect('/settings');
+          req.flash('error', 'Current password incorrect');
+          res.render('accounts/settings', { error: req.flash('error') });
         }
       } else {
         req.flash('error', 'Please fill all the fields');
-        res.redirect('/settings');
+        res.render('accounts/settings', { error: req.flash('error') });
       }
     } else {
       req.flash('error', 'User not found');
       res.redirect('/');
+    }
+  });
+});
+
+router.post('/update-preferences', (req, res, next) => {
+  User.findOne({ _id: req.user._id }, function(err, user) {
+    if (user) {
+      let customWork = req.body.work;
+      console.log(customWork);
+      if (customWork) {
+        user.customWork = true;
+      } else {
+        user.customWork = false;
+      }
+      user.save(function(err) {
+        req.flash('success', 'Your details have been updated');
+        res.render('accounts/settings');
+      });
+    } else {
+      req.flash('error', 'User not found');
+      res.redirect('/', { error: req.flash('error') });
     }
   });
 });
