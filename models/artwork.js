@@ -9,6 +9,7 @@ const ArtworkSchema = new Schema({
   about: String,
   price: Number,
   cover: { type: String, default: 'http://placehold.it/350x150' },
+  media: String,
   created: { type: Date, default: Date.now }
 });
 

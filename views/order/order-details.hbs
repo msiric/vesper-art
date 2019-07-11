@@ -1,0 +1,72 @@
+<div class="container">
+  <div class="app row clearfix">
+    <div class="col-sm-4">
+      <input type="hidden" id="userId" value="{{ user._id }}">
+      <div class="row">
+        <div class="sidebar right">
+          <div class="overlay">
+            <div class="profile">
+              <div class="pic">
+                <img src="{{ order.artwork.cover }}" class="artorder-image">
+              </div>
+              <div class="info">
+                <h3 class="title name">{{ order.artwork.title }}</h3>
+                <p class="bio">
+                  {{ order.artwork.about }}
+                </p>
+                <br>
+                <div class="btn btn-{{ formatButtonOrder order.status }}">{{ formatStatusOrder order.status }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-8">
+      <div class="row">
+        <div class="chatbox">
+          <div class="chat-messages clearfix" id="order-messages">
+            {{#if order.artwork.price}}
+            {{#each order.messages}}
+            {{#if_equals ../user._id owner._id}}
+            <div class="message right">
+              <span class="pic"><img src="{{ owner.photo }}" /></span>
+              <div class="bubble right">
+                <p>{{ content }}</p>
+              </div>
+            </div>
+            {{ else }}
+            <div class=" message left">
+              <span class="pic"><img src="{{ owner.photo }}" /></span>
+              <div class="bubble left">
+                <p>{{ content }}</p>
+              </div>
+            </div>
+            {{/if_equals}}
+            {{/each}}
+            {{ else }}
+            <div class="no-messages">
+              <p>No messages</p>
+              <br>
+              <p>Start a conversation!</p>
+            </div>
+            {{/if}}
+          </div>
+
+          <div class="compose">
+            <form action="#" id="order-message-form" class="form-group">
+              <div class="input-group">
+                <a href="#" class="input-group-addon"><i class="fa fa-plus">
+                  </i></a>
+                <input type="text" id="order-message" class="form-control" placeholder="Type something here">
+                <a href="#" class="input-group-addon"><i class="fa fa-smile-o"></i></a>
+                <input type="submit" class="form-control" value="Send">
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

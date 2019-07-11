@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const Order = require('../models/order');
+const Work = require('../models/work');
 const Conversation = require('../models/conversation');
 const Message = require('../models/message');
 const async = require('async');
@@ -7,15 +7,15 @@ const async = require('async');
 module.exports = function(io) {
   io.on('connection', function(socket) {
     const user = socket.request.user;
-    const orderId = socket.request.session.orderId;
+    const workId = socket.request.session.workId;
     const convoId = socket.request.session.convoId;
 
-    socket.join(orderId);
+    socket.join(workId);
 
-    socket.on('orderChatTo', data => {
+    socket.on('workChatTo', data => {
       async.waterfall([
         function(callback) {
-          io.in(orderId).emit('orderIncomingChat', {
+          io.in(workId).emit('workIncomingChat', {
             message: data.message,
             sender: user.name,
             senderImage: user.photo,
@@ -31,9 +31,9 @@ module.exports = function(io) {
         },
 
         function(message, callback) {
-          Order.update(
+          Work.update(
             {
-              _id: orderId
+              _id: workId
             },
             {
               $push: { messages: message._id }

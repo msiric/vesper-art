@@ -2,17 +2,22 @@ const mongoose = require('mongoose');
 const deepPopulate = require('mongoose-deep-populate')(mongoose);
 const Schema = mongoose.Schema;
 
-const OrderSchema = new Schema({
+const WorkSchema = new Schema({
   buyer: { type: Schema.Types.ObjectId, ref: 'User' },
   seller: { type: Schema.Types.ObjectId, ref: 'User' },
-  artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
+  messages: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Message'
+    }
+  ],
+  description: String,
   created: { type: Date, default: Date.now },
   amount: Number,
-  discount: Boolean,
-  paid: Number,
+  delivery: Date,
   status: Number
 });
 
-OrderSchema.plugin(deepPopulate);
+WorkSchema.plugin(deepPopulate);
 
-module.exports = mongoose.model('Order', OrderSchema);
+module.exports = mongoose.model('Work', WorkSchema);

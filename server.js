@@ -70,23 +70,49 @@ app.engine(
       formatDate: function(date, format) {
         return moment(date).format(format);
       },
-      formatStatus: function(status) {
+      formatStatusOrder: function(status) {
         if (status == 0) {
           return 'Cancelled';
         } else if (status == 1) {
-          return 'In progress';
+          return 'Dispute';
         } else if (status == 2) {
           return 'Completed';
         } else {
           return 'Error';
         }
       },
-      formatButton: function(status) {
+      formatButtonOrder: function(status) {
         if (status == 0) {
           return 'danger';
         } else if (status == 1) {
           return 'warning';
         } else if (status == 2) {
+          return 'success';
+        } else {
+          return 'light';
+        }
+      },
+      formatStatusWork: function(status) {
+        if (status == 0) {
+          return 'Cancelled';
+        } else if (status == 1) {
+          return 'Dispute';
+        } else if (status == 2) {
+          return 'In progress';
+        } else if (status == 3) {
+          return 'Completed';
+        } else {
+          return 'Error';
+        }
+      },
+      formatButtonWork: function(status) {
+        if (status == 0) {
+          return 'danger';
+        } else if (status == 1) {
+          return 'warning';
+        } else if (status == 2) {
+          return 'primary';
+        } else if (status == 3) {
           return 'success';
         } else {
           return 'light';

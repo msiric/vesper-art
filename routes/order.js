@@ -142,8 +142,10 @@ router
   })
   .post((req, res, next) => {
     let artwork = req.session.artwork;
-    let price = req.session.price;
-    price *= 100;
+    let price = req.session.artwork.price;
+    let paid = req.session.price;
+    paid *= 100;
+    paid = Math.round(paid);
     stripe.customers
       .create({
         email: req.user.email
@@ -155,7 +157,7 @@ router
       })
       .then(source => {
         return stripe.charges.create({
-          amount: price,
+          amount: paid,
           currency: 'usd',
           customer: source.customer
         });
@@ -167,16 +169,19 @@ router
         order.seller = artwork.owner;
         order.artwork = artwork._id;
         order.amount = price;
-        order.status = 1;
+        if (req.session.discount) order.discount = true;
+        order.paid = req.session.price;
+        order.status = 2;
         order.save(function(err) {
           if (err) console.log(err);
           req.session.artwork = null;
           req.session.price = null;
+          req.session.discount = null;
           res.redirect('/users/' + req.user._id + '/orders/' + order._id);
         });
       })
       .catch(err => {
-        // Deal with an error
+        console.log(err);
       });
   });
 
@@ -189,9 +194,10 @@ router
   })
   .post((req, res, next) => {
     let artworks = req.session.artwork;
-    let price = req.session.price;
-    price *= 100;
-    price = Math.round(price);
+    let price = req.session.artwork.price;
+    let paid = req.session.price;
+    paid *= 100;
+    paid = Math.round(paid);
     stripe.customers
       .create({
         email: req.user.email
@@ -203,7 +209,7 @@ router
       })
       .then(source => {
         return stripe.charges.create({
-          amount: price,
+          amount: paid,
           currency: 'usd',
           customer: source.customer
         });
@@ -216,10 +222,13 @@ router
           order.seller = artwork.owner;
           order.artwork = artwork._id;
           order.amount = price;
-          order.status = 1;
+          if (req.session.discount) order.discount = true;
+          order.paid = req.session.price;
+          order.status = 2;
           order.save(function(err) {
             req.session.artwork = null;
             req.session.price = null;
+            req.session.discount = null;
           });
         });
         User.update({ _id: req.user._id }, { $set: { cart: [] } }, function(
@@ -242,21 +251,24 @@ router.get('/users/:userId/orders/:orderId', (req, res, next) => {
     .populate('buyer')
     .populate('seller')
     .populate('artwork')
-    .deepPopulate('messages.owner')
     .exec(function(err, order) {
-      res.render('order/order-room', {
-        layout: 'order-chat',
-        order: order,
-        helpers: {
-          if_equals: function(a, b, opts) {
-            if (a.equals(b)) {
-              return opts.fn(this);
-            } else {
-              return opts.inverse(this);
+      if (order) {
+        res.render('order/order-details', {
+          order: order,
+          helpers: {
+            if_equals: function(a, b, opts) {
+              if (a.equals(b)) {
+                return opts.fn(this);
+              } else {
+                return opts.inverse(this);
+              }
             }
           }
-        }
-      });
+        });
+      } else {
+        req.flash('error', 'Order not found');
+        res.redirect('/');
+      }
     });
 });
 

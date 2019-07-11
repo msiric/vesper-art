@@ -27,6 +27,7 @@ const profilePhotoUpload = multer({
   storage: multerS3({
     s3: s3,
     bucket: 'vesper-testing',
+    limits: { fileSize: 2 * 1024 * 1024 },
     acl: 'public-read',
     metadata: function(req, file, callback) {
       callback(null, { fieldName: 'TESTING_META_DATA!' });
@@ -45,6 +46,7 @@ const artworkCoverUpload = multer({
   storage: multerS3({
     s3: s3,
     bucket: 'vesper-testing',
+    limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
     metadata: function(req, file, callback) {
       callback(null, { fieldName: 'TESTING_META_DATA!' });
@@ -63,6 +65,7 @@ const artworkCoverEdit = multer({
   storage: multerS3({
     s3: s3,
     bucket: 'vesper-testing',
+    limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
     metadata: function(req, file, callback) {
       callback(null, { fieldName: 'TESTING_META_DATA!' });
