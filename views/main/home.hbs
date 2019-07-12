@@ -3,13 +3,15 @@
 		<div class="row">
 			{{#if error }}
 			<div class="alert alert-danger alert-dismissible">
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+						aria-hidden="true">&times;</span></button>
 				{{ error }}
 			</div>
 			{{/if}}
 			{{#if success }}
 			<div class="alert alert-success alert-dismissible">
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+						aria-hidden="true">&times;</span></button>
 				{{ success }}
 			</div>
 			{{/if}}
@@ -29,8 +31,9 @@
 						</span>
 					</div>
 				</form>
-				{{#if id}}
-				<button class="btn btn-primary" data-toggle="modal" data-target="#request-modal">Request custom work</button>
+				{{#if this.user}}
+				<button class="btn btn-primary" data-toggle="modal" data-target="#post-request-modal">Request custom
+					work</button>
 				{{ else }}
 				<button class="btn btn-primary" disabled>Request custom work</button>
 				{{/if}}
@@ -45,10 +48,14 @@
 		{{#each requests}}
 		<div class="col-md-3">
 			<div id="{{ _id }}" class="request-card">
+				{{#checkIfEquals poster._id ../this.user._id }}
 				<i onclick="deleteRequest('{{ _id }}')" class="fa fa-trash delete-request-button"></i>
-				<h4>{{ _id }}</h4>
+				<a href="/edit-request/{{ _id }}" class="fa fa-edit edit-request-button"></a>
+				{{ else }}
+				<a href="#" class="fa fa-briefcase"></a>
+				{{/checkIfEquals}}
 				<h4>{{ poster.name }}</h4>
-				<h4>{{ poster.photo }}</h4>
+				<img src="{{ poster.photo }}">
 				<h4>
 					{{ category }}
 				</h4>
@@ -108,7 +115,7 @@
 	</div>
 </div>
 
-<div class="modal fade" id="request-modal" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="post-request-modal" tabindex="-1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -117,7 +124,7 @@
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
-			<form action="/request" method="post" id="request-form" class="form-group">
+			<form action="/request" method="post" id="post-request-form" class="form-group">
 				<div class="modal-body">
 					<select name="request_category" class="form-control">
 						<option value="cw">Creative writing</option>
@@ -125,9 +132,10 @@
 						<option value="va">Visual arts</option>
 					</select>
 					<input name="request_budget" class="form-control" type="number" min="1" placeholder="What is your budget">
-					<input name="request_delivery" class="form-control" type="number" min="1" max="90" placeholder="In how many days do you want the work delivered">
-					<textarea name="request_description" class="form-control" cols="30" rows="10" placeholder="Describe your request"
-					 required></textarea>
+					<input name="request_delivery" class="form-control" type="number" min="1" max="90"
+						placeholder="In how many days do you want the work delivered">
+					<textarea name="request_description" class="form-control" cols="30" rows="10"
+						placeholder="Describe your request" required></textarea>
 				</div>
 				<div class="modal-footer">
 					<input type="submit" class="form-control" value="Post your request">

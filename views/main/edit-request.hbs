@@ -1,0 +1,14 @@
+<h5 class="title">Edit custom work</h5>
+<form action="/edit-request/{{ request._id }}" method="post" id="edit-request-form" class="form-group">
+  <select name="request_category" class="form-control">
+    <option value="cw" {{#formatSelection artwork.category 'cw'}}{{/formatSelection}}>Creative writing</option>
+    <option value="m" {{#formatSelection artwork.category 'm'}}{{/formatSelection}}>Music</option>
+    <option value="va" {{#formatSelection artwork.category 'va'}}{{/formatSelection}}>Visual arts</option>
+  </select>
+  <input name="request_budget" class="form-control" type="number" min="1" placeholder="{{ request.budget }}">
+  <input name="request_delivery" class="form-control" type="number" min="1" max="90"
+    placeholder="{{ request.delivery }}">
+  <textarea name="request_description" class="form-control" cols="30" rows="10" placeholder="{{ request.description }}"
+    required></textarea>
+  <input type="submit" class="form-control" value="Update your request">
+</form>

@@ -20,23 +20,7 @@ const sessionStore = new MongoStore({
 
 hbsEngine = expressHbs.create({
   extname: 'hbs',
-  defaultLayout: 'layout.hbs',
-  helpers: {
-    formatDate: function(date, format) {
-      return moment(date).format(format);
-    },
-    formatStatus: function(status) {
-      if (status == 0) {
-        return 'Cancelled';
-      } else if (status == 1) {
-        return 'In progress';
-      } else if (status == 2) {
-        return 'Completed';
-      } else {
-        return 'Error';
-      }
-    }
-  }
+  defaultLayout: 'layout.hbs'
 });
 
 hbs.registerHelper('formatCheckbox', function(a) {
@@ -135,6 +119,23 @@ app.engine(
           return c;
         } else {
           return d;
+        }
+      },
+      formatCheckbox: function(a) {
+        if (a) {
+          return 'checked';
+        }
+      },
+      formatSelection: function(a, b) {
+        if (a === b) {
+          return 'selected';
+        }
+      },
+      checkIfEquals: function(a, b, opts) {
+        if (a.equals(b)) {
+          return opts.fn(this);
+        } else {
+          return opts.inverse(this);
         }
       }
     }

@@ -254,16 +254,7 @@ router.get('/users/:userId/orders/:orderId', (req, res, next) => {
     .exec(function(err, order) {
       if (order) {
         res.render('order/order-details', {
-          order: order,
-          helpers: {
-            if_equals: function(a, b, opts) {
-              if (a.equals(b)) {
-                return opts.fn(this);
-              } else {
-                return opts.inverse(this);
-              }
-            }
-          }
+          order: order
         });
       } else {
         req.flash('error', 'Order not found');

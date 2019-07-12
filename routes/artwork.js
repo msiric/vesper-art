@@ -64,16 +64,7 @@ router.get('/artwork-details/:id', (req, res, next) => {
         res.render('main/artwork-details', {
           id: id,
           artwork: artwork,
-          inCart: inCart,
-          helpers: {
-            if_equals: function(a, b, opts) {
-              if (a.equals(b)) {
-                return opts.fn(this);
-              } else {
-                return opts.inverse(this);
-              }
-            }
-          }
+          inCart: inCart
         });
       } else {
         req.flash('error', 'Artwork not found');
@@ -88,14 +79,7 @@ router
     Artwork.findOne({ _id: req.params.id }, function(err, artwork) {
       if (artwork) {
         res.render('main/edit-artwork', {
-          artwork: artwork,
-          helpers: {
-            formatSelection: function(a, b) {
-              if (a === b) {
-                return 'selected';
-              }
-            }
-          }
+          artwork: artwork
         });
       } else {
         req.flash('error', 'Artwork not found');

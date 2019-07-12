@@ -13,7 +13,7 @@ router.post('/request', (req, res, next) => {
             res.render('main/home', { error: req.flash('error') });
           } else {
             let request = new Request();
-            request.owner = req.user._id;
+            request.poster = req.user._id;
             if (req.body.request_category)
               request.category = req.body.request_category;
             if (req.body.request_budget)
@@ -91,21 +91,52 @@ router.delete('/request/:id', (req, res, next) => {
   }
 });
 
-router.put('/request/:id', (req, res, next) => {
+router.get('/edit-request/:id', (req, res, next) => {
   if (req.user) {
     let requestId = req.params.id;
     async.waterfall([
       function(callback) {
         User.findOne({ _id: req.user._id }).exec(function(err, user) {
           if (user.requests.indexOf(requestId) > -1) {
-            callback(err, result);
+            callback(err, user);
           } else {
             req.flash('error', 'Request not found');
             res.render('main/home', { error: req.flash('error') });
           }
         });
       },
-      function(result, callback) {
+      function(user, callback) {
+        Request.findOne({ _id: requestId }, function(err, request) {
+          if (request) {
+            res.render('main/edit-request', { request: request });
+          } else {
+            req.flash('error', 'Request not found');
+            res.render('main/home', { error: req.flash('error') });
+          }
+        });
+      }
+    ]);
+  } else {
+    req.flash('error', 'You need to be logged in');
+    res.render('main/home', { error: req.flash('error') });
+  }
+});
+
+router.post('/edit-request/:id', (req, res, next) => {
+  if (req.user) {
+    let requestId = req.params.id;
+    async.waterfall([
+      function(callback) {
+        User.findOne({ _id: req.user._id }).exec(function(err, user) {
+          if (user.requests.indexOf(requestId) > -1) {
+            callback(err, user);
+          } else {
+            req.flash('error', 'Request not found');
+            res.render('main/home', { error: req.flash('error') });
+          }
+        });
+      },
+      function(user, callback) {
         Request.findOne({ _id: requestId }, function(err, request) {
           if (request) {
             if (req.body.request_category)

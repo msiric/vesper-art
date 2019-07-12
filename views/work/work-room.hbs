@@ -29,7 +29,7 @@
           <div class="chat-messages clearfix" id="work-messages">
             {{#if work.messages}}
             {{#each work.messages}}
-            {{#if_equals ../user._id owner._id}}
+            {{#checkIfEquals ../user._id owner._id}}
             <div class="message right">
               <span class="pic"><img src="{{ owner.photo }}" /></span>
               <div class="bubble right">
@@ -43,7 +43,7 @@
                 <p>{{ content }}</p>
               </div>
             </div>
-            {{/if_equals}}
+            {{/checkIfEquals}}
             {{/each}}
             {{ else }}
             <div class="no-messages">

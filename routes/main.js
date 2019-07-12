@@ -15,10 +15,6 @@ let index = client.initIndex('ArtworkSchema');
 const fee = 3.15;
 
 router.get('/', (req, res) => {
-  let id = null;
-  if (req.user) {
-    id = req.user._id;
-  }
   async.series(
     [
       function(callback) {
@@ -37,7 +33,6 @@ router.get('/', (req, res) => {
     ],
     function(err, results) {
       res.render('main/home', {
-        id: id,
         requests: results[0],
         artwork: results[1]
       });
@@ -269,16 +264,7 @@ router.get('/conversations/:convoId', (req, res, next) => {
         res.render('accounts/convo-room', {
           layout: 'convo-chat',
           conversations: results[0],
-          conversation: results[1],
-          helpers: {
-            if_equals: function(a, b, opts) {
-              if (a.equals(b)) {
-                return opts.fn(this);
-              } else {
-                return opts.inverse(this);
-              }
-            }
-          }
+          conversation: results[1]
         });
       }
     );

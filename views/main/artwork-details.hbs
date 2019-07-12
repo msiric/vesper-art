@@ -27,7 +27,7 @@
     <div class="col-md-4">
       <div class="overview">
         {{#if req.user }}
-        {{#if_equals artwork.owner._id id }}
+        {{#checkIfEquals artwork.owner._id id }}
         <div class="edit-card">
           <a href="/edit-artwork/{{ artwork._id }}" class="btn btn-success" id="edit-artwork"><i
               class="fa fa-edit"></i></a>
@@ -45,7 +45,7 @@
             {{/if}}
           </div>
         </div>
-        {{/if_equals}}
+        {{/checkIfEquals}}
         {{ else }}
         <div class="order-card">
           <div class="name">

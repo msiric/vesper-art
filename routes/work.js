@@ -11,16 +11,7 @@ router.get('/users/:userId/custom-work/:workId', (req, res, next) => {
     .exec(function(err, work) {
       res.render('work/work-room', {
         layout: 'work-chat',
-        work: work,
-        helpers: {
-          if_equals: function(a, b, opts) {
-            if (a.equals(b)) {
-              return opts.fn(this);
-            } else {
-              return opts.inverse(this);
-            }
-          }
-        }
+        work: work
       });
     });
 });
