@@ -6,6 +6,7 @@ const Conversation = require('../models/conversation');
 const Message = require('../models/message');
 const Promocode = require('../models/promocode');
 const Notification = require('../models/notification');
+const Request = require('../models/request');
 
 const algoliasearch = require('algoliasearch');
 let client = algoliasearch('P9R2R1LI94', '2b949398099e9ee44619187ca4ea9809');
@@ -14,9 +15,34 @@ let index = client.initIndex('ArtworkSchema');
 const fee = 3.15;
 
 router.get('/', (req, res) => {
-  Artwork.find({}, function(err, artwork) {
-    res.render('main/home', { artwork: artwork });
-  });
+  let id = null;
+  if (req.user) {
+    id = req.user._id;
+  }
+  async.series(
+    [
+      function(callback) {
+        Request.find({})
+          .populate('poster')
+          .exec(function(err, requests) {
+            if (err) console.log(err);
+            callback(err, requests);
+          });
+      },
+      function(callback) {
+        Artwork.find({}, function(err, artwork) {
+          callback(err, artwork);
+        });
+      }
+    ],
+    function(err, results) {
+      res.render('main/home', {
+        id: id,
+        requests: results[0],
+        artwork: results[1]
+      });
+    }
+  );
 });
 
 router.get('/categories/creative-writing', (req, res) => {
@@ -224,7 +250,7 @@ router.get('/conversations/:convoId', (req, res, next) => {
             .populate('second')
             .deepPopulate('messages.owner')
             .exec(function(err, conversations) {
-              console.log(conversations);
+              if (err) console.log(err);
               callback(err, conversations);
             });
         },
@@ -271,6 +297,27 @@ router.get('/notifications', (req, res, next) => {
   } else {
     res.redirect('/login');
   }
+});
+
+router.post('/', (req, res) => {
+  async.series(
+    [
+      function(callback) {
+        Request.find({}, function(err, requests) {
+          if (err) console.log(err);
+          callback(err, requests);
+        });
+      },
+      function(callback) {
+        Artwork.find({}, function(err, artwork) {
+          callback(err, artwork);
+        });
+      }
+    ],
+    function(err, results) {
+      res.render('main/home', { requests: results[0], artwork: results[1] });
+    }
+  );
 });
 
 module.exports = router;

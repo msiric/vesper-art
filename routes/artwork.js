@@ -54,13 +54,15 @@ router.get('/artwork-details/:id', (req, res, next) => {
     .exec(function(err, artwork) {
       if (artwork) {
         let inCart = false;
+        let id = null;
         if (req.user) {
+          id = req.user._id;
           if (req.user.cart.indexOf(artwork_id) > -1) {
             inCart = true;
           }
         }
         res.render('main/artwork-details', {
-          id: req.user._id,
+          id: id,
           artwork: artwork,
           inCart: inCart,
           helpers: {

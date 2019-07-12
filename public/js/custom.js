@@ -390,3 +390,18 @@ $(function() {
     window.location.hash = '';
   }
 });
+
+function deleteRequest(requestId) {
+  if (confirm('Are you sure you want to delete this request?')) {
+    $.ajax({
+      type: 'DELETE',
+      url: '/request/' + requestId,
+      success: function() {
+        window.location.href = '/';
+      },
+      error: function(err) {
+        console.log(err);
+      }
+    });
+  }
+}

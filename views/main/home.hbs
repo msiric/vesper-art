@@ -3,16 +3,14 @@
 		<div class="row">
 			{{#if error }}
 			<div class="alert alert-danger alert-dismissible">
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-						aria-hidden="true">&times;</span></button>
-				{{ error  }}
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				{{ error }}
 			</div>
 			{{/if}}
 			{{#if success }}
 			<div class="alert alert-success alert-dismissible">
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-						aria-hidden="true">&times;</span></button>
-				{{ success  }}
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				{{ success }}
 			</div>
 			{{/if}}
 			<div class="hero-heading">
@@ -31,12 +29,52 @@
 						</span>
 					</div>
 				</form>
+				{{#if id}}
 				<button class="btn btn-primary" data-toggle="modal" data-target="#request-modal">Request custom work</button>
+				{{ else }}
+				<button class="btn btn-primary" disabled>Request custom work</button>
+				{{/if}}
 			</div>
 		</div>
 	</div>
 </div>
 <div class="container section">
+	<h1>Requests</h1>
+	<div class="row">
+		{{#if requests}}
+		{{#each requests}}
+		<div class="col-md-3">
+			<div id="{{ _id }}" class="request-card">
+				<i onclick="deleteRequest('{{ _id }}')" class="fa fa-trash delete-request-button"></i>
+				<h4>{{ _id }}</h4>
+				<h4>{{ poster.name }}</h4>
+				<h4>{{ poster.photo }}</h4>
+				<h4>
+					{{ category }}
+				</h4>
+				<h3>
+					${{ budget }}
+				</h3>
+				<h3>
+					{{ description }}
+				</h3>
+				<h3>
+					{{ delivery }} days
+				</h3>
+			</div>
+		</div>
+		{{/each}}
+		{{ else }}
+		<div class="col-md-12">
+			<br>
+			<br>
+			<br>
+			<div class="no-requests">
+				<p>No requests to display at the moment</p>
+			</div>
+		</div>
+		{{/if}}
+	</div>
 	<h1>
 		Newest artwork
 	</h1>
@@ -79,18 +117,17 @@
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
-			<form action="#" id="modal-message-form" class="form-group">
+			<form action="/request" method="post" id="request-form" class="form-group">
 				<div class="modal-body">
-					<select name="request-category" class="form-control">
+					<select name="request_category" class="form-control">
 						<option value="cw">Creative writing</option>
 						<option value="m">Music</option>
 						<option value="va">Visual arts</option>
 					</select>
-					<input name="request-budget" class="form-control" type="number" min="1" placeholder="What is your budget">
-					<input name="request-date" class="form-control" type="number" min="1" max="90"
-						placeholder="In how many days do you want the work delivered">
-					<textarea name="request-description" class="form-control" cols="30" rows="10"
-						placeholder="Describe your request"></textarea>
+					<input name="request_budget" class="form-control" type="number" min="1" placeholder="What is your budget">
+					<input name="request_delivery" class="form-control" type="number" min="1" max="90" placeholder="In how many days do you want the work delivered">
+					<textarea name="request_description" class="form-control" cols="30" rows="10" placeholder="Describe your request"
+					 required></textarea>
 				</div>
 				<div class="modal-footer">
 					<input type="submit" class="form-control" value="Post your request">

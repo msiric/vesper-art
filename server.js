@@ -187,6 +187,7 @@ const orderRoutes = require('./routes/order');
 const uploadRoutes = require('./routes/upload');
 const emailRoutes = require('./routes/email');
 const artworkRoutes = require('./routes/artwork');
+const requestRoutes = require('./routes/request');
 
 app.use(mainRoutes);
 app.use(userRoutes);
@@ -194,6 +195,7 @@ app.use(orderRoutes);
 app.use(uploadRoutes);
 app.use(emailRoutes);
 app.use(artworkRoutes);
+app.use(requestRoutes);
 
 http.listen(config.port, err => {
   if (err) console.log(err);

@@ -9,7 +9,7 @@ router.get('/users/:userId/custom-work/:workId', (req, res, next) => {
     .populate('seller')
     .deepPopulate('messages.owner')
     .exec(function(err, work) {
-      res.render('custom-work/work-room', {
+      res.render('work/work-room', {
         layout: 'work-chat',
         work: work,
         helpers: {
