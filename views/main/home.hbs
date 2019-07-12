@@ -47,7 +47,7 @@
 		{{#if requests}}
 		{{#each requests}}
 		<div class="col-md-3">
-			<div id="{{ _id }}" class="request-card">
+			<div class="request-card">
 				{{#checkIfEquals poster._id ../this.user._id }}
 				<i onclick="deleteRequest('{{ _id }}')" class="fa fa-trash delete-request-button"></i>
 				<a href="/edit-request/{{ _id }}" class="fa fa-edit edit-request-button"></a>

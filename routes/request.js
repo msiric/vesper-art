@@ -7,10 +7,10 @@ router.post('/request', (req, res, next) => {
   if (req.user) {
     async.waterfall([
       function(callback) {
-        User.find({ _id: req.user._id }).exec(function(err, user) {
-          if (user.requests) {
+        User.findOne({ _id: req.user._id }, function(err, user) {
+          if (user.requests && user.requests.length > 0) {
             req.flash('error', 'You already have an active request');
-            res.render('main/home', { error: req.flash('error') });
+            res.redirect('/');
           } else {
             let request = new Request();
             request.poster = req.user._id;
@@ -45,7 +45,7 @@ router.post('/request', (req, res, next) => {
     ]);
   } else {
     req.flash('error', 'You need to be logged in');
-    res.render('main/home', { error: req.flash('error') });
+    res.redirect('/');
   }
 });
 
@@ -70,7 +70,7 @@ router.delete('/request/:id', (req, res, next) => {
             );
           } else {
             req.flash('error', 'Request not found');
-            res.render('main/home', { error: req.flash('error') });
+            res.redirect('/');
           }
         });
       },
@@ -87,7 +87,7 @@ router.delete('/request/:id', (req, res, next) => {
     ]);
   } else {
     req.flash('error', 'You need to be logged in');
-    res.render('main/home', { error: req.flash('error') });
+    res.redirect('/');
   }
 });
 
@@ -101,7 +101,7 @@ router.get('/edit-request/:id', (req, res, next) => {
             callback(err, user);
           } else {
             req.flash('error', 'Request not found');
-            res.render('main/home', { error: req.flash('error') });
+            res.redirect('/');
           }
         });
       },
@@ -111,14 +111,14 @@ router.get('/edit-request/:id', (req, res, next) => {
             res.render('main/edit-request', { request: request });
           } else {
             req.flash('error', 'Request not found');
-            res.render('main/home', { error: req.flash('error') });
+            res.redirect('/');
           }
         });
       }
     ]);
   } else {
     req.flash('error', 'You need to be logged in');
-    res.render('main/home', { error: req.flash('error') });
+    res.redirect('/');
   }
 });
 
@@ -132,7 +132,7 @@ router.post('/edit-request/:id', (req, res, next) => {
             callback(err, user);
           } else {
             req.flash('error', 'Request not found');
-            res.render('main/home', { error: req.flash('error') });
+            res.redirect('/');
           }
         });
       },
@@ -154,14 +154,14 @@ router.post('/edit-request/:id', (req, res, next) => {
             });
           } else {
             req.flash('error', 'Request not found');
-            res.render('main/home', { error: req.flash('error') });
+            res.redirect('/');
           }
         });
       }
     ]);
   } else {
     req.flash('error', 'You need to be logged in');
-    res.render('main/home', { error: req.flash('error') });
+    res.redirect('/');
   }
 });
 
