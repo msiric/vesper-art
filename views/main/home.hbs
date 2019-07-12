@@ -31,6 +31,7 @@
 						</span>
 					</div>
 				</form>
+				<button class="btn btn-primary" data-toggle="modal" data-target="#request-modal">Request custom work</button>
 			</div>
 		</div>
 	</div>
@@ -66,5 +67,35 @@
 			</div>
 		</div>
 		{{/if}}
+	</div>
+</div>
+
+<div class="modal fade" id="request-modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Request custom work</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form action="#" id="modal-message-form" class="form-group">
+				<div class="modal-body">
+					<select name="request-category" class="form-control">
+						<option value="cw">Creative writing</option>
+						<option value="m">Music</option>
+						<option value="va">Visual arts</option>
+					</select>
+					<input name="request-budget" class="form-control" type="number" min="1" placeholder="What is your budget">
+					<input name="request-date" class="form-control" type="number" min="1" max="90"
+						placeholder="In how many days do you want the work delivered">
+					<textarea name="request-description" class="form-control" cols="30" rows="10"
+						placeholder="Describe your request"></textarea>
+				</div>
+				<div class="modal-footer">
+					<input type="submit" class="form-control" value="Post your request">
+				</div>
+			</form>
+		</div>
 	</div>
 </div>
