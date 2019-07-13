@@ -144,3 +144,29 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="custom-work-modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Custom work offer</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form action="/send-offer" method="post" id="custom-work-form" class="form-group">
+				<div class="modal-body">
+					<input name="request_budget" class="form-control" type="number" min="1" placeholder="What is your budget"
+						required>
+					<input name="request_delivery" class="form-control" type="number" min="1" max="90"
+						placeholder="In how many days do you want the work delivered" required>
+					<textarea name="request_description" class="form-control" cols="30" rows="10"
+						placeholder="Describe your request" required></textarea>
+				</div>
+				<div class="modal-footer">
+					<input type="submit" class="form-control" value="Send your request">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

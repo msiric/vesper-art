@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const async = require('async');
 const User = require('../models/user');
+const Offer = require('../models/Offer');
 const Request = require('../models/request');
 
 router.post('/request', (req, res, next) => {
@@ -163,6 +164,82 @@ router.post('/edit-request/:id', (req, res, next) => {
     req.flash('error', 'You need to be logged in');
     res.redirect('/');
   }
+});
+
+router.get('/users/:id/requests', (req, res, next) => {
+  Request.find({ poster: req.user._id })
+    .populate('poster')
+    .exec(function(err, request) {
+      res.render('request/requests', {
+        request: request
+      });
+    });
+});
+
+router.get('/users/:userId/requests/:requestId', (req, res, next) => {
+  async.waterfall([
+    function(callback) {
+      Request.findOne({ _id: req.params.requestId })
+        .deepPopulate(['offers.buyer', 'offers.seller'])
+        .exec(function(err, request) {
+          if (err) console.log(err);
+          callback(err, request);
+        });
+    },
+    function(request, err) {
+      const offers = [];
+      if (request.offers) {
+        request.offers.forEach(function(offer) {
+          Offer.findOne({ seller: offer.seller })
+            .populate('buyer')
+            .populate('seller')
+            .exec(function(err, offer) {
+              if (err) console.log(err);
+              offers.push(offer);
+            });
+        });
+      }
+      res.render('request/request-details', {
+        request: request,
+        offers: offers
+      });
+    }
+  ]);
+});
+
+router.get('/users/:id/offers', (req, res, next) => {
+  Offer.find({ seller: req.user._id })
+    .populate('buyer')
+    .exec(function(err, offer) {
+      res.render('offer/offers', {
+        offer: offer
+      });
+    });
+});
+
+router.get('/users/:userId/offers/:offerId', (req, res, next) => {
+  async.waterfall([
+    function(callback) {
+      Offer.findOne({ _id: req.params.offerId })
+        .populate('buyer')
+        .populate('seller')
+        .exec(function(err, offer) {
+          if (err) console.log(err);
+          callback(err, offer);
+        });
+    },
+    function(offer, err) {
+      Request.findOne({ poster: offer.buyer })
+        .populate('poster')
+        .exec(function(err, request) {
+          if (err) console.log(err);
+          res.render('offer/offer-details', {
+            offer: offer,
+            request: request
+          });
+        });
+    }
+  ]);
 });
 
 module.exports = router;
