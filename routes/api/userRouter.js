@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const passport = require('passport');
-const passportConfig = require('../config/passport');
-const User = require('../models/user');
+const passportConfig = require('../../config/passport');
+const User = require('../../models/user');
 const randomString = require('randomstring');
 const axios = require('axios');
 

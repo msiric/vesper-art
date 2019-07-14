@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const async = require('async');
-const Work = require('../models/work');
+const Work = require('../../models/work');
 
 router.get('/users/:userId/custom-work/:workId', (req, res, next) => {
   req.session.workId = req.params.workId;

@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const async = require('async');
-const User = require('../models/user');
-const Offer = require('../models/Offer');
-const Request = require('../models/request');
+const User = require('../../models/user');
+const Offer = require('../../models/Offer');
+const Request = require('../../models/request');
 
 router.post('/request', (req, res, next) => {
   if (req.user) {

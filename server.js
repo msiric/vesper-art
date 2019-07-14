@@ -189,13 +189,14 @@ function onAuthorizeFail(data, message, error, accept) {
 
 require('./realtime/io')(io);
 
-const mainRoutes = require('./routes/main');
-const userRoutes = require('./routes/user');
-const orderRoutes = require('./routes/order');
-const uploadRoutes = require('./routes/upload');
-const emailRoutes = require('./routes/email');
-const artworkRoutes = require('./routes/artwork');
-const requestRoutes = require('./routes/request');
+const mainRoutes = require('./routes/api/homeRouter');
+const userRoutes = require('./routes/api/userRouter');
+const orderRoutes = require('./routes/api/orderRouter');
+const uploadRoutes = require('./routes/api/uploadRouter');
+const emailRoutes = require('./routes/api/emailRouter');
+const artworkRoutes = require('./routes/api/artworkRouter');
+const requestRoutes = require('./routes/api/requestRouter');
+const chatRoutes = require('./routes/api/chatRouter');
 
 app.use(mainRoutes);
 app.use(userRoutes);
@@ -204,6 +205,7 @@ app.use(uploadRoutes);
 app.use(emailRoutes);
 app.use(artworkRoutes);
 app.use(requestRoutes);
+app.use(chatRoutes);
 
 http.listen(config.port, err => {
   if (err) console.log(err);
