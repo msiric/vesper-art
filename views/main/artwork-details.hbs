@@ -95,10 +95,10 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="/conversations/{{ artwork.owner._id }}" method="post" id="modal-message-form" class="form-group">
+      <form action="#" id="modal-message-form" class="form-group">
         <div class="modal-body">
-          <textarea id="modal-message-input" name="modal_message" class="form-control" cols="30" rows="10"
-            required></textarea>
+          <textarea id="modal-message-input" class="form-control" cols="30" rows="10"></textarea>
+          <input type="hidden" id="modal-user-id" value="{{ artwork.owner._id }}">
         </div>
         <div class="modal-footer">
           <input type="submit" class="form-control" value="Send message">

@@ -107,15 +107,22 @@ app.engine(
           return 'checked';
         }
       },
+      formatUsername: function(a, b, c, d) {
+        if (a.equals(b)) {
+          return c;
+        } else {
+          return d;
+        }
+      },
       formatChatName: function(a, b, c, d) {
-        if (a == b) {
+        if (a.equals(b)) {
           return c;
         } else {
           return d;
         }
       },
       formatChatPhoto: function(a, b, c, d) {
-        if (a == b) {
+        if (a.equals(b)) {
           return c;
         } else {
           return d;

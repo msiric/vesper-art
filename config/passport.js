@@ -34,7 +34,7 @@ passport.use(
 
       // find a user whose email is the same as the forms email
       // we are checking to see if the user trying to login already exists
-      User.findOne({ email: email })
+      User.findOne({ $or: [{ email: email }, { name: email }] })
         .then(user => {
           console.log(2);
           // if no user is found, return the message

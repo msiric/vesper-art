@@ -204,33 +204,6 @@ $(function() {
     }
   });
 
-  $('#modal-message-form').submit(function() {
-    var input = $('#modal-message-input').val();
-    var userId = $('#modal-user-id').val();
-    if (input === '') {
-      return false;
-    } else {
-      $.ajax({
-        type: 'POST',
-        url: '/send-message',
-        data: {
-          user: userId,
-          message: input
-        },
-        success: function(data) {
-          if (data.success) {
-            $('#modal-message-input').val('');
-            window.location.href = '/conversations/' + data.success;
-          } else if (data.error) {
-            alert(data.error);
-          } else {
-            alert(data.error);
-          }
-        }
-      });
-    }
-  });
-
   $('#profile-photo-upload').on('change', function() {
     const fileInput = $('#profile-photo-upload')[0];
     const file = fileInput.files[0];

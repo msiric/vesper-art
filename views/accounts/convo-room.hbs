@@ -1,7 +1,7 @@
 <div class="container">
   <div class="app row clearfix">
     <div class="col-sm-4">
-      <input type="hidden" id="userId" value="">
+      <input type="hidden" id="userId" value="{{ user._id }}">
       <div class="row">
         <div class="sidebar right">
           <div class="overlay">
@@ -9,11 +9,12 @@
             <div id="{{ _id }}" class="chat-profiles">
               <a href="/conversations/{{ _id }}">
                 <div class="pic">
-                  <img src="{{ formatChatPhoto first._id req.user._id second.photo first.photo }}"
+                  <img src="{{#formatChatPhoto ../user._id first._id second.photo first.photo }}{{/formatChatPhoto}}"
                     class="artwork-image">
                 </div>
                 <div class="info">
-                  <h3 class="title name">{{ formatChatName first._id req.user._id second.name first.name }}</h3>
+                  <h3 class="title name">
+                    {{#formatChatName ../user._id first._id second.name first.name }}{{/formatChatName}}</h3>
                   <p class="bio">
                     {{#each messages }}
                     <p>{{ content }}</p>

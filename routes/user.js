@@ -17,41 +17,47 @@ router
   })
 
   .post((req, res, next) => {
-    User.findOne({ email: req.body.email }, function(err, user) {
-      if (user) {
-        req.flash('error', 'Account with that email address already exists.');
-        return res.redirect('/signup');
-      } else {
-        let verificationInfo = {
-          token: randomString.generate(),
-          email: req.body.email
-        };
-        let user = new User();
-        user.name = req.body.username;
-        user.email = req.body.email;
-        user.photo = user.gravatar();
-        user.password = req.body.password;
-        user.customWork = true;
-        user.secretToken = verificationInfo.token;
-        user.verified = false;
-        user.save(function(err) {
-          if (err) return next(err);
-          axios
-            .post('http://localhost:3000/send-email', verificationInfo, {
-              proxy: false
-            })
-            .then(res => {
-              console.log(`statusCode: ${res.statusCode}`);
-              console.log(res);
-            })
-            .catch(error => {
-              console.error(error);
-            });
-          req.flash('success', 'Account created successfully.');
-          res.redirect('/login');
-        });
+    User.findOne(
+      { $or: [{ email: req.body.email }, { name: req.body.username }] },
+      function(err, user) {
+        if (user) {
+          req.flash(
+            'error',
+            'Account with that email/username already exists.'
+          );
+          return res.redirect('/signup');
+        } else {
+          let verificationInfo = {
+            token: randomString.generate(),
+            email: req.body.email
+          };
+          let user = new User();
+          user.name = req.body.username;
+          user.email = req.body.email;
+          user.photo = user.gravatar();
+          user.password = req.body.password;
+          user.customWork = true;
+          user.secretToken = verificationInfo.token;
+          user.verified = false;
+          user.save(function(err) {
+            if (err) return next(err);
+            axios
+              .post('http://localhost:3000/send-email', verificationInfo, {
+                proxy: false
+              })
+              .then(res => {
+                console.log(`statusCode: ${res.statusCode}`);
+                console.log(res);
+              })
+              .catch(error => {
+                console.error(error);
+              });
+            req.flash('success', 'Account created successfully.');
+            res.redirect('/login');
+          });
+        }
       }
-    });
+    );
   });
 
 /* LOGIN ROUTE */
