@@ -20,10 +20,18 @@ router.get(
   requestController.getUserRequests
 );
 
-router.get('/users/:userId/requests/:requestId', isLoggedInAPI, getUserRequest);
+router.get(
+  '/users/:userId/requests/:requestId',
+  isLoggedInAPI,
+  requestController.getUserRequest
+);
 
-router.get('/users/:id/offers', isLoggedInAPI, getUserOffers);
+router.get('/users/:id/offers', isLoggedInAPI, requestController.getUserOffers);
 
-router.get('/users/:userId/offers/:offerId', isLoggedInAPI, getUserOffer);
+router.get(
+  '/users/:userId/offers/:offerId',
+  isLoggedInAPI,
+  requestController.getUserOffer
+);
 
 module.exports = router;

@@ -1,80 +1,25 @@
 const router = require('express').Router();
-const passport = require('passport');
-const passportConfig = require('../../config/passport');
-const User = require('../../models/user');
-const randomString = require('randomstring');
-const axios = require('axios');
-
-/* SIGNUP ROUTE */
+const { isLoggedInAPI, isLoggedOut } = require('../../utils/helpers');
+const userController = require('../../controllers/userController');
 
 router
   .route('/signup')
   .get((req, res, next) => {
-    res.render('accounts/signup', {
-      error: req.flash('error'),
-      success: req.flash('success')
-    });
+    res.render('accounts/signup');
   })
+  .post(userController.postSignUp);
 
-  .post((req, res, next) => {
-    User.findOne(
-      { $or: [{ email: req.body.email }, { name: req.body.username }] },
-      function(err, user) {
-        if (user) {
-          req.flash(
-            'error',
-            'Account with that email/username already exists.'
-          );
-          return res.redirect('/signup');
-        } else {
-          let verificationInfo = {
-            token: randomString.generate(),
-            email: req.body.email
-          };
-          let user = new User();
-          user.name = req.body.username;
-          user.email = req.body.email;
-          user.photo = user.gravatar();
-          user.password = req.body.password;
-          user.customWork = true;
-          user.secretToken = verificationInfo.token;
-          user.verified = false;
-          user.save(function(err) {
-            if (err) return next(err);
-            axios
-              .post('http://localhost:3000/send-email', verificationInfo, {
-                proxy: false
-              })
-              .then(res => {
-                console.log(`statusCode: ${res.statusCode}`);
-                console.log(res);
-              })
-              .catch(error => {
-                console.error(error);
-              });
-            req.flash('success', 'Account created successfully.');
-            res.redirect('/login');
-          });
-        }
-      }
-    );
-  });
-
-/* LOGIN ROUTE */
 router
   .route('/login')
   .get((req, res, next) => {
     if (req.user) return res.redirect('/');
-    res.render('accounts/login', {
-      error: req.flash('error'),
-      success: req.flash('success')
-    });
+    res.render('accounts/login');
   })
   .post(
     passport.authenticate('local-login', {
-      successRedirect: '/', // redirect to the secure profile section
-      failureRedirect: '/login', // redirect back to the signup page if there is an error
-      failureFlash: true // allow flash messages
+      successRedirect: '/',
+      failureRedirect: '/login',
+      failureFlash: true
     })
   );
 
@@ -103,7 +48,6 @@ router.get(
   })
 );
 
-/* PROFILE ROUTE */
 router
   .route('/profile')
   .get(passportConfig.isAuthenticated, (req, res, next) => {

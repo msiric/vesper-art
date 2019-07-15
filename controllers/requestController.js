@@ -1,6 +1,6 @@
-const User = require('../../models/user');
-const Offer = require('../../models/Offer');
-const Request = require('../../models/request');
+const User = require('../models/user');
+const Offer = require('../models/Offer');
+const Request = require('../models/request');
 
 const postRequest = async (req, res, next) => {
   try {
@@ -169,18 +169,17 @@ const getUserRequest = async (req, res, next) => {
     if (foundRequest) {
       const offers = [];
       if (foundRequest.offers) {
-        foundRequest.offers.forEach(function(offer) {
+        foundRequest.offers.forEach(async offer => {
           const foundOffer = await Offer.find({ seller: offer.seller })
             .populate('buyer')
-            .populate('seller')
-            if (foundOffer){
-              offers.push(foundOffer)
-            }
+            .populate('seller');
+          if (foundOffer) {
+            offers.push(foundOffer);
+          }
         });
       }
-      return res.status(200).json({ request: foundRequest,
-        offers: offers });
-    } else{
+      return res.status(200).json({ request: foundRequest, offers: offers });
+    } else {
       return res.status(400).json({ message: 'Request not found' });
     }
   } catch (err) {
@@ -189,35 +188,39 @@ const getUserRequest = async (req, res, next) => {
 };
 
 const getUserOffers = async (req, res, next) => {
-  try{
-    const foundOffers = await Offer.find({ seller: req.user._id })
-    .populate('buyer')
+  try {
+    const foundOffers = await Offer.find({ seller: req.user._id }).populate(
+      'buyer'
+    );
     return res.status(200).json({ offers: foundOffers });
-  } catch(err){
+  } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
-}
+};
 
 const getUserOffer = async (req, res, next) => {
-  try{
+  try {
     const foundOffer = await Offer.findOne({ _id: req.params.offerId })
-    .populate('buyer')
-    .populate('seller')
-    if (foundOffer){
-      const foundRequest = await Request.findOne({ poster: offer.buyer })
-      .populate('poster')
-      if (foundRequest){
-        return res.status(200).json({ offer: foundOffer, request: foundRequest });
-      } else{
+      .populate('buyer')
+      .populate('seller');
+    if (foundOffer) {
+      const foundRequest = await Request.findOne({
+        poster: offer.buyer
+      }).populate('poster');
+      if (foundRequest) {
+        return res
+          .status(200)
+          .json({ offer: foundOffer, request: foundRequest });
+      } else {
         return res.status(400).json({ message: 'Request not found' });
       }
-    } else{
+    } else {
       return res.status(400).json({ message: 'Offer not found' });
     }
-  } catch(err){
+  } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
-}
+};
 
 module.exports = {
   postRequest,
@@ -227,5 +230,5 @@ module.exports = {
   getUserRequests,
   getUserRequest,
   getUserOffers,
-  getUserOffer,
+  getUserOffer
 };

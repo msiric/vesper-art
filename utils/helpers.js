@@ -8,4 +8,9 @@ const isLoggedIn = (req, res, next) => {
   res.redirect('/login');
 };
 
-module.exports = { isLoggedInAPI, isLoggedIn };
+const isLoggedOut = (req, res, next) => {
+  if (!req.isAuthenticated()) return next();
+  res.redirect('/');
+};
+
+module.exports = { isLoggedInAPI, isLoggedIn, isLoggedOut };

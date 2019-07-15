@@ -118,25 +118,24 @@ const deleteArtwork = async (req, res, next) => {
       Bucket: 'vesper-testing',
       Key: filePath
     };
-    s3.deleteObject(params, function(err, data) {
-      if (err) {
-      return res.status(400).json({ message: 'Artwork could not be deleted' });
-      } else{
-        const updatedUser = await User.update(
-          {
-            _id: req.user._id
-          },
-          {
-            $pull: { artworks: req.params.id }
-          }
-        );
-        if (updatedUser){
-          return res.status(200).json(updatedUser);
-        } else{
-          return res.status(400).json({ message: 'User could not be updated' });
+    const deletedImage = await s3.deleteObject(params);
+    if (deletedImage) {
+      const updatedUser = await User.update(
+        {
+          _id: req.user._id
+        },
+        {
+          $pull: { artworks: req.params.id }
         }
+      );
+      if (updatedUser) {
+        return res.status(200).json(updatedUser);
+      } else {
+        return res.status(400).json({ message: 'User could not be updated' });
       }
-    });
+    } else {
+      return res.status(400).json({ message: 'Artwork could not be deleted' });
+    }
   } else {
     return res.status(500).json({ message: 'Internal server error' });
   }
