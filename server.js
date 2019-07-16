@@ -197,6 +197,7 @@ const emailRoutes = require('./routes/api/emailRouter');
 const artworkRoutes = require('./routes/api/artworkRouter');
 const requestRoutes = require('./routes/api/requestRouter');
 const chatRoutes = require('./routes/api/chatRouter');
+const workRouter = require('./routes/api/workRouter');
 
 app.use(mainRoutes);
 app.use(userRoutes);
@@ -206,6 +207,7 @@ app.use(emailRoutes);
 app.use(artworkRoutes);
 app.use(requestRoutes);
 app.use(chatRoutes);
+app.use(workRouter);
 
 http.listen(config.port, err => {
   if (err) console.log(err);

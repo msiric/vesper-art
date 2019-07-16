@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 const async = require('async');
-const Artwork = require('../../models/artwork');
-const User = require('../../models/user');
-const Conversation = require('../../models/conversation');
-const Message = require('../../models/message');
-const Promocode = require('../../models/promocode');
-const Notification = require('../../models/notification');
-const Request = require('../../models/request');
+const Artwork = require('../models/artwork');
+const User = require('../models/user');
+const Conversation = require('../models/conversation');
+const Message = require('../models/message');
+const Promocode = require('../models/promocode');
+const Notification = require('../models/notification');
+const Request = require('../models/request');
 
 /* const algoliasearch = require('algoliasearch');
 let client = algoliasearch('P9R2R1LI94', '2b949398099e9ee44619187ca4ea9809');

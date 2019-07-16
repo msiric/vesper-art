@@ -1,19 +1,11 @@
 const router = require('express').Router();
-const async = require('async');
-const Work = require('../../models/work');
+const { isLoggedInAPI } = require('../../utils/helpers');
+const workController = require('../../controllers/workController');
 
-router.get('/users/:userId/custom-work/:workId', (req, res, next) => {
-  req.session.workId = req.params.workId;
-  Work.findOne({ _id: req.params.workId })
-    .populate('buyer')
-    .populate('seller')
-    .deepPopulate('messages.owner')
-    .exec(function(err, work) {
-      res.render('work/work-room', {
-        layout: 'work-chat',
-        work: work
-      });
-    });
-});
+router.get(
+  '/users/:userId/custom-work/:workId',
+  isLoggedInAPI,
+  workController.getUserCustomWork
+);
 
 module.exports = router;
