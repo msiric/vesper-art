@@ -11,7 +11,7 @@ const profilePhotoSingleUpload = profilePhotoUpload.single('image');
 const artworkCoverSingleUpload = artworkCoverUpload.single('image');
 const artworkCoverSingleEdit = artworkCoverEdit.single('image');
 
-const postProfileImage = async (req, res) => {
+const postProfileImage = async (req, res, next) => {
   try {
     const uploadedImage = await profilePhotoSingleUpload(req, res);
     if (uploadedImage) {
@@ -54,7 +54,7 @@ const postProfileImage = async (req, res) => {
   }
 };
 
-const postArtworkCover = async (req, res) => {
+const postArtworkCover = async (req, res, next) => {
   try {
     const uploadedImage = await artworkCoverSingleUpload(req, res);
     if (uploadedImage) {
@@ -69,7 +69,7 @@ const postArtworkCover = async (req, res) => {
   }
 };
 
-const updateArtworkCover = async (req, res) => {
+const updateArtworkCover = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
     const uploadedImage = await artworkCoverSingleEdit(req, res);

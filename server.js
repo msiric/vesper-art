@@ -189,6 +189,12 @@ function onAuthorizeFail(data, message, error, accept) {
 
 require('./realtime/io')(io);
 
+const indexRouter = require('./routes/index');
+const api = require('./routes/api');
+
+// app.use('/', indexRouter);
+// app.use('/api', api);
+
 const mainRoutes = require('./routes/api/homeRouter');
 const userRoutes = require('./routes/api/userRouter');
 const orderRoutes = require('./routes/api/orderRouter');
@@ -208,6 +214,17 @@ app.use(artworkRoutes);
 app.use(requestRoutes);
 app.use(chatRoutes);
 app.use(workRouter);
+
+app.use((req, res, next) => {
+  const err = new Error('Not found');
+  err.status = 404;
+  next(err);
+});
+
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json(err.message);
+});
 
 http.listen(config.port, err => {
   if (err) console.log(err);

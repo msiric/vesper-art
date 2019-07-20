@@ -31,7 +31,7 @@ const sendEmail = (req, res) => {
         if (error) {
           return res.status(400).json({ message: 'Email could not be sent' });
         } else {
-          return res.status(200).json({ message: 'Email sent successfully' });
+          return res.redirect('/');
         }
       });
     } else {
@@ -52,7 +52,7 @@ const verifyToken = async (req, res, next) => {
       foundUser.verified = true;
       const savedUser = await foundUser.save();
       if (savedUser) {
-        return res.status(200).json({ message: 'User successfully verified' });
+        return res.redirect('/login');
       } else {
         return res
           .status(400)
@@ -70,60 +70,53 @@ const verifyToken = async (req, res, next) => {
 
 const forgotPassword = async (req, res, next) => {
   try {
-    crypto.randomBytes(20, function(err, buf) {
+    crypto.randomBytes(20, async function(err, buf) {
       var token = buf.toString('hex');
-      callback(err, token);
+      const foundUser = await User.findOne({ email: req.body.email });
+      if (!foundUser) {
+        return res
+          .status(400)
+          .json({ message: 'No account with that email address exists' });
+      }
+      foundUser.resetPasswordToken = token;
+      foundUser.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+      const savedUser = await foundUser.save();
+      if (savedUser) {
+        const smtpTransport = nodemailer.createTransport({
+          service: 'Gmail',
+          auth: {
+            user: config.email,
+            pass: config.password
+          }
+        });
+        mailOptions = {
+          from: 'vesper',
+          to: foundUser.email,
+          subject: 'Reset your password',
+          html:
+            'You are receiving this because you have requested to reset the password for your account.<br>' +
+            'Please click on the following link, or paste this into your browser to complete the process:<br><br>' +
+            '<a href="http://' +
+            req.headers.host +
+            '/reset/' +
+            token +
+            '"</a><br>' +
+            'If you did not request this, please ignore this email and your password will remain unchanged.'
+        };
+        smtpTransport.sendMail(mailOptions, function(error, response) {
+          if (error) {
+            return res.status(400).json({ message: 'Could not send email' });
+          } else {
+            return res.redirect('/');
+          }
+        });
+      } else {
+        return res
+          .status(400)
+          .json({ message: 'Could not update user password' });
+      }
     });
-    const foundUser = await User.findOne({ email: req.body.email });
-    if (!foundUser) {
-      return res
-        .status(400)
-        .json({ message: 'No account with that email address exists' });
-    }
-
-    foundUser.resetPasswordToken = token;
-    foundUser.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-
-    const savedUser = await foundUser.save();
-    if (savedUser) {
-      const smtpTransport = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
-          user: config.email,
-          pass: config.password
-        }
-      });
-      mailOptions = {
-        from: 'vesper',
-        to: foundUser.email,
-        subject: 'Reset your password',
-        html:
-          'You are receiving this because you have requested to reset the password for your account.<br>' +
-          'Please click on the following link, or paste this into your browser to complete the process:<br><br>' +
-          '<a href="http://' +
-          req.headers.host +
-          '/reset/' +
-          token +
-          '"</a><br>' +
-          'If you did not request this, please ignore this email and your password will remain unchanged.'
-      };
-      smtpTransport.sendMail(mailOptions, function(error, response) {
-        if (error) {
-          return res.status(400).json({ message: 'Could not send email' });
-        } else {
-          return res.status(200).json({
-            message:
-              'An e-mail has been sent to ' +
-              foundUser.email +
-              ' with further instructions.'
-          });
-        }
-      });
-    } else {
-      return res
-        .status(400)
-        .json({ message: 'Could not update user password' });
-    }
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -140,9 +133,7 @@ const getToken = async (req, res) => {
         .status(400)
         .json({ message: 'Token is invalid or has expired' });
     } else {
-      return res
-        .status(200)
-        .json({ message: 'You have successfully reset your password' });
+      return res.redirect('/login');
     }
   } else {
     res.redirect('/');
@@ -196,9 +187,7 @@ const resendToken = async (req, res) => {
           .status(400)
           .json({ message: 'Something went wrong, please try again' });
       } else {
-        return res
-          .status(200)
-          .json({ message: 'You have successfully changed your password' });
+        return res.redirect('/login');
       }
     });
   } catch (err) {

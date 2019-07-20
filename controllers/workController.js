@@ -8,7 +8,7 @@ const getUserCustomWork = async (req, res, next) => {
       .populate('seller')
       .deepPopulate('messages.owner');
     if (foundWork) {
-      return res.status(200).json({ work: foundWork });
+      return res.render('work/work-room', { work: foundWork });
     } else {
       return res.status(400).json({ message: 'Custom work not found' });
     }

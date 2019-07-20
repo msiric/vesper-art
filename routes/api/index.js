@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-const { isLoggedInAPI } = require('../../../utils/helpers');
-
 const artworkRouter = require('./artworkRouter');
 const chatRouter = require('./chatRouter');
 const emailRouter = require('./emailRouter');
@@ -12,13 +10,6 @@ const requestRouter = require('./requestRouter');
 const uploadRouter = require('./uploadRouter');
 const userRouter = require('./userRouter');
 const workRouter = require('./workRouter');
-
-/**
- * API ENDPOINT
- */
-router.get('/', isLoggedInAPI, (req, res) => {
-  res.json({ message: 'Logged in API' });
-});
 
 router.use('/', artworkRouter);
 router.use('/', chatRouter);

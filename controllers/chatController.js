@@ -25,9 +25,9 @@ const getConversations = (req, res, next) => {
               }
               fullConversations.push(message);
               if (fullConversations.length === conversations.length) {
-                return res
-                  .status(200)
-                  .json({ conversations: fullConversations });
+                return res.render('accounts/conversations', {
+                  conversations: fullConversations
+                });
               }
             });
         });
@@ -47,8 +47,7 @@ const getConversation = (req, res, next) => {
         res.send({ error: err });
         return next(err);
       }
-
-      res.status(200).json({ conversation: messages });
+      res.render('accounts/convo-room', { conversation: messages });
     });
 };
 

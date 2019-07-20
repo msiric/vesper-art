@@ -47,9 +47,7 @@ const postSignUp = async (req, res, next) => {
           .catch(error => {
             console.error(error);
           });
-        return res
-          .status(200)
-          .json({ message: 'Account created successfully' });
+        return res.redirect('/signup');
       } else {
         return res.status(400).json({ message: 'Could not create account' });
       }
@@ -67,64 +65,31 @@ const getLogIn = async (req, res, next) => {
   }
 };
 
-const postLogIn = async () => {
-  try {
-    passport.authenticate('local-login', {
-      successRedirect: '/',
-      failureRedirect: '/login',
-      failureFlash: true
-    });
-  } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
+const postLogIn = passport.authenticate('local-login', {
+  successRedirect: '/',
+  failureRedirect: '/login',
+  failureFlash: true
+});
 
-const getFacebookLogIn = async () => {
-  try {
-    passport.authenticate('facebook', { scope: 'email' });
-  } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
+const getFacebookLogIn = passport.authenticate('facebook', { scope: 'email' });
 
-const getFacebookCallback = async () => {
-  try {
-    passport.authenticate('facebook', {
-      successRedirect: '/profile',
-      failureRedirect: '/login',
-      failureFlash: true
-    });
-  } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
+const getFacebookCallback = passport.authenticate('facebook', {
+  successRedirect: '/profile',
+  failureRedirect: '/login',
+  failureFlash: true
+});
 
-const getGoogleLogIn = async () => {
-  try {
-    passport.authenticate('google', { scope: 'email' });
-  } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
+const getGoogleLogIn = passport.authenticate('google', { scope: 'email' });
 
-const getGoogleCallback = async () => {
-  try {
-    passport.authenticate('google', {
-      successRedirect: '/profile',
-      failureRedirect: '/login',
-      failureFlash: true
-    });
-  } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
+const getGoogleCallback = passport.authenticate('google', {
+  successRedirect: '/profile',
+  failureRedirect: '/login',
+  failureFlash: true
+});
 
-const getUserProfile = async () => {
+const getUserProfile = async (req, res, next) => {
   try {
-    passportConfig.isAuthenticated,
-      (req, res, next) => {
-        res.render('accounts/profile', { message: req.flash('success') });
-      };
+    res.render('accounts/profile', { message: req.flash('success') });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -165,7 +130,9 @@ const getLogOut = async (req, res) => {
 
 const getUserSettings = async (req, res) => {
   try {
-    return res.status(200).json({ customWork: req.user.customWork });
+    return res
+      .status(200)
+      .render('accounts/settings', { customWork: req.user.customWork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }

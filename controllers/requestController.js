@@ -30,9 +30,7 @@ const postRequest = async (req, res, next) => {
             }
           );
           if (updatedUser) {
-            return res
-              .status(200)
-              .json({ message: 'Request successfully published' });
+            return res.redirect('/');
           } else {
             return res.status(400).json({ message: 'Could not update user' });
           }
@@ -67,9 +65,7 @@ const deleteRequest = async (req, res, next) => {
         if (updatedUser) {
           const deletedRequest = await Request.deleteOne({ _id: requestId });
           if (deletedRequest) {
-            return res
-              .status(200)
-              .json({ message: 'Request successfully deleted' });
+            return res.redirect('/');
           } else {
             return res
               .status(400)
@@ -97,7 +93,9 @@ const getRequest = async (req, res, next) => {
       if (foundUser.requests.indexOf(requestId) > -1) {
         const foundRequest = await Request.findOne({ _id: requestId });
         if (foundRequest) {
-          return res.status(200).json({ request: foundRequest });
+          return res.render('request/request-details', {
+            request: foundRequest
+          });
         } else {
           return res.status(400).json({ message: 'Request not found' });
         }
@@ -131,9 +129,7 @@ const updateRequest = async (req, res, next) => {
           }
           const savedRequest = await foundRequest.save();
           if (savedRequest) {
-            return res
-              .status(200)
-              .json({ message: 'Request successfully updated' });
+            return res.redirect('/users/' + req.user._id + '/requests');
           } else {
           }
         } else {
@@ -155,7 +151,7 @@ const getUserRequests = async (req, res, next) => {
     const foundRequests = await Request.find({ poster: req.user._id }).populate(
       'poster'
     );
-    return res.status(200).json({ request: foundRequests });
+    return res.render('request/requests', { request: foundRequests });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -178,7 +174,10 @@ const getUserRequest = async (req, res, next) => {
           }
         });
       }
-      return res.status(200).json({ request: foundRequest, offers: offers });
+      return res.render('request/request-details', {
+        request: foundRequest,
+        offers: offers
+      });
     } else {
       return res.status(400).json({ message: 'Request not found' });
     }
@@ -192,7 +191,7 @@ const getUserOffers = async (req, res, next) => {
     const foundOffers = await Offer.find({ seller: req.user._id }).populate(
       'buyer'
     );
-    return res.status(200).json({ offers: foundOffers });
+    return res.render('offer/offers', { offers: foundOffers });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -208,9 +207,10 @@ const getUserOffer = async (req, res, next) => {
         poster: offer.buyer
       }).populate('poster');
       if (foundRequest) {
-        return res
-          .status(200)
-          .json({ offer: foundOffer, request: foundRequest });
+        return res.render('offer/offer-details', {
+          offer: foundOffer,
+          request: foundRequest
+        });
       } else {
         return res.status(400).json({ message: 'Request not found' });
       }

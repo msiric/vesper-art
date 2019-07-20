@@ -40,7 +40,7 @@ const getSingleArtwork = async (req, res, next) => {
         }
         req.session.artwork = artworkInfo.artwork;
         req.session.price = artworkInfo.totalPrice;
-        res.status(200).json({
+        res.render('checkout/single-package', {
           artwork: artworkInfo.artwork,
           subtotal: parseFloat(artworkInfo.subtotal.toFixed(12)),
           totalPrice: parseFloat(artworkInfo.totalPrice.toFixed(12)),
@@ -100,7 +100,7 @@ const getProcessCart = async (req, res, next) => {
           } else {
             req.session.artwork = null;
           }
-          res.status(200).json({
+          res.render('order/cart', {
             foundUser: artworkInfo.foundUser,
             totalPrice: parseFloat(artworkInfo.totalPrice.toFixed(12)),
             subtotal: parseFloat(artworkInfo.subtotal.toFixed(12)),
@@ -159,7 +159,7 @@ const postPaymentSingle = async (req, res, next) => {
           req.session.artwork = null;
           req.session.price = null;
           req.session.discount = null;
-          res.status(200).json({ message: 'Payment successfully completed' });
+          res.redirect('/users/' + req.user._id + '/orders/' + savedOrder._id);
         } else {
           return res.status(400).json({ message: "Couldn't process payment" });
         }
@@ -224,7 +224,7 @@ const postPaymentCart = async (req, res, next) => {
           { $set: { cart: [] } }
         );
         if (updatedUser) {
-          res.status(200).json({ message: 'Payment successfully completed' });
+          res.redirect('/users/' + req.user._id + '/orders');
         } else {
           return res.status(400).json({ message: 'Couldn\t update user cart' });
         }
@@ -247,7 +247,7 @@ const getOrderId = async (req, res, next) => {
       .populate('seller')
       .populate('artwork');
     if (foundOrder) {
-      res.status(200).json({ order: foundOrder });
+      res.render('order/order-details', { order: foundOrder });
     } else {
       return res.status(400).json({ message: 'Order not found' });
     }
@@ -262,7 +262,7 @@ const getSoldOrders = async (req, res, next) => {
       .populate('buyer')
       .populate('seller')
       .populate('artwork');
-    res.status(200).json({ order: foundOrders });
+    res.render('order/order-seller', { order: foundOrders });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -274,7 +274,7 @@ const getBoughtOrders = async (req, res, next) => {
       .populate('buyer')
       .populate('seller')
       .populate('artwork');
-    res.status(200).json({ order: foundOrders });
+    res.render('order/order-buyer', { order: foundOrders });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }

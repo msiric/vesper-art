@@ -6,7 +6,7 @@ const getUserArtwork = async (req, res, next) => {
   try {
     const artwork = await Artwork.find({ owner: req.user._id });
     if (artwork) {
-      return res.status(200).json(artwork);
+      return res.render('main/my-artwork', artwork);
     } else {
       return res.status(400).json({ message: 'Artwork not found' });
     }
@@ -17,8 +17,10 @@ const getUserArtwork = async (req, res, next) => {
 
 const getNewArtwork = async (req, res, next) => {
   try {
-    res.render('main/add-new-artwork');
-  } catch (err) {}
+    return res.render('main/add-new-artwork');
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 const postNewArtwork = async (req, res, next) => {
@@ -43,7 +45,7 @@ const postNewArtwork = async (req, res, next) => {
     if (!updatedUser) {
       return res.status(400).json({ message: 'Could not update user' });
     } else {
-      return res.status(200).json(updatedUser);
+      return res.redirect('/my-artwork');
     }
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
@@ -65,9 +67,11 @@ const getArtworkDetails = async (req, res, next) => {
           inCart = true;
         }
       }
-      return res
-        .status(200)
-        .json({ id: userId, artwork: foundArtwork, inCart: inCart });
+      return res.render('main/artwork-details', {
+        id: userId,
+        artwork: foundArtwork,
+        inCart: inCart
+      });
     } else {
       return res.status(400).json({ message: 'Artwork not found' });
     }
@@ -80,7 +84,7 @@ const editArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.findOne({ _id: req.params.id });
     if (foundArtwork) {
-      return res.status(200).json(foundArtwork);
+      return res.render('main/edit-artwork', foundArtwork);
     } else {
       return res.status(400).json({ message: 'Artwork not found' });
     }
@@ -99,7 +103,7 @@ const updateArtwork = async (req, res, next) => {
     if (req.body.artwork_price) artwork.price = req.body.artwork_price;
     const savedArtwork = await artwork.save();
     if (savedArtwork) {
-      return res.status(200).json(savedArtwork);
+      return res.redirect('/my-artwork');
     } else {
       return res.status(400).json({ message: 'Artwork could not be updated' });
     }
@@ -129,7 +133,7 @@ const deleteArtwork = async (req, res, next) => {
         }
       );
       if (updatedUser) {
-        return res.status(200).json(updatedUser);
+        return res.redirect('/my-artwork');
       } else {
         return res.status(400).json({ message: 'User could not be updated' });
       }
