@@ -41,7 +41,7 @@ const postNewArtwork = async (req, res, next) => {
     if (!updatedUser) {
       return res.status(400).json({ message: 'Could not update user' });
     } else {
-      return res.redirect('/my-artwork');
+      return res.status(200).json('/my-artwork');
     }
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
@@ -80,7 +80,7 @@ const editArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.findOne({ _id: req.params.id });
     if (foundArtwork) {
-      return res.render('main/edit-artwork', foundArtwork);
+      return res.render('main/edit-artwork', { artwork: foundArtwork });
     } else {
       return res.status(400).json({ message: 'Artwork not found' });
     }
@@ -93,13 +93,13 @@ const updateArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.findOne({ _id: req.params.id });
     if (foundArtwork) {
-      if (req.body.artwork_cover) artwork.cover = req.body.artwork_cover;
-      if (req.body.artwork_title) artwork.title = req.body.artwork_title;
+      if (req.body.artwork_cover) foundArtwork.cover = req.body.artwork_cover;
+      if (req.body.artwork_title) foundArtwork.title = req.body.artwork_title;
       if (req.body.artwork_category)
-        artwork.category = req.body.artwork_category;
-      if (req.body.artwork_about) artwork.about = req.body.artwork_about;
-      if (req.body.artwork_price) artwork.price = req.body.artwork_price;
-      const savedArtwork = await artwork.save();
+        foundArtwork.category = req.body.artwork_category;
+      if (req.body.artwork_about) foundArtwork.about = req.body.artwork_about;
+      if (req.body.artwork_price) foundArtwork.price = req.body.artwork_price;
+      const savedArtwork = await foundArtwork.save();
       if (savedArtwork) {
         return res.redirect('/my-artwork');
       } else {
@@ -140,7 +140,7 @@ const deleteArtwork = async (req, res, next) => {
             }
           );
           if (updatedUser) {
-            return res.redirect('/my-artwork');
+            return res.status(200).json('/my-artwork');
           } else {
             return res
               .status(400)

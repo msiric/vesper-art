@@ -202,7 +202,7 @@ const uploadRoutes = require('./routes/api/uploadRouter');
 const emailRoutes = require('./routes/api/emailRouter');
 const artworkRoutes = require('./routes/api/artworkRouter');
 const requestRoutes = require('./routes/api/requestRouter');
-const chatRoutes = require('./routes/api/chatRouter');
+const conversationRoutes = require('./routes/api/conversationRouter');
 const workRouter = require('./routes/api/workRouter');
 
 app.use(mainRoutes);
@@ -212,7 +212,7 @@ app.use(uploadRoutes);
 app.use(emailRoutes);
 app.use(artworkRoutes);
 app.use(requestRoutes);
-app.use(chatRoutes);
+app.use(conversationRoutes);
 app.use(workRouter);
 
 app.use((req, res, next) => {

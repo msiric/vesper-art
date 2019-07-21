@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const artworkRouter = require('./artworkRouter');
-const chatRouter = require('./chatRouter');
+const conversationRouter = require('./conversationRouter');
 const emailRouter = require('./emailRouter');
 const homeRouter = require('./homeRouter');
 const orderRouter = require('./orderRouter');
@@ -12,7 +12,7 @@ const userRouter = require('./userRouter');
 const workRouter = require('./workRouter');
 
 router.use('/', artworkRouter);
-router.use('/', chatRouter);
+router.use('/', conversationRouter);
 router.use('/', emailRouter);
 router.use('/', homeRouter);
 router.use('/', orderRouter);

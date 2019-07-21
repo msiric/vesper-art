@@ -1,25 +1,81 @@
-exports = module.exports = function(io) {
-  // Set socket.io listeners.
-  io.on('connection', socket => {
-    //console.log('a user connected');
+const User = require('../models/user');
+const Work = require('../models/work');
+const Conversation = require('../models/conversation');
+const Message = require('../models/message');
+const async = require('async');
 
-    // On conversation entry, join broadcast channel
-    socket.on('enter conversation', conversation => {
-      socket.join(conversation);
-      // console.log('joined ' + conversation);
+module.exports = function(io) {
+  io.on('connection', function(socket) {
+    const user = socket.request.user;
+    const workId = socket.request.session.workId;
+    const convoId = socket.request.session.convoId;
+
+    socket.join(workId);
+
+    socket.on('workChatTo', data => {
+      async.waterfall([
+        function(callback) {
+          io.in(workId).emit('workIncomingChat', {
+            message: data.message,
+            sender: user.name,
+            senderImage: user.photo,
+            senderId: user._id
+          });
+          const message = new Message();
+          message.owner = user._id;
+          message.content = data.message;
+          message.read = false;
+          message.save(function(err) {
+            callback(err, message);
+          });
+        },
+
+        function(message, callback) {
+          Work.update(
+            {
+              _id: workId
+            },
+            {
+              $push: { messages: message._id }
+            },
+            function(err, count) {}
+          );
+        }
+      ]);
     });
 
-    socket.on('leave conversation', conversation => {
-      socket.leave(conversation);
-      // console.log('left ' + conversation);
-    });
+    socket.join(convoId);
 
-    socket.on('new message', conversation => {
-      io.sockets.in(conversation).emit('refresh messages', conversation);
-    });
+    socket.on('convoChatTo', data => {
+      async.waterfall([
+        function(callback) {
+          io.in(convoId).emit('convoIncomingChat', {
+            message: data.message,
+            sender: user.name,
+            senderImage: user.photo,
+            senderId: user._id
+          });
+          const message = new Message();
+          message.owner = user._id;
+          message.content = data.message;
+          message.read = false;
+          message.save(function(err) {
+            callback(err, message);
+          });
+        },
 
-    socket.on('disconnect', () => {
-      //console.log('user disconnected');
+        function(message, callback) {
+          Conversation.update(
+            {
+              _id: convoId
+            },
+            {
+              $push: { messages: message._id }
+            },
+            function(err, count) {}
+          );
+        }
+      ]);
     });
   });
 };

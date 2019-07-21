@@ -38,13 +38,15 @@
             {{#each conversation.messages}}
             {{#checkIfEquals ../user._id owner._id}}
             <div class="message right">
+              <p>{{ owner.name }}</p>
               <span class="pic"><img src="{{ owner.photo }}" /></span>
               <div class="bubble right">
                 <p>{{ content }}</p>
               </div>
             </div>
             {{ else }}
-            <div class=" message left">
+            <div class="message left">
+              <p>{{ owner.name }}</p>
               <span class="pic"><img src="{{ owner.photo }}" /></span>
               <div class="bubble left">
                 <p>{{ content }}</p>

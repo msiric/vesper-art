@@ -1,54 +1,42 @@
 const Conversation = require('../models/conversation');
 const Message = require('../models/message');
 
-const getConversations = (req, res, next) => {
-  // Only return one message from each conversation to display as snippet
-  Conversation.find({ participants: req.user._id })
-    .select('_id')
-    .exec(function(err, conversations) {
-      if (err) {
-        res.send({ error: err });
-        return next(err);
-      }
-      if (conversations) {
-        // Set up empty array to hold conversations + most recent message
-        let fullConversations = [];
-        conversations.forEach(function(conversation) {
-          Message.find({ conversationId: conversation._id })
-            .sort('-createdAt')
-            .limit(1)
-            .populate('author')
-            .exec(function(err, message) {
-              if (err) {
-                res.send({ error: err });
-                return next(err);
-              }
-              fullConversations.push(message);
-              if (fullConversations.length === conversations.length) {
-                return res.render('accounts/conversations', {
-                  conversations: fullConversations
-                });
-              }
-            });
-        });
-      } else {
-        res.render('accounts/conversations');
-      }
-    });
+const getConversations = async (req, res, next) => {
+  try {
+    const conversations = await Conversation.find({
+      $or: [{ first: req.user._id }, { second: req.user._id }]
+    })
+      .populate('first')
+      .populate('second')
+      .deepPopulate('messages.owner');
+    res.render('accounts/conversations', { conversations: conversations });
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
-const getConversation = (req, res, next) => {
-  Message.find({ conversationId: req.params.conversationId })
-    .select('createdAt body author')
-    .sort('-createdAt')
-    .populate('author')
-    .exec(function(err, messages) {
-      if (err) {
-        res.send({ error: err });
-        return next(err);
-      }
-      res.render('accounts/convo-room', { conversation: messages });
+const getConversation = async (req, res, next) => {
+  try {
+    const conversations = await Conversation.find({
+      $or: [{ first: req.user._id }, { second: req.user._id }]
+    })
+      .populate('first')
+      .populate('second')
+      .deepPopulate('messages.owner');
+    const conversation = await Conversation.find({
+      _id: req.params.conversationId
+    })
+      .populate('first')
+      .populate('second')
+      .deepPopulate('messages.owner');
+    console.log(conversation);
+    res.render('accounts/convo-room', {
+      conversations: conversations,
+      conversation: conversation[0]
     });
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 const newConversation = (req, res, next) => {
