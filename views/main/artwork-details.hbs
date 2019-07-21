@@ -26,7 +26,7 @@
 
     <div class="col-md-4">
       <div class="overview">
-        {{#if req.user }}
+        {{#if id }}
         {{#checkIfEquals artwork.owner._id id }}
         <div class="edit-card">
           <a href="/edit-artwork/{{ artwork._id }}" class="btn btn-success" id="edit-artwork"><i

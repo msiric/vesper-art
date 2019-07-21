@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { isLoggedInAPI } = require('../../utils/helpers');
+const { isLoggedIn } = require('../../utils/helpers');
 const homeController = require('../../controllers/homeController');
 
 /* const algoliasearch = require('algoliasearch');
@@ -28,10 +28,10 @@ router
   });
 }); */
 
-router.post('/promocode', isLoggedInAPI, homeController.postPromocode);
+router.post('/promocode', isLoggedIn, homeController.postPromocode);
 
-router.post('/remove-promocode', isLoggedInAPI, homeController.deletePromocode);
+router.post('/remove-promocode', isLoggedIn, homeController.deletePromocode);
 
-router.get('/notifications', isLoggedInAPI, homeController.getNotifications);
+router.get('/notifications', isLoggedIn, homeController.getNotifications);
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { isLoggedInAPI, isLoggedOut } = require('../../utils/helpers');
+const { isLoggedIn, isLoggedOut } = require('../../utils/helpers');
 const userController = require('../../controllers/userController');
 
 router
@@ -22,18 +22,18 @@ router.get('/auth/google/callback', userController.getGoogleCallback);
 
 router
   .route('/profile')
-  .get(isLoggedInAPI, userController.getUserProfile)
-  .post(isLoggedInAPI, userController.updateUserProfile);
+  .get(isLoggedIn, userController.getUserProfile)
+  .post(isLoggedIn, userController.updateUserProfile);
 
-router.get('/logout', isLoggedInAPI, userController.getLogOut);
+router.get('/logout', isLoggedIn, userController.getLogOut);
 
-router.get('/settings', isLoggedInAPI, userController.getUserSettings);
+router.get('/settings', isLoggedIn, userController.getUserSettings);
 
-router.post('/new-password', isLoggedInAPI, userController.updateUserPassword);
+router.post('/new-password', isLoggedIn, userController.updateUserPassword);
 
 router.post(
   '/update-preferences',
-  isLoggedInAPI,
+  isLoggedIn,
   userController.updateUserPreferences
 );
 

@@ -5,11 +5,7 @@ const Artwork = require('../models/artwork');
 const getUserArtwork = async (req, res, next) => {
   try {
     const artwork = await Artwork.find({ owner: req.user._id });
-    if (artwork) {
-      return res.render('main/my-artwork', artwork);
-    } else {
-      return res.status(400).json({ message: 'Artwork not found' });
-    }
+    return res.render('main/my-artwork', { artwork: artwork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -94,53 +90,76 @@ const editArtwork = async (req, res, next) => {
 };
 
 const updateArtwork = async (req, res, next) => {
-  const foundArtwork = await Artwork.findOne({ _id: req.params.id });
-  if (foundArtwork) {
-    if (req.body.artwork_cover) artwork.cover = req.body.artwork_cover;
-    if (req.body.artwork_title) artwork.title = req.body.artwork_title;
-    if (req.body.artwork_category) artwork.category = req.body.artwork_category;
-    if (req.body.artwork_about) artwork.about = req.body.artwork_about;
-    if (req.body.artwork_price) artwork.price = req.body.artwork_price;
-    const savedArtwork = await artwork.save();
-    if (savedArtwork) {
-      return res.redirect('/my-artwork');
+  try {
+    const foundArtwork = await Artwork.findOne({ _id: req.params.id });
+    if (foundArtwork) {
+      if (req.body.artwork_cover) artwork.cover = req.body.artwork_cover;
+      if (req.body.artwork_title) artwork.title = req.body.artwork_title;
+      if (req.body.artwork_category)
+        artwork.category = req.body.artwork_category;
+      if (req.body.artwork_about) artwork.about = req.body.artwork_about;
+      if (req.body.artwork_price) artwork.price = req.body.artwork_price;
+      const savedArtwork = await artwork.save();
+      if (savedArtwork) {
+        return res.redirect('/my-artwork');
+      } else {
+        return res
+          .status(400)
+          .json({ message: 'Artwork could not be updated' });
+      }
     } else {
-      return res.status(400).json({ message: 'Artwork could not be updated' });
+      return res.status(400).json({ message: 'Artwork not found' });
     }
-  } else {
+  } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
 const deleteArtwork = async (req, res, next) => {
-  const deletedArtwork = await Artwork.deleteOne({ _id: req.params.id });
-  if (deletedArtwork) {
-    const folderName = 'artworkCovers/';
-    const filePath = folderName + fileName;
-    const s3 = new aws.S3();
-    const params = {
-      Bucket: 'vesper-testing',
-      Key: filePath
-    };
-    const deletedImage = await s3.deleteObject(params);
-    if (deletedImage) {
-      const updatedUser = await User.update(
-        {
-          _id: req.user._id
-        },
-        {
-          $pull: { artworks: req.params.id }
+  try {
+    const foundArtwork = await Artwork.findOne({ _id: req.params.id });
+    if (foundArtwork) {
+      const deletedArtwork = await Artwork.deleteOne({ _id: req.params.id });
+      if (deletedArtwork) {
+        const folderName = 'artworkCovers/';
+        const fileName = foundArtwork.cover;
+        const filePath = folderName + fileName;
+        const s3 = new aws.S3();
+        const params = {
+          Bucket: 'vesper-testing',
+          Key: filePath
+        };
+        const deletedImage = await s3.deleteObject(params);
+        if (deletedImage) {
+          const updatedUser = await User.update(
+            {
+              _id: req.user._id
+            },
+            {
+              $pull: { artworks: req.params.id }
+            }
+          );
+          if (updatedUser) {
+            return res.redirect('/my-artwork');
+          } else {
+            return res
+              .status(400)
+              .json({ message: 'User could not be updated' });
+          }
+        } else {
+          return res
+            .status(400)
+            .json({ message: 'Artwork could not be deleted' });
         }
-      );
-      if (updatedUser) {
-        return res.redirect('/my-artwork');
       } else {
-        return res.status(400).json({ message: 'User could not be updated' });
+        return res
+          .status(400)
+          .json({ message: 'Artwork could not be deleted' });
       }
     } else {
-      return res.status(400).json({ message: 'Artwork could not be deleted' });
+      return res.status(400).json({ message: 'Artwork not found' });
     }
-  } else {
+  } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };

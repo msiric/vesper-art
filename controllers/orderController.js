@@ -100,19 +100,17 @@ const getProcessCart = async (req, res, next) => {
           } else {
             req.session.artwork = null;
           }
-          res.render('order/cart', {
-            foundUser: artworkInfo.foundUser,
-            totalPrice: parseFloat(artworkInfo.totalPrice.toFixed(12)),
-            subtotal: parseFloat(artworkInfo.subtotal.toFixed(12)),
-            cartIsEmpty: artworkInfo.cartIsEmpty,
-            discount: req.session.discount,
-            discountPercentage: artworkInfo.discount,
-            promo: artworkInfo.promo
-          });
-        } else {
-          return res.status(400).json({ message: 'Promo code not found' });
         }
       }
+      res.render('order/cart', {
+        foundUser: artworkInfo.foundUser,
+        totalPrice: parseFloat(artworkInfo.totalPrice.toFixed(12)),
+        subtotal: parseFloat(artworkInfo.subtotal.toFixed(12)),
+        cartIsEmpty: artworkInfo.cartIsEmpty,
+        discount: req.session.discount,
+        discountPercentage: artworkInfo.discount,
+        promo: artworkInfo.promo
+      });
     } else {
       return res.status(400).json({ message: 'User not found' });
     }
@@ -322,7 +320,7 @@ const deleteFromCart = async (req, res, next) => {
         if (req.user.cart.length === 1) {
           req.session.discount = null;
         }
-        res.status(200).json({ message: 'Item deleted from cart' });
+        res.status(200).json({ success: true });
       } else {
         return res.status(400).json({ message: "Couldn't update user " });
       }

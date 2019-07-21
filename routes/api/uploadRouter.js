@@ -1,22 +1,32 @@
 const router = require('express').Router();
-const { isLoggedInAPI } = require('../../utils/helpers');
+const { isLoggedIn } = require('../../utils/helpers');
 const uploadController = require('../../controllers/uploadController');
+
+const upload = require('../../services/multer');
+
+const profilePhotoUpload = upload.profilePhotoUpload;
+const artworkCoverUpload = upload.artworkCoverUpload;
+const artworkCoverEdit = upload.artworkCoverEdit;
+
+const profilePhotoSingleUpload = profilePhotoUpload.single('image');
+const artworkCoverSingleUpload = artworkCoverUpload.single('image');
+const artworkCoverSingleEdit = artworkCoverEdit.single('image');
 
 router.post(
   '/profile-image-upload',
-  isLoggedInAPI,
+  [isLoggedIn, profilePhotoSingleUpload],
   uploadController.postProfileImage
 );
 
 router.post(
   '/artwork-cover-upload',
-  isLoggedInAPI,
+  [isLoggedIn, artworkCoverSingleUpload],
   uploadController.postArtworkCover
 );
 
 router.post(
   '/artwork-cover-edit/:id',
-  isLoggedInAPI,
+  [isLoggedIn, artworkCoverSingleEdit],
   uploadController.updateArtworkCover
 );
 
