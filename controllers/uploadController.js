@@ -6,15 +6,15 @@ const postProfileImage = async (req, res, next) => {
   try {
     const foundUser = await User.findOne({ _id: req.user._id });
     if (foundUser) {
-      const fileName = foundUser.photo.split('/').slice(-1)[0];
       const folderName = 'profilePhotos/';
+      const fileName = foundUser.photo.split('/').slice(-1)[0];
       const filePath = folderName + fileName;
       const s3 = new aws.S3();
       const params = {
         Bucket: 'vesper-testing',
         Key: filePath
       };
-      const deletedImage = await s3.deleteObject(params);
+      const deletedImage = await s3.deleteObject(params).promise();
       if (deletedImage) {
         foundUser.photo = req.file.location;
         const savedUser = await foundUser.save();
@@ -59,7 +59,7 @@ const updateArtworkCover = async (req, res, next) => {
         Bucket: 'vesper-testing',
         Key: filePath
       };
-      const deletedImage = await s3.deleteObject(params);
+      const deletedImage = await s3.deleteObject(params).promise();
       if (deletedImage) {
         foundArtwork.cover = req.file.location;
         const savedArtwork = await foundArtwork.save();
