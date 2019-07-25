@@ -17,6 +17,13 @@ const getConversations = async (req, res, next) => {
 
 const getConversation = async (req, res, next) => {
   const userId = req.params.conversationId;
+  if (userId.localeCompare(req.user._id) === 1) {
+    req.session.convoId = userId + req.user._id;
+    console.log(req.session.convoId);
+  } else {
+    req.session.convoId = req.user._id + userId;
+    console.log(req.session.convoId);
+  }
   try {
     const conversations = await Conversation.find({
       $or: [{ first: req.user._id }, { second: req.user._id }]

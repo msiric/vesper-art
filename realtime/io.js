@@ -9,7 +9,7 @@ module.exports = function(io) {
     console.log('pizdek ' + socket.id + ' se connecta');
     const user = socket.request.user;
     const workId = socket.request.session.workId;
-    let convoId = null;
+    const convoId = socket.request.session.convoId;
 
     socket.join(workId);
 
@@ -45,14 +45,7 @@ module.exports = function(io) {
       ]);
     });
 
-    socket.on('join', function(data) {
-      if (data.user.localeCompare(user._id) === 1) {
-        convoId = data.user + user._id;
-      } else {
-        convoId = user._id + data.user;
-      }
-      socket.join(convoId);
-    });
+    socket.join(convoId);
 
     /* socket.on('convoChatTo', data => { */
     socket.on('convoChatTo', function(data) {
