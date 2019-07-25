@@ -1,11 +1,16 @@
 $(function() {
   var socket = io();
+  const id = window.location.href.substring(
+    window.location.href.lastIndexOf('/') + 1
+  );
 
-  $('#convo-message-form').submit(function() {
+  $('#convo-message-form').submit(function(e) {
+    e.preventDefault();
     var input = $('#convo-message').val();
     if (input === '') {
       return false;
     } else {
+      /* socket.emit('join', { user: id }); */
       socket.emit('convoChatTo', { message: input });
       $('#convo-message').val('');
       return false;

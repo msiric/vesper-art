@@ -33,6 +33,12 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
+app.use(function(req, res, next) {
+  'use strict';
+  req.io = io;
+  next();
+});
+
 const sessionMiddleware = session({
   resave: true,
   saveUninitialized: true,
@@ -214,6 +220,8 @@ app.use(artworkRoutes);
 app.use(requestRoutes);
 app.use(conversationRoutes);
 app.use(workRouter);
+
+app.set('socketio', io);
 
 app.use((req, res, next) => {
   const err = new Error('Not found');

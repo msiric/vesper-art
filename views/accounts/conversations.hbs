@@ -6,7 +6,8 @@
           <div class="overlay">
             {{#each conversations }}
             <div id="{{ _id }}" class="chat-profiles">
-              <a href="/conversations/{{ _id }}">
+              <a
+                href="/conversations/{{#formatUsername ../user._id first._id second._id first._id }}{{/formatUsername}}">
                 <div class="pic">
                   <img src="{{#formatChatPhoto ../user._id first._id second.photo first.photo }}{{/formatChatPhoto}}"
                     class="artwork-image">

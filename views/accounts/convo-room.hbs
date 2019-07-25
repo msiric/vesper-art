@@ -7,7 +7,8 @@
           <div class="overlay">
             {{#each conversations }}
             <div id="{{ _id }}" class="chat-profiles">
-              <a href="/conversations/{{ _id }}">
+              <a
+                href="/conversations/{{#formatUsername ../user._id first._id second._id first._id }}{{/formatUsername}}">
                 <div class="pic">
                   <img src="{{#formatChatPhoto ../user._id first._id second.photo first.photo }}{{/formatChatPhoto}}"
                     class="artwork-image">
@@ -38,7 +39,7 @@
             {{#each conversation.messages}}
             {{#checkIfEquals ../user._id owner._id}}
             <div class="message right">
-              <p>{{ owner.name }}</p>
+              <p class="text-center">{{ owner.name }}</p>
               <span class="pic"><img src="{{ owner.photo }}" /></span>
               <div class="bubble right">
                 <p>{{ content }}</p>
@@ -46,7 +47,7 @@
             </div>
             {{ else }}
             <div class="message left">
-              <p>{{ owner.name }}</p>
+              <p class="text-center">{{ owner.name }}</p>
               <span class="pic"><img src="{{ owner.photo }}" /></span>
               <div class="bubble left">
                 <p>{{ content }}</p>
@@ -64,7 +65,7 @@
           </div>
 
           <div class="compose">
-            <form action="#" id="convo-message-form" class="form-group">
+            <form id="convo-message-form" class="form-group">
               <div class="input-group">
                 <a href="#" class="input-group-addon"><i class="fa fa-plus">
                   </i></a>

@@ -16,6 +16,7 @@ const getConversations = async (req, res, next) => {
 };
 
 const getConversation = async (req, res, next) => {
+  const userId = req.params.conversationId;
   try {
     const conversations = await Conversation.find({
       $or: [{ first: req.user._id }, { second: req.user._id }]
@@ -24,17 +25,21 @@ const getConversation = async (req, res, next) => {
       .populate('second')
       .deepPopulate('messages.owner');
     const conversation = await Conversation.find({
-      _id: req.params.conversationId
+      $and: [
+        { $or: [{ first: req.user._id }, { second: userId }] },
+        { $or: [{ first: userId }, { second: req.user._id }] }
+      ]
     })
       .populate('first')
       .populate('second')
       .deepPopulate('messages.owner');
-    console.log(conversation);
     res.render('accounts/convo-room', {
+      layout: 'convo-chat',
       conversations: conversations,
       conversation: conversation[0]
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
