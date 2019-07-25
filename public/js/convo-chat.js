@@ -21,12 +21,14 @@ $(function() {
     var userId = $('#userId').val();
     var html = '';
     if (data.senderId === userId) {
+      html += '<p class="text-right">' + data.sender + '</p>';
       html += '<div class="message right">';
       html += '<span class="pic"><img src="' + data.senderImage + '"/></span>';
       html += '<div class="bubble right">';
       html += '<p> ' + data.message + '</p>';
       html += '</div></div>';
     } else {
+      html += '<p class="text-left">' + data.sender + '</p>';
       html += '<div class="message left">';
       html += '<span class="pic"><img src="' + data.senderImage + '"/></span>';
       html += '<div class="bubble left">';

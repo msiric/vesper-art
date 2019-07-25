@@ -17,12 +17,11 @@ const getConversations = async (req, res, next) => {
 
 const getConversation = async (req, res, next) => {
   const userId = req.params.conversationId;
+  req.session.participantId = userId;
   if (userId.localeCompare(req.user._id) === 1) {
     req.session.convoId = userId + req.user._id;
-    console.log(req.session.convoId);
   } else {
     req.session.convoId = req.user._id + userId;
-    console.log(req.session.convoId);
   }
   try {
     const conversations = await Conversation.find({
@@ -32,19 +31,20 @@ const getConversation = async (req, res, next) => {
       .populate('second')
       .deepPopulate('messages.owner');
     const conversation = await Conversation.find({
-      $and: [
-        { $or: [{ first: req.user._id }, { second: userId }] },
-        { $or: [{ first: userId }, { second: req.user._id }] }
-      ]
+      tag: req.session.convoId
     })
       .populate('first')
       .populate('second')
       .deepPopulate('messages.owner');
-    res.render('accounts/convo-room', {
-      layout: 'convo-chat',
-      conversations: conversations,
-      conversation: conversation[0]
-    });
+    if (conversation) {
+      res.render('accounts/convo-room', {
+        layout: 'convo-chat',
+        conversations: conversations,
+        conversation: conversation[0]
+      });
+    } else {
+      res.redirect('/conversations');
+    }
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: 'Internal server error' });

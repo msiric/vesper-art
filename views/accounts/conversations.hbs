@@ -17,7 +17,7 @@
                     {{#formatChatName ../user._id first._id second.name first.name }}{{/formatChatName}}</h3>
                   <p class="bio">
                     {{#each messages }}
-                    <p>{{ content }}</p>
+                    <p>{{#if @last}}{{ this.content }}{{/if}}</p>
                     {{/each}}
                   </p>
                 </div>

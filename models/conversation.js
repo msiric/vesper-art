@@ -3,6 +3,7 @@ const deepPopulate = require('mongoose-deep-populate')(mongoose);
 const Schema = mongoose.Schema;
 
 const ConversationSchema = new Schema({
+  tag: String,
   first: { type: Schema.Types.ObjectId, ref: 'User' },
   second: { type: Schema.Types.ObjectId, ref: 'User' },
   offer: { type: Schema.Types.ObjectId, ref: 'Offer' },
