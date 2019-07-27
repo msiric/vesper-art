@@ -71,7 +71,7 @@
             <hr>
             <h4>{{ artwork.owner.name }}</h4>
             <i class="fa fa-briefcase"></i>
-            <i class="fa fa-envelope" data-toggle="modal" data-target="#contact-artist-modal"></i>
+            <a href="/conversations/{{artwork.owner._id}}"><i class="fa fa-envelope"></i></a>
             <img class="img-circle" src="{{ artwork.owner.photo }}" />
             <br>
             {{#if artwork.owner.about}}

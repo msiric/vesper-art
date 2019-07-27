@@ -40,6 +40,11 @@ $(function() {
     $('#order-messages').scrollTop($('#order-messages')[0].scrollHeight);
     $('.no-messages').hide();
   });
+
+  socket.on('increaseInbox', function() {
+    console.log('wat');
+    $('.message-badge').html(parseInt($('.message-badge').html()) + 1);
+  });
 });
 
 $('.chat-messages').scrollTop($('.chat-messages')[0].scrollHeight);

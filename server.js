@@ -211,6 +211,11 @@ const requestRoutes = require('./routes/api/requestRouter');
 const conversationRoutes = require('./routes/api/conversationRouter');
 const workRouter = require('./routes/api/workRouter');
 
+app.use(function(req, res, next) {
+  res.locals.session = req.session;
+  next();
+});
+
 app.use(mainRoutes);
 app.use(userRoutes);
 app.use(orderRoutes);

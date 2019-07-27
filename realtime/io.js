@@ -41,7 +41,6 @@ module.exports = function(io) {
 
     socket.join(convoId);
 
-    /* socket.on('convoChatTo', data => { */
     socket.on('convoChatTo', async data => {
       io.in(convoId).emit('convoIncomingChat', {
         message: data.message,
@@ -54,7 +53,7 @@ module.exports = function(io) {
       message.content = data.message;
       message.read = false;
       const savedMessage = await message.save();
-      const foundConvo = await Conversation.updateOne(
+      const updatedConvo = await Conversation.updateOne(
         {
           tag: convoId
         },
@@ -66,6 +65,10 @@ module.exports = function(io) {
           upsert: true
         }
       );
+      if (updatedConvo.nModified == 0) {
+        socket.broadcast.to(participantId).emit('increaseInbox', {});
+        /* io.in(participantId).broadcast.emit('increaseInbox', {}); //SKEM */
+      }
     });
   });
 };
