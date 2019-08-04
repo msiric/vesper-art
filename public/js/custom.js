@@ -1,4 +1,7 @@
+let socket = null;
 $(function() {
+  socket = io();
+
   let badge = $('#cart_items')
     .eq(0)
     .html();
@@ -386,3 +389,11 @@ function deleteRequest(requestId) {
     });
   }
 }
+$(function() {
+  socket.on('increaseInbox', function(data) {
+    console.log(
+      'WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAT'
+    );
+    $('.message-badge').html(parseInt($('.message-badge').html()) + 1);
+  });
+});

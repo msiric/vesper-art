@@ -1,9 +1,4 @@
 $(function() {
-  var socket = io();
-  const id = window.location.href.substring(
-    window.location.href.lastIndexOf('/') + 1
-  );
-
   $('#convo-message-form').submit(function(e) {
     e.preventDefault();
     var input = $('#convo-message').val();
@@ -16,7 +11,6 @@ $(function() {
       return false;
     }
   });
-
   socket.on('convoIncomingChat', function(data) {
     var userId = $('#userId').val();
     var html = '';
@@ -39,11 +33,6 @@ $(function() {
     $('.chat-messages').append(html);
     $('#order-messages').scrollTop($('#order-messages')[0].scrollHeight);
     $('.no-messages').hide();
-  });
-
-  socket.on('increaseInbox', function() {
-    console.log('wat');
-    $('.message-badge').html(parseInt($('.message-badge').html()) + 1);
   });
 });
 

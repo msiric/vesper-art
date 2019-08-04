@@ -1,18 +1,19 @@
-const User = require('../models/user');
 const Work = require('../models/work');
 const Conversation = require('../models/conversation');
 const Message = require('../models/message');
 const mongoose = require('mongoose');
 
 module.exports = function(io) {
+  const users = {};
   io.on('connection', function(socket) {
-    console.log('pizdek ' + socket.id + ' se connecta');
     const user = socket.request.user;
     const workId = socket.request.session.workId;
     const convoId = socket.request.session.convoId;
     const participantId = mongoose.Types.ObjectId(
       socket.request.session.participantId
     );
+
+    users[user._id] = socket;
 
     socket.join(workId);
 
@@ -48,7 +49,7 @@ module.exports = function(io) {
         senderImage: user.photo,
         senderId: user._id
       });
-      const message = new Message();
+      /*       const message = new Message();
       message.owner = user._id;
       message.content = data.message;
       message.read = false;
@@ -64,11 +65,17 @@ module.exports = function(io) {
         {
           upsert: true
         }
-      );
-      if (updatedConvo.nModified == 0) {
-        socket.broadcast.to(participantId).emit('increaseInbox', {});
-        /* io.in(participantId).broadcast.emit('increaseInbox', {}); //SKEM */
-      }
+      ); */
+
+      users[participantId].emit('increaseInbox', {});
+
+      /*       if (updatedConvo.nModified == 0) {
+        users[participantId].emit('increaseInbox', {});
+      } */
+    });
+
+    socket.on('disconnect', () => {
+      delete users[user._id];
     });
   });
 };
