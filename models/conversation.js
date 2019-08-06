@@ -13,6 +13,9 @@ const ConversationSchema = new Schema({
       ref: 'Message'
     }
   ],
+  read: {
+    type: Boolean
+  },
   created: { type: Date, default: Date.now }
 });
 

@@ -1,5 +1,6 @@
 const Conversation = require('../models/conversation');
 const Message = require('../models/message');
+const User = require('../models/user');
 
 const getConversations = async (req, res, next) => {
   try {
@@ -16,31 +17,53 @@ const getConversations = async (req, res, next) => {
 };
 
 const getConversation = async (req, res, next) => {
-  const userId = req.params.conversationId;
-  req.session.participantId = userId;
-  if (userId.localeCompare(req.user._id) === 1) {
-    req.session.convoId = userId + req.user._id;
-  } else {
-    req.session.convoId = req.user._id + userId;
-  }
+  // fix object id error, emit to decrement inbox, on send show receiver photo, username and last message, handle inbox value on client side when inside the conversation
   try {
-    const conversations = await Conversation.find({
-      $or: [{ first: req.user._id }, { second: req.user._id }]
-    })
-      .populate('first')
-      .populate('second')
-      .deepPopulate('messages.owner');
-    const conversation = await Conversation.find({
-      tag: req.session.convoId
-    })
-      .populate('first')
-      .populate('second')
-      .deepPopulate('messages.owner');
-    if (conversation) {
+    const userId = req.params.conversationId;
+    const userExists = await User.findOne({
+      _id: userId
+    });
+    if (userExists) {
+      req.session.participantId = userId;
+      if (userId.localeCompare(req.user._id) === 1) {
+        req.session.convoId = userId + req.user._id;
+      } else {
+        req.session.convoId = req.user._id + userId;
+      }
+      const conversations = await Conversation.find({
+        $or: [{ first: req.user._id }, { second: req.user._id }]
+      })
+        .populate('first')
+        .populate('second')
+        .deepPopulate('messages.owner');
+      const conversation = await Conversation.findOne({
+        tag: req.session.convoId
+      })
+        .populate('first')
+        .populate('second')
+        .deepPopulate('messages.owner');
+      if (conversation && conversation.read === false) {
+        const updatedConvo = await Conversation.updateOne(
+          {
+            tag: req.session.convoId
+          },
+          {
+            $set: {
+              read: true
+            }
+          }
+        );
+        const updatedUser = await User.updateOne(
+          {
+            _id: req.user._id
+          },
+          { $inc: { inbox: -1 } }
+        );
+      }
       res.render('accounts/convo-room', {
         layout: 'convo-chat',
         conversations: conversations,
-        conversation: conversation[0]
+        conversation: conversation
       });
     } else {
       res.redirect('/conversations');

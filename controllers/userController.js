@@ -34,7 +34,8 @@ const postSignUp = async (req, res, next) => {
       user.customWork = true;
       user.secretToken = verificationInfo.token;
       user.verified = false;
-      req.session.inbox = 0;
+      user.inbox = 0;
+      user.notifications = 0;
       const savedUser = await user.save();
       if (savedUser) {
         axios

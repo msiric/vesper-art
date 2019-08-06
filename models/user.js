@@ -39,7 +39,9 @@ const UserSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'Request'
     }
-  ]
+  ],
+  inbox: Number,
+  notifications: Number
 });
 
 UserSchema.pre('save', function(next) {

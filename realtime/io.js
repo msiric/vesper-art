@@ -1,4 +1,5 @@
 const Work = require('../models/work');
+const User = require('../models/user');
 const Conversation = require('../models/conversation');
 const Message = require('../models/message');
 const mongoose = require('mongoose');
@@ -49,7 +50,7 @@ module.exports = function(io) {
         senderImage: user.photo,
         senderId: user._id
       });
-      /*       const message = new Message();
+      const message = new Message();
       message.owner = user._id;
       message.content = data.message;
       message.read = false;
@@ -59,19 +60,29 @@ module.exports = function(io) {
           tag: convoId
         },
         {
-          $set: { tag: convoId, first: user._id, second: participantId },
+          $set: {
+            tag: convoId,
+            first: user._id,
+            second: participantId,
+            read: false
+          },
           $push: { messages: message._id }
         },
         {
           upsert: true
         }
-      ); */
+      );
 
-      users[participantId].emit('increaseInbox', {});
-
-      /*       if (updatedConvo.nModified == 0) {
+      if (updatedConvo.nModified == 0) {
+        // if convo.read === false -> do not increment
+        const updatedUser = await User.updateOne(
+          {
+            _id: participantId
+          },
+          { $inc: { inbox: 1 } }
+        );
         users[participantId].emit('increaseInbox', {});
-      } */
+      }
     });
 
     socket.on('disconnect', () => {
