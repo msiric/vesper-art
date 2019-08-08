@@ -92,8 +92,15 @@ module.exports = function(io) {
         { $inc: { inbox: 1 } },
         { useFindAndModify: false }
       );
-      users[participantId].emit('increaseInbox', {});
+      if (users[participantId]) {
+        users[participantId].emit('increaseInbox', {});
+      }
     }
+
+    socket.on('convoRead', () => {
+      console.log('in');
+      users[user._id].emit('decreaseInbox', {});
+    });
 
     socket.on('disconnect', () => {
       console.log('user ' + user.name + ' disconnected');

@@ -391,9 +391,9 @@ function deleteRequest(requestId) {
 }
 $(function() {
   socket.on('increaseInbox', function(data) {
-    console.log(
-      'WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAT'
-    );
     $('.message-badge').html(parseInt($('.message-badge').html()) + 1);
+  });
+  socket.on('decreaseInbox', function(data) {
+    $('.message-badge').html(parseInt($('.message-badge').html()) - 1);
   });
 });

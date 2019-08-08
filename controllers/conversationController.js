@@ -56,7 +56,6 @@ const getConversation = async (req, res, next) => {
           !conversation.read &&
           conversation.second._id.equals(req.user._id)
         ) {
-          console.log('dafuq1');
           const updatedConvo = await Conversation.updateOne(
             {
               tag: req.session.convoId
@@ -73,8 +72,8 @@ const getConversation = async (req, res, next) => {
             },
             { $inc: { inbox: -1 } }
           );
+          req.io.emit('convoRead', {}); // Ne radi
         }
-        console.log('dafuq2');
         res.render('accounts/convo-room', {
           layout: 'convo-chat',
           conversations: conversations,
