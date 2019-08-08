@@ -14,6 +14,8 @@ module.exports = function(io) {
       socket.request.session.participantId
     );
 
+    console.log('user ' + user.name + ' connected');
+
     users[user._id] = socket;
 
     socket.join(workId);
@@ -55,7 +57,7 @@ module.exports = function(io) {
       message.content = data.message;
       message.read = false;
       const savedMessage = await message.save();
-      const updatedConvo = await Conversation.updateOne(
+      const updatedConvo = await Conversation.findOneAndUpdate(
         {
           tag: convoId
         },
@@ -69,23 +71,32 @@ module.exports = function(io) {
           $push: { messages: message._id }
         },
         {
-          upsert: true
+          upsert: true,
+          useFindAndModify: false,
+          rawResult: true
         }
       );
 
-      if (updatedConvo.nModified == 0) {
-        // if convo.read === false -> do not increment
-        const updatedUser = await User.updateOne(
-          {
-            _id: participantId
-          },
-          { $inc: { inbox: 1 } }
-        );
-        users[participantId].emit('increaseInbox', {});
+      if (!updatedConvo.lastErrorObject.updatedExisting) {
+        notifyRecipient();
+      } else if (updatedConvo.value && updatedConvo.value.read) {
+        notifyRecipient();
       }
     });
 
+    async function notifyRecipient() {
+      const updatedUser = await User.findByIdAndUpdate(
+        {
+          _id: participantId
+        },
+        { $inc: { inbox: 1 } },
+        { useFindAndModify: false }
+      );
+      users[participantId].emit('increaseInbox', {});
+    }
+
     socket.on('disconnect', () => {
+      console.log('user ' + user.name + ' disconnected');
       delete users[user._id];
     });
   });
