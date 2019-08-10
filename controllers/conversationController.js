@@ -72,7 +72,7 @@ const getConversation = async (req, res, next) => {
             },
             { $inc: { inbox: -1 } }
           );
-          req.io.emit('convoRead', {}); // Ne radi
+          req.io.emit('decreaseInbox', {}); // Ne radi
         }
         res.render('accounts/convo-room', {
           layout: 'convo-chat',

@@ -97,8 +97,8 @@ module.exports = function(io) {
       }
     }
 
-    socket.on('convoRead', () => {
-      console.log('in');
+    io.on('decreaseInbox', () => {
+      console.log('read');
       users[user._id].emit('decreaseInbox', {});
     });
 

@@ -390,10 +390,11 @@ function deleteRequest(requestId) {
   }
 }
 $(function() {
-  socket.on('increaseInbox', function(data) {
+  socket.on('increaseInbox', function() {
     $('.message-badge').html(parseInt($('.message-badge').html()) + 1);
   });
-  socket.on('decreaseInbox', function(data) {
+  socket.on('decreaseInbox', function() {
+    console.log('decrease');
     $('.message-badge').html(parseInt($('.message-badge').html()) - 1);
   });
 });
