@@ -36,6 +36,12 @@
   <script src="/js/search.js"></script>
   <script src="/js/custom.js"></script>
   <script src="/js/convo-chat.js"></script>
+  {{!--   Decrease inbox value  --}}
+  {{#if decreaseInbox}}
+  <script>
+    $('.message-badge').html(parseInt($('.message-badge').html()) - 1);
+  </script>
+  {{/if}}
 </body>
 
 </html>

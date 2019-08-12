@@ -1,4 +1,4 @@
-const Work = require('../models/work');
+/* const Work = require('../models/work');
 const User = require('../models/user');
 const Conversation = require('../models/conversation');
 const Message = require('../models/message');
@@ -97,14 +97,10 @@ module.exports = function(io) {
       }
     }
 
-    io.on('decreaseInbox', () => {
-      console.log('read');
-      users[user._id].emit('decreaseInbox', {});
-    });
-
     socket.on('disconnect', () => {
       console.log('user ' + user.name + ' disconnected');
       delete users[user._id];
     });
   });
 };
+ */

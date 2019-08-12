@@ -25,8 +25,9 @@ const getConversations = async (req, res, next) => {
 };
 
 const getConversation = async (req, res, next) => {
-  // emit to decrement inbox, on send show receiver photo, username and last message, handle inbox value on client side when inside the conversation
+  // on send show receiver photo, username and last message, handle inbox value on client side when inside the conversation
   try {
+    let decreaseInbox = false;
     const userId = req.params.conversationId;
     if (mongoose.Types.ObjectId.isValid(userId)) {
       const userExists = await User.findOne({
@@ -72,12 +73,13 @@ const getConversation = async (req, res, next) => {
             },
             { $inc: { inbox: -1 } }
           );
-          req.io.emit('decreaseInbox', {}); // Ne radi
+          decreaseInbox = true;
         }
         res.render('accounts/convo-room', {
           layout: 'convo-chat',
           conversations: conversations,
-          conversation: conversation
+          conversation: conversation,
+          decreaseInbox: decreaseInbox
         });
       } else {
         res.redirect('/conversations');
