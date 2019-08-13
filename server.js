@@ -193,7 +193,8 @@ function onAuthorizeFail(data, message, error, accept) {
   if (error) accept(new Error(message));
 }
 
-require('./routes/index')(io);
+/* require('./routes/index')(io);
+ */ require('./realtime/io')(io);
 
 const indexRouter = require('./routes/index');
 const api = require('./routes/api');

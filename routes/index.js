@@ -7,7 +7,7 @@ let index = client.initIndex('ArtworkSchema'); */
 
 const fee = 3.15;
 
-const Work = require('../models/work');
+/* const Work = require('../models/work');
 const User = require('../models/user');
 const Conversation = require('../models/conversation');
 const Message = require('../models/message');
@@ -59,7 +59,8 @@ module.exports = function(io) {
         message: data.message,
         sender: user.name,
         senderImage: user.photo,
-        senderId: user._id
+        senderId: user._id,
+        url: convoId
       });
       const message = new Message();
       message.owner = user._id;
@@ -106,7 +107,8 @@ module.exports = function(io) {
       );
       if (users[participantId]) {
         console.log('koji je sad ovo k');
-        users[participantId].emit('increaseInbox', { convoId });
+        console.log(convoId);
+        users[participantId].emit('increaseInbox', { url: user._id });
       }
       console.log('koji je sad ovo k 2');
     }
@@ -117,3 +119,4 @@ module.exports = function(io) {
     });
   });
 };
+ */

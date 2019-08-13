@@ -390,10 +390,8 @@ function deleteRequest(requestId) {
   }
 }
 $(function() {
-  socket.on('increaseInbox', function(url) {
-    if (window.location.pathname != '/conversations/' + url) {
-      console.log(window.location.pathname);
-      console.log('/conversations/' + url);
+  socket.on('increaseInbox', function(data) {
+    if (window.location.pathname != '/conversations/' + data.url) {
       console.log('increase');
       $('.message-badge').html(parseInt($('.message-badge').html()) + 1);
     }

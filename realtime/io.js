@@ -1,12 +1,12 @@
-/* const Work = require('../models/work');
+const Work = require('../models/work');
 const User = require('../models/user');
 const Conversation = require('../models/conversation');
 const Message = require('../models/message');
 const mongoose = require('mongoose');
 
 module.exports = function(io) {
-  const users = {};
   io.on('connection', function(socket) {
+    users = {};
     const user = socket.request.user;
     const workId = socket.request.session.workId;
     const convoId = socket.request.session.convoId;
@@ -50,7 +50,8 @@ module.exports = function(io) {
         message: data.message,
         sender: user.name,
         senderImage: user.photo,
-        senderId: user._id
+        senderId: user._id,
+        url: convoId
       });
       const message = new Message();
       message.owner = user._id;
@@ -78,10 +79,13 @@ module.exports = function(io) {
       );
 
       if (!updatedConvo.lastErrorObject.updatedExisting) {
+        console.log('koji mrtvi k se dogada');
         notifyRecipient();
       } else if (updatedConvo.value && updatedConvo.value.read) {
+        console.log('koji mrtvi k se dogada 2');
         notifyRecipient();
       }
+      console.log('koji mrtvi k se dogada 3');
     });
 
     async function notifyRecipient() {
@@ -93,8 +97,11 @@ module.exports = function(io) {
         { useFindAndModify: false }
       );
       if (users[participantId]) {
-        users[participantId].emit('increaseInbox', {});
+        console.log('koji je sad ovo k');
+        console.log(convoId);
+        users[participantId].emit('increaseInbox', { url: user._id });
       }
+      console.log('koji je sad ovo k 2');
     }
 
     socket.on('disconnect', () => {
@@ -103,4 +110,3 @@ module.exports = function(io) {
     });
   });
 };
- */
