@@ -4,6 +4,7 @@ const Conversation = require('../models/conversation');
 const Message = require('../models/message');
 const mongoose = require('mongoose');
 
+// Join room on route, leave on exit
 module.exports = function(io) {
   io.on('connection', function(socket) {
     users = {};
@@ -44,6 +45,9 @@ module.exports = function(io) {
     });
 
     socket.join(convoId);
+
+    console.log(users[user._id]);
+    console.log(io.sockets.adapter.rooms[convoId].sockets[users[user._id].id]);
 
     socket.on('convoChatTo', async data => {
       io.in(convoId).emit('convoIncomingChat', {
@@ -96,11 +100,11 @@ module.exports = function(io) {
         { $inc: { inbox: 1 } },
         { useFindAndModify: false }
       );
-      if (users[participantId]) {
-        console.log('koji je sad ovo k');
-        console.log(convoId);
-        users[participantId].emit('increaseInbox', { url: user._id });
-      }
+      // if (users[participantId]) {
+      console.log('koji je sad ovo k');
+      console.log(convoId);
+      users[participantId].emit('increaseInbox', { url: user._id });
+      // }
       console.log('koji je sad ovo k 2');
     }
 

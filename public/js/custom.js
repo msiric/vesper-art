@@ -396,8 +396,4 @@ $(function() {
       $('.message-badge').html(parseInt($('.message-badge').html()) + 1);
     }
   });
-  socket.on('decreaseInbox', function() {
-    console.log('decrease');
-    $('.message-badge').html(parseInt($('.message-badge').html()) - 1);
-  });
 });
