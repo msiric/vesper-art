@@ -10,7 +10,7 @@ module.exports = function(io) {
     const user = socket.request.user;
     const workId = socket.request.session.workId;
     const convoId = socket.request.session.convoId;
-    let participantId = mongoose.Types.ObjectId(
+    const participantId = mongoose.Types.ObjectId(
       socket.request.session.participantId
     );
 
@@ -45,12 +45,8 @@ module.exports = function(io) {
 
     socket.on('joinRoom', data => {
       console.log('joined ' + user._id);
-      participantId = data.receiverId;
 
       socket.join(convoId);
-      console.log(
-        io.sockets.adapter.rooms[convoId].sockets[users[user._id].id]
-      );
 
       socket.on('convoChatTo', async data => {
         io.in(convoId).emit('convoIncomingChat', {
@@ -65,6 +61,17 @@ module.exports = function(io) {
         message.content = data.message;
         message.read = false;
         const savedMessage = await message.save();
+        let read = false;
+        let notify = false;
+        if (
+          io.sockets.adapter.rooms[convoId].sockets[users[participantId].id]
+        ) {
+          read = true;
+          notify = false;
+        } else {
+          read = false;
+          notify = true;
+        }
         const updatedConvo = await Conversation.findOneAndUpdate(
           {
             tag: convoId
@@ -74,7 +81,7 @@ module.exports = function(io) {
               tag: convoId,
               first: user._id,
               second: participantId,
-              read: false
+              read: read
             },
             $push: { messages: message._id }
           },
@@ -84,23 +91,19 @@ module.exports = function(io) {
             rawResult: true
           }
         );
-
-        if (!updatedConvo.lastErrorObject.updatedExisting) {
-          notifyRecipient();
-        } else if (updatedConvo.value && updatedConvo.value.read) {
-          notifyRecipient();
+        if (notify) {
+          if (!updatedConvo.lastErrorObject.updatedExisting) {
+            notifyRecipient();
+          } else if (updatedConvo.value && updatedConvo.value.read) {
+            notifyRecipient();
+          }
         }
       });
     });
 
     socket.on('leaveRoom', data => {
-      console.log('left ' + data.userId);
-      // sta je ovo
       socket.leave(convoId);
     });
-
-    /*     console.log(users[user._id]);
-    console.log(io.sockets.adapter.rooms[convoId].sockets[users[user._id].id]); */
 
     async function notifyRecipient() {
       const updatedUser = await User.findByIdAndUpdate(

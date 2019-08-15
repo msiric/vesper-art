@@ -1,5 +1,5 @@
 $(function() {
-  socket.emit('leaveRoom', {
-    userId: socket.id
+  socket.on('connect', () => {
+    socket.emit('leaveRoom', {});
   });
 });

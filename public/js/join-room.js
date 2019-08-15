@@ -1,5 +1,5 @@
 $(function() {
-  socket.emit('joinRoom', {
-    receiverId: window.location.pathname.split('/').pop()
+  socket.on('connect', () => {
+    socket.emit('joinRoom', {});
   });
 });
