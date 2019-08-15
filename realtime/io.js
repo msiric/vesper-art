@@ -7,15 +7,14 @@ const mongoose = require('mongoose');
 // Join room on route, leave on exit
 module.exports = function(io) {
   io.on('connection', function(socket) {
-    users = {};
     const user = socket.request.user;
     const workId = socket.request.session.workId;
     const convoId = socket.request.session.convoId;
-    const participantId = mongoose.Types.ObjectId(
+    let participantId = mongoose.Types.ObjectId(
       socket.request.session.participantId
     );
 
-    console.log('user ' + user.name + ' connected');
+    console.log('user ' + user.name + ' connected, id: ' + user._id);
 
     users[user._id] = socket;
 
@@ -44,53 +43,64 @@ module.exports = function(io) {
       );
     });
 
-    socket.join(convoId);
+    socket.on('joinRoom', data => {
+      console.log('joined ' + user._id);
+      participantId = data.receiverId;
 
-    console.log(users[user._id]);
-    console.log(io.sockets.adapter.rooms[convoId].sockets[users[user._id].id]);
-
-    socket.on('convoChatTo', async data => {
-      io.in(convoId).emit('convoIncomingChat', {
-        message: data.message,
-        sender: user.name,
-        senderImage: user.photo,
-        senderId: user._id,
-        url: convoId
-      });
-      const message = new Message();
-      message.owner = user._id;
-      message.content = data.message;
-      message.read = false;
-      const savedMessage = await message.save();
-      const updatedConvo = await Conversation.findOneAndUpdate(
-        {
-          tag: convoId
-        },
-        {
-          $set: {
-            tag: convoId,
-            first: user._id,
-            second: participantId,
-            read: false
-          },
-          $push: { messages: message._id }
-        },
-        {
-          upsert: true,
-          useFindAndModify: false,
-          rawResult: true
-        }
+      socket.join(convoId);
+      console.log(
+        io.sockets.adapter.rooms[convoId].sockets[users[user._id].id]
       );
 
-      if (!updatedConvo.lastErrorObject.updatedExisting) {
-        console.log('koji mrtvi k se dogada');
-        notifyRecipient();
-      } else if (updatedConvo.value && updatedConvo.value.read) {
-        console.log('koji mrtvi k se dogada 2');
-        notifyRecipient();
-      }
-      console.log('koji mrtvi k se dogada 3');
+      socket.on('convoChatTo', async data => {
+        io.in(convoId).emit('convoIncomingChat', {
+          message: data.message,
+          sender: user.name,
+          senderImage: user.photo,
+          senderId: user._id,
+          url: convoId
+        });
+        const message = new Message();
+        message.owner = user._id;
+        message.content = data.message;
+        message.read = false;
+        const savedMessage = await message.save();
+        const updatedConvo = await Conversation.findOneAndUpdate(
+          {
+            tag: convoId
+          },
+          {
+            $set: {
+              tag: convoId,
+              first: user._id,
+              second: participantId,
+              read: false
+            },
+            $push: { messages: message._id }
+          },
+          {
+            upsert: true,
+            useFindAndModify: false,
+            rawResult: true
+          }
+        );
+
+        if (!updatedConvo.lastErrorObject.updatedExisting) {
+          notifyRecipient();
+        } else if (updatedConvo.value && updatedConvo.value.read) {
+          notifyRecipient();
+        }
+      });
     });
+
+    socket.on('leaveRoom', data => {
+      console.log('left ' + data.userId);
+      // sta je ovo
+      socket.leave(convoId);
+    });
+
+    /*     console.log(users[user._id]);
+    console.log(io.sockets.adapter.rooms[convoId].sockets[users[user._id].id]); */
 
     async function notifyRecipient() {
       const updatedUser = await User.findByIdAndUpdate(
@@ -100,12 +110,9 @@ module.exports = function(io) {
         { $inc: { inbox: 1 } },
         { useFindAndModify: false }
       );
-      // if (users[participantId]) {
-      console.log('koji je sad ovo k');
-      console.log(convoId);
-      users[participantId].emit('increaseInbox', { url: user._id });
-      // }
-      console.log('koji je sad ovo k 2');
+      if (users[participantId]) {
+        users[participantId].emit('increaseInbox', { url: user._id });
+      }
     }
 
     socket.on('disconnect', () => {

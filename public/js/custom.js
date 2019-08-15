@@ -1,6 +1,7 @@
-let socket = null;
+let socket;
 $(function() {
   socket = io();
+  console.log(socket);
 
   let badge = $('#cart_items')
     .eq(0)

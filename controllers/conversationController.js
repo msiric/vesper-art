@@ -35,6 +35,7 @@ const getConversation = async (req, res, next) => {
       });
       if (userExists) {
         req.session.participantId = userId;
+        req.io.emit('saveReceiver', { participantId: userId });
         if (userId.localeCompare(req.user._id) === 1) {
           req.session.convoId = userId + req.user._id;
         } else {

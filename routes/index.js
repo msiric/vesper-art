@@ -7,6 +7,8 @@ let index = client.initIndex('ArtworkSchema'); */
 
 const fee = 3.15;
 
+users = {};
+
 /* const Work = require('../models/work');
 const User = require('../models/user');
 const Conversation = require('../models/conversation');
