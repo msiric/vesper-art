@@ -393,8 +393,14 @@ function deleteRequest(requestId) {
 $(function() {
   socket.on('increaseInbox', function(data) {
     if (window.location.pathname != '/conversations/' + data.url) {
-      console.log('increase');
+      console.log('increaseInbox');
       $('.message-badge').html(parseInt($('.message-badge').html()) + 1);
     }
+  });
+  socket.on('increaseNotif', function() {
+    console.log('increaseNotif');
+    $('.notification-badge').html(
+      parseInt($('.notification-badge').html()) + 1
+    );
   });
 });

@@ -61,7 +61,7 @@ const getSingleArtwork = async (req, res, next) => {
 const getProcessCart = async (req, res, next) => {
   let artworkInfo = {
     price: 0,
-    cartIsEmpty: true,
+    cartIsEmpty: false,
     totalPrice: 0,
     subtotal: 0,
     foundUser: null,
@@ -81,7 +81,7 @@ const getProcessCart = async (req, res, next) => {
         artworkInfo.subtotal = artworkInfo.price;
         artworkInfo.totalPrice = artworkInfo.price + fee;
       } else {
-        artworkInfo.cartIsEmpty = false;
+        artworkInfo.cartIsEmpty = true;
       }
       if (req.session.discount) {
         const foundPromocode = await Promocode.findOne({
@@ -93,8 +93,6 @@ const getProcessCart = async (req, res, next) => {
           artworkInfo.discount = foundPromocode.discount * 100;
           artworkInfo.totalPrice = artworkInfo.subtotal + fee;
           artworkInfo.promo = foundPromocode._id;
-
-          req.session.price = artworkInfo.totalPrice;
           if (artworkInfo.foundUser) {
             req.session.artwork = artworkInfo.foundUser.cart;
           } else {
@@ -102,6 +100,9 @@ const getProcessCart = async (req, res, next) => {
           }
         }
       }
+
+      req.session.price = artworkInfo.totalPrice;
+
       res.render('order/cart', {
         foundUser: artworkInfo.foundUser,
         totalPrice: parseFloat(artworkInfo.totalPrice.toFixed(12)),
@@ -121,6 +122,7 @@ const getProcessCart = async (req, res, next) => {
 
 const postPaymentSingle = async (req, res, next) => {
   try {
+    console.log(req.session);
     let artwork = req.session.artwork;
     let price = req.session.artwork.price;
     let paid = req.session.price;
@@ -174,6 +176,7 @@ const postPaymentSingle = async (req, res, next) => {
 
 const postPaymentCart = async (req, res, next) => {
   try {
+    console.log(req.session);
     let artworks = req.session.artwork;
     let price = req.session.artwork.price;
     let paid = req.session.price;
@@ -208,24 +211,28 @@ const postPaymentCart = async (req, res, next) => {
           order.status = 2;
           const savedOrder = await order.save();
           if (savedOrder) {
+            let artworkOwner = req.session.artwork[0].owner;
+            users[artworkOwner].emit('increaseNotif', {});
             req.session.artwork = null;
             req.session.price = null;
             req.session.discount = null;
+            const updatedUser = await User.update(
+              { _id: req.user._id },
+              { $set: { cart: [] } }
+            );
+            if (updatedUser) {
+              res.redirect('/users/' + req.user._id + '/orders');
+            } else {
+              return res
+                .status(400)
+                .json({ message: 'Couldn\t update user cart' });
+            }
           } else {
             return res
               .status(400)
               .json({ message: "Couldn't process payment" });
           }
         });
-        const updatedUser = await User.update(
-          { _id: req.user._id },
-          { $set: { cart: [] } }
-        );
-        if (updatedUser) {
-          res.redirect('/users/' + req.user._id + '/orders');
-        } else {
-          return res.status(400).json({ message: 'Couldn\t update user cart' });
-        }
       })
       .catch(err => {
         return res
