@@ -122,6 +122,7 @@ const updateUserProfile = async (req, res, next) => {
 
 const getLogOut = async (req, res) => {
   try {
+    req.logout();
     req.session.destroy(function(err) {
       res.redirect('/');
     });

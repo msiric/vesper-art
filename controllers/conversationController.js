@@ -35,7 +35,6 @@ const getConversation = async (req, res, next) => {
       });
       if (userExists) {
         req.session.participantId = userId;
-        req.io.emit('saveReceiver', { participantId: userId });
         if (userId.localeCompare(req.user._id) === 1) {
           req.session.convoId = userId + req.user._id;
         } else {
@@ -68,13 +67,15 @@ const getConversation = async (req, res, next) => {
               }
             }
           );
-          const updatedUser = await User.updateOne(
-            {
-              _id: req.user._id
-            },
-            { $inc: { inbox: -1 } }
-          );
-          decreaseInbox = true;
+          if (updatedConvo) {
+            const updatedUser = await User.updateOne(
+              {
+                _id: req.user._id
+              },
+              { $inc: { inbox: -1 } }
+            );
+            decreaseInbox = true;
+          }
         }
         res.render('accounts/convo-room', {
           layout: 'convo-chat',

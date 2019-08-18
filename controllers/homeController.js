@@ -151,7 +151,7 @@ const getNotifications = async (req, res, next) => {
     const foundNotifications = await Notification.find({
       receiver: req.user._id
     }).populate('sender');
-    return res.status(200).json({ foundNotifications });
+    res.render('accounts/notifications', { notification: foundNotifications });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }

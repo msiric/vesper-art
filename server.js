@@ -40,6 +40,7 @@ app.use(function(req, res, next) {
 });
 
 const sessionMiddleware = session({
+  // needs change?
   resave: true,
   saveUninitialized: true,
   secret: config.secret,

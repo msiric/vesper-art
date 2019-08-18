@@ -3,6 +3,7 @@ const Artwork = require('../models/artwork');
 const Order = require('../models/order');
 const Promocode = require('../models/promocode');
 const User = require('../models/user');
+const Notification = require('../models/notification');
 
 const fee = 3.15;
 
@@ -93,16 +94,16 @@ const getProcessCart = async (req, res, next) => {
           artworkInfo.discount = foundPromocode.discount * 100;
           artworkInfo.totalPrice = artworkInfo.subtotal + fee;
           artworkInfo.promo = foundPromocode._id;
-          if (artworkInfo.foundUser) {
-            req.session.artwork = artworkInfo.foundUser.cart;
-          } else {
-            req.session.artwork = null;
-          }
         }
       }
 
-      req.session.price = artworkInfo.totalPrice;
+      if (artworkInfo.foundUser) {
+        req.session.artwork = artworkInfo.foundUser.cart;
+      } else {
+        req.session.artwork = null;
+      }
 
+      req.session.price = artworkInfo.totalPrice;
       res.render('order/cart', {
         foundUser: artworkInfo.foundUser,
         totalPrice: parseFloat(artworkInfo.totalPrice.toFixed(12)),
@@ -126,6 +127,7 @@ const postPaymentSingle = async (req, res, next) => {
     let artwork = req.session.artwork;
     let price = req.session.artwork.price;
     let paid = req.session.price;
+    console.log(artwork);
     paid *= 100;
     paid = Math.round(paid);
     stripe.customers
@@ -147,11 +149,12 @@ const postPaymentSingle = async (req, res, next) => {
       .then(async charge => {
         // New charge created on a new customer
         let order = new Order();
+        order.bulk = false;
         order.buyer = req.user._id;
         order.seller = artwork.owner;
         order.artwork = artwork._id;
         order.amount = price;
-        if (req.session.discount) order.discount = true;
+        order.discount = req.session.discount ? true : false;
         order.paid = req.session.price;
         order.status = 2;
         const savedOrder = await order.save();
@@ -159,6 +162,25 @@ const postPaymentSingle = async (req, res, next) => {
           req.session.artwork = null;
           req.session.price = null;
           req.session.discount = null;
+          // emit to user (needs testing)
+          let notification = new Notification();
+          notification.receiver.push(artwork.owner);
+          notification.link = savedOrder._id;
+          notification.message = `${req.user.name} purchased your artwork!`;
+          notification.read = false;
+          const savedNotification = await notification.save();
+          if (savedNotification) {
+            const updatedUser = await User.findByIdAndUpdate(
+              {
+                _id: artwork.owner
+              },
+              { $inc: { notifications: 1 } },
+              { useFindAndModify: false }
+            );
+            if (users[artwork.owner]) {
+              users[artwork.owner].emit('increaseNotif', {});
+            }
+          }
           res.redirect('/users/' + req.user._id + '/orders/' + savedOrder._id);
         } else {
           return res.status(400).json({ message: "Couldn't process payment" });
@@ -176,10 +198,10 @@ const postPaymentSingle = async (req, res, next) => {
 
 const postPaymentCart = async (req, res, next) => {
   try {
-    console.log(req.session);
+    // amount not getting saved?
     let artworks = req.session.artwork;
-    let price = req.session.artwork.price;
     let paid = req.session.price;
+    let orderId = null;
     paid *= 100;
     paid = Math.round(paid);
     stripe.customers
@@ -200,46 +222,70 @@ const postPaymentCart = async (req, res, next) => {
       })
       .then(async charge => {
         // New charge created on a new customer
+        let order = new Order();
+        order.bulk = artworks.length > 1 ? true : false;
+        order.discount = req.session.discount ? true : false;
         artworks.map(async function(artwork) {
-          let order = new Order();
-          order.buyer = req.user._id;
-          order.seller = artwork.owner;
-          order.artwork = artwork._id;
-          order.amount = price;
-          if (req.session.discount) order.discount = true;
-          order.paid = req.session.price;
-          order.status = 2;
-          const savedOrder = await order.save();
-          if (savedOrder) {
-            let artworkOwner = req.session.artwork[0].owner;
-            users[artworkOwner].emit('increaseNotif', {});
-            req.session.artwork = null;
-            req.session.price = null;
-            req.session.discount = null;
-            const updatedUser = await User.update(
-              { _id: req.user._id },
-              { $set: { cart: [] } }
-            );
-            if (updatedUser) {
-              res.redirect('/users/' + req.user._id + '/orders');
-            } else {
-              return res
-                .status(400)
-                .json({ message: 'Couldn\t update user cart' });
+          order.seller.push(artwork.owner);
+          order.artwork.push(artwork._id);
+          order.amount.push(artwork.price);
+        });
+        order.buyer = req.user._id;
+        order.paid = req.session.price;
+        order.status = 2;
+        const savedOrder = await order.save();
+        if (savedOrder) {
+          req.session.artwork = null;
+          req.session.price = null;
+          req.session.discount = null;
+          const updatedUser = await User.update(
+            { _id: req.user._id },
+            { $set: { cart: [] } }
+          );
+          if (updatedUser) {
+            // emit to multiple sellers (needs testing)
+            let notification = new Notification();
+            artworks.map(async function(artwork) {
+              notification.receiver.push(artwork.owner);
+            });
+            notification.link = savedOrder._id;
+            notification.message = `${req.user.name} purchased your artwork!`;
+            notification.read = false;
+            const savedNotification = await notification.save();
+            if (savedNotification) {
+              artworks.map(async function(artwork) {
+                const updatedUser = await User.findByIdAndUpdate(
+                  {
+                    _id: artwork.owner
+                  },
+                  { $inc: { notifications: 1 } },
+                  { useFindAndModify: false }
+                );
+              });
+              artworks.map(async function(artwork) {
+                if (users[artwork.owner]) {
+                  users[artwork.owner].emit('increaseNotif', {});
+                }
+              });
             }
+            res.redirect('/users/' + req.user._id + '/orders');
           } else {
             return res
               .status(400)
-              .json({ message: "Couldn't process payment" });
+              .json({ message: 'Couldn\t update user cart' });
           }
-        });
+        } else {
+          return res.status(400).json({ message: "Couldn't process payment" });
+        }
       })
       .catch(err => {
+        console.log(err);
         return res
           .status(400)
           .json({ message: 'Something went wrong, please try again' });
       });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
