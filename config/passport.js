@@ -28,58 +28,55 @@ passport.use(
       passwordField: 'password',
       passReqToCallback: true // allows us to pass back the entire request to the callback
     },
-    function(req, email, password, done) {
-      console.log(1);
-      // callback with email and password from our form
+    async function(req, email, password, done) {
+      try {
+        console.log(1);
+        // callback with email and password from our form
 
-      // find a user whose email is the same as the forms email
-      // we are checking to see if the user trying to login already exists
-      User.findOne({ $or: [{ email: email }, { name: email }] })
-        .then(user => {
-          console.log(2);
-          // if no user is found, return the message
-          if (!user) {
-            console.log(4);
-            return done(null, false, req.flash('error', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
-          } else if (!user.password) {
-            return done(
-              null,
-              false,
-              req.flash(
-                'error',
-                'Please use your social media account to log in.'
-              )
-            );
-          }
-          // if the user is found but the password is wrong
-          else if (!user.comparePassword(password)) {
-            console.log(5);
-            return done(
-              null,
-              false,
-              req.flash('error', 'Oops! Wrong password.')
-            ); // create the loginMessage and save it to session as flashdata
-          }
-          // if account is not verified
-          else if (!user.verified) {
-            console.log(6);
-            return done(
-              null,
-              false,
-              req.flash('error', 'Please verify your e-mail.')
-            );
-          } else {
-            console.log(7);
-            return done(null, user);
-          }
-        })
-        .catch(err =>
-          done(
+        // find a user whose email is the same as the forms email
+        // we are checking to see if the user trying to login already exists
+        const foundUser = await User.findOne({
+          $or: [{ email: email }, { name: email }]
+        });
+        console.log(2);
+        // if no user is found, return the message
+        if (!foundUser) {
+          console.log(4);
+          return done(null, false, req.flash('error', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
+        } else if (!foundUser.password) {
+          return done(
             null,
             false,
-            req.flash('error', 'Something went wrong. Please try again')
-          )
+            req.flash(
+              'error',
+              'Please use your social media account to log in.'
+            )
+          );
+        }
+        // if the user is found but the password is wrong
+        else if (!foundUser.comparePassword(password)) {
+          console.log(5);
+          return done(null, false, req.flash('error', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+        }
+        // if account is not verified
+        else if (!foundUser.verified) {
+          console.log(6);
+          return done(
+            null,
+            false,
+            req.flash('error', 'Please verify your e-mail.')
+          );
+        } else {
+          console.log(7);
+          return done(null, foundUser);
+        }
+      } catch (err) {
+        done(
+          null,
+          false,
+          req.flash('error', 'Something went wrong. Please try again')
         );
+      }
     }
   )
 );

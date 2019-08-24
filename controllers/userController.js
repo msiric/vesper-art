@@ -38,7 +38,21 @@ const postSignUp = async (req, res, next) => {
       user.notifications = 0;
       const savedUser = await user.save();
       if (savedUser) {
-        axios
+        try {
+          const sentEmail = await axios.post(
+            'http://localhost:3000/send-email',
+            verificationInfo,
+            {
+              proxy: false
+            }
+          );
+          console.log(`statusCode: ${res.statusCode}`);
+          console.log(res);
+        } catch (err) {
+          console.log(err);
+        }
+        // old code
+        /*         axios
           .post('http://localhost:3000/send-email', verificationInfo, {
             proxy: false
           })
@@ -48,7 +62,7 @@ const postSignUp = async (req, res, next) => {
           })
           .catch(error => {
             console.error(error);
-          });
+          }); */
         return res.redirect('/signup');
       } else {
         return res.status(400).json({ message: 'Could not create account' });
