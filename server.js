@@ -33,7 +33,14 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
+app.use(function(req, res, next) {
+  'use strict';
+  req.io = io;
+  next();
+});
+
 const sessionMiddleware = session({
+  // needs change?
   resave: true,
   saveUninitialized: true,
   secret: config.secret,
@@ -187,7 +194,14 @@ function onAuthorizeFail(data, message, error, accept) {
   if (error) accept(new Error(message));
 }
 
-require('./realtime/io')(io);
+/* require('./routes/index')(io);
+ */ require('./realtime/io')(io);
+
+const indexRouter = require('./routes/index');
+const api = require('./routes/api');
+
+// app.use('/', indexRouter);
+// app.use('/api', api);
 
 const mainRoutes = require('./routes/api/homeRouter');
 const userRoutes = require('./routes/api/userRouter');
@@ -196,7 +210,13 @@ const uploadRoutes = require('./routes/api/uploadRouter');
 const emailRoutes = require('./routes/api/emailRouter');
 const artworkRoutes = require('./routes/api/artworkRouter');
 const requestRoutes = require('./routes/api/requestRouter');
-const chatRoutes = require('./routes/api/chatRouter');
+const conversationRoutes = require('./routes/api/conversationRouter');
+const workRouter = require('./routes/api/workRouter');
+
+app.use(function(req, res, next) {
+  res.locals.session = req.session;
+  next();
+});
 
 app.use(mainRoutes);
 app.use(userRoutes);
@@ -205,7 +225,21 @@ app.use(uploadRoutes);
 app.use(emailRoutes);
 app.use(artworkRoutes);
 app.use(requestRoutes);
-app.use(chatRoutes);
+app.use(conversationRoutes);
+app.use(workRouter);
+
+app.set('socketio', io);
+
+app.use((req, res, next) => {
+  const err = new Error('Not found');
+  err.status = 404;
+  next(err);
+});
+
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json(err.message);
+});
 
 http.listen(config.port, err => {
   if (err) console.log(err);

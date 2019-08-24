@@ -4,10 +4,10 @@
     <div class="col-sm-12">
       <input type="hidden" id="userId" value="">
       <div class="row">
-        {{#if notifications}}
-        {{#each notifications }}
+        {{#if notification}}
+        {{#each notification }}
         <div id="{{ _id }}" class="notification-card">
-          <a href="/notification/{{ link }}">
+          <a href="{{ link }}?ref={{ _id }}">
             <div class="pic">
               <img src="{{ sender.photo }}" class="user-image">
             </div>

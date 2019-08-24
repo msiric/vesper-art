@@ -11,7 +11,6 @@ aws.config.update({
 const s3 = new aws.S3();
 
 const fileFilter = (req, file, callback) => {
-  console.log(file);
   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
     callback(null, true);
   } else {
@@ -29,9 +28,6 @@ const profilePhotoUpload = multer({
     bucket: 'vesper-testing',
     limits: { fileSize: 2 * 1024 * 1024 },
     acl: 'public-read',
-    metadata: function(req, file, callback) {
-      callback(null, { fieldName: 'TESTING_META_DATA!' });
-    },
     key: function(req, file, callback) {
       const fileName = req.user._id + Date.now().toString();
       const folderName = 'profilePhotos/';
@@ -48,9 +44,6 @@ const artworkCoverUpload = multer({
     bucket: 'vesper-testing',
     limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
-    metadata: function(req, file, callback) {
-      callback(null, { fieldName: 'TESTING_META_DATA!' });
-    },
     key: function(req, file, callback) {
       const fileName = req.user._id + Date.now().toString();
       const folderName = 'artworkCovers/';
@@ -67,9 +60,6 @@ const artworkCoverEdit = multer({
     bucket: 'vesper-testing',
     limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
-    metadata: function(req, file, callback) {
-      callback(null, { fieldName: 'TESTING_META_DATA!' });
-    },
     key: function(req, file, callback) {
       const fileName = req.user._id + Date.now().toString();
       const folderName = 'artworkCovers/';

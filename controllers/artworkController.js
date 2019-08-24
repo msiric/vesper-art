@@ -5,11 +5,7 @@ const Artwork = require('../models/artwork');
 const getUserArtwork = async (req, res, next) => {
   try {
     const artwork = await Artwork.find({ owner: req.user._id });
-    if (artwork) {
-      return res.status(200).json(artwork);
-    } else {
-      return res.status(400).json({ message: 'Artwork not found' });
-    }
+    return res.render('main/my-artwork', { artwork: artwork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -17,8 +13,10 @@ const getUserArtwork = async (req, res, next) => {
 
 const getNewArtwork = async (req, res, next) => {
   try {
-    res.render('main/add-new-artwork');
-  } catch (err) {}
+    return res.render('main/add-new-artwork');
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 const postNewArtwork = async (req, res, next) => {
@@ -43,7 +41,7 @@ const postNewArtwork = async (req, res, next) => {
     if (!updatedUser) {
       return res.status(400).json({ message: 'Could not update user' });
     } else {
-      return res.status(200).json(updatedUser);
+      return res.status(200).json('/my-artwork');
     }
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
@@ -65,9 +63,11 @@ const getArtworkDetails = async (req, res, next) => {
           inCart = true;
         }
       }
-      return res
-        .status(200)
-        .json({ id: userId, artwork: foundArtwork, inCart: inCart });
+      return res.render('main/artwork-details', {
+        id: userId,
+        artwork: foundArtwork,
+        inCart: inCart
+      });
     } else {
       return res.status(400).json({ message: 'Artwork not found' });
     }
@@ -80,7 +80,7 @@ const editArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.findOne({ _id: req.params.id });
     if (foundArtwork) {
-      return res.status(200).json(foundArtwork);
+      return res.render('main/edit-artwork', { artwork: foundArtwork });
     } else {
       return res.status(400).json({ message: 'Artwork not found' });
     }
@@ -90,54 +90,76 @@ const editArtwork = async (req, res, next) => {
 };
 
 const updateArtwork = async (req, res, next) => {
-  const foundArtwork = await Artwork.findOne({ _id: req.params.id });
-  if (foundArtwork) {
-    if (req.body.artwork_cover) artwork.cover = req.body.artwork_cover;
-    if (req.body.artwork_title) artwork.title = req.body.artwork_title;
-    if (req.body.artwork_category) artwork.category = req.body.artwork_category;
-    if (req.body.artwork_about) artwork.about = req.body.artwork_about;
-    if (req.body.artwork_price) artwork.price = req.body.artwork_price;
-    const savedArtwork = await artwork.save();
-    if (savedArtwork) {
-      return res.status(200).json(savedArtwork);
+  try {
+    const foundArtwork = await Artwork.findOne({ _id: req.params.id });
+    if (foundArtwork) {
+      if (req.body.artwork_cover) foundArtwork.cover = req.body.artwork_cover;
+      if (req.body.artwork_title) foundArtwork.title = req.body.artwork_title;
+      if (req.body.artwork_category)
+        foundArtwork.category = req.body.artwork_category;
+      if (req.body.artwork_about) foundArtwork.about = req.body.artwork_about;
+      if (req.body.artwork_price) foundArtwork.price = req.body.artwork_price;
+      const savedArtwork = await foundArtwork.save();
+      if (savedArtwork) {
+        return res.redirect('/my-artwork');
+      } else {
+        return res
+          .status(400)
+          .json({ message: 'Artwork could not be updated' });
+      }
     } else {
-      return res.status(400).json({ message: 'Artwork could not be updated' });
+      return res.status(400).json({ message: 'Artwork not found' });
     }
-  } else {
+  } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
 const deleteArtwork = async (req, res, next) => {
-  const deletedArtwork = await Artwork.deleteOne({ _id: req.params.id });
-  if (deletedArtwork) {
-    const folderName = 'artworkCovers/';
-    const filePath = folderName + fileName;
-    const s3 = new aws.S3();
-    const params = {
-      Bucket: 'vesper-testing',
-      Key: filePath
-    };
-    s3.deleteObject(params, function(err, data) {
-      if (err) {
-      return res.status(400).json({ message: 'Artwork could not be deleted' });
-      } else{
-        const updatedUser = await User.update(
-          {
-            _id: req.user._id
-          },
-          {
-            $pull: { artworks: req.params.id }
+  try {
+    const foundArtwork = await Artwork.findOne({ _id: req.params.id });
+    if (foundArtwork) {
+      const deletedArtwork = await Artwork.deleteOne({ _id: req.params.id });
+      if (deletedArtwork) {
+        const folderName = 'artworkCovers/';
+        const fileName = foundArtwork.cover;
+        const filePath = folderName + fileName;
+        const s3 = new aws.S3();
+        const params = {
+          Bucket: 'vesper-testing',
+          Key: filePath
+        };
+        const deletedImage = await s3.deleteObject(params);
+        if (deletedImage) {
+          const updatedUser = await User.update(
+            {
+              _id: req.user._id
+            },
+            {
+              $pull: { artworks: req.params.id }
+            }
+          );
+          if (updatedUser) {
+            return res.status(200).json('/my-artwork');
+          } else {
+            return res
+              .status(400)
+              .json({ message: 'User could not be updated' });
           }
-        );
-        if (updatedUser){
-          return res.status(200).json(updatedUser);
-        } else{
-          return res.status(400).json({ message: 'User could not be updated' });
+        } else {
+          return res
+            .status(400)
+            .json({ message: 'Artwork could not be deleted' });
         }
+      } else {
+        return res
+          .status(400)
+          .json({ message: 'Artwork could not be deleted' });
       }
-    });
-  } else {
+    } else {
+      return res.status(400).json({ message: 'Artwork not found' });
+    }
+  } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };

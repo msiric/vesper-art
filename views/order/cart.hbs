@@ -29,6 +29,8 @@
             <hr>
             <div class="cart">
               {{#if cartIsEmpty }}
+              Cart is empty
+              {{ else }}
               <div class="inner">
                 <img src="{{ artwork.cover }}" class="img-circle">
                 <br>
@@ -64,8 +66,6 @@
                 </h3>
               </div>
               <a href="/payment/cart" class="btn btn-success proceed-btn">Proceed to payment</a>
-              {{ else }}
-              Cart is empty
               {{/if}}
             </div>
           </div>

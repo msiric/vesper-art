@@ -12,9 +12,10 @@ const getHomepage = async (req, res) => {
   try {
     const foundRequests = await Request.find({}).populate('poster');
     const foundArtwork = await Artwork.find({});
-    return res
-      .status(200)
-      .json({ requests: foundRequests, artwork: foundArtwork });
+    return res.render('main/home', {
+      requests: foundRequests,
+      artwork: foundArtwork
+    });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -23,7 +24,7 @@ const getHomepage = async (req, res) => {
 const getCreativeWriting = async (req, res) => {
   try {
     const foundArtwork = await Artwork.find({ category: 'cw' });
-    return res.status(200).json({ artwork: foundArtwork });
+    return res.render('main/creative-writing', { artwork: foundArtwork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -32,7 +33,7 @@ const getCreativeWriting = async (req, res) => {
 const getMusic = async (req, res) => {
   try {
     const foundArtwork = await Artwork.find({ category: 'm' });
-    return res.status(200).json({ artwork: foundArtwork });
+    return res.render('main/music', { artwork: foundArtwork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -41,7 +42,7 @@ const getMusic = async (req, res) => {
 const getVisualArts = async (req, res) => {
   try {
     const foundArtwork = await Artwork.find({ category: 'va' });
-    return res.status(200).json({ artwork: foundArtwork });
+    return res.render('main/visual-arts', { artwork: foundArtwork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -149,8 +150,10 @@ const getNotifications = async (req, res, next) => {
   try {
     const foundNotifications = await Notification.find({
       receiver: req.user._id
-    }).populate('sender');
-    return res.status(200).json({ foundNotifications });
+    })
+      .populate('sender')
+      .sort({ created: -1 });
+    res.render('accounts/notifications', { notification: foundNotifications });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }

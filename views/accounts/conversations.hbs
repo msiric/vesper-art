@@ -7,7 +7,7 @@
             {{#each conversations }}
             <div id="{{ _id }}" class="chat-profiles">
               <a
-                href="/conversations/{{#formatUsername first._id ../user._id second._id first._id }}{{/formatUsername}}">
+                href="/conversations/{{#formatUsername ../user._id first._id second._id first._id }}{{/formatUsername}}">
                 <div class="pic">
                   <img src="{{#formatChatPhoto ../user._id first._id second.photo first.photo }}{{/formatChatPhoto}}"
                     class="artwork-image">
@@ -17,7 +17,7 @@
                     {{#formatChatName ../user._id first._id second.name first.name }}{{/formatChatName}}</h3>
                   <p class="bio">
                     {{#each messages }}
-                    <p>{{ content }}</p>
+                    <p>{{#if @last}}{{ this.content }}{{/if}}</p>
                     {{/each}}
                   </p>
                 </div>

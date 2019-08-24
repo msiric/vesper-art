@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { isLoggedInAPI } = require('../../utils/helpers');
+const { isLoggedIn } = require('../../utils/helpers');
 const emailController = require('../../controllers/emailController');
 
 router.post('/send-email', emailController.sendEmail);

@@ -31,9 +31,9 @@ ArtworkSchema.plugin(mongooseAlgolia, {
 
 let Model = mongoose.model('Artwork', ArtworkSchema);
 
-Model.SyncToAlgolia(); //Clears the Algolia index for this schema and synchronizes all documents to Algolia (based on the settings defined in your plugin settings)
-Model.SetAlgoliaSettings({
-  searchableAttributes: ['title', 'owner.name'] //Sets the settings for this schema, see [Algolia's Index settings parameters](https://www.algolia.com/doc/api-client/javascript/settings#set-settings) for more info.
-});
+// Model.SyncToAlgolia(); //Clears the Algolia index for this schema and synchronizes all documents to Algolia (based on the settings defined in your plugin settings)
+// Model.SetAlgoliaSettings({
+//   searchableAttributes: ['title', 'owner.name'] //Sets the settings for this schema, see [Algolia's Index settings parameters](https://www.algolia.com/doc/api-client/javascript/settings#set-settings) for more info.
+// });
 
 module.exports = Model;
