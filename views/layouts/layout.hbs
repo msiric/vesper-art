@@ -41,6 +41,12 @@
   <script src="/js/search.js"></script>
   <script src="/js/custom.js"></script>
   <script src="/js/leave-room.js"></script>
+  {{!--   Decrease notification value  --}}
+  {{#if decreaseNotif}}
+  <script>
+    $('.notification-badge').html(parseInt($('.notification-badge').html()) - 1);
+  </script>
+  {{/if}}
 </body>
 
 </html>

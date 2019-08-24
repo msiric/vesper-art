@@ -4,13 +4,6 @@ const User = require('../models/user');
 const mongoose = require('mongoose');
 
 const getConversations = async (req, res, next) => {
-  // FOR RESET
-  /*   const updatedUser = await User.updateOne(
-    {
-      _id: req.user._id
-    },
-    { $set: { inbox: 0 } }
-  ); */
   try {
     const conversations = await Conversation.find({
       $or: [{ first: req.user._id }, { second: req.user._id }]

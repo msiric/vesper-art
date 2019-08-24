@@ -2,6 +2,7 @@ const Work = require('../models/work');
 const User = require('../models/user');
 const Conversation = require('../models/conversation');
 const Message = require('../models/message');
+const Notification = require('../models/notification');
 const mongoose = require('mongoose');
 
 // Join room on route, leave on exit

@@ -390,6 +390,7 @@ function deleteRequest(requestId) {
     });
   }
 }
+
 $(function() {
   socket.on('increaseInbox', function(data) {
     if (window.location.pathname != '/conversations/' + data.url) {

@@ -5,19 +5,21 @@
       <div class="row">
         <div class="sidebar right">
           <div class="overlay">
+            {{#each order.artwork}}
             <div class="profile">
               <div class="pic">
-                <img src="{{ order.artwork.cover }}" class="artorder-image">
+                <img src="{{ cover }}" class="artorder-image">
               </div>
               <div class="info">
-                <h3 class="title name">{{ order.artwork.title }}</h3>
+                <h3 class="title name">{{ title }}</h3>
                 <p class="bio">
-                  {{ order.artwork.about }}
+                  {{ about }}
+                  {{ price }}
                 </p>
                 <br>
-                <div class="btn btn-{{ formatButtonOrder order.status }}">{{ formatStatusOrder order.status }}</div>
               </div>
             </div>
+            {{/each}}
           </div>
         </div>
       </div>
@@ -27,9 +29,9 @@
       <div class="row">
         <div class="chatbox">
           <div class="chat-messages clearfix" id="order-messages">
-            <p>{{ order.amount }}</p>
-            <p>{{ order.artwork.price }}</p>
+            <p>{{ order.paid }}</p>
             <p>{{ order.created }}</p>
+            <div class="btn btn-{{ formatButtonOrder order.status }}">{{ formatStatusOrder order.status }}</div>
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ const NotificationSchema = new Schema({
   receiver: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   link: String,
   message: String,
-  read: Boolean,
+  read: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   created: { type: Date, default: Date.now }
 });
 

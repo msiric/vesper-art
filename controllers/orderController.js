@@ -159,15 +159,18 @@ const postPaymentSingle = async (req, res, next) => {
         order.status = 2;
         const savedOrder = await order.save();
         if (savedOrder) {
+          // temp
+          const orderPath =
+            '/users/' + req.user._id + '/orders/' + savedOrder._id;
           req.session.artwork = null;
           req.session.price = null;
           req.session.discount = null;
           // emit to user (needs testing)
           let notification = new Notification();
           notification.receiver.push(artwork.owner);
-          notification.link = savedOrder._id;
+          notification.link = orderPath;
           notification.message = `${req.user.name} purchased your artwork!`;
-          notification.read = false;
+          notification.read = [];
           const savedNotification = await notification.save();
           if (savedNotification) {
             const updatedUser = await User.findByIdAndUpdate(
@@ -187,6 +190,7 @@ const postPaymentSingle = async (req, res, next) => {
         }
       })
       .catch(err => {
+        console.log(err);
         return res
           .status(400)
           .json({ message: 'Something went wrong, please try again' });
@@ -243,14 +247,16 @@ const postPaymentCart = async (req, res, next) => {
             { $set: { cart: [] } }
           );
           if (updatedUser) {
+            const orderPath =
+              '/users/' + req.user._id + '/orders/' + savedOrder._id;
             // emit to multiple sellers (needs testing)
             let notification = new Notification();
             artworks.map(async function(artwork) {
               notification.receiver.push(artwork.owner);
             });
-            notification.link = savedOrder._id;
+            notification.link = orderPath;
             notification.message = `${req.user.name} purchased your artwork!`;
-            notification.read = false;
+            notification.read = [];
             const savedNotification = await notification.save();
             if (savedNotification) {
               artworks.map(async function(artwork) {
@@ -298,11 +304,74 @@ const getOrderId = async (req, res, next) => {
       .populate('seller')
       .populate('artwork');
     if (foundOrder) {
-      res.render('order/order-details', { order: foundOrder });
+      let decreaseNotif = false;
+      // show information only related to seller (needs testing)
+      if (!foundOrder.buyer._id.equals(req.user._id)) {
+        const artwork = [];
+        const amount = [];
+        let sellerId = null;
+        let total = 0;
+        foundOrder.seller.forEach(function(seller, i) {
+          if (seller._id.equals(req.user._id)) {
+            if (!sellerId) {
+              sellerId = seller._id;
+            }
+            artwork.push(foundOrder.artwork[i]);
+            amount.push(foundOrder.amount[i]);
+            total = total + foundOrder.amount[i];
+          }
+        });
+        if (!sellerId) {
+          return res.status(400).json({ message: 'Order not found' });
+        }
+        foundOrder.artwork = artwork;
+        foundOrder.amount = amount;
+        foundOrder.paid = parseFloat(total.toFixed(12));
+      }
+      if (req.query.ref) {
+        const foundNotif = await Notification.findById({ _id: req.query.ref });
+        if (foundNotif) {
+          let receiverId = null;
+          foundNotif.receiver.forEach(function(receiver, i) {
+            if (receiver.equals(req.user._id)) {
+              receiverId = req.user._id;
+            }
+          });
+          if (receiverId) {
+            let found = false;
+            foundNotif.read.forEach(function(read, i) {
+              if (read.equals(req.user._id)) {
+                found = true;
+              }
+            });
+            if (!found) {
+              foundNotif.read.push(req.user._id);
+              const savedNotif = await foundNotif.save();
+              if (savedNotif) {
+                const updatedUser = await User.findByIdAndUpdate(
+                  {
+                    _id: req.user._id
+                  },
+                  { $inc: { notifications: -1 } },
+                  { useFindAndModify: false }
+                );
+                if (updatedUser) {
+                  decreaseNotif = true;
+                }
+              }
+            }
+          }
+        }
+      }
+      res.render('order/order-details', {
+        order: foundOrder,
+        decreaseNotif: decreaseNotif
+      });
     } else {
       return res.status(400).json({ message: 'Order not found' });
     }
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -348,7 +417,7 @@ const addToCart = async (req, res, next) => {
       if (updatedUser) {
         res.status(200).json({ message: 'Added to cart' });
       } else {
-        return res.status(400).json({ message: 'Couldn\t update user' });
+        return res.status(400).json({ message: 'Could not update user' });
       }
     }
   } catch (err) {
@@ -375,10 +444,10 @@ const deleteFromCart = async (req, res, next) => {
         }
         res.status(200).json({ success: true });
       } else {
-        return res.status(400).json({ message: "Couldn't update user " });
+        return res.status(400).json({ message: 'Could not update user ' });
       }
     } else {
-      return res.status(400).json({ message: "Couldn't find artwork " });
+      return res.status(400).json({ message: 'Could not find artwork ' });
     }
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
