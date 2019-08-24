@@ -10,6 +10,7 @@ const OrderSchema = new Schema({
   amount: [Number],
   discount: Boolean,
   paid: Number,
+  sold: Number,
   status: Number,
   bulk: Boolean
 });

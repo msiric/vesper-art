@@ -29,7 +29,11 @@
       <div class="row">
         <div class="chatbox">
           <div class="chat-messages clearfix" id="order-messages">
+            {{#checkIfEquals order.buyer user._id}}
             <p>{{ order.paid }}</p>
+            {{else}}
+            <p>{{ order.sold }}</p>
+            {{/checkIfEquals}}
             <p>{{ order.created }}</p>
             <div class="btn btn-{{ formatButtonOrder order.status }}">{{ formatStatusOrder order.status }}</div>
           </div>

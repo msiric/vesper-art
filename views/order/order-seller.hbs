@@ -17,15 +17,36 @@
             <tbody>
               {{#if order}}
               {{#each order}}
+              {{#if bulk}}
               <tr>
-                <td><img class="order-image-my-artwork" src="{{ artwork.cover }}"><span
-                    class="artwork-title">{{ artwork.title }}</span></td>
-                <td>${{ artwork.price }}</td>
+                <td>
+                  {{#each artwork}}
+                  <img class="order-image-my-artwork" src="{{ cover }}"><span class="artwork-title">{{ title }}</span>
+                  {{/each}}
+                </td>
+                <td>
+                  ${{ amount }}
+                </td>
                 <td><button class="btn btn-{{ formatButtonOrder status }}">{{ formatStatusOrder status }}</button></td>
                 <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>
-                <td><a href="/users/{{ seller._id }}/orders/{{ _id }}" class="btn btn-primary">Order page</a>
+                <td><a href="/users/{{ seller.[0]._id }}/orders/{{ _id }}" class="btn btn-primary">Order
+                    page</a>
                 </td>
               </tr>
+              {{else}}
+              <tr>
+                {{#each artwork}}
+                <td><img class="order-image-my-artwork" src="{{ cover }}"><span class="artwork-title">{{ title }}</span>
+                </td>
+                <td>${{ price }}</td>
+                {{/each}}
+                <td><button class="btn btn-{{ formatButtonOrder status }}">{{ formatStatusOrder status }}</button></td>
+                <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>
+                <td>{{#each seller}}<a href="/users/{{ _id }}/orders/{{ ../_id }}" class="btn btn-primary">Order
+                    page</a>{{/each}}
+                </td>
+              </tr>
+              {{/if}}
               {{/each}}
               {{ else }}
               <tr>

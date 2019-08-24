@@ -156,6 +156,7 @@ const postPaymentSingle = async (req, res, next) => {
         order.amount = price;
         order.discount = req.session.discount ? true : false;
         order.paid = req.session.price;
+        order.sold = price;
         order.status = 2;
         const savedOrder = await order.save();
         if (savedOrder) {
@@ -225,6 +226,7 @@ const postPaymentCart = async (req, res, next) => {
         });
       })
       .then(async charge => {
+        let totalAmount = 0;
         // New charge created on a new customer
         let order = new Order();
         order.bulk = artworks.length > 1 ? true : false;
@@ -233,9 +235,11 @@ const postPaymentCart = async (req, res, next) => {
           order.seller.push(artwork.owner);
           order.artwork.push(artwork._id);
           order.amount.push(artwork.price);
+          totalAmount = totalAmount + artwork.price;
         });
         order.buyer = req.user._id;
         order.paid = req.session.price;
+        order.sold = totalAmount;
         order.status = 2;
         const savedOrder = await order.save();
         if (savedOrder) {
@@ -310,7 +314,6 @@ const getOrderId = async (req, res, next) => {
         const artwork = [];
         const amount = [];
         let sellerId = null;
-        let total = 0;
         foundOrder.seller.forEach(function(seller, i) {
           if (seller._id.equals(req.user._id)) {
             if (!sellerId) {
@@ -318,7 +321,6 @@ const getOrderId = async (req, res, next) => {
             }
             artwork.push(foundOrder.artwork[i]);
             amount.push(foundOrder.amount[i]);
-            total = total + foundOrder.amount[i];
           }
         });
         if (!sellerId) {
@@ -326,7 +328,6 @@ const getOrderId = async (req, res, next) => {
         }
         foundOrder.artwork = artwork;
         foundOrder.amount = amount;
-        foundOrder.paid = parseFloat(total.toFixed(12));
       }
       if (req.query.ref) {
         const foundNotif = await Notification.findById({ _id: req.query.ref });
@@ -384,6 +385,7 @@ const getSoldOrders = async (req, res, next) => {
       .populate('artwork');
     res.render('order/order-seller', { order: foundOrders });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
