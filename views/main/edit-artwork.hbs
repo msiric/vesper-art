@@ -12,16 +12,19 @@
               <div class="btn btn-rounded float-left">
                 <span>Edit photo</span>
                 <input id="artwork-cover-edit" type="file" class="form-control" name="artwork_cover">
-                <input id="artwork-cover-path" type="hidden" class="form-control" name="artwork_path">
+              </div>
+              <div class="btn btn-rounded float-left">
+                <span>Edit artwork</span>
+                <input id="artwork-media-edit" type="file" class="form-control" name="artwork_media">
               </div>
               <br>
               <label>Artwork title</label>
-              <input type="text" class="form-control" placeholder="{{ artwork.title }}" name="artwork_title">
+              <input type="text" class="form-control" value="{{ artwork.title }}" name="artwork_title">
             </div>
 
             <div class="form-group">
               <label>Artwork price</label>
-              <input type="text" class="form-control" placeholder="{{ artwork.price }}" name="artwork_price">
+              <input type="text" class="form-control" value="{{ artwork.price }}" name="artwork_price">
             </div>
 
             <div class="form-group">
@@ -36,8 +39,7 @@
 
             <div class="form-group">
               <label>Artwork description</label>
-              <textarea type="text" class="form-control" placeholder="{{ artwork.about }}"
-                name="artwork_about"></textarea>
+              <textarea type="text" class="form-control" name="artwork_about">{{ artwork.about }}</textarea>
             </div>
 
             <button type="submit" class="btn btn-success">Save</button>
