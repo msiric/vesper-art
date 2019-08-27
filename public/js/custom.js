@@ -239,18 +239,19 @@ $(function() {
     }
   });
 
+  // lacks artwork media upload
   $('#artwork-upload-form').on('submit', function(e) {
     e.preventDefault();
-    const fileInput = $('#artwork-cover-upload')[0];
-    const file = fileInput.files[0];
-    const imageType = /image.*/;
-    if (file) {
-      if (!file.type.match(imageType)) {
+    const coverInput = $('#artwork-cover-upload')[0];
+    const coverFile = coverInput.files[0];
+    const coverType = /image.*/;
+    if (coverFile) {
+      if (!coverFile.type.match(coverType)) {
         return false;
       }
 
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('image', coverFile);
       if (formData) {
         $.ajax({
           type: 'POST',
@@ -291,6 +292,7 @@ $(function() {
     }
   });
 
+  // needs to be reformatted to save on click and lacks artwork media edit
   $('#artwork-cover-edit').on('change', function() {
     const artworkId = window.location.href.substring(
       window.location.href.lastIndexOf('/') + 1

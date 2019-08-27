@@ -69,8 +69,42 @@ const artworkCoverEdit = multer({
   })
 });
 
+const artworkMediaUpload = multer({
+  fileFilter: fileFilter,
+  storage: multerS3({
+    s3: s3,
+    bucket: 'vesper-testing',
+    limits: { fileSize: 20 * 1024 * 1024 },
+    acl: 'public-read',
+    key: function(req, file, callback) {
+      const fileName = req.user._id + Date.now().toString();
+      const folderName = 'artworkMedia/';
+      const filePath = folderName + fileName;
+      callback(null, filePath);
+    }
+  })
+});
+
+const artworkMediaEdit = multer({
+  fileFilter: fileFilter,
+  storage: multerS3({
+    s3: s3,
+    bucket: 'vesper-testing',
+    limits: { fileSize: 20 * 1024 * 1024 },
+    acl: 'public-read',
+    key: function(req, file, callback) {
+      const fileName = req.user._id + Date.now().toString();
+      const folderName = 'artworkMedia/';
+      const filePath = folderName + fileName;
+      callback(null, filePath);
+    }
+  })
+});
+
 module.exports = {
   profilePhotoUpload: profilePhotoUpload,
   artworkCoverUpload: artworkCoverUpload,
-  artworkCoverEdit: artworkCoverEdit
+  artworkCoverEdit: artworkCoverEdit,
+  artworkMediaUpload: artworkMediaUpload,
+  artworkMediaEdit: artworkMediaEdit
 };
