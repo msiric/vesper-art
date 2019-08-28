@@ -117,7 +117,6 @@ const updateArtwork = async (req, res, next) => {
   }
 };
 
-// does not delete cover and media
 const deleteArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.findOne({
@@ -132,7 +131,7 @@ const deleteArtwork = async (req, res, next) => {
         Bucket: 'vesper-testing',
         Key: filePath
       };
-      const deletedCover = await s3.deleteObject(params);
+      const deletedCover = await s3.deleteObject(params).promise();
       if (deletedCover) {
         const folderName = 'artworkMedia/';
         const fileName = foundArtwork.media.split('/').slice(-1)[0];
@@ -142,7 +141,7 @@ const deleteArtwork = async (req, res, next) => {
           Bucket: 'vesper-testing',
           Key: filePath
         };
-        const deletedMedia = await s3.deleteObject(params);
+        const deletedMedia = await s3.deleteObject(params).promise();
         if (deletedMedia) {
           const deletedArtwork = await Artwork.deleteOne({
             _id: req.params.id

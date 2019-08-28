@@ -327,7 +327,6 @@ $(function() {
     }
   });
 
-  // if cover or media empty, continue requests without them
   $('#artwork-edit-form').on('submit', function(e) {
     e.preventDefault();
     const urlId = window.location.href.substring(
@@ -338,6 +337,7 @@ $(function() {
     const coverType = /image.*/;
     let artworkCover;
     let artworkMedia;
+
     if (coverFile) {
       if (!coverFile.type.match(coverType)) {
         return false;
@@ -355,61 +355,6 @@ $(function() {
           data: formData,
           success: function(data) {
             artworkCover = data.imageUrl;
-            const mediaInput = $('#artwork-media-edit')[0];
-            const mediaFile = mediaInput.files[0];
-            const mediaType = /image.*/;
-            if (mediaFile) {
-              if (!mediaFile.type.match(mediaType)) {
-                return false;
-              }
-            }
-
-            const formData = new FormData();
-            formData.append('image', mediaFile);
-            if (formData) {
-              $.ajax({
-                type: 'POST',
-                url: '/artwork-media-edit/' + urlId,
-                processData: false,
-                contentType: false,
-                cache: false,
-                data: formData,
-                success: function(data) {
-                  artworkMedia = data.imageUrl;
-
-                  const artwork_cover = artworkCover;
-                  const artwork_media = artworkMedia;
-                  const artwork_title = $('input[name=artwork_title]').val();
-                  const artwork_category = $(
-                    'select[name=artwork_category]'
-                  ).val();
-                  const artwork_about = $('textarea[name=artwork_about]').val();
-                  const artwork_price = $('input[name=artwork_price]').val();
-
-                  $.ajax({
-                    type: 'POST',
-                    url: '/edit-artwork/' + urlId,
-                    data: {
-                      artwork_cover,
-                      artwork_media,
-                      artwork_title,
-                      artwork_category,
-                      artwork_about,
-                      artwork_price
-                    },
-                    success: function(url) {
-                      window.location.href = url;
-                    },
-                    error: function(err) {
-                      console.log(err);
-                    }
-                  });
-                },
-                error: function(err) {
-                  console.log(err);
-                }
-              });
-            }
           },
           error: function(err) {
             console.log(err);
@@ -417,6 +362,58 @@ $(function() {
         });
       }
     }
+
+    const mediaInput = $('#artwork-media-edit')[0];
+    const mediaFile = mediaInput.files[0];
+    const mediaType = /image.*/;
+    if (mediaFile) {
+      if (!mediaFile.type.match(mediaType)) {
+        return false;
+      }
+      const formData = new FormData();
+      formData.append('image', mediaFile);
+      if (formData) {
+        $.ajax({
+          type: 'POST',
+          url: '/artwork-media-edit/' + urlId,
+          processData: false,
+          contentType: false,
+          cache: false,
+          data: formData,
+          success: function(data) {
+            artworkMedia = data.imageUrl;
+          },
+          error: function(err) {
+            console.log(err);
+          }
+        });
+      }
+    }
+
+    const artwork_cover = artworkCover;
+    const artwork_media = artworkMedia;
+    const artwork_title = $('input[name=artwork_title]').val();
+    const artwork_category = $('select[name=artwork_category]').val();
+    const artwork_about = $('textarea[name=artwork_about]').val();
+    const artwork_price = $('input[name=artwork_price]').val();
+    $.ajax({
+      type: 'POST',
+      url: '/edit-artwork/' + urlId,
+      data: {
+        artwork_cover,
+        artwork_media,
+        artwork_title,
+        artwork_category,
+        artwork_about,
+        artwork_price
+      },
+      success: function(url) {
+        window.location.href = url;
+      },
+      error: function(err) {
+        console.log(err);
+      }
+    });
   });
 
   $('#artwork-delete-button').on('click', function(e) {
