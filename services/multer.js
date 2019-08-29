@@ -1,6 +1,7 @@
 const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
+const path = require('path');
 
 aws.config.update({
   secretAccessKey: 'TZhmTLVh6KSBJRfYK2aq2eqoiYbIEncgzUptgGON',
@@ -29,7 +30,8 @@ const profilePhotoUpload = multer({
     limits: { fileSize: 2 * 1024 * 1024 },
     acl: 'public-read',
     key: function(req, file, callback) {
-      const fileName = req.user._id + Date.now().toString();
+      const fileName =
+        req.user._id + Date.now().toString() + path.extname(file.originalname);
       const folderName = 'profilePhotos/';
       const filePath = folderName + fileName;
       callback(null, filePath);
@@ -45,7 +47,8 @@ const artworkCoverUpload = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
     key: function(req, file, callback) {
-      const fileName = req.user._id + Date.now().toString();
+      const fileName =
+        req.user._id + Date.now().toString() + path.extname(file.originalname);
       const folderName = 'artworkCovers/';
       const filePath = folderName + fileName;
       callback(null, filePath);
@@ -61,7 +64,8 @@ const artworkCoverEdit = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
     key: function(req, file, callback) {
-      const fileName = req.user._id + Date.now().toString();
+      const fileName =
+        req.user._id + Date.now().toString() + path.extname(file.originalname);
       const folderName = 'artworkCovers/';
       const filePath = folderName + fileName;
       callback(null, filePath);
@@ -77,7 +81,8 @@ const artworkMediaUpload = multer({
     limits: { fileSize: 20 * 1024 * 1024 },
     acl: 'public-read',
     key: function(req, file, callback) {
-      const fileName = req.user._id + Date.now().toString();
+      const fileName =
+        req.user._id + Date.now().toString() + path.extname(file.originalname);
       const folderName = 'artworkMedia/';
       const filePath = folderName + fileName;
       callback(null, filePath);
@@ -93,7 +98,8 @@ const artworkMediaEdit = multer({
     limits: { fileSize: 20 * 1024 * 1024 },
     acl: 'public-read',
     key: function(req, file, callback) {
-      const fileName = req.user._id + Date.now().toString();
+      const fileName =
+        req.user._id + Date.now().toString() + path.extname(file.originalname);
       const folderName = 'artworkMedia/';
       const filePath = folderName + fileName;
       callback(null, filePath);
