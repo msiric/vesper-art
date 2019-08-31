@@ -89,21 +89,13 @@ const postPromocode = async (req, res, next) => {
     if (!req.session.discount) {
       const foundPromocode = await Promocode.findOne({ name: promocode });
       if (foundPromocode) {
-        if (req.session.discount) {
-          return res
-            .status(400)
-            .json({ message: 'You already used a promo code' });
-        } else {
-          let discount = foundPromocode.discount * 100;
-          let promo = foundPromocode._id;
-          subtotal = (totalPrice - fee) * (1 - foundPromocode.discount);
-          totalPrice = subtotal + fee;
-          req.session.price = totalPrice;
-          req.session.discount = foundPromocode._id;
-          return res
-            .status(200)
-            .json({ totalPrice, subtotal, discount, promo });
-        }
+        let discount = foundPromocode.discount * 100;
+        let promo = foundPromocode._id;
+        subtotal = (totalPrice - fee) * (1 - foundPromocode.discount);
+        totalPrice = subtotal + fee;
+        req.session.price = totalPrice;
+        req.session.discount = foundPromocode._id;
+        return res.status(200).json({ totalPrice, subtotal, discount, promo });
       } else {
         return res.status(400).json({ message: 'Promo code does not exist' });
       }

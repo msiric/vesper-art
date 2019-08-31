@@ -4,6 +4,7 @@ const Order = require('../models/order');
 const Promocode = require('../models/promocode');
 const User = require('../models/user');
 const Notification = require('../models/notification');
+const Review = require('../models/review');
 
 const fee = 3.15;
 
@@ -205,7 +206,6 @@ const postPaymentSingle = async (req, res, next) => {
 
 const postPaymentCart = async (req, res, next) => {
   try {
-    // amount not getting saved?
     let artworks = req.session.artwork;
     let paid = req.session.price;
     let orderId = null;
@@ -304,12 +304,18 @@ const postPaymentCart = async (req, res, next) => {
 
 const getOrderId = async (req, res, next) => {
   try {
+    let reviews = [];
     req.session.orderId = req.params.orderId;
     const foundOrder = await Order.findOne({ _id: req.params.orderId })
       .populate('buyer')
       .populate('seller')
       .populate('artwork');
     if (foundOrder) {
+      // needs to be implemented (with modals?)
+      const foundReviews = await Review.find({ artwork: foundOrder.artwork });
+      if (foundReviews) {
+        reviews = foundReviews;
+      }
       let decreaseNotif = false;
       // show information only related to seller (needs testing)
       if (!foundOrder.buyer._id.equals(req.user._id)) {
@@ -368,6 +374,7 @@ const getOrderId = async (req, res, next) => {
       }
       res.render('order/order-details', {
         order: foundOrder,
+        reviews: reviews,
         decreaseNotif: decreaseNotif
       });
     } else {
