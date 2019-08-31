@@ -1,10 +1,13 @@
 const aws = require('aws-sdk');
 const User = require('../models/user');
 const Artwork = require('../models/artwork');
+const Order = require('../models/order');
 
 const getUserArtwork = async (req, res, next) => {
   try {
-    const artwork = await Artwork.find({ owner: req.user._id });
+    const artwork = await Artwork.find({
+      $and: [{ owner: req.user._id }, { active: true }]
+    });
     return res.render('main/my-artwork', { artwork: artwork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
@@ -25,6 +28,7 @@ const postNewArtwork = async (req, res, next) => {
     newArtwork.owner = req.user._id;
     newArtwork.cover = req.body.artwork_cover;
     newArtwork.media = req.body.artwork_media;
+    newArtwork.deleted = false;
     newArtwork.title = req.body.artwork_title;
     newArtwork.category = req.body.artwork_category;
     newArtwork.about = req.body.artwork_about;
@@ -52,9 +56,9 @@ const postNewArtwork = async (req, res, next) => {
 const getArtworkDetails = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
-    const foundArtwork = await Artwork.findOne({ _id: req.params.id }).populate(
-      'owner'
-    );
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: req.params.id }, { active: true }]
+    }).populate('owner');
     if (foundArtwork) {
       let inCart = false;
       let userId = null;
@@ -79,7 +83,9 @@ const getArtworkDetails = async (req, res, next) => {
 
 const editArtwork = async (req, res, next) => {
   try {
-    const foundArtwork = await Artwork.findOne({ _id: req.params.id });
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: req.params.id }, { active: true }]
+    });
     if (foundArtwork) {
       return res.render('main/edit-artwork', { artwork: foundArtwork });
     } else {
@@ -92,7 +98,9 @@ const editArtwork = async (req, res, next) => {
 
 const updateArtwork = async (req, res, next) => {
   try {
-    const foundArtwork = await Artwork.findOne({ _id: req.params.id });
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: req.params.id }, { active: true }]
+    });
     if (foundArtwork) {
       if (req.body.artwork_cover) foundArtwork.cover = req.body.artwork_cover;
       if (req.body.artwork_media) foundArtwork.media = req.body.artwork_media;
@@ -117,65 +125,83 @@ const updateArtwork = async (req, res, next) => {
   }
 };
 
+// needs testing
 const deleteArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: req.params.id }, { owner: req.user._id }]
+      $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
     });
     if (foundArtwork) {
-      const folderName = 'artworkCovers/';
-      const fileName = foundArtwork.cover.split('/').slice(-1)[0];
-      const filePath = folderName + fileName;
-      const s3 = new aws.S3();
-      const params = {
-        Bucket: 'vesper-testing',
-        Key: filePath
-      };
-      const deletedCover = await s3.deleteObject(params).promise();
-      if (deletedCover) {
-        const folderName = 'artworkMedia/';
-        const fileName = foundArtwork.media.split('/').slice(-1)[0];
+      const foundOrders = await Order.find({ artwork: req.params.id });
+      if (!foundOrders) {
+        const folderName = 'artworkCovers/';
+        const fileName = foundArtwork.cover.split('/').slice(-1)[0];
         const filePath = folderName + fileName;
         const s3 = new aws.S3();
         const params = {
           Bucket: 'vesper-testing',
           Key: filePath
         };
-        const deletedMedia = await s3.deleteObject(params).promise();
-        if (deletedMedia) {
-          const deletedArtwork = await Artwork.deleteOne({
-            _id: req.params.id
-          });
-          if (deletedArtwork) {
-            const updatedUser = await User.update(
-              {
-                _id: req.user._id
-              },
-              {
-                $pull: { artworks: req.params.id }
+        const deletedCover = await s3.deleteObject(params).promise();
+        if (deletedCover) {
+          const folderName = 'artworkMedia/';
+          const fileName = foundArtwork.media.split('/').slice(-1)[0];
+          const filePath = folderName + fileName;
+          const s3 = new aws.S3();
+          const params = {
+            Bucket: 'vesper-testing',
+            Key: filePath
+          };
+          const deletedMedia = await s3.deleteObject(params).promise();
+          if (deletedMedia) {
+            const deletedArtwork = await Artwork.deleteOne({
+              _id: req.params.id
+            });
+            if (deletedArtwork) {
+              const updatedUser = await User.update(
+                {
+                  _id: req.user._id
+                },
+                {
+                  $pull: { artworks: req.params.id }
+                }
+              );
+              if (updatedUser) {
+                return res.status(200).json('/my-artwork');
+              } else {
+                return res
+                  .status(400)
+                  .json({ message: 'User could not be updated' });
               }
-            );
-            if (updatedUser) {
-              return res.status(200).json('/my-artwork');
             } else {
               return res
                 .status(400)
-                .json({ message: 'User could not be updated' });
+                .json({ message: 'Artwork could not be deleted' });
             }
           } else {
             return res
               .status(400)
-              .json({ message: 'Artwork could not be deleted' });
+              .json({ message: 'Artwork media could not be deleted' });
           }
         } else {
           return res
             .status(400)
-            .json({ message: 'Artwork media could not be deleted' });
+            .json({ message: 'Artwork cover could not be deleted' });
         }
       } else {
-        return res
-          .status(400)
-          .json({ message: 'Artwork cover could not be deleted' });
+        const updatedArtwork = await Artwork.updateOne(
+          {
+            _id: req.params.id
+          },
+          { deleted: true }
+        );
+        if (updatedArtwork) {
+          return res.status(200).json('/my-artwork');
+        } else {
+          return res
+            .status(400)
+            .json({ message: 'Artwork could not be deleted' });
+        }
       }
     } else {
       return res.status(400).json({ message: 'Artwork not found' });

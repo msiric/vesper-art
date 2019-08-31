@@ -16,32 +16,12 @@ const UserSchema = new Schema({
   verified: Boolean,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
-  artworks: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Artwork'
-    }
-  ],
-  cart: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Artwork'
-    }
-  ],
-  messages: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Message'
-    }
-  ],
-  requests: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Request'
-    }
-  ],
+  cart: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
+  promocode: { type: Schema.Types.ObjectId, ref: 'Promocode' },
   inbox: Number,
-  notifications: Number
+  notifications: Number,
+  review: Number,
+  active: Boolean
 });
 
 UserSchema.pre('save', function(next) {

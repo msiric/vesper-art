@@ -453,6 +453,22 @@ function deleteRequest(requestId) {
   }
 }
 
+$('#user-delete-button').on('click', function(e) {
+  e.preventDefault();
+  if (confirm('Are you sure you want to delete your account?')) {
+    $.ajax({
+      type: 'POST',
+      url: '/delete-user',
+      success: function(data) {
+        console.log(data);
+      },
+      error: function(err) {
+        console.log(err);
+      }
+    });
+  }
+});
+
 $(function() {
   socket.on('increaseInbox', function(data) {
     if (window.location.pathname != '/conversations/' + data.url) {

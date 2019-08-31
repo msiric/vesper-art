@@ -1,3 +1,4 @@
+const aws = require('aws-sdk');
 const passport = require('passport');
 const passportConfig = require('../config/passport');
 const User = require('../models/user');
@@ -227,6 +228,57 @@ const updateUserPreferences = async (req, res, next) => {
   }
 };
 
+// not updating user fields
+const deleteUser = async (req, res, next) => {
+  try {
+    const foundUser = await User.findOne({
+      $and: [{ _id: req.user._id }, { active: true }]
+    });
+    if (foundUser) {
+      if (foundUser.photo.includes(foundUser._id)) {
+        const folderName = 'profilePhotos/';
+        const fileName = foundUser.photo.split('/').slice(-1)[0];
+        const filePath = folderName + fileName;
+        const s3 = new aws.S3();
+        const params = {
+          Bucket: 'vesper-testing',
+          Key: filePath
+        };
+        const deletedPhoto = await s3.deleteObject(params).promise();
+      }
+      foundUser.email = null;
+      foundUser.name = 'Deleted;User';
+      foundUser.password = null;
+      foundUser.photo = null;
+      if (foundUser.about) foundUser.about = null;
+      if (foundUser.facebooKId) foundUser.facebookId = null;
+      if (foundUser.googleId) foundUser.googleId = null;
+      foundUser.customWork = false;
+      foundUser.secretToken = null;
+      foundUser.verified = false;
+      if (foundUser.resetPasswordToken) foundUser.resetPasswordToken = null;
+      if (foundUser.resetPasswordExpires) foundUser.resetPasswordExpires = null;
+      if (foundUser.cart) foundUser.cart = [];
+      if (foundUser.promocode) foundUser.promocode = null;
+      foundUser.inbox = null;
+      foundUser.notifications = null;
+      if (foundUser.review) foundUser.review = null;
+      foundUser.active = false;
+      const updatedUser = await foundUser.save();
+      if (updatedUser) {
+        getLogOut();
+      } else {
+        return res.status(400).json({ message: 'User could not be deleted' });
+      }
+    } else {
+      return res.status(400).json({ message: 'User not found' });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getSignUp,
   postSignUp,
@@ -241,5 +293,6 @@ module.exports = {
   getLogOut,
   getUserSettings,
   updateUserPassword,
-  updateUserPreferences
+  updateUserPreferences,
+  deleteUser
 };

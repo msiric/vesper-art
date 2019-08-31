@@ -37,4 +37,6 @@ router.post(
   userController.updateUserPreferences
 );
 
+router.post('/delete-user', isLoggedIn, userController.deleteUser);
+
 module.exports = router;

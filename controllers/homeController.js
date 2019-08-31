@@ -11,7 +11,7 @@ const fee = 3.15;
 const getHomepage = async (req, res) => {
   try {
     const foundRequests = await Request.find({}).populate('poster');
-    const foundArtwork = await Artwork.find({});
+    const foundArtwork = await Artwork.find({ active: true });
     return res.render('main/home', {
       requests: foundRequests,
       artwork: foundArtwork
@@ -23,7 +23,9 @@ const getHomepage = async (req, res) => {
 
 const getCreativeWriting = async (req, res) => {
   try {
-    const foundArtwork = await Artwork.find({ category: 'cw' });
+    const foundArtwork = await Artwork.find({
+      $and: [{ category: 'cw' }, { active: true }]
+    });
     return res.render('main/creative-writing', { artwork: foundArtwork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
@@ -32,7 +34,9 @@ const getCreativeWriting = async (req, res) => {
 
 const getMusic = async (req, res) => {
   try {
-    const foundArtwork = await Artwork.find({ category: 'm' });
+    const foundArtwork = await Artwork.find({
+      $and: [{ category: 'm' }, { active: true }]
+    });
     return res.render('main/music', { artwork: foundArtwork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
@@ -41,7 +45,9 @@ const getMusic = async (req, res) => {
 
 const getVisualArts = async (req, res) => {
   try {
-    const foundArtwork = await Artwork.find({ category: 'va' });
+    const foundArtwork = await Artwork.find({
+      $and: [{ category: 'va' }, { active: true }]
+    });
     return res.render('main/visual-arts', { artwork: foundArtwork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });

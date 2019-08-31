@@ -16,7 +16,9 @@ const getSingleArtwork = async (req, res, next) => {
       promo: null,
       artwork: null
     };
-    const foundArtwork = await Artwork.findOne({ _id: req.params.id });
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: req.params.id }, { active: true }]
+    });
     if (foundArtwork) {
       artworkInfo.artwork = foundArtwork;
       artworkInfo.totalPrice = foundArtwork.price + fee;
@@ -430,7 +432,9 @@ const addToCart = async (req, res, next) => {
 const deleteFromCart = async (req, res, next) => {
   try {
     const artworkId = req.body.artwork_id;
-    const foundArtwork = await Artwork.findOne({ _id: artworkId });
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: artworkId }, { active: true }]
+    });
     if (foundArtwork) {
       const updatedUser = await User.update(
         {

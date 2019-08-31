@@ -49,7 +49,9 @@ const postArtworkCover = async (req, res, next) => {
 const updateArtworkCover = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
-    const foundArtwork = await Artwork.findOne({ _id: artworkId });
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: artworkId }, { active: true }]
+    });
     if (foundArtwork && foundArtwork.cover) {
       const fileName = foundArtwork.cover.split('/').slice(-1)[0];
       const folderName = 'artworkCovers/';
@@ -94,7 +96,9 @@ const postArtworkMedia = async (req, res, next) => {
 const updateArtworkMedia = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
-    const foundArtwork = await Artwork.findOne({ _id: artworkId });
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: artworkId }, { active: true }]
+    });
     if (foundArtwork && foundArtwork.media) {
       const fileName = foundArtwork.media.split('/').slice(-1)[0];
       const folderName = 'artworkMedia/';

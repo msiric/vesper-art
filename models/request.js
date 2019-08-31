@@ -8,12 +8,7 @@ const RequestSchema = new Schema({
   budget: Number,
   delivery: Date,
   description: String,
-  offers: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Offer'
-    }
-  ],
+  offers: [{ type: Schema.Types.ObjectId, ref: 'Offer' }],
   created: { type: Date, default: Date.now }
 });
 

@@ -5,12 +5,7 @@ const Schema = mongoose.Schema;
 const WorkSchema = new Schema({
   buyer: { type: Schema.Types.ObjectId, ref: 'User' },
   seller: { type: Schema.Types.ObjectId, ref: 'User' },
-  messages: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Message'
-    }
-  ],
+  messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
   description: String,
   created: { type: Date, default: Date.now },
   amount: Number,

@@ -7,15 +7,8 @@ const ConversationSchema = new Schema({
   first: { type: Schema.Types.ObjectId, ref: 'User' },
   second: { type: Schema.Types.ObjectId, ref: 'User' },
   offer: { type: Schema.Types.ObjectId, ref: 'Offer' },
-  messages: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Message'
-    }
-  ],
-  read: {
-    type: Boolean
-  },
+  messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
+  read: Boolean,
   created: { type: Date, default: Date.now }
 });
 
