@@ -42,7 +42,7 @@ $(function() {
     } else {
       $.ajax({
         type: 'POST',
-        url: '/promocode',
+        url: '/apply-promocode',
         data: {
           promocode: amount
         },
@@ -466,6 +466,34 @@ $('#user-delete-button').on('click', function(e) {
         console.log(err);
       }
     });
+  }
+});
+
+// add artwork id value to hidden input before publishing the review
+$('.rate-artwork').click(function() {
+  $('#modal-id-input').val(this.id);
+});
+
+// validate all inputs and :id
+$('#rate-artwork-form').on('submit', function(e) {
+  e.preventDefault();
+  const data = $('#rate-artwork-form').serialize();
+  const artworkId = $('#modal-id-input').val();
+
+  if (artworkId) {
+    $.ajax({
+      type: 'POST',
+      data: data,
+      url: `/rate-artwork/${artworkId}`,
+      success: function(data) {
+        console.log(data);
+      },
+      error: function(err) {
+        console.log(err);
+      }
+    });
+  } else {
+    console.log('Something went wrong');
   }
 });
 

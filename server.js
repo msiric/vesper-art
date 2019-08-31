@@ -212,6 +212,8 @@ const artworkRoutes = require('./routes/api/artworkRouter');
 const requestRoutes = require('./routes/api/requestRouter');
 const conversationRoutes = require('./routes/api/conversationRouter');
 const workRouter = require('./routes/api/workRouter');
+const reviewRouter = require('./routes/api/reviewRouter');
+const promocodeRouter = require('./routes/api/promocodeRouter');
 
 app.use(function(req, res, next) {
   res.locals.session = req.session;
@@ -227,6 +229,8 @@ app.use(artworkRoutes);
 app.use(requestRoutes);
 app.use(conversationRoutes);
 app.use(workRouter);
+app.use(reviewRouter);
+app.use(promocodeRouter);
 
 app.set('socketio', io);
 

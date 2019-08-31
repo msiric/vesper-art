@@ -2,6 +2,7 @@ const aws = require('aws-sdk');
 const User = require('../models/user');
 const Artwork = require('../models/artwork');
 const Order = require('../models/order');
+const Review = require('../models/review');
 
 const getUserArtwork = async (req, res, next) => {
   try {
@@ -33,6 +34,7 @@ const postNewArtwork = async (req, res, next) => {
     newArtwork.category = req.body.artwork_category;
     newArtwork.about = req.body.artwork_about;
     newArtwork.price = req.body.artwork_price;
+    newArtwork.active = true;
     const savedArtwork = await newArtwork.save();
 
     const updatedUser = await User.update(
@@ -56,6 +58,7 @@ const postNewArtwork = async (req, res, next) => {
 const getArtworkDetails = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
+    let rating;
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { active: true }]
     }).populate('owner');
@@ -68,9 +71,23 @@ const getArtworkDetails = async (req, res, next) => {
           inCart = true;
         }
       }
+      const foundReview = await Review.find({ artwork: artworkId });
+      if (foundReview) {
+        let ratings = 0;
+        let reviews = 0;
+        foundReview.map(function(review) {
+          ratings += review.rating;
+          reviews++;
+        });
+        rating = (parseInt(ratings) / parseInt(reviews))
+          .toFixed(2)
+          .replace(/[.,]00$/, '');
+      }
       return res.render('main/artwork-details', {
         id: userId,
         artwork: foundArtwork,
+        review: foundReview,
+        rating: rating,
         inCart: inCart
       });
     } else {

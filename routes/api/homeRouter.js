@@ -28,10 +28,6 @@ router
   });
 }); */
 
-router.post('/promocode', isLoggedIn, homeController.postPromocode);
-
-router.post('/remove-promocode', isLoggedIn, homeController.deletePromocode);
-
 router.get('/notifications', isLoggedIn, homeController.getNotifications);
 
 module.exports = router;

@@ -33,7 +33,8 @@ const UserSchema = new Schema({
   promocode: { type: Schema.Types.ObjectId, ref: 'Promocode' },
   inbox: Number,
   notifications: Number,
-  review: Number,
+  rating: Number,
+  reviews: Number,
   active: Boolean
 });
 

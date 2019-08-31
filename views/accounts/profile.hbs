@@ -8,6 +8,11 @@
           <br>
           <div class="btn btn-rounded float-left">
             <span>Add photo</span>
+            {{#if user.rating}}
+            <p>{{ user.rating }}/5</p>
+            {{else}}
+            <p>No rating yet</p>
+            {{/if}}
             <input id="profile-photo-upload" type="file">
           </div>
           <div class="new-artwork-card">

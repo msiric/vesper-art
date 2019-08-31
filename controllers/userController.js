@@ -37,6 +37,8 @@ const postSignUp = async (req, res, next) => {
       user.verified = false;
       user.inbox = 0;
       user.notifications = 0;
+      user.rating = null;
+      user.reviews = 0;
       user.active = true;
       const savedUser = await user.save();
       if (savedUser) {
@@ -248,24 +250,6 @@ const deleteUser = async (req, res, next) => {
         };
         const deletedPhoto = await s3.deleteObject(params).promise();
       }
-      /*       foundUser.email = null;
-      foundUser.name = 'Deleted User';
-      foundUser.password = null;
-      foundUser.photo = null;
-      if (foundUser.about) foundUser.about = null;
-      if (foundUser.facebooKId) foundUser.facebookId = null;
-      if (foundUser.googleId) foundUser.googleId = null;
-      foundUser.customWork = false;
-      foundUser.secretToken = null;
-      foundUser.verified = false;
-      if (foundUser.resetPasswordToken) foundUser.resetPasswordToken = null;
-      if (foundUser.resetPasswordExpires) foundUser.resetPasswordExpires = null;
-      if (foundUser.cart) foundUser.cart = [];
-      if (foundUser.promocode) foundUser.promocode = null;
-      foundUser.inbox = null;
-      foundUser.notifications = null;
-      if (foundUser.review) foundUser.review = null;
-      foundUser.active = false; */
       const updatedUser = await User.updateOne(
         { _id: foundUser._id },
         {
@@ -286,7 +270,8 @@ const deleteUser = async (req, res, next) => {
             promocode: null,
             inbox: null,
             notifications: null,
-            review: null,
+            rating: null,
+            reviews: null,
             active: false
           }
         }

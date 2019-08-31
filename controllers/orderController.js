@@ -304,7 +304,7 @@ const postPaymentCart = async (req, res, next) => {
 
 const getOrderId = async (req, res, next) => {
   try {
-    let reviews = [];
+    let review = [];
     req.session.orderId = req.params.orderId;
     const foundOrder = await Order.findOne({ _id: req.params.orderId })
       .populate('buyer')
@@ -312,9 +312,9 @@ const getOrderId = async (req, res, next) => {
       .populate('artwork');
     if (foundOrder) {
       // needs to be implemented (with modals?)
-      const foundReviews = await Review.find({ artwork: foundOrder.artwork });
-      if (foundReviews) {
-        reviews = foundReviews;
+      const foundReview = await Review.find({ artwork: foundOrder.artwork });
+      if (foundReview) {
+        review = foundReview;
       }
       let decreaseNotif = false;
       // show information only related to seller (needs testing)
@@ -374,7 +374,7 @@ const getOrderId = async (req, res, next) => {
       }
       res.render('order/order-details', {
         order: foundOrder,
-        reviews: reviews,
+        review: review,
         decreaseNotif: decreaseNotif
       });
     } else {
