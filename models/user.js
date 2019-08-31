@@ -4,8 +4,21 @@ const crypto = require('crypto');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-  email: { type: String, unique: true, lowercase: true },
-  name: String,
+  email: {
+    type: String,
+    trim: true,
+    index: {
+      unique: true,
+      partialFilterExpression: { email: { $exists: true } }
+    }
+  },
+  name: {
+    type: String,
+    index: {
+      unique: true,
+      partialFilterExpression: { email: { $exists: true } }
+    }
+  },
   password: String,
   photo: String,
   about: String,

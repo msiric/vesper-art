@@ -30,13 +30,14 @@ const postSignUp = async (req, res, next) => {
       let user = new User();
       user.name = req.body.username;
       user.email = req.body.email;
-      user.photo = foundUser.gravatar();
+      user.photo = user.gravatar();
       user.password = req.body.password;
       user.customWork = true;
       user.secretToken = verificationInfo.token;
       user.verified = false;
       user.inbox = 0;
       user.notifications = 0;
+      user.active = true;
       const savedUser = await user.save();
       if (savedUser) {
         try {
@@ -70,6 +71,7 @@ const postSignUp = async (req, res, next) => {
       }
     }
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -228,7 +230,7 @@ const updateUserPreferences = async (req, res, next) => {
   }
 };
 
-// not updating user fields
+// needs testing (better way to update already found user)
 const deleteUser = async (req, res, next) => {
   try {
     const foundUser = await User.findOne({
@@ -246,8 +248,8 @@ const deleteUser = async (req, res, next) => {
         };
         const deletedPhoto = await s3.deleteObject(params).promise();
       }
-      foundUser.email = null;
-      foundUser.name = 'Deleted;User';
+      /*       foundUser.email = null;
+      foundUser.name = 'Deleted User';
       foundUser.password = null;
       foundUser.photo = null;
       if (foundUser.about) foundUser.about = null;
@@ -263,10 +265,37 @@ const deleteUser = async (req, res, next) => {
       foundUser.inbox = null;
       foundUser.notifications = null;
       if (foundUser.review) foundUser.review = null;
-      foundUser.active = false;
-      const updatedUser = await foundUser.save();
+      foundUser.active = false; */
+      const updatedUser = await User.updateOne(
+        { _id: foundUser._id },
+        {
+          $set: {
+            email: null,
+            name: 'Deleted User',
+            password: null,
+            photo: foundUser.gravatar(),
+            about: null,
+            facebookId: null,
+            googleId: null,
+            customWork: false,
+            secretToken: null,
+            verified: false,
+            resetPasswordToken: null,
+            resetPasswordExpires: null,
+            cart: null,
+            promocode: null,
+            inbox: null,
+            notifications: null,
+            review: null,
+            active: false
+          }
+        }
+      );
       if (updatedUser) {
-        getLogOut();
+        req.logout();
+        req.session.destroy(function(err) {
+          res.status(200).json('/');
+        });
       } else {
         return res.status(400).json({ message: 'User could not be deleted' });
       }

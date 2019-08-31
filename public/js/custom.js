@@ -460,7 +460,7 @@ $('#user-delete-button').on('click', function(e) {
       type: 'POST',
       url: '/delete-user',
       success: function(data) {
-        console.log(data);
+        window.location.href = data;
       },
       error: function(err) {
         console.log(err);
