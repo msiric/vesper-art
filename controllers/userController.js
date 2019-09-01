@@ -35,10 +35,12 @@ const postSignUp = async (req, res, next) => {
       user.customWork = true;
       user.secretToken = verificationInfo.token;
       user.verified = false;
+      user.cart = [];
       user.inbox = 0;
       user.notifications = 0;
       user.rating = null;
       user.reviews = 0;
+      user.savedArtwork = [];
       user.active = true;
       const savedUser = await user.save();
       if (savedUser) {
@@ -272,6 +274,7 @@ const deleteUser = async (req, res, next) => {
             notifications: null,
             rating: null,
             reviews: null,
+            savedArtwork: null,
             active: false
           }
         }

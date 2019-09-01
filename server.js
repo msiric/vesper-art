@@ -214,6 +214,7 @@ const conversationRoutes = require('./routes/api/conversationRouter');
 const workRouter = require('./routes/api/workRouter');
 const reviewRouter = require('./routes/api/reviewRouter');
 const promocodeRouter = require('./routes/api/promocodeRouter');
+const ticketRouter = require('./routes/api/ticketRouter');
 
 app.use(function(req, res, next) {
   res.locals.session = req.session;
@@ -231,6 +232,7 @@ app.use(conversationRoutes);
 app.use(workRouter);
 app.use(reviewRouter);
 app.use(promocodeRouter);
+app.use(ticketRouter);
 
 app.set('socketio', io);
 

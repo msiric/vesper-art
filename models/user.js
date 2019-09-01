@@ -35,6 +35,7 @@ const UserSchema = new Schema({
   notifications: Number,
   rating: Number,
   reviews: Number,
+  savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   active: Boolean
 });
 

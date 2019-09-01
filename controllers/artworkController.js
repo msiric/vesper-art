@@ -58,6 +58,9 @@ const postNewArtwork = async (req, res, next) => {
 const getArtworkDetails = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
+    const savedArtwork = req.user.savedArtwork.includes(artworkId)
+      ? true
+      : false;
     let rating;
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { active: true }]
@@ -88,7 +91,8 @@ const getArtworkDetails = async (req, res, next) => {
         artwork: foundArtwork,
         review: foundReview,
         rating: rating,
-        inCart: inCart
+        inCart: inCart,
+        savedArtwork
       });
     } else {
       return res.status(400).json({ message: 'Artwork not found' });
@@ -228,6 +232,44 @@ const deleteArtwork = async (req, res, next) => {
   }
 };
 
+const saveArtwork = async (req, res, next) => {
+  try {
+    const artworkId = req.params.id;
+    const foundArtwork = await Artwork.findOne({ _id: artworkId });
+    if (foundArtwork) {
+      const foundUser = await User.findOne({ _id: req.user._id });
+      if (foundUser) {
+        let updatedUser;
+        let saved;
+        if (foundUser.savedArtwork.includes(foundArtwork._id)) {
+          updatedUser = await User.updateOne(
+            { _id: foundUser._id },
+            { $pull: { savedArtwork: artworkId } }
+          );
+          saved = false;
+        } else {
+          updatedUser = await User.updateOne(
+            { _id: foundUser._id },
+            { $addToSet: { savedArtwork: artworkId } }
+          );
+          saved = true;
+        }
+        if (updatedUser) {
+          res.status(200).json({ saved });
+        } else {
+          return res.status(400).json({ message: 'Could not update user' });
+        }
+      } else {
+        return res.status(400).json({ message: 'User not found' });
+      }
+    } else {
+      return res.status(400).json({ message: 'Artwork not found' });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
 module.exports = {
   getUserArtwork,
   getNewArtwork,
@@ -235,5 +277,6 @@ module.exports = {
   getArtworkDetails,
   editArtwork,
   updateArtwork,
-  deleteArtwork
+  deleteArtwork,
+  saveArtwork
 };

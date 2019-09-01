@@ -3,7 +3,7 @@ const deepPopulate = require('mongoose-deep-populate')(mongoose);
 const Schema = mongoose.Schema;
 
 const RequestSchema = new Schema({
-  poster: { type: Schema.Types.ObjectId, ref: 'User' },
+  owner: { type: Schema.Types.ObjectId, ref: 'User' },
   category: String,
   budget: Number,
   delivery: Date,

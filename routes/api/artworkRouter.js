@@ -17,4 +17,8 @@ router
   .post(isLoggedIn, artworkController.updateArtwork)
   .delete(isLoggedIn, artworkController.deleteArtwork);
 
+router
+  .route('/save-artwork/:id')
+  .post(isLoggedIn, artworkController.saveArtwork);
+
 module.exports = router;

@@ -497,6 +497,45 @@ $('#rate-artwork-form').on('submit', function(e) {
   }
 });
 
+$('#contact-support-form').on('submit', function(e) {
+  e.preventDefault();
+  const data = $('#contact-support-form').serialize();
+
+  $.ajax({
+    type: 'POST',
+    data: data,
+    url: `/contact-support/`,
+    success: function(data) {
+      console.log(data);
+    },
+    error: function(err) {
+      console.log(err);
+    }
+  });
+});
+
+$('.save-artwork-button').on('click', function() {
+  const artworkId = this.id;
+  if (artworkId) {
+    $.ajax({
+      type: 'POST',
+      url: `/save-artwork/${artworkId}`,
+      success: function(data) {
+        if (data.saved) {
+          $('.save-artwork-button').html('Remove artwork');
+        } else {
+          $('.save-artwork-button').html('Save artwork');
+        }
+      },
+      error: function(err) {
+        console.log(err);
+      }
+    });
+  } else {
+    console.log('Something went wrong');
+  }
+});
+
 $(function() {
   socket.on('increaseInbox', function(data) {
     if (window.location.pathname != '/conversations/' + data.url) {

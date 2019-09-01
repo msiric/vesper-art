@@ -3,7 +3,32 @@ const config = require('../config/mailer');
 const User = require('../models/user');
 const crypto = require('crypto');
 
-const sendEmail = (req, res) => {
+function postTicket(req, res, next) {
+  let mailOptions, host, link;
+  const smtpTransport = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      user: config.email,
+      pass: config.password
+    }
+  });
+  host = req.get('host');
+  mailOptions = {
+    from: res.locals.email.sender,
+    to: config.email,
+    subject: `Support ticket (#${res.locals.email.id}): ${res.locals.email.title}`,
+    html: res.locals.email.body
+  };
+  smtpTransport.sendMail(mailOptions, function(error, response) {
+    if (error) {
+      return res.status(400).json({ message: 'Email could not be sent' });
+    } else {
+      return res.status(200).json('Email sent successfully');
+    }
+  });
+}
+
+const sendConfirmation = (req, res) => {
   try {
     let mailOptions, host, link;
     const smtpTransport = nodemailer.createTransport({
@@ -196,7 +221,8 @@ const resendToken = async (req, res) => {
 };
 
 module.exports = {
-  sendEmail,
+  postTicket,
+  sendConfirmation,
   verifyToken,
   forgotPassword,
   getToken,

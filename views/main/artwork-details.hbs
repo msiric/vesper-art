@@ -10,6 +10,13 @@
             <p>{{ rating }}</p>
             <hr>
             <img src="{{ artwork.cover }}" class="image-test">
+            {{#if savedArtwork}}
+            <button id="{{ artwork._id }}" class="btn btn-danger save-artwork-button">Remove
+              artwork</button>
+            {{else}}
+            <button id="{{ artwork._id }}" class="btn btn-primary save-artwork-button">Save
+              artwork</button>
+            {{/if}}
           </div>
         </div>
       </div>
