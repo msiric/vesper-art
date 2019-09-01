@@ -250,7 +250,7 @@ const saveArtwork = async (req, res, next) => {
         } else {
           updatedUser = await User.updateOne(
             { _id: foundUser._id },
-            { $addToSet: { savedArtwork: artworkId } }
+            { $push: { savedArtwork: artworkId } }
           );
           saved = true;
         }
