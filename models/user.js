@@ -36,6 +36,8 @@ const UserSchema = new Schema({
   rating: Number,
   reviews: Number,
   savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
+  funds: Number,
+  escrow: Number,
   active: Boolean
 });
 

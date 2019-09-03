@@ -58,22 +58,21 @@ const postNewArtwork = async (req, res, next) => {
 const getArtworkDetails = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
-    const savedArtwork = req.user.savedArtwork.includes(artworkId)
-      ? true
-      : false;
+    let savedArtwork = false;
+    let inCart = false;
     let rating;
+    if (req.user) {
+      if (req.user.savedArtwork.includes(artworkId)) {
+        savedArtwork = true;
+      }
+      if (req.user.cart.indexOf(artworkId) > -1) {
+        inCart = true;
+      }
+    }
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { active: true }]
     }).populate('owner');
     if (foundArtwork) {
-      let inCart = false;
-      let userId = null;
-      if (req.user) {
-        userId = req.user._id;
-        if (req.user.cart.indexOf(artworkId) > -1) {
-          inCart = true;
-        }
-      }
       const foundReview = await Review.find({ artwork: artworkId });
       if (foundReview) {
         let ratings = 0;
@@ -87,7 +86,6 @@ const getArtworkDetails = async (req, res, next) => {
           .replace(/[.,]00$/, '');
       }
       return res.render('main/artwork-details', {
-        id: userId,
         artwork: foundArtwork,
         review: foundReview,
         rating: rating,
@@ -98,6 +96,7 @@ const getArtworkDetails = async (req, res, next) => {
       return res.status(400).json({ message: 'Artwork not found' });
     }
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };

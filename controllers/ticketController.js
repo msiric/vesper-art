@@ -1,7 +1,4 @@
 const Ticket = require('../models/ticket');
-const Message = require('../models/message');
-const User = require('../models/user');
-const mongoose = require('mongoose');
 const emailController = require('./emailController');
 
 const getSupport = async (req, res, next) => {
