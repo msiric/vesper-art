@@ -163,7 +163,7 @@ $(function() {
     } else {
       $.ajax({
         type: 'POST',
-        url: '/add-to-cart',
+        url: '/add-to-cart/',
         data: {
           artwork_id: artwork_id
         },

@@ -30,7 +30,7 @@ const UserSchema = new Schema({
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   cart: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
-  promocode: { type: Schema.Types.ObjectId, ref: 'Promocode' },
+  discount: { type: Schema.Types.ObjectId, ref: 'Promocode' },
   inbox: Number,
   notifications: Number,
   rating: Number,

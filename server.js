@@ -51,6 +51,7 @@ mongoose.connect(config.database, { useNewUrlParser: true }, function(err) {
   if (err) console.log(err);
   console.log('Connected to the database');
 });
+mongoose.set('useCreateIndex', true);
 
 app.engine(
   '.hbs',

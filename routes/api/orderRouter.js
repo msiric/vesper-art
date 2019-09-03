@@ -15,22 +15,14 @@ router.get(
 );
 
 router
-  .route('/payment')
-  .get((req, res, next) => {
-    res.render('checkout/payment', {
-      amount: parseFloat(req.session.price.toFixed(12))
-    });
-  })
-  .post(isLoggedIn, orderController.postPaymentSingle);
+  .route('/payment/cart')
+  .get(isLoggedIn, orderController.getPaymentCart)
+  .post(isLoggedIn, orderController.postPaymentCart);
 
 router
-  .route('/payment/cart')
-  .get((req, res, next) => {
-    res.render('checkout/payment', {
-      amount: parseFloat(req.session.price.toFixed(12))
-    });
-  })
-  .post(isLoggedIn, orderController.postPaymentCart);
+  .route('/payment/:id')
+  .get(isLoggedIn, orderController.getPaymentSingle)
+  .post(isLoggedIn, orderController.postPaymentSingle);
 
 router.get(
   '/users/:userId/orders/:orderId',

@@ -36,6 +36,7 @@ const postSignUp = async (req, res, next) => {
       user.secretToken = verificationInfo.token;
       user.verified = false;
       user.cart = [];
+      user.discount = null;
       user.inbox = 0;
       user.notifications = 0;
       user.rating = null;
@@ -271,7 +272,7 @@ const deleteUser = async (req, res, next) => {
             resetPasswordToken: null,
             resetPasswordExpires: null,
             cart: null,
-            promocode: null,
+            discount: null,
             inbox: null,
             notifications: null,
             rating: null,
