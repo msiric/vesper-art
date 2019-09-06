@@ -42,8 +42,9 @@ const postSignUp = async (req, res, next) => {
       user.rating = null;
       user.reviews = 0;
       user.savedArtwork = [];
-      user.funds = 0;
-      user.escrow = 0;
+      user.earnings = 0;
+      user.incomingFunds = 0;
+      user.outgoingFunds = 0;
       user.active = true;
       const savedUser = await user.save();
       if (savedUser) {
@@ -278,7 +279,9 @@ const deleteUser = async (req, res, next) => {
             rating: null,
             reviews: null,
             savedArtwork: null,
-            funds: null,
+            earnings: null,
+            incomingFunds: null,
+            outgoingFunds: null,
             escrow: null,
             active: false
           }

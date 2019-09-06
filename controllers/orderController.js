@@ -7,6 +7,7 @@ const Notification = require('../models/notification');
 const Review = require('../models/review');
 
 const fee = 3.15;
+const commission = 0.1;
 
 const getSingleArtwork = async (req, res, next) => {
   try {
@@ -233,7 +234,12 @@ const postPaymentSingle = async (req, res, next) => {
                 {
                   _id: foundArtwork.owner
                 },
-                { $inc: { notifications: 1 } },
+                {
+                  $inc: {
+                    notifications: 1,
+                    incomingFunds: foundArtwork.price * (1 - commission)
+                  }
+                },
                 { useFindAndModify: false }
               );
               if (users[foundArtwork.owner]) {
@@ -389,7 +395,12 @@ const postPaymentCart = async (req, res, next) => {
                     {
                       _id: artwork.owner
                     },
-                    { $inc: { notifications: 1 } },
+                    {
+                      $inc: {
+                        notifications: 1,
+                        incomingFunds: artwork.price * (1 - commission)
+                      }
+                    },
                     { useFindAndModify: false }
                   );
                   if (users[artwork.owner]) {

@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const aws = require('aws-sdk');
 const User = require('../models/user');
 const Artwork = require('../models/artwork');
@@ -58,38 +60,27 @@ const postNewArtwork = async (req, res, next) => {
 const getArtworkDetails = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
-    let savedArtwork = false;
-    let inCart = false;
-    let rating;
-    if (req.user) {
-      if (req.user.savedArtwork.includes(artworkId)) {
-        savedArtwork = true;
-      }
-      if (req.user.cart.indexOf(artworkId) > -1) {
-        inCart = true;
-      }
-    }
+    const savedArtwork =
+      req.user && req.user.savedArtwork.includes(artworkId) ? true : false;
+    const inCart = req.user && req.user.cart.includes(artworkId) ? true : false;
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { active: true }]
     }).populate('owner');
     if (foundArtwork) {
-      const foundReview = await Review.find({ artwork: artworkId });
-      if (foundReview) {
-        let ratings = 0;
-        let reviews = 0;
-        foundReview.map(function(review) {
-          ratings += review.rating;
-          reviews++;
-        });
-        rating = (parseInt(ratings) / parseInt(reviews))
-          .toFixed(2)
-          .replace(/[.,]00$/, '');
-      }
+      const foundReview = await Review.aggregate([
+        { $match: { artwork: ObjectId(artworkId) } },
+        {
+          $group: {
+            _id: '$owner',
+            averageRating: { $avg: '$rating' },
+            reviews: { $push: '$$ROOT' }
+          }
+        }
+      ]);
       return res.render('main/artwork-details', {
         artwork: foundArtwork,
         review: foundReview,
-        rating: rating,
-        inCart: inCart,
+        inCart,
         savedArtwork
       });
     } else {
@@ -112,6 +103,7 @@ const editArtwork = async (req, res, next) => {
       return res.status(400).json({ message: 'Artwork not found' });
     }
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
