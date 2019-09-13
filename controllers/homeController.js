@@ -22,7 +22,7 @@ const getCreativeWriting = async (req, res) => {
     const foundArtwork = await Artwork.find({
       $and: [{ category: 'cw' }, { active: true }]
     });
-    return res.render('main/creative-writing', { artwork: foundArtwork });
+    return res.render('main/creative_writing', { artwork: foundArtwork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -44,7 +44,7 @@ const getVisualArts = async (req, res) => {
     const foundArtwork = await Artwork.find({
       $and: [{ category: 'va' }, { active: true }]
     });
-    return res.render('main/visual-arts', { artwork: foundArtwork });
+    return res.render('main/visual_arts', { artwork: foundArtwork });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }

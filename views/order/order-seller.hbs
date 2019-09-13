@@ -29,7 +29,7 @@
                 </td>
                 <td><button class="btn btn-{{ formatButtonOrder status }}">{{ formatStatusOrder status }}</button></td>
                 <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>
-                <td><a href="/users/{{ seller.[0]._id }}/orders/{{ _id }}" class="btn btn-primary">Order
+                <td><a href="/orders/{{ _id }}" class="btn btn-primary">Order
                     page</a>
                 </td>
               </tr>
@@ -42,7 +42,7 @@
                 {{/each}}
                 <td><button class="btn btn-{{ formatButtonOrder status }}">{{ formatStatusOrder status }}</button></td>
                 <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>
-                <td>{{#each seller}}<a href="/users/{{ _id }}/orders/{{ ../_id }}" class="btn btn-primary">Order
+                <td>{{#each seller}}<a href="/orders/{{ ../_id }}" class="btn btn-primary">Order
                     page</a>{{/each}}
                 </td>
               </tr>

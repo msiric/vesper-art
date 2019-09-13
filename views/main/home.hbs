@@ -43,7 +43,7 @@
 			<div class="request-card">
 				{{#checkIfEquals poster._id ../this.user._id }}
 				<i onclick="deleteRequest('{{ _id }}')" class="fa fa-trash delete-request-button"></i>
-				<a href="/edit-request/{{ _id }}" class="fa fa-edit edit-request-button"></a>
+				<a href="/edit_request/{{ _id }}" class="fa fa-edit edit-request-button"></a>
 				{{ else }}
 				<a href="#" class="fa fa-briefcase"></a>
 				{{/checkIfEquals}}
@@ -83,7 +83,7 @@
 		{{#each artwork}}
 		<div class="col-md-3">
 			<div class="artwork-card">
-				<a href="/artwork-details/{{ _id }}"><img src="{{ cover }}" /></a>
+				<a href="/artwork_details/{{ _id }}"><img src="{{ cover }}" /></a>
 				<h4>
 					{{ title }}
 				</h4>

@@ -12,6 +12,10 @@ const moment = require('moment');
 const expressHbs = require('express-handlebars');
 const passportSocketIo = require('passport.socketio');
 
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 const config = require('./config/secret');
 const sessionStore = new MongoStore({
   url: config.database,

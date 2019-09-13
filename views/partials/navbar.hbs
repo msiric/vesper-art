@@ -62,9 +62,9 @@
             Selling
           </a>
           <ul class="dropdown-menu">
-            <li><a href="/users/{{ user._id }}/manage_orders">Orders</a></li>
-            <li><a href="/users/{{ user._id }}/offers">Offers</a></li>
-            <li><a href="/my-artwork">Artwork</a></li>
+            <li><a href="/orders/sold">Orders</a></li>
+            <li><a href="/offers">Offers</a></li>
+            <li><a href="/my_artwork">Artwork</a></li>
           </ul>
         </li>
         <li class="dropdown">
@@ -73,8 +73,8 @@
             Buying
           </a>
           <ul class="dropdown-menu">
-            <li><a href="/users/{{ user._id }}/orders">Orders</a></li>
-            <li><a href="/users/{{ user._id }}/requests">Requests</a></li>
+            <li><a href="/orders/bought">Orders</a></li>
+            <li><a href="/requests">Requests</a></li>
           </ul>
         </li>
 
@@ -93,9 +93,8 @@
           </ul>
         </li>
 
-        <li><a href="/checkout/process_cart"><i class="fa fa-shopping-cart"><span class="cart-badge badge"
+        <li><a href="/checkout/cart"><i class="fa fa-shopping-cart"><span class="cart-badge badge"
                 id="cart_items">{{ user.cart.length }}</span></i></a></li>
-
         {{else }}
         <li><a href="/login">Sign In</a></li>
         <li>

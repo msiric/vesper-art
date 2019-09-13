@@ -50,7 +50,7 @@ const postNewArtwork = async (req, res, next) => {
     if (!updatedUser) {
       return res.status(400).json({ message: 'Could not update user' });
     } else {
-      return res.status(200).json('/my-artwork');
+      return res.status(200).json('/my_artwork');
     }
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
@@ -123,7 +123,7 @@ const updateArtwork = async (req, res, next) => {
       if (req.body.artwork_price) foundArtwork.price = req.body.artwork_price;
       const savedArtwork = await foundArtwork.save();
       if (savedArtwork) {
-        return res.status(200).json('/my-artwork');
+        return res.status(200).json('/my_artwork');
       } else {
         return res
           .status(400)
@@ -179,7 +179,7 @@ const deleteArtwork = async (req, res, next) => {
                 }
               );
               if (updatedUser) {
-                return res.status(200).json('/my-artwork');
+                return res.status(200).json('/my_artwork');
               } else {
                 return res
                   .status(400)
@@ -208,7 +208,7 @@ const deleteArtwork = async (req, res, next) => {
           { deleted: true }
         );
         if (updatedArtwork) {
-          return res.status(200).json('/my-artwork');
+          return res.status(200).json('/my_artwork');
         } else {
           return res
             .status(400)

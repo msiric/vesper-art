@@ -50,7 +50,7 @@ const postSignUp = async (req, res, next) => {
       if (savedUser) {
         try {
           const sentEmail = await axios.post(
-            'http://localhost:3000/send-email',
+            'http://localhost:3000/send_email',
             verificationInfo,
             {
               proxy: false
@@ -63,7 +63,7 @@ const postSignUp = async (req, res, next) => {
         }
         // old code
         /*         axios
-          .post('http://localhost:3000/send-email', verificationInfo, {
+          .post('http://localhost:3000/send_email', verificationInfo, {
             proxy: false
           })
           .then(res => {

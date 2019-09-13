@@ -17,31 +17,31 @@ const artworkMediaSingleUpload = artworkMediaUpload.single('image');
 const artworkMediaSingleEdit = artworkMediaEdit.single('image');
 
 router.post(
-  '/profile-image-upload',
+  '/profile_image_upload',
   [isLoggedIn, profilePhotoSingleUpload],
   uploadController.postProfileImage
 );
 
 router.post(
-  '/artwork-cover-upload',
+  '/artwork_cover_upload',
   [isLoggedIn, artworkCoverSingleUpload],
   uploadController.postArtworkCover
 );
 
 router.post(
-  '/artwork-cover-edit/:id',
+  '/artwork_cover_edit/:id',
   [isLoggedIn, artworkCoverSingleEdit],
   uploadController.updateArtworkCover
 );
 
 router.post(
-  '/artwork-media-upload',
+  '/artwork_media_upload',
   [isLoggedIn, artworkMediaSingleUpload],
   uploadController.postArtworkMedia
 );
 
 router.post(
-  '/artwork-media-edit/:id',
+  '/artwork_media_edit/:id',
   [isLoggedIn, artworkMediaSingleEdit],
   uploadController.updateArtworkMedia
 );

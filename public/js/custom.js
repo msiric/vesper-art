@@ -42,7 +42,7 @@ $(function() {
     } else {
       $.ajax({
         type: 'POST',
-        url: '/apply-promocode',
+        url: '/apply_promocode',
         data: {
           promocode: amount
         },
@@ -133,7 +133,7 @@ $(function() {
     } else {
       $.ajax({
         type: 'POST',
-        url: '/remove-promocode',
+        url: '/remove_promocode',
         data: {
           promocode: promo_id
         },
@@ -163,13 +163,13 @@ $(function() {
     } else {
       $.ajax({
         type: 'POST',
-        url: '/add-to-cart/',
+        url: '/add_to_cart/',
         data: {
           artwork_id: artwork_id
         },
         success: function(data) {
           $('.order-card .name').append(
-            '<a href="/checkout/process_cart" class="btn btn-success" id="in-cart">In cart</a>'
+            '<a href="/checkout/cart" class="btn btn-success" id="in-cart">In cart</a>'
           );
           $('#add-to-cart').remove();
           if (data.warning) {
@@ -195,7 +195,7 @@ $(function() {
     } else {
       $.ajax({
         type: 'DELETE',
-        url: '/remove-from-cart',
+        url: '/remove_from_cart',
         data: {
           artwork_id: artwork_id
         },
@@ -222,7 +222,7 @@ $(function() {
       if (formData) {
         $.ajax({
           type: 'POST',
-          url: '/profile-image-upload',
+          url: '/profile_image_upload',
           processData: false,
           contentType: false,
           cache: false,
@@ -256,7 +256,7 @@ $(function() {
       if (formData) {
         $.ajax({
           type: 'POST',
-          url: '/artwork-cover-upload',
+          url: '/artwork_cover_upload',
           processData: false,
           contentType: false,
           cache: false,
@@ -277,7 +277,7 @@ $(function() {
             if (formData) {
               $.ajax({
                 type: 'POST',
-                url: '/artwork-media-upload',
+                url: '/artwork_media_upload',
                 processData: false,
                 contentType: false,
                 cache: false,
@@ -296,7 +296,7 @@ $(function() {
 
                   $.ajax({
                     type: 'POST',
-                    url: '/add-new-artwork',
+                    url: '/add_new_artwork',
                     data: {
                       artwork_cover,
                       artwork_media,
@@ -348,7 +348,7 @@ $(function() {
       if (formData) {
         $.ajax({
           type: 'POST',
-          url: '/artwork-cover-edit/' + urlId,
+          url: '/artwork_cover_edit/' + urlId,
           processData: false,
           contentType: false,
           cache: false,
@@ -375,7 +375,7 @@ $(function() {
       if (formData) {
         $.ajax({
           type: 'POST',
-          url: '/artwork-media-edit/' + urlId,
+          url: '/artwork_media_edit/' + urlId,
           processData: false,
           contentType: false,
           cache: false,
@@ -398,7 +398,7 @@ $(function() {
     const artwork_price = $('input[name=artwork_price]').val();
     $.ajax({
       type: 'POST',
-      url: '/edit-artwork/' + urlId,
+      url: '/edit_artwork/' + urlId,
       data: {
         artwork_cover,
         artwork_media,
@@ -424,7 +424,7 @@ $(function() {
       );
       $.ajax({
         type: 'DELETE',
-        url: '/edit-artwork/' + artworkId,
+        url: '/edit_artwork/' + artworkId,
         success: function(url) {
           window.location.href = url;
         }
@@ -458,7 +458,7 @@ $('#user-delete-button').on('click', function(e) {
   if (confirm('Are you sure you want to delete your account?')) {
     $.ajax({
       type: 'POST',
-      url: '/delete-user',
+      url: '/delete_user',
       success: function(data) {
         window.location.href = data;
       },
@@ -484,7 +484,7 @@ $('#rate-artwork-form').on('submit', function(e) {
     $.ajax({
       type: 'POST',
       data: data,
-      url: `/rate-artwork/${artworkId}`,
+      url: `/rate_artwork/${artworkId}`,
       success: function(data) {
         console.log(data);
       },
@@ -504,7 +504,7 @@ $('#contact-support-form').on('submit', function(e) {
   $.ajax({
     type: 'POST',
     data: data,
-    url: `/contact-support/`,
+    url: `/contact_support/`,
     success: function(data) {
       console.log(data);
     },
@@ -519,7 +519,7 @@ $('.save-artwork-button').on('click', function() {
   if (artworkId) {
     $.ajax({
       type: 'POST',
-      url: `/save-artwork/${artworkId}`,
+      url: `/save_artwork/${artworkId}`,
       success: function(data) {
         if (data.saved) {
           $('.save-artwork-button').html('Remove artwork');

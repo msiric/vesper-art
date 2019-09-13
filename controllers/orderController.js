@@ -219,8 +219,7 @@ const postPaymentSingle = async (req, res, next) => {
           const savedOrder = await order.save();
           if (savedOrder) {
             // temp
-            const orderPath =
-              '/users/' + req.user._id + '/orders/' + savedOrder._id;
+            const orderPath = '/orders/' + savedOrder._id;
             await User.updateOne({ _id: req.user._id }, { discount: null });
             // emit to user (needs testing)
             let notification = new Notification();
@@ -246,9 +245,7 @@ const postPaymentSingle = async (req, res, next) => {
                 users[foundArtwork.owner].emit('increaseNotif', {});
               }
             }
-            res.redirect(
-              '/users/' + req.user._id + '/orders/' + savedOrder._id
-            );
+            res.redirect('/orders/' + savedOrder._id);
           } else {
             return res
               .status(400)
@@ -378,8 +375,7 @@ const postPaymentCart = async (req, res, next) => {
               { $set: { cart: [], discount: null } }
             );
             if (updatedUser) {
-              const orderPath =
-                '/users/' + req.user._id + '/orders/' + savedOrder._id;
+              const orderPath = '/orders/' + savedOrder._id;
               // emit to multiple sellers (needs testing)
               let notification = new Notification();
               foundArtwork.map(async function(artwork) {
@@ -408,7 +404,7 @@ const postPaymentCart = async (req, res, next) => {
                   }
                 });
               }
-              res.redirect('/users/' + req.user._id + '/orders');
+              res.redirect('/orders');
             } else {
               return res
                 .status(400)
@@ -431,6 +427,31 @@ const postPaymentCart = async (req, res, next) => {
     }
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getSoldOrders = async (req, res, next) => {
+  try {
+    const foundOrders = await Order.find({ seller: req.user._id })
+      .populate('buyer')
+      .populate('seller')
+      .populate('artwork');
+    res.render('order/order-seller', { order: foundOrders });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getBoughtOrders = async (req, res, next) => {
+  try {
+    const foundOrders = await Order.find({ buyer: req.user._id })
+      .populate('buyer')
+      .populate('seller')
+      .populate('artwork');
+    res.render('order/order-buyer', { order: foundOrders });
+  } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -513,31 +534,6 @@ const getOrderId = async (req, res, next) => {
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-const getSoldOrders = async (req, res, next) => {
-  try {
-    const foundOrders = await Order.find({ seller: req.user._id })
-      .populate('buyer')
-      .populate('seller')
-      .populate('artwork');
-    res.render('order/order-seller', { order: foundOrders });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-const getBoughtOrders = async (req, res, next) => {
-  try {
-    const foundOrders = await Order.find({ buyer: req.user._id })
-      .populate('buyer')
-      .populate('seller')
-      .populate('artwork');
-    res.render('order/order-buyer', { order: foundOrders });
-  } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };

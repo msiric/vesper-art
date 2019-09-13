@@ -2,17 +2,9 @@ const router = require('express').Router();
 const { isLoggedIn } = require('../../utils/helpers');
 const orderController = require('../../controllers/orderController');
 
-router.get(
-  '/checkout/single-package/:id',
-  isLoggedIn,
-  orderController.getSingleArtwork
-);
+router.get('/checkout/cart', isLoggedIn, orderController.getProcessCart);
 
-router.get(
-  '/checkout/process_cart',
-  isLoggedIn,
-  orderController.getProcessCart
-);
+router.get('/checkout/:id', isLoggedIn, orderController.getSingleArtwork);
 
 router
   .route('/payment/cart')
@@ -24,22 +16,14 @@ router
   .get(isLoggedIn, orderController.getPaymentSingle)
   .post(isLoggedIn, orderController.postPaymentSingle);
 
-router.get(
-  '/users/:userId/orders/:orderId',
-  isLoggedIn,
-  orderController.getOrderId
-);
+router.get('/orders/sold', isLoggedIn, orderController.getSoldOrders);
 
-router.get(
-  '/users/:id/manage_orders',
-  isLoggedIn,
-  orderController.getSoldOrders
-);
+router.get('/orders/bought', isLoggedIn, orderController.getBoughtOrders);
 
-router.get('/users/:id/orders', isLoggedIn, orderController.getBoughtOrders);
+router.get('/orders/:orderId', isLoggedIn, orderController.getOrderId);
 
-router.post('/add-to-cart', isLoggedIn, orderController.addToCart);
+router.post('/add_to_cart', isLoggedIn, orderController.addToCart);
 
-router.delete('/remove-from-cart', isLoggedIn, orderController.deleteFromCart);
+router.delete('/remove_from_cart', isLoggedIn, orderController.deleteFromCart);
 
 module.exports = router;
