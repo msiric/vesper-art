@@ -27,12 +27,6 @@ hbsEngine = expressHbs.create({
   defaultLayout: 'layout.hbs'
 });
 
-hbs.registerHelper('formatCheckbox', function(a) {
-  if (a) {
-    return 'checked';
-  }
-});
-
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
@@ -44,11 +38,11 @@ app.use(function(req, res, next) {
 });
 
 const sessionMiddleware = session({
-  // needs change?
-  resave: true,
+  resave: false,
   saveUninitialized: true,
   secret: config.secret,
-  store: new MongoStore({ url: config.database, autoReconnect: true })
+  checkExpirationInterval: 15 * 60 * 1000,
+  expiration: 30 * 24 * 60 * 60 * 1000
 });
 
 mongoose.connect(config.database, { useNewUrlParser: true }, function(err) {
@@ -220,11 +214,6 @@ const workRouter = require('./routes/api/workRouter');
 const reviewRouter = require('./routes/api/reviewRouter');
 const promocodeRouter = require('./routes/api/promocodeRouter');
 const ticketRouter = require('./routes/api/ticketRouter');
-
-app.use(function(req, res, next) {
-  res.locals.session = req.session;
-  next();
-});
 
 app.use(mainRoutes);
 app.use(userRoutes);
