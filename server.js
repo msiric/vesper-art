@@ -11,6 +11,7 @@ const hbs = require('hbs');
 const moment = require('moment');
 const expressHbs = require('express-handlebars');
 const passportSocketIo = require('passport.socketio');
+const cors = require('cors');
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -31,6 +32,9 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
+app.use(cors());
+app.options('*', cors());
+
 app.use(function(req, res, next) {
   'use strict';
   req.io = io;
@@ -38,11 +42,13 @@ app.use(function(req, res, next) {
 });
 
 const sessionMiddleware = session({
+  // needs change?
   resave: false,
   saveUninitialized: true,
   secret: config.secret,
   checkExpirationInterval: 15 * 60 * 1000,
-  expiration: 30 * 24 * 60 * 60 * 1000
+  expiration: 30 * 24 * 60 * 60 * 1000,
+  store: sessionStore
 });
 
 mongoose.connect(config.database, { useNewUrlParser: true }, function(err) {
@@ -157,12 +163,13 @@ app.engine(
 app.set('view engine', 'hbs');
 app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+
 app.use(function(req, res, next) {
   res.locals.user = req.user;
   next();
@@ -246,10 +253,11 @@ http.listen(config.port, err => {
   console.log(`Running on port ${config.port}`);
 });
 
-app.use(function(req, res, next) {
+/* app.use(function(req, res, next) {
   res.set(
     'Cache-Control',
     'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0'
   );
   next();
 });
+ */

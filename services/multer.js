@@ -2,6 +2,7 @@ const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const path = require('path');
+const Jimp = require('jimp');
 
 aws.config.update({
   secretAccessKey: 'TZhmTLVh6KSBJRfYK2aq2eqoiYbIEncgzUptgGON',
@@ -46,13 +47,34 @@ const artworkCoverUpload = multer({
     bucket: 'vesper-testing',
     limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
-    key: function(req, file, callback) {
-      const fileName =
-        req.user._id + Date.now().toString() + path.extname(file.originalname);
-      const folderName = 'artworkCovers/';
-      const filePath = folderName + fileName;
-      callback(null, filePath);
-    }
+    shouldTransform: function(req, file, callback) {
+      callback(null, /^image/i.test(file.mimetype));
+    },
+    transforms: [
+      {
+        id: 'original',
+        key: function(req, file, callback) {
+          const fileName =
+            req.user._id +
+            Date.now().toString() +
+            path.extname(file.originalname);
+
+          const folderName = 'artworkCovers/';
+          const filePath = folderName + fileName;
+          callback(null, filePath);
+        },
+        transform: async function(req, file, callback) {
+          const readFile = await Jimp.read(file);
+          const width = 10;
+          const height = Jimp.AUTO;
+
+          const resizedFile = readFile.resize(width, height);
+
+          file = await resizedFile.getBufferAsync(Jimp.MIME_PNG);
+          callback(null, file);
+        }
+      }
+    ]
   })
 });
 

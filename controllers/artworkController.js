@@ -145,7 +145,8 @@ const deleteArtwork = async (req, res, next) => {
     });
     if (foundArtwork) {
       const foundOrders = await Order.find({ artwork: req.params.id });
-      if (!foundOrders) {
+      console.log(foundOrders);
+      if (!foundOrders.length) {
         const folderName = 'artworkCovers/';
         const fileName = foundArtwork.cover.split('/').slice(-1)[0];
         const filePath = folderName + fileName;
@@ -205,7 +206,7 @@ const deleteArtwork = async (req, res, next) => {
           {
             _id: req.params.id
           },
-          { deleted: true }
+          { active: false }
         );
         if (updatedArtwork) {
           return res.status(200).json('/my_artwork');

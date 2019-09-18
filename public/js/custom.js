@@ -241,16 +241,16 @@ $(function() {
 
   $('#artwork-upload-form').on('submit', function(e) {
     e.preventDefault();
-    const coverInput = $('#artwork-cover-upload')[0];
+    const coverInput = $('#artwork-media-upload')[0];
     const coverFile = coverInput.files[0];
     const coverType = /image.*/;
     let artworkCover;
     let artworkMedia;
+
     if (coverFile) {
       if (!coverFile.type.match(coverType)) {
         return false;
       }
-
       const formData = new FormData();
       formData.append('image', coverFile);
       if (formData) {
@@ -332,7 +332,7 @@ $(function() {
     const urlId = window.location.href.substring(
       window.location.href.lastIndexOf('/') + 1
     );
-    const coverInput = $('#artwork-cover-edit')[0];
+    const coverInput = $('#artwork-media-edit')[0];
     const coverFile = coverInput.files[0];
     const coverType = /image.*/;
     let artworkCover;
