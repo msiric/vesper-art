@@ -5,16 +5,16 @@ const uploadController = require('../../controllers/uploadController');
 const upload = require('../../services/multer');
 
 const profilePhotoUpload = upload.profilePhotoUpload;
-const artworkCoverUpload = upload.artworkCoverUpload;
-const artworkCoverEdit = upload.artworkCoverEdit;
+/* const artworkCoverUpload = upload.artworkCoverUpload; */
+/* const artworkCoverEdit = upload.artworkCoverEdit; */
 const artworkMediaUpload = upload.artworkMediaUpload;
-const artworkMediaEdit = upload.artworkMediaEdit;
+/* const artworkMediaEdit = upload.artworkMediaEdit; */
 
 const profilePhotoSingleUpload = profilePhotoUpload.single('image');
-const artworkCoverSingleUpload = artworkCoverUpload.single('image');
-const artworkCoverSingleEdit = artworkCoverEdit.single('image');
-const artworkMediaSingleUpload = artworkMediaUpload.single('image');
-const artworkMediaSingleEdit = artworkMediaEdit.single('image');
+/* const artworkCoverSingleUpload = artworkCoverUpload.single('image');
+const artworkCoverSingleEdit = artworkCoverEdit.single('image'); */
+const artworkMediaArrayUpload = artworkMediaUpload.array('image', 2);
+/* const artworkMediaSingleEdit = artworkMediaEdit.single('image'); */
 
 router.post(
   '/profile_image_upload',
@@ -23,11 +23,11 @@ router.post(
 );
 
 router.post(
-  '/artwork_cover_upload',
-  [isLoggedIn, artworkCoverSingleUpload],
-  uploadController.postArtworkCover
+  '/artwork_media_upload',
+  [isLoggedIn, artworkMediaArrayUpload],
+  uploadController.postArtworkMedia
 );
-
+/* 
 router.post(
   '/artwork_cover_edit/:id',
   [isLoggedIn, artworkCoverSingleEdit],
@@ -44,6 +44,6 @@ router.post(
   '/artwork_media_edit/:id',
   [isLoggedIn, artworkMediaSingleEdit],
   uploadController.updateArtworkMedia
-);
+); */
 
 module.exports = router;

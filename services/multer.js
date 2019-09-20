@@ -40,38 +40,59 @@ const profilePhotoUpload = multer({
   })
 });
 
-const artworkCoverUpload = multer({
+const artworkMediaUpload = multer({
   fileFilter: fileFilter,
   storage: multerS3({
     s3: s3,
     bucket: 'vesper-testing',
     limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
-    shouldTransform: function(req, file, callback) {
-      callback(null, /^image/i.test(file.mimetype));
+    shouldTransform: function(req, file, cb) {
+      console.log('in should transform ', file);
+      cb(null, /^image/i.test(file.mimetype));
     },
     transforms: [
       {
-        id: 'original',
+        id: 'image',
         key: function(req, file, callback) {
+          console.log(file);
+          console.log('original');
           const fileName =
             req.user._id +
             Date.now().toString() +
             path.extname(file.originalname);
+          const folderName = 'artworkMedia/';
+          const filePath = folderName + fileName;
+          callback(null, filePath);
+        },
+        transform: function(req, file, callback) {
+          console.log('original1');
 
+          callback(null, sharp().jpg());
+        }
+      },
+      {
+        id: 'cover',
+        key: function(req, file, callback) {
+          console.log(file);
+          console.log('thumbnail');
+          const fileName =
+            req.user._id +
+            Date.now().toString() +
+            path.extname(file.originalname);
           const folderName = 'artworkCovers/';
           const filePath = folderName + fileName;
           callback(null, filePath);
         },
-        transform: async function(req, file, callback) {
-          const readFile = await Jimp.read(file);
-          const width = 10;
-          const height = Jimp.AUTO;
+        transform: function(req, file, callback) {
+          console.log('thumbnail1');
 
-          const resizedFile = readFile.resize(width, height);
-
-          file = await resizedFile.getBufferAsync(Jimp.MIME_PNG);
-          callback(null, file);
+          callback(
+            null,
+            sharp()
+              .resize(10, 10)
+              .jpg()
+          );
         }
       }
     ]
@@ -95,7 +116,7 @@ const artworkCoverEdit = multer({
   })
 });
 
-const artworkMediaUpload = multer({
+/* const artworkMediaUpload = multer({
   fileFilter: fileFilter,
   storage: multerS3({
     s3: s3,
@@ -110,7 +131,7 @@ const artworkMediaUpload = multer({
       callback(null, filePath);
     }
   })
-});
+}); */
 
 const artworkMediaEdit = multer({
   fileFilter: fileFilter,
@@ -131,8 +152,8 @@ const artworkMediaEdit = multer({
 
 module.exports = {
   profilePhotoUpload: profilePhotoUpload,
-  artworkCoverUpload: artworkCoverUpload,
-  artworkCoverEdit: artworkCoverEdit,
-  artworkMediaUpload: artworkMediaUpload,
-  artworkMediaEdit: artworkMediaEdit
+  /*   artworkCoverUpload: artworkCoverUpload,
+  artworkCoverEdit: artworkCoverEdit, */
+  artworkMediaUpload: artworkMediaUpload
+  /*   artworkMediaEdit: artworkMediaEdit */
 };

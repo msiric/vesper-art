@@ -253,71 +253,43 @@ $(function() {
       }
       const formData = new FormData();
       formData.append('image', coverFile);
+      formData.append('image', coverFile);
       if (formData) {
         $.ajax({
           type: 'POST',
-          url: '/artwork_cover_upload',
+          url: '/artwork_media_upload',
           processData: false,
           contentType: false,
           cache: false,
           data: formData,
           success: function(data) {
-            artworkCover = data.imageUrl;
-            const mediaInput = $('#artwork-media-upload')[0];
-            const mediaFile = mediaInput.files[0];
-            const mediaType = /image.*/;
-            if (mediaFile) {
-              if (!mediaFile.type.match(mediaType)) {
-                return false;
+            artworkCover = data.coverUrl;
+            artworkMedia = data.originalUrl;
+            const artwork_cover = artworkCover;
+            const artwork_media = artworkMedia;
+            const artwork_title = $('input[name=artwork_title]').val();
+            const artwork_category = $('select[name=artwork_category]').val();
+            const artwork_about = $('textarea[name=artwork_about]').val();
+            const artwork_price = $('input[name=artwork_price]').val();
+
+            $.ajax({
+              type: 'POST',
+              url: '/add_new_artwork',
+              data: {
+                artwork_cover,
+                artwork_media,
+                artwork_title,
+                artwork_category,
+                artwork_about,
+                artwork_price
+              },
+              success: function(url) {
+                window.location.href = url;
+              },
+              error: function(err) {
+                console.log(err);
               }
-            }
-
-            const formData = new FormData();
-            formData.append('image', mediaFile);
-            if (formData) {
-              $.ajax({
-                type: 'POST',
-                url: '/artwork_media_upload',
-                processData: false,
-                contentType: false,
-                cache: false,
-                data: formData,
-                success: function(data) {
-                  artworkMedia = data.imageUrl;
-
-                  const artwork_cover = artworkCover;
-                  const artwork_media = artworkMedia;
-                  const artwork_title = $('input[name=artwork_title]').val();
-                  const artwork_category = $(
-                    'select[name=artwork_category]'
-                  ).val();
-                  const artwork_about = $('textarea[name=artwork_about]').val();
-                  const artwork_price = $('input[name=artwork_price]').val();
-
-                  $.ajax({
-                    type: 'POST',
-                    url: '/add_new_artwork',
-                    data: {
-                      artwork_cover,
-                      artwork_media,
-                      artwork_title,
-                      artwork_category,
-                      artwork_about,
-                      artwork_price
-                    },
-                    success: function(url) {
-                      window.location.href = url;
-                    },
-                    error: function(err) {
-                      console.log(err);
-                    }
-                  });
-                },
-                error: function(err) {
-                  console.log(err);
-                }
-              });
-            }
+            });
           },
           error: function(err) {
             console.log(err);

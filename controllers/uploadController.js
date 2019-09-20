@@ -38,15 +38,19 @@ const postProfileImage = async (req, res, next) => {
   }
 };
 
-const postArtworkCover = async (req, res, next) => {
+const postArtworkMedia = async (req, res, next) => {
   try {
-    return res.status(200).json({ imageUrl: req.file.location });
+    console.log('yoyoma');
+    console.log(req.files);
+    return res
+      .status(200)
+      .json({ originalUrl: req.files[0], coverUrl: req.files[1] });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-const updateArtworkCover = async (req, res, next) => {
+/* const updateArtworkCover = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
     const foundArtwork = await Artwork.findOne({
@@ -83,10 +87,11 @@ const updateArtworkCover = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
-};
+}; */
 
-const postArtworkMedia = async (req, res, next) => {
+/* const postArtworkMedia = async (req, res, next) => {
   try {
+    console.log(req.file);
     return res.status(200).json({ imageUrl: req.file.location });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
@@ -130,12 +135,12 @@ const updateArtworkMedia = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
-};
+}; */
 
 module.exports = {
   postProfileImage,
-  postArtworkCover,
-  updateArtworkCover,
-  postArtworkMedia,
-  updateArtworkMedia
+  /*   postArtworkCover, */
+  /*   updateArtworkCover, */
+  postArtworkMedia
+  /*   updateArtworkMedia */
 };
