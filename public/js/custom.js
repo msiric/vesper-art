@@ -252,7 +252,7 @@ $(function() {
         return false;
       }
       const formData = new FormData();
-      formData.append('image', coverFile);
+      formData.append('artwork_media', coverFile);
       if (formData) {
         $.ajax({
           type: 'POST',

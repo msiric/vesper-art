@@ -1,8 +1,7 @@
 const aws = require('aws-sdk');
 const multer = require('multer');
-const multerS3 = require('multer-s3');
+const multerS3 = require('multer-s3-transform');
 const path = require('path');
-const Jimp = require('jimp');
 const sharp = require('sharp');
 
 aws.config.update({
@@ -35,12 +34,12 @@ const profilePhotoUpload = multer({
     bucket: 'vesper-testing',
     limits: { fileSize: 2 * 1024 * 1024 },
     acl: 'public-read',
-    key: function(req, file, callback) {
+    key: function(req, file, cb) {
       const fileName =
         req.user._id + Date.now().toString() + path.extname(file.originalname);
       const folderName = 'profilePhotos/';
       const filePath = folderName + fileName;
-      callback(null, filePath);
+      cb(null, filePath);
     }
   })
 });
@@ -59,7 +58,6 @@ const artworkMediaUpload = multer({
       {
         id: 'image',
         key: function(req, file, cb) {
-          console.log('original');
           const fileName =
             req.user._id +
             Date.now().toString() +
@@ -69,15 +67,12 @@ const artworkMediaUpload = multer({
           cb(null, filePath);
         },
         transform: function(req, file, cb) {
-          console.log('original1');
-
-          cb(null, sharp().jpg());
+          cb(null, sharp());
         }
       },
       {
         id: 'cover',
         key: function(req, file, cb) {
-          console.log('thumbnail');
           const fileName =
             req.user._id +
             Date.now().toString() +
@@ -87,14 +82,7 @@ const artworkMediaUpload = multer({
           cb(null, filePath);
         },
         transform: function(req, file, cb) {
-          console.log('thumbnail1');
-
-          cb(
-            null,
-            sharp()
-              .resize(10, 10)
-              .jpg()
-          );
+          cb(null, sharp().resize(10, 10));
         }
       }
     ]

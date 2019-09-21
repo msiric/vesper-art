@@ -13,7 +13,7 @@ const artworkMediaUpload = upload.artworkMediaUpload;
 const profilePhotoSingleUpload = profilePhotoUpload.single('image');
 /* const artworkCoverSingleUpload = artworkCoverUpload.single('image');
 const artworkCoverSingleEdit = artworkCoverEdit.single('image'); */
-const artworkMediaSingleUpload = artworkMediaUpload.single('image');
+const artworkMediaSingleUpload = artworkMediaUpload.single('artwork_media');
 /* const artworkMediaSingleEdit = artworkMediaEdit.single('image'); */
 
 router.post(

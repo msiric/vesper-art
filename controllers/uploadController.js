@@ -42,7 +42,7 @@ const postArtworkMedia = async (req, res, next) => {
   try {
     console.log('yoyoma');
     console.log(req.file);
-    return res.status(200).json({ coverUrl: req.file });
+    return res.status(200).json({ coverUrl: req.file, originalUrl: req.file });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
