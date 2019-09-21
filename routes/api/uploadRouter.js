@@ -13,7 +13,7 @@ const artworkMediaUpload = upload.artworkMediaUpload;
 const profilePhotoSingleUpload = profilePhotoUpload.single('image');
 /* const artworkCoverSingleUpload = artworkCoverUpload.single('image');
 const artworkCoverSingleEdit = artworkCoverEdit.single('image'); */
-const artworkMediaArrayUpload = artworkMediaUpload.array('image', 2);
+const artworkMediaSingleUpload = artworkMediaUpload.single('image');
 /* const artworkMediaSingleEdit = artworkMediaEdit.single('image'); */
 
 router.post(
@@ -24,7 +24,7 @@ router.post(
 
 router.post(
   '/artwork_media_upload',
-  [isLoggedIn, artworkMediaArrayUpload],
+  [isLoggedIn, artworkMediaSingleUpload],
   uploadController.postArtworkMedia
 );
 /* 

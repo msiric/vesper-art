@@ -253,7 +253,6 @@ $(function() {
       }
       const formData = new FormData();
       formData.append('image', coverFile);
-      formData.append('image', coverFile);
       if (formData) {
         $.ajax({
           type: 'POST',

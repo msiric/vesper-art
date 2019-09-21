@@ -41,11 +41,10 @@ const postProfileImage = async (req, res, next) => {
 const postArtworkMedia = async (req, res, next) => {
   try {
     console.log('yoyoma');
-    console.log(req.files);
-    return res
-      .status(200)
-      .json({ originalUrl: req.files[0], coverUrl: req.files[1] });
+    console.log(req.file);
+    return res.status(200).json({ coverUrl: req.file });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };

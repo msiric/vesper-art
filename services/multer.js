@@ -3,6 +3,7 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const path = require('path');
 const Jimp = require('jimp');
+const sharp = require('sharp');
 
 aws.config.update({
   secretAccessKey: 'TZhmTLVh6KSBJRfYK2aq2eqoiYbIEncgzUptgGON',
@@ -12,12 +13,16 @@ aws.config.update({
 
 const s3 = new aws.S3();
 
-const fileFilter = (req, file, callback) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-    callback(null, true);
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === 'image/jpeg' ||
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/gif'
+  ) {
+    cb(null, true);
   } else {
-    callback(
-      new Error('Invalid Mime Type, only JPEG and PNG files allowed'),
+    cb(
+      new Error('Invalid Mime Type, only JPEG, PNG and GIF files are allowed'),
       false
     );
   }
@@ -48,14 +53,12 @@ const artworkMediaUpload = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
     shouldTransform: function(req, file, cb) {
-      console.log('in should transform ', file);
-      cb(null, /^image/i.test(file.mimetype));
+      cb(null, true);
     },
     transforms: [
       {
         id: 'image',
-        key: function(req, file, callback) {
-          console.log(file);
+        key: function(req, file, cb) {
           console.log('original');
           const fileName =
             req.user._id +
@@ -63,18 +66,17 @@ const artworkMediaUpload = multer({
             path.extname(file.originalname);
           const folderName = 'artworkMedia/';
           const filePath = folderName + fileName;
-          callback(null, filePath);
+          cb(null, filePath);
         },
-        transform: function(req, file, callback) {
+        transform: function(req, file, cb) {
           console.log('original1');
 
-          callback(null, sharp().jpg());
+          cb(null, sharp().jpg());
         }
       },
       {
         id: 'cover',
-        key: function(req, file, callback) {
-          console.log(file);
+        key: function(req, file, cb) {
           console.log('thumbnail');
           const fileName =
             req.user._id +
@@ -82,12 +84,12 @@ const artworkMediaUpload = multer({
             path.extname(file.originalname);
           const folderName = 'artworkCovers/';
           const filePath = folderName + fileName;
-          callback(null, filePath);
+          cb(null, filePath);
         },
-        transform: function(req, file, callback) {
+        transform: function(req, file, cb) {
           console.log('thumbnail1');
 
-          callback(
+          cb(
             null,
             sharp()
               .resize(10, 10)
