@@ -188,14 +188,54 @@ $(function() {
     }
   });
 
-  $('.remove-from-cart').on('click', function() {
-    let artwork_id = $(this).attr('id');
+  $('#remove-from-cart').on('click', function() {
+    let artwork_id = $('#remove-from-cart').val();
     if (artwork_id === '') {
       return false;
     } else {
       $.ajax({
         type: 'DELETE',
         url: '/remove_from_cart',
+        data: {
+          artwork_id: artwork_id
+        },
+        success: function(data) {
+          if (data.success) {
+            window.location.reload();
+          }
+        }
+      });
+    }
+  });
+
+  $('#increase-artwork-quantity').on('click', function() {
+    let artwork_id = $('#increase-artwork-quantity').val();
+    if (artwork_id === '') {
+      return false;
+    } else {
+      $.ajax({
+        type: 'POST',
+        url: '/increase_artwork_quantity',
+        data: {
+          artwork_id: artwork_id
+        },
+        success: function(data) {
+          if (data.success) {
+            window.location.reload();
+          }
+        }
+      });
+    }
+  });
+
+  $('#decrease-artwork-quantity').on('click', function() {
+    let artwork_id = $('#decrease-artwork-quantity').val();
+    if (artwork_id === '') {
+      return false;
+    } else {
+      $.ajax({
+        type: 'POST',
+        url: '/decrease_artwork_quantity',
         data: {
           artwork_id: artwork_id
         },

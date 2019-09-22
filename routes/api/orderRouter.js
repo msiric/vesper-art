@@ -26,4 +26,16 @@ router.post('/add_to_cart', isLoggedIn, orderController.addToCart);
 
 router.delete('/remove_from_cart', isLoggedIn, orderController.deleteFromCart);
 
+router.post(
+  '/increase_artwork_quantity',
+  isLoggedIn,
+  orderController.increaseArtwork
+);
+
+router.post(
+  '/decrease_artwork_quantity',
+  isLoggedIn,
+  orderController.decreaseArtwork
+);
+
 module.exports = router;

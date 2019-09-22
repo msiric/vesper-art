@@ -9,10 +9,14 @@
             <div class="space-between">
               <h4><span><img src="{{ cover }}" style="width: 70%"></span>
                 <span>{{ title }}</span></h4>
+              <div class="col-sm-1">
+                <button id="decrease-artwork-quantity" value="{{ _id }}" class="btn btn-sm btn-primary">-</button>
+                <button id="increase-artwork-quantity" value="{{ _id }}" class="btn btn-sm btn-primary">+</button>
+              </div>
               <hr>
               <h3>
                 <span></span>
-                <span><button class="btn btn-danger remove-from-cart" id="{{ _id }}">Remove</button></span>
+                <span><button id="remove-from-cart" class="btn btn-danger" value="{{ _id }}">Remove</button></span>
               </h3>
             </div>
           </div>

@@ -598,6 +598,62 @@ const deleteFromCart = async (req, res, next) => {
   }
 };
 
+const increaseArtwork = async (req, res, next) => {
+  try {
+    const artworkId = req.body.artwork_id;
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: artworkId }, { active: true }]
+    });
+    if (foundArtwork) {
+      const updatedUser = await User.updateOne(
+        {
+          _id: req.user._id
+        },
+        {
+          $push: { cart: artworkId }
+        }
+      );
+      if (updatedUser) {
+        res.status(200).json({ success: true });
+      } else {
+        return res.status(400).json({ message: 'Could not update user' });
+      }
+    } else {
+      return res.status(400).json({ message: 'Artwork not found' });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const decreaseArtwork = async (req, res, next) => {
+  try {
+    const artworkId = req.body.artwork_id;
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: artworkId }, { active: true }]
+    });
+    if (foundArtwork) {
+      const updatedUser = await User.updateOne(
+        {
+          _id: req.user._id
+        },
+        {
+          $pull: { cart: artworkId }
+        }
+      );
+      if (updatedUser) {
+        res.status(200).json({ success: true });
+      } else {
+        return res.status(400).json({ message: 'Could not update user' });
+      }
+    } else {
+      return res.status(400).json({ message: 'Artwork not found' });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getSingleArtwork,
   getProcessCart,
@@ -609,5 +665,7 @@ module.exports = {
   getSoldOrders,
   getBoughtOrders,
   addToCart,
-  deleteFromCart
+  deleteFromCart,
+  increaseArtwork,
+  decreaseArtwork
 };

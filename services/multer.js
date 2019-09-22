@@ -28,15 +28,8 @@ const fileFilter = (req, file, cb) => {
 };
 
 const watermark = new Buffer.from(
-  `<svg width="1366" height="768">
-      <style>
-          @font-face {
-              font-family: arial;
-          }
-      </style>
-      <rect x="0" y="0" width="1366" height="768" fill="#000" fill-opacity="0.4"/>
-      <rect x="0" y="0" width="1366" height="96" fill="#000" fill-opacity="0.8"/>
-      <text class="title" style="font-size: 24; font-family:Aller_Light" x="5" y="22" fill="#FFF">
+  `<svg width="100%" height="200%">
+      <text style="font-size: 35; font-family: arial; font-weight: bold;" fill="black" fill-opacity="0.5" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">
           artcore
       </text>
   </svg>`
@@ -100,8 +93,9 @@ const artworkMediaUpload = multer({
           cb(
             null,
             sharp()
-              .resize(null, 100)
+              .resize(300, null)
               .composite([{ input: watermark }])
+              .sharpen()
           );
         }
       }
