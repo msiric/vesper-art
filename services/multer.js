@@ -27,6 +27,21 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+const watermark = new Buffer.from(
+  `<svg width="1366" height="768">
+      <style>
+          @font-face {
+              font-family: arial;
+          }
+      </style>
+      <rect x="0" y="0" width="1366" height="768" fill="#000" fill-opacity="0.4"/>
+      <rect x="0" y="0" width="1366" height="96" fill="#000" fill-opacity="0.8"/>
+      <text class="title" style="font-size: 24; font-family:Aller_Light" x="5" y="22" fill="#FFF">
+          artcore
+      </text>
+  </svg>`
+);
+
 const profilePhotoUpload = multer({
   fileFilter: fileFilter,
   storage: multerS3({
@@ -82,7 +97,12 @@ const artworkMediaUpload = multer({
           cb(null, filePath);
         },
         transform: function(req, file, cb) {
-          cb(null, sharp().resize(10, 10));
+          cb(
+            null,
+            sharp()
+              .resize(null, 100)
+              .composite([{ input: watermark }])
+          );
         }
       }
     ]
