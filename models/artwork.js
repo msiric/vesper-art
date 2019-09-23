@@ -8,13 +8,14 @@ const ArtworkSchema = new Schema({
   category: String,
   about: String,
   price: Number,
+  commercial: Number,
   cover: { type: String, default: 'http://placehold.it/350x150' },
   media: String,
   active: Boolean,
   created: { type: Date, default: Date.now }
 });
 
-ArtworkSchema.plugin(mongooseAlgolia, {
+/* ArtworkSchema.plugin(mongooseAlgolia, {
   appId: 'P9R2R1LI94',
   apiKey: 'a34d14a54aa9d16c44914324bf41076b',
   indexName: 'ArtworkSchema', //The name of the index in Algolia, you can also pass in a function
@@ -28,7 +29,7 @@ ArtworkSchema.plugin(mongooseAlgolia, {
   },
 
   debug: true // Default: false -> If true operations are logged out in your console
-});
+}); */
 
 let Model = mongoose.model('Artwork', ArtworkSchema);
 
