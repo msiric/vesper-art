@@ -31,12 +31,23 @@ const postNewArtwork = async (req, res, next) => {
     newArtwork.owner = req.user._id;
     newArtwork.cover = req.body.artwork_cover;
     newArtwork.media = req.body.artwork_media;
-    newArtwork.deleted = false;
     newArtwork.title = req.body.artwork_title;
+    newArtwork.type = req.body.artwork_type;
     newArtwork.category = req.body.artwork_category;
+    newArtwork.price = null;
+    newArtwork.license = 0;
     newArtwork.about = req.body.artwork_about;
-    newArtwork.price = req.body.artwork_price;
     newArtwork.active = true;
+    if (req.body.artwork_type && req.body.artwork_type == 'commercial') {
+      newArtwork.price = req.body.artwork_price;
+      if (
+        req.body.artwork_license &&
+        req.body.artwork_license == 'commercial'
+      ) {
+        newArtwork.license = req.body.artwork_commercial;
+      }
+    }
+
     const savedArtwork = await newArtwork.save();
 
     const updatedUser = await User.update(
@@ -117,10 +128,21 @@ const updateArtwork = async (req, res, next) => {
       if (req.body.artwork_cover) foundArtwork.cover = req.body.artwork_cover;
       if (req.body.artwork_media) foundArtwork.media = req.body.artwork_media;
       if (req.body.artwork_title) foundArtwork.title = req.body.artwork_title;
+      if (req.body.artwork_type) foundArtwork.type = req.body.artwork_type;
+      foundArtwork.price = null;
+      foundArtwork.license = 0;
+      if (req.body.artwork_type && req.body.artwork_type == 'commercial') {
+        foundArtwork.price = req.body.artwork_price;
+        if (
+          req.body.artwork_license &&
+          req.body.artwork_license == 'commercial'
+        ) {
+          foundArtwork.license = req.body.artwork_commercial;
+        }
+      }
       if (req.body.artwork_category)
         foundArtwork.category = req.body.artwork_category;
       if (req.body.artwork_about) foundArtwork.about = req.body.artwork_about;
-      if (req.body.artwork_price) foundArtwork.price = req.body.artwork_price;
       const savedArtwork = await foundArtwork.save();
       if (savedArtwork) {
         return res.status(200).json('/my_artwork');

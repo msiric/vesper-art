@@ -4,11 +4,12 @@ const Schema = mongoose.Schema;
 
 const ArtworkSchema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
+  type: String,
   title: String,
   category: String,
   about: String,
   price: Number,
-  commercial: Number,
+  license: Number,
   cover: { type: String, default: 'http://placehold.it/350x150' },
   media: String,
   active: Boolean,

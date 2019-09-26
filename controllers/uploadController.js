@@ -40,8 +40,6 @@ const postProfileImage = async (req, res, next) => {
 
 const postArtworkMedia = async (req, res, next) => {
   try {
-    console.log('yoyoma');
-    console.log(req.file);
     return res.status(200).json({
       coverUrl: req.file.transforms[0].location,
       originalUrl: req.file.transforms[1].location

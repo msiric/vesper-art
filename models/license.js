@@ -7,6 +7,7 @@ const LicenseSchema = new Schema({
   fingerprint: String,
   type: String,
   credentials: String,
+  active: Boolean,
   created: { type: Date, default: Date.now }
 });
 

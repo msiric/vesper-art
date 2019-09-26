@@ -307,10 +307,14 @@ $(function() {
             const artwork_cover = artworkCover;
             const artwork_media = artworkMedia;
             const artwork_title = $('input[name=artwork_title]').val();
+            const artwork_type = $('select[name=artwork_type]').val();
             const artwork_category = $('select[name=artwork_category]').val();
-            const artwork_about = $('textarea[name=artwork_about]').val();
             const artwork_price = $('input[name=artwork_price]').val();
-
+            const artwork_license = $('select[name=artwork_license]').val();
+            const artwork_commercial = $(
+              'input[name=artwork_commercial]'
+            ).val();
+            const artwork_about = $('textarea[name=artwork_about]').val();
             $.ajax({
               type: 'POST',
               url: '/add_new_artwork',
@@ -318,9 +322,12 @@ $(function() {
                 artwork_cover,
                 artwork_media,
                 artwork_title,
+                artwork_type,
                 artwork_category,
-                artwork_about,
-                artwork_price
+                artwork_price,
+                artwork_license,
+                artwork_commercial,
+                artwork_about
               },
               success: function(url) {
                 window.location.href = url;
@@ -404,9 +411,12 @@ $(function() {
     const artwork_cover = artworkCover;
     const artwork_media = artworkMedia;
     const artwork_title = $('input[name=artwork_title]').val();
+    const artwork_type = $('select[name=artwork_type]').val();
     const artwork_category = $('select[name=artwork_category]').val();
-    const artwork_about = $('textarea[name=artwork_about]').val();
     const artwork_price = $('input[name=artwork_price]').val();
+    const artwork_license = $('select[name=artwork_license]').val();
+    const artwork_commercial = $('input[name=artwork_commercial]').val();
+    const artwork_about = $('textarea[name=artwork_about]').val();
     $.ajax({
       type: 'POST',
       url: '/edit_artwork/' + urlId,
@@ -414,9 +424,12 @@ $(function() {
         artwork_cover,
         artwork_media,
         artwork_title,
+        artwork_type,
         artwork_category,
-        artwork_about,
-        artwork_price
+        artwork_price,
+        artwork_license,
+        artwork_commercial,
+        artwork_about
       },
       success: function(url) {
         window.location.href = url;
