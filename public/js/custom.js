@@ -155,18 +155,19 @@ $(function() {
     }
   }
 
-  $('#add-to-cart').on('click', function() {
-    let artwork_id = $('#artwork_id').val();
+  $('#add-license-form').on('submit', function(e) {
+    e.preventDefault();
+    const artwork_id = $('#artwork_id').val();
 
-    if (artwork_id === '') {
+    const data =
+      $('#add-license-form').serialize() + `&artworkId=${artwork_id}`;
+    if (!data) {
       return false;
     } else {
       $.ajax({
         type: 'POST',
-        url: '/add_to_cart/',
-        data: {
-          artwork_id: artwork_id
-        },
+        url: '/add_to_cart',
+        data: data,
         success: function(data) {
           $('.order-card .name').append(
             '<a href="/checkout/cart" class="btn btn-success" id="in-cart">In cart</a>'
@@ -182,13 +183,15 @@ $(function() {
             $('.service-details-message')
               .addClass('alert alert-success')
               .html(data.message);
+            $('#add-license-modal').modal('hide');
           }
         }
       });
     }
   });
 
-  $('#remove-from-cart').on('click', function() {
+  $('#remove-from-cart').on('click', function(e) {
+    e.preventDefault();
     let artwork_id = $('#remove-from-cart').val();
     if (artwork_id === '') {
       return false;
@@ -197,7 +200,7 @@ $(function() {
         type: 'DELETE',
         url: '/remove_from_cart',
         data: {
-          artwork_id: artwork_id
+          artworkId: artwork_id
         },
         success: function(data) {
           if (data.success) {
@@ -208,17 +211,19 @@ $(function() {
     }
   });
 
-  $('#increase-artwork-quantity').on('click', function() {
+  $('#add-license-form').on('submit', function(e) {
+    e.preventDefault();
     let artwork_id = $('#increase-artwork-quantity').val();
+
+    const data =
+      $('#add-license-form').serialize() + `&artworkId=${artwork_id}`;
     if (artwork_id === '') {
       return false;
     } else {
       $.ajax({
         type: 'POST',
         url: '/increase_artwork_quantity',
-        data: {
-          artwork_id: artwork_id
-        },
+        data: data,
         success: function(data) {
           if (data.success) {
             window.location.reload();

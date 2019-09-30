@@ -3,20 +3,23 @@
   <div class="row">
     <div class="col-md-8">
       {{#each foundUser.cart}}
-      <div class="overview" id="{{ _id }}">
+      <div class="overview" id="{{ artwork._id }}">
         <div class="cart-card">
           <div class="name">
             <div class="space-between">
-              <h4><span><img src="{{ cover }}" style="width: 70%"></span>
-                <span>{{ title }}</span></h4>
-              <div class="col-sm-1">
-                <button id="decrease-artwork-quantity" value="{{ _id }}" class="btn btn-sm btn-primary">-</button>
-                <button id="increase-artwork-quantity" value="{{ _id }}" class="btn btn-sm btn-primary">+</button>
+              <h4><span><img src="{{ artwork.cover }}" style="width: 70%"></span>
+                <span>{{ artwork.title }}</span></h4>
+              <div class="form-group">
+                <button id="decrease-artwork-quantity" value="{{ artwork._id }}"
+                  class="btn btn-sm btn-primary">-</button>
+                <button data-toggle="modal" data-target="#add-license-modal" id="increase-artwork-quantity"
+                  value="{{ artwork._id }}" class="btn btn-sm btn-primary">+</button>
               </div>
               <hr>
               <h3>
                 <span></span>
-                <span><button id="remove-from-cart" class="btn btn-danger" value="{{ _id }}">Remove</button></span>
+                <span><button id="remove-from-cart" class="btn btn-danger"
+                    value="{{ artwork._id }}">Remove</button></span>
               </h3>
             </div>
           </div>
@@ -75,6 +78,36 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="add-license-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">License information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="add-license-form" class="form-group">
+        <div class="modal-body">
+          <label for="modal-license-type">Artwork license</label>
+          <select class="form-control" id="modal-license-credentials" name="licenseType">
+            <option value="personal" selected>Personal use</option>
+            {{#checkIfEqualsString artwork.use 'commercial'}}
+            <option value="commercial">Commercial use</option>
+            {{/checkIfEqualsString}}
+          </select>
+          <label for="modal-license-credentials">License owner credentials</label>
+          <input type="text" class="form-control" name="licenseCredentials" placeholder="Full name/company name"
+            id="modal-license-credentials">
+        </div>
+        <div class="modal-footer">
+          <input type="submit" class="form-control" value="Save license">
+        </div>
+      </form>
     </div>
   </div>
 </div>

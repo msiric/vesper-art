@@ -150,8 +150,15 @@ app.engine(
           return 'selected';
         }
       },
-      checkIfEquals: function(a, b, opts) {
+      checkIfEqualsId: function(a, b, opts) {
         if (a.equals(b)) {
+          return opts.fn(this);
+        } else {
+          return opts.inverse(this);
+        }
+      },
+      checkIfEqualsString: function(a, b, opts) {
+        if (a === b) {
           return opts.fn(this);
         } else {
           return opts.inverse(this);

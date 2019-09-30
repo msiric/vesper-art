@@ -4,17 +4,10 @@ const orderController = require('../../controllers/orderController');
 
 router.get('/checkout/cart', isLoggedIn, orderController.getProcessCart);
 
-router.get('/checkout/:id', isLoggedIn, orderController.getSingleArtwork);
-
 router
   .route('/payment/cart')
   .get(isLoggedIn, orderController.getPaymentCart)
   .post(isLoggedIn, orderController.postPaymentCart);
-
-router
-  .route('/payment/:id')
-  .get(isLoggedIn, orderController.getPaymentSingle)
-  .post(isLoggedIn, orderController.postPaymentSingle);
 
 router.get('/orders/sold', isLoggedIn, orderController.getSoldOrders);
 

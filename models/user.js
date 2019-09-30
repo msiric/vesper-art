@@ -29,7 +29,12 @@ const UserSchema = new Schema({
   verified: Boolean,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
-  cart: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
+  cart: [
+    {
+      artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
+      licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }]
+    }
+  ],
   discount: { type: Schema.Types.ObjectId, ref: 'Promocode' },
   inbox: Number,
   notifications: Number,

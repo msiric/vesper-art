@@ -34,7 +34,8 @@ const postNewArtwork = async (req, res, next) => {
     newArtwork.title = req.body.artwork_title;
     newArtwork.type = req.body.artwork_type;
     newArtwork.category = req.body.artwork_category;
-    newArtwork.price = null;
+    newArtwork.price = 0;
+    newArtwork.use = 'personal';
     newArtwork.license = 0;
     newArtwork.about = req.body.artwork_about;
     newArtwork.active = true;
@@ -44,6 +45,7 @@ const postNewArtwork = async (req, res, next) => {
         req.body.artwork_license &&
         req.body.artwork_license == 'commercial'
       ) {
+        newArtwork.use = 'commercial';
         newArtwork.license = req.body.artwork_commercial;
       }
     }
@@ -73,7 +75,10 @@ const getArtworkDetails = async (req, res, next) => {
     const artworkId = req.params.id;
     const savedArtwork =
       req.user && req.user.savedArtwork.includes(artworkId) ? true : false;
-    const inCart = req.user && req.user.cart.includes(artworkId) ? true : false;
+    const inCart =
+      req.user && req.user.cart.some(item => item.artwork._id.equals(artworkId))
+        ? true
+        : false;
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { active: true }]
     }).populate('owner');
@@ -129,7 +134,8 @@ const updateArtwork = async (req, res, next) => {
       if (req.body.artwork_media) foundArtwork.media = req.body.artwork_media;
       if (req.body.artwork_title) foundArtwork.title = req.body.artwork_title;
       if (req.body.artwork_type) foundArtwork.type = req.body.artwork_type;
-      foundArtwork.price = null;
+      foundArtwork.price = 0;
+      foundArtwork.use = 'personal';
       foundArtwork.license = 0;
       if (req.body.artwork_type && req.body.artwork_type == 'commercial') {
         foundArtwork.price = req.body.artwork_price;
@@ -137,6 +143,7 @@ const updateArtwork = async (req, res, next) => {
           req.body.artwork_license &&
           req.body.artwork_license == 'commercial'
         ) {
+          foundArtwork.use = 'commercial';
           foundArtwork.license = req.body.artwork_commercial;
         }
       }
