@@ -8,6 +8,7 @@ const LicenseSchema = new Schema({
   type: String,
   credentials: String,
   active: Boolean,
+  price: Number,
   created: { type: Date, default: Date.now }
 });
 

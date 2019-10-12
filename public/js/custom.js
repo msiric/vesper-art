@@ -211,12 +211,12 @@ $(function() {
     }
   });
 
-  $('#add-license-form').on('submit', function(e) {
+  $('#increase-license-form').on('submit', function(e) {
     e.preventDefault();
-    let artwork_id = $('#increase-artwork-quantity').val();
+    let artwork_id = $('.increase-artwork-quantity').val();
 
     const data =
-      $('#add-license-form').serialize() + `&artworkId=${artwork_id}`;
+      $('#increase-license-form').serialize() + `&artworkId=${artwork_id}`;
     if (artwork_id === '') {
       return false;
     } else {

@@ -13,10 +13,11 @@ const commission = 0.1;
 
 const getProcessCart = async (req, res, next) => {
   let artworkInfo = {
-    price: 0,
     cartIsEmpty: false,
+    price: 0,
     totalPrice: 0,
     subtotal: 0,
+    license: 0,
     foundUser: null,
     discount: null,
     promo: null,
@@ -33,10 +34,15 @@ const getProcessCart = async (req, res, next) => {
       if (foundUser.cart.length > 0) {
         artworkInfo.foundUser = foundUser;
         foundUser.cart.map(function(item) {
-          artworkInfo.price += item.artwork.price;
+          if (item.artwork.active) {
+            artworkInfo.price += item.artwork.price;
+            item.licenses.map(function(license) {
+              artworkInfo.license += license.price;
+            });
+          }
         });
         artworkInfo.subtotal = artworkInfo.price;
-        artworkInfo.totalPrice = artworkInfo.price + fee;
+        artworkInfo.totalPrice = artworkInfo.price + artworkInfo.license + fee;
       } else {
         artworkInfo.cartIsEmpty = true;
       }
@@ -45,17 +51,17 @@ const getProcessCart = async (req, res, next) => {
           _id: foundUser.discount
         });
         if (foundPromocode && foundPromocode.active) {
-          artworkInfo.subtotal =
-            artworkInfo.price * (1 - foundPromocode.discount);
           artworkInfo.discount = foundPromocode.discount * 100;
-          artworkInfo.totalPrice = artworkInfo.subtotal + fee;
           artworkInfo.promo = foundPromocode._id;
+          artworkInfo.totalPrice =
+            artworkInfo.totalPrice * (1 - foundPromocode.discount);
         }
       }
       res.render('order/cart', {
         foundUser: artworkInfo.foundUser,
         totalPrice: parseFloat(artworkInfo.totalPrice.toFixed(12)),
         subtotal: parseFloat(artworkInfo.subtotal.toFixed(12)),
+        license: parseFloat(artworkInfo.license.toFixed(12)),
         cartIsEmpty: artworkInfo.cartIsEmpty,
         discountPercentage: artworkInfo.discount,
         promo: artworkInfo.promo
@@ -64,41 +70,44 @@ const getProcessCart = async (req, res, next) => {
       return res.status(400).json({ message: 'User not found' });
     }
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
 const getPaymentCart = async (req, res, next) => {
   try {
-    const artwork = req.user.cart;
-    const foundArtwork = await Artwork.find({
-      $and: [{ _id: artwork.artwork }, { active: true }]
-    });
+    const foundUser = await User.findOne({
+      $and: [{ _id: req.user._id }, { active: true }]
+    })
+      .populate('cart.artwork')
+      .populate('cart.licenses');
     let amount = 0;
-    if (foundArtwork) {
-      foundArtwork.map(async function(artwork) {
-        amount = amount + artwork.price;
-      });
-      if (req.user.discount) {
-        const foundDiscount = await Promocode.findOne({
-          $and: [
-            {
-              _id: req.user.discount
-            },
-            { active: true }
-          ]
+    foundUser.cart.map(function(item) {
+      if (item.artwork.active) {
+        amount += item.artwork.price;
+        item.licenses.map(function(license) {
+          amount += license.price;
         });
-        if (foundDiscount) {
-          amount = amount * (1 - foundDiscount.discount);
-        }
       }
-      amount = amount + fee;
-      res.render('checkout/payment', {
-        amount: parseFloat(amount.toFixed(12))
+    });
+    amount = amount + fee;
+    if (foundUser.discount) {
+      const foundDiscount = await Promocode.findOne({
+        $and: [
+          {
+            _id: foundUser.discount
+          },
+          { active: true }
+        ]
       });
-    } else {
-      return res.status(400).json({ message: 'Artwork not found' });
+      if (foundDiscount) {
+        amount = amount * (1 - foundDiscount.discount);
+      }
     }
+    res.render('checkout/payment', {
+      amount: parseFloat(amount.toFixed(12))
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
@@ -107,126 +116,142 @@ const getPaymentCart = async (req, res, next) => {
 
 const postPaymentCart = async (req, res, next) => {
   try {
-    let artwork = req.user.cart;
+    const foundUser = await User.findOne({
+      $and: [{ _id: req.user._id }, { active: true }]
+    })
+      .populate('cart.artwork')
+      .populate('cart.licenses');
+    // alternative?
     let paid = 0;
     let discount;
-    const foundArtwork = await Artwork.find({
-      $and: [{ _id: artwork }, { active: true }]
-    });
-    if (foundArtwork) {
-      if (req.user.discount) {
-        const foundDiscount = await Promocode.findOne({
-          $and: [
-            {
-              _id: req.user.discount
-            },
-            { active: true }
-          ]
+    foundUser.cart.map(function(item) {
+      if (item.artwork.active) {
+        paid += item.artwork.price;
+        item.licenses.map(function(license) {
+          paid += license.price;
         });
-        if (foundDiscount) {
-          discount = foundDiscount.discount;
-        }
       }
-      foundArtwork.map(async function(artwork) {
-        paid = paid + artwork.price;
+    });
+    if (foundUser.discount) {
+      const foundDiscount = await Promocode.findOne({
+        $and: [
+          {
+            _id: foundUser.discount
+          },
+          { active: true }
+        ]
       });
-      if (discount) {
-        paid = paid * (1 - discount);
+      if (foundDiscount) {
+        discount = foundDiscount.discount;
       }
-      paid = paid + fee;
-      paid *= 100;
-      paid = Math.round(paid);
-      stripe.customers
-        .create({
-          email: req.user.email
-        })
-        .then(customer => {
-          return stripe.customers.createSource(customer.id, {
-            source: req.body.stripeToken
-          });
-        })
-        .then(source => {
-          return stripe.charges.create({
-            amount: paid,
-            currency: 'usd',
-            customer: source.customer
-          });
-        })
-        .then(async charge => {
-          let totalAmount = 0;
-          // New charge created on a new customer
-          let order = new Order();
-          order.bulk = foundArtwork.length > 1 ? true : false;
-          order.discount = req.user.discount ? true : false;
-          foundArtwork.map(function(artwork) {
-            order.seller.push(artwork.owner);
-            order.artwork.push(artwork._id);
-            order.amount.push(artwork.price);
-            totalAmount = totalAmount + artwork.price;
-          });
-          order.buyer = req.user._id;
-          order.paid = discount
-            ? totalAmount * (1 - discount) + fee
-            : totalAmount + fee;
-          order.sold = totalAmount;
-          order.status = 2;
-          const savedOrder = await order.save();
-          if (savedOrder) {
-            const updatedUser = await User.updateOne(
-              { _id: req.user._id },
-              { $set: { cart: [], discount: null } }
-            );
-            if (updatedUser) {
-              const orderPath = '/orders/' + savedOrder._id;
-              // emit to multiple sellers (needs testing)
-              let notification = new Notification();
-              foundArtwork.map(async function(artwork) {
-                notification.receiver.push(artwork.owner);
-              });
-              notification.link = orderPath;
-              notification.message = `${req.user.name} purchased your artwork!`;
-              notification.read = [];
-              const savedNotification = await notification.save();
-              if (savedNotification) {
-                foundArtwork.map(async function(artwork) {
+    }
+    paid = paid + fee;
+    if (discount) {
+      paid = paid * (1 - discount);
+    }
+    paid *= 100;
+    paid = Math.round(paid);
+    stripe.customers
+      .create({
+        email: foundUser.email
+      })
+      .then(customer => {
+        return stripe.customers.createSource(customer.id, {
+          source: req.body.stripeToken
+        });
+      })
+      .then(source => {
+        return stripe.charges.create({
+          amount: paid,
+          currency: 'usd',
+          customer: source.customer
+        });
+      })
+      .then(async charge => {
+        let totalAmount = 0;
+        // New charge created on a new customer
+
+        // Ne valja nista (fale sve licence u kosarici)
+        let order = new Order();
+        order.bulk = foundUser.cart.length > 1 ? true : false;
+        order.discount = foundUser.discount ? true : false;
+        foundUser.cart.map(function(item) {
+          if (item.artwork.active) {
+            let licenses = [];
+            totalAmount += item.artwork.price;
+            item.licenses.map(function(license) {
+              totalAmount += license.price;
+              licenses.push(license._id);
+            });
+            order.details.push({
+              seller: item.artwork.owner,
+              artwork: item.artwork._id,
+              licenses: licenses
+            });
+          }
+        });
+        order.sold = totalAmount;
+        totalAmount += fee;
+        order.buyer = foundUser._id;
+        order.paid = discount ? totalAmount * (1 - discount) : totalAmount;
+        order.status = 2;
+        const savedOrder = await order.save();
+        if (savedOrder) {
+          const updatedUser = await User.updateOne(
+            { _id: foundUser._id },
+            { $set: { cart: [], discount: null } }
+          );
+          if (updatedUser) {
+            const orderPath = '/orders/' + savedOrder._id;
+            // emit to multiple sellers (needs testing)
+            let notification = new Notification();
+            foundUser.cart.map(async function(item) {
+              if (item.artwork.active) {
+                notification.receiver.push(item.artwork.owner);
+              }
+            });
+            notification.link = orderPath;
+            notification.message = `${foundUser.name} purchased your artwork!`;
+            notification.read = [];
+            const savedNotification = await notification.save();
+            if (savedNotification) {
+              foundUser.cart.map(async function(item) {
+                if (item.artwork.active) {
                   await User.updateOne(
                     {
-                      _id: artwork.owner
+                      _id: item.artwork.owner
                     },
                     {
                       $inc: {
                         notifications: 1,
-                        incomingFunds: artwork.price * (1 - commission)
+                        // fale licence
+                        incomingFunds: item.artwork.price * (1 - commission)
                       }
                     },
                     { useFindAndModify: false }
                   );
-                  if (users[artwork.owner]) {
-                    users[artwork.owner].emit('increaseNotif', {});
+                  if (users[item.artwork.owner]) {
+                    users[item.artwork.owner].emit('increaseNotif', {});
                   }
-                });
-              }
-              res.redirect('/orders');
-            } else {
-              return res
-                .status(400)
-                .json({ message: 'Couldn\t update user cart' });
+                }
+              });
             }
+            res.redirect('/orders/bought');
           } else {
             return res
               .status(400)
-              .json({ message: "Couldn't process payment" });
+              .json({ message: "Couldn't update user cart" });
           }
-        })
-        .catch(err => {
-          console.log(err);
-          return res
-            .status(400)
-            .json({ message: 'Something went wrong, please try again' });
-        });
-    } else {
-      return res.status(400).json({ message: 'Artwork not found' });
-    }
+        } else {
+          return res.status(400).json({ message: "Couldn't process payment" });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        return res
+          .status(400)
+          .json({ message: 'Something went wrong, please try again' });
+      });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
@@ -235,10 +260,11 @@ const postPaymentCart = async (req, res, next) => {
 
 const getSoldOrders = async (req, res, next) => {
   try {
-    const foundOrders = await Order.find({ seller: req.user._id })
+    const foundOrders = await Order.find({
+      details: { $elemMatch: { seller: req.user._id } }
+    })
       .populate('buyer')
-      .populate('seller')
-      .populate('artwork');
+      .populate('details');
     res.render('order/order-seller', { order: foundOrders });
   } catch (err) {
     console.log(err);
@@ -250,8 +276,7 @@ const getBoughtOrders = async (req, res, next) => {
   try {
     const foundOrders = await Order.find({ buyer: req.user._id })
       .populate('buyer')
-      .populate('seller')
-      .populate('artwork');
+      .populate('details');
     res.render('order/order-buyer', { order: foundOrders });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
@@ -263,8 +288,7 @@ const getOrderId = async (req, res, next) => {
     let review = [];
     const foundOrder = await Order.findOne({ _id: req.params.orderId })
       .populate('buyer')
-      .populate('seller')
-      .populate('artwork');
+      .populate('details');
     if (foundOrder) {
       const foundReview = await Review.find({ artwork: foundOrder.artwork });
       if (foundReview) {
@@ -276,13 +300,12 @@ const getOrderId = async (req, res, next) => {
         const artwork = [];
         const amount = [];
         let sellerId = null;
-        foundOrder.seller.forEach(function(seller, i) {
-          if (seller._id.equals(req.user._id)) {
+        foundOrder.details.forEach(function(item) {
+          if (item.seller._id.equals(req.user._id)) {
             if (!sellerId) {
-              sellerId = seller._id;
+              sellerId = item.seller._id;
             }
-            artwork.push(foundOrder.artwork[i]);
-            amount.push(foundOrder.amount[i]);
+            artwork.push(item.artwork);
           }
         });
         if (!sellerId) {
@@ -358,6 +381,7 @@ const addToCart = async (req, res, next) => {
           newLicense.type = licenseType;
           newLicense.credentials = licenseCredentials;
           newLicense.active = false;
+          newLicense.price = foundArtwork.license;
 
           const savedLicense = await newLicense.save();
 
@@ -405,7 +429,11 @@ const deleteFromCart = async (req, res, next) => {
 
     if (foundArtwork) {
       const deletedLicense = await License.remove({
-        $and: [{ artwork: foundArtwork._id }, { active: false }]
+        $and: [
+          { artwork: foundArtwork._id },
+          { owner: req.user._id },
+          { active: false }
+        ]
       });
       const updatedUser = await User.updateOne(
         {
@@ -442,20 +470,17 @@ const increaseArtwork = async (req, res, next) => {
       newLicense.type = licenseType;
       newLicense.credentials = licenseCredentials;
       newLicense.active = false;
+      newLicense.price = foundArtwork.license;
 
       const savedLicense = await newLicense.save();
       if (savedLicense) {
-        // match user by id and by cart artwork id
         const updatedUser = await User.updateOne(
           {
-            _id: req.user._id
+            _id: req.user._id,
+            cart: { $elemMatch: { artwork: foundArtwork._id } }
           },
           {
-            $push: {
-              cart: {
-                licenses: savedLicense._id
-              }
-            }
+            $push: { 'cart.$.licenses': savedLicense._id }
           }
         );
         if (updatedUser) {
@@ -484,14 +509,11 @@ const decreaseArtwork = async (req, res, next) => {
     if (foundArtwork) {
       const updatedUser = await User.updateOne(
         {
-          _id: req.user._id
+          _id: req.user._id,
+          cart: { $elemMatch: { artwork: foundArtwork._id } }
         },
         {
-          $pull: {
-            cart: {
-              licenses: savedLicense._id
-            }
-          }
+          $pull: { 'cart.$.licenses': savedLicense._id }
         }
       );
       if (updatedUser) {

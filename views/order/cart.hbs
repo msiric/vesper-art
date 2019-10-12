@@ -10,10 +10,10 @@
               <h4><span><img src="{{ artwork.cover }}" style="width: 70%"></span>
                 <span>{{ artwork.title }}</span></h4>
               <div class="form-group">
-                <button id="decrease-artwork-quantity" value="{{ artwork._id }}"
-                  class="btn btn-sm btn-primary">-</button>
-                <button data-toggle="modal" data-target="#add-license-modal" id="increase-artwork-quantity"
-                  value="{{ artwork._id }}" class="btn btn-sm btn-primary">+</button>
+                <button data-toggle="modal" data-target="#increase-license-modal" value="{{ artwork._id }}"
+                  class="btn btn-sm btn-primary increase-artwork-quantity">Add license</button>
+                <button data-toggle="modal" data-target="#display-licenses-modal" value="{{ artwork._id }}"
+                  class="btn btn-sm btn-primary display-artwork-licenses">Licenses</button>
               </div>
               <hr>
               <h3>
@@ -65,6 +65,10 @@
                 </h4>
               </div>
               <div class="space-between">
+                <h4><span>License:</span><span class="dollar fee">$<span id="cart-subtotal">{{ license }}</span></span>
+                </h4>
+              </div>
+              <div class="space-between">
                 <h4><span>Fee:</span><span class="dollar fee">$3.15</span></h4>
               </div>
               <hr>
@@ -82,7 +86,27 @@
   </div>
 </div>
 
-<div class="modal fade" id="add-license-modal" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="display-licenses-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Licenses information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="display-licenses-form" class="form-group">
+        <div class="modal-body">
+          <label for="modal-license-type">Artwork licenses</label>
+          <p>License owner</p><small>License type:</small>
+          <button class="btn btn-sm btn-danger decrease-artwork-quantity">Delete license</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="increase-license-modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -91,7 +115,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="add-license-form" class="form-group">
+      <form id="increase-license-form" class="form-group">
         <div class="modal-body">
           <label for="modal-license-type">Artwork license</label>
           <select class="form-control" id="modal-license-credentials" name="licenseType">

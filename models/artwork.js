@@ -3,6 +3,7 @@ const mongooseAlgolia = require('mongoose-algolia');
 const Schema = mongoose.Schema;
 
 const ArtworkSchema = new Schema({
+  // delete everything except owner and active
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
   type: String,
   title: String,
