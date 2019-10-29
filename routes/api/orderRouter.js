@@ -31,4 +31,10 @@ router.post(
   orderController.decreaseArtwork
 );
 
+router.get(
+  '/license_information/:artworkId',
+  isLoggedIn,
+  orderController.getLicenseInformation
+);
+
 module.exports = router;

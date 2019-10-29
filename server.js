@@ -228,6 +228,7 @@ const workRouter = require('./routes/api/workRouter');
 const reviewRouter = require('./routes/api/reviewRouter');
 const promocodeRouter = require('./routes/api/promocodeRouter');
 const ticketRouter = require('./routes/api/ticketRouter');
+const validatorRouter = require('./routes/api/validatorRouter');
 
 app.use(mainRoutes);
 app.use(userRoutes);
@@ -241,6 +242,7 @@ app.use(workRouter);
 app.use(reviewRouter);
 app.use(promocodeRouter);
 app.use(ticketRouter);
+app.use(validatorRouter);
 
 app.set('socketio', io);
 

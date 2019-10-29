@@ -27,13 +27,13 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const watermark = new Buffer.from(
+/* const watermark = new Buffer.from(
   `<svg width="100%" height="200%">
       <text style="font-size: 35; font-family: arial; font-weight: bold;" fill="black" fill-opacity="0.5" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">
           artcore
       </text>
   </svg>`
-);
+); */
 
 const profilePhotoUpload = multer({
   fileFilter: fileFilter,
@@ -90,20 +90,59 @@ const artworkMediaUpload = multer({
           cb(null, filePath);
         },
         transform: function(req, file, cb) {
-          cb(
-            null,
-            sharp()
-              .resize(300, null)
-              .composite([{ input: watermark }])
-              .sharpen()
-          );
+          cb(null, sharp().resize(300, null));
         }
       }
     ]
   })
 });
 
-const artworkCoverEdit = multer({
+const artworkMediaEdit = multer({
+  fileFilter: fileFilter,
+  storage: multerS3({
+    s3: s3,
+    bucket: 'vesper-testing',
+    limits: { fileSize: 5 * 1024 * 1024 },
+    acl: 'public-read',
+    shouldTransform: function(req, file, cb) {
+      cb(null, true);
+    },
+    transforms: [
+      {
+        id: 'image',
+        key: function(req, file, cb) {
+          const fileName =
+            req.user._id +
+            Date.now().toString() +
+            path.extname(file.originalname);
+          const folderName = 'artworkMedia/';
+          const filePath = folderName + fileName;
+          cb(null, filePath);
+        },
+        transform: function(req, file, cb) {
+          cb(null, sharp());
+        }
+      },
+      {
+        id: 'cover',
+        key: function(req, file, cb) {
+          const fileName =
+            req.user._id +
+            Date.now().toString() +
+            path.extname(file.originalname);
+          const folderName = 'artworkCovers/';
+          const filePath = folderName + fileName;
+          cb(null, filePath);
+        },
+        transform: function(req, file, cb) {
+          cb(null, sharp().resize(300, null));
+        }
+      }
+    ]
+  })
+});
+
+/* const artworkCoverEdit = multer({
   fileFilter: fileFilter,
   storage: multerS3({
     s3: s3,
@@ -118,7 +157,7 @@ const artworkCoverEdit = multer({
       callback(null, filePath);
     }
   })
-});
+}); */
 
 /* const artworkMediaUpload = multer({
   fileFilter: fileFilter,
@@ -137,7 +176,7 @@ const artworkCoverEdit = multer({
   })
 }); */
 
-const artworkMediaEdit = multer({
+/* const artworkMediaEdit = multer({
   fileFilter: fileFilter,
   storage: multerS3({
     s3: s3,
@@ -152,12 +191,13 @@ const artworkMediaEdit = multer({
       callback(null, filePath);
     }
   })
-});
+}); */
 
 module.exports = {
   profilePhotoUpload: profilePhotoUpload,
   /*   artworkCoverUpload: artworkCoverUpload,
   artworkCoverEdit: artworkCoverEdit, */
-  artworkMediaUpload: artworkMediaUpload
+  artworkMediaUpload: artworkMediaUpload,
+  artworkMediaEdit: artworkMediaEdit
   /*   artworkMediaEdit: artworkMediaEdit */
 };

@@ -14,7 +14,7 @@ router.get('/artwork_details/:id', artworkController.getArtworkDetails);
 router
   .route('/edit_artwork/:id')
   .get(isLoggedIn, artworkController.editArtwork)
-  .post(isLoggedIn, artworkController.updateArtwork)
+  .put(isLoggedIn, artworkController.updateArtwork)
   .delete(isLoggedIn, artworkController.deleteArtwork);
 
 router

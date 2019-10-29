@@ -238,6 +238,7 @@ const updateUserPreferences = async (req, res, next) => {
 };
 
 // needs testing (better way to update already found user)
+// delete all users artwork, versions and media if not found in orders
 const deleteUser = async (req, res, next) => {
   try {
     const foundUser = await User.findOne({
@@ -253,7 +254,7 @@ const deleteUser = async (req, res, next) => {
           Bucket: 'vesper-testing',
           Key: filePath
         };
-        const deletedPhoto = await s3.deleteObject(params).promise();
+        await s3.deleteObject(params).promise();
       }
       const updatedUser = await User.updateOne(
         { _id: foundUser._id },

@@ -20,12 +20,13 @@
               {{#if bulk}}
               <tr>
                 <td>
-                  {{#each artwork}}
-                  <img class="order-image-my-artwork" src="{{ cover }}"><span class="artwork-title">{{ title }}</span>
+                  {{#each details}}
+                  <img class="order-image-my-artwork" src="{{ version.cover }}"><span
+                    class="artwork-title">{{ version.title }}</span>
                   {{/each}}
                 </td>
                 <td>
-                  ${{ amount }}
+                  ${{ sold }}
                 </td>
                 <td><button class="btn btn-{{ formatButtonOrder status }}">{{ formatStatusOrder status }}</button></td>
                 <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>
@@ -35,10 +36,11 @@
               </tr>
               {{else}}
               <tr>
-                {{#each artwork}}
-                <td><img class="order-image-my-artwork" src="{{ cover }}"><span class="artwork-title">{{ title }}</span>
+                {{#each details}}
+                <td><img class="order-image-my-artwork" src="{{ version.cover }}"><span
+                    class="artwork-title">{{ version.title }}</span>
                 </td>
-                <td>${{ price }}</td>
+                <td>${{ sold }}</td>
                 {{/each}}
                 <td><button class="btn btn-{{ formatButtonOrder status }}">{{ formatStatusOrder status }}</button></td>
                 <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>

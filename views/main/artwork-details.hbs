@@ -6,10 +6,10 @@
         <input type="hidden" value="{{ artwork._id }}" id="artwork_id">
         <div class="template-card">
           <div class="name">
-            <h2 class="h2-size">{{ artwork.title }}</h2>
+            <h2 class="h2-size">{{ artwork.current.title }}</h2>
             <p>{{ review.[0].averageRating }}</p>
             <hr>
-            <img src="{{ artwork.cover }}" class="image-test">
+            <img src="{{ artwork.current.cover }}" class="image-test">
             {{#if savedArtwork}}
             <button id="{{ artwork._id }}" class="btn btn-danger save-artwork-button">Remove
               artwork</button>
@@ -26,7 +26,7 @@
           <div class="name">
             <h2 class="h2-size">About artwork</h2>
             <hr>
-            <h4>{{ artwork.about }}</h4>
+            <h4>{{ artwork.current.about }}</h4>
           </div>
         </div>
       </div>
@@ -44,12 +44,21 @@
         <div class="order-card">
           <div class="name">
             <h3>Artwork price</h3>
-            <h4>${{ artwork.price }}</h4>
+            <h4>${{ artwork.current.price }}</h4>
             {{#if inCart}}
             <a href="/checkout/cart" class="btn btn-success" id="in-cart">In cart</a>
             {{ else }}
+            {{#if artwork.current.available}}
+            {{#checkIfEqualsString artwork.current.type 'showcase' }}
+            <a href="{{ artwork.current.media }}" class="btn btn-success" id="download-artwork"><i
+                class="fa fa-download"></i></a>
+            {{ else }}
             <button data-toggle="modal" data-target="#add-license-modal" class="btn btn-success" id="add-to-cart"><i
                 class="fa fa-shopping-cart"></i></button>
+            {{/checkIfEqualsString}}
+            {{ else }}
+            <p>Showcase artwork</p><small>(not available for download)</small>
+            {{/if}}
             {{/if}}
           </div>
         </div>
@@ -58,12 +67,17 @@
         <div class="order-card">
           <div class="name">
             <h3>Artwork price</h3>
-            <h4>${{ artwork.price }}</h4>
-            {{#if inCart}}
-            <a href="/checkout/cart" class="btn btn-success" id="in-cart">In cart</a>
+            <h4>${{ artwork.current.price }}</h4>
+            {{#if artwork.current.available}}
+            {{#checkIfEqualsString artwork.current.type 'showcase' }}
+            <a href="{{ artwork.current.media }}" class="btn btn-success" id="download-artwork"><i
+                class="fa fa-download"></i></a>
             {{ else }}
-            <button data-toggle="modal" data-target="#add-license-modal" id="add-to-cart"><i
+            <button data-toggle="modal" data-target="#add-license-modal" class="btn btn-success" id="add-to-cart"><i
                 class="fa fa-shopping-cart"></i></button>
+            {{/checkIfEqualsString}}
+            {{ else }}
+            <p>Showcase artwork</p><small>(not available for download)</small>
             {{/if}}
           </div>
         </div>
@@ -79,7 +93,7 @@
             <hr>
             <h4>{{ artwork.owner.name }}</h4>
             <i class="fa fa-briefcase"></i>
-            <a href="/conversations/{{artwork.owner._id}}"><i class="fa fa-envelope"></i></a>
+            <a href="/conversations/{{ artwork.owner._id }}"><i class="fa fa-envelope"></i></a>
             <img class="img-circle" src="{{ artwork.owner.photo }}" />
             <br>
             {{#if artwork.owner.about}}
@@ -108,7 +122,7 @@
           <label for="modal-license-type">Artwork license</label>
           <select class="form-control" id="modal-license-credentials" name="licenseType">
             <option value="personal" selected>Personal use</option>
-            {{#checkIfEqualsString artwork.use 'commercial'}}
+            {{#checkIfEqualsString artwork.current.use 'commercial'}}
             <option value="commercial">Commercial use</option>
             {{/checkIfEqualsString}}
           </select>

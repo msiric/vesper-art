@@ -38,8 +38,8 @@
                   {{#if artwork}}
                   {{#each artwork}}
                   <tr>
-                    <td><img class="order-image-my-artwork" src="{{ cover }}"></td>
-                    <td>{{ title }}</td>
+                    <td><img class="order-image-my-artwork" src="{{ current.cover }}"></td>
+                    <td>{{ current.title }}</td>
                   </tr>
                   {{/each}}
                   {{ else }}

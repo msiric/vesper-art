@@ -20,8 +20,9 @@
               {{#if bulk}}
               <tr>
                 <td>
-                  {{#each artwork}}
-                  <img class="order-image-my-artwork" src="{{ cover }}"><span class="artwork-title">{{ title }}</span>
+                  {{#each details}}
+                  <img class="order-image-my-artwork" src="{{ version.cover }}"><span
+                    class="artwork-title">{{ version.title }}</span>
                   {{/each}}
                 </td>
                 <td>
@@ -34,8 +35,9 @@
               </tr>
               {{else}}
               <tr>
-                {{#each artwork}}
-                <td><img class="order-image-my-artwork" src="{{ cover }}"><span class="artwork-title">{{ title }}</span>
+                {{#each details}}
+                <td><img class="order-image-my-artwork" src="{{ version.cover }}"><span
+                    class="artwork-title">{{ version.title }}</span>
                 </td>
                 {{/each}}
                 <td>${{ paid }}</td>

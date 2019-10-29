@@ -203,17 +203,61 @@ $(function() {
           artworkId: artwork_id
         },
         success: function(data) {
-          if (data.success) {
-            window.location.reload();
-          }
+          window.location.reload();
         }
       });
     }
   });
 
+  $('#increase-artwork-quantity').click(function() {
+    $('#display-licenses-modal').modal('hide');
+    $('#increase-license-modal').modal('show');
+    $('#save-license-button').val($(this).val());
+  });
+
+  $('.display-artwork-licenses').click(function() {
+    let artworkId = $(this).val();
+    $('#increase-artwork-quantity').val(artworkId);
+    $.ajax({
+      type: 'GET',
+      url: '/license_information/' + artworkId,
+      success: function(data) {
+        $('#display-licenses-panel').empty();
+        if (data.length == 1) {
+          data.forEach(function(license) {
+            $('#display-licenses-panel').append(`
+            <div id="${license.artwork}" class="form-group">
+              <label>License credentials</label>
+              <p class="license-owner">${license.credentials}</p>
+              <label>License type</label>
+              <p class="license-type">${license.type}</p>
+              <label>License price</label>
+              <p class="license-price">${license.price}</p>
+            </div>`);
+          });
+        } else {
+          data.forEach(function(license) {
+            $('#display-licenses-panel').append(`
+            <div id="${license.artwork}" class="license-information form-group">
+              <label>License credentials</label>
+              <p class="license-owner">${license.credentials}</p>
+              <label>License type</label>
+              <p class="license-type">${license.type}</p>
+              <label>License price</label>
+              <p class="license-price">${license.price}</p>
+              <button value="${license._id}" class="btn btn-sm btn-danger delete-license-button">Delete
+                license</button>
+            </div>`);
+          });
+        }
+        $('#display-licenses-modal').modal('show');
+      }
+    });
+  });
+
   $('#increase-license-form').on('submit', function(e) {
     e.preventDefault();
-    let artwork_id = $('.increase-artwork-quantity').val();
+    let artwork_id = $('#save-license-button').val();
 
     const data =
       $('#increase-license-form').serialize() + `&artworkId=${artwork_id}`;
@@ -224,34 +268,41 @@ $(function() {
         type: 'POST',
         url: '/increase_artwork_quantity',
         data: data,
-        success: function(data) {
-          if (data.success) {
-            window.location.reload();
-          }
+        success: function() {
+          window.location.reload();
         }
       });
     }
   });
 
-  $('#decrease-artwork-quantity').on('click', function() {
-    let artwork_id = $('#decrease-artwork-quantity').val();
-    if (artwork_id === '') {
-      return false;
-    } else {
-      $.ajax({
-        type: 'POST',
-        url: '/decrease_artwork_quantity',
-        data: {
-          artwork_id: artwork_id
-        },
-        success: function(data) {
-          if (data.success) {
+  $('#display-licenses-panel').on(
+    'click',
+    '.delete-license-button',
+    function() {
+      let licenseId = $(this).val();
+      let artworkId = $('.delete-license-button')
+        .closest('.license-information')
+        .attr('id');
+      if (licenseId === '' || artworkId === '') {
+        return false;
+      } else {
+        $.ajax({
+          type: 'POST',
+          url: '/decrease_artwork_quantity',
+          data: {
+            licenseId: licenseId,
+            artworkId: artworkId
+          },
+          success: function() {
             window.location.reload();
+          },
+          error: function(err) {
+            console.log(err);
           }
-        }
-      });
+        });
+      }
     }
-  });
+  );
 
   $('#profile-photo-upload').on('change', function() {
     const fileInput = $('#profile-photo-upload')[0];
@@ -286,18 +337,18 @@ $(function() {
 
   $('#artwork-upload-form').on('submit', function(e) {
     e.preventDefault();
-    const coverInput = $('#artwork-media-upload')[0];
-    const coverFile = coverInput.files[0];
-    const coverType = /image.*/;
+    const mediaInput = $('#artwork-media-upload')[0];
+    const mediaFile = mediaInput.files[0];
+    const mediaType = /image.*/;
     let artworkCover;
     let artworkMedia;
 
-    if (coverFile) {
-      if (!coverFile.type.match(coverType)) {
+    if (mediaFile) {
+      if (!mediaFile.type.match(mediaType)) {
         return false;
       }
       const formData = new FormData();
-      formData.append('artwork_media', coverFile);
+      formData.append('artwork_media', mediaFile);
       if (formData) {
         $.ajax({
           type: 'POST',
@@ -316,6 +367,7 @@ $(function() {
             const artwork_category = $('select[name=artwork_category]').val();
             const artwork_price = $('input[name=artwork_price]').val();
             const artwork_license = $('select[name=artwork_license]').val();
+            const artwork_available = $('select[name=artwork_available]').val();
             const artwork_commercial = $(
               'input[name=artwork_commercial]'
             ).val();
@@ -331,6 +383,7 @@ $(function() {
                 artwork_category,
                 artwork_price,
                 artwork_license,
+                artwork_available,
                 artwork_commercial,
                 artwork_about
               },
@@ -355,94 +408,73 @@ $(function() {
     const urlId = window.location.href.substring(
       window.location.href.lastIndexOf('/') + 1
     );
-    const coverInput = $('#artwork-media-edit')[0];
-    const coverFile = coverInput.files[0];
-    const coverType = /image.*/;
-    let artworkCover;
-    let artworkMedia;
-
-    if (coverFile) {
-      if (!coverFile.type.match(coverType)) {
-        return false;
-      }
-
-      const formData = new FormData();
-      formData.append('image', coverFile);
-      if (formData) {
-        $.ajax({
-          type: 'POST',
-          url: '/artwork_cover_edit/' + urlId,
-          processData: false,
-          contentType: false,
-          cache: false,
-          data: formData,
-          success: function(data) {
-            artworkCover = data.imageUrl;
-          },
-          error: function(err) {
-            console.log(err);
-          }
-        });
-      }
-    }
-
     const mediaInput = $('#artwork-media-edit')[0];
     const mediaFile = mediaInput.files[0];
     const mediaType = /image.*/;
+    let artworkCover;
+    let artworkMedia;
     if (mediaFile) {
       if (!mediaFile.type.match(mediaType)) {
         return false;
       }
       const formData = new FormData();
-      formData.append('image', mediaFile);
+      formData.append('artwork_media', mediaFile);
       if (formData) {
         $.ajax({
-          type: 'POST',
+          type: 'PUT',
           url: '/artwork_media_edit/' + urlId,
           processData: false,
           contentType: false,
           cache: false,
           data: formData,
           success: function(data) {
-            artworkMedia = data.imageUrl;
+            artworkCover = data.coverUrl;
+            artworkMedia = data.originalUrl;
+            saveArtwork();
           },
           error: function(err) {
             console.log(err);
           }
         });
       }
+    } else {
+      saveArtwork();
     }
 
-    const artwork_cover = artworkCover;
-    const artwork_media = artworkMedia;
-    const artwork_title = $('input[name=artwork_title]').val();
-    const artwork_type = $('select[name=artwork_type]').val();
-    const artwork_category = $('select[name=artwork_category]').val();
-    const artwork_price = $('input[name=artwork_price]').val();
-    const artwork_license = $('select[name=artwork_license]').val();
-    const artwork_commercial = $('input[name=artwork_commercial]').val();
-    const artwork_about = $('textarea[name=artwork_about]').val();
-    $.ajax({
-      type: 'POST',
-      url: '/edit_artwork/' + urlId,
-      data: {
-        artwork_cover,
-        artwork_media,
-        artwork_title,
-        artwork_type,
-        artwork_category,
-        artwork_price,
-        artwork_license,
-        artwork_commercial,
-        artwork_about
-      },
-      success: function(url) {
-        window.location.href = url;
-      },
-      error: function(err) {
-        console.log(err);
-      }
-    });
+    function saveArtwork() {
+      const artwork_cover = artworkCover;
+      const artwork_media = artworkMedia;
+      const artwork_title = $('input[name=artwork_title]').val();
+      const artwork_type = $('select[name=artwork_type]').val();
+      const artwork_category = $('select[name=artwork_category]').val();
+      const artwork_price = $('input[name=artwork_price]').val();
+      const artwork_license = $('select[name=artwork_license]').val();
+      const artwork_available = $('select[name=artwork_available]').val();
+      const artwork_commercial = $('input[name=artwork_commercial]').val();
+      const artwork_about = $('textarea[name=artwork_about]').val();
+      $.ajax({
+        type: 'PUT',
+        url: '/edit_artwork/' + urlId,
+        data: {
+          artwork_cover,
+          artwork_media,
+          artwork_title,
+          artwork_type,
+          artwork_category,
+          artwork_price,
+          artwork_license,
+          artwork_available,
+          artwork_commercial,
+          artwork_about
+        },
+        success: function(url) {
+          window.location.href = url;
+        },
+        error: function(err) {
+          console.log(err);
+        }
+      });
+    }
   });
 
   $('#artwork-delete-button').on('click', function(e) {
@@ -563,6 +595,23 @@ $('.save-artwork-button').on('click', function() {
   } else {
     console.log('Something went wrong');
   }
+});
+
+$('#validate-license-form').on('submit', function(e) {
+  e.preventDefault();
+  const data = $('#validate-license-form').serialize();
+
+  $.ajax({
+    type: 'POST',
+    data: data,
+    url: `/validator`,
+    success: function(data) {
+      console.log(data);
+    },
+    error: function(err) {
+      console.log(err);
+    }
+  });
 });
 
 $(function() {

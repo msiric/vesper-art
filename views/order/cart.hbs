@@ -7,12 +7,10 @@
         <div class="cart-card">
           <div class="name">
             <div class="space-between">
-              <h4><span><img src="{{ artwork.cover }}" style="width: 70%"></span>
-                <span>{{ artwork.title }}</span></h4>
+              <h4><span><img src="{{ artwork.current.cover }}" style="width: 70%"></span>
+                <span>{{ artwork.current.title }}</span></h4>
               <div class="form-group">
-                <button data-toggle="modal" data-target="#increase-license-modal" value="{{ artwork._id }}"
-                  class="btn btn-sm btn-primary increase-artwork-quantity">Add license</button>
-                <button data-toggle="modal" data-target="#display-licenses-modal" value="{{ artwork._id }}"
+                <button value="{{ artwork._id }}"
                   class="btn btn-sm btn-primary display-artwork-licenses">Licenses</button>
               </div>
               <hr>
@@ -39,9 +37,9 @@
               Cart is empty
               {{ else }}
               <div class="inner">
-                <img src="{{ artwork.cover }}" class="img-circle">
+                <img src="{{ artwork.current.cover }}" class="img-circle">
                 <br>
-                <p class="text-center">{{ artwork.title }}</p>
+                <p class="text-center">{{ artwork.current.title }}</p>
               </div>
               <hr>
               <div class="cart-promocode-panel">
@@ -98,8 +96,9 @@
       <form id="display-licenses-form" class="form-group">
         <div class="modal-body">
           <label for="modal-license-type">Artwork licenses</label>
-          <p>License owner</p><small>License type:</small>
-          <button class="btn btn-sm btn-danger decrease-artwork-quantity">Delete license</button>
+          <button type="button" id="increase-artwork-quantity" class="btn btn-sm btn-primary">Add
+            license</button>
+          <div id="display-licenses-panel"></div>
         </div>
       </form>
     </div>
@@ -120,6 +119,7 @@
           <label for="modal-license-type">Artwork license</label>
           <select class="form-control" id="modal-license-credentials" name="licenseType">
             <option value="personal" selected>Personal use</option>
+            {{!-- smislit kako ovo rijesit --}}
             {{#checkIfEqualsString artwork.use 'commercial'}}
             <option value="commercial">Commercial use</option>
             {{/checkIfEqualsString}}
@@ -129,7 +129,7 @@
             id="modal-license-credentials">
         </div>
         <div class="modal-footer">
-          <input type="submit" class="form-control" value="Save license">
+          <button id="save-license-button" type="submit" class="form-control">Save license</button>
         </div>
       </form>
     </div>

@@ -83,12 +83,12 @@
 		{{#each artwork}}
 		<div class="col-md-3">
 			<div class="artwork-card">
-				<a href="/artwork_details/{{ _id }}"><img src="{{ cover }}" /></a>
+				<a href="/artwork_details/{{ _id }}"><img src="{{ current.cover }}" /></a>
 				<h4>
-					{{ title }}
+					{{ current.title }}
 				</h4>
 				<h3>
-					${{ price }}
+					${{ current.price }}
 				</h3>
 			</div>
 		</div>

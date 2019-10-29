@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const mongooseAlgolia = require('mongoose-algolia');
+const deepPopulate = require('mongoose-deep-populate')(mongoose);
 const Schema = mongoose.Schema;
 
 const ArtworkSchema = new Schema({
@@ -13,10 +14,14 @@ const ArtworkSchema = new Schema({
   use: String,
   license: Number,
   cover: { type: String, default: 'http://placehold.it/350x150' },
+  current: { type: Schema.Types.ObjectId, ref: 'Version' },
+  versions: [{ type: Schema.Types.ObjectId, ref: 'Version' }],
   media: String,
   active: Boolean,
   created: { type: Date, default: Date.now }
 });
+
+ArtworkSchema.plugin(deepPopulate);
 
 /* ArtworkSchema.plugin(mongooseAlgolia, {
   appId: 'P9R2R1LI94',

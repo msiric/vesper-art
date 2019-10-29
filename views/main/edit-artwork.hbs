@@ -31,6 +31,14 @@
             </div>
 
             <div class="form-group">
+              <label>Artwork availability</label>
+              <select class="form-control" name="artwork_available">
+                <option value="available" selected>Available for download</option>
+                <option value="unavailable">For viewing only</option>
+              </select>
+            </div>
+
+            <div class="form-group">
               <label>Artwork price</label>
               <input type="text" class="form-control" value="{{ artwork.price }}" name="artwork_price">
             </div>
