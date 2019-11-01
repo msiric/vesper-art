@@ -1,4 +1,6 @@
 const License = require('../models/license');
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
 
 const getValidator = async (req, res, next) => {
   try {
@@ -17,7 +19,11 @@ const validateLicense = async (req, res, next) => {
       active: true
     });
     if (foundLicense) {
-      return res.status(200).json({ license: foundLicense });
+      let pdf = new PDFDocument();
+
+      pdf.text('Hello', 100, 100);
+      pdf.end();
+      pdf.pipe(res);
     } else {
       return res.status(400).json({ message: 'License not found' });
     }

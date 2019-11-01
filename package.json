@@ -39,6 +39,7 @@
     "passport-google-oauth": "^2.0.0",
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.7.0",
+    "pdfkit": "^0.10.0",
     "randomstring": "^1.1.5",
     "sharp": "^0.23.0",
     "socket.io": "^2.2.0",

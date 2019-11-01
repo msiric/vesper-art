@@ -604,6 +604,7 @@ $('#validate-license-form').on('submit', function(e) {
   $.ajax({
     type: 'POST',
     data: data,
+    responseType: 'arraybuffer',
     url: `/validator`,
     success: function(data) {
       console.log(data);
