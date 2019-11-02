@@ -137,7 +137,6 @@ const editArtwork = async (req, res, next) => {
 
 // does it work in all cases?
 // needs testing
-// ne brise staru verziju a izbrise mediju dobro
 const updateArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.findOne({
