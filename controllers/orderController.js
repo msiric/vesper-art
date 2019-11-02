@@ -219,7 +219,10 @@ const postPaymentCart = async (req, res, next) => {
               let notification = new Notification();
               foundUser.cart.map(async function(item) {
                 if (item.artwork.active) {
-                  notification.receiver.push(item.artwork.owner);
+                  notification.receivers.push({
+                    user: item.artwork.owner,
+                    read: false
+                  });
                 }
               });
               notification.link = orderPath;
@@ -241,7 +244,6 @@ const postPaymentCart = async (req, res, next) => {
                       {
                         $inc: {
                           notifications: 1,
-                          // fale licence
                           incomingFunds: funds * (1 - commission)
                         }
                       },
@@ -370,35 +372,27 @@ const getOrderId = async (req, res, next) => {
       if (req.query.ref) {
         const foundNotif = await Notification.findById({ _id: req.query.ref });
         if (foundNotif) {
-          let receiverId = null;
-          foundNotif.receiver.forEach(function(receiver) {
-            if (receiver.equals(req.user._id)) {
-              receiverId = req.user._id;
+          let changed = false;
+          foundNotif.receivers.forEach(function(receiver) {
+            if (receiver.user.equals(req.user._id)) {
+              if (receiver.read === false) {
+                receiver.read = true;
+                changed = true;
+              }
             }
           });
-          if (receiverId) {
-            let found = false;
-            foundNotif.read.forEach(function(read) {
-              if (read.equals(req.user._id)) {
-                found = true;
-              }
-            });
-            if (!found) {
-              foundNotif.read.push(req.user._id);
-              const savedNotif = await foundNotif.save();
-              if (savedNotif) {
-                const updatedUser = await User.updateOne(
-                  {
-                    _id: req.user._id
-                  },
-                  { $inc: { notifications: -1 } },
-                  { useFindAndModify: false }
-                );
-                if (updatedUser) {
-                  decreaseNotif = true;
-                }
-              }
-            }
+          if (changed) {
+            await foundNotif.save();
+          }
+          const updatedUser = await User.updateOne(
+            {
+              _id: req.user._id
+            },
+            { $inc: { notifications: -1 } },
+            { useFindAndModify: false }
+          );
+          if (updatedUser) {
+            decreaseNotif = true;
           }
         }
       }

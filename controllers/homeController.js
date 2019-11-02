@@ -84,9 +84,9 @@ const postSearchResults = async (req, res, next) => {
 const getNotifications = async (req, res, next) => {
   try {
     const foundNotifications = await Notification.find({
-      receiver: req.user._id
+      receivers: { $elemMatch: { user: req.user._id } }
     })
-      .populate('sender')
+      .populate('user')
       .sort({ created: -1 });
     res.render('accounts/notifications', { notification: foundNotifications });
   } catch (err) {

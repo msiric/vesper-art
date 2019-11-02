@@ -3,11 +3,7 @@ const deepPopulate = require('mongoose-deep-populate')(mongoose);
 const Schema = mongoose.Schema;
 
 const OrderSchema = new Schema({
-  // needs restructuring
   buyer: { type: Schema.Types.ObjectId, ref: 'User' },
-  /*   seller: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
-  amount: [Number], */
   details: [
     {
       seller: { type: Schema.Types.ObjectId, ref: 'User' },
