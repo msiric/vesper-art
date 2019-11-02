@@ -1,6 +1,5 @@
 module.exports = {
-  database:
-    'mongodb+srv://root:loslakers24@fiverr-demo-5nkas.mongodb.net/test?retryWrites=true&w=majority',
+  database: `mongodb+srv://${process.env.DEV_DB_USER}:${process.env.DEV_DB_PASS}@${process.env.DEV_DB_NAME}-5nkas.mongodb.net/test?retryWrites=true&w=majority`,
   port: process.env.PORT || 3000,
   secret: process.env.SECRET || 'fiverrclone'
 };

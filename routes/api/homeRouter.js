@@ -8,11 +8,11 @@ let index = client.initIndex('ArtworkSchema'); */
 
 router.get('/', homeController.getHomepage);
 
-router.get('/categories/creative-writing', homeController.getCreativeWriting);
+router.get('/categories/creative_writing', homeController.getCreativeWriting);
 
 router.get('/categories/music', homeController.getMusic);
 
-router.get('/categories/visual-arts', homeController.getVisualArts);
+router.get('/categories/visual_arts', homeController.getVisualArts);
 
 router
   .route('/search')

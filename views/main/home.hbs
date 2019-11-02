@@ -41,12 +41,12 @@
 		{{#each requests}}
 		<div class="col-md-3">
 			<div class="request-card">
-				{{#checkIfEquals poster._id ../this.user._id }}
+				{{#checkIfEqualsId poster._id ../this.user._id }}
 				<i onclick="deleteRequest('{{ _id }}')" class="fa fa-trash delete-request-button"></i>
-				<a href="/edit-request/{{ _id }}" class="fa fa-edit edit-request-button"></a>
+				<a href="/edit_request/{{ _id }}" class="fa fa-edit edit-request-button"></a>
 				{{ else }}
 				<a href="#" class="fa fa-briefcase"></a>
-				{{/checkIfEquals}}
+				{{/checkIfEqualsId}}
 				<h4>{{ poster.name }}</h4>
 				<img src="{{ poster.photo }}">
 				<h4>
@@ -83,12 +83,12 @@
 		{{#each artwork}}
 		<div class="col-md-3">
 			<div class="artwork-card">
-				<a href="/artwork-details/{{ _id }}"><img src="{{ cover }}" /></a>
+				<a href="/artwork_details/{{ _id }}"><img src="{{ current.cover }}" /></a>
 				<h4>
-					{{ title }}
+					{{ current.title }}
 				</h4>
 				<h3>
-					${{ price }}
+					${{ current.price }}
 				</h3>
 			</div>
 		</div>

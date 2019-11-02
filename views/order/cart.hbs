@@ -3,16 +3,21 @@
   <div class="row">
     <div class="col-md-8">
       {{#each foundUser.cart}}
-      <div class="overview" id="{{ _id }}">
+      <div class="overview" id="{{ artwork._id }}">
         <div class="cart-card">
           <div class="name">
             <div class="space-between">
-              <h4><span><img src="{{ cover }}" style="width: 70%"></span>
-                <span>{{ title }}</span></h4>
+              <h4><span><img src="{{ artwork.current.cover }}" style="width: 70%"></span>
+                <span>{{ artwork.current.title }}</span></h4>
+              <div class="form-group">
+                <button value="{{ artwork._id }}"
+                  class="btn btn-sm btn-primary display-artwork-licenses">Licenses</button>
+              </div>
               <hr>
               <h3>
                 <span></span>
-                <span><button class="btn btn-danger remove-from-cart" id="{{ _id }}">Remove</button></span>
+                <span><button id="remove-from-cart" class="btn btn-danger"
+                    value="{{ artwork._id }}">Remove</button></span>
               </h3>
             </div>
           </div>
@@ -32,9 +37,9 @@
               Cart is empty
               {{ else }}
               <div class="inner">
-                <img src="{{ artwork.cover }}" class="img-circle">
+                <img src="{{ artwork.current.cover }}" class="img-circle">
                 <br>
-                <p class="text-center">{{ artwork.title }}</p>
+                <p class="text-center">{{ artwork.current.title }}</p>
               </div>
               <hr>
               <div class="cart-promocode-panel">
@@ -58,6 +63,10 @@
                 </h4>
               </div>
               <div class="space-between">
+                <h4><span>License:</span><span class="dollar fee">$<span id="cart-subtotal">{{ license }}</span></span>
+                </h4>
+              </div>
+              <div class="space-between">
                 <h4><span>Fee:</span><span class="dollar fee">$3.15</span></h4>
               </div>
               <hr>
@@ -71,6 +80,58 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="display-licenses-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Licenses information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="display-licenses-form" class="form-group">
+        <div class="modal-body">
+          <label for="modal-license-type">Artwork licenses</label>
+          <button type="button" id="increase-artwork-quantity" class="btn btn-sm btn-primary">Add
+            license</button>
+          <div id="display-licenses-panel"></div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="increase-license-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">License information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="increase-license-form" class="form-group">
+        <div class="modal-body">
+          <label for="modal-license-type">Artwork license</label>
+          <select class="form-control" id="modal-license-credentials" name="licenseType">
+            <option value="personal" selected>Personal use</option>
+            {{!-- smislit kako ovo rijesit --}}
+            {{#checkIfEqualsString artwork.use 'commercial'}}
+            <option value="commercial">Commercial use</option>
+            {{/checkIfEqualsString}}
+          </select>
+          <label for="modal-license-credentials">License owner credentials</label>
+          <input type="text" class="form-control" name="licenseCredentials" placeholder="Full name/company name"
+            id="modal-license-credentials">
+        </div>
+        <div class="modal-footer">
+          <button id="save-license-button" type="submit" class="form-control">Save license</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

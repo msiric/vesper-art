@@ -8,14 +8,15 @@ const User = require('../models/user');
 
 passport.serializeUser(function(user, done) {
   console.log(8);
-  done(null, user.id);
+  return done(null, user.id);
 });
 
-passport.deserializeUser(function(id, done) {
+passport.deserializeUser(async function(id, done) {
   console.log(9);
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
+  const foundUser = await User.findOne({ _id: id });
+  if (foundUser) {
+    return done(null, foundUser);
+  }
 });
 
 /* Sign in using Email and Password */

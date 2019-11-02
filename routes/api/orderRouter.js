@@ -2,44 +2,39 @@ const router = require('express').Router();
 const { isLoggedIn } = require('../../utils/helpers');
 const orderController = require('../../controllers/orderController');
 
-router.get(
-  '/checkout/single-package/:id',
-  isLoggedIn,
-  orderController.getSingleArtwork
-);
-
-router.get(
-  '/checkout/process_cart',
-  isLoggedIn,
-  orderController.getProcessCart
-);
+router.get('/checkout/cart', isLoggedIn, orderController.getProcessCart);
 
 router
   .route('/payment/cart')
   .get(isLoggedIn, orderController.getPaymentCart)
   .post(isLoggedIn, orderController.postPaymentCart);
 
-router
-  .route('/payment/:id')
-  .get(isLoggedIn, orderController.getPaymentSingle)
-  .post(isLoggedIn, orderController.postPaymentSingle);
+router.get('/orders/sold', isLoggedIn, orderController.getSoldOrders);
 
-router.get(
-  '/users/:userId/orders/:orderId',
+router.get('/orders/bought', isLoggedIn, orderController.getBoughtOrders);
+
+router.get('/orders/:orderId', isLoggedIn, orderController.getOrderId);
+
+router.post('/add_to_cart', isLoggedIn, orderController.addToCart);
+
+router.delete('/remove_from_cart', isLoggedIn, orderController.deleteFromCart);
+
+router.post(
+  '/increase_artwork_quantity',
   isLoggedIn,
-  orderController.getOrderId
+  orderController.increaseArtwork
+);
+
+router.post(
+  '/decrease_artwork_quantity',
+  isLoggedIn,
+  orderController.decreaseArtwork
 );
 
 router.get(
-  '/users/:id/manage_orders',
+  '/license_information/:artworkId',
   isLoggedIn,
-  orderController.getSoldOrders
+  orderController.getLicenseInformation
 );
-
-router.get('/users/:id/orders', isLoggedIn, orderController.getBoughtOrders);
-
-router.post('/add-to-cart', isLoggedIn, orderController.addToCart);
-
-router.delete('/remove-from-cart', isLoggedIn, orderController.deleteFromCart);
 
 module.exports = router;

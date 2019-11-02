@@ -6,28 +6,20 @@ router.post('/request', isLoggedIn, requestController.postRequest);
 
 router.delete('/request/:id', isLoggedIn, requestController.deleteRequest);
 
-router.get('/edit-request/:id', isLoggedIn, requestController.getRequest);
+router.get('/edit_request/:id', isLoggedIn, requestController.getRequest);
 
-router.post('/edit-request/:id', isLoggedIn, requestController.updateRequest);
+router.post('/edit_request/:id', isLoggedIn, requestController.updateRequest);
 
-router.get(
-  '/users/:id/requests',
-  isLoggedIn,
-  requestController.getUserRequests
-);
+router.get('/requests', isLoggedIn, requestController.getUserRequests);
 
 router.get(
-  '/users/:userId/requests/:requestId',
+  '/requests/:requestId',
   isLoggedIn,
   requestController.getUserRequest
 );
 
-router.get('/users/:id/offers', isLoggedIn, requestController.getUserOffers);
+router.get('/offers', isLoggedIn, requestController.getUserOffers);
 
-router.get(
-  '/users/:userId/offers/:offerId',
-  isLoggedIn,
-  requestController.getUserOffer
-);
+router.get('/offers/:offerId', isLoggedIn, requestController.getUserOffer);
 
 module.exports = router;
