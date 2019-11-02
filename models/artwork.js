@@ -6,17 +6,6 @@ const Schema = mongoose.Schema;
 const ArtworkSchema = new Schema({
   // delete everything except owner and active
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
-  type: String,
-  title: String,
-  category: String,
-  about: String,
-  price: Number,
-  use: String,
-  license: Number,
-  cover: { type: String, default: 'http://placehold.it/350x150' },
-  current: { type: Schema.Types.ObjectId, ref: 'Version' },
-  versions: [{ type: Schema.Types.ObjectId, ref: 'Version' }],
-  media: String,
   active: Boolean,
   created: { type: Date, default: Date.now }
 });
