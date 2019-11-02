@@ -1,5 +1,5 @@
 <h5 class="title">Edit custom work</h5>
-<form action="/edit-request/{{ request._id }}" method="post" id="edit-request-form" class="form-group">
+<form action="/edit_request/{{ request._id }}" method="post" id="edit-request-form" class="form-group">
   <select name="request_category" class="form-control">
     <option value="cw" {{#formatSelection artwork.category 'cw'}}{{/formatSelection}}>Creative writing</option>
     <option value="m" {{#formatSelection artwork.category 'm'}}{{/formatSelection}}>Music</option>

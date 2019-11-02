@@ -5,14 +5,14 @@
         <h2 class="text-center">Edit your artwork</h2>
         <br>
         <div class="edit-artwork-card">
-          <form action="/edit-artwork/{{ artwork._id }}" method="POST" id="artwork-edit-form">
+          <form action="/edit_artwork/{{ artwork._id }}" method="POST" id="artwork-edit-form">
             <div class="form-group text-center">
               <img id="artwork-cover" class="img-circle" src="{{ artwork.cover }}" />
               <br>
-              <div class="btn btn-rounded float-left">
+              {{!--               <div class="btn btn-rounded float-left">
                 <span>Edit photo</span>
                 <input id="artwork-cover-edit" type="file" class="form-control" name="artwork_cover">
-              </div>
+              </div> --}}
               <div class="btn btn-rounded float-left">
                 <span>Edit artwork</span>
                 <input id="artwork-media-edit" type="file" class="form-control" name="artwork_media">
@@ -23,8 +23,37 @@
             </div>
 
             <div class="form-group">
+              <label>Artwork type</label>
+              <select class="form-control" name="artwork_type">
+                <option value="commercial" selected>Commercial artwork</option>
+                <option value="showcase">Showcase artwork</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Artwork availability</label>
+              <select class="form-control" name="artwork_available">
+                <option value="available" selected>Available for download</option>
+                <option value="unavailable">For viewing only</option>
+              </select>
+            </div>
+
+            <div class="form-group">
               <label>Artwork price</label>
               <input type="text" class="form-control" value="{{ artwork.price }}" name="artwork_price">
+            </div>
+
+            <div class="form-group">
+              <label>Artwork license</label>
+              <select class="form-control" name="artwork_license">
+                <option value="commercial" selected>Offer both personal and commercial licenses</option>
+                <option value="personal">Offer only personal license</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Commercial license</label>
+              <input type="text" class="form-control" value="{{ artwork.license }}" name="artwork_commercial">
             </div>
 
             <div class="form-group">

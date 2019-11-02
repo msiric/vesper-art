@@ -5,19 +5,26 @@
       <div class="row">
         <div class="sidebar right">
           <div class="overlay">
-            {{#each order.artwork}}
+            {{#each order.details}}
             <div class="profile">
               <div class="pic">
-                <img src="{{ cover }}" class="artorder-image">
+                <img src="{{ version.cover }}" class="artorder-image">
               </div>
               <div class="info">
-                <h3 class="title name">{{ title }}</h3>
+                <h3 class="title name">{{ version.title }}</h3>
                 <p class="bio">
-                  {{ about }}
-                  {{ price }}
+                  {{ version.about }}
+                  {{ version.price }}
                 </p>
-                <a href="{{ media }}">{{ title }}</a>
-                {{#checkIfEquals ../user._id owner}}
+                {{#each licenses}}
+                <p>
+                  {{ credentials }}
+                  {{ price }}
+                  {{ type }}
+                </p>
+                {{/each}}
+                <a href="{{ version.media }}">{{ version.title }}</a>
+                {{#checkIfEqualsId ../user._id artwork.owner}}
                 {{else}}
                 {{../review}}
                 {{#if ../review}}
@@ -27,7 +34,7 @@
                 <a id="{{ _id }}" class="rate-artwork" data-toggle="modal" data-target="#rate-artwork-modal">Rate this
                   artwork</a>
                 {{/if}}
-                {{/checkIfEquals}}
+                {{/checkIfEqualsId}}
                 <br>
               </div>
             </div>
@@ -41,14 +48,17 @@
       <div class="row">
         <div class="chatbox">
           <div class="chat-messages clearfix" id="order-messages">
-            {{#checkIfEquals order.buyer user._id}}
+            {{#checkIfEqualsId order.buyer user._id}}
             <p>{{ order.paid }}</p>
+            {{#if order.discount}}
+            <p>Discount: {{ order.discount.discount }}%</p>
+            {{/if}}
             {{else}}
             <p>{{ order.sold }}</p>
-            {{/checkIfEquals}}
+            {{/checkIfEqualsId}}
             <p>{{ order.created }}</p>
             <div class="btn btn-{{ formatButtonOrder order.status }}">{{ formatStatusOrder order.status }}</div>
-            <a href="/contact-support">Having issues with your order? Contact us</a>
+            <a href="/contact_support">Having issues with your order? Contact us</a>
           </div>
         </div>
       </div>

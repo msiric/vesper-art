@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt-nodejs');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const deepPopulate = require('mongoose-deep-populate')(mongoose);
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -29,15 +30,21 @@ const UserSchema = new Schema({
   verified: Boolean,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
-  cart: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
+  cart: [
+    {
+      artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
+      licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }]
+    }
+  ],
   discount: { type: Schema.Types.ObjectId, ref: 'Promocode' },
   inbox: Number,
   notifications: Number,
   rating: Number,
   reviews: Number,
   savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
-  funds: Number,
-  escrow: Number,
+  earnings: Number,
+  incomingFunds: Number,
+  outgoingFunds: Number,
   active: Boolean
 });
 
@@ -55,6 +62,8 @@ UserSchema.pre('save', function(next) {
     });
   }
 });
+
+UserSchema.plugin(deepPopulate);
 
 UserSchema.methods.comparePassword = function(password) {
   return bcrypt.compareSync(password, this.password);
