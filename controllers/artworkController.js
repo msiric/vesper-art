@@ -33,7 +33,6 @@ const getNewArtwork = async (req, res, next) => {
 
 const postNewArtwork = async (req, res, next) => {
   try {
-    console.log(req.body);
     const newVersion = new Version();
     newVersion.cover = req.body.artwork_cover;
     newVersion.media = req.body.artwork_media;

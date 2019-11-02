@@ -1,6 +1,6 @@
 const License = require('../models/license');
 const PDFDocument = require('pdfkit');
-const fs = require('fs');
+const { Base64Encode } = require('base64-stream');
 
 const getValidator = async (req, res, next) => {
   try {
@@ -19,11 +19,7 @@ const validateLicense = async (req, res, next) => {
       active: true
     });
     if (foundLicense) {
-      let pdf = new PDFDocument();
-
-      pdf.text('Hello', 100, 100);
-      pdf.end();
-      pdf.pipe(res);
+      return res.status(200).json({ foundLicense: foundLicense });
     } else {
       return res.status(400).json({ message: 'License not found' });
     }
@@ -33,7 +29,29 @@ const validateLicense = async (req, res, next) => {
   }
 };
 
+const displayLicense = async (req, res, next) => {
+  try {
+    const doc = new PDFDocument();
+
+    let finalString = '';
+    const stream = doc.pipe(new Base64Encode());
+
+    doc.end();
+
+    stream.on('data', function(chunk) {
+      finalString += chunk;
+    });
+
+    stream.on('end', function() {
+      res.json({ pdf: finalString });
+    });
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getValidator,
-  validateLicense
+  validateLicense,
+  displayLicense
 };

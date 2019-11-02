@@ -1,3 +1,6 @@
+const Artwork = require('../models/artwork');
+const Order = require('../models/order');
+const Version = require('../models/version');
 const aws = require('aws-sdk');
 const passport = require('passport');
 const passportConfig = require('../config/passport');
@@ -237,9 +240,7 @@ const updateUserPreferences = async (req, res, next) => {
   }
 };
 
-// needs testing (better way to update already found user)
-// delete all users artwork, versions and media if not found in orders
-const deleteUser = async (req, res, next) => {
+/* const deleteUser = async (req, res, next) => {
   try {
     const foundUser = await User.findOne({
       $and: [{ _id: req.user._id }, { active: true }]
@@ -260,7 +261,6 @@ const deleteUser = async (req, res, next) => {
         { _id: foundUser._id },
         {
           $set: {
-            email: null,
             name: 'Deleted User',
             password: null,
             photo: foundUser.gravatar(),
@@ -294,6 +294,395 @@ const deleteUser = async (req, res, next) => {
         });
       } else {
         return res.status(400).json({ message: 'User could not be deleted' });
+      }
+    } else {
+      return res.status(400).json({ message: 'User not found' });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}; */
+
+// needs testing (better way to update already found user)
+// not tested
+const deleteUser = async (req, res, next) => {
+  try {
+    const foundUser = await User.findOne({
+      $and: [{ _id: req.user._id }, { active: true }]
+    });
+    if (foundUser) {
+      const foundArtwork = await Artwork.find({
+        $and: [{ owner: req.user._id }, { active: true }]
+      })
+        .populate('current')
+        .populate('versions');
+      if (foundArtwork) {
+        foundArtwork.forEach(async function(artwork) {
+          const foundOrder = await Order.find({
+            details: { $elemMatch: { artwork: artwork._id } },
+            details: { $elemMatch: { version: artwork.current._id } }
+          }).deepPopulate('details.artwork details.version');
+          console.log('order', foundOrder);
+          if (foundOrder.length) {
+            const updatedArtwork = await Artwork.updateOne(
+              {
+                _id: artwork._id
+              },
+              {
+                active: false
+              }
+            );
+            if (updatedArtwork) {
+              if (foundUser.photo.includes(foundUser._id)) {
+                const folderName = 'profilePhotos/';
+                const fileName = foundUser.photo.split('/').slice(-1)[0];
+                const filePath = folderName + fileName;
+                const s3 = new aws.S3();
+                const params = {
+                  Bucket: 'vesper-testing',
+                  Key: filePath
+                };
+                await s3.deleteObject(params).promise();
+              }
+              const updatedUser = await User.updateOne(
+                { _id: foundUser._id },
+                {
+                  $set: {
+                    name: 'Deleted User',
+                    password: null,
+                    photo: foundUser.gravatar(),
+                    about: null,
+                    facebookId: null,
+                    googleId: null,
+                    customWork: false,
+                    secretToken: null,
+                    verified: false,
+                    resetPasswordToken: null,
+                    resetPasswordExpires: null,
+                    cart: null,
+                    discount: null,
+                    inbox: null,
+                    notifications: null,
+                    rating: null,
+                    reviews: null,
+                    savedArtwork: null,
+                    earnings: null,
+                    incomingFunds: null,
+                    outgoingFunds: null,
+                    escrow: null,
+                    active: false
+                  }
+                }
+              );
+              if (updatedUser) {
+                req.logout();
+                req.session.destroy(function(err) {
+                  res.status(200).json('/');
+                });
+              } else {
+                return res
+                  .status(400)
+                  .json({ message: 'User could not be deleted' });
+              }
+            } else {
+              return res
+                .status(400)
+                .json({ message: 'Could not delete version' });
+            }
+          } else {
+            console.log('length', artwork.versions.length);
+            if (artwork.versions.length) {
+              let usedContent = false;
+              artwork.versions.map(function(version) {
+                if (
+                  version.media == artwork.current.media &&
+                  version.cover == artwork.current.cover
+                ) {
+                  usedContent = true;
+                }
+              });
+              console.log('used content', usedContent);
+              if (usedContent) {
+                const deletedVersion = await Version.remove({
+                  _id: artwork.current._id
+                });
+                if (deletedVersion) {
+                  const updatedArtwork = await Artwork.updateOne(
+                    {
+                      _id: artwork._id
+                    },
+                    {
+                      current: null,
+                      active: false
+                    }
+                  );
+                  if (updatedArtwork) {
+                    if (foundUser.photo.includes(foundUser._id)) {
+                      const folderName = 'profilePhotos/';
+                      const fileName = foundUser.photo.split('/').slice(-1)[0];
+                      const filePath = folderName + fileName;
+                      const s3 = new aws.S3();
+                      const params = {
+                        Bucket: 'vesper-testing',
+                        Key: filePath
+                      };
+                      await s3.deleteObject(params).promise();
+                    }
+                    const updatedUser = await User.updateOne(
+                      { _id: foundUser._id },
+                      {
+                        $set: {
+                          name: 'Deleted User',
+                          password: null,
+                          photo: foundUser.gravatar(),
+                          about: null,
+                          facebookId: null,
+                          googleId: null,
+                          customWork: false,
+                          secretToken: null,
+                          verified: false,
+                          resetPasswordToken: null,
+                          resetPasswordExpires: null,
+                          cart: null,
+                          discount: null,
+                          inbox: null,
+                          notifications: null,
+                          rating: null,
+                          reviews: null,
+                          savedArtwork: null,
+                          earnings: null,
+                          incomingFunds: null,
+                          outgoingFunds: null,
+                          escrow: null,
+                          active: false
+                        }
+                      }
+                    );
+                    if (updatedUser) {
+                      req.logout();
+                      req.session.destroy(function(err) {
+                        res.status(200).json('/');
+                      });
+                    } else {
+                      return res
+                        .status(400)
+                        .json({ message: 'User could not be deleted' });
+                    }
+                  } else {
+                    return res
+                      .status(400)
+                      .json({ message: 'Could not update artwork' });
+                  }
+                } else {
+                  return res
+                    .status(400)
+                    .json({ message: 'Could not delete version' });
+                }
+              } else {
+                const coverFolderName = 'artworkCovers/';
+                const coverFileName = artwork.current.cover
+                  .split('/')
+                  .slice(-1)[0];
+                const coverFilePath = coverFolderName + coverFileName;
+                const coverS3 = new aws.S3();
+                const coverParams = {
+                  Bucket: 'vesper-testing',
+                  Key: coverFilePath
+                };
+
+                await coverS3.deleteObject(coverParams).promise();
+
+                const mediaFolderName = 'artworkMedia/';
+                const mediaFileName = artwork.current.media
+                  .split('/')
+                  .slice(-1)[0];
+                const mediaFilePath = mediaFolderName + mediaFileName;
+                const mediaS3 = new aws.S3();
+                const mediaParams = {
+                  Bucket: 'vesper-testing',
+                  Key: mediaFilePath
+                };
+
+                await mediaS3.deleteObject(mediaParams).promise();
+
+                const deletedVersion = await Version.remove({
+                  _id: artwork.current._id
+                });
+                if (deletedVersion) {
+                  const updatedArtwork = await Artwork.updateOne(
+                    {
+                      _id: artwork._id
+                    },
+                    {
+                      current: null,
+                      active: false
+                    }
+                  );
+                  if (updatedArtwork) {
+                    if (foundUser.photo.includes(foundUser._id)) {
+                      const folderName = 'profilePhotos/';
+                      const fileName = foundUser.photo.split('/').slice(-1)[0];
+                      const filePath = folderName + fileName;
+                      const s3 = new aws.S3();
+                      const params = {
+                        Bucket: 'vesper-testing',
+                        Key: filePath
+                      };
+                      await s3.deleteObject(params).promise();
+                    }
+                    const updatedUser = await User.updateOne(
+                      { _id: foundUser._id },
+                      {
+                        $set: {
+                          name: 'Deleted User',
+                          password: null,
+                          photo: foundUser.gravatar(),
+                          about: null,
+                          facebookId: null,
+                          googleId: null,
+                          customWork: false,
+                          secretToken: null,
+                          verified: false,
+                          resetPasswordToken: null,
+                          resetPasswordExpires: null,
+                          cart: null,
+                          discount: null,
+                          inbox: null,
+                          notifications: null,
+                          rating: null,
+                          reviews: null,
+                          savedArtwork: null,
+                          earnings: null,
+                          incomingFunds: null,
+                          outgoingFunds: null,
+                          escrow: null,
+                          active: false
+                        }
+                      }
+                    );
+                    if (updatedUser) {
+                      req.logout();
+                      req.session.destroy(function(err) {
+                        res.status(200).json('/');
+                      });
+                    } else {
+                      return res
+                        .status(400)
+                        .json({ message: 'User could not be deleted' });
+                    }
+                  } else {
+                    return res
+                      .status(400)
+                      .json({ message: 'Could not update artwork' });
+                  }
+                } else {
+                  return res
+                    .status(400)
+                    .json({ message: 'Could not delete version' });
+                }
+              }
+            } else {
+              const coverFolderName = 'artworkCovers/';
+              const coverFileName = artwork.current.cover
+                .split('/')
+                .slice(-1)[0];
+              const coverFilePath = coverFolderName + coverFileName;
+              const coverS3 = new aws.S3();
+              const coverParams = {
+                Bucket: 'vesper-testing',
+                Key: coverFilePath
+              };
+
+              await coverS3.deleteObject(coverParams).promise();
+
+              const mediaFolderName = 'artworkMedia/';
+              const mediaFileName = artwork.current.media
+                .split('/')
+                .slice(-1)[0];
+              const mediaFilePath = mediaFolderName + mediaFileName;
+              const mediaS3 = new aws.S3();
+              const mediaParams = {
+                Bucket: 'vesper-testing',
+                Key: mediaFilePath
+              };
+
+              await mediaS3.deleteObject(mediaParams).promise();
+
+              const deletedVersion = await Version.remove({
+                _id: artwork.current._id
+              });
+              if (deletedVersion) {
+                const deletedArtwork = await Artwork.remove({
+                  _id: artwork._id
+                });
+                if (deletedArtwork) {
+                  if (foundUser.photo.includes(foundUser._id)) {
+                    const folderName = 'profilePhotos/';
+                    const fileName = foundUser.photo.split('/').slice(-1)[0];
+                    const filePath = folderName + fileName;
+                    const s3 = new aws.S3();
+                    const params = {
+                      Bucket: 'vesper-testing',
+                      Key: filePath
+                    };
+                    await s3.deleteObject(params).promise();
+                  }
+                  const updatedUser = await User.updateOne(
+                    { _id: foundUser._id },
+                    {
+                      $set: {
+                        name: 'Deleted User',
+                        password: null,
+                        photo: foundUser.gravatar(),
+                        about: null,
+                        facebookId: null,
+                        googleId: null,
+                        customWork: false,
+                        secretToken: null,
+                        verified: false,
+                        resetPasswordToken: null,
+                        resetPasswordExpires: null,
+                        cart: null,
+                        discount: null,
+                        inbox: null,
+                        notifications: null,
+                        rating: null,
+                        reviews: null,
+                        savedArtwork: null,
+                        earnings: null,
+                        incomingFunds: null,
+                        outgoingFunds: null,
+                        escrow: null,
+                        active: false
+                      }
+                    }
+                  );
+                  if (updatedUser) {
+                    req.logout();
+                    req.session.destroy(function(err) {
+                      res.status(200).json('/');
+                    });
+                  } else {
+                    return res
+                      .status(400)
+                      .json({ message: 'User could not be deleted' });
+                  }
+                } else {
+                  return res
+                    .status(400)
+                    .json({ message: 'Could not delete artwork' });
+                }
+              } else {
+                return res
+                  .status(400)
+                  .json({ message: 'Could not delete version' });
+              }
+            }
+          }
+        });
+      } else {
+        return res.status(400).json({ message: 'Artwork not found' });
       }
     } else {
       return res.status(400).json({ message: 'User not found' });

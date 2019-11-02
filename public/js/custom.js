@@ -604,10 +604,26 @@ $('#validate-license-form').on('submit', function(e) {
   $.ajax({
     type: 'POST',
     data: data,
-    responseType: 'arraybuffer',
     url: `/validator`,
     success: function(data) {
-      console.log(data);
+      console.log(data.foundLicense);
+    },
+    error: function(err) {
+      console.log(err);
+    }
+  });
+});
+
+$('#retrieve-license-button').on('click', function() {
+  $.ajax({
+    type: 'POST',
+    data: data,
+    url: `/validator`,
+    success: function(data) {
+      let newTab = window.open();
+      newTab.document.write(
+        `<iframe src="data:application/pdf;base64,${data.pdf}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`
+      );
     },
     error: function(err) {
       console.log(err);
