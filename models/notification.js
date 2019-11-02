@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const NotificationSchema = new Schema({
-  /*   receiver: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  read: [{ type: Schema.Types.ObjectId, ref: 'User' }], */
   link: String,
   message: String,
   receivers: [
