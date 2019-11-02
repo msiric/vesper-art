@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { isLoggedIn } = require('../../utils/helpers');
 const emailController = require('../../controllers/emailController');
 
-router.post('/send_email', emailController.sendConfirmation);
+router.post('/send-email', emailController.sendConfirmation);
 
 router.get('/verify/:token', emailController.verifyToken);
 

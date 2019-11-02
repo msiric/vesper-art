@@ -129,7 +129,7 @@ const updateRequest = async (req, res, next) => {
           }
           const savedRequest = await foundRequest.save();
           if (savedRequest) {
-            return res.redirect('/requests');
+            return res.redirect('/users/' + req.user._id + '/requests');
           } else {
           }
         } else {

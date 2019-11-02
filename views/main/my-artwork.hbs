@@ -19,7 +19,7 @@
         <div class="overview">
           <div class="add-artwork-card">
             <p class="text-center" style="margin-top: 50px">
-              <a href="/add_new_artwork" class="btn btn-success">Add new artwork</a>
+              <a href="/add-new-artwork" class="btn btn-success">Add new artwork</a>
             </p>
           </div>
         </div>
@@ -38,8 +38,8 @@
                   {{#if artwork}}
                   {{#each artwork}}
                   <tr>
-                    <td><img class="order-image-my-artwork" src="{{ current.cover }}"></td>
-                    <td>{{ current.title }}</td>
+                    <td><img class="order-image-my-artwork" src="{{ cover }}"></td>
+                    <td>{{ title }}</td>
                   </tr>
                   {{/each}}
                   {{ else }}

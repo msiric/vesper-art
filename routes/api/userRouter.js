@@ -29,14 +29,14 @@ router.get('/logout', isLoggedIn, userController.getLogOut);
 
 router.get('/settings', isLoggedIn, userController.getUserSettings);
 
-router.post('/new_password', isLoggedIn, userController.updateUserPassword);
+router.post('/new-password', isLoggedIn, userController.updateUserPassword);
 
 router.post(
-  '/update_preferences',
+  '/update-preferences',
   isLoggedIn,
   userController.updateUserPreferences
 );
 
-router.post('/delete_user', isLoggedIn, userController.deleteUser);
+router.post('/delete-user', isLoggedIn, userController.deleteUser);
 
 module.exports = router;

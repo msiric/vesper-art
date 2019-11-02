@@ -8,17 +8,15 @@
         {{#each notification }}
         <div id="{{ _id }}" class="notification-card">
           <a href="{{ link }}?ref={{ _id }}">
-            {{#each receivers}}
             <div class="pic">
-              <img src="{{ user.photo }}" class="user-image">
+              <img src="{{ sender.photo }}" class="user-image">
             </div>
             <div class="info">
-              <h3 class="title name">{{ user.name }}</h3>
+              <h3 class="title name">{{ sender.name }}</h3>
               <p class="bio">
-                {{ ../message }}
+                {{ message }}
               </p>
             </div>
-            {{/each}}
           </a>
         </div>
         {{/each}}

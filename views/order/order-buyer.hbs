@@ -20,9 +20,8 @@
               {{#if bulk}}
               <tr>
                 <td>
-                  {{#each details}}
-                  <img class="order-image-my-artwork" src="{{ version.cover }}"><span
-                    class="artwork-title">{{ version.title }}</span>
+                  {{#each artwork}}
+                  <img class="order-image-my-artwork" src="{{ cover }}"><span class="artwork-title">{{ title }}</span>
                   {{/each}}
                 </td>
                 <td>
@@ -30,20 +29,19 @@
                 </td>
                 <td><button class="btn btn-{{ formatButtonOrder status }}">{{ formatStatusOrder status }}</button></td>
                 <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>
-                <td><a href="/orders/{{ _id }}" class="btn btn-primary">Order page</a>
+                <td><a href="/users/{{ buyer._id }}/orders/{{ _id }}" class="btn btn-primary">Order page</a>
                 </td>
               </tr>
               {{else}}
               <tr>
-                {{#each details}}
-                <td><img class="order-image-my-artwork" src="{{ version.cover }}"><span
-                    class="artwork-title">{{ version.title }}</span>
+                {{#each artwork}}
+                <td><img class="order-image-my-artwork" src="{{ cover }}"><span class="artwork-title">{{ title }}</span>
                 </td>
                 {{/each}}
                 <td>${{ paid }}</td>
                 <td><button class="btn btn-{{ formatButtonOrder status }}">{{ formatStatusOrder status }}</button></td>
                 <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>
-                <td><a href="/orders/{{ _id }}" class="btn btn-primary">Order page</a>
+                <td><a href="/users/{{ buyer._id }}/orders/{{ _id }}" class="btn btn-primary">Order page</a>
                 </td>
               </tr>
               {{/if}}

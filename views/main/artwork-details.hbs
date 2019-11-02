@@ -6,10 +6,10 @@
         <input type="hidden" value="{{ artwork._id }}" id="artwork_id">
         <div class="template-card">
           <div class="name">
-            <h2 class="h2-size">{{ artwork.current.title }}</h2>
-            <p>{{ review.[0].averageRating }}</p>
+            <h2 class="h2-size">{{ artwork.title }}</h2>
+            <p>{{ rating }}</p>
             <hr>
-            <img src="{{ artwork.current.cover }}" class="image-test">
+            <img src="{{ artwork.cover }}" class="image-test">
             {{#if savedArtwork}}
             <button id="{{ artwork._id }}" class="btn btn-danger save-artwork-button">Remove
               artwork</button>
@@ -26,7 +26,7 @@
           <div class="name">
             <h2 class="h2-size">About artwork</h2>
             <hr>
-            <h4>{{ artwork.current.about }}</h4>
+            <h4>{{ artwork.about }}</h4>
           </div>
         </div>
       </div>
@@ -35,49 +35,35 @@
     <div class="col-md-4">
       <div class="overview">
         {{#if user }}
-        {{#checkIfEqualsId artwork.owner._id user._id }}
+        {{#checkIfEquals artwork.owner._id user._id }}
         <div class="edit-card">
-          <a href="/edit_artwork/{{ artwork._id }}" class="btn btn-success" id="edit-artwork"><i
+          <a href="/edit-artwork/{{ artwork._id }}" class="btn btn-success" id="edit-artwork"><i
               class="fa fa-edit"></i></a>
         </div>
         {{ else }}
         <div class="order-card">
           <div class="name">
             <h3>Artwork price</h3>
-            <h4>${{ artwork.current.price }}</h4>
+            <h4>${{ artwork.price }}</h4>
+            <a href="/checkout/single-package/{{ artwork._id }}" class="btn btn-success">Proceed to order</a>
             {{#if inCart}}
-            <a href="/checkout/cart" class="btn btn-success" id="in-cart">In cart</a>
+            <a href="/checkout/process_cart" class="btn btn-success" id="in-cart">In cart</a>
             {{ else }}
-            {{#if artwork.current.available}}
-            {{#checkIfEqualsString artwork.current.type 'showcase' }}
-            <a href="{{ artwork.current.media }}" class="btn btn-success" id="download-artwork"><i
-                class="fa fa-download"></i></a>
-            {{ else }}
-            <button data-toggle="modal" data-target="#add-license-modal" class="btn btn-success" id="add-to-cart"><i
-                class="fa fa-shopping-cart"></i></button>
-            {{/checkIfEqualsString}}
-            {{ else }}
-            <p>Showcase artwork</p><small>(not available for download)</small>
-            {{/if}}
+            <button class="btn btn-success" id="add-to-cart"><i class="fa fa-shopping-cart"></i></button>
             {{/if}}
           </div>
         </div>
-        {{/checkIfEqualsId}}
+        {{/checkIfEquals}}
         {{ else }}
         <div class="order-card">
           <div class="name">
             <h3>Artwork price</h3>
-            <h4>${{ artwork.current.price }}</h4>
-            {{#if artwork.current.available}}
-            {{#checkIfEqualsString artwork.current.type 'showcase' }}
-            <a href="{{ artwork.current.media }}" class="btn btn-success" id="download-artwork"><i
-                class="fa fa-download"></i></a>
+            <h4>${{ artwork.price }}</h4>
+            <a href="/checkout/single-package/{{ artwork._id }}" class="btn btn-success">Proceed to order</a>
+            {{#if inCart}}
+            <a href="/checkout/process_cart" class="btn btn-success" id="in-cart">In cart</a>
             {{ else }}
-            <button data-toggle="modal" data-target="#add-license-modal" class="btn btn-success" id="add-to-cart"><i
-                class="fa fa-shopping-cart"></i></button>
-            {{/checkIfEqualsString}}
-            {{ else }}
-            <p>Showcase artwork</p><small>(not available for download)</small>
+            <button class="btn btn-success" id="add-to-cart"><i class="fa fa-shopping-cart"></i></button>
             {{/if}}
           </div>
         </div>
@@ -93,7 +79,7 @@
             <hr>
             <h4>{{ artwork.owner.name }}</h4>
             <i class="fa fa-briefcase"></i>
-            <a href="/conversations/{{ artwork.owner._id }}"><i class="fa fa-envelope"></i></a>
+            <a href="/conversations/{{artwork.owner._id}}"><i class="fa fa-envelope"></i></a>
             <img class="img-circle" src="{{ artwork.owner.photo }}" />
             <br>
             {{#if artwork.owner.about}}
@@ -108,30 +94,22 @@
   </div>
 </div>
 
-<div class="modal fade" id="add-license-modal" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="contact-artist-modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">License information</h5>
+        <h5 class="modal-title">Contact artist</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="add-license-form" class="form-group">
+      <form action="#" id="modal-message-form" class="form-group">
         <div class="modal-body">
-          <label for="modal-license-type">Artwork license</label>
-          <select class="form-control" id="modal-license-credentials" name="licenseType">
-            <option value="personal" selected>Personal use</option>
-            {{#checkIfEqualsString artwork.current.use 'commercial'}}
-            <option value="commercial">Commercial use</option>
-            {{/checkIfEqualsString}}
-          </select>
-          <label for="modal-license-credentials">License owner credentials</label>
-          <input type="text" class="form-control" name="licenseCredentials" placeholder="Full name/company name"
-            id="modal-license-credentials">
+          <textarea id="modal-message-input" class="form-control" cols="30" rows="10"></textarea>
+          <input type="hidden" id="modal-user-id" value="{{ artwork.owner._id }}">
         </div>
         <div class="modal-footer">
-          <input type="submit" class="form-control" value="Save license">
+          <input type="submit" class="form-control" value="Send message">
         </div>
       </form>
     </div>

@@ -38,31 +38,15 @@ const postProfileImage = async (req, res, next) => {
   }
 };
 
-const postArtworkMedia = async (req, res, next) => {
+const postArtworkCover = async (req, res, next) => {
   try {
-    return res.status(200).json({
-      coverUrl: req.file.transforms[0].location,
-      originalUrl: req.file.transforms[1].location
-    });
+    return res.status(200).json({ imageUrl: req.file.location });
   } catch (err) {
-    console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-const putArtworkMedia = async (req, res, next) => {
-  try {
-    return res.status(200).json({
-      coverUrl: req.file.transforms[0].location,
-      originalUrl: req.file.transforms[1].location
-    });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-/* const updateArtworkCover = async (req, res, next) => {
+const updateArtworkCover = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
     const foundArtwork = await Artwork.findOne({
@@ -99,11 +83,10 @@ const putArtworkMedia = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
-}; */
+};
 
-/* const postArtworkMedia = async (req, res, next) => {
+const postArtworkMedia = async (req, res, next) => {
   try {
-    console.log(req.file);
     return res.status(200).json({ imageUrl: req.file.location });
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
@@ -147,13 +130,12 @@ const updateArtworkMedia = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({ message: 'Internal server error' });
   }
-}; */
+};
 
 module.exports = {
   postProfileImage,
-  /*   postArtworkCover, */
-  /*   updateArtworkCover, */
+  postArtworkCover,
+  updateArtworkCover,
   postArtworkMedia,
-  putArtworkMedia
-  /*   updateArtworkMedia */
+  updateArtworkMedia
 };
