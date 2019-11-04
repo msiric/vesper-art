@@ -1,31 +1,36 @@
+const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 const config = require('../config/mailer');
 const User = require('../models/user');
 const crypto = require('crypto');
 
 function postTicket(req, res, next) {
-  let mailOptions, host, link;
-  const smtpTransport = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-      user: config.email,
-      pass: config.password
-    }
-  });
-  host = req.get('host');
-  mailOptions = {
-    from: res.locals.email.sender,
-    to: config.email,
-    subject: `Support ticket (#${res.locals.email.id}): ${res.locals.email.title}`,
-    html: res.locals.email.body
-  };
-  smtpTransport.sendMail(mailOptions, function(error, response) {
-    if (error) {
-      return res.status(400).json({ message: 'Email could not be sent' });
-    } else {
-      return res.status(200).json('Email sent successfully');
-    }
-  });
+  try {
+    let mailOptions, host, link;
+    const smtpTransport = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: config.email,
+        pass: config.password
+      }
+    });
+    host = req.get('host');
+    mailOptions = {
+      from: res.locals.email.sender,
+      to: config.email,
+      subject: `Support ticket (#${res.locals.email.id}): ${res.locals.email.title}`,
+      html: res.locals.email.body
+    };
+    smtpTransport.sendMail(mailOptions, function(error, response) {
+      if (error) {
+        return res.status(400).json({ message: 'Email could not be sent' });
+      } else {
+        return res.status(200).json('Email sent successfully');
+      }
+    });
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 }
 
 const sendConfirmation = (req, res) => {
@@ -93,6 +98,7 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
+// needs transaction
 const forgotPassword = async (req, res, next) => {
   try {
     crypto.randomBytes(20, async function(err, buf) {
@@ -148,23 +154,28 @@ const forgotPassword = async (req, res, next) => {
 };
 
 const getToken = async (req, res) => {
-  if (!req.user) {
-    const foundUser = await User.findOne({
-      resetPasswordToken: req.params.token,
-      resetPasswordExpires: { $gt: Date.now() }
-    });
-    if (!foundUser) {
-      return res
-        .status(400)
-        .json({ message: 'Token is invalid or has expired' });
+  try {
+    if (!req.user) {
+      const foundUser = await User.findOne({
+        resetPasswordToken: req.params.token,
+        resetPasswordExpires: { $gt: Date.now() }
+      });
+      if (!foundUser) {
+        return res
+          .status(400)
+          .json({ message: 'Token is invalid or has expired' });
+      } else {
+        return res.redirect('/login');
+      }
     } else {
-      return res.redirect('/login');
+      res.redirect('/');
     }
-  } else {
-    res.redirect('/');
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
+// needs transaction
 const resendToken = async (req, res) => {
   try {
     const foundUser = await User.findOne({

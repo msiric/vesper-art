@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Artwork = require('../models/artwork');
 const Order = require('../models/order');
 const Version = require('../models/version');

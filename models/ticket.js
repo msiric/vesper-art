@@ -10,4 +10,10 @@ const TicketSchema = new Schema({
   created: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Ticket', TicketSchema);
+const Ticket = mongoose.model('Ticket', TicketSchema);
+
+Ticket.createCollection().then(function(collection) {
+  console.log('Tickets created');
+});
+
+module.exports = Ticket;

@@ -12,4 +12,10 @@ const LicenseSchema = new Schema({
   created: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('License', LicenseSchema);
+const License = mongoose.model('License', LicenseSchema);
+
+License.createCollection().then(function(collection) {
+  console.log('Licenses created');
+});
+
+module.exports = License;

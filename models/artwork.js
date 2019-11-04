@@ -4,8 +4,9 @@ const deepPopulate = require('mongoose-deep-populate')(mongoose);
 const Schema = mongoose.Schema;
 
 const ArtworkSchema = new Schema({
-  // delete everything except owner and active
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
+  current: { type: Schema.Types.ObjectId, ref: 'Version' },
+  versions: [{ type: Schema.Types.ObjectId, ref: 'Version' }],
   active: Boolean,
   created: { type: Date, default: Date.now }
 });
@@ -28,11 +29,15 @@ ArtworkSchema.plugin(deepPopulate);
   debug: true // Default: false -> If true operations are logged out in your console
 }); */
 
-let Model = mongoose.model('Artwork', ArtworkSchema);
-
 // Model.SyncToAlgolia(); //Clears the Algolia index for this schema and synchronizes all documents to Algolia (based on the settings defined in your plugin settings)
 // Model.SetAlgoliaSettings({
 //   searchableAttributes: ['title', 'owner.name'] //Sets the settings for this schema, see [Algolia's Index settings parameters](https://www.algolia.com/doc/api-client/javascript/settings#set-settings) for more info.
 // });
 
-module.exports = Model;
+const Artwork = mongoose.model('Artwork', ArtworkSchema);
+
+Artwork.createCollection().then(function(collection) {
+  console.log('Artwork created');
+});
+
+module.exports = Artwork;

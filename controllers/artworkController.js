@@ -31,7 +31,10 @@ const getNewArtwork = async (req, res, next) => {
   }
 };
 
+// needs transaction (done)
 const postNewArtwork = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const newVersion = new Version();
     newVersion.cover = req.body.artwork_cover;
@@ -57,24 +60,32 @@ const postNewArtwork = async (req, res, next) => {
       newVersion.available =
         req.body.artwork_available == 'available' ? true : false;
     }
-    const savedVersion = await newVersion.save();
+    const savedVersion = await newVersion.save({ session });
     if (savedVersion) {
+      console.log(savedVersion);
       const newArtwork = new Artwork();
       newArtwork.owner = req.user._id;
       newArtwork.active = true;
       newArtwork.current = savedVersion._id;
-      const savedArtwork = await newArtwork.save();
+      const savedArtwork = await newArtwork.save({ session });
       if (savedArtwork) {
+        console.log(savedArtwork);
+        await session.commitTransaction();
         return res.status(200).json('/my_artwork');
       } else {
+        await session.abortTransaction();
         return res.status(400).json({ message: 'Could not save artwork' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'Could not save version' });
     }
   } catch (err) {
     console.log(err);
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -135,15 +146,19 @@ const editArtwork = async (req, res, next) => {
   }
 };
 
+// needs transaction (done)
 // does it work in all cases?
 // needs testing
 const updateArtwork = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
     })
       .populate('current')
-      .populate('versions');
+      .populate('versions')
+      .session(session);
     if (foundArtwork) {
       const newVersion = new Version();
       newVersion.cover = req.body.artwork_cover
@@ -187,12 +202,14 @@ const updateArtwork = async (req, res, next) => {
         newVersion.available =
           req.body.artwork_available == 'available' ? true : false;
       }
-      const savedVersion = await newVersion.save();
+      const savedVersion = await newVersion.save({ session });
       if (savedVersion) {
         const foundOrder = await Order.find({
           details: { $elemMatch: { artwork: foundArtwork._id } },
           details: { $elemMatch: { version: foundArtwork.current._id } }
-        }).deepPopulate('details.artwork details.version');
+        })
+          .deepPopulate('details.artwork details.version')
+          .session(session);
         if (!(foundOrder && foundOrder.length)) {
           if (!foundArtwork.versions.length) {
             if (foundArtwork.current.media != savedVersion.media) {
@@ -222,11 +239,12 @@ const updateArtwork = async (req, res, next) => {
 
               const deletedVersion = await Version.remove({
                 _id: foundArtwork.current._id
-              });
+              }).session(session);
 
               if (deletedVersion) {
                 foundArtwork.current = savedVersion._id;
               } else {
+                await session.abortTransaction();
                 return res
                   .status(400)
                   .json({ message: 'Version could not be deleted' });
@@ -234,11 +252,12 @@ const updateArtwork = async (req, res, next) => {
             } else {
               const deletedVersion = await Version.remove({
                 _id: foundArtwork.current._id
-              });
+              }).session(session);
 
               if (deletedVersion) {
                 foundArtwork.current = savedVersion._id;
               } else {
+                await session.abortTransaction();
                 return res
                   .status(400)
                   .json({ message: 'Version could not be deleted' });
@@ -257,11 +276,12 @@ const updateArtwork = async (req, res, next) => {
             if (usedContent) {
               const deletedVersion = await Version.remove({
                 _id: foundArtwork.current._id
-              });
+              }).session(session);
 
               if (deletedVersion) {
                 foundArtwork.current = savedVersion._id;
               } else {
+                await session.abortTransaction();
                 return res
                   .status(400)
                   .json({ message: 'Version could not be deleted' });
@@ -294,11 +314,12 @@ const updateArtwork = async (req, res, next) => {
 
                 const deletedVersion = await Version.remove({
                   _id: foundArtwork.current._id
-                });
+                }).session(session);
 
                 if (deletedVersion) {
                   foundArtwork.current = savedVersion._id;
                 } else {
+                  await session.abortTransaction();
                   return res
                     .status(400)
                     .json({ message: 'Version could not be deleted' });
@@ -306,11 +327,12 @@ const updateArtwork = async (req, res, next) => {
               } else {
                 const deletedVersion = await Version.remove({
                   _id: foundArtwork.current._id
-                });
+                }).session(session);
 
                 if (deletedVersion) {
                   foundArtwork.current = savedVersion._id;
                 } else {
+                  await session.abortTransaction();
                   return res
                     .status(400)
                     .json({ message: 'Version could not be deleted' });
@@ -323,23 +345,30 @@ const updateArtwork = async (req, res, next) => {
           foundArtwork.current = savedVersion._id;
         }
 
-        const updatedArtwork = await foundArtwork.save();
+        const updatedArtwork = await foundArtwork.save({ session });
         if (updatedArtwork) {
+          await session.commitTransaction();
           return res.status(200).json('/my_artwork');
         } else {
+          await session.abortTransaction();
           return res
             .status(400)
             .json({ message: 'Artwork could not be updated' });
         }
       } else {
+        await session.abortTransaction();
         return res.status(400).json({ message: 'Version could not be saved' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'Artwork not found' });
     }
   } catch (err) {
+    await session.abortTransaction();
     console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -549,18 +578,24 @@ const updateArtwork = async (req, res, next) => {
   }
 }; */
 
+// needs transaction (done)
 const deleteArtwork = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
     })
       .populate('current')
-      .populate('versions');
+      .populate('versions')
+      .session(session);
     if (foundArtwork) {
       const foundOrder = await Order.find({
         details: { $elemMatch: { artwork: foundArtwork._id } },
         details: { $elemMatch: { version: foundArtwork.current._id } }
-      }).deepPopulate('details.artwork details.version');
+      })
+        .deepPopulate('details.artwork details.version')
+        .session(session);
       console.log('order', foundOrder);
       if (foundOrder.length) {
         const updatedArtwork = await Artwork.updateOne(
@@ -570,10 +605,12 @@ const deleteArtwork = async (req, res, next) => {
           {
             active: false
           }
-        );
+        ).session(session);
         if (updatedArtwork) {
+          await session.commitTransaction();
           return res.status(200).json('/my_artwork');
         } else {
+          await session.abortTransaction();
           return res.status(400).json({ message: 'Could not delete version' });
         }
       } else {
@@ -592,7 +629,7 @@ const deleteArtwork = async (req, res, next) => {
           if (usedContent) {
             const deletedVersion = await Version.remove({
               _id: foundArtwork.current._id
-            });
+            }).session(session);
             if (deletedVersion) {
               const updatedArtwork = await Artwork.updateOne(
                 {
@@ -602,15 +639,18 @@ const deleteArtwork = async (req, res, next) => {
                   current: null,
                   active: false
                 }
-              );
+              ).session(session);
               if (updatedArtwork) {
+                await session.commitTransaction();
                 return res.status(200).json('/my_artwork');
               } else {
+                await session.abortTransaction();
                 return res
                   .status(400)
                   .json({ message: 'Could not update artwork' });
               }
             } else {
+              await session.abortTransaction();
               return res
                 .status(400)
                 .json({ message: 'Could not delete version' });
@@ -644,7 +684,7 @@ const deleteArtwork = async (req, res, next) => {
 
             const deletedVersion = await Version.remove({
               _id: foundArtwork.current._id
-            });
+            }).session(session);
             if (deletedVersion) {
               const updatedArtwork = await Artwork.updateOne(
                 {
@@ -654,15 +694,18 @@ const deleteArtwork = async (req, res, next) => {
                   current: null,
                   active: false
                 }
-              );
+              ).session(session);
               if (updatedArtwork) {
+                await session.commitTransaction();
                 return res.status(200).json('/my_artwork');
               } else {
+                await session.abortTransaction();
                 return res
                   .status(400)
                   .json({ message: 'Could not update artwork' });
               }
             } else {
+              await session.abortTransaction();
               return res
                 .status(400)
                 .json({ message: 'Could not delete version' });
@@ -697,19 +740,22 @@ const deleteArtwork = async (req, res, next) => {
 
           const deletedVersion = await Version.remove({
             _id: foundArtwork.current._id
-          });
+          }).session(session);
           if (deletedVersion) {
             const deletedArtwork = await Artwork.remove({
               _id: req.params.id
-            });
+            }).session(session);
             if (deletedArtwork) {
+              await session.commitTransaction();
               return res.status(200).json('/my_artwork');
             } else {
+              await session.abortTransaction();
               return res
                 .status(400)
                 .json({ message: 'Could not delete artwork' });
             }
           } else {
+            await session.abortTransaction();
             return res
               .status(400)
               .json({ message: 'Could not delete version' });
@@ -717,20 +763,31 @@ const deleteArtwork = async (req, res, next) => {
         }
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'Artwork not found' });
     }
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
+// needs transaction (done)
 const saveArtwork = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { active: true }]
-    }).populate('current');
+    })
+      .populate('current')
+      .session(session);
     if (foundArtwork) {
-      const foundUser = await User.findOne({ _id: req.user._id });
+      const foundUser = await User.findOne({ _id: req.user._id }).session(
+        session
+      );
       if (foundUser) {
         let updatedUser;
         let saved;
@@ -738,29 +795,36 @@ const saveArtwork = async (req, res, next) => {
           updatedUser = await User.updateOne(
             { _id: foundUser._id },
             { $pull: { savedArtwork: req.params.id } }
-          );
+          ).session(session);
           saved = false;
         } else {
           updatedUser = await User.updateOne(
             { _id: foundUser._id },
             { $push: { savedArtwork: req.params.id } }
-          );
+          ).session(session);
           saved = true;
         }
         if (updatedUser) {
+          await session.commitTransaction();
           res.status(200).json({ saved });
         } else {
+          await session.abortTransaction();
           return res.status(400).json({ message: 'Could not update user' });
         }
       } else {
+        await session.abortTransaction();
         return res.status(400).json({ message: 'User not found' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'Artwork not found' });
     }
   } catch (err) {
+    await session.abortTransaction();
     console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 module.exports = {

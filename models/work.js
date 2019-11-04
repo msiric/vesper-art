@@ -15,4 +15,10 @@ const WorkSchema = new Schema({
 
 WorkSchema.plugin(deepPopulate);
 
-module.exports = mongoose.model('Work', WorkSchema);
+const Work = mongoose.model('Work', WorkSchema);
+
+Work.createCollection().then(function(collection) {
+  console.log('Work created');
+});
+
+module.exports = Work;

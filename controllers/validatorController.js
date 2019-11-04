@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const License = require('../models/license');
 const PDFDocument = require('pdfkit');
 const { Base64Encode } = require('base64-stream');

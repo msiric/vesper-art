@@ -14,4 +14,10 @@ const RequestSchema = new Schema({
 
 RequestSchema.plugin(deepPopulate);
 
-module.exports = mongoose.model('Request', RequestSchema);
+const Request = mongoose.model('Request', RequestSchema);
+
+Request.createCollection().then(function(collection) {
+  console.log('Requests created');
+});
+
+module.exports = Request;

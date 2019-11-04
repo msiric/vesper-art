@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const aws = require('aws-sdk');
 const User = require('../models/user');
 const Artwork = require('../models/artwork');

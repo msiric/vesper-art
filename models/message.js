@@ -8,4 +8,10 @@ const MessageSchema = new Schema({
   created: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Message', MessageSchema);
+const Message = mongoose.model('Message', MessageSchema);
+
+Message.createCollection().then(function(collection) {
+  console.log('Messages created');
+});
+
+module.exports = Message;

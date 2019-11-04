@@ -8,4 +8,10 @@ const PromocodeSchema = new Schema({
   created: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Promocode', PromocodeSchema);
+const Promocode = mongoose.model('Promocode', PromocodeSchema);
+
+Promocode.createCollection().then(function(collection) {
+  console.log('Promocodes created');
+});
+
+module.exports = Promocode;

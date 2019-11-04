@@ -65,6 +65,7 @@ module.exports = function(io) {
         let read = false;
         let notify = false;
         if (
+          io.sockets.adapter.rooms[convoId].sockets[users[participantId]] &&
           io.sockets.adapter.rooms[convoId].sockets[users[participantId].id]
         ) {
           read = true;
@@ -73,6 +74,7 @@ module.exports = function(io) {
           read = false;
           notify = true;
         }
+        // ne sejva initiator i participant
         const updatedConvo = await Conversation.findOneAndUpdate(
           {
             tag: convoId
@@ -80,8 +82,8 @@ module.exports = function(io) {
           {
             $set: {
               tag: convoId,
-              first: user._id,
-              second: participantId,
+              initiator: user._id,
+              participant: participantId,
               read: read
             },
             $push: { messages: message._id }

@@ -76,8 +76,8 @@ module.exports = function(io) {
         {
           $set: {
             tag: convoId,
-            first: user._id,
-            second: participantId,
+            initiator: user._id,
+            participant: participantId,
             read: false
           },
           $push: { messages: message._id }

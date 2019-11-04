@@ -9,4 +9,10 @@ const ReviewSchema = new Schema({
   created: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Review', ReviewSchema);
+const Review = mongoose.model('Review', ReviewSchema);
+
+Review.createCollection().then(function(collection) {
+  console.log('Reviews created');
+});
+
+module.exports = Review;

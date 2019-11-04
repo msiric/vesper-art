@@ -16,4 +16,10 @@ const VersionSchema = new Schema({
   created: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Version', VersionSchema);
+const Version = mongoose.model('Version', VersionSchema);
+
+Version.createCollection().then(function(collection) {
+  console.log('Versions created');
+});
+
+module.exports = Version;

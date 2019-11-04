@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Promocode = require('../models/promocode');
 const User = require('../models/user');
 

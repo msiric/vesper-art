@@ -13,4 +13,10 @@ const NotificationSchema = new Schema({
   created: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Notification', NotificationSchema);
+const Notification = mongoose.model('Notification', NotificationSchema);
+
+Notification.createCollection().then(function(collection) {
+  console.log('Notifications created');
+});
+
+module.exports = Notification;

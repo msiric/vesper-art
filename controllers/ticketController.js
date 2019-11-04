@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Ticket = require('../models/ticket');
 const emailController = require('./emailController');
 

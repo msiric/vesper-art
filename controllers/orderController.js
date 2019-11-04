@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const stripe = require('stripe')('sk_test_gBneokmqdbgLUsAQcHZuR4h500k4P1wiBq');
 const Artwork = require('../models/artwork');
 const Version = require('../models/version');
@@ -117,12 +118,15 @@ const getPaymentCart = async (req, res, next) => {
 };
 
 const postPaymentCart = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const foundUser = await User.findOne({
       $and: [{ _id: req.user._id }, { active: true }]
     })
       .deepPopulate('cart.artwork.current')
-      .populate('cart.licenses');
+      .populate('cart.licenses')
+      .session(session);
     let paid = 0;
     let licenses = [];
     let discount;
@@ -143,7 +147,7 @@ const postPaymentCart = async (req, res, next) => {
           },
           { active: true }
         ]
-      });
+      }).session(session);
       if (foundDiscount) {
         discount = foundDiscount;
       }
@@ -202,17 +206,17 @@ const postPaymentCart = async (req, res, next) => {
           ).toFixed(12)
         );
         order.status = 2;
-        const savedOrder = await order.save();
+        const savedOrder = await order.save({ session });
         if (savedOrder) {
           const updatedLicense = await License.updateMany(
             { _id: licenses },
             { active: true }
-          );
+          ).session(session);
           if (updatedLicense) {
             const updatedUser = await User.updateOne(
               { _id: foundUser._id },
               { $set: { cart: [], discount: null } }
-            );
+            ).session(session);
             if (updatedUser) {
               const orderPath = '/orders/' + savedOrder._id;
               // emit to multiple sellers (needs testing)
@@ -228,7 +232,7 @@ const postPaymentCart = async (req, res, next) => {
               notification.link = orderPath;
               notification.message = `${foundUser.name} purchased your artwork!`;
               notification.read = [];
-              const savedNotification = await notification.save();
+              const savedNotification = await notification.save({ session });
               if (savedNotification) {
                 foundUser.cart.map(async function(item) {
                   if (item.artwork.active) {
@@ -248,37 +252,44 @@ const postPaymentCart = async (req, res, next) => {
                         }
                       },
                       { useFindAndModify: false }
-                    );
+                    ).session(session);
                     if (users[item.artwork.owner]) {
                       users[item.artwork.owner].emit('increaseNotif', {});
                     }
                   }
                 });
               }
+              await session.commitTransaction();
               res.redirect('/orders/bought');
             } else {
+              await session.abortTransaction();
               return res
                 .status(400)
                 .json({ message: "Couldn't update user cart" });
             }
           } else {
+            await session.abortTransaction();
             return res
               .status(400)
               .json({ message: "Couldn't update licenses" });
           }
         } else {
+          await session.abortTransaction();
           return res.status(400).json({ message: "Couldn't process payment" });
         }
       })
-      .catch(err => {
+      .catch(async err => {
         console.log(err);
         return res
           .status(400)
           .json({ message: 'Something went wrong, please try again' });
       });
   } catch (err) {
+    await session.abortTransaction();
     console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
 const Offer = require('../models/offer');
 const Request = require('../models/request');
