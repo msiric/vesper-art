@@ -387,9 +387,9 @@ const getOrderId = async (req, res, next) => {
             item.licenses.map(function(license) {
               sold += license.price;
             });
-            const review = foundReview.find(review => {
-              review.artwork.equals(item.artwork._id);
-            });
+            const review = foundReview.find(review =>
+              review.artwork.equals(item.artwork._id)
+            );
             details.push({
               licenses: item.licenses,
               seller: item.seller,
@@ -450,15 +450,13 @@ const getOrderId = async (req, res, next) => {
           });
           if (changed) {
             await foundNotif.save({ session });
-          }
-          const updatedUser = await User.updateOne(
-            {
-              _id: req.user._id
-            },
-            { $inc: { notifications: -1 } },
-            { useFindAndModify: false }
-          ).session(session);
-          if (updatedUser) {
+            await User.updateOne(
+              {
+                _id: req.user._id
+              },
+              { $inc: { notifications: -1 } },
+              { useFindAndModify: false }
+            ).session(session);
             decreaseNotif = true;
           }
         }

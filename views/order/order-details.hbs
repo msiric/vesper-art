@@ -13,7 +13,11 @@
               <div class="info">
                 <h3 class="title name">{{ version.title }}</h3>
                 <p class="bio">
+                  {{#checkIfEqualsId artwork.owner ../user._id}}
+                  {{ ../order.buyer.name}}
+                  {{else}}
                   {{ artwork.owner.name }}
+                  {{/checkIfEqualsId}}
                   {{ version.about }}
                   {{ version.price }}
                 </p>
@@ -29,7 +33,7 @@
                 <p>Rating: {{ review.rating }}</p>
                 <p>Review: {{ review.review }}</p>
                 {{else}}
-                {{#checkIfEqualsId artwork.owner ../user._id}}
+                {{#checkIfEqualsId artwork.owner._id ../user._id}}
                 {{else}}
                 <a id="{{ artwork._id }}" class="rate-artwork" data-toggle="modal"
                   data-target="#rate-artwork-modal">Rate

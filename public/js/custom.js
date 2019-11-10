@@ -538,8 +538,11 @@ $('.rate-artwork').click(function() {
 // validate all inputs and :id
 $('#rate-artwork-form').on('submit', function(e) {
   e.preventDefault();
-  const data = $('#rate-artwork-form').serialize();
   const artworkId = $('#modal-id-input').val();
+  const orderId = window.location.href.substring(
+    window.location.href.lastIndexOf('/') + 1
+  );
+  const data = $('#rate-artwork-form').serialize() + '&orderId=' + orderId;
 
   if (artworkId) {
     $.ajax({

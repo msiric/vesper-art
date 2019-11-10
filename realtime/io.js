@@ -74,7 +74,6 @@ module.exports = function(io) {
           read = false;
           notify = true;
         }
-        // ne sejva initiator i participant
         const updatedConvo = await Conversation.findOneAndUpdate(
           {
             tag: convoId
