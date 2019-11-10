@@ -62,14 +62,12 @@ const postNewArtwork = async (req, res, next) => {
     }
     const savedVersion = await newVersion.save({ session });
     if (savedVersion) {
-      console.log(savedVersion);
       const newArtwork = new Artwork();
       newArtwork.owner = req.user._id;
       newArtwork.active = true;
       newArtwork.current = savedVersion._id;
       const savedArtwork = await newArtwork.save({ session });
       if (savedArtwork) {
-        console.log(savedArtwork);
         await session.commitTransaction();
         return res.status(200).json('/my_artwork');
       } else {
@@ -105,19 +103,18 @@ const getArtworkDetails = async (req, res, next) => {
       .populate('owner')
       .populate('current');
     if (foundArtwork) {
-      const foundReview = await Review.aggregate([
-        { $match: { artwork: ObjectId(req.params.id) } },
-        {
-          $group: {
-            _id: '$owner',
-            averageRating: { $avg: '$rating' },
-            reviews: { $push: '$$ROOT' }
-          }
-        }
-      ]);
+      const foundReview = await Review.find({
+        artwork: req.params.id
+      }).populate('owner');
+      let averageRating = 0;
+      foundReview.forEach(function(review) {
+        averageRating = (review.rating + averageRating) / foundReview.length;
+      });
+      const reviewWithAverage = foundReview;
+      reviewWithAverage.rating = averageRating ? averageRating : null;
       return res.render('main/artwork-details', {
         artwork: foundArtwork,
-        review: foundReview,
+        review: reviewWithAverage,
         inCart,
         savedArtwork
       });
