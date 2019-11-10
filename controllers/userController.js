@@ -17,12 +17,16 @@ const getSignUp = async (req, res, next) => {
   }
 };
 
+// needs transaction (not tested)
 const postSignUp = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const foundUser = await User.findOne({
       $or: [{ email: req.body.email }, { name: req.body.username }]
-    });
+    }).session(session);
     if (foundUser) {
+      await session.abortTransaction();
       return res
         .status(400)
         .json({ message: 'Account with that email/username already exists' });
@@ -43,28 +47,22 @@ const postSignUp = async (req, res, next) => {
       user.discount = null;
       user.inbox = 0;
       user.notifications = 0;
-      user.rating = null;
+      user.rating = 0;
       user.reviews = 0;
       user.savedArtwork = [];
       user.earnings = 0;
       user.incomingFunds = 0;
       user.outgoingFunds = 0;
       user.active = true;
-      const savedUser = await user.save();
+      const savedUser = await user.save({ session });
       if (savedUser) {
-        try {
-          const sentEmail = await axios.post(
-            'http://localhost:3000/send_email',
-            verificationInfo,
-            {
-              proxy: false
-            }
-          );
-          console.log(`statusCode: ${res.statusCode}`);
-          console.log(res);
-        } catch (err) {
-          console.log(err);
-        }
+        const sentEmail = await axios.post(
+          'http://localhost:3000/send_email',
+          verificationInfo,
+          {
+            proxy: false
+          }
+        );
         // old code
         /*         axios
           .post('http://localhost:3000/send_email', verificationInfo, {
@@ -77,14 +75,24 @@ const postSignUp = async (req, res, next) => {
           .catch(error => {
             console.error(error);
           }); */
-        return res.redirect('/signup');
+        if (sentEmail) {
+          await session.commitTransaction();
+          return res.redirect('/signup');
+        } else {
+          await session.abortTransaction();
+          return res.status(400).json({ message: 'Could not save email' });
+        }
       } else {
+        await session.abortTransaction();
         return res.status(400).json({ message: 'Could not create account' });
       }
     }
   } catch (err) {
+    await session.abortTransaction();
     console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -126,26 +134,37 @@ const getUserProfile = async (req, res, next) => {
   }
 };
 
+// needs transaction (done)
 const updateUserProfile = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: req.user._id });
+    const foundUser = await User.findOne({
+      $and: [{ _id: req.user._id }, { active: true }]
+    }).session(session);
     if (foundUser) {
       if (req.body.name) foundUser.name = req.body.name;
       if (req.body.email) foundUser.email = req.body.email;
       if (req.body.about) foundUser.about = req.body.about;
-      const savedUser = await foundUser.save();
+      const savedUser = await foundUser.save({ session });
       if (savedUser) {
+        await session.commitTransaction();
         return res
           .status(200)
           .json({ message: 'User details successfully updated' });
       } else {
+        await session.abortTransaction();
         return res.status(400).json({ message: 'Could not update user' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'User not found' });
     }
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -169,9 +188,14 @@ const getUserSettings = async (req, res) => {
   }
 };
 
+// needs transaction (done)
 const updateUserPassword = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: req.user._id });
+    const foundUser = await User.findOne({ _id: req.user._id }).session(
+      session
+    );
     if (foundUser) {
       let current = req.body.current;
       let change = req.body.password;
@@ -180,42 +204,56 @@ const updateUserPassword = async (req, res, next) => {
         if (foundUser.comparePassword(current)) {
           if (change === confirm) {
             foundUser.password = change;
-            const updatedUser = await foundUser.save();
+            const updatedUser = await foundUser.save({ session });
             if (updatedUser) {
+              await session.commitTransaction();
               return res
                 .status(200)
                 .json({ message: 'Password updated successfully' });
             } else {
+              await session.abortTransaction();
               return res
                 .status(400)
                 .json({ message: 'Could not update password' });
             }
           } else {
+            await session.abortTransaction();
             return res
               .status(400)
               .json({ message: 'New passwords do not match' });
           }
         } else {
+          await session.abortTransaction();
           return res
             .status(400)
             .json({ message: 'Current password incorrect' });
         }
       } else {
+        await session.abortTransaction();
         return res
           .status(400)
           .json({ message: 'All fields need to be filled out' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'User not found' });
     }
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
+// needs transaction (done)
 const updateUserPreferences = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: req.user._id });
+    const foundUser = await User.findOne({ _id: req.user._id }).session(
+      session
+    );
     if (foundUser) {
       let customWork = req.body.work;
       if (customWork) {
@@ -223,21 +261,27 @@ const updateUserPreferences = async (req, res, next) => {
       } else {
         foundUser.customWork = false;
       }
-      const updatedUser = await foundUser.save();
+      const updatedUser = await foundUser.save({ session });
       if (updatedUser) {
+        await session.commitTransaction();
         return res
           .status(200)
           .json({ message: 'Preferences updated successfully' });
       } else {
+        await session.abortTransaction();
         return res
           .status(400)
           .json({ message: 'Could not update preferences' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'User not found' });
     }
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -307,23 +351,29 @@ const updateUserPreferences = async (req, res, next) => {
 
 // needs testing (better way to update already found user)
 // not tested
+// needs transaction (not tested)
 const deleteUser = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const foundUser = await User.findOne({
       $and: [{ _id: req.user._id }, { active: true }]
-    });
+    }).session(session);
     if (foundUser) {
       const foundArtwork = await Artwork.find({
         $and: [{ owner: req.user._id }, { active: true }]
       })
         .populate('current')
-        .populate('versions');
+        .populate('versions')
+        .session(session);
       if (foundArtwork) {
         foundArtwork.forEach(async function(artwork) {
           const foundOrder = await Order.find({
             details: { $elemMatch: { artwork: artwork._id } },
             details: { $elemMatch: { version: artwork.current._id } }
-          }).deepPopulate('details.artwork details.version');
+          })
+            .deepPopulate('details.artwork details.version')
+            .session(session);
           console.log('order', foundOrder);
           if (foundOrder.length) {
             const updatedArtwork = await Artwork.updateOne(
@@ -333,7 +383,7 @@ const deleteUser = async (req, res, next) => {
               {
                 active: false
               }
-            );
+            ).session(session);
             if (updatedArtwork) {
               if (foundUser.photo.includes(foundUser._id)) {
                 const folderName = 'profilePhotos/';
@@ -375,18 +425,21 @@ const deleteUser = async (req, res, next) => {
                     active: false
                   }
                 }
-              );
+              ).session(session);
               if (updatedUser) {
+                await session.commitTransaction();
                 req.logout();
                 req.session.destroy(function(err) {
                   res.status(200).json('/');
                 });
               } else {
+                await session.abortTransaction();
                 return res
                   .status(400)
                   .json({ message: 'User could not be deleted' });
               }
             } else {
+              await session.abortTransaction();
               return res
                 .status(400)
                 .json({ message: 'Could not delete version' });
@@ -407,7 +460,7 @@ const deleteUser = async (req, res, next) => {
               if (usedContent) {
                 const deletedVersion = await Version.remove({
                   _id: artwork.current._id
-                });
+                }).session(session);
                 if (deletedVersion) {
                   const updatedArtwork = await Artwork.updateOne(
                     {
@@ -417,7 +470,7 @@ const deleteUser = async (req, res, next) => {
                       current: null,
                       active: false
                     }
-                  );
+                  ).session(session);
                   if (updatedArtwork) {
                     if (foundUser.photo.includes(foundUser._id)) {
                       const folderName = 'profilePhotos/';
@@ -459,23 +512,27 @@ const deleteUser = async (req, res, next) => {
                           active: false
                         }
                       }
-                    );
+                    ).session(session);
                     if (updatedUser) {
+                      await session.commitTransaction();
                       req.logout();
                       req.session.destroy(function(err) {
                         res.status(200).json('/');
                       });
                     } else {
+                      await session.abortTransaction();
                       return res
                         .status(400)
                         .json({ message: 'User could not be deleted' });
                     }
                   } else {
+                    await session.abortTransaction();
                     return res
                       .status(400)
                       .json({ message: 'Could not update artwork' });
                   }
                 } else {
+                  await session.abortTransaction();
                   return res
                     .status(400)
                     .json({ message: 'Could not delete version' });
@@ -509,7 +566,7 @@ const deleteUser = async (req, res, next) => {
 
                 const deletedVersion = await Version.remove({
                   _id: artwork.current._id
-                });
+                }).session(session);
                 if (deletedVersion) {
                   const updatedArtwork = await Artwork.updateOne(
                     {
@@ -519,7 +576,7 @@ const deleteUser = async (req, res, next) => {
                       current: null,
                       active: false
                     }
-                  );
+                  ).session(session);
                   if (updatedArtwork) {
                     if (foundUser.photo.includes(foundUser._id)) {
                       const folderName = 'profilePhotos/';
@@ -561,23 +618,27 @@ const deleteUser = async (req, res, next) => {
                           active: false
                         }
                       }
-                    );
+                    ).session(session);
                     if (updatedUser) {
+                      await session.commitTransaction();
                       req.logout();
                       req.session.destroy(function(err) {
                         res.status(200).json('/');
                       });
                     } else {
+                      await session.abortTransaction();
                       return res
                         .status(400)
                         .json({ message: 'User could not be deleted' });
                     }
                   } else {
+                    await session.abortTransaction();
                     return res
                       .status(400)
                       .json({ message: 'Could not update artwork' });
                   }
                 } else {
+                  await session.abortTransaction();
                   return res
                     .status(400)
                     .json({ message: 'Could not delete version' });
@@ -612,11 +673,11 @@ const deleteUser = async (req, res, next) => {
 
               const deletedVersion = await Version.remove({
                 _id: artwork.current._id
-              });
+              }).session(session);
               if (deletedVersion) {
                 const deletedArtwork = await Artwork.remove({
                   _id: artwork._id
-                });
+                }).session(session);
                 if (deletedArtwork) {
                   if (foundUser.photo.includes(foundUser._id)) {
                     const folderName = 'profilePhotos/';
@@ -658,23 +719,27 @@ const deleteUser = async (req, res, next) => {
                         active: false
                       }
                     }
-                  );
+                  ).session(session);
                   if (updatedUser) {
+                    await session.commitTransaction();
                     req.logout();
                     req.session.destroy(function(err) {
                       res.status(200).json('/');
                     });
                   } else {
+                    await session.abortTransaction();
                     return res
                       .status(400)
                       .json({ message: 'User could not be deleted' });
                   }
                 } else {
+                  await session.abortTransaction();
                   return res
                     .status(400)
                     .json({ message: 'Could not delete artwork' });
                 }
               } else {
+                await session.abortTransaction();
                 return res
                   .status(400)
                   .json({ message: 'Could not delete version' });
@@ -683,14 +748,19 @@ const deleteUser = async (req, res, next) => {
           }
         });
       } else {
+        await session.abortTransaction();
         return res.status(400).json({ message: 'Artwork not found' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'User not found' });
     }
   } catch (err) {
+    await session.abortTransaction();
     console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 

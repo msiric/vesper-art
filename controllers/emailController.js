@@ -74,37 +74,53 @@ const sendConfirmation = (req, res) => {
   }
 };
 
+// needs transaction (not tested)
 const verifyToken = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    const foundUser = await User.findOne({ secretToken: req.params.token });
+    const foundUser = await User.findOne({
+      secretToken: req.params.token
+    }).session(session);
     if (foundUser) {
       foundUser.secretToken = null;
       foundUser.verified = true;
-      const savedUser = await foundUser.save();
+      const savedUser = await foundUser.save({ session });
       if (savedUser) {
+        await session.commitTransaction();
         return res.redirect('/login');
       } else {
+        await session.abortTransaction();
         return res
           .status(400)
           .json({ message: 'Could not update user verification' });
       }
     } else {
+      await session.abortTransaction();
       return res
         .status(500)
         .json({ message: 'Verification token could not be found' });
     }
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
-// needs transaction
+// needs transaction (not tested)
 const forgotPassword = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     crypto.randomBytes(20, async function(err, buf) {
-      var token = buf.toString('hex');
-      const foundUser = await User.findOne({ email: req.body.email });
+      const token = buf.toString('hex');
+      const foundUser = await User.findOne({ email: req.body.email }).session(
+        session
+      );
       if (!foundUser) {
+        await session.abortTransaction();
         return res
           .status(400)
           .json({ message: 'No account with that email address exists' });
@@ -112,7 +128,7 @@ const forgotPassword = async (req, res, next) => {
       foundUser.resetPasswordToken = token;
       foundUser.resetPasswordExpires = Date.now() + 3600000; // 1 hour
 
-      const savedUser = await foundUser.save();
+      const savedUser = await foundUser.save({ session });
       if (savedUser) {
         const smtpTransport = nodemailer.createTransport({
           service: 'Gmail',
@@ -135,21 +151,27 @@ const forgotPassword = async (req, res, next) => {
             '"</a><br>' +
             'If you did not request this, please ignore this email and your password will remain unchanged.'
         };
-        smtpTransport.sendMail(mailOptions, function(error, response) {
+        smtpTransport.sendMail(mailOptions, async function(error, response) {
           if (error) {
+            await session.abortTransaction();
             return res.status(400).json({ message: 'Could not send email' });
           } else {
+            await session.commitTransaction();
             return res.redirect('/');
           }
         });
       } else {
+        await session.abortTransaction();
         return res
           .status(400)
           .json({ message: 'Could not update user password' });
       }
     });
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -175,20 +197,25 @@ const getToken = async (req, res) => {
   }
 };
 
-// needs transaction
+// needs transaction (not tested)
 const resendToken = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const foundUser = await User.findOne({
       resetPasswordToken: req.params.token,
       resetPasswordExpires: { $gt: Date.now() }
-    });
+    }).session(session);
     if (!foundUser) {
+      await session.abortTransaction();
       return res
         .status(400)
         .json({ message: 'Token is invalid or has expired' });
     } else if (req.body.password !== req.body.confirm) {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'Passwords do not match' });
     } else if (user.password === req.body.password) {
+      await session.abortTransaction();
       return res
         .status(400)
         .json({ message: 'Password is identical to the old one' });
@@ -217,17 +244,22 @@ const resendToken = async (req, res) => {
       html:
         'You are receiving this because you just changed your password <br><br> If you did not request this, please contact us immediately.'
     };
-    smtpTransport.sendMail(mailOptions, function(error, response) {
+    smtpTransport.sendMail(mailOptions, async function(error, response) {
       if (error) {
+        await session.abortTransaction();
         return res
           .status(400)
           .json({ message: 'Something went wrong, please try again' });
       } else {
+        await session.commitTransaction();
         return res.redirect('/login');
       }
     });
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 

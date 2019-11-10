@@ -9,6 +9,7 @@ const RequestSchema = new Schema({
   delivery: Date,
   description: String,
   offers: [{ type: Schema.Types.ObjectId, ref: 'Offer' }],
+  active: Boolean,
   created: { type: Date, default: Date.now }
 });
 

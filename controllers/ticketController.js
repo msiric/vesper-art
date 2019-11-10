@@ -10,6 +10,7 @@ const getSupport = async (req, res, next) => {
   }
 };
 
+// how to handle transactions?
 const postTicket = async (req, res, next) => {
   try {
     let id;

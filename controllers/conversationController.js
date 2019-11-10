@@ -17,8 +17,10 @@ const getConversations = async (req, res, next) => {
   }
 };
 
-// needs transaction
+// needs transaction (done)
 const getConversation = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   // on send show receiver photo, username and last message, handle inbox value on client side when inside the conversation
   try {
     let decreaseInbox = false;
@@ -26,7 +28,7 @@ const getConversation = async (req, res, next) => {
     if (mongoose.Types.ObjectId.isValid(userId)) {
       const userExists = await User.findOne({
         _id: userId
-      });
+      }).session(session);
       if (userExists) {
         req.session.participantId = userId;
         if (userId.localeCompare(req.user._id) === 1) {
@@ -39,13 +41,15 @@ const getConversation = async (req, res, next) => {
         })
           .populate('initiator')
           .populate('participant')
-          .deepPopulate('messages.owner');
+          .deepPopulate('messages.owner')
+          .session(session);
         const conversation = await Conversation.findOne({
           tag: req.session.convoId
         })
           .populate('initiator')
           .populate('participant')
-          .deepPopulate('messages.owner');
+          .deepPopulate('messages.owner')
+          .session(session);
         if (
           conversation &&
           !conversation.read &&
@@ -60,17 +64,18 @@ const getConversation = async (req, res, next) => {
                 read: true
               }
             }
-          );
+          ).session(session);
           if (updatedConvo) {
             await User.updateOne(
               {
                 _id: req.user._id
               },
               { $inc: { inbox: -1 } }
-            );
+            ).session(session);
             decreaseInbox = true;
           }
         }
+        await session.commitTransaction();
         res.render('accounts/convo-room', {
           layout: 'convo-chat',
           conversations: conversations,
@@ -78,20 +83,29 @@ const getConversation = async (req, res, next) => {
           decreaseInbox: decreaseInbox
         });
       } else {
+        await session.abortTransaction();
         res.redirect('/conversations');
       }
     } else {
+      await session.abortTransaction();
       res.redirect('/conversations');
     }
   } catch (err) {
+    await session.abortTransaction();
     console.log(err);
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
+// needs transaction (done)
 const newConversation = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     if (!req.params.recipient) {
+      await session.abortTransaction();
       res
         .status(422)
         .send({ error: 'Please choose a valid recipient for your message.' });
@@ -99,6 +113,7 @@ const newConversation = async (req, res, next) => {
     }
 
     if (!req.body.composedMessage) {
+      await session.abortTransaction();
       res.status(422).send({ error: 'Please enter a message.' });
       return next();
     }
@@ -108,7 +123,7 @@ const newConversation = async (req, res, next) => {
     conversation.initiator = req.user._id;
     conversation.participant = req.params.recipient;
 
-    const savedConversation = await conversation.save();
+    const savedConversation = await conversation.save({ session });
 
     if (savedConversation) {
       const message = new Message();
@@ -117,20 +132,26 @@ const newConversation = async (req, res, next) => {
       body = req.body.composedMessage;
       author = req.user._id;
 
-      const savedMessage = await message.save();
+      const savedMessage = await message.save({ session });
 
       if (savedMessage) {
+        await session.commitTransaction();
         return res.status(200).json({
           conversationId: savedConversation._id
         });
       } else {
+        await session.abortTransaction();
         return res.status(400).json({ message: 'Could not save message' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'Could not save conversation' });
     }
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 

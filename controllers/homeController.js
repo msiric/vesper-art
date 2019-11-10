@@ -7,7 +7,9 @@ const fee = 3.15;
 
 const getHomepage = async (req, res) => {
   try {
-    const foundRequests = await Request.find({}).populate('poster');
+    const foundRequests = await Request.find({ active: true }).populate(
+      'owner'
+    );
     const foundArtwork = await Artwork.find({ active: true }).populate(
       'current'
     );

@@ -3,24 +3,29 @@ const User = require('../models/user');
 const Offer = require('../models/offer');
 const Request = require('../models/request');
 
+// needs transaction (done)
 const postRequest = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: req.user._id });
+    const foundUser = await User.findOne({ _id: req.user._id }).session(
+      session
+    );
     if (foundUser) {
-      if (foundUser.requests && foundUser.requests.length > 0) {
-        return res
-          .status(400)
-          .json({ message: 'You already have an active request' });
-      } else {
+      const foundRequest = await Request.find({
+        $and: [{ owner: foundUser._id }, { active: true }]
+      });
+      if (!foundRequest.length) {
         let request = new Request();
-        request.poster = req.user._id;
+        request.owner = req.user._id;
         if (req.body.request_category)
           request.category = req.body.request_category;
         if (req.body.request_budget) request.budget = req.body.request_budget;
         if (req.body.request_delivery)
           request.delivery = req.body.request_delivery;
         request.description = req.body.request_description;
-        const savedRequest = await request.save();
+        request.active = true;
+        const savedRequest = await request.save({ session });
         if (savedRequest) {
           const updatedUser = await User.update(
             {
@@ -29,32 +34,52 @@ const postRequest = async (req, res, next) => {
             {
               $push: { requests: request._id }
             }
-          );
+          ).session(session);
           if (updatedUser) {
+            await session.commitTransaction();
             return res.redirect('/');
           } else {
+            await session.abortTransaction();
             return res.status(400).json({ message: 'Could not update user' });
           }
         } else {
+          await session.abortTransaction();
           return res
             .status(400)
             .json({ message: 'Could not publish your request' });
         }
+      } else {
+        await session.abortTransaction();
+        return res
+          .status(400)
+          .json({ message: 'You already have an active request' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'User not found' });
     }
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
+// needs transaction (done)
 const deleteRequest = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const requestId = req.params.id;
-    const foundUser = await User.findOne({ _id: req.user._id });
+    const foundUser = await User.findOne({ _id: req.user._id }).session(
+      session
+    );
     if (foundUser) {
-      if (foundUser.requests.indexOf(requestId) > -1) {
+      const foundRequest = await Request.findOne({
+        $and: [{ _id: requestId }, { active: true }]
+      });
+      if (foundRequest) {
         const updatedUser = await User.update(
           {
             _id: req.user._id
@@ -62,27 +87,38 @@ const deleteRequest = async (req, res, next) => {
           {
             $pull: { requests: requestId }
           }
-        );
+        ).session(session);
         if (updatedUser) {
-          const deletedRequest = await Request.deleteOne({ _id: requestId });
+          const deletedRequest = await Request.deleteOne({
+            _id: requestId
+          }).session(session);
           if (deletedRequest) {
+            await session.commitTransaction();
             return res.redirect('/');
           } else {
+            await session.abortTransaction();
             return res
               .status(400)
               .json({ message: 'Could not delete request' });
           }
         } else {
+          await session.abortTransaction();
           return res.status(400).json({ message: 'Could not update user' });
         }
       } else {
+        await session.abortTransaction();
         return res.status(400).json({ message: 'Request not found' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'User not found' });
     }
   } catch (err) {
+    console.log(err);
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -91,15 +127,13 @@ const getRequest = async (req, res, next) => {
     const requestId = req.params.id;
     const foundUser = await User.findOne({ _id: req.user._id });
     if (foundUser) {
-      if (foundUser.requests.indexOf(requestId) > -1) {
-        const foundRequest = await Request.findOne({ _id: requestId });
-        if (foundRequest) {
-          return res.render('request/request-details', {
-            request: foundRequest
-          });
-        } else {
-          return res.status(400).json({ message: 'Request not found' });
-        }
+      const foundRequest = await Request.findOne({
+        $and: [{ _id: requestId }, { active: true }]
+      });
+      if (foundRequest) {
+        return res.render('request/request-details', {
+          request: foundRequest
+        });
       } else {
         return res.status(400).json({ message: 'Request not found' });
       }
@@ -111,46 +145,57 @@ const getRequest = async (req, res, next) => {
   }
 };
 
+// needs transaction (not tested)
 const updateRequest = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const requestId = req.params.id;
-    const foundUser = await User.findOne({ _id: req.user._id });
+    const foundUser = await User.findOne({ _id: req.user._id }).session(
+      session
+    );
     if (foundUser) {
-      if (foundUser.requests.indexOf(requestId) > -1) {
-        const foundRequest = await Request.findOne({ _id: requestId });
-        if (foundRequest) {
-          if (req.body.request_category)
-            foundRequest.category = req.body.request_category;
-          if (req.body.request_budget)
-            foundRequest.budget = req.body.request_budget;
-          if (req.body.request_delivery)
-            foundRequest.delivery = req.body.request_delivery;
-          if (req.body.request_description) {
-            foundRequest.description = req.body.request_description;
-          }
-          const savedRequest = await foundRequest.save();
-          if (savedRequest) {
-            return res.redirect('/requests');
-          } else {
-          }
+      const foundRequest = await Request.findOne({
+        $and: [{ _id: requestId }, { active: true }]
+      }).session(session);
+      if (foundRequest) {
+        if (req.body.request_category)
+          foundRequest.category = req.body.request_category;
+        if (req.body.request_budget)
+          foundRequest.budget = req.body.request_budget;
+        if (req.body.request_delivery)
+          foundRequest.delivery = req.body.request_delivery;
+        if (req.body.request_description) {
+          foundRequest.description = req.body.request_description;
+        }
+        const savedRequest = await foundRequest.save({ session });
+        if (savedRequest) {
+          await session.commitTransaction();
+          return res.redirect('/requests');
         } else {
-          return res.status(400).json({ message: 'Request not found' });
+          await session.abortTransaction();
+          return res.status(400).json({ message: 'Could not save request' });
         }
       } else {
+        await session.abortTransaction();
         return res.status(400).json({ message: 'Request not found' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'User not found' });
     }
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 
 const getUserRequests = async (req, res, next) => {
   try {
-    const foundRequests = await Request.find({ poster: req.user._id }).populate(
-      'poster'
+    const foundRequests = await Request.find({ owner: req.user._id }).populate(
+      'owner'
     );
     return res.render('request/requests', { request: foundRequests });
   } catch (err) {
@@ -205,8 +250,8 @@ const getUserOffer = async (req, res, next) => {
       .populate('seller');
     if (foundOffer) {
       const foundRequest = await Request.findOne({
-        poster: offer.buyer
-      }).populate('poster');
+        owner: offer.buyer
+      }).populate('owner');
       if (foundRequest) {
         return res.render('offer/offer-details', {
           offer: foundOffer,

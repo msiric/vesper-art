@@ -3,9 +3,14 @@ const aws = require('aws-sdk');
 const User = require('../models/user');
 const Artwork = require('../models/artwork');
 
+// needs transaction (done)
 const postProfileImage = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: req.user._id });
+    const foundUser = await User.findOne({ _id: req.user._id }).session(
+      session
+    );
     if (foundUser) {
       const folderName = 'profilePhotos/';
       const fileName = foundUser.photo.split('/').slice(-1)[0];
@@ -18,24 +23,31 @@ const postProfileImage = async (req, res, next) => {
       const deletedImage = await s3.deleteObject(params).promise();
       if (deletedImage) {
         foundUser.photo = req.file.location;
-        const savedUser = await foundUser.save();
+        const savedUser = await foundUser.save({ session });
         if (savedUser) {
+          await session.commitTransaction();
           return res.status(200).json({ imageUrl: req.file.location });
         } else {
+          await session.abortTransaction();
           return res
             .status(400)
             .json({ message: 'Could not update profile image' });
         }
       } else {
+        await session.abortTransaction();
         return res
           .status(400)
           .json({ message: 'Could not delete existing image' });
       }
     } else {
+      await session.abortTransaction();
       return res.status(400).json({ message: 'User not found' });
     }
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    session.endSession();
   }
 };
 

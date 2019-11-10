@@ -13,6 +13,7 @@
               <div class="info">
                 <h3 class="title name">{{ version.title }}</h3>
                 <p class="bio">
+                  {{ artwork.owner.name }}
                   {{ version.about }}
                   {{ version.price }}
                 </p>
@@ -24,17 +25,18 @@
                 </p>
                 {{/each}}
                 <a href="{{ version.media }}">{{ version.title }}</a>
-                {{#checkIfEqualsId ../user._id artwork.owner}}
+                {{#if review}}
+                <p>Rating: {{ review.rating }}</p>
+                <p>Review: {{ review.review }}</p>
                 {{else}}
-                {{../review}}
-                {{#if ../review}}
-                <p>{{ ../review.rating }}</p>
-                <p>{{ ../review.review }}</p>
+                {{#checkIfEqualsId artwork.owner ../user._id}}
                 {{else}}
-                <a id="{{ _id }}" class="rate-artwork" data-toggle="modal" data-target="#rate-artwork-modal">Rate this
+                <a id="{{ artwork._id }}" class="rate-artwork" data-toggle="modal"
+                  data-target="#rate-artwork-modal">Rate
+                  this
                   artwork</a>
-                {{/if}}
                 {{/checkIfEqualsId}}
+                {{/if}}
                 <br>
               </div>
             </div>
@@ -48,7 +50,7 @@
       <div class="row">
         <div class="chatbox">
           <div class="chat-messages clearfix" id="order-messages">
-            {{#checkIfEqualsId order.buyer user._id}}
+            {{#checkIfEqualsId order.buyer._id user._id}}
             <p>{{ order.paid }}</p>
             {{#if order.discount}}
             <p>Discount: {{ order.discount.discount }}%</p>
