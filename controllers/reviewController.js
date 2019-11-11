@@ -26,7 +26,7 @@ const postReview = async (req, res, next) => {
         .session(session);
       if (foundOrder) {
         const foundReview = await Review.findOne({
-          artwork: artworkId
+          $and: [{ artwork: artworkId }, { owner: req.user._id }]
         }).session(session);
         if (!foundReview) {
           const newReview = new Review();
