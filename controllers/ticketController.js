@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 const Ticket = require('../models/ticket');
 const emailController = require('./emailController');
+const createError = require('http-errors');
 
 const getSupport = async (req, res, next) => {
   try {
     res.render('main/support');
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -24,19 +25,15 @@ const postTicket = async (req, res, next) => {
       newTicket.body = body;
       newTicket.resolved = false;
       const savedTicket = await newTicket.save();
-      if (savedTicket) {
-        id = savedTicket._id;
-        res.locals.email = { id, sender, title, body };
-        emailController.postTicket(req, res, next);
-      } else {
-        return res.status(400).json({ message: 'Could not save the ticket' });
-      }
+      id = savedTicket._id;
+      res.locals.email = { id, sender, title, body };
+      emailController.postTicket(req, res, next);
     } else {
-      return res.status(400).json({ message: 'All fields are required' });
+      throw createError(400, 'All fields are required');
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 

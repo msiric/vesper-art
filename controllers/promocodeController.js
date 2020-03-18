@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Promocode = require('../models/promocode');
 const User = require('../models/user');
+const createError = require('http-errors');
 
 // needs transaction (done)
 const postPromocode = async (req, res, next) => {
@@ -14,36 +15,26 @@ const postPromocode = async (req, res, next) => {
       }).session(session);
       if (foundPromocode) {
         if (foundPromocode.active) {
-          const updatedUser = await User.updateOne(
+          await User.updateOne(
             {
               $and: [{ _id: req.user._id }, { active: true }]
             },
             { discount: foundPromocode._id }
           ).session(session);
-          if (updatedUser) {
-            await session.commitTransaction();
-            return res.status(200).json('Discount applied');
-          } else {
-            await session.abortTransaction();
-            return res.status(400).json({ message: 'Could not update user' });
-          }
+          await session.commitTransaction();
+          return res.status(200).json('Discount applied');
         } else {
-          await session.abortTransaction();
-          return res.status(400).json({ message: 'Promo code expired' });
+          throw createError(400, 'Promo code expired');
         }
       } else {
-        await session.abortTransaction();
-        return res.status(400).json({ message: 'Promo code does not exist' });
+        throw createError(400, 'Promo code not found');
       }
     } else {
-      await session.abortTransaction();
-      return res
-        .status(400)
-        .json({ message: 'You already have an active promo code' });
+      throw createError(400, 'You already have an active promo code');
     }
   } catch (err) {
     await session.abortTransaction();
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   } finally {
     session.endSession();
   }
@@ -59,7 +50,7 @@ const deletePromocode = async (req, res, next) => {
       _id: promocode
     }).session(session);
     if (foundPromocode) {
-      const updatedUser = await User.update(
+      await User.updateOne(
         {
           _id: req.user._id
         },
@@ -67,20 +58,15 @@ const deletePromocode = async (req, res, next) => {
           discount: null
         }
       ).session(session);
-      if (updatedUser) {
-        await session.commitTransaction();
-        return res.status(200).json('Promocode removed');
-      } else {
-        await session.abortTransaction();
-        return res.status(400).json({ message: 'User could not be updated' });
-      }
+
+      await session.commitTransaction();
+      return res.status(200).json('Promocode removed');
     } else {
-      await session.abortTransaction();
-      return res.status(400).json({ message: 'Promocode not found' });
+      throw createError(400, 'Promo code not found');
     }
   } catch (err) {
     await session.abortTransaction();
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   } finally {
     session.endSession();
   }
