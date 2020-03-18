@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Conversation = require('../models/conversation');
 const Message = require('../models/message');
 const User = require('../models/user');
+const createError = require('http-errors');
 
 const getConversations = async (req, res, next) => {
   try {
@@ -13,7 +14,7 @@ const getConversations = async (req, res, next) => {
       .deepPopulate('messages.owner');
     res.render('accounts/conversations', { conversations: conversations });
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -53,9 +54,10 @@ const getConversation = async (req, res, next) => {
         if (
           conversation &&
           !conversation.read &&
+          conversation.participant &&
           conversation.participant._id.equals(req.user._id)
         ) {
-          const updatedConvo = await Conversation.updateOne(
+          await Conversation.updateOne(
             {
               tag: req.session.convoId
             },
@@ -65,15 +67,13 @@ const getConversation = async (req, res, next) => {
               }
             }
           ).session(session);
-          if (updatedConvo) {
-            await User.updateOne(
-              {
-                _id: req.user._id
-              },
-              { $inc: { inbox: -1 } }
-            ).session(session);
-            decreaseInbox = true;
-          }
+          await User.updateOne(
+            {
+              _id: req.user._id
+            },
+            { $inc: { inbox: -1 } }
+          ).session(session);
+          decreaseInbox = true;
         }
         await session.commitTransaction();
         res.render('accounts/convo-room', {
@@ -83,17 +83,15 @@ const getConversation = async (req, res, next) => {
           decreaseInbox: decreaseInbox
         });
       } else {
-        await session.abortTransaction();
-        res.redirect('/conversations');
+        throw createError(400, 'User not found');
       }
     } else {
-      await session.abortTransaction();
-      res.redirect('/conversations');
+      throw createError(400, 'Invalid parameter');
     }
   } catch (err) {
     await session.abortTransaction();
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   } finally {
     session.endSession();
   }
@@ -105,17 +103,11 @@ const newConversation = async (req, res, next) => {
   session.startTransaction();
   try {
     if (!req.params.recipient) {
-      await session.abortTransaction();
-      res
-        .status(422)
-        .send({ error: 'Please choose a valid recipient for your message.' });
-      return next();
+      throw createError(400, 'Invalid parameter');
     }
 
     if (!req.body.composedMessage) {
-      await session.abortTransaction();
-      res.status(422).send({ error: 'Please enter a message.' });
-      return next();
+      throw createError(400, 'Message cannot be empty');
     }
 
     const conversation = new Conversation();
@@ -125,31 +117,21 @@ const newConversation = async (req, res, next) => {
 
     const savedConversation = await conversation.save({ session });
 
-    if (savedConversation) {
-      const message = new Message();
+    const message = new Message();
 
-      message.conversationId = savedConversation._id;
-      body = req.body.composedMessage;
-      author = req.user._id;
+    message.conversationId = savedConversation._id;
+    body = req.body.composedMessage;
+    author = req.user._id;
 
-      const savedMessage = await message.save({ session });
+    await message.save({ session });
 
-      if (savedMessage) {
-        await session.commitTransaction();
-        return res.status(200).json({
-          conversationId: savedConversation._id
-        });
-      } else {
-        await session.abortTransaction();
-        return res.status(400).json({ message: 'Could not save message' });
-      }
-    } else {
-      await session.abortTransaction();
-      return res.status(400).json({ message: 'Could not save conversation' });
-    }
+    await session.commitTransaction();
+    return res.status(200).json({
+      conversationId: savedConversation._id
+    });
   } catch (err) {
     await session.abortTransaction();
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   } finally {
     session.endSession();
   }
@@ -162,15 +144,10 @@ const sendReply = async (req, res, next) => {
     message.conversationId = req.params.conversationId;
     message.body = req.body.composedMessage;
     message.author = req.user._id;
-
-    const savedMessage = await message.save();
-    if (savedMessage) {
-      return res.status(200).json({ message: 'Reply successfully sent!' });
-    } else {
-      return res.status(400).json({ message: 'Could not save message' });
-    }
+    await message.save();
+    return res.status(200).json({ message: 'Reply successfully sent!' });
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 

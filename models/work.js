@@ -7,10 +7,10 @@ const WorkSchema = new Schema({
   seller: { type: Schema.Types.ObjectId, ref: 'User' },
   messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
   description: String,
-  created: { type: Date, default: Date.now },
   amount: Number,
   delivery: Date,
-  status: Number
+  status: Number,
+  created: { type: Date, default: Date.now }
 });
 
 WorkSchema.plugin(deepPopulate);

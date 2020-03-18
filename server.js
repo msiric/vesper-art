@@ -12,10 +12,8 @@ const moment = require('moment');
 const expressHbs = require('express-handlebars');
 const passportSocketIo = require('passport.socketio');
 const cors = require('cors');
-
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
+const createError = require('http-errors');
+require('dotenv').config();
 
 const config = require('./config/secret');
 const sessionStore = new MongoStore({
@@ -167,6 +165,18 @@ app.engine(
     }
   })
 );
+
+io.use(
+  passportSocketIo.authorize({
+    cookieParser: cookieParser, // the same middleware you registrer in express
+    key: 'connect.sid', // the name of the cookie where express/connect stores its session_id
+    secret: config.secret, // the session_secret to parse the cookie
+    store: sessionStore, // we NEED to use a sessionstore. no memorystore please
+    success: onAuthorizeSuccess, // *optional* callback on success - read more below
+    fail: onAuthorizeFail // *optional* callback on fail/error - read more below
+  })
+);
+
 app.set('view engine', 'hbs');
 app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
@@ -181,17 +191,6 @@ app.use(function(req, res, next) {
   res.locals.user = req.user;
   next();
 });
-
-io.use(
-  passportSocketIo.authorize({
-    cookieParser: cookieParser, // the same middleware you registrer in express
-    key: 'connect.sid', // the name of the cookie where express/connect stores its session_id
-    secret: config.secret, // the session_secret to parse the cookie
-    store: sessionStore, // we NEED to use a sessionstore. no memorystore please
-    success: onAuthorizeSuccess, // *optional* callback on success - read more below
-    fail: onAuthorizeFail // *optional* callback on fail/error - read more below
-  })
-);
 
 io.use(function(socket, next) {
   sessionMiddleware(socket.request, socket.request.res, next);
@@ -247,9 +246,7 @@ app.use(validatorRouter);
 app.set('socketio', io);
 
 app.use((req, res, next) => {
-  const err = new Error('Not found');
-  err.status = 404;
-  next(err);
+  createError(404);
 });
 
 app.use((err, req, res, next) => {

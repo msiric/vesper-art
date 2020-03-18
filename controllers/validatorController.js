@@ -2,12 +2,13 @@ const mongoose = require('mongoose');
 const License = require('../models/license');
 const PDFDocument = require('pdfkit');
 const { Base64Encode } = require('base64-stream');
+const createError = require('http-errors');
 
 const getValidator = async (req, res, next) => {
   try {
     res.render('main/validator');
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -22,11 +23,11 @@ const validateLicense = async (req, res, next) => {
     if (foundLicense) {
       return res.status(200).json({ foundLicense: foundLicense });
     } else {
-      return res.status(400).json({ message: 'License not found' });
+      throw createError(400, 'License not found');
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -47,7 +48,7 @@ const displayLicense = async (req, res, next) => {
       res.json({ pdf: finalString });
     });
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
