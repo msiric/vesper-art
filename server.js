@@ -17,7 +17,7 @@ require('dotenv').config();
 
 const config = require('./config/secret');
 const sessionStore = new MongoStore({
-  url: config.database,
+  url: config.mongo.database,
   autoReconnect: true
 });
 
@@ -43,13 +43,15 @@ const sessionMiddleware = session({
   // needs change?
   resave: false,
   saveUninitialized: true,
-  secret: config.secret,
+  secret: config.mongo.secret,
   checkExpirationInterval: 15 * 60 * 1000,
   expiration: 30 * 24 * 60 * 60 * 1000,
   store: sessionStore
 });
 
-mongoose.connect(config.database, { useNewUrlParser: true }, function(err) {
+mongoose.connect(config.mongo.database, { useNewUrlParser: true }, function(
+  err
+) {
   if (err) console.log(err);
   console.log('Connected to the database');
 });
@@ -170,7 +172,7 @@ io.use(
   passportSocketIo.authorize({
     cookieParser: cookieParser, // the same middleware you registrer in express
     key: 'connect.sid', // the name of the cookie where express/connect stores its session_id
-    secret: config.secret, // the session_secret to parse the cookie
+    secret: config.mongo.secret, // the session_secret to parse the cookie
     store: sessionStore, // we NEED to use a sessionstore. no memorystore please
     success: onAuthorizeSuccess, // *optional* callback on success - read more below
     fail: onAuthorizeFail // *optional* callback on fail/error - read more below
@@ -254,9 +256,9 @@ app.use((err, req, res, next) => {
   res.json(err.message);
 });
 
-http.listen(config.port, err => {
+http.listen(config.server.port, err => {
   if (err) console.log(err);
-  console.log(`Running on port ${config.port}`);
+  console.log(`Running on port ${config.server.port}`);
 });
 
 /* app.use(function(req, res, next) {
