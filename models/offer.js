@@ -10,4 +10,10 @@ const OfferSchema = new Schema({
   created: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Offer', OfferSchema);
+const Offer = mongoose.model('Offer', OfferSchema);
+
+Offer.createCollection().then(function(collection) {
+  console.log('Offers created');
+});
+
+module.exports = Offer;

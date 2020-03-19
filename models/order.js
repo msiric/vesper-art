@@ -22,4 +22,10 @@ const OrderSchema = new Schema({
 
 OrderSchema.plugin(deepPopulate);
 
-module.exports = mongoose.model('Order', OrderSchema);
+const Order = mongoose.model('Order', OrderSchema);
+
+Order.createCollection().then(function(collection) {
+  console.log('Orders created');
+});
+
+module.exports = Order;

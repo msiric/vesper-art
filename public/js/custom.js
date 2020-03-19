@@ -340,15 +340,15 @@ $(function() {
     const mediaInput = $('#artwork-media-upload')[0];
     const mediaFile = mediaInput.files[0];
     const mediaType = /image.*/;
-    let artworkCover;
-    let artworkMedia;
+    let artworkCoverContent;
+    let artworkMediaContent;
 
     if (mediaFile) {
       if (!mediaFile.type.match(mediaType)) {
         return false;
       }
       const formData = new FormData();
-      formData.append('artwork_media', mediaFile);
+      formData.append('artworkMedia', mediaFile);
       if (formData) {
         $.ajax({
           type: 'POST',
@@ -358,34 +358,32 @@ $(function() {
           cache: false,
           data: formData,
           success: function(data) {
-            artworkCover = data.coverUrl;
-            artworkMedia = data.originalUrl;
-            const artwork_cover = artworkCover;
-            const artwork_media = artworkMedia;
-            const artwork_title = $('input[name=artwork_title]').val();
-            const artwork_type = $('select[name=artwork_type]').val();
-            const artwork_category = $('select[name=artwork_category]').val();
-            const artwork_price = $('input[name=artwork_price]').val();
-            const artwork_license = $('select[name=artwork_license]').val();
-            const artwork_available = $('select[name=artwork_available]').val();
-            const artwork_commercial = $(
-              'input[name=artwork_commercial]'
-            ).val();
-            const artwork_about = $('textarea[name=artwork_about]').val();
+            artworkCoverContent = data.coverUrl;
+            artworkMediaContent = data.originalUrl;
+            const artworkCover = artworkCoverContent;
+            const artworkMedia = artworkMediaContent;
+            const artworkTitle = $('input[name=artworkTitle]').val();
+            const artworkType = $('select[name=artworkType]').val();
+            const artworkCategory = $('select[name=artworkCategory]').val();
+            const artworkPrice = $('input[name=artworkPrice]').val();
+            const artworkLicense = $('select[name=artworkLicense]').val();
+            const artworkAvailable = $('select[name=artworkAvailable]').val();
+            const artworkCommercial = $('input[name=artworkCommercial]').val();
+            const artworkAbout = $('textarea[name=artworkAbout]').val();
             $.ajax({
               type: 'POST',
               url: '/add_new_artwork',
               data: {
-                artwork_cover,
-                artwork_media,
-                artwork_title,
-                artwork_type,
-                artwork_category,
-                artwork_price,
-                artwork_license,
-                artwork_available,
-                artwork_commercial,
-                artwork_about
+                artworkCover,
+                artworkMedia,
+                artworkTitle,
+                artworkType,
+                artworkCategory,
+                artworkPrice,
+                artworkLicense,
+                artworkAvailable,
+                artworkCommercial,
+                artworkAbout
               },
               success: function(url) {
                 window.location.href = url;
@@ -411,14 +409,14 @@ $(function() {
     const mediaInput = $('#artwork-media-edit')[0];
     const mediaFile = mediaInput.files[0];
     const mediaType = /image.*/;
-    let artworkCover;
-    let artworkMedia;
+    let artworkCoverContent;
+    let artworkMediaContent;
     if (mediaFile) {
       if (!mediaFile.type.match(mediaType)) {
         return false;
       }
       const formData = new FormData();
-      formData.append('artwork_media', mediaFile);
+      formData.append('artworkMedia', mediaFile);
       if (formData) {
         $.ajax({
           type: 'PUT',
@@ -428,8 +426,8 @@ $(function() {
           cache: false,
           data: formData,
           success: function(data) {
-            artworkCover = data.coverUrl;
-            artworkMedia = data.originalUrl;
+            artworkCoverContent = data.coverUrl;
+            artworkMediaContent = data.originalUrl;
             saveArtwork();
           },
           error: function(err) {
@@ -442,30 +440,30 @@ $(function() {
     }
 
     function saveArtwork() {
-      const artwork_cover = artworkCover;
-      const artwork_media = artworkMedia;
-      const artwork_title = $('input[name=artwork_title]').val();
-      const artwork_type = $('select[name=artwork_type]').val();
-      const artwork_category = $('select[name=artwork_category]').val();
-      const artwork_price = $('input[name=artwork_price]').val();
-      const artwork_license = $('select[name=artwork_license]').val();
-      const artwork_available = $('select[name=artwork_available]').val();
-      const artwork_commercial = $('input[name=artwork_commercial]').val();
-      const artwork_about = $('textarea[name=artwork_about]').val();
+      const artworkCover = artworkCoverContent;
+      const artworkMedia = artworkMediaContent;
+      const artworkTitle = $('input[name=artworkTitle]').val();
+      const artworkType = $('select[name=artworkType]').val();
+      const artworkCategory = $('select[name=artworkCategory]').val();
+      const artworkPrice = $('input[name=artworkPrice]').val();
+      const artworkLicense = $('select[name=artworkLicense]').val();
+      const artworkAvailable = $('select[name=artworkAvailable]').val();
+      const artworkCommercial = $('input[name=artworkCommercial]').val();
+      const artworkAbout = $('textarea[name=artworkAbout]').val();
       $.ajax({
         type: 'PUT',
         url: '/edit_artwork/' + urlId,
         data: {
-          artwork_cover,
-          artwork_media,
-          artwork_title,
-          artwork_type,
-          artwork_category,
-          artwork_price,
-          artwork_license,
-          artwork_available,
-          artwork_commercial,
-          artwork_about
+          artworkCover,
+          artworkMedia,
+          artworkTitle,
+          artworkType,
+          artworkCategory,
+          artworkPrice,
+          artworkLicense,
+          artworkAvailable,
+          artworkCommercial,
+          artworkAbout
         },
         success: function(url) {
           window.location.href = url;
@@ -538,8 +536,11 @@ $('.rate-artwork').click(function() {
 // validate all inputs and :id
 $('#rate-artwork-form').on('submit', function(e) {
   e.preventDefault();
-  const data = $('#rate-artwork-form').serialize();
   const artworkId = $('#modal-id-input').val();
+  const orderId = window.location.href.substring(
+    window.location.href.lastIndexOf('/') + 1
+  );
+  const data = $('#rate-artwork-form').serialize() + '&orderId=' + orderId;
 
   if (artworkId) {
     $.ajax({

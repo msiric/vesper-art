@@ -40,12 +40,12 @@
                 <td><img class="order-image-my-artwork" src="{{ version.cover }}"><span
                     class="artwork-title">{{ version.title }}</span>
                 </td>
-                <td>${{ sold }}</td>
+                <td>${{ ../sold }}</td>
                 {{/each}}
                 <td><button class="btn btn-{{ formatButtonOrder status }}">{{ formatStatusOrder status }}</button></td>
                 <td>{{ formatDate created 'DD/MM/YYYY HH:mm:ss' }}</td>
-                <td>{{#each seller}}<a href="/orders/{{ ../_id }}" class="btn btn-primary">Order
-                    page</a>{{/each}}
+                <td><a href="/orders/{{ _id }}" class="btn btn-primary">Order
+                    page</a>
                 </td>
               </tr>
               {{/if}}

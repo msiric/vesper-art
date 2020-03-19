@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ReviewSchema = new Schema({
+  order: { type: Schema.Types.ObjectId, ref: 'Order' },
   artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
   review: String,
@@ -9,4 +10,10 @@ const ReviewSchema = new Schema({
   created: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Review', ReviewSchema);
+const Review = mongoose.model('Review', ReviewSchema);
+
+Review.createCollection().then(function(collection) {
+  console.log('Reviews created');
+});
+
+module.exports = Review;

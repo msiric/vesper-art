@@ -2,12 +2,15 @@ const Artwork = require('../models/artwork');
 const Version = require('../models/version');
 const Notification = require('../models/notification');
 const Request = require('../models/request');
+const createError = require('http-errors');
 
 const fee = 3.15;
 
 const getHomepage = async (req, res) => {
   try {
-    const foundRequests = await Request.find({}).populate('poster');
+    const foundRequests = await Request.find({ active: true }).populate(
+      'owner'
+    );
     const foundArtwork = await Artwork.find({ active: true }).populate(
       'current'
     );
@@ -17,7 +20,7 @@ const getHomepage = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -28,7 +31,7 @@ const getCreativeWriting = async (req, res) => {
     }).populate('current');
     return res.render('main/creative_writing', { artwork: foundArtwork });
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -39,7 +42,7 @@ const getMusic = async (req, res) => {
     }).populate('current');
     return res.render('main/music', { artwork: foundArtwork });
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -50,7 +53,7 @@ const getVisualArts = async (req, res) => {
     }).populate('current');
     return res.render('main/visual_arts', { artwork: foundArtwork });
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -65,7 +68,7 @@ const getSearchResults = async (req, res, next) => {
       });
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -77,7 +80,7 @@ const postSearchResults = async (req, res, next) => {
       return res.status(400).json({ message: 'Search cannot be empty' });
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -90,7 +93,7 @@ const getNotifications = async (req, res, next) => {
       .sort({ created: -1 });
     res.render('accounts/notifications', { notification: foundNotifications });
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 

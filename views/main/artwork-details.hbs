@@ -7,7 +7,7 @@
         <div class="template-card">
           <div class="name">
             <h2 class="h2-size">{{ artwork.current.title }}</h2>
-            <p>{{ review.[0].averageRating }}</p>
+            <p>{{ review.rating }}</p>
             <hr>
             <img src="{{ artwork.current.cover }}" class="image-test">
             {{#if savedArtwork}}
@@ -100,6 +100,26 @@
             <h4>{{ artwork.owner.about }}</h4>
             {{ else }}
             <h4>No further information about this artist</h4>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="overview">
+        <div class="artist-card">
+          <div class="name">
+            <h3>Artwork reviews</h3>
+            {{#if review}}
+            {{#each review}}
+            <img class="img-circle" src="{{ owner.photo }}" />
+            <p>{{ owner.name }}</p>
+            <br>
+            <p>{{ review }}</p>
+            {{/each}}
+            {{else}}
+            <p>No reviews yet</p>
             {{/if}}
           </div>
         </div>

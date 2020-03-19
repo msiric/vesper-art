@@ -1,87 +1,86 @@
+const mongoose = require('mongoose');
 const Review = require('../models/review');
+const Notification = require('../models/notification');
 const Order = require('../models/order');
 const User = require('../models/user');
+const createError = require('http-errors');
 
+// needs transaction (done)
 const postReview = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
+    const orderId = req.body.orderId;
     const rating = req.body.rating;
     const review = req.body.review;
     const artworkId = req.params.id;
-    let sellerId;
-    let sellerRating;
-    let sellerReviews;
     if (rating) {
-      const foundOrder = await Order.find({
-        $and: [{ buyer: req.user._id }, { artwork: artworkId }]
-      });
+      const foundOrder = await Order.findOne({
+        $and: [
+          { _id: orderId },
+          { buyer: req.user._id },
+          { details: { $elemMatch: { artwork: artworkId } } }
+        ]
+      })
+        .populate('buyer')
+        .deepPopulate('details.artwork.owner')
+        .session(session);
       if (foundOrder) {
-        const foundReview = await Review.findOne({ artwork: artworkId });
+        const foundReview = await Review.findOne({
+          $and: [{ artwork: artworkId }, { owner: req.user._id }]
+        }).session(session);
         if (!foundReview) {
           const newReview = new Review();
+          newReview.order = foundOrder._id;
           newReview.artwork = artworkId;
           newReview.owner = req.user._id;
           if (review) newReview.review = review;
           newReview.rating = rating;
-          const savedReview = await newReview.save();
-          if (savedReview) {
-            foundOrder[0].artwork.map(async function(artwork, index) {
-              if (artworkId == artwork) {
-                sellerId = foundOrder[0].seller[index];
-              }
-            });
-            if (sellerId) {
-              const foundUser = await User.findOne({ _id: sellerId });
-              if (foundUser) {
-                sellerRating = foundUser.rating;
-                sellerReviews = foundUser.reviews;
-                if (sellerReviews == 0) {
-                  sellerRating = rating;
-                  sellerReviews = 1;
-                } else {
-                  sellerReviews++;
-                  sellerRating = (
-                    (parseInt(sellerRating) + parseInt(rating)) /
-                    parseInt(sellerReviews)
-                  )
-                    .toFixed(2)
-                    .replace(/[.,]00$/, '');
-                }
-                const updatedUser = await User.updateOne(
-                  { _id: sellerId },
-                  { rating: sellerRating, reviews: sellerReviews }
-                );
-                if (updatedUser) {
-                  return res.status(200).json('Review successfully published');
-                } else {
-                  return res
-                    .status(400)
-                    .json({ message: 'Could not update user rating' });
-                }
-              } else {
-                return res.status(400).json({ message: 'Seller not found' });
-              }
-            } else {
-              return res.status(400).json({ message: 'Seller not found' });
+          await newReview.save({ session });
+          const seller = foundOrder.details.find(item =>
+            item.artwork.equals(artworkId)
+          ).artwork.owner;
+          const orderPath = '/orders/' + foundOrder._id;
+          let notification = new Notification();
+          notification.receivers.push({
+            user: seller._id,
+            read: false
+          });
+          notification.link = orderPath;
+          notification.message = `${foundOrder.buyer.name} left a review on your artwork!`;
+          notification.read = [];
+          await notification.save({ session });
+          sellerRating = (
+            (parseInt(seller.rating) + parseInt(rating)) /
+            parseInt(seller.reviews + 1)
+          ).toFixed(2);
+          await User.updateOne(
+            { _id: seller._id },
+            {
+              rating: sellerRating,
+              $inc: { reviews: 1, notifications: 1 }
             }
-          } else {
-            return res.status(400).json({ message: 'Could not save review' });
+          ).session(session);
+          if (users[seller._id]) {
+            users[seller._id].emit('increaseNotif', {});
           }
+          await session.commitTransaction();
+          return res.status(200).json('Review successfully published');
         } else {
-          return res
-            .status(400)
-            .json({ message: 'Review already exists for this artwork' });
+          throw createError(400, 'Review already exists for this artwork');
         }
       } else {
-        return res
-          .status(400)
-          .json({ message: 'Review cannot be posted for unbought artwork' });
+        throw createError(400, 'Review cannot be posted for unbought artwork');
       }
     } else {
-      return res.status(400).json({ message: 'Rating cannot be empty' });
+      throw createError(400, 'Rating is required');
     }
   } catch (err) {
+    await session.abortTransaction();
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
+  } finally {
+    session.endSession();
   }
 };
 

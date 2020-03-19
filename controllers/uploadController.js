@@ -1,10 +1,17 @@
+const mongoose = require('mongoose');
 const aws = require('aws-sdk');
 const User = require('../models/user');
 const Artwork = require('../models/artwork');
+const createError = require('http-errors');
 
+// needs transaction (done)
 const postProfileImage = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: req.user._id });
+    const foundUser = await User.findOne({ _id: req.user._id }).session(
+      session
+    );
     if (foundUser) {
       const folderName = 'profilePhotos/';
       const fileName = foundUser.photo.split('/').slice(-1)[0];
@@ -14,27 +21,19 @@ const postProfileImage = async (req, res, next) => {
         Bucket: 'vesper-testing',
         Key: filePath
       };
-      const deletedImage = await s3.deleteObject(params).promise();
-      if (deletedImage) {
-        foundUser.photo = req.file.location;
-        const savedUser = await foundUser.save();
-        if (savedUser) {
-          return res.status(200).json({ imageUrl: req.file.location });
-        } else {
-          return res
-            .status(400)
-            .json({ message: 'Could not update profile image' });
-        }
-      } else {
-        return res
-          .status(400)
-          .json({ message: 'Could not delete existing image' });
-      }
+      await s3.deleteObject(params).promise();
+      foundUser.photo = req.file.location;
+      await foundUser.save({ session });
+      await session.commitTransaction();
+      return res.status(200).json({ imageUrl: req.file.location });
     } else {
-      return res.status(400).json({ message: 'User not found' });
+      throw createError(400, 'User not found');
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    await session.abortTransaction();
+    next(err, res);
+  } finally {
+    session.endSession();
   }
 };
 
@@ -46,7 +45,7 @@ const postArtworkMedia = async (req, res, next) => {
     });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -58,7 +57,7 @@ const putArtworkMedia = async (req, res, next) => {
     });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -97,7 +96,7 @@ const putArtworkMedia = async (req, res, next) => {
       return res.status(400).json({ message: 'Artwork cover not found' });
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 }; */
 
@@ -106,7 +105,7 @@ const putArtworkMedia = async (req, res, next) => {
     console.log(req.file);
     return res.status(200).json({ imageUrl: req.file.location });
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -145,7 +144,7 @@ const updateArtworkMedia = async (req, res, next) => {
       return res.status(400).json({ message: 'Artwork media not found' });
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 }; */
 

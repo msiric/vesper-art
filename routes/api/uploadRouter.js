@@ -14,8 +14,8 @@ const artworkMediaEdit = upload.artworkMediaEdit;
 const profilePhotoSingleUpload = profilePhotoUpload.single('image');
 /* const artworkCoverSingleUpload = artworkCoverUpload.single('image');
 const artworkCoverSingleEdit = artworkCoverEdit.single('image'); */
-const artworkMediaSingleUpload = artworkMediaUpload.single('artwork_media');
-const artworkMediaSingleEdit = artworkMediaEdit.single('artwork_media');
+const artworkMediaSingleUpload = artworkMediaUpload.single('artworkMedia');
+const artworkMediaSingleEdit = artworkMediaEdit.single('artworkMedia');
 /* const artworkMediaSingleEdit = artworkMediaEdit.single('image'); */
 
 router.post(

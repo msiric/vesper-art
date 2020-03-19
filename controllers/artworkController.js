@@ -6,20 +6,20 @@ const Artwork = require('../models/artwork');
 const Version = require('../models/version');
 const Order = require('../models/order');
 const Review = require('../models/review');
+const createError = require('http-errors');
+const { sanitize } = require('../utils/helpers');
+const postArtworkValidator = require('../utils/validation/postArtworkValidator');
+const putArtworkValidator = require('../utils/validation/putArtworkValidator');
 
 const getUserArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.find({
       $and: [{ owner: req.user._id }, { active: true }]
     }).populate('current');
-    if (foundArtwork) {
-      return res.render('main/my-artwork', { artwork: foundArtwork });
-    } else {
-      return res.status(500).json({ message: 'Artwork not found' });
-    }
+    return res.render('main/my-artwork', { artwork: foundArtwork });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -27,54 +27,52 @@ const getNewArtwork = async (req, res, next) => {
   try {
     return res.render('main/add-new-artwork');
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
+// needs transaction (done)
 const postNewArtwork = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
+    const { error, value } = postArtworkValidator(sanitize(req.body));
+    if (error) throw createError(400, error);
     const newVersion = new Version();
-    newVersion.cover = req.body.artwork_cover;
-    newVersion.media = req.body.artwork_media;
-    newVersion.title = req.body.artwork_title;
-    newVersion.type = req.body.artwork_type;
-    newVersion.category = req.body.artwork_category;
+    newVersion.cover = value.artworkCover;
+    newVersion.media = value.artworkMedia;
+    newVersion.title = value.artworkTitle;
+    newVersion.type = value.artworkType;
+    newVersion.category = value.artworkCategory;
     newVersion.price = 0;
     newVersion.use = 'personal';
     newVersion.license = 0;
     newVersion.available = true;
-    newVersion.about = req.body.artwork_about;
-    if (req.body.artwork_type && req.body.artwork_type == 'commercial') {
-      newVersion.price = req.body.artwork_price;
-      if (
-        req.body.artwork_license &&
-        req.body.artwork_license == 'commercial'
-      ) {
+    newVersion.about = value.artworkAbout;
+    if (value.artworkType && value.artworkType == 'commercial') {
+      newVersion.price = value.artworkPrice;
+      if (value.artworkLicense && value.artworkLicense == 'commercial') {
         newVersion.use = 'commercial';
-        newVersion.license = req.body.artwork_commercial;
+        newVersion.license = value.artworkCommercial;
       }
     } else {
       newVersion.available =
-        req.body.artwork_available == 'available' ? true : false;
+        value.artworkAvailable == 'available' ? true : false;
     }
-    const savedVersion = await newVersion.save();
-    if (savedVersion) {
-      const newArtwork = new Artwork();
-      newArtwork.owner = req.user._id;
-      newArtwork.active = true;
-      newArtwork.current = savedVersion._id;
-      const savedArtwork = await newArtwork.save();
-      if (savedArtwork) {
-        return res.status(200).json('/my_artwork');
-      } else {
-        return res.status(400).json({ message: 'Could not save artwork' });
-      }
-    } else {
-      return res.status(400).json({ message: 'Could not save version' });
-    }
+    const savedVersion = await newVersion.save({ session });
+    const newArtwork = new Artwork();
+    newArtwork.owner = req.user._id;
+    newArtwork.active = true;
+    newArtwork.current = savedVersion._id;
+    await newArtwork.save({ session });
+    await session.commitTransaction();
+    return res.status(200).json('/my_artwork');
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    await session.abortTransaction();
+    next(err, res);
+  } finally {
+    session.endSession();
   }
 };
 
@@ -94,28 +92,27 @@ const getArtworkDetails = async (req, res, next) => {
       .populate('owner')
       .populate('current');
     if (foundArtwork) {
-      const foundReview = await Review.aggregate([
-        { $match: { artwork: ObjectId(req.params.id) } },
-        {
-          $group: {
-            _id: '$owner',
-            averageRating: { $avg: '$rating' },
-            reviews: { $push: '$$ROOT' }
-          }
-        }
-      ]);
+      const foundReview = await Review.find({
+        artwork: req.params.id
+      }).populate('owner');
+      let averageRating = 0;
+      foundReview.forEach(function(review) {
+        averageRating = (review.rating + averageRating) / foundReview.length;
+      });
+      const reviewWithAverage = foundReview;
+      reviewWithAverage.rating = averageRating ? averageRating : null;
       return res.render('main/artwork-details', {
         artwork: foundArtwork,
-        review: foundReview,
+        review: reviewWithAverage,
         inCart,
         savedArtwork
       });
     } else {
-      return res.status(400).json({ message: 'Artwork not found' });
+      throw createError(400, 'Artwork not found');
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
@@ -127,55 +124,58 @@ const editArtwork = async (req, res, next) => {
     if (foundArtwork) {
       return res.render('main/edit-artwork', { artwork: foundArtwork.current });
     } else {
-      return res.status(400).json({ message: 'Artwork not found' });
+      throw createError(400, 'Artwork not found');
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
+// needs transaction (done)
 // does it work in all cases?
 // needs testing
 const updateArtwork = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
     })
       .populate('current')
-      .populate('versions');
+      .populate('versions')
+      .session(session);
+    const { error, value } = putArtworkValidator(sanitize(req.body));
+    if (error) throw createError(400, error);
     if (foundArtwork) {
       const newVersion = new Version();
-      newVersion.cover = req.body.artwork_cover
-        ? req.body.artwork_cover
+      newVersion.cover = value.artworkCover
+        ? value.artworkCover
         : foundArtwork.current.cover;
-      newVersion.media = req.body.artwork_media
-        ? req.body.artwork_media
+      newVersion.media = value.artworkMedia
+        ? value.artworkMedia
         : foundArtwork.current.media;
-      newVersion.title = req.body.artwork_title
-        ? req.body.artwork_title
+      newVersion.title = value.artworkTitle
+        ? value.artworkTitle
         : foundArtwork.current.title;
-      newVersion.type = req.body.artwork_type
-        ? req.body.artwork_type
+      newVersion.type = value.artworkType
+        ? value.artworkType
         : foundArtwork.current.type;
-      newVersion.category = req.body.artwork_category
-        ? req.body.artwork_category
+      newVersion.category = value.artworkCategory
+        ? value.artworkCategory
         : foundArtwork.current.category;
-      newVersion.about = req.body.artwork_about
-        ? req.body.artwork_about
+      newVersion.about = value.artworkAbout
+        ? value.artworkAbout
         : foundArtwork.current.about;
-      newVersion.category = req.body.artwork_category
-        ? req.body.artwork_category
+      newVersion.category = value.artworkCategory
+        ? value.artworkCategory
         : foundArtwork.current.category;
-      if (req.body.artwork_type && req.body.artwork_type == 'commercial') {
-        newVersion.price = req.body.artwork_price;
+      if (value.artworkType && value.artworkType == 'commercial') {
+        newVersion.price = value.artworkPrice;
         newVersion.available = true;
-        if (
-          req.body.artwork_license &&
-          req.body.artwork_license == 'commercial'
-        ) {
+        if (value.artworkLicense && value.artworkLicense == 'commercial') {
           newVersion.use = 'commercial';
-          newVersion.license = req.body.artwork_commercial;
+          newVersion.license = value.artworkCommercial;
         } else {
           newVersion.use = 'personal';
           newVersion.license = 0;
@@ -185,16 +185,68 @@ const updateArtwork = async (req, res, next) => {
         newVersion.price = 0;
         newVersion.license = 0;
         newVersion.available =
-          req.body.artwork_available == 'available' ? true : false;
+          value.artworkAvailable == 'available' ? true : false;
       }
-      const savedVersion = await newVersion.save();
-      if (savedVersion) {
-        const foundOrder = await Order.find({
-          details: { $elemMatch: { artwork: foundArtwork._id } },
-          details: { $elemMatch: { version: foundArtwork.current._id } }
-        }).deepPopulate('details.artwork details.version');
-        if (!(foundOrder && foundOrder.length)) {
-          if (!foundArtwork.versions.length) {
+      const savedVersion = await newVersion.save({ session });
+      const foundOrder = await Order.find({
+        details: { $elemMatch: { artwork: foundArtwork._id } },
+        details: { $elemMatch: { version: foundArtwork.current._id } }
+      })
+        .deepPopulate('details.artwork details.version')
+        .session(session);
+      if (!(foundOrder && foundOrder.length)) {
+        if (!foundArtwork.versions.length) {
+          if (foundArtwork.current.media != savedVersion.media) {
+            const coverLink = foundArtwork.current.cover;
+            const coverFolderName = 'artworkCovers/';
+            const coverFileName = coverLink.split('/').slice(-1)[0];
+            const coverFilePath = coverFolderName + coverFileName;
+            const coverS3 = new aws.S3();
+            const coverParams = {
+              Bucket: 'vesper-testing',
+              Key: coverFilePath
+            };
+
+            await coverS3.deleteObject(coverParams).promise();
+
+            const mediaLink = foundArtwork.current.media;
+            const mediaFolderName = 'artworkMedia/';
+            const mediaFileName = mediaLink.split('/').slice(-1)[0];
+            const mediaFilePath = mediaFolderName + mediaFileName;
+            const mediaS3 = new aws.S3();
+            const mediaParams = {
+              Bucket: 'vesper-testing',
+              Key: mediaFilePath
+            };
+
+            await mediaS3.deleteObject(mediaParams).promise();
+
+            await Version.remove({
+              _id: foundArtwork.current._id
+            }).session(session);
+            foundArtwork.current = savedVersion._id;
+          } else {
+            await Version.remove({
+              _id: foundArtwork.current._id
+            }).session(session);
+            foundArtwork.current = savedVersion._id;
+          }
+        } else {
+          let usedContent = false;
+          foundArtwork.versions.map(function(version) {
+            if (
+              version.media == foundArtwork.current.media &&
+              version.cover == foundArtwork.current.cover
+            ) {
+              usedContent = true;
+            }
+          });
+          if (usedContent) {
+            await Version.remove({
+              _id: foundArtwork.current._id
+            }).session(session);
+            foundArtwork.current = savedVersion._id;
+          } else {
             if (foundArtwork.current.media != savedVersion.media) {
               const coverLink = foundArtwork.current.cover;
               const coverFolderName = 'artworkCovers/';
@@ -220,126 +272,35 @@ const updateArtwork = async (req, res, next) => {
 
               await mediaS3.deleteObject(mediaParams).promise();
 
-              const deletedVersion = await Version.remove({
+              await Version.remove({
                 _id: foundArtwork.current._id
-              });
-
-              if (deletedVersion) {
-                foundArtwork.current = savedVersion._id;
-              } else {
-                return res
-                  .status(400)
-                  .json({ message: 'Version could not be deleted' });
-              }
+              }).session(session);
+              foundArtwork.current = savedVersion._id;
             } else {
-              const deletedVersion = await Version.remove({
+              await Version.remove({
                 _id: foundArtwork.current._id
-              });
-
-              if (deletedVersion) {
-                foundArtwork.current = savedVersion._id;
-              } else {
-                return res
-                  .status(400)
-                  .json({ message: 'Version could not be deleted' });
-              }
-            }
-          } else {
-            let usedContent = false;
-            foundArtwork.versions.map(function(version) {
-              if (
-                version.media == foundArtwork.current.media &&
-                version.cover == foundArtwork.current.cover
-              ) {
-                usedContent = true;
-              }
-            });
-            if (usedContent) {
-              const deletedVersion = await Version.remove({
-                _id: foundArtwork.current._id
-              });
-
-              if (deletedVersion) {
-                foundArtwork.current = savedVersion._id;
-              } else {
-                return res
-                  .status(400)
-                  .json({ message: 'Version could not be deleted' });
-              }
-            } else {
-              if (foundArtwork.current.media != savedVersion.media) {
-                const coverLink = foundArtwork.current.cover;
-                const coverFolderName = 'artworkCovers/';
-                const coverFileName = coverLink.split('/').slice(-1)[0];
-                const coverFilePath = coverFolderName + coverFileName;
-                const coverS3 = new aws.S3();
-                const coverParams = {
-                  Bucket: 'vesper-testing',
-                  Key: coverFilePath
-                };
-
-                await coverS3.deleteObject(coverParams).promise();
-
-                const mediaLink = foundArtwork.current.media;
-                const mediaFolderName = 'artworkMedia/';
-                const mediaFileName = mediaLink.split('/').slice(-1)[0];
-                const mediaFilePath = mediaFolderName + mediaFileName;
-                const mediaS3 = new aws.S3();
-                const mediaParams = {
-                  Bucket: 'vesper-testing',
-                  Key: mediaFilePath
-                };
-
-                await mediaS3.deleteObject(mediaParams).promise();
-
-                const deletedVersion = await Version.remove({
-                  _id: foundArtwork.current._id
-                });
-
-                if (deletedVersion) {
-                  foundArtwork.current = savedVersion._id;
-                } else {
-                  return res
-                    .status(400)
-                    .json({ message: 'Version could not be deleted' });
-                }
-              } else {
-                const deletedVersion = await Version.remove({
-                  _id: foundArtwork.current._id
-                });
-
-                if (deletedVersion) {
-                  foundArtwork.current = savedVersion._id;
-                } else {
-                  return res
-                    .status(400)
-                    .json({ message: 'Version could not be deleted' });
-                }
-              }
+              }).session(session);
+              foundArtwork.current = savedVersion._id;
             }
           }
-        } else {
-          foundArtwork.versions.push(foundArtwork.current._id);
-          foundArtwork.current = savedVersion._id;
-        }
-
-        const updatedArtwork = await foundArtwork.save();
-        if (updatedArtwork) {
-          return res.status(200).json('/my_artwork');
-        } else {
-          return res
-            .status(400)
-            .json({ message: 'Artwork could not be updated' });
         }
       } else {
-        return res.status(400).json({ message: 'Version could not be saved' });
+        foundArtwork.versions.push(foundArtwork.current._id);
+        foundArtwork.current = savedVersion._id;
       }
+
+      await foundArtwork.save({ session });
+      await session.commitTransaction();
+      return res.status(200).json('/my_artwork');
     } else {
-      return res.status(400).json({ message: 'Artwork not found' });
+      throw createError(400, 'Artwork not found');
     }
   } catch (err) {
+    await session.abortTransaction();
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
+  } finally {
+    session.endSession();
   }
 };
 
@@ -545,37 +506,40 @@ const updateArtwork = async (req, res, next) => {
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 }; */
 
+// needs transaction (done)
 const deleteArtwork = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
     })
       .populate('current')
-      .populate('versions');
+      .populate('versions')
+      .session(session);
     if (foundArtwork) {
       const foundOrder = await Order.find({
         details: { $elemMatch: { artwork: foundArtwork._id } },
         details: { $elemMatch: { version: foundArtwork.current._id } }
-      }).deepPopulate('details.artwork details.version');
+      })
+        .deepPopulate('details.artwork details.version')
+        .session(session);
       console.log('order', foundOrder);
       if (foundOrder.length) {
-        const updatedArtwork = await Artwork.updateOne(
+        await Artwork.updateOne(
           {
             _id: req.params.id
           },
           {
             active: false
           }
-        );
-        if (updatedArtwork) {
-          return res.status(200).json('/my_artwork');
-        } else {
-          return res.status(400).json({ message: 'Could not delete version' });
-        }
+        ).session(session);
+        await session.commitTransaction();
+        return res.status(200).json('/my_artwork');
       } else {
         console.log('length', foundArtwork.versions.length);
         if (foundArtwork.versions.length) {
@@ -590,31 +554,20 @@ const deleteArtwork = async (req, res, next) => {
           });
           console.log('used content', usedContent);
           if (usedContent) {
-            const deletedVersion = await Version.remove({
+            await Version.remove({
               _id: foundArtwork.current._id
-            });
-            if (deletedVersion) {
-              const updatedArtwork = await Artwork.updateOne(
-                {
-                  _id: req.params.id
-                },
-                {
-                  current: null,
-                  active: false
-                }
-              );
-              if (updatedArtwork) {
-                return res.status(200).json('/my_artwork');
-              } else {
-                return res
-                  .status(400)
-                  .json({ message: 'Could not update artwork' });
+            }).session(session);
+            await Artwork.updateOne(
+              {
+                _id: req.params.id
+              },
+              {
+                current: null,
+                active: false
               }
-            } else {
-              return res
-                .status(400)
-                .json({ message: 'Could not delete version' });
-            }
+            ).session(session);
+            await session.commitTransaction();
+            return res.status(200).json('/my_artwork');
           } else {
             const coverFolderName = 'artworkCovers/';
             const coverFileName = foundArtwork.current.cover
@@ -642,31 +595,20 @@ const deleteArtwork = async (req, res, next) => {
 
             await mediaS3.deleteObject(mediaParams).promise();
 
-            const deletedVersion = await Version.remove({
+            await Version.remove({
               _id: foundArtwork.current._id
-            });
-            if (deletedVersion) {
-              const updatedArtwork = await Artwork.updateOne(
-                {
-                  _id: req.params.id
-                },
-                {
-                  current: null,
-                  active: false
-                }
-              );
-              if (updatedArtwork) {
-                return res.status(200).json('/my_artwork');
-              } else {
-                return res
-                  .status(400)
-                  .json({ message: 'Could not update artwork' });
+            }).session(session);
+            await Artwork.updateOne(
+              {
+                _id: req.params.id
+              },
+              {
+                current: null,
+                active: false
               }
-            } else {
-              return res
-                .status(400)
-                .json({ message: 'Could not delete version' });
-            }
+            ).session(session);
+            await session.commitTransaction();
+            return res.status(200).json('/my_artwork');
           }
         } else {
           const coverFolderName = 'artworkCovers/';
@@ -695,72 +637,70 @@ const deleteArtwork = async (req, res, next) => {
 
           await mediaS3.deleteObject(mediaParams).promise();
 
-          const deletedVersion = await Version.remove({
+          await Version.remove({
             _id: foundArtwork.current._id
-          });
-          if (deletedVersion) {
-            const deletedArtwork = await Artwork.remove({
-              _id: req.params.id
-            });
-            if (deletedArtwork) {
-              return res.status(200).json('/my_artwork');
-            } else {
-              return res
-                .status(400)
-                .json({ message: 'Could not delete artwork' });
-            }
-          } else {
-            return res
-              .status(400)
-              .json({ message: 'Could not delete version' });
-          }
+          }).session(session);
+          await Artwork.remove({
+            _id: req.params.id
+          }).session(session);
+          await session.commitTransaction();
+          return res.status(200).json('/my_artwork');
         }
       }
     } else {
-      return res.status(400).json({ message: 'Artwork not found' });
+      throw createError(400, 'Artwork not found');
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    await session.abortTransaction();
+    next(err, res);
+  } finally {
+    session.endSession();
   }
 };
 
+// needs transaction (done)
 const saveArtwork = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { active: true }]
-    }).populate('current');
+    })
+      .populate('current')
+      .session(session);
     if (foundArtwork) {
-      const foundUser = await User.findOne({ _id: req.user._id });
+      const foundUser = await User.findOne({ _id: req.user._id }).session(
+        session
+      );
       if (foundUser) {
-        let updatedUser;
         let saved;
         if (foundUser.savedArtwork.includes(foundArtwork._id)) {
-          updatedUser = await User.updateOne(
+          await User.updateOne(
             { _id: foundUser._id },
             { $pull: { savedArtwork: req.params.id } }
-          );
+          ).session(session);
           saved = false;
         } else {
-          updatedUser = await User.updateOne(
+          await User.updateOne(
             { _id: foundUser._id },
             { $push: { savedArtwork: req.params.id } }
-          );
+          ).session(session);
           saved = true;
         }
-        if (updatedUser) {
-          res.status(200).json({ saved });
-        } else {
-          return res.status(400).json({ message: 'Could not update user' });
-        }
+        await session.commitTransaction();
+        res.status(200).json({ saved });
       } else {
-        return res.status(400).json({ message: 'User not found' });
+        throw createError(400, 'User not found');
       }
     } else {
-      return res.status(400).json({ message: 'Artwork not found' });
+      throw createError(400, 'Artwork not found');
     }
   } catch (err) {
+    await session.abortTransaction();
     console.log(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
+  } finally {
+    session.endSession();
   }
 };
 module.exports = {

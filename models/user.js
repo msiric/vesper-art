@@ -79,4 +79,10 @@ UserSchema.methods.gravatar = function(size) {
   return 'https://gravatar.com/avatar/' + md5 + '?s=' + size + '&d=retro';
 };
 
-module.exports = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
+
+User.createCollection().then(function(collection) {
+  console.log('Users created');
+});
+
+module.exports = User;

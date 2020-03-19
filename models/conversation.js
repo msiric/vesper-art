@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 
 const ConversationSchema = new Schema({
   tag: String,
-  first: { type: Schema.Types.ObjectId, ref: 'User' },
-  second: { type: Schema.Types.ObjectId, ref: 'User' },
+  initiator: { type: Schema.Types.ObjectId, ref: 'User' },
+  participant: { type: Schema.Types.ObjectId, ref: 'User' },
   offer: { type: Schema.Types.ObjectId, ref: 'Offer' },
   messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
   read: Boolean,
@@ -14,4 +14,10 @@ const ConversationSchema = new Schema({
 
 ConversationSchema.plugin(deepPopulate);
 
-module.exports = mongoose.model('Conversation', ConversationSchema);
+const Conversation = mongoose.model('Conversation', ConversationSchema);
+
+Conversation.createCollection().then(function(collection) {
+  console.log('Conversations created');
+});
+
+module.exports = Conversation;

@@ -15,16 +15,16 @@
               </div> --}}
               <div class="btn btn-rounded float-left">
                 <span>Edit artwork</span>
-                <input id="artwork-media-edit" type="file" class="form-control" name="artwork_media">
+                <input id="artwork-media-edit" type="file" class="form-control" name="artworkMedia">
               </div>
               <br>
               <label>Artwork title</label>
-              <input type="text" class="form-control" value="{{ artwork.title }}" name="artwork_title">
+              <input type="text" class="form-control" value="{{ artwork.title }}" name="artworkTitle">
             </div>
 
             <div class="form-group">
               <label>Artwork type</label>
-              <select class="form-control" name="artwork_type">
+              <select class="form-control" name="artworkType">
                 <option value="commercial" selected>Commercial artwork</option>
                 <option value="showcase">Showcase artwork</option>
               </select>
@@ -32,7 +32,7 @@
 
             <div class="form-group">
               <label>Artwork availability</label>
-              <select class="form-control" name="artwork_available">
+              <select class="form-control" name="artworkAvailable">
                 <option value="available" selected>Available for download</option>
                 <option value="unavailable">For viewing only</option>
               </select>
@@ -40,12 +40,12 @@
 
             <div class="form-group">
               <label>Artwork price</label>
-              <input type="text" class="form-control" value="{{ artwork.price }}" name="artwork_price">
+              <input type="text" class="form-control" value="{{ artwork.price }}" name="artworkPrice">
             </div>
 
             <div class="form-group">
               <label>Artwork license</label>
-              <select class="form-control" name="artwork_license">
+              <select class="form-control" name="artworkLicense">
                 <option value="commercial" selected>Offer both personal and commercial licenses</option>
                 <option value="personal">Offer only personal license</option>
               </select>
@@ -53,12 +53,12 @@
 
             <div class="form-group">
               <label>Commercial license</label>
-              <input type="text" class="form-control" value="{{ artwork.license }}" name="artwork_commercial">
+              <input type="text" class="form-control" value="{{ artwork.license }}" name="artworkCommercial">
             </div>
 
             <div class="form-group">
               <label>Artwork category</label>
-              <select class="form-control" name="artwork_category">
+              <select class="form-control" name="artworkCategory">
                 <option value="cw" {{#formatSelection artwork.category 'cw'}}{{/formatSelection}}>Creative Writing
                 </option>
                 <option value="m" {{#formatSelection artwork.category 'm'}}{{/formatSelection}}>Music</option>
@@ -68,7 +68,7 @@
 
             <div class="form-group">
               <label>Artwork description</label>
-              <textarea type="text" class="form-control" name="artwork_about">{{ artwork.about }}</textarea>
+              <textarea type="text" class="form-control" name="artworkAbout">{{ artwork.about }}</textarea>
             </div>
 
             <button type="submit" class="btn btn-success">Save</button>

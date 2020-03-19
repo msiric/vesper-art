@@ -12,14 +12,12 @@ const moment = require('moment');
 const expressHbs = require('express-handlebars');
 const passportSocketIo = require('passport.socketio');
 const cors = require('cors');
-
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
+const createError = require('http-errors');
+require('dotenv').config();
 
 const config = require('./config/secret');
 const sessionStore = new MongoStore({
-  url: config.database,
+  url: config.mongo.database,
   autoReconnect: true
 });
 
@@ -45,13 +43,15 @@ const sessionMiddleware = session({
   // needs change?
   resave: false,
   saveUninitialized: true,
-  secret: config.secret,
+  secret: config.mongo.secret,
   checkExpirationInterval: 15 * 60 * 1000,
   expiration: 30 * 24 * 60 * 60 * 1000,
   store: sessionStore
 });
 
-mongoose.connect(config.database, { useNewUrlParser: true }, function(err) {
+mongoose.connect(config.mongo.database, { useNewUrlParser: true }, function(
+  err
+) {
   if (err) console.log(err);
   console.log('Connected to the database');
 });
@@ -167,6 +167,18 @@ app.engine(
     }
   })
 );
+
+io.use(
+  passportSocketIo.authorize({
+    cookieParser: cookieParser, // the same middleware you registrer in express
+    key: 'connect.sid', // the name of the cookie where express/connect stores its session_id
+    secret: config.mongo.secret, // the session_secret to parse the cookie
+    store: sessionStore, // we NEED to use a sessionstore. no memorystore please
+    success: onAuthorizeSuccess, // *optional* callback on success - read more below
+    fail: onAuthorizeFail // *optional* callback on fail/error - read more below
+  })
+);
+
 app.set('view engine', 'hbs');
 app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
@@ -181,17 +193,6 @@ app.use(function(req, res, next) {
   res.locals.user = req.user;
   next();
 });
-
-io.use(
-  passportSocketIo.authorize({
-    cookieParser: cookieParser, // the same middleware you registrer in express
-    key: 'connect.sid', // the name of the cookie where express/connect stores its session_id
-    secret: config.secret, // the session_secret to parse the cookie
-    store: sessionStore, // we NEED to use a sessionstore. no memorystore please
-    success: onAuthorizeSuccess, // *optional* callback on success - read more below
-    fail: onAuthorizeFail // *optional* callback on fail/error - read more below
-  })
-);
 
 io.use(function(socket, next) {
   sessionMiddleware(socket.request, socket.request.res, next);
@@ -247,9 +248,7 @@ app.use(validatorRouter);
 app.set('socketio', io);
 
 app.use((req, res, next) => {
-  const err = new Error('Not found');
-  err.status = 404;
-  next(err);
+  createError(404);
 });
 
 app.use((err, req, res, next) => {
@@ -257,9 +256,9 @@ app.use((err, req, res, next) => {
   res.json(err.message);
 });
 
-http.listen(config.port, err => {
+http.listen(config.server.port, err => {
   if (err) console.log(err);
-  console.log(`Running on port ${config.port}`);
+  console.log(`Running on port ${config.server.port}`);
 });
 
 /* app.use(function(req, res, next) {

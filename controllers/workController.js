@@ -1,4 +1,6 @@
+const mongoose = require('mongoose');
 const Work = require('../models/work');
+const createError = require('http-errors');
 
 const getUserCustomWork = async (req, res, next) => {
   try {
@@ -10,10 +12,10 @@ const getUserCustomWork = async (req, res, next) => {
     if (foundWork) {
       return res.render('work/work-room', { work: foundWork });
     } else {
-      return res.status(400).json({ message: 'Custom work not found' });
+      throw createError(400, 'Custom work not found');
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    next(err, res);
   }
 };
 
