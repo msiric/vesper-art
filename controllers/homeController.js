@@ -6,7 +6,7 @@ const createError = require('http-errors');
 
 const fee = 3.15;
 
-const getHomepage = async (req, res) => {
+const getHomepage = async (req, res, next) => {
   try {
     const foundRequests = await Request.find({ active: true }).populate(
       'owner'

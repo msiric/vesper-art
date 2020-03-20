@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "dev": "concurrently \"npm run server\""
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +19,7 @@
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.3.1",
+    "concurrently": "^5.1.0",
     "connect-mongo": "^3.0.0",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",

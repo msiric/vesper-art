@@ -3,12 +3,12 @@ const Artwork = require('../models/artwork');
 const Order = require('../models/order');
 const Version = require('../models/version');
 const aws = require('aws-sdk');
-const passport = require('passport');
-const passportConfig = require('../config/passport');
 const User = require('../models/user');
 const randomString = require('randomstring');
 const axios = require('axios');
 const createError = require('http-errors');
+const auth = require('../utils/auth');
+const bcrypt = require('bcrypt-nodejs');
 
 const getSignUp = async (req, res, next) => {
   try {
@@ -87,31 +87,61 @@ const getLogIn = async (req, res, next) => {
   }
 };
 
-const postLogIn = passport.authenticate('local-login', {
-  successRedirect: '/',
-  failureRedirect: '/login',
-  failureFlash: true
-});
+const postLogIn = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const foundUser = await User.findOne({
+      $or: [{ email: req.body.email }, { name: req.body.username }]
+    }).session(session);
 
-const getFacebookLogIn = passport.authenticate('facebook', { scope: 'email' });
+    if (!foundUser) {
+      throw createError(
+        400,
+        'Account with provided credentials does not exist'
+      );
+    }
 
-const getFacebookCallback = passport.authenticate('facebook', {
-  successRedirect: '/profile',
-  failureRedirect: '/login',
-  failureFlash: true
-});
+    const valid = await bcrypt.compareSync(
+      req.body.password,
+      foundUser.password
+    );
 
-const getGoogleLogIn = passport.authenticate('google', { scope: 'email' });
+    if (!valid) {
+      throw createError(
+        400,
+        'Account with provided credentials does not exist'
+      );
+    }
 
-const getGoogleCallback = passport.authenticate('google', {
-  successRedirect: '/profile',
-  failureRedirect: '/login',
-  failureFlash: true
-});
+    const tokenPayload = {
+      id: foundUser.id,
+      name: foundUser.name,
+      photo: foundUser.photo,
+      inbox: foundUser.inbox,
+      notifications: foundUser.notifications,
+      cart: foundUser.cart.length,
+      jwtVersion: foundUser.jwtVersion
+    };
+
+    auth.sendRefreshToken(res, auth.createRefreshToken(tokenPayload));
+
+    res.send({
+      accessToken: auth.createAccessToken(tokenPayload),
+      tokenPayload
+    });
+  } catch (err) {
+    console.log(err);
+    await session.abortTransaction();
+    next(err, res);
+  } finally {
+    session.endSession();
+  }
+};
 
 const getUserProfile = async (req, res, next) => {
   try {
-    res.render('accounts/profile', { message: req.flash('success') });
+    res.render('accounts/profile');
   } catch (err) {
     next(err, res);
   }
@@ -150,6 +180,14 @@ const getLogOut = async (req, res) => {
     req.session.destroy(function(err) {
       res.redirect('/');
     });
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+const postLogOut = async (req, res) => {
+  try {
+    auth.sendRefreshToken(res, '');
   } catch (err) {
     next(err, res);
   }
@@ -644,13 +682,10 @@ module.exports = {
   postSignUp,
   getLogIn,
   postLogIn,
-  getFacebookLogIn,
-  getFacebookCallback,
-  getGoogleLogIn,
-  getGoogleCallback,
   getUserProfile,
   updateUserProfile,
   getLogOut,
+  postLogOut,
   getUserSettings,
   updateUserPassword,
   updateUserPreferences,

@@ -30,6 +30,7 @@ const UserSchema = new Schema({
   verified: Boolean,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
+  jwtVersion: { type: Number, default: 0 },
   cart: [
     {
       artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },

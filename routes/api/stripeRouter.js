@@ -91,7 +91,6 @@ router.get('/token', pilotRequired, async (req, res, next) => {
     await req.user.save();
 
     // Redirect to the Rocket Rides dashboard
-    req.flash('showBanner', 'true');
     res.redirect('/dashboard');
   } catch (err) {
     console.log('The Stripe onboarding process has not succeeded.');

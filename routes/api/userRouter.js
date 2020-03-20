@@ -12,20 +12,14 @@ router
   .get(isLoggedOut, userController.getLogIn)
   .post(isLoggedOut, userController.postLogIn);
 
-router.get('/auth/facebook', isLoggedOut, userController.getFacebookLogIn);
-
-router.get('/auth/facebook/callback', userController.getFacebookCallback);
-
-router.get('/auth/google', isLoggedOut, userController.getGoogleLogIn);
-
-router.get('/auth/google/callback', userController.getGoogleCallback);
-
 router
   .route('/profile')
   .get(isLoggedIn, userController.getUserProfile)
   .post(isLoggedIn, userController.updateUserProfile);
 
-router.get('/logout', isLoggedIn, userController.getLogOut);
+router
+  .get('/logout', isLoggedIn, userController.getLogOut)
+  .post('/logout', isLoggedIn, userController.postLogOut);
 
 router.get('/settings', isLoggedIn, userController.getUserSettings);
 

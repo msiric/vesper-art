@@ -1,25 +1,16 @@
+require('dotenv').config();
+
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
-const passport = require('passport');
-const flash = require('express-flash');
 const hbs = require('hbs');
 const moment = require('moment');
 const expressHbs = require('express-handlebars');
-const passportSocketIo = require('passport.socketio');
 const cors = require('cors');
 const createError = require('http-errors');
-require('dotenv').config();
-
 const config = require('./config/secret');
-const sessionStore = new MongoStore({
-  url: config.mongo.database,
-  autoReconnect: true
-});
+const cookieParser = require('cookie-parser');
 
 hbsEngine = expressHbs.create({
   extname: 'hbs',
@@ -30,23 +21,18 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-app.use(cors());
-app.options('*', cors());
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+  })
+);
+app.use(cookieParser());
 
 app.use(function(req, res, next) {
   'use strict';
   req.io = io;
   next();
-});
-
-const sessionMiddleware = session({
-  // needs change?
-  resave: false,
-  saveUninitialized: true,
-  secret: config.mongo.secret,
-  checkExpirationInterval: 15 * 60 * 1000,
-  expiration: 30 * 24 * 60 * 60 * 1000,
-  store: sessionStore
 });
 
 mongoose.connect(config.mongo.database, { useNewUrlParser: true }, function(
@@ -168,48 +154,13 @@ app.engine(
   })
 );
 
-io.use(
-  passportSocketIo.authorize({
-    cookieParser: cookieParser, // the same middleware you registrer in express
-    key: 'connect.sid', // the name of the cookie where express/connect stores its session_id
-    secret: config.mongo.secret, // the session_secret to parse the cookie
-    store: sessionStore, // we NEED to use a sessionstore. no memorystore please
-    success: onAuthorizeSuccess, // *optional* callback on success - read more below
-    fail: onAuthorizeFail // *optional* callback on fail/error - read more below
-  })
-);
-
 app.set('view engine', 'hbs');
 app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(sessionMiddleware);
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(flash());
 
-app.use(function(req, res, next) {
-  res.locals.user = req.user;
-  next();
-});
-
-io.use(function(socket, next) {
-  sessionMiddleware(socket.request, socket.request.res, next);
-});
-
-function onAuthorizeSuccess(data, accept) {
-  console.log('successful connection to socket.io');
-  accept();
-}
-
-function onAuthorizeFail(data, message, error, accept) {
-  console.log('failed connection to socket.io:', message);
-  if (error) accept(new Error(message));
-}
-
-/* require('./routes/index')(io);
- */ require('./realtime/io')(io);
+/* require('./routes/index')(io); */
 
 const indexRouter = require('./routes/index');
 const api = require('./routes/api');
@@ -230,6 +181,7 @@ const reviewRouter = require('./routes/api/reviewRouter');
 const promocodeRouter = require('./routes/api/promocodeRouter');
 const ticketRouter = require('./routes/api/ticketRouter');
 const validatorRouter = require('./routes/api/validatorRouter');
+const authRouter = require('./routes/api/authRouter');
 
 app.use(mainRoutes);
 app.use(userRoutes);
@@ -244,8 +196,7 @@ app.use(reviewRouter);
 app.use(promocodeRouter);
 app.use(ticketRouter);
 app.use(validatorRouter);
-
-app.set('socketio', io);
+app.use(authRouter);
 
 app.use((req, res, next) => {
   createError(404);
