@@ -24,8 +24,6 @@ OrderSchema.plugin(deepPopulate);
 
 const Order = mongoose.model('Order', OrderSchema);
 
-Order.createCollection().then(function(collection) {
-  console.log('Orders created');
-});
+Order.createCollection();
 
 module.exports = Order;

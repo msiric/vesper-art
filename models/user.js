@@ -82,8 +82,6 @@ UserSchema.methods.gravatar = function(size) {
 
 const User = mongoose.model('User', UserSchema);
 
-User.createCollection().then(function(collection) {
-  console.log('Users created');
-});
+User.createCollection();
 
 module.exports = User;

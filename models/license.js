@@ -14,8 +14,6 @@ const LicenseSchema = new Schema({
 
 const License = mongoose.model('License', LicenseSchema);
 
-License.createCollection().then(function(collection) {
-  console.log('Licenses created');
-});
+License.createCollection();
 
 module.exports = License;

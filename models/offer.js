@@ -12,8 +12,6 @@ const OfferSchema = new Schema({
 
 const Offer = mongoose.model('Offer', OfferSchema);
 
-Offer.createCollection().then(function(collection) {
-  console.log('Offers created');
-});
+Offer.createCollection();
 
 module.exports = Offer;

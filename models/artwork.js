@@ -36,8 +36,6 @@ ArtworkSchema.plugin(deepPopulate);
 
 const Artwork = mongoose.model('Artwork', ArtworkSchema);
 
-Artwork.createCollection().then(function(collection) {
-  console.log('Artwork created');
-});
+Artwork.createCollection();
 
 module.exports = Artwork;

@@ -15,8 +15,6 @@ const NotificationSchema = new Schema({
 
 const Notification = mongoose.model('Notification', NotificationSchema);
 
-Notification.createCollection().then(function(collection) {
-  console.log('Notifications created');
-});
+Notification.createCollection();
 
 module.exports = Notification;

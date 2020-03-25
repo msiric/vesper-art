@@ -10,8 +10,6 @@ const MessageSchema = new Schema({
 
 const Message = mongoose.model('Message', MessageSchema);
 
-Message.createCollection().then(function(collection) {
-  console.log('Messages created');
-});
+Message.createCollection();
 
 module.exports = Message;

@@ -16,8 +16,6 @@ ConversationSchema.plugin(deepPopulate);
 
 const Conversation = mongoose.model('Conversation', ConversationSchema);
 
-Conversation.createCollection().then(function(collection) {
-  console.log('Conversations created');
-});
+Conversation.createCollection();
 
 module.exports = Conversation;

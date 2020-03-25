@@ -18,8 +18,6 @@ const VersionSchema = new Schema({
 
 const Version = mongoose.model('Version', VersionSchema);
 
-Version.createCollection().then(function(collection) {
-  console.log('Versions created');
-});
+Version.createCollection();
 
 module.exports = Version;
