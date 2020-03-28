@@ -14,7 +14,7 @@ const getHomepage = async (req, res, next) => {
     const foundArtwork = await Artwork.find({ active: true }).populate(
       'current'
     );
-    return res.render('main/home', {
+    return res.json({
       requests: foundRequests,
       artwork: foundArtwork
     });
@@ -29,7 +29,7 @@ const getCreativeWriting = async (req, res) => {
     const foundArtwork = await Artwork.find({
       $and: [{ category: 'cw' }, { active: true }]
     }).populate('current');
-    return res.render('main/creative_writing', { artwork: foundArtwork });
+    return res.json({ artwork: foundArtwork });
   } catch (err) {
     next(err, res);
   }
@@ -40,7 +40,7 @@ const getMusic = async (req, res) => {
     const foundArtwork = await Artwork.find({
       $and: [{ category: 'm' }, { active: true }]
     }).populate('current');
-    return res.render('main/music', { artwork: foundArtwork });
+    return res.json({ artwork: foundArtwork });
   } catch (err) {
     next(err, res);
   }
@@ -51,7 +51,7 @@ const getVisualArts = async (req, res) => {
     const foundArtwork = await Artwork.find({
       $and: [{ category: 'va' }, { active: true }]
     }).populate('current');
-    return res.render('main/visual_arts', { artwork: foundArtwork });
+    return res.json({ artwork: foundArtwork });
   } catch (err) {
     next(err, res);
   }
@@ -61,7 +61,7 @@ const getSearchResults = async (req, res, next) => {
   try {
     if (req.query.q) {
       index.search(req.query.q, function(err, content) {
-        res.render('main/search-results', {
+        res.json({
           content: content,
           searchResults: req.query.q
         });
@@ -91,7 +91,7 @@ const getNotifications = async (req, res, next) => {
     })
       .populate('user')
       .sort({ created: -1 });
-    res.render('accounts/notifications', { notification: foundNotifications });
+    res.json({ notification: foundNotifications });
   } catch (err) {
     next(err, res);
   }

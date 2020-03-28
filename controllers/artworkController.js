@@ -16,17 +16,9 @@ const getUserArtwork = async (req, res, next) => {
     const foundArtwork = await Artwork.find({
       $and: [{ owner: req.user._id }, { active: true }]
     }).populate('current');
-    return res.render('main/my-artwork', { artwork: foundArtwork });
+    return res.json({ artwork: foundArtwork });
   } catch (err) {
     console.log(err);
-    next(err, res);
-  }
-};
-
-const getNewArtwork = async (req, res, next) => {
-  try {
-    return res.render('main/add-new-artwork');
-  } catch (err) {
     next(err, res);
   }
 };
@@ -101,7 +93,7 @@ const getArtworkDetails = async (req, res, next) => {
       });
       const reviewWithAverage = foundReview;
       reviewWithAverage.rating = averageRating ? averageRating : null;
-      return res.render('main/artwork-details', {
+      return res.json({
         artwork: foundArtwork,
         review: reviewWithAverage,
         inCart,
@@ -122,7 +114,7 @@ const editArtwork = async (req, res, next) => {
       $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
     }).populate('current');
     if (foundArtwork) {
-      return res.render('main/edit-artwork', { artwork: foundArtwork.current });
+      return res.json({ artwork: foundArtwork.current });
     } else {
       throw createError(400, 'Artwork not found');
     }
@@ -705,7 +697,6 @@ const saveArtwork = async (req, res, next) => {
 };
 module.exports = {
   getUserArtwork,
-  getNewArtwork,
   postNewArtwork,
   getArtworkDetails,
   editArtwork,

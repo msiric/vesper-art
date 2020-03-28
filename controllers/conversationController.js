@@ -12,7 +12,7 @@ const getConversations = async (req, res, next) => {
       .populate('initiator')
       .populate('participant')
       .deepPopulate('messages.owner');
-    res.render('accounts/conversations', { conversations: conversations });
+    res.json({ conversations: conversations });
   } catch (err) {
     next(err, res);
   }
@@ -76,8 +76,7 @@ const getConversation = async (req, res, next) => {
           decreaseInbox = true;
         }
         await session.commitTransaction();
-        res.render('accounts/convo-room', {
-          layout: 'convo-chat',
+        res.json({
           conversations: conversations,
           conversation: conversation,
           decreaseInbox: decreaseInbox

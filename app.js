@@ -43,38 +43,9 @@ mongoose.connect(
 
 mongoose.set('useCreateIndex', true);
 
-const indexRouter = require('./routes/index');
-const api = require('./routes/api');
+const apiRouter = require('./routes/api');
 
-const mainRoutes = require('./routes/api/homeRouter');
-const userRoutes = require('./routes/api/userRouter');
-const orderRoutes = require('./routes/api/orderRouter');
-const uploadRoutes = require('./routes/api/uploadRouter');
-const emailRoutes = require('./routes/api/emailRouter');
-const artworkRoutes = require('./routes/api/artworkRouter');
-const requestRoutes = require('./routes/api/requestRouter');
-const conversationRoutes = require('./routes/api/conversationRouter');
-const workRouter = require('./routes/api/workRouter');
-const reviewRouter = require('./routes/api/reviewRouter');
-const promocodeRouter = require('./routes/api/promocodeRouter');
-const ticketRouter = require('./routes/api/ticketRouter');
-const validatorRouter = require('./routes/api/validatorRouter');
-const authRouter = require('./routes/api/authRouter');
-
-app.use(mainRoutes);
-app.use(userRoutes);
-app.use(orderRoutes);
-app.use(uploadRoutes);
-app.use(emailRoutes);
-app.use(artworkRoutes);
-app.use(requestRoutes);
-app.use(conversationRoutes);
-app.use(workRouter);
-app.use(reviewRouter);
-app.use(promocodeRouter);
-app.use(ticketRouter);
-app.use(validatorRouter);
-app.use(authRouter);
+app.use('/api', apiRouter);
 
 app.use((req, res, next) => {
   createError(404);
@@ -82,7 +53,7 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
-  res.json(err.message);
+  res.json({ status_code: err.status || 500, error: err.message });
 });
 
 module.exports = app;

@@ -61,7 +61,7 @@ const getProcessCart = async (req, res, next) => {
         }
       }
       artworkInfo.totalPrice = artworkInfo.totalPrice + fee;
-      res.render('order/cart', {
+      res.json({
         foundUser: artworkInfo.foundUser,
         totalPrice: parseFloat(artworkInfo.totalPrice.toFixed(12)),
         subtotal: parseFloat(artworkInfo.subtotal.toFixed(12)),
@@ -110,7 +110,7 @@ const getPaymentCart = async (req, res, next) => {
         }
       }
       amount = amount + fee;
-      res.render('checkout/payment', {
+      res.json({
         amount: parseFloat(amount.toFixed(12))
       });
     } else {
@@ -304,7 +304,7 @@ const getSoldOrders = async (req, res, next) => {
       order.details = details;
       order.sold = sold;
     });
-    res.render('order/order-seller', { order: foundOrders });
+    res.json({ order: foundOrders });
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -333,7 +333,7 @@ const getBoughtOrders = async (req, res, next) => {
         order.details = details;
         order.paid = paid;
       }); */
-    res.render('order/order-buyer', { order: foundOrders });
+    res.json({ order: foundOrders });
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -447,7 +447,7 @@ const getOrderId = async (req, res, next) => {
         }
       }
       await session.commitTransaction();
-      res.render('order/order-details', {
+      res.json({
         order: orderWithReviews,
         decreaseNotif: decreaseNotif
       });

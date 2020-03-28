@@ -4,148 +4,7 @@ const Order = require('../models/order');
 const Version = require('../models/version');
 const aws = require('aws-sdk');
 const User = require('../models/user');
-const randomString = require('randomstring');
-const axios = require('axios');
 const createError = require('http-errors');
-const auth = require('../utils/auth');
-const bcrypt = require('bcrypt-nodejs');
-
-const getSignUp = async (req, res, next) => {
-  try {
-    res.render('accounts/signup');
-  } catch (err) {
-    next(err, res);
-  }
-};
-
-// needs transaction (not tested)
-const postSignUp = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const foundUser = await User.findOne({
-      $or: [{ email: req.body.email }, { name: req.body.username }]
-    }).session(session);
-    if (foundUser) {
-      throw createError(400, 'Account with that email/username already exists');
-    } else {
-      let verificationInfo = {
-        token: randomString.generate(),
-        email: req.body.email
-      };
-      let user = new User();
-      user.name = req.body.username;
-      user.email = req.body.email;
-      user.photo = user.gravatar();
-      user.password = req.body.password;
-      user.customWork = true;
-      user.secretToken = verificationInfo.token;
-      user.verified = false;
-      user.cart = [];
-      user.discount = null;
-      user.inbox = 0;
-      user.notifications = 0;
-      user.rating = 0;
-      user.reviews = 0;
-      user.savedArtwork = [];
-      user.earnings = 0;
-      user.incomingFunds = 0;
-      user.outgoingFunds = 0;
-      user.active = true;
-      await user.save({ session });
-      await axios.post('http://localhost:3000/send_email', verificationInfo, {
-        proxy: false
-      });
-      // old code
-      /*         axios
-          .post('http://localhost:3000/send_email', verificationInfo, {
-            proxy: false
-          })
-          .then(res => {
-            console.log(`statusCode: ${res.statusCode}`);
-            console.log(res);
-          })
-          .catch(error => {
-            console.error(error);
-          }); */
-      await session.commitTransaction();
-      return res.redirect('/signup');
-    }
-  } catch (err) {
-    await session.abortTransaction();
-    next(err, res);
-  } finally {
-    session.endSession();
-  }
-};
-
-const getLogIn = async (req, res, next) => {
-  try {
-    res.render('accounts/login');
-  } catch (err) {
-    next(err, res);
-  }
-};
-
-const postLogIn = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const foundUser = await User.findOne({
-      $or: [{ email: req.body.email }, { name: req.body.username }]
-    }).session(session);
-
-    if (!foundUser) {
-      throw createError(
-        400,
-        'Account with provided credentials does not exist'
-      );
-    }
-
-    const valid = await bcrypt.compareSync(
-      req.body.password,
-      foundUser.password
-    );
-
-    if (!valid) {
-      throw createError(
-        400,
-        'Account with provided credentials does not exist'
-      );
-    }
-
-    const tokenPayload = {
-      id: foundUser.id,
-      name: foundUser.name,
-      photo: foundUser.photo,
-      inbox: foundUser.inbox,
-      notifications: foundUser.notifications,
-      cart: foundUser.cart.length,
-      jwtVersion: foundUser.jwtVersion
-    };
-
-    auth.sendRefreshToken(res, auth.createRefreshToken(tokenPayload));
-
-    res.send({
-      accessToken: auth.createAccessToken(tokenPayload),
-      tokenPayload
-    });
-  } catch (err) {
-    console.log(err);
-    await session.abortTransaction();
-    next(err, res);
-  } finally {
-    session.endSession();
-  }
-};
-
-const getUserProfile = async (req, res, next) => {
-  try {
-    res.render('accounts/profile');
-  } catch (err) {
-    next(err, res);
-  }
-};
 
 // needs transaction (done)
 const updateUserProfile = async (req, res, next) => {
@@ -172,24 +31,6 @@ const updateUserProfile = async (req, res, next) => {
     next(err, res);
   } finally {
     session.endSession();
-  }
-};
-
-const getLogOut = async (req, res) => {
-  try {
-    req.session.destroy(function(err) {
-      res.redirect('/');
-    });
-  } catch (err) {
-    next(err, res);
-  }
-};
-
-const postLogOut = async (req, res) => {
-  try {
-    auth.sendRefreshToken(res, '');
-  } catch (err) {
-    next(err, res);
   }
 };
 
@@ -678,14 +519,7 @@ const deleteUser = async (req, res, next) => {
 };
 
 module.exports = {
-  getSignUp,
-  postSignUp,
-  getLogIn,
-  postLogIn,
-  getUserProfile,
   updateUserProfile,
-  getLogOut,
-  postLogOut,
   getUserSettings,
   updateUserPassword,
   updateUserPreferences,

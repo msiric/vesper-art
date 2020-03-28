@@ -3,14 +3,6 @@ const Ticket = require('../models/ticket');
 const emailController = require('./emailController');
 const createError = require('http-errors');
 
-const getSupport = async (req, res, next) => {
-  try {
-    res.render('main/support');
-  } catch (err) {
-    next(err, res);
-  }
-};
-
 // how to handle transactions?
 const postTicket = async (req, res, next) => {
   try {
@@ -38,6 +30,5 @@ const postTicket = async (req, res, next) => {
 };
 
 module.exports = {
-  getSupport,
   postTicket
 };

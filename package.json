@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./bin/www",
-    "client": "cd client && npm start",
+    "client": "cd client2 && npm start",
     "dev": "concurrently \"npm start\" \"npm run client\""
   },
   "author": "",

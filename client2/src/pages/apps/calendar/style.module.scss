@@ -1,0 +1,12 @@
+@import 'components/kit-core/mixins.scss';
+
+.event {
+  margin-top: rem(5);
+  margin-bottom: rem(5);
+  margin-right: rem(20);
+  white-space: nowrap;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}

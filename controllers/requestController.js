@@ -103,7 +103,7 @@ const getRequest = async (req, res, next) => {
         $and: [{ _id: requestId }, { active: true }]
       });
       if (foundRequest) {
-        return res.render('request/request-details', {
+        return res.json({
           request: foundRequest
         });
       } else {
@@ -162,7 +162,7 @@ const getUserRequests = async (req, res, next) => {
     const foundRequests = await Request.find({ owner: req.user._id }).populate(
       'owner'
     );
-    return res.render('request/requests', { request: foundRequests });
+    return res.json({ request: foundRequests });
   } catch (err) {
     next(err, res);
   }
@@ -185,7 +185,7 @@ const getUserRequest = async (req, res, next) => {
           }
         });
       }
-      return res.render('request/request-details', {
+      return res.json({
         request: foundRequest,
         offers: offers
       });
@@ -202,7 +202,7 @@ const getUserOffers = async (req, res, next) => {
     const foundOffers = await Offer.find({ seller: req.user._id }).populate(
       'buyer'
     );
-    return res.render('offer/offers', { offers: foundOffers });
+    return res.json({ offers: foundOffers });
   } catch (err) {
     next(err, res);
   }
@@ -218,7 +218,7 @@ const getUserOffer = async (req, res, next) => {
         owner: offer.buyer
       }).populate('owner');
       if (foundRequest) {
-        return res.render('offer/offer-details', {
+        return res.json({
           offer: foundOffer,
           request: foundRequest
         });

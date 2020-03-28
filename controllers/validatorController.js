@@ -4,14 +4,6 @@ const PDFDocument = require('pdfkit');
 const { Base64Encode } = require('base64-stream');
 const createError = require('http-errors');
 
-const getValidator = async (req, res, next) => {
-  try {
-    res.render('main/validator');
-  } catch (err) {
-    next(err, res);
-  }
-};
-
 const validateLicense = async (req, res, next) => {
   try {
     const { fingerprint, credentials } = req.body;
@@ -53,7 +45,6 @@ const displayLicense = async (req, res, next) => {
 };
 
 module.exports = {
-  getValidator,
   validateLicense,
   displayLicense
 };
