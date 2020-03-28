@@ -19,7 +19,7 @@ const createRefreshToken = user => {
 const sendRefreshToken = (res, token) => {
   res.cookie('jid', token, {
     httpOnly: true,
-    path: '/refresh_token'
+    path: 'api/auth/refresh_token'
   });
 };
 
