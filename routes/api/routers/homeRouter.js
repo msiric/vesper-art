@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { isLoggedIn } = require('../../../utils/helpers');
+const { isAuthenticated } = require('../../../utils/helpers');
 const homeController = require('../../../controllers/homeController');
 
 /* const algoliasearch = require('algoliasearch');
@@ -28,6 +28,6 @@ router
   });
 }); */
 
-router.get('/notifications', isLoggedIn, homeController.getNotifications);
+router.get('/notifications', isAuthenticated, homeController.getNotifications);
 
 module.exports = router;

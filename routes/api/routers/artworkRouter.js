@@ -1,23 +1,23 @@
 const router = require('express').Router();
-const { isLoggedIn } = require('../../../utils/helpers');
+const { isAuthenticated } = require('../../../utils/helpers');
 const artworkController = require('../../../controllers/artworkController');
 
-router.get('/my_artwork', isLoggedIn, artworkController.getUserArtwork);
+router.get('/my_artwork', isAuthenticated, artworkController.getUserArtwork);
 
 router
   .route('/add_new_artwork')
-  .post(isLoggedIn, artworkController.postNewArtwork);
+  .post(isAuthenticated, artworkController.postNewArtwork);
 
 router.get('/artwork_details/:id', artworkController.getArtworkDetails);
 
 router
   .route('/edit_artwork/:id')
-  .get(isLoggedIn, artworkController.editArtwork)
-  .put(isLoggedIn, artworkController.updateArtwork)
-  .delete(isLoggedIn, artworkController.deleteArtwork);
+  .get(isAuthenticated, artworkController.editArtwork)
+  .put(isAuthenticated, artworkController.updateArtwork)
+  .delete(isAuthenticated, artworkController.deleteArtwork);
 
 router
   .route('/save_artwork/:id')
-  .post(isLoggedIn, artworkController.saveArtwork);
+  .post(isAuthenticated, artworkController.saveArtwork);
 
 module.exports = router;

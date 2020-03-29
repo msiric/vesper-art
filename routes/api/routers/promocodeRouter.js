@@ -1,12 +1,16 @@
 const router = require('express').Router();
-const { isLoggedIn } = require('../../../utils/helpers');
+const { isAuthenticated } = require('../../../utils/helpers');
 const promocodeController = require('../../../controllers/promocodeController');
 
-router.post('/apply_promocode', isLoggedIn, promocodeController.postPromocode);
+router.post(
+  '/apply_promocode',
+  isAuthenticated,
+  promocodeController.postPromocode
+);
 
 router.post(
   '/remove_promocode',
-  isLoggedIn,
+  isAuthenticated,
   promocodeController.deletePromocode
 );
 

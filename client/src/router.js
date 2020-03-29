@@ -3,6 +3,7 @@ import { Route, Redirect, Switch } from 'react-router-dom'
 import { ConnectedRouter } from 'connected-react-router'
 import { CSSTransition, SwitchTransition } from 'react-transition-group'
 import { connect } from 'react-redux'
+import store from 'store'
 
 import Layout from 'layouts'
 
@@ -314,6 +315,18 @@ const mapStateToProps = ({ settings }) => ({
 
 @connect(mapStateToProps)
 class Router extends React.Component {
+  // async componentDidMount() {
+  //   const response = await fetch(`/api/auth/refresh_token`, {
+  //     method: 'POST',
+  //     headers: {
+  //       Accept: 'application/json',
+  //       'Content-Type': 'application/json',
+  //       credentials: 'include',
+  //     },
+  //   })
+  //   const { accessToken } = await response.json()
+  //   store.set('jwt.token', accessToken)
+  // }
   render() {
     const { history, routerAnimation } = this.props
     return (

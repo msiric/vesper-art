@@ -37,7 +37,7 @@ class Layout extends React.PureComponent {
       location: { pathname, search },
       user,
     } = this.props
-
+    console.log(user)
     // NProgress Management
     const currentPath = pathname + search
     if (currentPath !== this.previousPath) {

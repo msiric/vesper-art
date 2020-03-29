@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { isLoggedIn } = require('../../../utils/helpers');
+const { isAuthenticated } = require('../../../utils/helpers');
 const emailController = require('../../../controllers/emailController');
 
 router.post('/send_email', emailController.sendConfirmation);

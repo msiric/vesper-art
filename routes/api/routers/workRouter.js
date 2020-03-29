@@ -1,10 +1,10 @@
 const router = require('express').Router();
-const { isLoggedIn } = require('../../../utils/helpers');
+const { isAuthenticated } = require('../../../utils/helpers');
 const workController = require('../../../controllers/workController');
 
 router.get(
   '/custom_work/:workId',
-  isLoggedIn,
+  isAuthenticated,
   workController.getUserCustomWork
 );
 

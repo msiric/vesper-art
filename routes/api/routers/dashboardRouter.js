@@ -1,5 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
-const { isLoggedIn } = require('../../../utils/helpers');
+const { isAuthenticated } = require('../../../utils/helpers');
 const router = require('express').Router();
 const config = require('./config/secret');
 
@@ -12,7 +12,7 @@ const config = require('./config/secret');
  * Use the `pilotRequired` middleware to ensure that only logged-in
  * pilots can access this route.
  */
-router.get('/dashboard', isLoggedIn, async (req, res) => {
+router.get('/dashboard', isAuthenticated, async (req, res) => {
   // Retrieve the balance from Stripe
   const balance = await stripe.balance.retrieve({
     stripe_account: req.user.stripeAccountId
@@ -39,7 +39,7 @@ router.get('/dashboard', isLoggedIn, async (req, res) => {
  *
  * Generate a test ride with sample data for the logged-in pilot.
  */
-router.post('/rides', isLoggedIn, async (req, res, next) => {
+router.post('/rides', isAuthenticated, async (req, res, next) => {
   // Find a random passenger
   const passenger = await Passenger.getRandom();
   // Create a new ride for the pilot and this random passenger

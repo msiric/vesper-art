@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { isLoggedIn } = require('../../../utils/helpers');
+const { isAuthenticated } = require('../../../utils/helpers');
 const uploadController = require('../../../controllers/uploadController');
 
 const upload = require('../../../services/multer');
@@ -20,38 +20,38 @@ const artworkMediaSingleEdit = artworkMediaEdit.single('artworkMedia');
 
 router.post(
   '/profile_image_upload',
-  [isLoggedIn, profilePhotoSingleUpload],
+  [isAuthenticated, profilePhotoSingleUpload],
   uploadController.postProfileImage
 );
 
 router.post(
   '/artwork_media_upload',
-  [isLoggedIn, artworkMediaSingleUpload],
+  [isAuthenticated, artworkMediaSingleUpload],
   uploadController.postArtworkMedia
 );
 
 router.put(
   '/artwork_media_edit/:id',
-  [isLoggedIn, artworkMediaSingleEdit],
+  [isAuthenticated, artworkMediaSingleEdit],
   uploadController.putArtworkMedia
 );
 
 /* 
 router.post(
   '/artwork_cover_edit/:id',
-  [isLoggedIn, artworkCoverSingleEdit],
+  [isAuthenticated, artworkCoverSingleEdit],
   uploadController.updateArtworkCover
 );
 
 router.post(
   '/artwork_media_upload',
-  [isLoggedIn, artworkMediaSingleUpload],
+  [isAuthenticated, artworkMediaSingleUpload],
   uploadController.postArtworkMedia
 );
 
 router.post(
   '/artwork_media_edit/:id',
-  [isLoggedIn, artworkMediaSingleEdit],
+  [isAuthenticated, artworkMediaSingleEdit],
   uploadController.updateArtworkMedia
 ); */
 

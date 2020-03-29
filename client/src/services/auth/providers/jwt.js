@@ -43,19 +43,21 @@ export async function JWT_login(email, password) {
     email,
     password,
   }
+  const token = store.get('jwt.token')
   const response = await fetch(`/api/auth/login`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
       credentials: 'include',
+      headers: {
+        authorization: token ? `bearer ${token}` : '',
+      },
     },
     body: JSON.stringify(user),
   })
-  const json = await response.json()
-  /*   store.set('jwt.token', data.jwt) */
-
-  console.log(json)
+  const { accessToken } = await response.json()
+  store.set('jwt.token', accessToken)
 }
 
 export async function JWT_currentAccount() {

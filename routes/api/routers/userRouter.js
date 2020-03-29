@@ -1,19 +1,25 @@
 const router = require('express').Router();
-const { isLoggedIn } = require('../../../utils/helpers');
+const { isAuthenticated } = require('../../../utils/helpers');
 const userController = require('../../../controllers/userController');
 
-router.route('/profile').post(isLoggedIn, userController.updateUserProfile);
+router
+  .route('/profile')
+  .post(isAuthenticated, userController.updateUserProfile);
 
-router.get('/settings', isLoggedIn, userController.getUserSettings);
+router.get('/settings', isAuthenticated, userController.getUserSettings);
 
-router.post('/new_password', isLoggedIn, userController.updateUserPassword);
+router.post(
+  '/new_password',
+  isAuthenticated,
+  userController.updateUserPassword
+);
 
 router.post(
   '/update_preferences',
-  isLoggedIn,
+  isAuthenticated,
   userController.updateUserPreferences
 );
 
-router.post('/delete_user', isLoggedIn, userController.deleteUser);
+router.post('/delete_user', isAuthenticated, userController.deleteUser);
 
 module.exports = router;

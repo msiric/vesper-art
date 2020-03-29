@@ -1,25 +1,29 @@
 const router = require('express').Router();
-const { isLoggedIn } = require('../../../utils/helpers');
+const { isAuthenticated } = require('../../../utils/helpers');
 const requestController = require('../../../controllers/requestController');
 
-router.post('/request', isLoggedIn, requestController.postRequest);
+router.post('/request', isAuthenticated, requestController.postRequest);
 
-router.delete('/request/:id', isLoggedIn, requestController.deleteRequest);
+router.delete('/request/:id', isAuthenticated, requestController.deleteRequest);
 
-router.get('/edit_request/:id', isLoggedIn, requestController.getRequest);
+router.get('/edit_request/:id', isAuthenticated, requestController.getRequest);
 
-router.post('/edit_request/:id', isLoggedIn, requestController.updateRequest);
+router.post(
+  '/edit_request/:id',
+  isAuthenticated,
+  requestController.updateRequest
+);
 
-router.get('/requests', isLoggedIn, requestController.getUserRequests);
+router.get('/requests', isAuthenticated, requestController.getUserRequests);
 
 router.get(
   '/requests/:requestId',
-  isLoggedIn,
+  isAuthenticated,
   requestController.getUserRequest
 );
 
-router.get('/offers', isLoggedIn, requestController.getUserOffers);
+router.get('/offers', isAuthenticated, requestController.getUserOffers);
 
-router.get('/offers/:offerId', isLoggedIn, requestController.getUserOffer);
+router.get('/offers/:offerId', isAuthenticated, requestController.getUserOffer);
 
 module.exports = router;

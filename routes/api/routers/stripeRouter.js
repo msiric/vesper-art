@@ -1,10 +1,10 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
-const { isLoggedIn } = require('../../../utils/helpers');
+const { isAuthenticated } = require('../../../utils/helpers');
 const querystring = require('querystring');
 const router = require('express').Router();
 const config = require('./config/secret');
 
-router.get('/dashboard', isLoggedIn, async (req, res) => {
+router.get('/dashboard', isAuthenticated, async (req, res) => {
   // Make sure the logged-in pilot completed the Express onboarding
   if (!req.user.stripeAccountId) {
     return res.redirect('/signup');
@@ -30,7 +30,7 @@ router.get('/dashboard', isLoggedIn, async (req, res) => {
   }
 });
 
-router.get('/authorize', isLoggedIn, (req, res) => {
+router.get('/authorize', isAuthenticated, (req, res) => {
   // Generate a random string as `state` to protect from CSRF and include it in the session
   req.session.state = Math.random()
     .toString(36)
@@ -98,7 +98,7 @@ router.get('/token', pilotRequired, async (req, res, next) => {
   }
 });
 
-router.post('/payout', isLoggedIn, async (req, res) => {
+router.post('/payout', isAuthenticated, async (req, res) => {
   try {
     // Fetch the account balance to determine the available funds
     const balance = await stripe.balance.retrieve({
