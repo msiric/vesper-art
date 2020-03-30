@@ -1,9 +1,65 @@
+const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 
 const createAccessToken = user => {
-  return jwt.sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '15m'
-  });
+  return jwt.sign(
+    {
+      id: user.id,
+      name: user.name,
+      photo: user.photo,
+      inbox: user.inbox,
+      notifications: user.notifications,
+      cart: user.cart.length,
+      jwtVersion: user.jwtVersion
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: '30s'
+    }
+  );
+};
+
+const updateAccessToken = async (req, res, next) => {
+  const token = req.cookies.jid;
+  console.log('token', token);
+  if (!token) {
+    return { ok: false, accessToken: '' };
+  }
+
+  let payload = null;
+  try {
+    payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+  } catch (err) {
+    console.log(err);
+    return { ok: false, accessToken: '' };
+  }
+
+  const foundUser = await User.findOne({ _id: payload.userId });
+
+  if (!foundUser) {
+    return { ok: false, accessToken: '' };
+  }
+
+  if (foundUser.jwtVersion !== payload.jwtVersion) {
+    return { ok: false, accessToken: '' };
+  }
+
+  const tokenPayload = {
+    id: foundUser.id,
+    name: foundUser.name,
+    photo: foundUser.photo,
+    inbox: foundUser.inbox,
+    notifications: foundUser.notifications,
+    cart: foundUser.cart.length,
+    jwtVersion: foundUser.jwtVersion
+  };
+
+  sendRefreshToken(res, createRefreshToken(tokenPayload));
+
+  return {
+    ok: true,
+    accessToken: createAccessToken(tokenPayload)
+  };
 };
 
 const createRefreshToken = user => {
@@ -25,6 +81,7 @@ const sendRefreshToken = (res, token) => {
 
 module.exports = {
   createAccessToken,
+  updateAccessToken,
   createRefreshToken,
   sendRefreshToken
 };

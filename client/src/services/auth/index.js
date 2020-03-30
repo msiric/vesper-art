@@ -1,4 +1,4 @@
-import { JWT_login, JWT_currentAccount, JWT_logout } from './providers/jwt'
+import { JWT_login, JWT_refreshToken, JWT_logout } from './providers/jwt'
 
 export function auth(provider) {
   switch (provider) {
@@ -7,8 +7,8 @@ export function auth(provider) {
         login: (email, password) => {
           return JWT_login(email, password)
         },
-        currentAccount: () => {
-          return JWT_currentAccount()
+        refreshToken: () => {
+          return JWT_refreshToken()
         },
         logout: () => {
           return JWT_logout()

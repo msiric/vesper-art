@@ -3,6 +3,7 @@ import { notification } from 'antd'
 import { history, store as reduxStore } from 'index'
 import { auth } from 'services/auth'
 import actions from './actions'
+import jwt from 'jsonwebtoken'
 
 export function* LOGIN({ payload }) {
   const { email, password } = payload
@@ -15,7 +16,7 @@ export function* LOGIN({ payload }) {
   })
   const success = yield call(auth(provider).login, email, password)
   yield put({
-    type: 'user/LOAD_CURRENT_ACCOUNT',
+    type: 'user/REFRESH_TOKEN',
   })
   if (success) {
     yield history.push('/')
@@ -26,7 +27,7 @@ export function* LOGIN({ payload }) {
   }
 }
 
-export function* LOAD_CURRENT_ACCOUNT() {
+export function* REFRESH_TOKEN() {
   const provider = reduxStore.getState().settings.authProvider
   yield put({
     type: 'user/SET_STATE',
@@ -34,16 +35,17 @@ export function* LOAD_CURRENT_ACCOUNT() {
       loading: true,
     },
   })
-  const response = yield call(auth(provider).currentAccount)
-  if (response) {
-    const { uid: id, email, photoURL: avatar } = response
+  const { accessToken } = yield call(auth(provider).refreshToken)
+  if (accessToken) {
+    const user = jwt.decode(accessToken)
+    console.log(user)
     yield put({
       type: 'user/SET_STATE',
       payload: {
-        id,
-        name: 'Administrator',
-        email,
-        avatar,
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.photo,
         role: 'admin',
         authorized: true,
       },
@@ -77,8 +79,8 @@ export function* LOGOUT() {
 export default function* rootSaga() {
   yield all([
     takeEvery(actions.LOGIN, LOGIN),
-    takeEvery(actions.LOAD_CURRENT_ACCOUNT, LOAD_CURRENT_ACCOUNT),
+    takeEvery(actions.REFRESH_TOKEN, REFRESH_TOKEN),
     takeEvery(actions.LOGOUT, LOGOUT),
-    LOAD_CURRENT_ACCOUNT(), // run once on app load to check user auth
+    REFRESH_TOKEN(), // run once on app load to check user auth
   ])
 }

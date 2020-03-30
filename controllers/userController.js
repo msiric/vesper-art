@@ -34,7 +34,7 @@ const updateUserProfile = async (req, res, next) => {
   }
 };
 
-const getUserSettings = async (req, res) => {
+const getUserSettings = async (req, res, next) => {
   try {
     return res
       .status(200)

@@ -1,4 +1,5 @@
 import store from 'store'
+import axios from 'axios'
 
 const FAKE_JWT =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRoZW9ybml0aG9sb2dpc3QiLCJzdXJuYW1lIjoiQm9uZCIsIm5hbWUiOiJKYW1lcyBCb25kIiwiaWF0Ijo5NDY2ODQ4MDB9.uOP6fIf8dhgb7As5D0a4z6EjaXsudQgrKWj8PmoWFd0'
@@ -44,43 +45,28 @@ export async function JWT_login(email, password) {
     password,
   }
   const token = store.get('jwt.token')
-  const response = await fetch(`/api/auth/login`, {
-    method: 'POST',
+
+  const { data } = await axios.post(`/api/auth/login`, JSON.stringify(user), {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
       credentials: 'include',
-      headers: {
-        authorization: token ? `bearer ${token}` : '',
-      },
+      Authorization: token ? `Bearer ${token}` : '',
     },
-    body: JSON.stringify(user),
   })
-  const { accessToken } = await response.json()
-  store.set('jwt.token', accessToken)
+  store.set('jwt.token', data.accessToken)
 }
 
-export async function JWT_currentAccount() {
-  const jwt = store.get('jwt.token')
-  return (
-    fake_fetch('api/currentUser', {
-      // replace this with real fetch() method
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({ jwt }),
-    })
-      // .then(resp => resp.json())
-      .then(data => {
-        if (data.message) {
-          return false
-        } else {
-          return data.data
-        }
-      })
-  )
+export async function JWT_refreshToken() {
+  const { data } = await axios.post(`/api/auth/refresh_token`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      credentials: 'include',
+    },
+  })
+
+  return { accessToken: data.accessToken }
 }
 
 export async function JWT_logout() {

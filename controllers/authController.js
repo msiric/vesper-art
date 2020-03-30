@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
 const auth = require('../utils/auth');
-const jwt = require('jsonwebtoken');
 const randomString = require('randomstring');
 const axios = require('axios');
 const bcrypt = require('bcrypt-nodejs');
@@ -107,7 +106,7 @@ const postLogIn = async (req, res, next) => {
 
     auth.sendRefreshToken(res, auth.createRefreshToken(tokenPayload));
 
-    res.send({
+    res.json({
       accessToken: auth.createAccessToken(tokenPayload),
       user: tokenPayload
     });
@@ -128,40 +127,58 @@ const postLogOut = async (req, res) => {
   }
 };
 
-const postRefreshToken = async (req, res) => {
-  const token = req.cookies.jid;
-  if (!token) {
-    return res.send({ ok: false, accessToken: '' });
-  }
+const postRefreshToken = async (req, res, next) => {
+  const data = await auth.updateAccessToken(req, res, next);
 
-  let payload = null;
-  try {
-    payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-  } catch (err) {
-    console.log(err);
-    return res.send({ ok: false, accessToken: '' });
-  }
+  return res.json(data);
 
-  const foundUser = await User.findOne({ id: payload.userId });
+  // const token = req.cookies.jid;
+  // console.log('token', token);
+  // if (!token) {
+  //   return res.json({ ok: false, accessToken: '' });
+  // }
 
-  if (!foundUser) {
-    return res.send({ ok: false, accessToken: '' });
-  }
+  // let payload = null;
+  // try {
+  //   payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+  // } catch (err) {
+  //   console.log(err);
+  //   return res.json({ ok: false, accessToken: '' });
+  // }
 
-  if (foundUser.jwtVersion !== payload.jwtVersion) {
-    return res.send({ ok: false, accessToken: '' });
-  }
+  // const foundUser = await User.findOne({ _id: payload.userId });
 
-  auth.sendRefreshToken(res, auth.createRefreshToken(foundUser));
+  // if (!foundUser) {
+  //   return res.json({ ok: false, accessToken: '' });
+  // }
 
-  return res.send({ ok: true, accessToken: auth.createAccessToken(foundUser) });
+  // if (foundUser.jwtVersion !== payload.jwtVersion) {
+  //   return res.json({ ok: false, accessToken: '' });
+  // }
+
+  // const tokenPayload = {
+  //   id: foundUser.id,
+  //   name: foundUser.name,
+  //   photo: foundUser.photo,
+  //   inbox: foundUser.inbox,
+  //   notifications: foundUser.notifications,
+  //   cart: foundUser.cart.length,
+  //   jwtVersion: foundUser.jwtVersion
+  // };
+
+  // auth.sendRefreshToken(res, auth.createRefreshToken(tokenPayload));
+
+  // return res.json({
+  //   ok: true,
+  //   accessToken: auth.createAccessToken(tokenPayload)
+  // });
 };
 
 const postRevokeToken = async (req, res, next) => {
   try {
     const userId = req.params.id;
 
-    await User.findOneAndUpdate({ id: userId }, { $inc: { jwtVersion: 1 } });
+    await User.findOneAndUpdate({ _id: userId }, { $inc: { jwtVersion: 1 } });
 
     res.status(200);
   } catch (err) {
