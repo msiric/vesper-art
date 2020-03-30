@@ -11,6 +11,7 @@
     "eslint": "eslint --ext .js,jsx src",
     "stylelint": "stylelint \"src/**/*.{scss,less}\""
   },
+  "license": "ISC",
   "husky": {
     "hooks": {
       "pre-commit": "npm run lint-staged"

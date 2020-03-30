@@ -3,6 +3,7 @@ import { Menu, Dropdown, Tooltip } from 'antd'
 import { Helmet } from 'react-helmet'
 import { Scrollbars } from 'react-custom-scrollbars'
 import instance from '../../axios.config'
+import store from 'store'
 
 const dropdownMenu = (
   <Menu>
@@ -24,9 +25,8 @@ const dropdownMenu = (
 
 class Settings extends React.Component {
   async componentDidMount() {
+    console.log(store.get('jwt.token'))
     const { data } = await instance.get(`/api/settings`, {})
-    console.log('aasdfasdfasdfasdfasdf')
-    console.log(data)
   }
   render() {
     return (

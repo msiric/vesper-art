@@ -55,6 +55,7 @@ export async function JWT_login(email, password) {
     },
   })
   store.set('jwt.token', data.accessToken)
+  return true
 }
 
 export async function JWT_refreshToken() {
@@ -70,25 +71,13 @@ export async function JWT_refreshToken() {
 }
 
 export async function JWT_logout() {
-  const jwt = store.get('jwt.token')
-  return (
-    fake_fetch('api/logout', {
-      // replace this with real fetch() method
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({ jwt }),
-    })
-      // .then(resp => resp.json())
-      .then(data => {
-        if (data.message) {
-          return false
-        } else {
-          store.remove('jwt.token')
-          return true
-        }
-      })
-  )
+  const { data } = await axios.post(`/api/auth/logout`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      credentials: 'include',
+    },
+  })
+  store.remove('jwt.token')
+  return true
 }
