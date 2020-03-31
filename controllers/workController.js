@@ -4,7 +4,7 @@ const createError = require('http-errors');
 
 const getUserCustomWork = async (req, res, next) => {
   try {
-    req.session.workId = req.params.workId;
+    req.session.workId = req.params.id;
     const foundWork = await Work.findOne({ _id: req.params.workId })
       .populate('buyer')
       .populate('seller')

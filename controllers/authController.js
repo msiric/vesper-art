@@ -44,18 +44,6 @@ const postSignUp = async (req, res, next) => {
       await axios.post('http://localhost:3000/send_email', verificationInfo, {
         proxy: false
       });
-      // old code
-      /*         axios
-          .post('http://localhost:3000/send_email', verificationInfo, {
-            proxy: false
-          })
-          .then(res => {
-            console.log(`statusCode: ${res.statusCode}`);
-            console.log(res);
-          })
-          .catch(error => {
-            console.error(error);
-          }); */
       await session.commitTransaction();
       return res.redirect('/signup');
     }
@@ -131,47 +119,6 @@ const postRefreshToken = async (req, res, next) => {
   const data = await auth.updateAccessToken(req, res, next);
 
   return res.json(data);
-
-  // const token = req.cookies.jid;
-  // console.log('token', token);
-  // if (!token) {
-  //   return res.json({ ok: false, accessToken: '' });
-  // }
-
-  // let payload = null;
-  // try {
-  //   payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-  // } catch (err) {
-  //   console.log(err);
-  //   return res.json({ ok: false, accessToken: '' });
-  // }
-
-  // const foundUser = await User.findOne({ _id: payload.userId });
-
-  // if (!foundUser) {
-  //   return res.json({ ok: false, accessToken: '' });
-  // }
-
-  // if (foundUser.jwtVersion !== payload.jwtVersion) {
-  //   return res.json({ ok: false, accessToken: '' });
-  // }
-
-  // const tokenPayload = {
-  //   id: foundUser.id,
-  //   name: foundUser.name,
-  //   photo: foundUser.photo,
-  //   inbox: foundUser.inbox,
-  //   notifications: foundUser.notifications,
-  //   cart: foundUser.cart.length,
-  //   jwtVersion: foundUser.jwtVersion
-  // };
-
-  // auth.sendRefreshToken(res, auth.createRefreshToken(tokenPayload));
-
-  // return res.json({
-  //   ok: true,
-  //   accessToken: auth.createAccessToken(tokenPayload)
-  // });
 };
 
 const postRevokeToken = async (req, res, next) => {

@@ -6,10 +6,10 @@ router.route('/signup').post(isLoggedOut, authController.postSignUp);
 
 router.route('/login').post(isLoggedOut, authController.postLogIn);
 
-router.post('/logout', isAuthenticated, authController.postLogOut);
+router.route('/logout').post(isAuthenticated, authController.postLogOut);
 
-router.post('/refresh_token', authController.postRefreshToken);
+router.route('/refresh_token').post(authController.postRefreshToken);
 
-router.post('/revoke_token/:id', authController.postRevokeToken);
+router.route('/revoke_token/:id').post(authController.postRevokeToken);
 
 module.exports = router;

@@ -6,45 +6,92 @@ import { connect } from 'react-redux'
 import Layout from 'layouts'
 
 const routes = [
-  // Auth Pages
+  // Artwork router
   {
-    path: '/dashboard/alpha',
-    Component: lazy(() => import('pages/dashboard/alpha')),
+    path: '/my_artwork',
+    Component: lazy(() => import('pages/artwork/my_artwork')),
     exact: true,
   },
   {
-    path: '/settings',
-    Component: lazy(() => import('pages/settings')),
+    path: '/add_artwork',
+    Component: lazy(() => import('pages/artwork/add_artwork')),
     exact: true,
   },
   {
-    path: '/auth/login',
-    Component: lazy(() => import('pages/auth/login')),
+    path: '/artwork/:id',
+    Component: lazy(() => import('pages/artwork/artwork_details')),
     exact: true,
   },
   {
-    path: '/auth/forgot-password',
-    Component: lazy(() => import('pages/auth/forgot-password')),
+    path: '/edit_artwork/:id',
+    Component: lazy(() => import('pages/artwork/edit_artwork')),
     exact: true,
   },
+  // Auth router
   {
-    path: '/auth/register',
+    path: '/register',
     Component: lazy(() => import('pages/auth/register')),
     exact: true,
   },
   {
-    path: '/auth/lockscreen',
-    Component: lazy(() => import('pages/auth/lockscreen')),
+    path: '/login',
+    Component: lazy(() => import('pages/auth/login')),
+    exact: true,
+  },
+  // Conversations router
+  {
+    path: '/conversations',
+    Component: lazy(() => import('pages/conversations/conversations')),
+    exact: true,
+  },
+  // Home router
+  {
+    path: '/',
+    Component: lazy(() => import('pages/home/homepage')),
     exact: true,
   },
   {
-    path: '/auth/404',
-    Component: lazy(() => import('pages/auth/404')),
+    path: '/artwork',
+    Component: lazy(() => import('pages/home/artwork')),
+    exact: true,
+  },
+  // Notifications router
+  {
+    path: '/notifications',
+    Component: lazy(() => import('pages/notifications/notifications')),
+    exact: true,
+  },
+  // Checkout router
+  {
+    path: '/cart',
+    Component: lazy(() => import('pages/checkout/cart')),
     exact: true,
   },
   {
-    path: '/auth/500',
-    Component: lazy(() => import('pages/auth/500')),
+    path: '/checkout',
+    Component: lazy(() => import('pages/checkout/checkout')),
+    exact: true,
+  },
+  // Order router
+  {
+    path: '/orders',
+    Component: lazy(() => import('pages/orders/orders')),
+    exact: true,
+  },
+  {
+    path: '/orders/:id',
+    Component: lazy(() => import('pages/orders/order')),
+    exact: true,
+  },
+  // User router
+  {
+    path: '/user',
+    Component: lazy(() => import('pages/user/profile')),
+    exact: true,
+  },
+  {
+    path: '/user/settings',
+    Component: lazy(() => import('pages/user/settings')),
     exact: true,
   },
 ]

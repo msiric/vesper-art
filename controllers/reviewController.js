@@ -18,7 +18,7 @@ const postReview = async (req, res, next) => {
       const foundOrder = await Order.findOne({
         $and: [
           { _id: orderId },
-          { buyer: req.user._id },
+          { buyer: res.locals.user.id },
           { details: { $elemMatch: { artwork: artworkId } } }
         ]
       })
@@ -27,13 +27,13 @@ const postReview = async (req, res, next) => {
         .session(session);
       if (foundOrder) {
         const foundReview = await Review.findOne({
-          $and: [{ artwork: artworkId }, { owner: req.user._id }]
+          $and: [{ artwork: artworkId }, { owner: res.locals.user.id }]
         }).session(session);
         if (!foundReview) {
           const newReview = new Review();
           newReview.order = foundOrder._id;
           newReview.artwork = artworkId;
-          newReview.owner = req.user._id;
+          newReview.owner = res.locals.user.id;
           if (review) newReview.review = review;
           newReview.rating = rating;
           await newReview.save({ session });

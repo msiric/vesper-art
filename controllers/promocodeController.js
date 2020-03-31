@@ -4,6 +4,7 @@ const User = require('../models/user');
 const createError = require('http-errors');
 
 // needs transaction (done)
+// treba sredit
 const postPromocode = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -52,7 +53,7 @@ const deletePromocode = async (req, res, next) => {
     if (foundPromocode) {
       await User.updateOne(
         {
-          _id: req.user._id
+          _id: res.locals.user.id
         },
         {
           discount: null

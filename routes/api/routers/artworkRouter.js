@@ -2,18 +2,22 @@ const router = require('express').Router();
 const { isAuthenticated } = require('../../../utils/helpers');
 const artworkController = require('../../../controllers/artworkController');
 
-router.get('/my_artwork', isAuthenticated, artworkController.getUserArtwork);
+router.route('/artwork').get(artworkController.getArtwork);
 
 router
-  .route('/add_new_artwork')
+  .route('/my_artwork')
+  .get(isAuthenticated, artworkController.getUserArtwork);
+
+router
+  .route('/add_artwork')
   .post(isAuthenticated, artworkController.postNewArtwork);
 
-router.get('/artwork_details/:id', artworkController.getArtworkDetails);
+router.route('/artwork_details/:id').get(artworkController.getArtworkDetails);
 
 router
   .route('/edit_artwork/:id')
   .get(isAuthenticated, artworkController.editArtwork)
-  .put(isAuthenticated, artworkController.updateArtwork)
+  .patch(isAuthenticated, artworkController.updateArtwork)
   .delete(isAuthenticated, artworkController.deleteArtwork);
 
 router

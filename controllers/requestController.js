@@ -9,7 +9,7 @@ const postRequest = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: req.user._id }).session(
+    const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
       session
     );
     if (foundUser) {
@@ -18,7 +18,7 @@ const postRequest = async (req, res, next) => {
       });
       if (!foundRequest.length) {
         let request = new Request();
-        request.owner = req.user._id;
+        request.owner = res.locals.user.id;
         if (req.body.request_category)
           request.category = req.body.request_category;
         if (req.body.request_budget) request.budget = req.body.request_budget;
@@ -29,7 +29,7 @@ const postRequest = async (req, res, next) => {
         await request.save({ session });
         await User.updateOne(
           {
-            _id: req.user._id
+            _id: res.locals.user.id
           },
           {
             $push: { requests: request._id }
@@ -57,7 +57,7 @@ const deleteRequest = async (req, res, next) => {
   session.startTransaction();
   try {
     const requestId = req.params.id;
-    const foundUser = await User.findOne({ _id: req.user._id }).session(
+    const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
       session
     );
     if (foundUser) {
@@ -67,7 +67,7 @@ const deleteRequest = async (req, res, next) => {
       if (foundRequest) {
         await User.updateOne(
           {
-            _id: req.user._id
+            _id: res.locals.user.id
           },
           {
             $pull: { requests: requestId }
@@ -97,7 +97,7 @@ const deleteRequest = async (req, res, next) => {
 const getRequest = async (req, res, next) => {
   try {
     const requestId = req.params.id;
-    const foundUser = await User.findOne({ _id: req.user._id });
+    const foundUser = await User.findOne({ _id: res.locals.user.id });
     if (foundUser) {
       const foundRequest = await Request.findOne({
         $and: [{ _id: requestId }, { active: true }]
@@ -123,7 +123,7 @@ const updateRequest = async (req, res, next) => {
   session.startTransaction();
   try {
     const requestId = req.params.id;
-    const foundUser = await User.findOne({ _id: req.user._id }).session(
+    const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
       session
     );
     if (foundUser) {
@@ -159,9 +159,9 @@ const updateRequest = async (req, res, next) => {
 
 const getUserRequests = async (req, res, next) => {
   try {
-    const foundRequests = await Request.find({ owner: req.user._id }).populate(
-      'owner'
-    );
+    const foundRequests = await Request.find({
+      owner: res.locals.user.id
+    }).populate('owner');
     return res.json({ request: foundRequests });
   } catch (err) {
     next(err, res);
@@ -171,7 +171,7 @@ const getUserRequests = async (req, res, next) => {
 const getUserRequest = async (req, res, next) => {
   try {
     const foundRequest = await Request.findOne({
-      _id: req.params.requestId
+      _id: req.params.id
     }).deepPopulate(['offers.buyer', 'offers.seller']);
     if (foundRequest) {
       const offers = [];
@@ -199,9 +199,9 @@ const getUserRequest = async (req, res, next) => {
 
 const getUserOffers = async (req, res, next) => {
   try {
-    const foundOffers = await Offer.find({ seller: req.user._id }).populate(
-      'buyer'
-    );
+    const foundOffers = await Offer.find({
+      seller: res.locals.user.id
+    }).populate('buyer');
     return res.json({ offers: foundOffers });
   } catch (err) {
     next(err, res);
@@ -210,7 +210,7 @@ const getUserOffers = async (req, res, next) => {
 
 const getUserOffer = async (req, res, next) => {
   try {
-    const foundOffer = await Offer.findOne({ _id: req.params.offerId })
+    const foundOffer = await Offer.findOne({ _id: req.params.id })
       .populate('buyer')
       .populate('seller');
     if (foundOffer) {

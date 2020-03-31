@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
 const aws = require('aws-sdk');
 const User = require('../models/user');
 const Artwork = require('../models/artwork');
@@ -11,10 +10,21 @@ const { sanitize } = require('../utils/helpers');
 const postArtworkValidator = require('../utils/validation/postArtworkValidator');
 const putArtworkValidator = require('../utils/validation/putArtworkValidator');
 
+const getArtwork = async (req, res) => {
+  try {
+    const foundArtwork = await Artwork.find({ active: true }).populate(
+      'current'
+    );
+    return res.json({ artwork: foundArtwork });
+  } catch (err) {
+    next(err, res);
+  }
+};
+
 const getUserArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.find({
-      $and: [{ owner: req.user._id }, { active: true }]
+      $and: [{ owner: res.locals.user.id }, { active: true }]
     }).populate('current');
     return res.json({ artwork: foundArtwork });
   } catch (err) {
@@ -53,7 +63,7 @@ const postNewArtwork = async (req, res, next) => {
     }
     const savedVersion = await newVersion.save({ session });
     const newArtwork = new Artwork();
-    newArtwork.owner = req.user._id;
+    newArtwork.owner = res.locals.user.id;
     newArtwork.active = true;
     newArtwork.current = savedVersion._id;
     await newArtwork.save({ session });
@@ -68,6 +78,7 @@ const postNewArtwork = async (req, res, next) => {
   }
 };
 
+// treba sredit
 const getArtworkDetails = async (req, res, next) => {
   try {
     const savedArtwork =
@@ -111,7 +122,11 @@ const getArtworkDetails = async (req, res, next) => {
 const editArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
+      $and: [
+        { _id: req.params.id },
+        { owner: res.locals.user.id },
+        { active: true }
+      ]
     }).populate('current');
     if (foundArtwork) {
       return res.json({ artwork: foundArtwork.current });
@@ -132,7 +147,11 @@ const updateArtwork = async (req, res, next) => {
   session.startTransaction();
   try {
     const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
+      $and: [
+        { _id: req.params.id },
+        { owner: res.locals.user.id },
+        { active: true }
+      ]
     })
       .populate('current')
       .populate('versions')
@@ -296,219 +315,17 @@ const updateArtwork = async (req, res, next) => {
   }
 };
 
-// needs testing
-/* const deleteArtwork = async (req, res, next) => {
-  try {
-    const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
-    })
-      .populate('current')
-      .populate('versions');
-    if (foundArtwork) {
-      const foundOrder = await Order.find({
-        details: { $elemMatch: { artwork: foundArtwork._id } },
-        $or: [
-          {
-            details: { $elemMatch: { version: { $in: foundArtwork.versions } } }
-          },
-          {
-            details: { $elemMatch: { version: foundArtwork.current._id } }
-          }
-        ]
-      }).deepPopulate('details.artwork details.version');
-      if (foundOrder.length) {
-        const usedVersions = [];
-        const allVersions = [];
-        foundArtwork.versions.map(function(item) {
-          allVersions.push(item);
-        });
-        allVersions.push(foundArtwork.current);
-
-        foundOrder.map(function(order) {
-          order.details.map(function(item) {
-            usedVersions.push(item.version);
-          });
-        });
-
-        const unusedVersions = [];
-
-        for (let item of allVersions) {
-          if (!usedVersions.find(value => value._id.equals(item._id))) {
-            unusedVersions.push(item);
-          }
-        }
-
-        if (unusedVersions.length) {
-          const usedCovers = [];
-          const usedMedia = [];
-          let unusedCovers;
-          let unusedMedia;
-          unusedVersions.forEach(async function(version) {
-            let coverLink = version.cover;
-            let mediaLink = version.media;
-
-            foundOrder.map(function(order) {
-              if (order.details.some(item => item.version.cover == coverLink)) {
-                if (!usedCovers.includes(coverLink)) {
-                  usedCovers.push(coverLink);
-                }
-              }
-
-              if (order.details.some(item => item.version.media == mediaLink)) {
-                if (!usedMedia.includes(mediaLink)) {
-                  usedMedia.push(mediaLink);
-                }
-              }
-            });
-
-            const deletedVersion = await Version.remove({
-              _id: version._id
-            });
-
-            if (!deletedVersion) {
-              return res
-                .status(400)
-                .json({ message: 'Version could not be deleted' });
-            }
-          });
-
-          if (usedMedia.length || usedCovers.length) {
-            unusedMedia = unusedVersions.filter(
-              x => !usedMedia.includes(x.media)
-            );
-
-            unusedCovers = unusedVersions.filter(
-              x => !usedCovers.includes(x.cover)
-            );
-
-            unusedMedia.forEach(async function(item) {
-              const mediaFolderName = 'artworkMedia/';
-              const mediaFileName = item.media.split('/').slice(-1)[0];
-              const mediaFilePath = mediaFolderName + mediaFileName;
-              const mediaS3 = new aws.S3();
-              const mediaParams = {
-                Bucket: 'vesper-testing',
-                Key: mediaFilePath
-              };
-
-              await mediaS3.deleteObject(mediaParams).promise();
-            });
-
-            unusedCovers.forEach(async function(item) {
-              const coverFolderName = 'artworkCovers/';
-              const coverFileName = item.cover.split('/').slice(-1)[0];
-              const coverFilePath = coverFolderName + coverFileName;
-              const coverS3 = new aws.S3();
-              const coverParams = {
-                Bucket: 'vesper-testing',
-                Key: coverFilePath
-              };
-
-              await coverS3.deleteObject(coverParams).promise();
-            });
-          }
-        }
-
-        if (
-          unusedVersions.find(value =>
-            value._id.equals(foundArtwork.current._id)
-          )
-        ) {
-          await Artwork.updateOne(
-            {
-              _id: req.params.id
-            },
-            {
-              $pull: {
-                versions: { $in: unusedVersions.map(version => version._id) }
-              },
-              active: false,
-              current: null
-            }
-          );
-        } else {
-          await Artwork.updateOne(
-            {
-              _id: req.params.id
-            },
-            {
-              $pull: {
-                versions: { $in: unusedVersions.map(version => version._id) }
-              },
-              active: false
-            }
-          );
-        }
-
-        return res.status(200).json('/my_artwork');
-      } else {
-        const allVersions = [];
-        foundArtwork.versions.map(function(item) {
-          allVersions.push(item);
-        });
-        allVersions.push(foundArtwork.current);
-
-        allVersions.forEach(async function(version) {
-          const coverFolderName = 'artworkCovers/';
-          const coverFileName = version.cover.split('/').slice(-1)[0];
-          const coverFilePath = coverFolderName + coverFileName;
-          const coverS3 = new aws.S3();
-          const coverParams = {
-            Bucket: 'vesper-testing',
-            Key: coverFilePath
-          };
-
-          await coverS3.deleteObject(coverParams).promise();
-
-          const mediaFolderName = 'artworkMedia/';
-          const mediaFileName = version.media.split('/').slice(-1)[0];
-          const mediaFilePath = mediaFolderName + mediaFileName;
-          const mediaS3 = new aws.S3();
-          const mediaParams = {
-            Bucket: 'vesper-testing',
-            Key: mediaFilePath
-          };
-
-          await mediaS3.deleteObject(mediaParams).promise();
-        });
-
-        const deletedVersion = await Version.remove({
-          _id: { $in: allVersions }
-        });
-        if (deletedVersion) {
-          const deletedArtwork = await Artwork.remove({
-            _id: req.params.id
-          });
-
-          if (deletedArtwork) {
-            return res.status(200).json('/my_artwork');
-          } else {
-            return res
-              .status(400)
-              .json({ message: 'Artwork could not be deleted' });
-          }
-        } else {
-          return res
-            .status(400)
-            .json({ message: 'Version could not be deleted' });
-        }
-      }
-    } else {
-      return res.status(400).json({ message: 'Artwork not found' });
-    }
-  } catch (err) {
-    console.log(err);
-    next(err, res);
-  }
-}; */
-
 // needs transaction (done)
 const deleteArtwork = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
+      $and: [
+        { _id: req.params.id },
+        { owner: res.locals.user.id },
+        { active: true }
+      ]
     })
       .populate('current')
       .populate('versions')
@@ -661,7 +478,7 @@ const saveArtwork = async (req, res, next) => {
       .populate('current')
       .session(session);
     if (foundArtwork) {
-      const foundUser = await User.findOne({ _id: req.user._id }).session(
+      const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
         session
       );
       if (foundUser) {
@@ -696,6 +513,7 @@ const saveArtwork = async (req, res, next) => {
   }
 };
 module.exports = {
+  getArtwork,
   getUserArtwork,
   postNewArtwork,
   getArtworkDetails,

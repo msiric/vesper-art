@@ -2,15 +2,8 @@ const express = require('express');
 const router = express.Router();
 const createError = require('http-errors');
 
-/* const algoliasearch = require('algoliasearch');
-let client = algoliasearch('P9R2R1LI94', '2b949398099e9ee44619187ca4ea9809');
-let index = client.initIndex('ArtworkSchema'); */
-
-const fee = 3.15;
-
 users = {};
 
-const mainRoutes = require('./routers/homeRouter');
 const userRoutes = require('./routers/userRouter');
 const orderRoutes = require('./routers/orderRouter');
 const uploadRoutes = require('./routers/uploadRouter');
@@ -23,9 +16,11 @@ const reviewRouter = require('./routers/reviewRouter');
 const promocodeRouter = require('./routers/promocodeRouter');
 const ticketRouter = require('./routers/ticketRouter');
 const validatorRouter = require('./routers/validatorRouter');
+const notificationRouter = require('./routers/notificationRouter');
+const licenseRouter = require('./routers/licenseRouter');
+const checkoutRouter = require('./routers/checkoutRouter');
 const authRouter = require('./routers/authRouter');
 
-router.use('/', mainRoutes);
 router.use('/', userRoutes);
 router.use('/', orderRoutes);
 router.use('/', uploadRoutes);
@@ -38,6 +33,9 @@ router.use('/', reviewRouter);
 router.use('/', promocodeRouter);
 router.use('/', ticketRouter);
 router.use('/', validatorRouter);
+router.use('/', notificationRouter);
+router.use('/', licenseRouter);
+router.use('/', checkoutRouter);
 router.use('/auth', authRouter);
 
 router.use((req, res, next) => {

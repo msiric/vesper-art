@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const aws = require('aws-sdk');
 const User = require('../models/user');
-const Artwork = require('../models/artwork');
 const createError = require('http-errors');
 
 // needs transaction (done)
@@ -9,7 +8,7 @@ const postProfileImage = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: req.user._id }).session(
+    const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
       session
     );
     if (foundUser) {

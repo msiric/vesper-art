@@ -12,6 +12,7 @@ const config = require('./config/secret');
  * Use the `pilotRequired` middleware to ensure that only logged-in
  * pilots can access this route.
  */
+// treba sredit sve
 router.get('/dashboard', isAuthenticated, async (req, res) => {
   // Retrieve the balance from Stripe
   const balance = await stripe.balance.retrieve({

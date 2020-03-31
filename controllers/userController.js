@@ -12,7 +12,7 @@ const updateUserProfile = async (req, res, next) => {
   session.startTransaction();
   try {
     const foundUser = await User.findOne({
-      $and: [{ _id: req.user._id }, { active: true }]
+      $and: [{ _id: res.locals.user.id }, { active: true }]
     }).session(session);
     if (foundUser) {
       if (req.body.name) foundUser.name = req.body.name;
@@ -34,6 +34,7 @@ const updateUserProfile = async (req, res, next) => {
   }
 };
 
+// treba sredit
 const getUserSettings = async (req, res, next) => {
   try {
     return res
@@ -49,7 +50,7 @@ const updateUserPassword = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: req.user._id }).session(
+    const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
       session
     );
     if (foundUser) {
@@ -90,7 +91,7 @@ const updateUserPreferences = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: req.user._id }).session(
+    const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
       session
     );
     if (foundUser) {
@@ -115,7 +116,7 @@ const updateUserPreferences = async (req, res, next) => {
 /* const deleteUser = async (req, res, next) => {
   try {
     const foundUser = await User.findOne({
-      $and: [{ _id: req.user._id }, { active: true }]
+      $and: [{ _id: res.locals.user.id }, { active: true }]
     });
     if (foundUser) {
       if (foundUser.photo.includes(foundUser._id)) {
@@ -184,11 +185,11 @@ const deleteUser = async (req, res, next) => {
   session.startTransaction();
   try {
     const foundUser = await User.findOne({
-      $and: [{ _id: req.user._id }, { active: true }]
+      $and: [{ _id: res.locals.user.id }, { active: true }]
     }).session(session);
     if (foundUser) {
       const foundArtwork = await Artwork.find({
-        $and: [{ owner: req.user._id }, { active: true }]
+        $and: [{ owner: res.locals.user.id }, { active: true }]
       })
         .populate('current')
         .populate('versions')

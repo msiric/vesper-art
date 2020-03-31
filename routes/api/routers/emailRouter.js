@@ -2,11 +2,12 @@ const router = require('express').Router();
 const { isAuthenticated } = require('../../../utils/helpers');
 const emailController = require('../../../controllers/emailController');
 
-router.post('/send_email', emailController.sendConfirmation);
+router.route('/send_email').post(emailController.sendConfirmation);
 
-router.get('/verify/:token', emailController.verifyToken);
+router.route('/verify/:token').get(emailController.verifyToken);
 
-router.get('/forgot', function(req, res) {
+// treba sredit ?
+router.route('/forgot').get(function(req, res) {
   if (!req.user) {
     res.json({
       user: req.user
@@ -16,10 +17,10 @@ router.get('/forgot', function(req, res) {
   }
 });
 
-router.post('/forgot', emailController.forgotPassword);
+router.route('/forgot').post(emailController.forgotPassword);
 
-router.get('/reset/:token', emailController.getToken);
+router.route('/reset/:token').get(emailController.getToken);
 
-router.post('/reset/:token', emailController.resendToken);
+router.route('/reset/:token').post(emailController.resendToken);
 
 module.exports = router;

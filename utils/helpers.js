@@ -3,7 +3,6 @@ const ObjectId = mongoose.Types.ObjectId;
 const createError = require('http-errors');
 const escapeHTML = require('escape-html');
 const jwt = require('jsonwebtoken');
-const auth = require('../utils/auth');
 
 const isAuthenticated = async (req, res, next) => {
   const authentication = req.headers['authorization'];
@@ -13,37 +12,18 @@ const isAuthenticated = async (req, res, next) => {
 
   try {
     const token = authentication.split(' ')[1];
-    let payload;
-    payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
       ignoreExpiration: true
     });
-    const { exp } = jwt.decode(token);
-    if (Date.now() >= exp * 1000) throw createError(401, 'Not authenticated');
+    const data = jwt.decode(token);
+    if (Date.now() >= data.exp * 1000)
+      throw createError(401, 'Not authenticated');
+    res.locals.user = data;
   } catch (err) {
     console.log(err);
     next(err);
   }
 
-  return next();
-};
-
-const isLoggedInAPI = (req, res, next) => {
-  // if (req.isAuthenticated()) return next();
-  // res.status(401).json({ message: 'Unauthorized' });
-  return next();
-};
-
-const isLoggedIn = (req, res, next) => {
-  // if (req.isAuthenticated()) {
-  //   return next();
-  // }
-  // res.redirect('/login');
-  return next();
-};
-
-const isLoggedOut = (req, res, next) => {
-  // if (!req.isAuthenticated()) return next();
-  // res.redirect('/');
   return next();
 };
 
@@ -77,9 +57,6 @@ const sanitize = body =>
 
 module.exports = {
   isAuthenticated,
-  isLoggedInAPI,
-  isLoggedIn,
-  isLoggedOut,
   checkParams,
   sanitize
 };

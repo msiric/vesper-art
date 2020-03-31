@@ -155,6 +155,7 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
+// treba sredit?
 const getToken = async (req, res) => {
   try {
     if (!req.user) {

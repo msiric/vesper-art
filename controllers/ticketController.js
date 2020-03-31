@@ -4,6 +4,7 @@ const emailController = require('./emailController');
 const createError = require('http-errors');
 
 // how to handle transactions?
+// treba sredit
 const postTicket = async (req, res, next) => {
   try {
     let id;

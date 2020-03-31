@@ -4,6 +4,7 @@ const querystring = require('querystring');
 const router = require('express').Router();
 const config = require('./config/secret');
 
+// treba sredit sve
 router.get('/dashboard', isAuthenticated, async (req, res) => {
   // Make sure the logged-in pilot completed the Express onboarding
   if (!req.user.stripeAccountId) {

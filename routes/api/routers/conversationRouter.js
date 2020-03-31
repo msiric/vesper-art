@@ -2,28 +2,17 @@ const router = require('express').Router();
 const { isAuthenticated } = require('../../../utils/helpers');
 const conversationController = require('../../../controllers/conversationController');
 
-router.get(
-  '/conversations',
-  isAuthenticated,
-  conversationController.getConversations
-);
+router
+  .route('/conversations')
+  .get(isAuthenticated, conversationController.getConversations);
 
-router.get(
-  '/conversations/:conversationId',
-  isAuthenticated,
-  conversationController.getConversation
-);
+router
+  .route('/conversations/:id')
+  .get(isAuthenticated, conversationController.getConversation)
+  .post(isAuthenticated, conversationController.sendReply);
 
-router.post(
-  '/conversations/:conversationId',
-  isAuthenticated,
-  conversationController.sendReply
-);
-
-router.post(
-  '/conversations/new/:recipient',
-  isAuthenticated,
-  conversationController.newConversation
-);
+router
+  .route('/conversations/new/:id')
+  .post(isAuthenticated, conversationController.newConversation);
 
 module.exports = router;

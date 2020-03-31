@@ -2,10 +2,8 @@ const router = require('express').Router();
 const { isAuthenticated } = require('../../../utils/helpers');
 const workController = require('../../../controllers/workController');
 
-router.get(
-  '/custom_work/:workId',
-  isAuthenticated,
-  workController.getUserCustomWork
-);
+router
+  .route('/custom_work/:id')
+  .get(isAuthenticated, workController.getUserCustomWork);
 
 module.exports = router;
