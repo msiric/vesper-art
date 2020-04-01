@@ -9,89 +9,84 @@ const routes = [
   // Artwork router
   {
     path: '/my_artwork',
-    Component: lazy(() => import('pages/artwork/my_artwork')),
+    Component: lazy(() => import('pages/Artwork/MyArtwork')),
     exact: true,
   },
   {
     path: '/add_artwork',
-    Component: lazy(() => import('pages/artwork/add_artwork')),
+    Component: lazy(() => import('pages/Artwork/AddArtwork')),
     exact: true,
   },
   {
     path: '/artwork/:id',
-    Component: lazy(() => import('pages/artwork/artwork_details')),
+    Component: lazy(() => import('pages/Artwork/ArtworkDetails')),
     exact: true,
   },
   {
     path: '/edit_artwork/:id',
-    Component: lazy(() => import('pages/artwork/edit_artwork')),
+    Component: lazy(() => import('pages/Artwork/EditArtwork')),
     exact: true,
   },
   // Auth router
   {
-    path: '/register',
-    Component: lazy(() => import('pages/auth/register')),
+    path: '/signup',
+    Component: lazy(() => import('pages/Auth/Signup')),
     exact: true,
   },
   {
     path: '/login',
-    Component: lazy(() => import('pages/auth/login')),
+    Component: lazy(() => import('pages/Auth/Login')),
     exact: true,
   },
   // Conversations router
   {
     path: '/conversations',
-    Component: lazy(() => import('pages/conversations/conversations')),
+    Component: lazy(() => import('pages/Conversations/Conversations')),
     exact: true,
   },
   // Home router
   {
     path: '/',
-    Component: lazy(() => import('pages/home/homepage')),
-    exact: true,
-  },
-  {
-    path: '/artwork',
-    Component: lazy(() => import('pages/home/artwork')),
+    Component: lazy(() => import('pages/Home/Home')),
     exact: true,
   },
   // Notifications router
   {
     path: '/notifications',
-    Component: lazy(() => import('pages/notifications/notifications')),
+    Component: lazy(() => import('pages/Notifications/Notifications')),
     exact: true,
   },
   // Checkout router
   {
     path: '/cart',
-    Component: lazy(() => import('pages/checkout/cart')),
+    Component: lazy(() => import('pages/Checkout/Cart')),
     exact: true,
   },
   {
     path: '/checkout',
-    Component: lazy(() => import('pages/checkout/checkout')),
+    Component: lazy(() => import('pages/Checkout/Checkout')),
     exact: true,
   },
-  // Order router
+  // Orders router
   {
     path: '/orders',
-    Component: lazy(() => import('pages/orders/orders')),
+    Component: lazy(() => import('pages/Orders/Orders')),
     exact: true,
   },
   {
     path: '/orders/:id',
-    Component: lazy(() => import('pages/orders/order')),
+    Component: lazy(() => import('pages/Orders/Order')),
     exact: true,
   },
   // User router
   {
     path: '/user',
-    Component: lazy(() => import('pages/user/profile')),
+    Component: lazy(() => import('pages/User/User')),
     exact: true,
   },
   {
     path: '/user/settings',
-    Component: lazy(() => import('pages/user/settings')),
+    Component: lazy(() => import('pages/User/Settings')),
     exact: true,
   },
 ]
