@@ -12,7 +12,6 @@ import sagas from './redux/sagas'
 import Localization from './localization'
 import Router from './router'
 import * as serviceWorker from './serviceWorker'
-import axios from 'axios'
 
 // app styles
 import './global.scss'

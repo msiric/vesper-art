@@ -1,10 +1,13 @@
 const router = require('express').Router();
-const { isAuthenticated, isLoggedOut } = require('../../../utils/helpers');
+const {
+  isAuthenticated,
+  isNotAuthenticated
+} = require('../../../utils/helpers');
 const authController = require('../../../controllers/authController');
 
-router.route('/signup').post(isLoggedOut, authController.postSignUp);
+router.route('/signup').post(isNotAuthenticated, authController.postSignUp);
 
-router.route('/login').post(isLoggedOut, authController.postLogIn);
+router.route('/login').post(isNotAuthenticated, authController.postLogIn);
 
 router.route('/logout').post(isAuthenticated, authController.postLogOut);
 

@@ -27,6 +27,15 @@ const isAuthenticated = async (req, res, next) => {
   return next();
 };
 
+const isNotAuthenticated = async (req, res, next) => {
+  const authentication = req.headers['authorization'];
+  if (authentication) {
+    return console.log('REDIRECT');
+  }
+
+  return next();
+};
+
 const checkParams = (req, res, next) => {
   const isId = id => (ObjectId(id) ? true : false);
   let isValid = true;
@@ -57,6 +66,7 @@ const sanitize = body =>
 
 module.exports = {
   isAuthenticated,
+  isNotAuthenticated,
   checkParams,
   sanitize
 };
