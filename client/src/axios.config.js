@@ -1,39 +1,42 @@
-import store from 'store'
-import axios from 'axios'
+import store from 'store';
+import axios from 'axios';
 
-const instance = axios.create()
+const instance = axios.create();
 
 instance.interceptors.request.use(
-  request => {
-    const token = store.get('jwt.token')
-    if (token) request.headers.Authorization = `Bearer ${token}`
+  (request) => {
+    const token = store.get('jwt.token');
+    if (token) request.headers.Authorization = `Bearer ${token}`;
 
-    return request
+    return request;
   },
-  error => {
-    return Promise.reject(error)
-  },
-)
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 instance.interceptors.response.use(
-  response => {
-    return response
+  (response) => {
+    return response;
   },
-  async error => {
+  async (error) => {
     if (error.response.status !== 401) {
       return new Promise((resolve, reject) => {
-        reject(error)
-      })
+        reject(error);
+      });
     }
 
-    if (error.config.url === '/api/auth/refresh_token' || error.response.message === 'Forbidden') {
+    if (
+      error.config.url === '/api/auth/refresh_token' ||
+      error.response.message === 'Forbidden'
+    ) {
       // log out!!!!!
       /* TokenStorage.clear();
     router.push({ name: 'root' }); */
 
       return new Promise((resolve, reject) => {
-        reject(error)
-      })
+        reject(error);
+      });
     }
 
     // handle error
@@ -43,24 +46,24 @@ instance.interceptors.response.use(
         'Content-Type': 'application/json',
         credentials: 'include',
       },
-    })
+    });
 
-    store.set('jwt.token', data.accessToken)
+    store.set('jwt.token', data.accessToken);
 
-    const config = error.config
-    config.headers['Authorization'] = `Bearer ${data.accessToken}`
+    const config = error.config;
+    config.headers['Authorization'] = `Bearer ${data.accessToken}`;
 
     return new Promise((resolve, reject) => {
       axios
         .request(config)
-        .then(response => {
-          resolve(response)
+        .then((response) => {
+          resolve(response);
         })
-        .catch(error => {
-          reject(error)
-        })
-    })
-  },
-)
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
+);
 
-export default instance
+export default instance;

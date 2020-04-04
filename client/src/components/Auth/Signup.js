@@ -1,0 +1,131 @@
+import React, { useContext } from 'react';
+import { Context } from '../Store/Store';
+import { withFormik } from 'formik';
+import * as Yup from 'yup';
+import { Link } from 'react-router-dom';
+import {
+  Card,
+  CardContent,
+  CardActions,
+  TextField,
+  Button,
+} from '@material-ui/core';
+import SignupStyles from './Signup.style';
+
+const Form = (props) => {
+  const [state, dispatch] = useContext(Context);
+
+  const classes = SignupStyles();
+  const {
+    values,
+    touched,
+    errors,
+    isSubmitting,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+  } = props;
+
+  return (
+    <div className={classes.container}>
+      <form onSubmit={handleSubmit}>
+        <Card className={classes.card}>
+          <CardContent>
+            <TextField
+              name="username"
+              label="Username"
+              value={values.username}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              helperText={touched.username ? errors.username : ''}
+              error={touched.username && Boolean(errors.username)}
+              margin="dense"
+              variant="outlined"
+              fullWidth
+            />
+            <TextField
+              name="email"
+              label="Email"
+              type="email"
+              value={values.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              helperText={touched.email ? errors.email : ''}
+              error={touched.email && Boolean(errors.email)}
+              margin="dense"
+              variant="outlined"
+              fullWidth
+            />
+            <TextField
+              name="password"
+              label="Password"
+              type="password"
+              value={values.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              helperText={touched.password ? errors.password : ''}
+              error={touched.password && Boolean(errors.password)}
+              margin="dense"
+              variant="outlined"
+              fullWidth
+            />
+            <TextField
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              value={values.confirmPassword}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              helperText={touched.confirmPassword ? errors.confirmPassword : ''}
+              error={touched.confirmPassword && Boolean(errors.confirmPassword)}
+              margin="dense"
+              variant="outlined"
+              fullWidth
+            />
+          </CardContent>
+          <CardActions className={classes.actions}>
+            <Button component={Link} to="/login" color="primary">
+              Log in
+            </Button>
+            <Button type="submit" color="primary" disabled={isSubmitting}>
+              Sign up
+            </Button>
+          </CardActions>
+        </Card>
+      </form>
+    </div>
+  );
+};
+
+const Signup = withFormik({
+  mapPropsToValues: ({ username, email, password, confirmPassword }) => {
+    return {
+      username: username || '',
+      email: email || '',
+      password: password || '',
+      confirmPassword: confirmPassword || '',
+    };
+  },
+
+  validationSchema: Yup.object().shape({
+    username: Yup.string().required('Username is required'),
+    email: Yup.string()
+      .email('Enter a valid email')
+      .required('Email is required'),
+    password: Yup.string()
+      .min(8, 'Password must contain at least 8 characters')
+      .required('Enter your password'),
+    confirmPassword: Yup.string()
+      .required('Confirm your password')
+      .oneOf([Yup.ref('password')], 'Password does not match'),
+  }),
+
+  handleSubmit: (values, { setSubmitting }) => {
+    setTimeout(() => {
+      alert(JSON.stringify(values, null, 2));
+      setSubmitting(false);
+    }, 1000);
+  },
+})(Form);
+
+export default Signup;
