@@ -12,14 +12,14 @@ const postSignUp = async (req, res, next) => {
   session.startTransaction();
   try {
     const foundUser = await User.findOne({
-      $or: [{ email: req.body.email }, { name: req.body.username }]
+      $or: [{ email: req.body.email }, { name: req.body.username }],
     }).session(session);
     if (foundUser) {
       throw createError(400, 'Account with that email/username already exists');
     } else {
       let verificationInfo = {
         token: randomString.generate(),
-        email: req.body.email
+        email: req.body.email,
       };
       let user = new User();
       user.name = req.body.username;
@@ -42,7 +42,7 @@ const postSignUp = async (req, res, next) => {
       user.active = true;
       await user.save({ session });
       await axios.post('http://localhost:3000/send_email', verificationInfo, {
-        proxy: false
+        proxy: false,
       });
       await session.commitTransaction();
       return res.redirect('/signup');
@@ -60,7 +60,7 @@ const postLogIn = async (req, res, next) => {
   session.startTransaction();
   try {
     const foundUser = await User.findOne({
-      $or: [{ email: req.body.email }, { name: req.body.email }]
+      $or: [{ email: req.body.username }, { name: req.body.username }],
     }).session(session);
 
     if (!foundUser) {
@@ -89,14 +89,14 @@ const postLogIn = async (req, res, next) => {
       inbox: foundUser.inbox,
       notifications: foundUser.notifications,
       cart: foundUser.cart.length,
-      jwtVersion: foundUser.jwtVersion
+      jwtVersion: foundUser.jwtVersion,
     };
 
     auth.sendRefreshToken(res, auth.createRefreshToken(tokenPayload));
 
     res.json({
       accessToken: auth.createAccessToken(tokenPayload),
-      user: tokenPayload
+      user: tokenPayload,
     });
   } catch (err) {
     console.log(err);
@@ -138,5 +138,5 @@ module.exports = {
   postLogIn,
   postLogOut,
   postRefreshToken,
-  postRevokeToken
+  postRevokeToken,
 };

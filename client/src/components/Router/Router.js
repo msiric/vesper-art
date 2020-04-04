@@ -1,8 +1,9 @@
-import React, { useContext, lazy, Suspense } from 'react';
+import React, { useEffect, useContext, lazy, Suspense } from 'react';
 import MainLayout from '../../layouts/MainLayout';
 import AuthLayout from '../../layouts/AuthLayout';
 import { Context } from '../Store/Store';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import axios from 'axios';
 
 const routes = [
   // Artwork router
@@ -112,7 +113,24 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
 );
 
 const Router = () => {
-  const [state] = useContext(Context);
+  const [state, dispatch] = useContext(Context);
+
+  const getRefreshToken = async () => {
+    const { data } = await axios.post('/api/auth/refresh_token');
+    dispatch({
+      type: 'setToken',
+      ...state,
+      user: {
+        ...state.user,
+        token: data.accessToken,
+      },
+    });
+  };
+
+  useEffect(() => {
+    getRefreshToken();
+  }, []);
+
   return (
     <BrowserRouter>
       <Route

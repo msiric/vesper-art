@@ -6,6 +6,7 @@ const store = {
     theme: 'dark',
   },
   user: {
+    token: '',
     id: '',
     name: '',
     role: '',
@@ -17,10 +18,24 @@ const store = {
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case 'setToken':
+      return {
+        ...state,
+        user: {
+          token: action.token,
+          id: action.id,
+          name: action.name,
+          role: action.role,
+          email: action.email,
+          avatar: action.avatar,
+          authorized: action.authorized,
+        },
+      };
     case 'userLogin':
       return {
         ...state,
         user: {
+          token: action.token,
           id: action.id,
           name: action.name,
           role: action.role,
@@ -33,6 +48,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         user: {
+          token: '',
           id: '',
           name: '',
           role: '',

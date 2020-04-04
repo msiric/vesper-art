@@ -11,6 +11,7 @@ import {
   TextField,
   Button,
 } from '@material-ui/core';
+import instance from '../../axios.config';
 import LoginStyles from './Login.style';
 
 const Form = (props) => {
@@ -91,11 +92,8 @@ const Login = withFormik({
       .required('Enter your password'),
   }),
 
-  handleSubmit: (values, { setSubmitting }) => {
-    setTimeout(() => {
-      alert(JSON.stringify(values, null, 2));
-      setSubmitting(false);
-    }, 1000);
+  handleSubmit: async (values, { setSubmitting }) => {
+    await instance.post('/api/auth/login', values);
   },
 })(Form);
 
