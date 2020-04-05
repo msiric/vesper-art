@@ -166,7 +166,6 @@ const Router = () => {
           const { location } = route;
           return (
             <Switch location={location}>
-              <Route exact path="/" render={() => <Redirect to="/" />} />
               {routes.map(({ path, Component, exact, type }) => (
                 <AppRoute
                   user={state.user}
