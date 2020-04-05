@@ -30,9 +30,9 @@ const Home = () => {
   }, []);
 
   return (
-    <Grid container spacing={3}>
+    <Grid container>
       <Grid item xs={12}>
-        {artwork.length ? <Gallery elements={artwork} /> : 'no artwork'}
+        {artwork.length ? <Gallery elements={artwork} /> : 'No artwork'}
       </Grid>
     </Grid>
   );
