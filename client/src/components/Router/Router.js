@@ -110,9 +110,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
     {...rest}
     render={(props) => {
       if (rest.type === 'auth') {
-        console.log('1');
         if (!rest.user.token) {
-          console.log('2');
           return (
             <AuthLayout>
               <Suspense fallback={null}>
@@ -121,7 +119,6 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
             </AuthLayout>
           );
         } else {
-          console.log('3');
           return (
             <Redirect
               to={{
@@ -134,9 +131,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
           );
         }
       } else if (rest.type === 'protected') {
-        console.log('4');
         if (!rest.user.token) {
-          console.log('5');
           return (
             <Redirect
               to={{
@@ -149,7 +144,6 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
           );
         }
       } else {
-        console.log('6');
         return (
           <MainLayout>
             <Suspense fallback={null}>

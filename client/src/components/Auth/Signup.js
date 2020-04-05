@@ -1,34 +1,70 @@
 import React, { useContext } from 'react';
 import { Context } from '../Store/Store';
-import { withFormik } from 'formik';
+import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 import {
   Card,
+  Typography,
   CardContent,
   CardActions,
   TextField,
   Button,
 } from '@material-ui/core';
+import { ax } from '../App/App';
 import SignupStyles from './Signup.style';
 
-const Form = (props) => {
-  const [state, dispatch] = useContext(Context);
+const validationSchema = Yup.object().shape({
+  username: Yup.string().required('Username is required'),
+  email: Yup.string()
+    .email('Enter a valid email')
+    .required('Email is required'),
+  password: Yup.string()
+    .min(8, 'Password must contain at least 8 characters')
+    .required('Enter your password'),
+  confirmPassword: Yup.string()
+    .required('Confirm your password')
+    .oneOf([Yup.ref('password')], 'Password does not match'),
+});
 
+const Signup = () => {
+  const [state, dispatch] = useContext(Context);
   const classes = SignupStyles();
+
   const {
-    values,
-    touched,
-    errors,
     isSubmitting,
+    handleSubmit,
     handleChange,
     handleBlur,
-    handleSubmit,
-  } = props;
-
+    touched,
+    values,
+    errors,
+  } = useFormik({
+    initialValues: {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+    validationSchema,
+    async onSubmit(values) {
+      const { data } = await ax.post('/api/auth/signup', values);
+      dispatch({
+        type: 'setToken',
+        ...state,
+        user: {
+          ...state.user,
+          token: data.accessToken,
+        },
+      });
+    },
+  });
   return (
     <div className={classes.container}>
       <form onSubmit={handleSubmit}>
+        <Typography variant="h6" align="center">
+          Sign up
+        </Typography>
         <Card className={classes.card}>
           <CardContent>
             <TextField
@@ -96,36 +132,5 @@ const Form = (props) => {
     </div>
   );
 };
-
-const Signup = withFormik({
-  mapPropsToValues: ({ username, email, password, confirmPassword }) => {
-    return {
-      username: username || '',
-      email: email || '',
-      password: password || '',
-      confirmPassword: confirmPassword || '',
-    };
-  },
-
-  validationSchema: Yup.object().shape({
-    username: Yup.string().required('Username is required'),
-    email: Yup.string()
-      .email('Enter a valid email')
-      .required('Email is required'),
-    password: Yup.string()
-      .min(8, 'Password must contain at least 8 characters')
-      .required('Enter your password'),
-    confirmPassword: Yup.string()
-      .required('Confirm your password')
-      .oneOf([Yup.ref('password')], 'Password does not match'),
-  }),
-
-  handleSubmit: (values, { setSubmitting }) => {
-    setTimeout(() => {
-      alert(JSON.stringify(values, null, 2));
-      setSubmitting(false);
-    }, 1000);
-  },
-})(Form);
 
 export default Signup;

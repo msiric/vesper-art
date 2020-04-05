@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Context } from '../Store/Store';
-import { withFormik } from 'formik';
+import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 import {
@@ -14,20 +14,43 @@ import {
 import { ax } from '../App/App';
 import LoginStyles from './Login.style';
 
-const Form = (props) => {
-  const [state, dispatch] = useContext(Context);
+const validationSchema = Yup.object().shape({
+  username: Yup.string().required('Username or email is required'),
+  password: Yup.string()
+    .min(8, 'Password must contain at least 8 characters')
+    .required('Enter your password'),
+});
 
+const Login = () => {
+  const [state, dispatch] = useContext(Context);
   const classes = LoginStyles();
+
   const {
-    values,
-    touched,
-    errors,
     isSubmitting,
+    handleSubmit,
     handleChange,
     handleBlur,
-    handleSubmit,
-  } = props;
-
+    touched,
+    values,
+    errors,
+  } = useFormik({
+    initialValues: {
+      username: '',
+      password: '',
+    },
+    validationSchema,
+    async onSubmit(values) {
+      const { data } = await ax.post('/api/auth/login', values);
+      dispatch({
+        type: 'setToken',
+        ...state,
+        user: {
+          ...state.user,
+          token: data.accessToken,
+        },
+      });
+    },
+  });
   return (
     <div className={classes.container}>
       <form className={classes.form} onSubmit={handleSubmit}>
@@ -38,7 +61,7 @@ const Form = (props) => {
           <CardContent>
             <TextField
               name="username"
-              label="Email or username"
+              label="Username or email"
               type="text"
               value={values.username}
               onChange={handleChange}
@@ -76,33 +99,5 @@ const Form = (props) => {
     </div>
   );
 };
-
-const Login = withFormik({
-  mapPropsToValues: ({ username, password }) => {
-    return {
-      username: username || '',
-      password: password || '',
-    };
-  },
-
-  validationSchema: Yup.object().shape({
-    username: Yup.string().required('Username is required'),
-    password: Yup.string()
-      .min(8, 'Password must contain at least 8 characters')
-      .required('Enter your password'),
-  }),
-
-  handleSubmit: async (values, { setSubmitting }) => {
-    const { data } = await ax.post('/api/auth/login', values);
-
-    /*     dispatch('setToken', {
-      ...state,
-      user: {
-        ...state.user,
-        token: data.accessToken,
-      },
-    }); */
-  },
-})(Form);
 
 export default Login;
