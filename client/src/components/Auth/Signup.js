@@ -11,7 +11,7 @@ import {
   TextField,
   Button,
 } from '@material-ui/core';
-import { ax } from '../App/App';
+import ax from '../../axios.config';
 import SignupStyles from './Signup.style';
 
 const validationSchema = Yup.object().shape({
@@ -49,14 +49,6 @@ const Signup = () => {
     validationSchema,
     async onSubmit(values) {
       const { data } = await ax.post('/api/auth/signup', values);
-      dispatch({
-        type: 'setToken',
-        ...state,
-        user: {
-          ...state.user,
-          token: data.accessToken,
-        },
-      });
     },
   });
   return (

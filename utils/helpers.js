@@ -13,7 +13,7 @@ const isAuthenticated = async (req, res, next) => {
   try {
     const token = authentication.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
-      ignoreExpiration: true
+      ignoreExpiration: true,
     });
     const data = jwt.decode(token);
     if (Date.now() >= data.exp * 1000)
@@ -37,9 +37,9 @@ const isNotAuthenticated = async (req, res, next) => {
 };
 
 const checkParams = (req, res, next) => {
-  const isId = id => (ObjectId(id) ? true : false);
+  const isId = (id) => (ObjectId(id) ? true : false);
   let isValid = true;
-  Object.keys(req.params).forEach(param => {
+  Object.keys(req.params).forEach((param) => {
     const value = req.params[param];
     if (!value) isValid = false;
     else if (!isId(value)) isValid = false;
@@ -49,10 +49,10 @@ const checkParams = (req, res, next) => {
   throw createError(400, 'Invalid route parameter');
 };
 
-const sanitize = body =>
+const sanitize = (body) =>
   Object.keys(body).reduce((obj, key) => {
     if (Array.isArray(body[key])) {
-      obj[key] = body[key].map(elem => {
+      obj[key] = body[key].map((elem) => {
         if (typeof elem === 'object') return sanitize(elem);
         return escapeHTML(elem);
       });
@@ -68,5 +68,5 @@ module.exports = {
   isAuthenticated,
   isNotAuthenticated,
   checkParams,
-  sanitize
+  sanitize,
 };

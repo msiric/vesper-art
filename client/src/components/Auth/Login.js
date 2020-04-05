@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { Context } from '../Store/Store';
+import { useHistory } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
@@ -11,7 +12,7 @@ import {
   TextField,
   Button,
 } from '@material-ui/core';
-import { ax } from '../App/App';
+import ax from '../../axios.config';
 import LoginStyles from './Login.style';
 
 const validationSchema = Yup.object().shape({
@@ -23,6 +24,8 @@ const validationSchema = Yup.object().shape({
 
 const Login = () => {
   const [state, dispatch] = useContext(Context);
+  const history = useHistory();
+
   const classes = LoginStyles();
 
   const {
@@ -41,14 +44,8 @@ const Login = () => {
     validationSchema,
     async onSubmit(values) {
       const { data } = await ax.post('/api/auth/login', values);
-      dispatch({
-        type: 'setToken',
-        ...state,
-        user: {
-          ...state.user,
-          token: data.accessToken,
-        },
-      });
+      window.accessToken = data.accessToken;
+      history.push('/');
     },
   });
   return (

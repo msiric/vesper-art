@@ -110,6 +110,10 @@ const postLogIn = async (req, res, next) => {
 const postLogOut = async (req, res) => {
   try {
     auth.sendRefreshToken(res, '');
+    res.json({
+      accessToken: '',
+      user: '',
+    });
   } catch (err) {
     next(err, res);
   }

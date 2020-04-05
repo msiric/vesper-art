@@ -6,22 +6,22 @@ const store = {
     theme: 'dark',
   },
   user: {
-    token: '',
-    id: '',
-    name: '',
-    role: '',
-    email: '',
-    avatar: '',
+    authenticated: false,
+    id: null,
+    name: null,
+    role: null,
+    email: null,
+    avatar: null,
   },
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'setToken':
+    case 'setUser':
       return {
         ...state,
         user: {
-          token: action.user.token,
+          authenticated: action.user.token,
           id: action.user.id,
           name: action.user.name,
           role: action.user.role,

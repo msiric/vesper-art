@@ -110,7 +110,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
     {...rest}
     render={(props) => {
       if (rest.type === 'auth') {
-        if (!rest.user.token) {
+        if (!rest.token) {
           return (
             <AuthLayout>
               <Suspense fallback={null}>
@@ -131,7 +131,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
           );
         }
       } else if (rest.type === 'protected') {
-        if (!rest.user.token) {
+        if (!rest.token) {
           return (
             <Redirect
               to={{
@@ -168,7 +168,7 @@ const Router = () => {
             <Switch location={location}>
               {routes.map(({ path, Component, exact, type }) => (
                 <AppRoute
-                  user={state.user}
+                  token={window.accessToken}
                   type={type}
                   path={path}
                   key={path}
