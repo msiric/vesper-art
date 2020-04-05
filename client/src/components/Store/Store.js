@@ -12,7 +12,6 @@ const store = {
     role: '',
     email: '',
     avatar: '',
-    authorized: false,
   },
 };
 
@@ -22,39 +21,12 @@ const reducer = (state, action) => {
       return {
         ...state,
         user: {
-          token: action.token,
-          id: action.id,
-          name: action.name,
-          role: action.role,
-          email: action.email,
-          avatar: action.avatar,
-          authorized: action.authorized,
-        },
-      };
-    case 'userLogin':
-      return {
-        ...state,
-        user: {
-          token: action.token,
-          id: action.id,
-          name: action.name,
-          role: action.role,
-          email: action.email,
-          avatar: action.avatar,
-          authorized: action.authorized,
-        },
-      };
-    case 'userLogout':
-      return {
-        ...state,
-        user: {
-          token: '',
-          id: '',
-          name: '',
-          role: '',
-          email: '',
-          avatar: '',
-          authorized: false,
+          token: action.user.token,
+          id: action.user.id,
+          name: action.user.name,
+          role: action.user.role,
+          email: action.user.email,
+          avatar: action.user.avatar,
         },
       };
     default:
