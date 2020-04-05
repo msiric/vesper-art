@@ -9,6 +9,9 @@ const SignupStyles = makeStyles(() => ({
     display: 'Flex',
     justifyContent: 'center',
   },
+  form: {
+    padding: 10,
+  },
   actions: {
     float: 'right',
   },

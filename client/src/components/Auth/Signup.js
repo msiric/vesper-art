@@ -61,7 +61,7 @@ const Signup = () => {
   });
   return (
     <div className={classes.container}>
-      <form onSubmit={handleSubmit}>
+      <form className={classes.form} onSubmit={handleSubmit}>
         <Typography variant="h6" align="center">
           Sign up
         </Typography>
