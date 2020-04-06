@@ -143,15 +143,14 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
             />
           );
         }
-      } else {
-        return (
-          <MainLayout>
-            <Suspense fallback={null}>
-              <Component {...props} />
-            </Suspense>
-          </MainLayout>
-        );
       }
+      return (
+        <MainLayout>
+          <Suspense fallback={null}>
+            <Component {...props} />
+          </Suspense>
+        </MainLayout>
+      );
     }}
   />
 );

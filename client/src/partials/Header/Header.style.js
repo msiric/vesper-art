@@ -9,6 +9,8 @@ const HeaderStyle = makeStyles((muiTheme) => ({
   },
   title: {
     display: 'none',
+    textDecoration: 'none',
+    color: '#000000',
     [muiTheme.breakpoints.up('sm')]: {
       display: 'block',
     },

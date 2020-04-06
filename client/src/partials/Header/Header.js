@@ -155,7 +155,13 @@ const Header = () => {
     <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar>
-          <Typography className={classes.title} variant="h6" noWrap>
+          <Typography
+            component={Link}
+            to="/"
+            className={classes.title}
+            variant="h6"
+            noWrap
+          >
             Material-UI
           </Typography>
           <div className={classes.search}>
