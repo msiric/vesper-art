@@ -12,9 +12,9 @@ import {
   TextField,
   Button,
 } from '@material-ui/core';
-import { useDropzone } from 'react-dropzone';
-import SelectInput from './SelectInput';
-import PriceInput from './PriceInput';
+import UploadInput from '../../shared/UploadInput/UploadInput';
+import SelectInput from '../../shared/SelectInput/SelectInput';
+import PriceInput from '../../shared/PriceInput/PriceInput';
 import ax from '../../axios.config';
 import AddArtworkStyles from './AddArtwork.style';
 
@@ -29,8 +29,8 @@ import AddArtworkStyles from './AddArtwork.style';
 // artworkCategory select (???) ???
 // artworkDescription text req
 
-const artworkMedia = {
-  size: 100 * 1024,
+const artworkMediaConfig = {
+  size: 1000 * 1024,
   format: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
 };
 
@@ -38,19 +38,19 @@ const validationSchema = Yup.object().shape({
   artworkMedia: Yup.mixed()
     .test(
       'fileSize',
-      `File needs to be less than ${artworkMedia.size}MB`,
-      (value) => value.size <= artworkMedia.size
+      `File needs to be less than ${artworkMediaConfig.size}MB`,
+      (value) => value[0] && value[0].size <= artworkMediaConfig.size
     )
     .test(
       'fileType',
-      `File needs to be in one of the following formats: ${artworkMedia.format}`,
-      (value) => artworkMedia.format.includes(value.type)
+      `File needs to be in one of the following formats: ${artworkMediaConfig.format}`,
+      (value) => value[0] && artworkMediaConfig.format.includes(value[0].type)
     )
     .required('Artwork needs to have a file'),
   artworkTitle: Yup.string().required('Artwork title is required'),
   artworkAvailability: Yup.string()
     .matches(/(available|unavailable)/)
-    .required(),
+    .required('Artwork availability is required'),
   artworkType: Yup.string().matches(/(commercial|showcase)/),
   artworkPrice: Yup.number()
     .positive('Artwork price cannot be negative')
@@ -96,15 +96,22 @@ const AddArtwork = () => {
     },
     validationSchema,
     async onSubmit(values) {
-      const { data } = await ax.post('/api/add_artwork', values);
+      const formData = new FormData();
+      formData.append('artworkMedia', values.artworkMedia[0]);
+      try {
+        const {
+          data: { artworkCover, artworkMedia },
+        } = await ax.post('/api/artwork_media_upload', formData);
+        values.artworkCover = artworkCover;
+        values.artworkMedia = artworkMedia;
+        const { data } = await ax.post('/api/add_artwork', values);
+        console.log(data);
+      } catch (err) {
+        console.log(err);
+      }
+      /* const { data } = await ax.post('/api/add_artwork', values); */
     },
   });
-
-  const onDrop = useCallback((acceptedFiles) => {
-    setFieldValue('files', acceptedFiles);
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
     <div className={classes.container}>
@@ -114,14 +121,7 @@ const AddArtwork = () => {
         </Typography>
         <Card className={classes.card}>
           <CardContent>
-            <div {...getRootProps()}>
-              <input {...getInputProps()} />
-              {isDragActive ? (
-                <p>Drop the files here ...</p>
-              ) : (
-                <p>Drag 'n' drop some files here, or click to select files</p>
-              )}
-            </div>
+            <UploadInput name="artworkMedia" setFieldValue={setFieldValue} />
             <TextField
               name="artworkTitle"
               label="Title"

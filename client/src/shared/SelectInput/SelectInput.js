@@ -1,19 +1,30 @@
 import React from 'react';
-import { FormControl, Select, MenuItem, InputLabel } from '@material-ui/core';
+import {
+  FormControl,
+  FormHelperText,
+  Select,
+  MenuItem,
+  InputLabel,
+} from '@material-ui/core';
 
 const SelectInput = ({
   name,
   label,
   handleChange,
   handleBlur,
+  helperText,
+  error,
   options,
   ...other
 }) => {
   return (
     <FormControl variant="outlined" margin="dense" fullWidth>
-      <InputLabel htmlFor={name}>{label}</InputLabel>
+      <InputLabel error={error} htmlFor={name}>
+        {label}
+      </InputLabel>
       <Select
         {...other}
+        error={error}
         label={label}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -22,16 +33,19 @@ const SelectInput = ({
           id: name,
         }}
       >
-        {options.map((item) =>
+        {options.map((item, index) =>
           item.value === '' ? (
-            <MenuItem value={item.value}>
+            <MenuItem key={index} value={item.value}>
               <em>None</em>
             </MenuItem>
           ) : (
-            <MenuItem value={item.value}>{item.text}</MenuItem>
+            <MenuItem key={index} value={item.value}>
+              {item.text}
+            </MenuItem>
           )
         )}
       </Select>
+      <FormHelperText error>{helperText}</FormHelperText>
     </FormControl>
   );
 };

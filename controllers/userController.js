@@ -12,12 +12,12 @@ const updateUserProfile = async (req, res, next) => {
   session.startTransaction();
   try {
     const foundUser = await User.findOne({
-      $and: [{ _id: res.locals.user.id }, { active: true }]
+      $and: [{ _id: res.locals.user.id }, { active: true }],
     }).session(session);
     if (foundUser) {
       if (req.body.name) foundUser.name = req.body.name;
       if (req.body.email) foundUser.email = req.body.email;
-      if (req.body.about) foundUser.about = req.body.about;
+      if (req.body.description) foundUser.description = req.body.description;
       await foundUser.save({ session });
       await session.commitTransaction();
       return res
@@ -137,7 +137,7 @@ const updateUserPreferences = async (req, res, next) => {
             name: 'Deleted User',
             password: null,
             photo: foundUser.gravatar(),
-            about: null,
+            description: null,
             facebookId: null,
             googleId: null,
             customWork: false,
@@ -185,20 +185,20 @@ const deleteUser = async (req, res, next) => {
   session.startTransaction();
   try {
     const foundUser = await User.findOne({
-      $and: [{ _id: res.locals.user.id }, { active: true }]
+      $and: [{ _id: res.locals.user.id }, { active: true }],
     }).session(session);
     if (foundUser) {
       const foundArtwork = await Artwork.find({
-        $and: [{ owner: res.locals.user.id }, { active: true }]
+        $and: [{ owner: res.locals.user.id }, { active: true }],
       })
         .populate('current')
         .populate('versions')
         .session(session);
       if (foundArtwork) {
-        foundArtwork.forEach(async function(artwork) {
+        foundArtwork.forEach(async function (artwork) {
           const foundOrder = await Order.find({
             details: { $elemMatch: { artwork: artwork._id } },
-            details: { $elemMatch: { version: artwork.current._id } }
+            details: { $elemMatch: { version: artwork.current._id } },
           })
             .deepPopulate('details.artwork details.version')
             .session(session);
@@ -206,10 +206,10 @@ const deleteUser = async (req, res, next) => {
           if (foundOrder.length) {
             await Artwork.updateOne(
               {
-                _id: artwork._id
+                _id: artwork._id,
               },
               {
-                active: false
+                active: false,
               }
             ).session(session);
             if (foundUser.photo.includes(foundUser._id)) {
@@ -219,7 +219,7 @@ const deleteUser = async (req, res, next) => {
               const s3 = new aws.S3();
               const params = {
                 Bucket: 'vesper-testing',
-                Key: filePath
+                Key: filePath,
               };
               await s3.deleteObject(params).promise();
             }
@@ -230,7 +230,7 @@ const deleteUser = async (req, res, next) => {
                   name: 'Deleted User',
                   password: null,
                   photo: foundUser.gravatar(),
-                  about: null,
+                  description: null,
                   facebookId: null,
                   googleId: null,
                   customWork: false,
@@ -249,20 +249,20 @@ const deleteUser = async (req, res, next) => {
                   incomingFunds: null,
                   outgoingFunds: null,
                   escrow: null,
-                  active: false
-                }
+                  active: false,
+                },
               }
             ).session(session);
             await session.commitTransaction();
             req.logout();
-            req.session.destroy(function(err) {
+            req.session.destroy(function (err) {
               res.status(200).json('/');
             });
           } else {
             console.log('length', artwork.versions.length);
             if (artwork.versions.length) {
               let usedContent = false;
-              artwork.versions.map(function(version) {
+              artwork.versions.map(function (version) {
                 if (
                   version.media == artwork.current.media &&
                   version.cover == artwork.current.cover
@@ -273,15 +273,15 @@ const deleteUser = async (req, res, next) => {
               console.log('used content', usedContent);
               if (usedContent) {
                 await Version.remove({
-                  _id: artwork.current._id
+                  _id: artwork.current._id,
                 }).session(session);
                 await Artwork.updateOne(
                   {
-                    _id: artwork._id
+                    _id: artwork._id,
                   },
                   {
                     current: null,
-                    active: false
+                    active: false,
                   }
                 ).session(session);
                 if (foundUser.photo.includes(foundUser._id)) {
@@ -291,7 +291,7 @@ const deleteUser = async (req, res, next) => {
                   const s3 = new aws.S3();
                   const params = {
                     Bucket: 'vesper-testing',
-                    Key: filePath
+                    Key: filePath,
                   };
                   await s3.deleteObject(params).promise();
                 }
@@ -302,7 +302,7 @@ const deleteUser = async (req, res, next) => {
                       name: 'Deleted User',
                       password: null,
                       photo: foundUser.gravatar(),
-                      about: null,
+                      description: null,
                       facebookId: null,
                       googleId: null,
                       customWork: false,
@@ -321,13 +321,13 @@ const deleteUser = async (req, res, next) => {
                       incomingFunds: null,
                       outgoingFunds: null,
                       escrow: null,
-                      active: false
-                    }
+                      active: false,
+                    },
                   }
                 ).session(session);
                 await session.commitTransaction();
                 req.logout();
-                req.session.destroy(function(err) {
+                req.session.destroy(function (err) {
                   res.status(200).json('/');
                 });
               } else {
@@ -339,7 +339,7 @@ const deleteUser = async (req, res, next) => {
                 const coverS3 = new aws.S3();
                 const coverParams = {
                   Bucket: 'vesper-testing',
-                  Key: coverFilePath
+                  Key: coverFilePath,
                 };
 
                 await coverS3.deleteObject(coverParams).promise();
@@ -352,22 +352,22 @@ const deleteUser = async (req, res, next) => {
                 const mediaS3 = new aws.S3();
                 const mediaParams = {
                   Bucket: 'vesper-testing',
-                  Key: mediaFilePath
+                  Key: mediaFilePath,
                 };
 
                 await mediaS3.deleteObject(mediaParams).promise();
 
                 await Version.remove({
-                  _id: artwork.current._id
+                  _id: artwork.current._id,
                 }).session(session);
 
                 await Artwork.updateOne(
                   {
-                    _id: artwork._id
+                    _id: artwork._id,
                   },
                   {
                     current: null,
-                    active: false
+                    active: false,
                   }
                 ).session(session);
 
@@ -378,7 +378,7 @@ const deleteUser = async (req, res, next) => {
                   const s3 = new aws.S3();
                   const params = {
                     Bucket: 'vesper-testing',
-                    Key: filePath
+                    Key: filePath,
                   };
                   await s3.deleteObject(params).promise();
                 }
@@ -389,7 +389,7 @@ const deleteUser = async (req, res, next) => {
                       name: 'Deleted User',
                       password: null,
                       photo: foundUser.gravatar(),
-                      about: null,
+                      description: null,
                       facebookId: null,
                       googleId: null,
                       customWork: false,
@@ -408,14 +408,14 @@ const deleteUser = async (req, res, next) => {
                       incomingFunds: null,
                       outgoingFunds: null,
                       escrow: null,
-                      active: false
-                    }
+                      active: false,
+                    },
                   }
                 ).session(session);
 
                 await session.commitTransaction();
                 req.logout();
-                req.session.destroy(function(err) {
+                req.session.destroy(function (err) {
                   res.status(200).json('/');
                 });
               }
@@ -428,7 +428,7 @@ const deleteUser = async (req, res, next) => {
               const coverS3 = new aws.S3();
               const coverParams = {
                 Bucket: 'vesper-testing',
-                Key: coverFilePath
+                Key: coverFilePath,
               };
 
               await coverS3.deleteObject(coverParams).promise();
@@ -441,17 +441,17 @@ const deleteUser = async (req, res, next) => {
               const mediaS3 = new aws.S3();
               const mediaParams = {
                 Bucket: 'vesper-testing',
-                Key: mediaFilePath
+                Key: mediaFilePath,
               };
 
               await mediaS3.deleteObject(mediaParams).promise();
 
               await Version.remove({
-                _id: artwork.current._id
+                _id: artwork.current._id,
               }).session(session);
 
               await Artwork.remove({
-                _id: artwork._id
+                _id: artwork._id,
               }).session(session);
 
               if (foundUser.photo.includes(foundUser._id)) {
@@ -461,7 +461,7 @@ const deleteUser = async (req, res, next) => {
                 const s3 = new aws.S3();
                 const params = {
                   Bucket: 'vesper-testing',
-                  Key: filePath
+                  Key: filePath,
                 };
                 await s3.deleteObject(params).promise();
               }
@@ -472,7 +472,7 @@ const deleteUser = async (req, res, next) => {
                     name: 'Deleted User',
                     password: null,
                     photo: foundUser.gravatar(),
-                    about: null,
+                    description: null,
                     facebookId: null,
                     googleId: null,
                     customWork: false,
@@ -491,14 +491,14 @@ const deleteUser = async (req, res, next) => {
                     incomingFunds: null,
                     outgoingFunds: null,
                     escrow: null,
-                    active: false
-                  }
+                    active: false,
+                  },
                 }
               ).session(session);
 
               await session.commitTransaction();
               req.logout();
-              req.session.destroy(function(err) {
+              req.session.destroy(function (err) {
                 res.status(200).json('/');
               });
             }
@@ -524,5 +524,5 @@ module.exports = {
   getUserSettings,
   updateUserPassword,
   updateUserPreferences,
-  deleteUser
+  deleteUser,
 };

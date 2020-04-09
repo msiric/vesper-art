@@ -8,9 +8,9 @@ const Gallery = ({ elements }) => {
 
   const imagesLoadedOptions = { background: '.my-bg-image-el' };
 
-  const childElements = elements.map(function (element) {
+  const childElements = elements.map((element, index) => {
     return (
-      <li className="image-element-class">
+      <li key={index} className="image-element-class">
         <img src={element.src} />
       </li>
     );

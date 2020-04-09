@@ -26,7 +26,7 @@ router
   );
 
 router
-  .route('/artwork_media_edit/:id')
+  .route('/artwork_media_upload/:id')
   .put(
     [isAuthenticated, artworkMediaSingleEdit],
     uploadController.putArtworkMedia

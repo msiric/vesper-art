@@ -6,14 +6,14 @@ const VersionSchema = new Schema({
   type: String,
   title: String,
   category: String,
-  about: String,
+  description: String,
   price: Number,
   use: String,
   license: Number,
   available: Boolean,
   cover: { type: String, default: 'http://placehold.it/350x150' },
   media: String,
-  created: { type: Date, default: Date.now }
+  created: { type: Date, default: Date.now },
 });
 
 const Version = mongoose.model('Version', VersionSchema);

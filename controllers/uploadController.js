@@ -18,7 +18,7 @@ const postProfileImage = async (req, res, next) => {
       const s3 = new aws.S3();
       const params = {
         Bucket: 'vesper-testing',
-        Key: filePath
+        Key: filePath,
       };
       await s3.deleteObject(params).promise();
       foundUser.photo = req.file.location;
@@ -39,8 +39,8 @@ const postProfileImage = async (req, res, next) => {
 const postArtworkMedia = async (req, res, next) => {
   try {
     return res.status(200).json({
-      coverUrl: req.file.transforms[0].location,
-      originalUrl: req.file.transforms[1].location
+      artworkCover: req.file.transforms[0].location,
+      artworkMedia: req.file.transforms[1].location,
     });
   } catch (err) {
     console.log(err);
@@ -51,8 +51,8 @@ const postArtworkMedia = async (req, res, next) => {
 const putArtworkMedia = async (req, res, next) => {
   try {
     return res.status(200).json({
-      coverUrl: req.file.transforms[0].location,
-      originalUrl: req.file.transforms[1].location
+      artworkCover: req.file.transforms[0].location,
+      artworkMedia: req.file.transforms[1].location,
     });
   } catch (err) {
     console.log(err);
@@ -152,6 +152,6 @@ module.exports = {
   /*   postArtworkCover, */
   /*   updateArtworkCover, */
   postArtworkMedia,
-  putArtworkMedia
+  putArtworkMedia,
   /*   updateArtworkMedia */
 };

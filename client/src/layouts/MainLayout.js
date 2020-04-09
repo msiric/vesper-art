@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import Header from '../partials/Header/Header';
+import Header from '../shared/Header/Header';
 import MainLayoutStyles from './MainLayout.style';
 
 const MainLayout = ({ children }) => {
