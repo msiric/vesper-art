@@ -136,7 +136,6 @@ const AddArtwork = () => {
               fullWidth
             />
             <SelectInput
-              native
               name="artworkAvailability"
               label="Availability"
               value={values.artworkAvailability}
@@ -157,7 +156,6 @@ const AddArtwork = () => {
             />
             {values.artworkAvailability === 'available' && (
               <SelectInput
-                native
                 name="artworkType"
                 label="Type"
                 value={values.artworkType}
@@ -190,7 +188,6 @@ const AddArtwork = () => {
             {values.artworkAvailability === 'available' &&
               values.artworkType === 'commercial' && (
                 <SelectInput
-                  native
                   name="artworkLicense"
                   label="License"
                   value={values.artworkLicense}

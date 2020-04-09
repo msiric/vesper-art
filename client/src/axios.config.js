@@ -6,10 +6,8 @@ ax.interceptors.request.use(
   (request) => {
     const token = window.accessToken;
     if (token) {
-      console.log('ima');
       request.headers.Authorization = `Bearer ${token}`;
     } else {
-      console.log('nema');
       request.headers.Authorization = ``;
     }
 

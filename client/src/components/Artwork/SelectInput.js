@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormControl, Select, InputLabel } from '@material-ui/core';
+import { FormControl, Select, MenuItem, InputLabel } from '@material-ui/core';
 
 const SelectInput = ({
   name,
@@ -24,9 +24,11 @@ const SelectInput = ({
       >
         {options.map((item) =>
           item.value === '' ? (
-            <option aria-label="None" value={item.value} />
+            <MenuItem value={item.value}>
+              <em>None</em>
+            </MenuItem>
           ) : (
-            <option value={item.value}>{item.text}</option>
+            <MenuItem value={item.value}>{item.text}</MenuItem>
           )
         )}
       </Select>
