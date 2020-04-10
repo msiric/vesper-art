@@ -22,7 +22,7 @@ const Home = () => {
 
   const fetchArtwork = async () => {
     const { data } = await ax.get('/api/artwork');
-    if (data.length) setArtwork(data);
+    if (data.artwork.length) setArtwork(data.artwork);
   };
 
   useEffect(() => {

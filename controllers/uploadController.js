@@ -39,8 +39,8 @@ const postProfileImage = async (req, res, next) => {
 const postArtworkMedia = async (req, res, next) => {
   try {
     return res.status(200).json({
-      artworkCover: req.file.transforms[0].location,
-      artworkMedia: req.file.transforms[1].location,
+      artworkMedia: req.file.transforms[0].location,
+      artworkCover: req.file.transforms[1].location,
     });
   } catch (err) {
     console.log(err);
@@ -51,8 +51,8 @@ const postArtworkMedia = async (req, res, next) => {
 const putArtworkMedia = async (req, res, next) => {
   try {
     return res.status(200).json({
-      artworkCover: req.file.transforms[0].location,
-      artworkMedia: req.file.transforms[1].location,
+      artworkMedia: req.file.transforms[0].location,
+      artworkCover: req.file.transforms[1].location,
     });
   } catch (err) {
     console.log(err);

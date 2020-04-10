@@ -52,18 +52,53 @@ const validationSchema = Yup.object().shape({
   artworkAvailability: Yup.string()
     .matches(/(available|unavailable)/)
     .required('Artwork availability is required'),
-  artworkType: Yup.string().matches(/(commercial|showcase)/),
-  artworkPrice: Yup.number()
-    .positive('Artwork price cannot be negative')
-    .integer()
-    .min(10)
-    .max(100000),
-  artworkLicense: Yup.string().matches(/(commercial|personal)/),
-  artworkCommercial: Yup.number()
-    .positive('Artwork commercial license price cannot be negative')
-    .integer()
-    .min(1)
-    .max(10000),
+  artworkType: Yup.mixed()
+    .oneOf([''])
+    .notRequired()
+    .when('artworkAvailability', {
+      is: 'available',
+      then: Yup.string()
+        .matches(/(commercial|free)/)
+        .required('Artwork type is required'),
+    }),
+  artworkPrice: Yup.mixed()
+    .oneOf([0])
+    .notRequired()
+    .when(['artworkAvailability', 'artworkType'], {
+      is: (artworkAvailability, artworkType) =>
+        artworkAvailability === 'available' && artworkType === 'commercial',
+      then: Yup.number()
+        .positive('Artwork price cannot be negative')
+        .integer()
+        .min(10)
+        .max(100000)
+        .required('Artwork price is required'),
+    }),
+  artworkLicense: Yup.mixed()
+    .oneOf([''])
+    .notRequired()
+    .when(['artworkAvailability', 'artworkType'], {
+      is: (artworkAvailability, artworkType) =>
+        artworkAvailability === 'available' && artworkType === 'commercial',
+      then: Yup.string()
+        .matches(/(commercial|personal)/)
+        .required('Artwork license is required'),
+    }),
+  artworkCommercial: Yup.mixed()
+    .oneOf([0])
+    .notRequired()
+    .when(['artworkAvailability', 'artworkType', 'artworkLicense'], {
+      is: (artworkAvailability, artworkType, artworkLicense) =>
+        artworkAvailability === 'available' &&
+        artworkType === 'commercial' &&
+        artworkLicense === 'commercial',
+      then: Yup.number()
+        .positive('Commercial license cannot be negative')
+        .integer()
+        .min(5)
+        .max(100000)
+        .required('Commercial license is required'),
+    }),
   artworkCategory: '',
   artworkDescription: Yup.string()
     .trim()
@@ -91,9 +126,9 @@ const AddArtwork = () => {
       artworkTitle: '',
       artworkType: '',
       artworkAvailability: '',
-      artworkPrice: '',
+      artworkPrice: 10,
       artworkLicense: '',
-      artworkCommercial: '',
+      artworkCommercial: 5,
       artworkCategory: '',
       artworkDescription: '',
     },

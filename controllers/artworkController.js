@@ -13,7 +13,8 @@ const putArtworkValidator = require('../utils/validation/putArtworkValidator');
 const getArtwork = async (req, res) => {
   try {
     const foundArtwork = await Artwork.find({ active: true }).populate(
-      'current'
+      'current',
+      '_id cover created title price use license available description'
     );
     return res.json({ artwork: foundArtwork });
   } catch (err) {
@@ -25,7 +26,10 @@ const getUserArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.find({
       $and: [{ owner: res.locals.user.id }, { active: true }],
-    }).populate('current');
+    }).populate(
+      'current',
+      '_id cover created title price use license available description'
+    );
     return res.json({ artwork: foundArtwork });
   } catch (err) {
     console.log(err);
@@ -93,7 +97,10 @@ const getArtworkDetails = async (req, res, next) => {
       $and: [{ _id: req.params.id }, { active: true }],
     })
       .populate('owner')
-      .populate('current');
+      .populate(
+        'current',
+        '_id cover created title price use license available description'
+      );
     if (foundArtwork) {
       const foundReview = await Review.find({
         artwork: req.params.id,
@@ -475,7 +482,10 @@ const saveArtwork = async (req, res, next) => {
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { active: true }],
     })
-      .populate('current')
+      .populate(
+        'current',
+        '_id cover created title price use license available description'
+      )
       .session(session);
     if (foundArtwork) {
       const foundUser = await User.findOne({ _id: res.locals.user.id }).session(

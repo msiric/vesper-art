@@ -3174,6 +3174,11 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-mason@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/react-mason/-/react-mason-1.1.2.tgz#e771ff1e946a2c4a53c60654cdd3ceeb3683f827"
+  integrity sha512-/+7Qv2cQaXwf7cMLN00Ki1g5+4t06aMVskp8ix2ZtAi+RZzRLZAXlli+sAg9WQH3tE0WjyZR2RkvsKd6v2snGA==
+
 read-pkg@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/read-pkg/-/read-pkg-4.0.1.tgz#963625378f3e1c4d48c85872b5a6ec7d5d093237"
