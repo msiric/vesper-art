@@ -2,42 +2,46 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 
 const schema = Joi.object().keys({
-  artworkTitle: Joi.string(),
-  artworkType: Joi.string().valid('commercial', 'showcase'),
-  artworkAvailable: Joi.string().valid('available', 'unavailable'),
-  artworkPrice: Joi.when('type', {
-    is: 'commercial',
-    then: Joi.number().integer().required(),
+  artworkTitle: Joi.string().required(),
+  artworkAvailability: Joi.string()
+    .valid('available', 'unavailable')
+    .required(),
+  artworkType: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.string().valid('commercial', 'showcase').required(),
+    otherwise: Joi.forbidden(),
   }),
-  artworkLicense: Joi.when('type', {
-    is: 'commercial',
-    then: Joi.when('use', {
-      is: 'commercial',
-      then: Joi.string().valid('commercial', 'personal').required(),
-    }),
-  }),
-  artworkCommercial: Joi.when('type', {
-    is: 'commercial',
-    then: Joi.when('use', {
+  artworkPrice: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.when('artworkType', {
       is: 'commercial',
       then: Joi.number().integer().required(),
+      otherwise: Joi.forbidden(),
     }),
-  })
-    .when('type', {
+  }),
+  artworkLicense: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.when('artworkType', {
       is: 'commercial',
-      then: Joi.when('use', {
-        is: 'personal',
-        then: Joi.forbidden(),
-      }),
-    })
-    .when('type', {
-      is: 'showcase',
-      then: Joi.forbidden(),
+      then: Joi.string().valid('commercial', 'personal').required(),
+      otherwise: Joi.forbidden(),
     }),
-  artworkCategory: Joi.string(),
-  artworkDescription: Joi.string(),
-  artworkMedia: Joi.string(),
-  artworkCover: Joi.string(),
+  }),
+  artworkCommercial: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.when('artworkType', {
+      is: 'commercial',
+      then: Joi.when('artworkLicense', {
+        is: 'commercial',
+        then: Joi.number().integer().required(),
+        otherwise: Joi.forbidden(),
+      }),
+    }),
+  }),
+  // artworkCategory: Joi.string().required(),
+  artworkDescription: Joi.string().required(),
+  artworkMedia: Joi.string().required(),
+  artworkCover: Joi.string().required(),
 });
 
 module.exports = (data) => Joi.validate(data, schema);

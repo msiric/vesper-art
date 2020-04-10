@@ -3,27 +3,42 @@ Joi.objectId = require('joi-objectid')(Joi);
 
 const schema = Joi.object().keys({
   artworkTitle: Joi.string().required(),
-  artworkAvailable: Joi.string().valid('available', 'unavailable').required(),
-  artworkType: Joi.string().valid('commercial', 'showcase').required(),
-  artworkPrice: Joi.when('type', {
-    is: 'commercial',
-    then: Joi.number().integer().required(),
+  artworkAvailability: Joi.string()
+    .valid('available', 'unavailable')
+    .required(),
+  artworkType: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.string().valid('commercial', 'showcase').required(),
+    otherwise: Joi.forbidden(),
   }),
-  artworkLicense: Joi.when('type', {
-    is: 'commercial',
-    then: Joi.when('use', {
-      is: 'commercial',
-      then: Joi.string().valid('commercial', 'personal').required(),
-    }),
-  }),
-  artworkCommercial: Joi.when('type', {
-    is: 'commercial',
-    then: Joi.when('use', {
+  artworkPrice: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.when('artworkType', {
       is: 'commercial',
       then: Joi.number().integer().required(),
+      otherwise: Joi.forbidden(),
     }),
   }),
-  artworkCategory: Joi.string().required(),
+  artworkLicense: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.when('artworkType', {
+      is: 'commercial',
+      then: Joi.string().valid('commercial', 'personal').required(),
+      otherwise: Joi.forbidden(),
+    }),
+  }),
+  artworkCommercial: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.when('artworkType', {
+      is: 'commercial',
+      then: Joi.when('artworkLicense', {
+        is: 'commercial',
+        then: Joi.number().integer().required(),
+        otherwise: Joi.forbidden(),
+      }),
+    }),
+  }),
+  // artworkCategory: Joi.string().required(),
   artworkDescription: Joi.string().required(),
   artworkMedia: Joi.string().required(),
   artworkCover: Joi.string().required(),

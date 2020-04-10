@@ -59,7 +59,7 @@ const postNewArtwork = async (req, res, next) => {
       }
     } else {
       newVersion.available =
-        value.artworkAvailable == 'available' ? true : false;
+        value.artworkAvailability == 'available' ? true : false;
     }
     const savedVersion = await newVersion.save({ session });
     const newArtwork = new Artwork();
@@ -196,7 +196,7 @@ const updateArtwork = async (req, res, next) => {
         newVersion.price = 0;
         newVersion.license = 0;
         newVersion.available =
-          value.artworkAvailable == 'available' ? true : false;
+          value.artworkAvailability == 'available' ? true : false;
       }
       const savedVersion = await newVersion.save({ session });
       const foundOrder = await Order.find({

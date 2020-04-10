@@ -16,6 +16,7 @@ import UploadInput from '../../shared/UploadInput/UploadInput';
 import SelectInput from '../../shared/SelectInput/SelectInput';
 import PriceInput from '../../shared/PriceInput/PriceInput';
 import ax from '../../axios.config';
+import deleteEmptyValues from '../../utils/deleteEmptyValues';
 import AddArtworkStyles from './AddArtwork.style';
 
 // form
@@ -47,7 +48,7 @@ const validationSchema = Yup.object().shape({
       (value) => value[0] && artworkMediaConfig.format.includes(value[0].type)
     )
     .required('Artwork needs to have a file'),
-  artworkTitle: Yup.string().required('Artwork title is required'),
+  artworkTitle: Yup.string().trim().required('Artwork title is required'),
   artworkAvailability: Yup.string()
     .matches(/(available|unavailable)/)
     .required('Artwork availability is required'),
@@ -64,7 +65,9 @@ const validationSchema = Yup.object().shape({
     .min(1)
     .max(10000),
   artworkCategory: '',
-  artworkDescription: Yup.string().required('Artwork description is required'),
+  artworkDescription: Yup.string()
+    .trim()
+    .required('Artwork description is required'),
 });
 
 const AddArtwork = () => {
@@ -104,8 +107,8 @@ const AddArtwork = () => {
         } = await ax.post('/api/artwork_media_upload', formData);
         values.artworkCover = artworkCover;
         values.artworkMedia = artworkMedia;
-        const { data } = await ax.post('/api/add_artwork', values);
-        console.log(data);
+        const data = deleteEmptyValues(values);
+        await ax.post('/api/add_artwork', data);
       } catch (err) {
         console.log(err);
       }
