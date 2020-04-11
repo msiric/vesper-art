@@ -52,8 +52,7 @@ const validationSchema = Yup.object().shape({
   artworkAvailability: Yup.string()
     .matches(/(available|unavailable)/)
     .required('Artwork availability is required'),
-  artworkType: Yup.mixed()
-    .oneOf([''])
+  artworkType: Yup.string()
     .notRequired()
     .when('artworkAvailability', {
       is: 'available',
@@ -61,8 +60,7 @@ const validationSchema = Yup.object().shape({
         .matches(/(commercial|free)/)
         .required('Artwork type is required'),
     }),
-  artworkPrice: Yup.mixed()
-    .oneOf([0])
+  artworkPrice: Yup.number()
     .notRequired()
     .when(['artworkAvailability', 'artworkType'], {
       is: (artworkAvailability, artworkType) =>
@@ -74,8 +72,7 @@ const validationSchema = Yup.object().shape({
         .max(100000)
         .required('Artwork price is required'),
     }),
-  artworkLicense: Yup.mixed()
-    .oneOf([''])
+  artworkLicense: Yup.string()
     .notRequired()
     .when(['artworkAvailability', 'artworkType'], {
       is: (artworkAvailability, artworkType) =>
@@ -84,8 +81,7 @@ const validationSchema = Yup.object().shape({
         .matches(/(commercial|personal)/)
         .required('Artwork license is required'),
     }),
-  artworkCommercial: Yup.mixed()
-    .oneOf([0])
+  artworkCommercial: Yup.number()
     .notRequired()
     .when(['artworkAvailability', 'artworkType', 'artworkLicense'], {
       is: (artworkAvailability, artworkType, artworkLicense) =>
@@ -126,9 +122,9 @@ const AddArtwork = () => {
       artworkTitle: '',
       artworkType: '',
       artworkAvailability: '',
-      artworkPrice: 10,
+      artworkPrice: '',
       artworkLicense: '',
-      artworkCommercial: 5,
+      artworkCommercial: '',
       artworkCategory: '',
       artworkDescription: '',
     },
