@@ -479,33 +479,22 @@ const saveArtwork = async (req, res, next) => {
   try {
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { active: true }],
-    })
-      .populate(
-        'current',
-        '_id cover created title price use license available description'
-      )
-      .session(session);
+    }).session(session);
     if (foundArtwork) {
       const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
         session
       );
       if (foundUser) {
-        let saved;
-        if (foundUser.savedArtwork.includes(foundArtwork._id)) {
+        if (!foundUser.savedArtwork.includes(foundArtwork._id)) {
           await User.updateOne(
             { _id: foundUser._id },
-            { $pull: { savedArtwork: req.params.id } }
+            { $push: { savedArtwork: foundArtwork._id } }
           ).session(session);
-          saved = false;
+          await session.commitTransaction();
+          res.status(200).json({ message: 'Artwork saved' });
         } else {
-          await User.updateOne(
-            { _id: foundUser._id },
-            { $push: { savedArtwork: req.params.id } }
-          ).session(session);
-          saved = true;
+          throw createError(400, 'Artwork could not be saved');
         }
-        await session.commitTransaction();
-        res.status(200).json({ saved });
       } else {
         throw createError(400, 'User not found');
       }
@@ -520,6 +509,44 @@ const saveArtwork = async (req, res, next) => {
     session.endSession();
   }
 };
+
+const unsaveArtwork = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: req.params.id }, { active: true }],
+    }).session(session);
+    if (foundArtwork) {
+      const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
+        session
+      );
+      if (foundUser) {
+        if (foundUser.savedArtwork.includes(foundArtwork._id)) {
+          await User.updateOne(
+            { _id: foundUser._id },
+            { $pull: { savedArtwork: foundArtwork._id } }
+          ).session(session);
+          await session.commitTransaction();
+          res.status(200).json({ message: 'Artwork unsaved' });
+        } else {
+          throw createError(400, 'Artwork could not be unsaved');
+        }
+      } else {
+        throw createError(400, 'User not found');
+      }
+    } else {
+      throw createError(400, 'Artwork not found');
+    }
+  } catch (err) {
+    await session.abortTransaction();
+    console.log(err);
+    next(err, res);
+  } finally {
+    session.endSession();
+  }
+};
+
 module.exports = {
   getArtwork,
   getUserArtwork,
@@ -529,4 +556,5 @@ module.exports = {
   updateArtwork,
   deleteArtwork,
   saveArtwork,
+  unsaveArtwork,
 };

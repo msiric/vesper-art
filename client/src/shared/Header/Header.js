@@ -77,7 +77,7 @@ const Header = () => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem component={Link} to="/user">
+      <MenuItem component={Link} to={`/user/${store.user.name}`}>
         Profile
       </MenuItem>
       <MenuItem component={Link} to="/settings">

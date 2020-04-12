@@ -1,5 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Context } from '../Store/Store';
+import Modal from '../../shared/Modal/Modal';
 import Masonry from 'react-mason';
 import {
   Paper,
@@ -16,12 +17,81 @@ import {
   FavoriteRounded as SavedIcon,
   ShareRounded as ShareIcon,
 } from '@material-ui/icons';
+import {
+  EmailShareButton,
+  FacebookShareButton,
+  InstapaperShareButton,
+  LineShareButton,
+  LinkedinShareButton,
+  LivejournalShareButton,
+  MailruShareButton,
+  OKShareButton,
+  PinterestShareButton,
+  PocketShareButton,
+  RedditShareButton,
+  TelegramShareButton,
+  TumblrShareButton,
+  TwitterShareButton,
+  ViberShareButton,
+  VKShareButton,
+  WhatsappShareButton,
+  WorkplaceShareButton,
+} from 'react-share';
 import { Link } from 'react-router-dom';
+import ax from '../../axios.config';
 import GalleryStyles from './Gallery.style';
 
 const Gallery = ({ elements }) => {
   const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({
+    modal: {
+      open: false,
+      body: ``,
+    },
+  });
   const classes = GalleryStyles();
+
+  const modalBody = <TwitterShareButton url="test" />;
+
+  const handleSaveArtwork = async (id) => {
+    try {
+      await ax.post(`/api/save_artwork/${id}`);
+      dispatch({
+        type: 'setUser',
+        ...store,
+        saved: {
+          ...store.saved,
+          [id]: true,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleUnsaveArtwork = async (id) => {
+    try {
+      await ax.delete(`/api/save_artwork/${id}`);
+      dispatch({
+        type: 'setUser',
+        ...store,
+        saved: {
+          ...store.saved,
+          [id]: false,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleModalOpen = (id, body) => {
+    setState({ ...state, modal: { ...state.modal, open: true, body } });
+  };
+
+  const handleModalClose = () => {
+    setState({ ...state, modal: { ...state.modal, open: false, body: `` } });
+  };
 
   const artwork = elements.map((element, index) => {
     return (
@@ -50,15 +120,24 @@ const Gallery = ({ elements }) => {
         </CardContent>
         <CardActions disableSpacing>
           {store.user.saved[element._id] ? (
-            <IconButton aria-label="Save artwork">
+            <IconButton
+              onClick={() => handleUnsaveArtwork(element._id)}
+              aria-label="Unsave artwork"
+            >
               <SavedIcon />
             </IconButton>
           ) : (
-            <IconButton aria-label="Save artwork">
+            <IconButton
+              onClick={() => handleSaveArtwork(element._id)}
+              aria-label="Save artwork"
+            >
               <SaveIcon />
             </IconButton>
           )}
-          <IconButton aria-label="Share artwork">
+          <IconButton
+            onClick={() => handleModalOpen(element._id, modalBody)}
+            aria-label="Share artwork"
+          >
             <ShareIcon />
           </IconButton>
         </CardActions>
@@ -69,6 +148,7 @@ const Gallery = ({ elements }) => {
   return (
     <Paper className={classes.paper}>
       <Masonry>{artwork}</Masonry>
+      <Modal {...state.modal} handleClose={handleModalClose} />
     </Paper>
   );
 };

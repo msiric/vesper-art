@@ -22,6 +22,7 @@ router
 
 router
   .route('/save_artwork/:id')
-  .post(isAuthenticated, artworkController.saveArtwork);
+  .post(isAuthenticated, artworkController.saveArtwork)
+  .delete(isAuthenticated, artworkController.unsaveArtwork);
 
 module.exports = router;
