@@ -5,11 +5,6 @@ const createAccessToken = (user) => {
   return jwt.sign(
     {
       id: user.id,
-      name: user.name,
-      photo: user.photo,
-      inbox: user.inbox,
-      notifications: user.notifications,
-      cart: user.cart.length,
       active: user.active,
       jwtVersion: user.jwtVersion,
     },
@@ -46,12 +41,20 @@ const updateAccessToken = async (req, res, next) => {
   }
 
   const tokenPayload = {
-    id: foundUser.id,
+    id: foundUser._id,
+    active: foundUser.active,
+    jwtVersion: foundUser.jwtVersion,
+  };
+
+  const userInfo = {
+    id: foundUser._id,
     name: foundUser.name,
+    email: foundUser.email,
     photo: foundUser.photo,
-    inbox: foundUser.inbox,
+    messages: foundUser.inbox,
     notifications: foundUser.notifications,
-    cart: foundUser.cart.length,
+    cart: foundUser.cart,
+    saved: foundUser.savedArtwork,
     active: foundUser.active,
     jwtVersion: foundUser.jwtVersion,
   };
@@ -61,6 +64,7 @@ const updateAccessToken = async (req, res, next) => {
   return {
     ok: true,
     accessToken: createAccessToken(tokenPayload),
+    user: userInfo,
   };
 };
 

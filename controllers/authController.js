@@ -83,12 +83,21 @@ const postLogIn = async (req, res, next) => {
     }
 
     const tokenPayload = {
-      id: foundUser.id,
+      id: foundUser._id,
+      active: foundUser.active,
+      jwtVersion: foundUser.jwtVersion,
+    };
+
+    const userInfo = {
+      id: foundUser._id,
       name: foundUser.name,
+      email: foundUser.email,
       photo: foundUser.photo,
-      inbox: foundUser.inbox,
+      messages: foundUser.inbox,
       notifications: foundUser.notifications,
-      cart: foundUser.cart.length,
+      cart: foundUser.cart,
+      saved: foundUser.savedArtwork,
+      active: foundUser.active,
       jwtVersion: foundUser.jwtVersion,
     };
 
@@ -96,7 +105,7 @@ const postLogIn = async (req, res, next) => {
 
     res.json({
       accessToken: auth.createAccessToken(tokenPayload),
-      user: tokenPayload,
+      user: userInfo,
     });
   } catch (err) {
     console.log(err);

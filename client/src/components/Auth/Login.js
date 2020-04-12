@@ -24,6 +24,7 @@ const validationSchema = Yup.object().shape({
 
 const Login = () => {
   const [store, dispatch] = useContext(Context);
+
   const history = useHistory();
 
   const classes = LoginStyles();
@@ -45,6 +46,26 @@ const Login = () => {
     async onSubmit(values) {
       const { data } = await ax.post('/api/auth/login', values);
       window.accessToken = data.accessToken;
+      if (data.user) {
+        dispatch({
+          type: 'setUser',
+          authenticated: true,
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          photo: data.user.photo,
+          messages: data.user.messages,
+          notifications: data.user.notifications,
+          saved: data.user.saved.reduce(function (object, item) {
+            object[item] = true;
+            return object;
+          }, {}),
+          cart: data.user.cart.reduce(function (object, item) {
+            object[item] = true;
+            return object;
+          }, {}),
+        });
+      }
       history.push('/');
     },
   });

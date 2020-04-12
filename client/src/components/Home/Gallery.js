@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { Context } from '../Store/Store';
 import Masonry from 'react-mason';
 import {
   Paper,
@@ -19,6 +20,7 @@ import { Link } from 'react-router-dom';
 import GalleryStyles from './Gallery.style';
 
 const Gallery = ({ elements }) => {
+  const [store, dispatch] = useContext(Context);
   const classes = GalleryStyles();
 
   const artwork = elements.map((element, index) => {
@@ -47,9 +49,15 @@ const Gallery = ({ elements }) => {
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton aria-label="Save artwork">
-            <SaveIcon />
-          </IconButton>
+          {store.user.saved[element._id] ? (
+            <IconButton aria-label="Save artwork">
+              <SavedIcon />
+            </IconButton>
+          ) : (
+            <IconButton aria-label="Save artwork">
+              <SaveIcon />
+            </IconButton>
+          )}
           <IconButton aria-label="Share artwork">
             <ShareIcon />
           </IconButton>

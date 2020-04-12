@@ -1,12 +1,12 @@
-import store from 'store'
-import axios from 'axios'
+import store from 'store';
+import axios from 'axios';
 
 export async function JWT_login(email, password) {
   const user = {
     email,
     password,
-  }
-  const token = store.get('jwt.token')
+  };
+  const token = mainStoreget('jwt.token');
 
   const { data } = await axios.post(`/api/auth/login`, JSON.stringify(user), {
     headers: {
@@ -15,9 +15,9 @@ export async function JWT_login(email, password) {
       credentials: 'include',
       Authorization: token ? `Bearer ${token}` : '',
     },
-  })
-  store.set('jwt.token', data.accessToken)
-  return true
+  });
+  mainStoreset('jwt.token', data.accessToken);
+  return true;
 }
 
 export async function JWT_refreshToken() {
@@ -27,9 +27,9 @@ export async function JWT_refreshToken() {
       'Content-Type': 'application/json',
       credentials: 'include',
     },
-  })
+  });
 
-  return { accessToken: data.accessToken }
+  return { accessToken: data.accessToken };
 }
 
 export async function JWT_logout() {
@@ -39,7 +39,7 @@ export async function JWT_logout() {
       'Content-Type': 'application/json',
       credentials: 'include',
     },
-  })
-  store.remove('jwt.token')
-  return true
+  });
+  mainStoreremove('jwt.token');
+  return true;
 }

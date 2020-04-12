@@ -8,6 +8,7 @@ import axios from 'axios';
 
 const App = () => {
   const [store, dispatch] = useContext(Context);
+
   const [loading, setLoading] = useState(true);
 
   const getRefreshToken = async () => {
@@ -18,6 +19,27 @@ const App = () => {
         },
       });
       window.accessToken = data.accessToken;
+
+      if (data.user) {
+        dispatch({
+          type: 'setUser',
+          authenticated: true,
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          photo: data.user.photo,
+          messages: data.user.messages,
+          notifications: data.user.notifications,
+          saved: data.user.saved.reduce(function (object, item) {
+            object[item] = true;
+            return object;
+          }, {}),
+          cart: data.user.cart.reduce(function (object, item) {
+            object[item] = true;
+            return object;
+          }, {}),
+        });
+      }
     }
     setLoading(false);
   };

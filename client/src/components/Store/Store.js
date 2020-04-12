@@ -9,9 +9,8 @@ const store = {
     authenticated: false,
     id: null,
     name: null,
-    role: null,
     email: null,
-    avatar: null,
+    photo: null,
     saved: {},
     cart: {},
   },
@@ -23,12 +22,15 @@ const reducer = (state, action) => {
       return {
         ...state,
         user: {
-          authenticated: action.user.token,
-          id: action.user.id,
-          name: action.user.name,
-          role: action.user.role,
-          email: action.user.email,
-          avatar: action.user.avatar,
+          authenticated: action.authenticated,
+          id: action.id,
+          name: action.name,
+          email: action.email,
+          photo: action.photo,
+          messages: action.messages,
+          notifications: action.notifications,
+          saved: action.saved,
+          cart: action.cart,
         },
       };
     default:
