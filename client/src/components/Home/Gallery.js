@@ -18,24 +18,16 @@ import {
   ShareRounded as ShareIcon,
 } from '@material-ui/icons';
 import {
-  EmailShareButton,
   FacebookShareButton,
-  InstapaperShareButton,
-  LineShareButton,
-  LinkedinShareButton,
-  LivejournalShareButton,
-  MailruShareButton,
-  OKShareButton,
   PinterestShareButton,
-  PocketShareButton,
   RedditShareButton,
-  TelegramShareButton,
   TumblrShareButton,
   TwitterShareButton,
-  ViberShareButton,
-  VKShareButton,
-  WhatsappShareButton,
-  WorkplaceShareButton,
+  FacebookIcon,
+  PinterestIcon,
+  RedditIcon,
+  TumblrIcon,
+  TwitterIcon,
 } from 'react-share';
 import { Link } from 'react-router-dom';
 import ax from '../../axios.config';
@@ -51,7 +43,35 @@ const Gallery = ({ elements }) => {
   });
   const classes = GalleryStyles();
 
-  const modalBody = <TwitterShareButton url="test" />;
+  const modalBody = (id) => {
+    const url = `${window.location}artwork/${id}`;
+    const title = store.settings.brand;
+
+    return (
+      <div>
+        <FacebookShareButton url={url} quote={title}>
+          <FacebookIcon size={32} round />
+        </FacebookShareButton>
+        <TwitterShareButton url={url} title={title}>
+          <TwitterIcon size={32} round />
+        </TwitterShareButton>
+        <RedditShareButton
+          url={url}
+          title={title}
+          windowWidth={660}
+          windowHeight={460}
+        >
+          <RedditIcon size={32} round />
+        </RedditShareButton>
+        <TumblrShareButton url={url} title={title}>
+          <TumblrIcon size={32} round />
+        </TumblrShareButton>
+        <PinterestShareButton url={url} media={``}>
+          <PinterestIcon size={32} round />
+        </PinterestShareButton>
+      </div>
+    );
+  };
 
   const handleSaveArtwork = async (id) => {
     try {
@@ -85,8 +105,11 @@ const Gallery = ({ elements }) => {
     }
   };
 
-  const handleModalOpen = (id, body) => {
-    setState({ ...state, modal: { ...state.modal, open: true, body } });
+  const handleModalOpen = (id) => {
+    setState({
+      ...state,
+      modal: { ...state.modal, open: true, body: modalBody(id) },
+    });
   };
 
   const handleModalClose = () => {
@@ -135,7 +158,7 @@ const Gallery = ({ elements }) => {
             </IconButton>
           )}
           <IconButton
-            onClick={() => handleModalOpen(element._id, modalBody)}
+            onClick={() => handleModalOpen(element._id)}
             aria-label="Share artwork"
           >
             <ShareIcon />

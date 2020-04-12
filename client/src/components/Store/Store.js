@@ -3,6 +3,7 @@ import React, { createContext, useReducer } from 'react';
 const store = {
   settings: {
     auth: 'jwt',
+    brand: 'test',
     theme: 'dark',
   },
   user: {
