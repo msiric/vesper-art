@@ -12,6 +12,8 @@ const store = {
     role: null,
     email: null,
     avatar: null,
+    saved: {},
+    cart: {},
   },
 };
 

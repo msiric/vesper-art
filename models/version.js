@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const VersionSchema = new Schema({
-  /* artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' }, */
+  artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' }, // new
   type: String,
   title: String,
   category: String,

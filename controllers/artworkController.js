@@ -71,6 +71,7 @@ const postNewArtwork = async (req, res, next) => {
     const newArtwork = new Artwork();
     newArtwork.owner = res.locals.user.id;
     newArtwork.active = true;
+    newArtwork.comments = [];
     newArtwork.current = savedVersion._id;
     await newArtwork.save({ session });
     await session.commitTransaction();
@@ -91,6 +92,7 @@ const getArtworkDetails = async (req, res, next) => {
       $and: [{ _id: req.params.id }, { active: true }],
     })
       .populate('owner')
+      .populate('comments')
       .populate(
         'current',
         '_id cover created title price use license available description'
@@ -106,13 +108,9 @@ const getArtworkDetails = async (req, res, next) => {
         req.user.cart.some((item) => item.artwork._id.equals(req.params.id))
           ? true
           : false;
-      const foundComments = await Comment.find({
-        artwork: foundArtwork._id,
-      }).populate('owner');
 
       return res.json({
         artwork: foundArtwork,
-        comments: foundComments,
         inCart,
         savedArtwork,
       });
@@ -322,6 +320,7 @@ const updateArtwork = async (req, res, next) => {
 };
 
 // needs transaction (done)
+// delete all comments (not done)
 const deleteArtwork = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();

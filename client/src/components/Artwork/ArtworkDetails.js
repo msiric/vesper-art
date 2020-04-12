@@ -66,6 +66,24 @@ const ArtworkDetails = ({ match }) => {
                 />
               </Card>
             </Paper>
+            <br />
+            <Paper className={classes.paper}>
+              <Card className={classes.root}>
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    Comments
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    component="p"
+                  >
+                    {state.artwork.owner.description ||
+                      "This artist doesn't have much to say about themself"}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Paper>
           </Grid>
           <Grid item xs={12} sm={5} className={classes.grid}>
             <Paper className={classes.paper}>
@@ -95,7 +113,7 @@ const ArtworkDetails = ({ match }) => {
                 </CardContent>
               </Card>
             </Paper>
-            <br></br>
+            <br />
             <Paper className={classes.paper}>
               <Card className={classes.root}>
                 <CardContent>
