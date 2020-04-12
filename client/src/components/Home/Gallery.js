@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Context } from '../Store/Store';
 import Modal from '../../shared/Modal/Modal';
+import Alert from '../../shared/Alert/Alert';
 import Masonry from 'react-mason';
 import {
   Paper,
@@ -16,26 +17,32 @@ import {
   FavoriteBorderRounded as SaveIcon,
   FavoriteRounded as SavedIcon,
   ShareRounded as ShareIcon,
+  LinkRounded as CopyIcon,
 } from '@material-ui/icons';
 import {
   FacebookShareButton,
-  PinterestShareButton,
+  WhatsappShareButton,
   RedditShareButton,
-  TumblrShareButton,
   TwitterShareButton,
   FacebookIcon,
-  PinterestIcon,
+  WhatsappIcon,
   RedditIcon,
-  TumblrIcon,
   TwitterIcon,
 } from 'react-share';
 import { Link } from 'react-router-dom';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ax from '../../axios.config';
 import GalleryStyles from './Gallery.style';
 
 const Gallery = ({ elements }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
+    alert: {
+      message: '',
+      type: '',
+      duration: 0,
+      open: false,
+    },
     modal: {
       open: false,
       body: ``,
@@ -48,11 +55,38 @@ const Gallery = ({ elements }) => {
     const title = store.settings.brand;
 
     return (
-      <div>
-        <FacebookShareButton url={url} quote={title}>
+      <div className={classes.shareContainer}>
+        <div className={classes.copyButton}>
+          <CopyToClipboard
+            text={url}
+            onCopy={() =>
+              setState((prevState) => ({
+                ...prevState,
+                alert: {
+                  ...prevState.alert,
+                  message: 'Link copied',
+                  type: 'success',
+                  duration: 3000,
+                  open: true,
+                },
+              }))
+            }
+          >
+            <CopyIcon />
+          </CopyToClipboard>
+        </div>
+        <FacebookShareButton
+          url={url}
+          quote={title}
+          className={classes.socialButton}
+        >
           <FacebookIcon size={32} round />
         </FacebookShareButton>
-        <TwitterShareButton url={url} title={title}>
+        <TwitterShareButton
+          url={url}
+          title={title}
+          className={classes.socialButton}
+        >
           <TwitterIcon size={32} round />
         </TwitterShareButton>
         <RedditShareButton
@@ -60,15 +94,18 @@ const Gallery = ({ elements }) => {
           title={title}
           windowWidth={660}
           windowHeight={460}
+          className={classes.socialButton}
         >
           <RedditIcon size={32} round />
         </RedditShareButton>
-        <TumblrShareButton url={url} title={title}>
-          <TumblrIcon size={32} round />
-        </TumblrShareButton>
-        <PinterestShareButton url={url} media={``}>
-          <PinterestIcon size={32} round />
-        </PinterestShareButton>
+        <WhatsappShareButton
+          url={url}
+          title={title}
+          separator=":: "
+          className={classes.socialButton}
+        >
+          <WhatsappIcon size={32} round />
+        </WhatsappShareButton>
       </div>
     );
   };
@@ -106,14 +143,24 @@ const Gallery = ({ elements }) => {
   };
 
   const handleModalOpen = (id) => {
-    setState({
-      ...state,
-      modal: { ...state.modal, open: true, body: modalBody(id) },
-    });
+    setState((prevState) => ({
+      ...prevState,
+      modal: { ...prevState.modal, open: true, body: modalBody(id) },
+    }));
   };
 
   const handleModalClose = () => {
-    setState({ ...state, modal: { ...state.modal, open: false, body: `` } });
+    setState((prevState) => ({
+      ...prevState,
+      modal: { ...prevState.modal, open: false, body: `` },
+    }));
+  };
+
+  const handleAlertClose = () => {
+    setState((prevState) => ({
+      ...prevState,
+      alert: { ...prevState.alert, open: false },
+    }));
   };
 
   const artwork = elements.map((element, index) => {
@@ -172,6 +219,7 @@ const Gallery = ({ elements }) => {
     <Paper className={classes.paper}>
       <Masonry>{artwork}</Masonry>
       <Modal {...state.modal} handleClose={handleModalClose} />
+      <Alert {...state.alert} handleClose={handleAlertClose} />
     </Paper>
   );
 };

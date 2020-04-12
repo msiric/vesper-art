@@ -12,6 +12,7 @@ const Modal = ({ open, handleClose, body }) => {
         onClose={handleClose}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
+        className={classes.modal}
       >
         {body}
       </Popup>

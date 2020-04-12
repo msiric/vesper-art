@@ -16,6 +16,24 @@ const GalleryStyles = makeStyles((muiTheme) => ({
     height: 0,
     paddingTop: '100%',
   },
+  shareContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  copyButton: {
+    display: 'flex',
+    borderRadius: '50%',
+    backgroundColor: 'white',
+    height: 31,
+    width: 31,
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+  },
+  socialButton: {
+    display: 'flex',
+  },
 }));
 
 export default GalleryStyles;

@@ -11,6 +11,7 @@
     "@testing-library/user-event": "^7.1.2",
     "formik": "^2.1.4",
     "react": "^16.13.1",
+    "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.13.1",
     "react-dropzone": "^10.2.2",
     "react-mason": "^1.1.2",
