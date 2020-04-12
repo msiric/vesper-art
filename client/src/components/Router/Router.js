@@ -92,10 +92,10 @@ const routes = [
   },
   // User router
   {
-    path: '/user',
+    path: '/user/:id',
     Component: lazy(() => import('../User/User')),
     exact: true,
-    type: 'protected',
+    type: 'public',
   },
   {
     path: '/settings',

@@ -23,7 +23,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const Login = () => {
-  const [state, dispatch] = useContext(Context);
+  const [store, dispatch] = useContext(Context);
   const history = useHistory();
 
   const classes = LoginStyles();

@@ -2,7 +2,7 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 
 const HeaderStyle = makeStyles((muiTheme) => ({
   grow: {
-    flexGrow: 1,
+    flex: 1,
   },
   menuButton: {
     marginRight: muiTheme.spacing(2),

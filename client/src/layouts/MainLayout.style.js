@@ -2,7 +2,9 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const MainLayoutStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
+    display: 'flex',
+    flexFlow: 'column',
+    height: '100vh',
   },
   paper: {
     padding: theme.spacing(2),

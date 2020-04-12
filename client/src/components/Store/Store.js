@@ -45,7 +45,7 @@ const Store = ({ children, definedState }) => {
 };
 
 export const Context = createContext({
-  state: store,
+  store: store,
   dispatch: reducer,
 });
 

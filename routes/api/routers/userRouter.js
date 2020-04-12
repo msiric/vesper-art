@@ -3,10 +3,11 @@ const { isAuthenticated } = require('../../../utils/helpers');
 const userController = require('../../../controllers/userController');
 
 router
-  .route('/profile')
+  .route('/user/:id')
+  .get(userController.getUserProfile)
   .patch(isAuthenticated, userController.updateUserProfile);
 
-router.route('/settings', isAuthenticated).get(userController.getUserSettings);
+router.route('/settings').get(isAuthenticated, userController.getUserSettings);
 
 router
   .route('/new_password')

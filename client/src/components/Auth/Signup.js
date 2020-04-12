@@ -28,7 +28,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const Signup = () => {
-  const [state, dispatch] = useContext(Context);
+  const [store, dispatch] = useContext(Context);
   const classes = SignupStyles();
 
   const {

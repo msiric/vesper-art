@@ -1,28 +1,38 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
-import Gallery from './Gallery';
-import { Link } from 'react-router-dom';
-import {
-  Grid,
-  Card,
-  Typography,
-  CardContent,
-  CardActions,
-  TextField,
-  Button,
-} from '@material-ui/core';
+import { Grid, CircularProgress } from '@material-ui/core';
 import ax from '../../axios.config';
+import Gallery from './Gallery';
+import Alert from '../../shared/Alert/Alert';
 import HomeStyles from './Home.style';
 
 const Home = () => {
-  const [state, dispatch] = useContext(Context);
-  const [artwork, setArtwork] = useState([]);
+  const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({
+    loading: true,
+    alert: {
+      message: '',
+      type: '',
+      duration: 0,
+      open: false,
+    },
+    artwork: [],
+  });
 
   const classes = HomeStyles();
 
   const fetchArtwork = async () => {
-    const { data } = await ax.get('/api/artwork');
-    if (data.artwork.length) setArtwork(data.artwork);
+    try {
+      const { data } = await ax.get('/api/artwork');
+      setState({ ...state, loading: false, artwork: data.artwork });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
+
+  const handleClose = (e, reason) => {
+    if (reason === 'clickaway') return;
+    setState({ ...state, alert: { ...state.alert, open: false } });
   };
 
   useEffect(() => {
@@ -30,9 +40,16 @@ const Home = () => {
   }, []);
 
   return (
-    <Grid container>
-      <Grid item xs={12}>
-        {artwork.length ? <Gallery elements={artwork} /> : 'No artwork'}
+    <Grid container className={classes.container}>
+      <Grid item xs={12} className={classes.grid}>
+        {state.loading ? (
+          <CircularProgress />
+        ) : state.artwork.length ? (
+          <Gallery elements={state.artwork} />
+        ) : (
+          'No artwork'
+        )}
+        <Alert {...state.alert} handleClose={handleClose} />
       </Grid>
     </Grid>
   );

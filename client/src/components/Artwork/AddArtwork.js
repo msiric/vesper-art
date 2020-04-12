@@ -102,7 +102,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const AddArtwork = () => {
-  const [state, dispatch] = useContext(Context);
+  const [store, dispatch] = useContext(Context);
   const history = useHistory();
 
   const classes = AddArtworkStyles();

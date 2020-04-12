@@ -22,11 +22,12 @@ import {
   Mail as MailIcon,
   Notifications as NotificationsIcon,
   MoreVert as MoreIcon,
+  ShoppingCartRounded as CartIcon,
 } from '@material-ui/icons';
 import HeaderStyles from './Header.style';
 
 const Header = () => {
-  const [state, dispatch] = useContext(Context);
+  const [store, dispatch] = useContext(Context);
   const history = useHistory();
 
   const classes = HeaderStyles();
@@ -119,6 +120,14 @@ const Header = () => {
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
+      <MenuItem>
+        <IconButton aria-label="show 11 new notifications" color="inherit">
+          <Badge badgeContent={11} color="secondary">
+            <CartIcon />
+          </Badge>
+        </IconButton>
+        <p>Cart</p>
+      </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           aria-label="account of current user"
@@ -152,7 +161,7 @@ const Header = () => {
   );
 
   return (
-    <div className={classes.grow}>
+    <>
       <AppBar position="static">
         <Toolbar>
           <Typography
@@ -195,6 +204,14 @@ const Header = () => {
                 >
                   <Badge badgeContent={17} color="secondary">
                     <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  aria-label="show 17 new notifications"
+                  color="inherit"
+                >
+                  <Badge badgeContent={17} color="secondary">
+                    <CartIcon />
                   </Badge>
                 </IconButton>
                 <IconButton
@@ -247,7 +264,7 @@ const Header = () => {
       </AppBar>
       {window.accessToken ? renderAuthMobileMenu : renderUnauthMobileMenu}
       {renderMenu}
-    </div>
+    </>
   );
 };
 

@@ -4,6 +4,8 @@ const artworkController = require('../../../controllers/artworkController');
 
 router.route('/artwork').get(artworkController.getArtwork);
 
+router.route('/artwork/:id').get(artworkController.getArtworkDetails);
+
 router
   .route('/my_artwork')
   .get(isAuthenticated, artworkController.getUserArtwork);
@@ -11,8 +13,6 @@ router
 router
   .route('/add_artwork')
   .post(isAuthenticated, artworkController.postNewArtwork);
-
-router.route('/artwork_details/:id').get(artworkController.getArtworkDetails);
 
 router
   .route('/edit_artwork/:id')

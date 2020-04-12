@@ -2,29 +2,28 @@ const mongoose = require('mongoose');
 const Order = require('../models/order');
 const User = require('../models/user');
 const Notification = require('../models/notification');
-const Review = require('../models/review');
 const createError = require('http-errors');
 
 const getSoldOrders = async (req, res, next) => {
   try {
     const foundOrders = await Order.find({
-      details: { $elemMatch: { seller: res.locals.user.id } }
+      details: { $elemMatch: { seller: res.locals.user.id } },
     })
       .populate('buyer')
       .deepPopulate('details.version details.licenses');
-    foundOrders.forEach(function(order) {
+    foundOrders.forEach(function (order) {
       const details = [];
       let sold = 0;
-      order.details.forEach(function(item) {
+      order.details.forEach(function (item) {
         if (item.seller.equals(res.locals.user.id)) {
           sold += item.version.price;
-          item.licenses.map(function(license) {
+          item.licenses.map(function (license) {
             sold += license.price;
           });
           details.push({
             licenses: item.licenses,
             seller: item.seller,
-            version: item.version
+            version: item.version,
           });
         }
       });
@@ -69,7 +68,7 @@ const getBoughtOrders = async (req, res, next) => {
 
 // moze to bolje
 const getOrderId = async (req, res, next) => {
-  let orderWithReviews;
+  let order;
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -84,52 +83,32 @@ const getOrderId = async (req, res, next) => {
         foundOrder.discount.discount = foundOrder.discount.discount * 100;
       }
       let decreaseNotif = false;
-      let foundReview;
       if (!foundOrder.buyer._id.equals(res.locals.user.id)) {
-        foundReview = await Review.find({
-          artwork: {
-            $in: foundOrder.details.map(item => item.artwork._id)
-          }
-        }).session(session);
         const details = [];
         let sold = 0;
-        foundOrder.details.forEach(function(item) {
+        foundOrder.details.forEach(function (item) {
           if (item.seller.equals(res.locals.user.id)) {
             sold += item.version.price;
-            item.licenses.map(function(license) {
+            item.licenses.map(function (license) {
               sold += license.price;
             });
-            const review = foundReview.find(review =>
-              review.artwork.equals(item.artwork._id)
-            );
             details.push({
               licenses: item.licenses,
               seller: item.seller,
               version: item.version,
               artwork: item.artwork,
-              review: review
             });
           }
         });
-        orderWithReviews = foundOrder.toObject();
-        orderWithReviews.details = details;
-        orderWithReviews.sold = sold;
+        order = foundOrder.toObject();
+        order.details = details;
+        order.sold = sold;
       } else {
-        foundReview = await Review.find({
-          $and: [
-            {
-              artwork: {
-                $in: foundOrder.details.map(item => item.artwork._id)
-              }
-            },
-            { owner: res.locals.user.id }
-          ]
-        }).session(session);
         const details = [];
         let paid = 0;
-        foundOrder.details.forEach(function(item) {
+        foundOrder.details.forEach(function (item) {
           paid += item.version.price;
-          item.licenses.map(function(license) {
+          item.licenses.map(function (license) {
             paid += license.price;
           });
           details.push({
@@ -137,22 +116,19 @@ const getOrderId = async (req, res, next) => {
             buyer: item.buyer,
             version: item.version,
             artwork: item.artwork,
-            review: foundReview.find(review =>
-              review.artwork.equals(item.artwork._id)
-            )
           });
         });
-        orderWithReviews = foundOrder.toObject();
-        orderWithReviews.details = details;
-        orderWithReviews.paid = paid;
+        order = foundOrder.toObject();
+        order.details = details;
+        order.paid = paid;
       }
       if (req.query.ref) {
         const foundNotif = await Notification.findById({
-          _id: req.query.ref
+          _id: req.query.ref,
         }).session(session);
         if (foundNotif) {
           let changed = false;
-          foundNotif.receivers.forEach(function(receiver) {
+          foundNotif.receivers.forEach(function (receiver) {
             if (receiver.user.equals(res.locals.user.id)) {
               if (receiver.read === false) {
                 receiver.read = true;
@@ -164,7 +140,7 @@ const getOrderId = async (req, res, next) => {
             await foundNotif.save({ session });
             await User.updateOne(
               {
-                _id: res.locals.user.id
+                _id: res.locals.user.id,
               },
               { $inc: { notifications: -1 } },
               { useFindAndModify: false }
@@ -175,8 +151,8 @@ const getOrderId = async (req, res, next) => {
       }
       await session.commitTransaction();
       res.json({
-        order: orderWithReviews,
-        decreaseNotif: decreaseNotif
+        order: order,
+        decreaseNotif: decreaseNotif,
       });
     } else {
       throw createError(400, 'Order not found');
@@ -193,5 +169,5 @@ const getOrderId = async (req, res, next) => {
 module.exports = {
   getOrderId,
   getSoldOrders,
-  getBoughtOrders
+  getBoughtOrders,
 };

@@ -6,6 +6,27 @@ const aws = require('aws-sdk');
 const User = require('../models/user');
 const createError = require('http-errors');
 
+const getUserProfile = async (req, res, next) => {
+  try {
+    const foundUser = await User.findOne({
+      $and: [{ _id: req.params.id }, { active: true }],
+    });
+    if (foundUser) {
+      const foundArtwork = await Artwork.find({
+        $and: [{ owner: foundUser._id }, { active: true }],
+      }).populate(
+        'current',
+        '_id cover created title price use license available description'
+      );
+      return res.json({ user: foundUser, artwork: foundArtwork });
+    } else {
+      throw createError(400, 'User not found');
+    }
+  } catch (err) {
+    next(err, res);
+  }
+};
+
 // needs transaction (done)
 const updateUserProfile = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -520,6 +541,7 @@ const deleteUser = async (req, res, next) => {
 };
 
 module.exports = {
+  getUserProfile,
   updateUserProfile,
   getUserSettings,
   updateUserPassword,

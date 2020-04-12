@@ -3,19 +3,21 @@ const aws = require('aws-sdk');
 const User = require('../models/user');
 const Artwork = require('../models/artwork');
 const Version = require('../models/version');
+const Comment = require('../models/comment');
 const Order = require('../models/order');
-const Review = require('../models/review');
 const createError = require('http-errors');
 const { sanitize } = require('../utils/helpers');
 const postArtworkValidator = require('../utils/validation/postArtworkValidator');
 const putArtworkValidator = require('../utils/validation/putArtworkValidator');
 
-const getArtwork = async (req, res) => {
+const getArtwork = async (req, res, next) => {
   try {
-    const foundArtwork = await Artwork.find({ active: true }).populate(
-      'current',
-      '_id cover created title price use license available description'
-    );
+    const foundArtwork = await Artwork.find({ active: true })
+      .populate('owner')
+      .populate(
+        'current',
+        '_id cover created title price use license available description'
+      );
     return res.json({ artwork: foundArtwork });
   } catch (err) {
     next(err, res);
@@ -85,14 +87,6 @@ const postNewArtwork = async (req, res, next) => {
 // treba sredit
 const getArtworkDetails = async (req, res, next) => {
   try {
-    const savedArtwork =
-      req.user && req.user.savedArtwork.includes(req.params.id) ? true : false;
-    const inCart =
-      req.user &&
-      req.user.cart.length > 0 &&
-      req.user.cart.some((item) => item.artwork._id.equals(req.params.id))
-        ? true
-        : false;
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: req.params.id }, { active: true }],
     })
@@ -102,18 +96,23 @@ const getArtworkDetails = async (req, res, next) => {
         '_id cover created title price use license available description'
       );
     if (foundArtwork) {
-      const foundReview = await Review.find({
-        artwork: req.params.id,
+      const savedArtwork =
+        req.user && req.user.savedArtwork.includes(req.params.id)
+          ? true
+          : false;
+      const inCart =
+        req.user &&
+        req.user.cart.length > 0 &&
+        req.user.cart.some((item) => item.artwork._id.equals(req.params.id))
+          ? true
+          : false;
+      const foundComments = await Comment.find({
+        artwork: foundArtwork._id,
       }).populate('owner');
-      let averageRating = 0;
-      foundReview.forEach(function (review) {
-        averageRating = (review.rating + averageRating) / foundReview.length;
-      });
-      const reviewWithAverage = foundReview;
-      reviewWithAverage.rating = averageRating ? averageRating : null;
+
       return res.json({
         artwork: foundArtwork,
-        review: reviewWithAverage,
+        comments: foundComments,
         inCart,
         savedArtwork,
       });

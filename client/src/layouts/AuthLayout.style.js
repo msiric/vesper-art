@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 const AuthLayoutStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    height: 'inherit',
   },
   paper: {
     padding: theme.spacing(2),

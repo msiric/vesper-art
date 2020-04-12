@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 
-const createAccessToken = user => {
+const createAccessToken = (user) => {
   return jwt.sign(
     {
       id: user.id,
@@ -10,11 +10,12 @@ const createAccessToken = user => {
       inbox: user.inbox,
       notifications: user.notifications,
       cart: user.cart.length,
-      jwtVersion: user.jwtVersion
+      active: user.active,
+      jwtVersion: user.jwtVersion,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: '30s'
+      expiresIn: '30s',
     }
   );
 };
@@ -51,23 +52,24 @@ const updateAccessToken = async (req, res, next) => {
     inbox: foundUser.inbox,
     notifications: foundUser.notifications,
     cart: foundUser.cart.length,
-    jwtVersion: foundUser.jwtVersion
+    active: foundUser.active,
+    jwtVersion: foundUser.jwtVersion,
   };
 
   sendRefreshToken(res, createRefreshToken(tokenPayload));
 
   return {
     ok: true,
-    accessToken: createAccessToken(tokenPayload)
+    accessToken: createAccessToken(tokenPayload),
   };
 };
 
-const createRefreshToken = user => {
+const createRefreshToken = (user) => {
   return jwt.sign(
     { userId: user.id, jwtVersion: user.jwtVersion },
     process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: '7d'
+      expiresIn: '7d',
     }
   );
 };
@@ -75,7 +77,7 @@ const createRefreshToken = user => {
 const sendRefreshToken = (res, token) => {
   res.cookie('jid', token, {
     httpOnly: true,
-    path: 'api/auth/refresh_token'
+    path: 'api/auth/refresh_token',
   });
 };
 
@@ -83,5 +85,5 @@ module.exports = {
   createAccessToken,
   updateAccessToken,
   createRefreshToken,
-  sendRefreshToken
+  sendRefreshToken,
 };

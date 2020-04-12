@@ -16,7 +16,7 @@ const isAuthenticated = async (req, res, next) => {
       ignoreExpiration: true,
     });
     const data = jwt.decode(token);
-    if (Date.now() >= data.exp * 1000)
+    if (Date.now() >= data.exp * 1000 || !data.active)
       throw createError(401, 'Not authenticated');
     res.locals.user = data;
   } catch (err) {
