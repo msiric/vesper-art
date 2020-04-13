@@ -141,6 +141,10 @@ const AddArtwork = () => {
         values.artworkMedia = artworkMedia;
         const data = deleteEmptyValues(values);
         await ax.post('/api/add_artwork', data);
+        history.push({
+          pathname: '/',
+          state: { message: 'Artwork published' },
+        });
       } catch (err) {
         console.log(err);
       }

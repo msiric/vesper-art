@@ -156,7 +156,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
 );
 
 const Router = () => {
-  const [state] = useContext(Context);
+  const [store] = useContext(Context);
 
   return (
     <BrowserRouter>

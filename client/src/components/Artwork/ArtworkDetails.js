@@ -147,7 +147,7 @@ const ArtworkDetails = ({ match }) => {
                       {state.artwork.current.description}
                     </Typography>
                     <Typography variant="body2" component="p">
-                      {state.artwork.current.available
+                      {state.artwork.current.availability
                         ? state.artwork.current.price
                           ? `$${state.artwork.current.price}`
                           : 'Free'
@@ -155,7 +155,7 @@ const ArtworkDetails = ({ match }) => {
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    {state.artwork.current.available ? (
+                    {state.artwork.current.availability ? (
                       state.artwork.current.price ? (
                         <Button>Add to cart</Button>
                       ) : (

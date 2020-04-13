@@ -134,6 +134,7 @@ const EditArtwork = ({ match }) => {
     values,
     errors,
   } = useFormik({
+    enableReinitialize: true,
     initialValues: {
       artworkMedia: state.artwork.media || '',
       artworkTitle: state.artwork.title || '',

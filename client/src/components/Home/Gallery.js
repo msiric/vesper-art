@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Context } from '../Store/Store';
 import Modal from '../../shared/Modal/Modal';
 import Masonry from 'react-mason';
+import { spacing } from '@material-ui/system';
 import {
   Paper,
   Card,
@@ -34,7 +35,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ax from '../../axios.config';
 import GalleryStyles from './Gallery.style';
 
-const Gallery = ({ elements, enqueueSnackbar }) => {
+const Gallery = ({ elements, location, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     alert: {
@@ -49,6 +50,58 @@ const Gallery = ({ elements, enqueueSnackbar }) => {
     },
   });
   const classes = GalleryStyles();
+
+  const artwork = elements.map((element, index) => {
+    return (
+      <Card key={index} className={classes.root}>
+        <CardHeader
+          title={element.owner.name}
+          subheader={
+            element.current.availability
+              ? element.current.price
+                ? `$${element.current.price}`
+                : 'Free'
+              : 'Showcase'
+          }
+        />
+        <CardMedia
+          component={Link}
+          to={`/artwork/${element._id}`}
+          className={classes.media}
+          image={element.current.cover}
+          title={element.current.title}
+        />
+        <CardContent>
+          <Typography variant="body2" color="textSecondary" component="p">
+            {element.current.title}
+          </Typography>
+        </CardContent>
+        <CardActions disableSpacing>
+          {store.user.saved[element._id] ? (
+            <IconButton
+              onClick={() => handleUnsaveArtwork(element._id)}
+              aria-label="Unsave artwork"
+            >
+              <SavedIcon />
+            </IconButton>
+          ) : (
+            <IconButton
+              onClick={() => handleSaveArtwork(element._id)}
+              aria-label="Save artwork"
+            >
+              <SaveIcon />
+            </IconButton>
+          )}
+          <IconButton
+            onClick={() => handleModalOpen(element._id)}
+            aria-label="Share artwork"
+          >
+            <ShareIcon />
+          </IconButton>
+        </CardActions>
+      </Card>
+    );
+  });
 
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;
@@ -153,58 +206,6 @@ const Gallery = ({ elements, enqueueSnackbar }) => {
       modal: { ...prevState.modal, open: false, body: `` },
     }));
   };
-
-  const artwork = elements.map((element, index) => {
-    return (
-      <Card key={index} className={classes.root}>
-        <CardHeader
-          title={element.owner.name}
-          subheader={
-            element.current.available
-              ? element.current.price
-                ? `$${element.current.price}`
-                : 'Free'
-              : 'Showcase'
-          }
-        />
-        <CardMedia
-          component={Link}
-          to={`/artwork/${element._id}`}
-          className={classes.media}
-          image={element.current.cover}
-          title={element.current.title}
-        />
-        <CardContent>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {element.current.title}
-          </Typography>
-        </CardContent>
-        <CardActions disableSpacing>
-          {store.user.saved[element._id] ? (
-            <IconButton
-              onClick={() => handleUnsaveArtwork(element._id)}
-              aria-label="Unsave artwork"
-            >
-              <SavedIcon />
-            </IconButton>
-          ) : (
-            <IconButton
-              onClick={() => handleSaveArtwork(element._id)}
-              aria-label="Save artwork"
-            >
-              <SaveIcon />
-            </IconButton>
-          )}
-          <IconButton
-            onClick={() => handleModalOpen(element._id)}
-            aria-label="Share artwork"
-          >
-            <ShareIcon />
-          </IconButton>
-        </CardActions>
-      </Card>
-    );
-  });
 
   return (
     <Paper className={classes.paper}>

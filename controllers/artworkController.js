@@ -16,7 +16,7 @@ const getArtwork = async (req, res, next) => {
       .populate('owner')
       .populate(
         'current',
-        '_id cover created title price use license available description'
+        '_id cover created title price type license availability description'
       );
     return res.json({ artwork: foundArtwork });
   } catch (err) {
@@ -30,7 +30,7 @@ const getUserArtwork = async (req, res, next) => {
       $and: [{ owner: res.locals.user.id }, { active: true }],
     }).populate(
       'current',
-      '_id cover created title price use license available description'
+      '_id cover created title price type license availability description'
     );
     return res.json({ artwork: foundArtwork });
   } catch (err) {
@@ -47,26 +47,16 @@ const postNewArtwork = async (req, res, next) => {
     const { error, value } = postArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
     const newVersion = new Version();
-    newVersion.cover = value.artworkCover;
-    newVersion.media = value.artworkMedia;
-    newVersion.title = value.artworkTitle;
-    newVersion.type = value.artworkType;
-    newVersion.category = value.artworkCategory;
-    newVersion.price = 0;
-    newVersion.use = 'personal';
-    newVersion.license = 0;
-    newVersion.available = true;
-    newVersion.description = value.artworkDescription;
-    if (value.artworkType && value.artworkType == 'commercial') {
-      newVersion.price = value.artworkPrice;
-      if (value.artworkLicense && value.artworkLicense == 'commercial') {
-        newVersion.use = 'commercial';
-        newVersion.license = value.artworkCommercial;
-      }
-    } else {
-      newVersion.available =
-        value.artworkAvailability == 'available' ? true : false;
-    }
+    newVersion.cover = value.artworkCover || '';
+    newVersion.media = value.artworkMedia || '';
+    newVersion.title = value.artworkTitle || '';
+    newVersion.type = value.artworkType || '';
+    newVersion.availability = value.artworkAvailability || '';
+    newVersion.price = value.artworkPrice || 0;
+    newVersion.license = value.artworkLicense || '';
+    newVersion.commercial = value.artworkCommercial || 0;
+    newVersion.category = value.artworkCategory || '';
+    newVersion.description = value.artworkDescription || '';
     const savedVersion = await newVersion.save({ session });
     const newArtwork = new Artwork();
     newArtwork.owner = res.locals.user.id;
@@ -95,7 +85,7 @@ const getArtworkDetails = async (req, res, next) => {
       .populate('comments')
       .populate(
         'current',
-        '_id cover created title price use license available description'
+        '_id cover created title price type license availability description'
       );
     if (foundArtwork) {
       const savedArtwork =
@@ -164,44 +154,16 @@ const updateArtwork = async (req, res, next) => {
     if (error) throw createError(400, error);
     if (foundArtwork) {
       const newVersion = new Version();
-      newVersion.cover = value.artworkCover
-        ? value.artworkCover
-        : foundArtwork.current.cover;
-      newVersion.media = value.artworkMedia
-        ? value.artworkMedia
-        : foundArtwork.current.media;
-      newVersion.title = value.artworkTitle
-        ? value.artworkTitle
-        : foundArtwork.current.title;
-      newVersion.type = value.artworkType
-        ? value.artworkType
-        : foundArtwork.current.type;
-      newVersion.category = value.artworkCategory
-        ? value.artworkCategory
-        : foundArtwork.current.category;
-      newVersion.description = value.artworkDescription
-        ? value.artworkDescription
-        : foundArtwork.current.description;
-      newVersion.category = value.artworkCategory
-        ? value.artworkCategory
-        : foundArtwork.current.category;
-      if (value.artworkType && value.artworkType == 'commercial') {
-        newVersion.price = value.artworkPrice;
-        newVersion.available = true;
-        if (value.artworkLicense && value.artworkLicense == 'commercial') {
-          newVersion.use = 'commercial';
-          newVersion.license = value.artworkCommercial;
-        } else {
-          newVersion.use = 'personal';
-          newVersion.license = 0;
-        }
-      } else {
-        newVersion.use = 'personal';
-        newVersion.price = 0;
-        newVersion.license = 0;
-        newVersion.available =
-          value.artworkAvailability == 'available' ? true : false;
-      }
+      newVersion.cover = value.artworkCover || '';
+      newVersion.media = value.artworkMedia || '';
+      newVersion.title = value.artworkTitle || '';
+      newVersion.type = value.artworkType || '';
+      newVersion.availability = value.artworkAvailability || '';
+      newVersion.price = value.artworkPrice || 0;
+      newVersion.license = value.artworkLicense || '';
+      newVersion.commercial = value.artworkCommercial || 0;
+      newVersion.category = value.artworkCategory || '';
+      newVersion.description = value.artworkDescription || '';
       const savedVersion = await newVersion.save({ session });
       const foundOrder = await Order.find({
         details: { $elemMatch: { artwork: foundArtwork._id } },

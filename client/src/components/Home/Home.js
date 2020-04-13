@@ -2,10 +2,11 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import { Grid, CircularProgress } from '@material-ui/core';
 import ax from '../../axios.config';
+import { withSnackbar } from 'notistack';
 import Gallery from './Gallery';
 import HomeStyles from './Home.style';
 
-const Home = () => {
+const Home = ({ location, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
@@ -26,6 +27,17 @@ const Home = () => {
 
   useEffect(() => {
     fetchArtwork();
+    console.log(location);
+    if (location.state) {
+      enqueueSnackbar(location.state.message, {
+        variant: 'success',
+        autoHideDuration: 1000,
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
+    }
   }, []);
 
   return (
@@ -43,4 +55,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default withSnackbar(Home);
