@@ -3,6 +3,12 @@ import { Context } from '../Store/Store';
 import {
   Container,
   Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  Divider,
   CircularProgress,
   Card,
   CardMedia,
@@ -70,8 +76,33 @@ const ArtworkDetails = ({ match }) => {
                       color="textSecondary"
                       component="p"
                     >
-                      {state.artwork.owner.description ||
-                        "This artist doesn't have much to say about themself"}
+                      {state.artwork.comments.length ? (
+                        <List className={classes.root}>
+                          {state.artwork.comments.map((comment) => (
+                            <React.Fragment key={comment._id}>
+                              <ListItem alignItems="flex-start">
+                                <ListItemAvatar>
+                                  <Avatar
+                                    alt="avatar"
+                                    src={comment.owner.photo}
+                                  />
+                                </ListItemAvatar>
+                                <ListItemText
+                                  primary={
+                                    <Typography className={classes.fonts}>
+                                      {comment.owner.name}
+                                    </Typography>
+                                  }
+                                  secondary={<>{comment.content}</>}
+                                />
+                              </ListItem>
+                              <Divider />
+                            </React.Fragment>
+                          ))}
+                        </List>
+                      ) : (
+                        <p>No comments</p>
+                      )}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -109,27 +140,36 @@ const ArtworkDetails = ({ match }) => {
               <Paper className={classes.paper}>
                 <Card className={classes.root}>
                   <CardContent>
-                    <Typography
-                      className={classes.title}
-                      color="textSecondary"
-                      gutterBottom
-                    >
-                      Word of the Day
-                    </Typography>
                     <Typography variant="h5" component="h2">
-                      A
+                      {state.artwork.current.title}
                     </Typography>
                     <Typography className={classes.pos} color="textSecondary">
-                      adjective
+                      {state.artwork.current.description}
                     </Typography>
                     <Typography variant="body2" component="p">
-                      well meaning and kindly.
-                      <br />
-                      {'"a benevolent smile"'}
+                      {state.artwork.current.available
+                        ? state.artwork.current.price
+                          ? `$${state.artwork.current.price}`
+                          : 'Free'
+                        : 'Showcase'}
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    <Button>Learn More</Button>
+                    {state.artwork.current.available ? (
+                      state.artwork.current.price ? (
+                        <Button>Add to cart</Button>
+                      ) : (
+                        <Button>Download</Button>
+                      )
+                    ) : null}
+                    {state.artwork.owner._id === store.user.id ? (
+                      <Button
+                        component={Link}
+                        to={`/edit_artwork/${state.artwork._id}`}
+                      >
+                        Edit artwork
+                      </Button>
+                    ) : null}
                   </CardActions>
                 </Card>
               </Paper>

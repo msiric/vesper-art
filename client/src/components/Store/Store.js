@@ -5,7 +5,7 @@ const store = {
     loading: true,
     auth: 'jwt',
     brand: 'test',
-    theme: 'dark',
+    theme: 'light',
   },
   user: {
     authenticated: false,

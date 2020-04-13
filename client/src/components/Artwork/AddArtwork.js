@@ -144,7 +144,6 @@ const AddArtwork = () => {
       } catch (err) {
         console.log(err);
       }
-      /* const { data } = await ax.post('/api/add_artwork', values); */
     },
   });
 

@@ -69,7 +69,12 @@ const App = () => {
   }, []);
 
   return (
-    <ThemeProvider theme={artepunktTheme}>
+    <ThemeProvider
+      theme={{
+        ...artepunktTheme,
+        palette: { ...artepunktTheme.palette, type: store.main.theme },
+      }}
+    >
       <SnackbarProvider
         classes={{
           containerAnchorOriginTopCenter: classes.alert,

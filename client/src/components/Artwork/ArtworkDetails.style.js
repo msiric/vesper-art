@@ -34,6 +34,16 @@ const ArtworkDetailsStyles = makeStyles((muiTheme) => ({
   avatar: {
     paddingTop: '30%',
   },
+  root: {
+    width: '100%',
+    backgroundColor: muiTheme.palette.background.paper,
+  },
+  fonts: {
+    fontWeight: 'bold',
+  },
+  inline: {
+    display: 'inline',
+  },
 }));
 
 export default ArtworkDetailsStyles;
