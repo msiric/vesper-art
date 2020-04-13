@@ -14,19 +14,12 @@ import {
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import ax from '../../axios.config';
-import Alert from '../../shared/Alert/Alert';
 import ArtworkDetailsStyles from './ArtworkDetails.style';
 
 const ArtworkDetails = ({ match }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
-    alert: {
-      message: '',
-      type: '',
-      duration: 0,
-      open: false,
-    },
     artwork: {},
   });
 
@@ -39,11 +32,6 @@ const ArtworkDetails = ({ match }) => {
     } catch (err) {
       setState({ ...state, loading: false });
     }
-  };
-
-  const handleClose = (e, reason) => {
-    if (reason === 'clickaway') return;
-    setState({ ...state, alert: { ...state.alert, open: false } });
   };
 
   useEffect(() => {
@@ -153,7 +141,6 @@ const ArtworkDetails = ({ match }) => {
           </Grid>
         </Grid>
       )}
-      <Alert {...state.alert} handleClose={handleClose} />
     </Container>
   );
 };

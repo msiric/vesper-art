@@ -105,24 +105,24 @@ const Header = () => {
         <p>Artwork</p>
       </MenuItem>
       <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="secondary">
+        <IconButton aria-label="Show messages" color="inherit">
+          <Badge badgeContent={store.user.messages} color="secondary">
             <MailIcon />
           </Badge>
         </IconButton>
         <p>Messages</p>
       </MenuItem>
       <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
+        <IconButton aria-label="Show notifications" color="inherit">
+          <Badge badgeContent={store.user.notifications} color="secondary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
       <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
+        <IconButton aria-label="Show cart" color="inherit">
+          <Badge badgeContent={0} color="secondary">
             <CartIcon />
           </Badge>
         </IconButton>
@@ -130,7 +130,7 @@ const Header = () => {
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
-          aria-label="account of current user"
+          aria-label="Show profile"
           aria-controls="primary-search-account-menu"
           aria-haspopup="true"
           color="inherit"
@@ -193,30 +193,27 @@ const Header = () => {
                 <IconButton component={Link} to="/add_artwork" color="inherit">
                   <AddIcon />
                 </IconButton>
-                <IconButton aria-label="show 4 new mails" color="inherit">
-                  <Badge badgeContent={4} color="secondary">
+                <IconButton aria-label="Show messages" color="inherit">
+                  <Badge badgeContent={store.user.messages} color="secondary">
                     <MailIcon />
                   </Badge>
                 </IconButton>
-                <IconButton
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
-                  <Badge badgeContent={17} color="secondary">
+                <IconButton aria-label="Show notifications" color="inherit">
+                  <Badge
+                    badgeContent={store.user.notifications}
+                    color="secondary"
+                  >
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
-                <IconButton
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
-                  <Badge badgeContent={17} color="secondary">
+                <IconButton aria-label="Show cart" color="inherit">
+                  <Badge badgeContent={0} color="secondary">
                     <CartIcon />
                   </Badge>
                 </IconButton>
                 <IconButton
                   edge="end"
-                  aria-label="account of current user"
+                  aria-label="Show profile"
                   aria-controls={menuId}
                   aria-haspopup="true"
                   onClick={handleProfileMenuOpen}
@@ -227,7 +224,7 @@ const Header = () => {
               </div>
               <div className={classes.sectionMobile}>
                 <IconButton
-                  aria-label="show more"
+                  aria-label="Show more"
                   aria-controls={mobileMenuId}
                   aria-haspopup="true"
                   onClick={handleMobileMenuOpen}
@@ -249,7 +246,7 @@ const Header = () => {
               </div>
               <div className={classes.sectionMobile}>
                 <IconButton
-                  aria-label="show more"
+                  aria-label="Show more"
                   aria-controls={mobileMenuId}
                   aria-haspopup="true"
                   onClick={handleMobileMenuOpen}

@@ -1,15 +1,24 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, createRef } from 'react';
 import Router from '../Router/Router';
 import { Context } from '../Store/Store';
 import { ThemeProvider } from '@material-ui/core/styles';
-import { CssBaseline } from '@material-ui/core';
+import { CssBaseline, IconButton } from '@material-ui/core';
+import { Close as CloseIcon } from '@material-ui/icons';
+import { SnackbarProvider } from 'notistack';
 import { artepunktTheme } from '../../constants/theme';
 import axios from 'axios';
+import AppStyles from './App.style';
 
 const App = () => {
   const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({ loading: true });
 
-  const [loading, setLoading] = useState(true);
+  const notistackRef = createRef();
+  const onClickDismiss = (key) => () => {
+    notistackRef.current.closeSnackbar(key);
+  };
+
+  const classes = AppStyles();
 
   const getRefreshToken = async () => {
     if (!window.accessToken) {
@@ -41,19 +50,36 @@ const App = () => {
         });
       }
     }
-    setLoading(false);
+    setState((prevState) => ({ ...prevState, loading: false }));
   };
 
   useEffect(() => {
     getRefreshToken();
   }, []);
 
-  return loading ? (
+  return state.loading ? (
     <div>Loading...</div>
   ) : (
     <ThemeProvider theme={artepunktTheme}>
-      <CssBaseline />
-      <Router />
+      <SnackbarProvider
+        dense
+        maxSnack={3}
+        preventDuplicate
+        ref={notistackRef}
+        action={(key) => (
+          <IconButton
+            color="inherit"
+            aria-label="Close"
+            className={classes.close}
+            onClick={onClickDismiss(key)}
+          >
+            <CloseIcon />
+          </IconButton>
+        )}
+      >
+        <CssBaseline />
+        <Router />
+      </SnackbarProvider>
     </ThemeProvider>
   );
 };

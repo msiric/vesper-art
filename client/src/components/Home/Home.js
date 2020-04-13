@@ -3,19 +3,13 @@ import { Context } from '../Store/Store';
 import { Grid, CircularProgress } from '@material-ui/core';
 import ax from '../../axios.config';
 import Gallery from './Gallery';
-import Alert from '../../shared/Alert/Alert';
 import HomeStyles from './Home.style';
 
 const Home = () => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
-    alert: {
-      message: '',
-      type: '',
-      duration: 0,
-      open: false,
-    },
+    alerts: [],
     artwork: [],
   });
 
@@ -28,11 +22,6 @@ const Home = () => {
     } catch (err) {
       setState({ ...state, loading: false });
     }
-  };
-
-  const handleClose = (e, reason) => {
-    if (reason === 'clickaway') return;
-    setState({ ...state, alert: { ...state.alert, open: false } });
   };
 
   useEffect(() => {
@@ -49,7 +38,6 @@ const Home = () => {
         ) : (
           'No artwork'
         )}
-        <Alert {...state.alert} handleClose={handleClose} />
       </Grid>
     </Grid>
   );

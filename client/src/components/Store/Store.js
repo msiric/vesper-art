@@ -1,7 +1,7 @@
 import React, { createContext, useReducer } from 'react';
 
 const store = {
-  settings: {
+  main: {
     auth: 'jwt',
     brand: 'test',
     theme: 'dark',
@@ -19,6 +19,15 @@ const store = {
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case 'setMain':
+      return {
+        ...state,
+        main: {
+          auth: action.auth,
+          brand: action.brand,
+          theme: action.theme,
+        },
+      };
     case 'setUser':
       return {
         ...state,

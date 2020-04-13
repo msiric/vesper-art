@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Context } from '../Store/Store';
 import Modal from '../../shared/Modal/Modal';
-import Alert from '../../shared/Alert/Alert';
 import Masonry from 'react-mason';
 import {
   Paper,
@@ -29,12 +28,13 @@ import {
   RedditIcon,
   TwitterIcon,
 } from 'react-share';
+import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ax from '../../axios.config';
 import GalleryStyles from './Gallery.style';
 
-const Gallery = ({ elements }) => {
+const Gallery = ({ elements, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     alert: {
@@ -52,7 +52,7 @@ const Gallery = ({ elements }) => {
 
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;
-    const title = store.settings.brand;
+    const title = store.main.brand;
 
     return (
       <div className={classes.shareContainer}>
@@ -60,16 +60,14 @@ const Gallery = ({ elements }) => {
           <CopyToClipboard
             text={url}
             onCopy={() =>
-              setState((prevState) => ({
-                ...prevState,
-                alert: {
-                  ...prevState.alert,
-                  message: 'Link copied',
-                  type: 'success',
-                  duration: 3000,
-                  open: true,
+              enqueueSnackbar('Link copied', {
+                variant: 'success',
+                autoHideDuration: 3000,
+                anchorOrigin: {
+                  vertical: 'top',
+                  horizontal: 'center',
                 },
-              }))
+              })
             }
           >
             <CopyIcon />
@@ -219,9 +217,8 @@ const Gallery = ({ elements }) => {
     <Paper className={classes.paper}>
       <Masonry>{artwork}</Masonry>
       <Modal {...state.modal} handleClose={handleModalClose} />
-      <Alert {...state.alert} handleClose={handleAlertClose} />
     </Paper>
   );
 };
 
-export default Gallery;
+export default withSnackbar(Gallery);
