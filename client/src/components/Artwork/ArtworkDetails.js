@@ -7,6 +7,7 @@ import {
   Card,
   CardMedia,
   CardContent,
+  CardActions,
   Typography,
   Paper,
   Button,
@@ -108,37 +109,28 @@ const ArtworkDetails = ({ match }) => {
               <Paper className={classes.paper}>
                 <Card className={classes.root}>
                   <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {state.artwork.current.title}
-                    </Typography>
                     <Typography
-                      variant="body2"
+                      className={classes.title}
                       color="textSecondary"
-                      component="p"
+                      gutterBottom
                     >
-                      {state.artwork.current.description}
+                      Word of the Day
                     </Typography>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {state.artwork.current.price}
+                    <Typography variant="h5" component="h2">
+                      A
                     </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="p"
-                    >
-                      {state.artwork.owner.description ||
-                        "This artist doesn't have much to say about themself"}
+                    <Typography className={classes.pos} color="textSecondary">
+                      adjective
                     </Typography>
-                    <Button
-                      component={Link}
-                      to={`/cart`}
-                      color="primary"
-                      variant="contained"
-                      fullWidth
-                    >
-                      Continue
-                    </Button>
+                    <Typography variant="body2" component="p">
+                      well meaning and kindly.
+                      <br />
+                      {'"a benevolent smile"'}
+                    </Typography>
                   </CardContent>
+                  <CardActions>
+                    <Button>Learn More</Button>
+                  </CardActions>
                 </Card>
               </Paper>
             </Grid>

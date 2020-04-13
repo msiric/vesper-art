@@ -154,13 +154,6 @@ const Gallery = ({ elements, enqueueSnackbar }) => {
     }));
   };
 
-  const handleAlertClose = () => {
-    setState((prevState) => ({
-      ...prevState,
-      alert: { ...prevState.alert, open: false },
-    }));
-  };
-
   const artwork = elements.map((element, index) => {
     return (
       <Card key={index} className={classes.root}>

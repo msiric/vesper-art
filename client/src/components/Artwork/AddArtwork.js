@@ -5,6 +5,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 import {
+  Container,
   Card,
   Typography,
   CardContent,
@@ -148,146 +149,149 @@ const AddArtwork = () => {
   });
 
   return (
-    <div className={classes.container}>
-      <form className={classes.form} onSubmit={handleSubmit}>
-        <Typography variant="h6" align="center">
-          Add artwork
-        </Typography>
-        <Card className={classes.card}>
-          <CardContent>
-            <UploadInput name="artworkMedia" setFieldValue={setFieldValue} />
-            <TextField
-              name="artworkTitle"
-              label="Title"
-              type="text"
-              value={values.artworkTitle}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              helperText={touched.artworkTitle ? errors.artworkTitle : ''}
-              error={touched.artworkTitle && Boolean(errors.artworkTitle)}
-              margin="dense"
-              variant="outlined"
-              fullWidth
-            />
-            <SelectInput
-              name="artworkAvailability"
-              label="Availability"
-              value={values.artworkAvailability}
-              handleChange={handleChange}
-              handleBlur={handleBlur}
-              helperText={
-                touched.artworkAvailability ? errors.artworkAvailability : ''
-              }
-              error={
-                touched.artworkAvailability &&
-                Boolean(errors.artworkAvailability)
-              }
-              options={[
-                { value: '' },
-                { value: 'available', text: 'Available for download' },
-                { value: 'unavailable', text: 'Only for preview' },
-              ]}
-            />
-            {values.artworkAvailability === 'available' && (
+    <Container fixed className={classes.fixed}>
+      <div className={classes.container}>
+        <form className={classes.form} onSubmit={handleSubmit}>
+          <Typography variant="h6" align="center">
+            Add artwork
+          </Typography>
+          <Card className={classes.card}>
+            <CardContent>
+              <UploadInput name="artworkMedia" setFieldValue={setFieldValue} />
+              <TextField
+                name="artworkTitle"
+                label="Title"
+                type="text"
+                value={values.artworkTitle}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                helperText={touched.artworkTitle ? errors.artworkTitle : ''}
+                error={touched.artworkTitle && Boolean(errors.artworkTitle)}
+                margin="dense"
+                variant="outlined"
+                fullWidth
+              />
               <SelectInput
-                name="artworkType"
-                label="Type"
-                value={values.artworkType}
+                name="artworkAvailability"
+                label="Availability"
+                value={values.artworkAvailability}
                 handleChange={handleChange}
                 handleBlur={handleBlur}
-                helperText={touched.artworkType ? errors.artworkType : ''}
-                error={touched.artworkType && Boolean(errors.artworkType)}
+                helperText={
+                  touched.artworkAvailability ? errors.artworkAvailability : ''
+                }
+                error={
+                  touched.artworkAvailability &&
+                  Boolean(errors.artworkAvailability)
+                }
                 options={[
                   { value: '' },
-                  { value: 'commercial', text: 'Commercial' },
-                  { value: 'free', text: 'Free' },
+                  { value: 'available', text: 'Available for download' },
+                  { value: 'unavailable', text: 'Only for preview' },
                 ]}
               />
-            )}
-            {values.artworkAvailability === 'available' &&
-              values.artworkType === 'commercial' && (
-                <PriceInput
-                  name="artworkPrice"
-                  label="Price"
-                  value={values.artworkPrice}
-                  handleChange={handleChange}
-                  handleBlur={handleBlur}
-                  helperText={touched.artworkPrice ? errors.artworkPrice : ''}
-                  error={touched.artworkPrice && Boolean(errors.artworkPrice)}
-                  margin="dense"
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
-            {values.artworkAvailability === 'available' &&
-              values.artworkType === 'commercial' && (
+              {values.artworkAvailability === 'available' && (
                 <SelectInput
-                  name="artworkLicense"
-                  label="License"
-                  value={values.artworkLicense}
+                  name="artworkType"
+                  label="Type"
+                  value={values.artworkType}
                   handleChange={handleChange}
                   handleBlur={handleBlur}
-                  helperText={
-                    touched.artworkLicense ? errors.artworkLicense : ''
-                  }
-                  error={
-                    touched.artworkLicense && Boolean(errors.artworkLicense)
-                  }
+                  helperText={touched.artworkType ? errors.artworkType : ''}
+                  error={touched.artworkType && Boolean(errors.artworkType)}
                   options={[
                     { value: '' },
                     { value: 'commercial', text: 'Commercial' },
-                    { value: 'personal', text: 'Personal' },
+                    { value: 'free', text: 'Free' },
                   ]}
                 />
               )}
-            {values.artworkAvailability === 'available' &&
-              values.artworkType === 'commercial' &&
-              values.artworkLicense === 'commercial' && (
-                <PriceInput
-                  name="artworkCommercial"
-                  label="Commercial license???"
-                  value={values.artworkCommercial}
-                  handleChange={handleChange}
-                  handleBlur={handleBlur}
-                  helperText={
-                    touched.artworkCommercial ? errors.artworkCommercial : ''
-                  }
-                  error={
-                    touched.artworkCommercial &&
-                    Boolean(errors.artworkCommercial)
-                  }
-                  margin="dense"
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
-            <TextField
-              name="artworkDescription"
-              label="Description"
-              type="text"
-              value={values.artworkDescription}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              helperText={
-                touched.artworkDescription ? errors.artworkDescription : ''
-              }
-              error={
-                touched.artworkDescription && Boolean(errors.artworkDescription)
-              }
-              margin="dense"
-              variant="outlined"
-              fullWidth
-              multiline
-            />
-          </CardContent>
-          <CardActions className={classes.actions}>
-            <Button type="submit" color="primary" disabled={isSubmitting}>
-              Publish
-            </Button>
-          </CardActions>
-        </Card>
-      </form>
-    </div>
+              {values.artworkAvailability === 'available' &&
+                values.artworkType === 'commercial' && (
+                  <PriceInput
+                    name="artworkPrice"
+                    label="Price"
+                    value={values.artworkPrice}
+                    handleChange={handleChange}
+                    handleBlur={handleBlur}
+                    helperText={touched.artworkPrice ? errors.artworkPrice : ''}
+                    error={touched.artworkPrice && Boolean(errors.artworkPrice)}
+                    margin="dense"
+                    variant="outlined"
+                    fullWidth
+                  />
+                )}
+              {values.artworkAvailability === 'available' &&
+                values.artworkType === 'commercial' && (
+                  <SelectInput
+                    name="artworkLicense"
+                    label="License"
+                    value={values.artworkLicense}
+                    handleChange={handleChange}
+                    handleBlur={handleBlur}
+                    helperText={
+                      touched.artworkLicense ? errors.artworkLicense : ''
+                    }
+                    error={
+                      touched.artworkLicense && Boolean(errors.artworkLicense)
+                    }
+                    options={[
+                      { value: '' },
+                      { value: 'commercial', text: 'Commercial' },
+                      { value: 'personal', text: 'Personal' },
+                    ]}
+                  />
+                )}
+              {values.artworkAvailability === 'available' &&
+                values.artworkType === 'commercial' &&
+                values.artworkLicense === 'commercial' && (
+                  <PriceInput
+                    name="artworkCommercial"
+                    label="Commercial license???"
+                    value={values.artworkCommercial}
+                    handleChange={handleChange}
+                    handleBlur={handleBlur}
+                    helperText={
+                      touched.artworkCommercial ? errors.artworkCommercial : ''
+                    }
+                    error={
+                      touched.artworkCommercial &&
+                      Boolean(errors.artworkCommercial)
+                    }
+                    margin="dense"
+                    variant="outlined"
+                    fullWidth
+                  />
+                )}
+              <TextField
+                name="artworkDescription"
+                label="Description"
+                type="text"
+                value={values.artworkDescription}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                helperText={
+                  touched.artworkDescription ? errors.artworkDescription : ''
+                }
+                error={
+                  touched.artworkDescription &&
+                  Boolean(errors.artworkDescription)
+                }
+                margin="dense"
+                variant="outlined"
+                fullWidth
+                multiline
+              />
+            </CardContent>
+            <CardActions className={classes.actions}>
+              <Button type="submit" color="primary" disabled={isSubmitting}>
+                Publish
+              </Button>
+            </CardActions>
+          </Card>
+        </form>
+      </div>
+    </Container>
   );
 };
 
