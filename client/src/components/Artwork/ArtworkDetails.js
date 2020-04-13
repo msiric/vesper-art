@@ -41,6 +41,24 @@ const ArtworkDetails = ({ match }) => {
     }
   };
 
+  const handleAddToCart = async (id) => {
+    try {
+      const { data } = await ax.get(`/api/artwork/${match.params.id}`);
+      setState({ ...state, loading: false, artwork: data.artwork });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
+
+  const handleDownload = async (id) => {
+    try {
+      const { data } = await ax.get(`/api/artwork/${match.params.id}`);
+      setState({ ...state, loading: false, artwork: data.artwork });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
+
   useEffect(() => {
     fetchArtwork();
   }, []);
@@ -155,11 +173,24 @@ const ArtworkDetails = ({ match }) => {
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    {state.artwork.current.availability ? (
+                    {state.artwork.owner._id !== store.user.id &&
+                    state.artwork.current.availability ? (
                       state.artwork.current.price ? (
-                        <Button>Add to cart</Button>
+                        <Button
+                          onClick={() =>
+                            handleAddToCart(state.artwork.current._id)
+                          }
+                        >
+                          Add to cart
+                        </Button>
                       ) : (
-                        <Button>Download</Button>
+                        <Button
+                          onClick={() =>
+                            handleDownload(state.artwork.current._id)
+                          }
+                        >
+                          Download
+                        </Button>
                       )
                     ) : null}
                     {state.artwork.owner._id === store.user.id ? (

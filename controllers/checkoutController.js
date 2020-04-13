@@ -308,8 +308,8 @@ const addToCart = async (req, res, next) => {
           throw createError(400, 'Item already in cart');
         } else {
           if (
-            foundArtwork.current.type != 'free' &&
-            foundArtwork.current.availability === 'available'
+            foundArtwork.current.availability === 'available' &&
+            foundArtwork.current.type === 'commercial'
           ) {
             if (licenseType == 'personal' || licenseType == 'commercial') {
               if (
