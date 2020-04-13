@@ -1,7 +1,27 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const ArtworkDetailsStyles = makeStyles((muiTheme) => ({
+  fixed: {
+    height: '100%',
+  },
+  container: {
+    flex: 1,
+    height: '100%',
+  },
+  loader: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  grid: {
+    display: 'flex',
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'column',
+  },
   paper: {
+    height: '100%',
     width: '100%',
     padding: muiTheme.spacing(2),
     boxSizing: 'border-box',

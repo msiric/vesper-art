@@ -1,14 +1,26 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { Context } from '../components/Store/Store';
+import { Backdrop, CircularProgress } from '@material-ui/core';
 import Header from '../shared/Header/Header';
 import MainLayoutStyles from './MainLayout.style';
 
 const MainLayout = ({ children }) => {
+  const [store, dispatch] = useContext(Context);
+
   const classes = MainLayoutStyles();
 
   return (
     <div className={classes.root}>
-      <Header />
-      {children}
+      {store.main.loading ? (
+        <Backdrop className={classes.backdrop} open={store.main.loading}>
+          <CircularProgress color="primary" />
+        </Backdrop>
+      ) : (
+        <>
+          <Header />
+          {children}
+        </>
+      )}
     </div>
   );
 };

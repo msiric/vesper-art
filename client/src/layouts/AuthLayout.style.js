@@ -1,14 +1,20 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const AuthLayoutStyles = makeStyles((theme) => ({
+const AuthLayoutStyles = makeStyles((muiTheme) => ({
+  backdrop: {
+    zIndex: muiTheme.zIndex.drawer + 1,
+    color: '#fff',
+    background: '#fff',
+  },
   root: {
-    flexGrow: 1,
-    height: 'inherit',
+    display: 'flex',
+    flexFlow: 'column',
+    height: '100vh',
   },
   paper: {
-    padding: theme.spacing(2),
+    padding: muiTheme.spacing(2),
     textAlign: 'center',
-    color: theme.palette.text.secondary,
+    color: muiTheme.palette.text.secondary,
   },
 }));
 

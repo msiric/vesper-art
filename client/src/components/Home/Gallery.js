@@ -62,7 +62,7 @@ const Gallery = ({ elements, enqueueSnackbar }) => {
             onCopy={() =>
               enqueueSnackbar('Link copied', {
                 variant: 'success',
-                autoHideDuration: 3000,
+                autoHideDuration: 1000,
                 anchorOrigin: {
                   vertical: 'top',
                   horizontal: 'center',

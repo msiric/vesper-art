@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, createRef } from 'react';
+import React, { useEffect, useContext, createRef } from 'react';
 import Router from '../Router/Router';
 import { Context } from '../Store/Store';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -11,14 +11,13 @@ import AppStyles from './App.style';
 
 const App = () => {
   const [store, dispatch] = useContext(Context);
-  const [state, setState] = useState({ loading: true });
-
   const notistackRef = createRef();
-  const onClickDismiss = (key) => () => {
-    notistackRef.current.closeSnackbar(key);
-  };
 
   const classes = AppStyles();
+
+  const handleAlertClose = (key) => () => {
+    notistackRef.current.closeSnackbar(key);
+  };
 
   const getRefreshToken = async () => {
     if (!window.accessToken) {
@@ -31,7 +30,11 @@ const App = () => {
 
       if (data.user) {
         dispatch({
-          type: 'setUser',
+          type: 'setStore',
+          loading: false,
+          auth: store.main.auth,
+          brand: store.main.brand,
+          theme: store.main.theme,
           authenticated: true,
           id: data.user.id,
           name: data.user.name,
@@ -47,21 +50,30 @@ const App = () => {
             object[item] = true;
             return object;
           }, {}),
+          cartSize: Object.keys(data.user.cart).length,
+        });
+      } else {
+        dispatch({
+          type: 'setMain',
+          loading: false,
+          auth: store.main.auth,
+          brand: store.main.brand,
+          theme: store.main.theme,
         });
       }
     }
-    setState((prevState) => ({ ...prevState, loading: false }));
   };
 
   useEffect(() => {
     getRefreshToken();
   }, []);
 
-  return state.loading ? (
-    <div>Loading...</div>
-  ) : (
+  return (
     <ThemeProvider theme={artepunktTheme}>
       <SnackbarProvider
+        classes={{
+          containerAnchorOriginTopCenter: classes.alert,
+        }}
         dense
         maxSnack={3}
         preventDuplicate
@@ -71,7 +83,7 @@ const App = () => {
             color="inherit"
             aria-label="Close"
             className={classes.close}
-            onClick={onClickDismiss(key)}
+            onClick={handleAlertClose(key)}
           >
             <CloseIcon />
           </IconButton>

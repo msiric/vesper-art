@@ -2,6 +2,7 @@ import React, { createContext, useReducer } from 'react';
 
 const store = {
   main: {
+    loading: true,
     auth: 'jwt',
     brand: 'test',
     theme: 'dark',
@@ -14,15 +15,39 @@ const store = {
     photo: null,
     saved: {},
     cart: {},
+    cartSize: null,
   },
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case 'setStore':
+      return {
+        ...state,
+        main: {
+          loading: action.loading,
+          auth: action.auth,
+          brand: action.brand,
+          theme: action.theme,
+        },
+        user: {
+          authenticated: action.authenticated,
+          id: action.id,
+          name: action.name,
+          email: action.email,
+          photo: action.photo,
+          messages: action.messages,
+          notifications: action.notifications,
+          saved: action.saved,
+          cart: action.cart,
+          cartSize: action.cartSize,
+        },
+      };
     case 'setMain':
       return {
         ...state,
         main: {
+          loading: action.loading,
           auth: action.auth,
           brand: action.brand,
           theme: action.theme,
@@ -41,6 +66,7 @@ const reducer = (state, action) => {
           notifications: action.notifications,
           saved: action.saved,
           cart: action.cart,
+          cartSize: action.cartSize,
         },
       };
     default:

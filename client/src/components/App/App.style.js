@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const AppStyles = makeStyles((muiTheme) => ({
-  containerAnchorOriginTopCenter: {
+  alert: {
     width: '100%',
   },
 }));

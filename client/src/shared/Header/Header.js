@@ -122,7 +122,7 @@ const Header = () => {
       </MenuItem>
       <MenuItem>
         <IconButton aria-label="Show cart" color="inherit">
-          <Badge badgeContent={0} color="secondary">
+          <Badge badgeContent={store.user.cartSize} color="secondary">
             <CartIcon />
           </Badge>
         </IconButton>
@@ -207,7 +207,7 @@ const Header = () => {
                   </Badge>
                 </IconButton>
                 <IconButton aria-label="Show cart" color="inherit">
-                  <Badge badgeContent={0} color="secondary">
+                  <Badge badgeContent={store.user.cartSize} color="secondary">
                     <CartIcon />
                   </Badge>
                 </IconButton>

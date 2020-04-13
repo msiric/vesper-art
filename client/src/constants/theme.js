@@ -32,4 +32,10 @@ export const artepunktTheme = createMuiTheme({
   },
 });
 
+artepunktTheme.overrides.MuiSnackbarContent = {
+  root: {
+    padding: '0 10px',
+  },
+};
+
 export default artepunktTheme;

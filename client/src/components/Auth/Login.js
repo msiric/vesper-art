@@ -64,6 +64,7 @@ const Login = () => {
             object[item] = true;
             return object;
           }, {}),
+          cartSize: Object.keys(data.user.cart).length,
         });
       }
       history.push('/');
