@@ -200,7 +200,24 @@ const ArtworkDetails = ({ match }) => {
                     <Typography className={classes.pos} color="textSecondary">
                       {state.artwork.current.description}
                     </Typography>
+                    {state.artwork.current.availability === 'available' ? (
+                      <>
+                        <Typography variant="body2" component="p">
+                          Artwork price: $
+                          {state.artwork.current.price || 'Free'}
+                        </Typography>
+                        <Typography variant="body2" component="p">
+                          Commercial license:
+                          {state.artwork.current.commercial
+                            ? ` $${state.artwork.current.commercial}`
+                            : ' Free'}
+                        </Typography>
+                      </>
+                    ) : null}
                     <Typography variant="body2" component="p">
+                      {state.artwork.current.availability === 'available'
+                        ? 'Total: '
+                        : null}
                       {state.artwork.current.availability === 'available'
                         ? state.artwork.current.price
                           ? state.license === 'personal'
