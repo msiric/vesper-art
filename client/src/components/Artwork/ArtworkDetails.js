@@ -191,7 +191,7 @@ const ArtworkDetails = ({ match }) => {
                       {state.artwork.current.description}
                     </Typography>
                     <Typography variant="body2" component="p">
-                      {state.artwork.current.availability
+                      {state.artwork.current.availability === 'available'
                         ? state.artwork.current.price
                           ? `$${state.artwork.current.price}`
                           : 'Free'
@@ -200,7 +200,7 @@ const ArtworkDetails = ({ match }) => {
                   </CardContent>
                   <CardActions>
                     {state.artwork.owner._id !== store.user.id &&
-                    state.artwork.current.availability ? (
+                    state.artwork.current.availability === 'available' ? (
                       state.artwork.current.price ? (
                         <Button onClick={() => handleModalOpen()}>
                           Add to cart

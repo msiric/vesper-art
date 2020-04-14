@@ -52,8 +52,9 @@ const postNewArtwork = async (req, res, next) => {
     newVersion.title = value.artworkTitle || '';
     newVersion.type = value.artworkType || '';
     newVersion.availability = value.artworkAvailability || '';
-    newVersion.price = value.artworkPrice || 0;
     newVersion.license = value.artworkLicense || '';
+    newVersion.use = value.artworkUse || '';
+    newVersion.price = value.artworkPrice || 0;
     newVersion.commercial = value.artworkCommercial || 0;
     newVersion.category = value.artworkCategory || '';
     newVersion.description = value.artworkDescription || '';
@@ -159,8 +160,9 @@ const updateArtwork = async (req, res, next) => {
       newVersion.title = value.artworkTitle || '';
       newVersion.type = value.artworkType || '';
       newVersion.availability = value.artworkAvailability || '';
-      newVersion.price = value.artworkPrice || 0;
       newVersion.license = value.artworkLicense || '';
+      newVersion.use = value.artworkUse || '';
+      newVersion.price = value.artworkPrice || 0;
       newVersion.commercial = value.artworkCommercial || 0;
       newVersion.category = value.artworkCategory || '';
       newVersion.description = value.artworkDescription || '';

@@ -23,6 +23,7 @@ ax.interceptors.response.use(
     return response;
   },
   async (error) => {
+    console.log(error);
     if (error.response.status !== 401) {
       return new Promise((resolve, reject) => {
         reject(error);

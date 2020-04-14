@@ -60,6 +60,14 @@ const validationSchema = Yup.object().shape({
         .matches(/(commercial|free)/)
         .required('Artwork type is required'),
     }),
+  artworkLicense: Yup.string()
+    .notRequired()
+    .when('artworkAvailability', {
+      is: 'available',
+      then: Yup.string()
+        .matches(/(commercial|personal)/)
+        .required('Artwork license is required'),
+    }),
   artworkPrice: Yup.number()
     .notRequired()
     .when(['artworkAvailability', 'artworkType'], {
@@ -72,22 +80,22 @@ const validationSchema = Yup.object().shape({
         .max(100000)
         .required('Artwork price is required'),
     }),
-  artworkLicense: Yup.string()
+  artworkUse: Yup.string()
     .notRequired()
-    .when(['artworkAvailability', 'artworkType'], {
-      is: (artworkAvailability, artworkType) =>
-        artworkAvailability === 'available' && artworkType === 'commercial',
+    .when(['artworkAvailability', 'artworkLicense'], {
+      is: (artworkAvailability, artworkLicense) =>
+        artworkAvailability === 'available' && artworkLicense === 'commercial',
       then: Yup.string()
-        .matches(/(commercial|personal)/)
-        .required('Artwork license is required'),
+        .matches(/(separate|included)/)
+        .required('Commercial use is required'),
     }),
   artworkCommercial: Yup.number()
     .notRequired()
-    .when(['artworkAvailability', 'artworkType', 'artworkLicense'], {
-      is: (artworkAvailability, artworkType, artworkLicense) =>
+    .when(['artworkAvailability', 'artworkLicense', 'artworkUse'], {
+      is: (artworkAvailability, artworkLicense, artworkUse) =>
         artworkAvailability === 'available' &&
-        artworkType === 'commercial' &&
-        artworkLicense === 'commercial',
+        artworkLicense === 'commercial' &&
+        artworkUse === 'separate',
       then: Yup.number()
         .positive('Commercial license cannot be negative')
         .integer()
@@ -124,6 +132,7 @@ const AddArtwork = () => {
       artworkAvailability: '',
       artworkPrice: '',
       artworkLicense: '',
+      artworkUse: '',
       artworkCommercial: '',
       artworkCategory: '',
       artworkDescription: '',
@@ -208,6 +217,26 @@ const AddArtwork = () => {
                   ]}
                 />
               )}
+              {values.artworkAvailability === 'available' && (
+                <SelectInput
+                  name="artworkLicense"
+                  label="License"
+                  value={values.artworkLicense}
+                  handleChange={handleChange}
+                  handleBlur={handleBlur}
+                  helperText={
+                    touched.artworkLicense ? errors.artworkLicense : ''
+                  }
+                  error={
+                    touched.artworkLicense && Boolean(errors.artworkLicense)
+                  }
+                  options={[
+                    { value: '' },
+                    { value: 'commercial', text: 'Commercial' },
+                    { value: 'personal', text: 'Personal' },
+                  ]}
+                />
+              )}
               {values.artworkAvailability === 'available' &&
                 values.artworkType === 'commercial' && (
                   <PriceInput
@@ -224,32 +253,38 @@ const AddArtwork = () => {
                   />
                 )}
               {values.artworkAvailability === 'available' &&
-                values.artworkType === 'commercial' && (
+                values.artworkLicense === 'commercial' && (
                   <SelectInput
-                    name="artworkLicense"
-                    label="License"
-                    value={values.artworkLicense}
+                    name="artworkUse"
+                    label="Commercial use"
+                    value={values.artworkUse}
                     handleChange={handleChange}
                     handleBlur={handleBlur}
-                    helperText={
-                      touched.artworkLicense ? errors.artworkLicense : ''
-                    }
-                    error={
-                      touched.artworkLicense && Boolean(errors.artworkLicense)
-                    }
+                    helperText={touched.artworkUse ? errors.artworkUse : ''}
+                    error={touched.artworkUse && Boolean(errors.artworkUse)}
                     options={[
                       { value: '' },
-                      { value: 'commercial', text: 'Commercial' },
-                      { value: 'personal', text: 'Personal' },
+                      {
+                        value: 'separate',
+                        text: 'Charge commercial license separately',
+                      },
+                      {
+                        value: 'included',
+                        text:
+                          values.artworkAvailability === 'available' &&
+                          values.artworkType === 'commercial'
+                            ? 'Include commercial license in the price'
+                            : 'Offer commercial license free of charge',
+                      },
                     ]}
                   />
                 )}
               {values.artworkAvailability === 'available' &&
-                values.artworkType === 'commercial' &&
-                values.artworkLicense === 'commercial' && (
+                values.artworkLicense === 'commercial' &&
+                values.artworkUse === 'separate' && (
                   <PriceInput
                     name="artworkCommercial"
-                    label="Commercial license???"
+                    label="Commercial license"
                     value={values.artworkCommercial}
                     handleChange={handleChange}
                     handleBlur={handleBlur}

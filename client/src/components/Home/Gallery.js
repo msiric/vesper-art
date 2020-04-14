@@ -50,7 +50,7 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
         <CardHeader
           title={element.owner.name}
           subheader={
-            element.current.availability
+            element.current.availability === 'available'
               ? element.current.price
                 ? `$${element.current.price}`
                 : 'Free'

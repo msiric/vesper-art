@@ -11,6 +11,11 @@ const schema = Joi.object().keys({
     then: Joi.string().valid('commercial', 'free').required(),
     otherwise: Joi.forbidden(),
   }),
+  artworkLicense: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.string().valid('commercial', 'personal').required(),
+    otherwise: Joi.forbidden(),
+  }),
   artworkPrice: Joi.when('artworkAvailability', {
     is: 'available',
     then: Joi.when('artworkType', {
@@ -19,20 +24,20 @@ const schema = Joi.object().keys({
       otherwise: Joi.forbidden(),
     }),
   }),
-  artworkLicense: Joi.when('artworkAvailability', {
+  artworkUse: Joi.when('artworkAvailability', {
     is: 'available',
-    then: Joi.when('artworkType', {
+    then: Joi.when('artworkLicense', {
       is: 'commercial',
-      then: Joi.string().valid('commercial', 'personal').required(),
+      then: Joi.string().valid('separate', 'included').required(),
       otherwise: Joi.forbidden(),
     }),
   }),
   artworkCommercial: Joi.when('artworkAvailability', {
     is: 'available',
-    then: Joi.when('artworkType', {
+    then: Joi.when('artworkLicense', {
       is: 'commercial',
-      then: Joi.when('artworkLicense', {
-        is: 'commercial',
+      then: Joi.when('artworkUse', {
+        is: 'separate',
         then: Joi.number().integer().required(),
         otherwise: Joi.forbidden(),
       }),
