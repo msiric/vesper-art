@@ -50,6 +50,7 @@ ax.interceptors.response.use(
     });
 
     window.accessToken = data.accessToken;
+    // update user info
 
     const config = error.config;
     config.headers['Authorization'] = `Bearer ${data.accessToken}`;

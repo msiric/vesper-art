@@ -139,6 +139,8 @@ const AddArtwork = () => {
         } = await ax.post('/api/artwork_media_upload', formData);
         values.artworkCover = artworkCover;
         values.artworkMedia = artworkMedia;
+        console.log('cover', values.artworkCover);
+        console.log('media', values.artworkMedia);
         const data = deleteEmptyValues(values);
         await ax.post('/api/add_artwork', data);
         history.push({

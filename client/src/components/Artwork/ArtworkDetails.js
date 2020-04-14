@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
+import Modal from '../../shared/Modal/Modal';
 import {
   Container,
   Grid,
@@ -28,20 +29,21 @@ const ArtworkDetails = ({ match }) => {
   const [state, setState] = useState({
     loading: true,
     artwork: {},
+    modal: {
+      open: false,
+      body: ``,
+    },
   });
 
   const classes = ArtworkDetailsStyles();
 
-  const fetchArtwork = async () => {
-    try {
-      const { data } = await ax.get(`/api/artwork/${match.params.id}`);
-      setState({ ...state, loading: false, artwork: data.artwork });
-    } catch (err) {
-      setState({ ...state, loading: false });
-    }
+  const modalBody = () => {
+    return (
+      <div className={classes.licenseContainer}>Testing license modal</div>
+    );
   };
 
-  const handleAddToCart = async (id) => {
+  const fetchArtwork = async () => {
     try {
       const { data } = await ax.get(`/api/artwork/${match.params.id}`);
       setState({ ...state, loading: false, artwork: data.artwork });
@@ -57,6 +59,28 @@ const ArtworkDetails = ({ match }) => {
     } catch (err) {
       setState({ ...state, loading: false });
     }
+  };
+
+  const handleModalOpen = () => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: {
+        ...prevState.modal,
+        open: true,
+        body: modalBody(),
+      },
+    }));
+  };
+
+  const handleModalClose = () => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: {
+        ...prevState.modal,
+        open: false,
+        body: ``,
+      },
+    }));
   };
 
   useEffect(() => {
@@ -78,7 +102,7 @@ const ArtworkDetails = ({ match }) => {
                   <CardMedia
                     className={classes.cover}
                     image={state.artwork.current.cover}
-                    title="Contemplative Reptile"
+                    title={state.artwork.current.title}
                   />
                 </Card>
               </Paper>
@@ -101,7 +125,7 @@ const ArtworkDetails = ({ match }) => {
                               <ListItem alignItems="flex-start">
                                 <ListItemAvatar>
                                   <Avatar
-                                    alt="avatar"
+                                    alt={comment.owner.name}
                                     src={comment.owner.photo}
                                   />
                                 </ListItemAvatar>
@@ -176,11 +200,7 @@ const ArtworkDetails = ({ match }) => {
                     {state.artwork.owner._id !== store.user.id &&
                     state.artwork.current.availability ? (
                       state.artwork.current.price ? (
-                        <Button
-                          onClick={() =>
-                            handleAddToCart(state.artwork.current._id)
-                          }
-                        >
+                        <Button onClick={() => handleModalOpen()}>
                           Add to cart
                         </Button>
                       ) : (
@@ -207,6 +227,7 @@ const ArtworkDetails = ({ match }) => {
             </Grid>
           </>
         )}
+        <Modal {...state.modal} handleClose={handleModalClose} />
       </Grid>
     </Container>
   );

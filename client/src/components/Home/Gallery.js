@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react';
 import { Context } from '../Store/Store';
 import Modal from '../../shared/Modal/Modal';
 import Masonry from 'react-mason';
-import { spacing } from '@material-ui/system';
 import {
   Paper,
   Card,
@@ -196,14 +195,22 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
   const handleModalOpen = (id) => {
     setState((prevState) => ({
       ...prevState,
-      modal: { ...prevState.modal, open: true, body: modalBody(id) },
+      modal: {
+        ...prevState.modal,
+        open: true,
+        body: modalBody(id),
+      },
     }));
   };
 
   const handleModalClose = () => {
     setState((prevState) => ({
       ...prevState,
-      modal: { ...prevState.modal, open: false, body: `` },
+      modal: {
+        ...prevState.modal,
+        open: false,
+        body: ``,
+      },
     }));
   };
 
