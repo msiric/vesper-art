@@ -106,7 +106,11 @@ const validationSchema = Yup.object().shape({
 
 const EditArtwork = ({ match }) => {
   const [store, dispatch] = useContext(Context);
-  const [state, setState] = useState({ loading: true, artwork: {} });
+  const [state, setState] = useState({
+    loading: true,
+    isDeleting: false,
+    artwork: {},
+  });
   const history = useHistory();
 
   const classes = EditArtworkStyles();
@@ -117,6 +121,19 @@ const EditArtwork = ({ match }) => {
       setState({ ...state, loading: false, artwork: data.artwork });
     } catch (err) {
       setState({ ...state, loading: false });
+    }
+  };
+
+  const handleDeleteArtwork = async () => {
+    try {
+      setState({ ...state, isDeleting: true });
+      await ax.delete(`/api/edit_artwork/${match.params.id}`);
+      history.push({
+        pathname: '/',
+        state: { message: 'Artwork deleted' },
+      });
+    } catch (err) {
+      setState({ ...state, isDeleting: false });
     }
   };
 
@@ -158,6 +175,10 @@ const EditArtwork = ({ match }) => {
         values.artworkMedia = artworkMedia;
         const data = deleteEmptyValues(values);
         await ax.patch(`/api/edit_artwork/${match.params.id}`, data);
+        history.push({
+          pathname: '/',
+          state: { message: 'Artwork edited' },
+        });
       } catch (err) {
         console.log(err);
       }
@@ -170,7 +191,7 @@ const EditArtwork = ({ match }) => {
         <Grid item xs={12} className={classes.loader}>
           <CircularProgress />
         </Grid>
-      ) : (
+      ) : state.artwork._id ? (
         <div className={classes.container}>
           <form className={classes.form} onSubmit={handleSubmit}>
             <Typography variant="h6" align="center">
@@ -316,13 +337,27 @@ const EditArtwork = ({ match }) => {
                 />
               </CardContent>
               <CardActions className={classes.actions}>
-                <Button type="submit" color="primary" disabled={isSubmitting}>
-                  Publish
+                <Button
+                  type="submit"
+                  color="primary"
+                  disabled={isSubmitting || state.isDeleting}
+                >
+                  Publish artwork
+                </Button>
+                <Button
+                  type="button"
+                  color="error"
+                  onClick={handleDeleteArtwork}
+                  disabled={isSubmitting || state.isDeleting}
+                >
+                  Delete artwork
                 </Button>
               </CardActions>
             </Card>
           </form>
         </div>
+      ) : (
+        history.push('/')
       )}
     </Container>
   );

@@ -1,9 +1,8 @@
-import React, { useContext, useCallback } from 'react';
+import React, { useContext } from 'react';
 import { Context } from '../Store/Store';
 import { useHistory } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
 import {
   Container,
   Card,
@@ -139,8 +138,6 @@ const AddArtwork = () => {
         } = await ax.post('/api/artwork_media_upload', formData);
         values.artworkCover = artworkCover;
         values.artworkMedia = artworkMedia;
-        console.log('cover', values.artworkCover);
-        console.log('media', values.artworkMedia);
         const data = deleteEmptyValues(values);
         await ax.post('/api/add_artwork', data);
         history.push({
@@ -290,7 +287,7 @@ const AddArtwork = () => {
             </CardContent>
             <CardActions className={classes.actions}>
               <Button type="submit" color="primary" disabled={isSubmitting}>
-                Publish
+                Publish artwork
               </Button>
             </CardActions>
           </Card>

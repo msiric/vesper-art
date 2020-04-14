@@ -37,12 +37,6 @@ import GalleryStyles from './Gallery.style';
 const Gallery = ({ elements, location, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
-    alert: {
-      message: '',
-      type: '',
-      duration: 0,
-      open: false,
-    },
     modal: {
       open: false,
       body: ``,
@@ -171,6 +165,14 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
           [id]: true,
         },
       });
+      enqueueSnackbar('Artwork saved', {
+        variant: 'success',
+        autoHideDuration: 1000,
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
     } catch (err) {
       console.log(err);
     }
@@ -185,6 +187,14 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
         saved: {
           ...store.saved,
           [id]: false,
+        },
+      });
+      enqueueSnackbar('Artwork unsaved', {
+        variant: 'success',
+        autoHideDuration: 1000,
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
         },
       });
     } catch (err) {

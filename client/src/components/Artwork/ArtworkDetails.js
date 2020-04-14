@@ -20,7 +20,7 @@ import {
   Button,
   Link as Anchor,
 } from '@material-ui/core';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
 import ArtworkDetailsStyles from './ArtworkDetails.style';
 
@@ -34,6 +34,7 @@ const ArtworkDetails = ({ match }) => {
       body: ``,
     },
   });
+  const history = useHistory();
 
   const classes = ArtworkDetailsStyles();
 
@@ -55,7 +56,8 @@ const ArtworkDetails = ({ match }) => {
   const handleDownload = async (id) => {
     try {
       const { data } = await ax.get(`/api/artwork/${match.params.id}`);
-      setState({ ...state, loading: false, artwork: data.artwork });
+      if (data.artwork._id)
+        setState({ ...state, loading: false, artwork: data.artwork });
     } catch (err) {
       setState({ ...state, loading: false });
     }
@@ -94,7 +96,7 @@ const ArtworkDetails = ({ match }) => {
           <Grid item xs={12} className={classes.loader}>
             <CircularProgress />
           </Grid>
-        ) : (
+        ) : state.artwork._id ? (
           <>
             <Grid item sm={12} md={7} className={classes.grid}>
               <Paper className={classes.paper}>
@@ -226,6 +228,8 @@ const ArtworkDetails = ({ match }) => {
               </Paper>
             </Grid>
           </>
+        ) : (
+          history.push('/')
         )}
         <Modal {...state.modal} handleClose={handleModalClose} />
       </Grid>
