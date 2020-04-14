@@ -18,6 +18,10 @@ import {
   Typography,
   Paper,
   Button,
+  FormControl,
+  MenuItem,
+  InputLabel,
+  Select,
   Link as Anchor,
 } from '@material-ui/core';
 import { Link, useHistory } from 'react-router-dom';
@@ -29,6 +33,7 @@ const ArtworkDetails = ({ match }) => {
   const [state, setState] = useState({
     loading: true,
     artwork: {},
+    license: 'personal',
     modal: {
       open: false,
       body: ``,
@@ -47,6 +52,7 @@ const ArtworkDetails = ({ match }) => {
   const fetchArtwork = async () => {
     try {
       const { data } = await ax.get(`/api/artwork/${match.params.id}`);
+      console.log(data.artwork);
       setState({ ...state, loading: false, artwork: data.artwork });
     } catch (err) {
       setState({ ...state, loading: false });
@@ -83,6 +89,10 @@ const ArtworkDetails = ({ match }) => {
         body: ``,
       },
     }));
+  };
+
+  const handleLicenseChange = (value) => {
+    setState({ ...state, license: value });
   };
 
   useEffect(() => {
@@ -193,15 +203,59 @@ const ArtworkDetails = ({ match }) => {
                     <Typography variant="body2" component="p">
                       {state.artwork.current.availability === 'available'
                         ? state.artwork.current.price
-                          ? `$${state.artwork.current.price}`
-                          : 'Free'
+                          ? state.license === 'personal'
+                            ? `$${state.artwork.current.price}`
+                            : `$${
+                                state.artwork.current.price +
+                                state.artwork.current.commercial
+                              }`
+                          : state.license === 'personal'
+                          ? 'Free'
+                          : `$${state.artwork.current.commercial}`
                         : 'Showcase'}
                     </Typography>
+                    {state.artwork.current.availability === 'available' ? (
+                      <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor="artworkLicense">
+                          License
+                        </InputLabel>
+                        <Select
+                          label="License"
+                          value={state.license}
+                          onChange={(e) => handleLicenseChange(e.target.value)}
+                          inputProps={{
+                            id: 'artworkLicense',
+                            name: 'artworkLicense',
+                          }}
+                        >
+                          <MenuItem value="personal">Personal</MenuItem>
+                          {state.artwork.current.license === 'commercial' ? (
+                            <MenuItem value="commercial">Commercial</MenuItem>
+                          ) : null}
+                        </Select>
+                      </FormControl>
+                    ) : null}
                   </CardContent>
                   <CardActions>
+                    {console.log(state.artwork.current, state.license)}
                     {state.artwork.owner._id !== store.user.id &&
                     state.artwork.current.availability === 'available' ? (
-                      state.artwork.current.price ? (
+                      state.license === 'personal' ? (
+                        state.artwork.current.price ? (
+                          <Button onClick={() => handleModalOpen()}>
+                            Add to cart
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() =>
+                              handleDownload(state.artwork.current._id)
+                            }
+                          >
+                            Download
+                          </Button>
+                        )
+                      ) : state.artwork.current.price ||
+                        state.artwork.current.commercial ? (
                         <Button onClick={() => handleModalOpen()}>
                           Add to cart
                         </Button>

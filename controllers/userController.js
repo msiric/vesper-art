@@ -16,7 +16,7 @@ const getUserProfile = async (req, res, next) => {
         $and: [{ owner: foundUser._id }, { active: true }],
       }).populate(
         'current',
-        '_id cover created title price type license availability description'
+        '_id cover created title price type license availability description use commercial'
       );
       return res.json({ user: foundUser, artwork: foundArtwork });
     } else {

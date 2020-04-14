@@ -16,7 +16,7 @@ const getArtwork = async (req, res, next) => {
       .populate('owner')
       .populate(
         'current',
-        '_id cover created title price type license availability description'
+        '_id cover created title price type license availability description use commercial'
       );
     return res.json({ artwork: foundArtwork });
   } catch (err) {
@@ -30,7 +30,7 @@ const getUserArtwork = async (req, res, next) => {
       $and: [{ owner: res.locals.user.id }, { active: true }],
     }).populate(
       'current',
-      '_id cover created title price type license availability description'
+      '_id cover created title price type license availability description use commercial'
     );
     return res.json({ artwork: foundArtwork });
   } catch (err) {
@@ -86,7 +86,7 @@ const getArtworkDetails = async (req, res, next) => {
       .populate('comments')
       .populate(
         'current',
-        '_id cover created title price type license availability description'
+        '_id cover created title price type license availability description use commercial'
       );
     if (foundArtwork) {
       const savedArtwork =

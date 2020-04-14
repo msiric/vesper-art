@@ -30,7 +30,7 @@ const getProcessCart = async (req, res, next) => {
   })
     .deepPopulate(
       'cart.artwork.current',
-      '_id cover created title price type license availability description'
+      '_id cover created title price type license availability description use commercial'
     )
     .populate('cart.licenses');
   try {
@@ -87,7 +87,7 @@ const getPaymentCart = async (req, res, next) => {
     })
       .deepPopulate(
         'cart.artwork.current',
-        '_id cover created title price type license availability description'
+        '_id cover created title price type license availability description use commercial'
       )
       .populate('cart.licenses');
     if (foundUser) {
@@ -137,7 +137,7 @@ const postPaymentCart = async (req, res, next) => {
     })
       .deepPopulate(
         'cart.artwork.current',
-        '_id cover created title price type license availability description'
+        '_id cover created title price type license availability description use commercial'
       )
       .populate('cart.licenses')
       .session(session);
@@ -298,7 +298,7 @@ const addToCart = async (req, res, next) => {
       })
         .populate(
           'current',
-          '_id cover created title price type license availability description'
+          '_id cover created title price type license availability description use commercial'
         )
         .session(session);
       if (foundArtwork) {
@@ -382,7 +382,7 @@ const deleteFromCart = async (req, res, next) => {
     })
       .populate(
         'current',
-        '_id cover created title price type license availability description'
+        '_id cover created title price type license availability description use commercial'
       )
       .session(session);
     if (foundArtwork) {
@@ -425,7 +425,7 @@ const increaseArtwork = async (req, res, next) => {
     })
       .populate(
         'current',
-        '_id cover created title price type license availability description'
+        '_id cover created title price type license availability description use commercial'
       )
       .session(session);
     if (foundArtwork) {
