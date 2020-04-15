@@ -52,7 +52,6 @@ const ArtworkDetails = ({ match }) => {
     license: 'personal',
     modal: {
       open: false,
-      body: ``,
     },
   });
   const history = useHistory();
@@ -61,6 +60,7 @@ const ArtworkDetails = ({ match }) => {
 
   const {
     isSubmitting,
+    resetForm,
     handleSubmit,
     handleChange,
     handleBlur,
@@ -86,7 +86,6 @@ const ArtworkDetails = ({ match }) => {
   const fetchArtwork = async () => {
     try {
       const { data } = await ax.get(`/api/artwork/${match.params.id}`);
-      console.log(data.artwork);
       setState({ ...state, loading: false, artwork: data.artwork });
     } catch (err) {
       setState({ ...state, loading: false });
@@ -109,12 +108,12 @@ const ArtworkDetails = ({ match }) => {
       modal: {
         ...prevState.modal,
         open: true,
-        body: modalBody,
       },
     }));
   };
 
   const handleModalClose = () => {
+    resetForm();
     setState((prevState) => ({
       ...prevState,
       modal: {
@@ -128,67 +127,6 @@ const ArtworkDetails = ({ match }) => {
   const handleLicenseChange = (value) => {
     setState({ ...state, license: value });
   };
-
-  const modalBody = (
-    <div className={classes.licenseContainer}>
-      <Card className={classes.card}>
-        <Typography variant="h6" align="center">
-          {`Add ${state.license} license`}
-        </Typography>
-        <CardContent>
-          <TextField
-            name="licenseeName"
-            label="License holder name"
-            type="text"
-            value={values.licenseeName}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            helperText={touched.licenseeName ? errors.licenseeName : ''}
-            error={touched.licenseeName && Boolean(errors.licenseeName)}
-            margin="dense"
-            variant="outlined"
-            fullWidth
-          />
-          <TextField
-            name="licenseeSurname"
-            label="License holder surname"
-            type="text"
-            value={values.licenseeSurname}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            helperText={touched.licenseeSurname ? errors.licenseeSurname : ''}
-            error={touched.licenseeSurname && Boolean(errors.licenseeSurname)}
-            margin="dense"
-            variant="outlined"
-            fullWidth
-          />
-          {state.license === 'commercial' && (
-            <TextField
-              name="licenseeCompany"
-              label="License holder company"
-              type="text"
-              value={values.licenseeCompany}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              helperText={touched.licenseeCompany ? errors.licenseeCompany : ''}
-              error={touched.licenseeCompany && Boolean(errors.licenseeCompany)}
-              margin="dense"
-              variant="outlined"
-              fullWidth
-            />
-          )}
-        </CardContent>
-        <CardActions className={classes.actions}>
-          <Button type="submit" color="primary" disabled={isSubmitting}>
-            Continue
-          </Button>
-          <Button type="submit" color="error" onClick={handleModalClose}>
-            Close
-          </Button>
-        </CardActions>
-      </Card>
-    </div>
-  );
 
   useEffect(() => {
     fetchArtwork();
@@ -298,8 +236,10 @@ const ArtworkDetails = ({ match }) => {
                     {state.artwork.current.availability === 'available' ? (
                       <>
                         <Typography variant="body2" component="p">
-                          Artwork price: $
-                          {state.artwork.current.price || 'Free'}
+                          Artwork price:
+                          {state.artwork.current.price
+                            ? ` $${state.artwork.current.price}`
+                            : ' Free'}
                         </Typography>
                         <Typography variant="body2" component="p">
                           Commercial license:
@@ -396,18 +336,97 @@ const ArtworkDetails = ({ match }) => {
         ) : (
           history.push('/')
         )}
-        <form className={classes.form} onSubmit={handleSubmit}>
-          <div>
-            <Modal
-              open={state.modal.open}
-              onClose={handleModalClose}
-              aria-labelledby="License modal"
-              className={classes.modal}
-            >
-              {modalBody}
-            </Modal>
-          </div>
-        </form>
+        <div>
+          <Modal
+            open={state.modal.open}
+            onClose={handleModalClose}
+            aria-labelledby="License modal"
+            className={classes.modal}
+          >
+            <form className={classes.form} onSubmit={handleSubmit}>
+              <div className={classes.licenseContainer}>
+                <Card className={classes.card}>
+                  <Typography variant="h6" align="center">
+                    {`Add ${state.license} license`}
+                  </Typography>
+                  <CardContent>
+                    <TextField
+                      name="licenseeName"
+                      label="License holder name"
+                      type="text"
+                      value={values.licenseeName}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={
+                        touched.licenseeName ? errors.licenseeName : ''
+                      }
+                      error={
+                        touched.licenseeName && Boolean(errors.licenseeName)
+                      }
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                    />
+                    <TextField
+                      name="licenseeSurname"
+                      label="License holder surname"
+                      type="text"
+                      value={values.licenseeSurname}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={
+                        touched.licenseeSurname ? errors.licenseeSurname : ''
+                      }
+                      error={
+                        touched.licenseeSurname &&
+                        Boolean(errors.licenseeSurname)
+                      }
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                    />
+                    {state.license === 'commercial' && (
+                      <TextField
+                        name="licenseeCompany"
+                        label="License holder company"
+                        type="text"
+                        value={values.licenseeCompany}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        helperText={
+                          touched.licenseeCompany ? errors.licenseeCompany : ''
+                        }
+                        error={
+                          touched.licenseeCompany &&
+                          Boolean(errors.licenseeCompany)
+                        }
+                        margin="dense"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    )}
+                  </CardContent>
+                  <CardActions className={classes.actions}>
+                    <Button
+                      type="submit"
+                      color="primary"
+                      disabled={isSubmitting}
+                    >
+                      Continue
+                    </Button>
+                    <Button
+                      type="button"
+                      color="error"
+                      onClick={handleModalClose}
+                    >
+                      Close
+                    </Button>
+                  </CardActions>
+                </Card>
+              </div>
+            </form>
+          </Modal>
+        </div>
       </Grid>
     </Container>
   );
