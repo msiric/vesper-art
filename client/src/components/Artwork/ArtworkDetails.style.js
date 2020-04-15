@@ -44,6 +44,11 @@ const ArtworkDetailsStyles = makeStyles((muiTheme) => ({
   inline: {
     display: 'inline',
   },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 }));
 
 export default ArtworkDetailsStyles;
