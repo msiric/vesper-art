@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import Modal from '../../shared/Modal/Modal';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import {
   Container,
   Grid,
@@ -16,6 +18,7 @@ import {
   CardContent,
   CardActions,
   Typography,
+  TextField,
   Paper,
   Button,
   FormControl,
@@ -43,9 +46,114 @@ const ArtworkDetails = ({ match }) => {
 
   const classes = ArtworkDetailsStyles();
 
+  const validationSchema = Yup.object().shape({
+    licenseeName: Yup.string()
+      .trim()
+      .required('License holder name is required'),
+    licenseeSurname: Yup.string()
+      .trim()
+      .required('License holder surname is required'),
+    licenseeCompany: Yup.string()
+      .notRequired()
+      .when(state.license, {
+        is: 'commercial',
+        then: Yup.string()
+          .trim()
+          .required('License holder company is required'),
+      }),
+  });
+
+  const {
+    isSubmitting,
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    touched,
+    values,
+    errors,
+  } = useFormik({
+    initialValues: {
+      licenseeName: '',
+      licenseeSurname: '',
+      licenseeCompany: '',
+    },
+    validationSchema,
+    async onSubmit(values) {
+      try {
+        console.log(values);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
+
   const modalBody = () => {
     return (
-      <div className={classes.licenseContainer}>Testing license modal</div>
+      <div className={classes.licenseContainer}>
+        <form className={classes.form} onSubmit={handleSubmit}>
+          <Card className={classes.card}>
+            <Typography variant="h6" align="center">
+              {`Add ${state.license} license`}
+            </Typography>
+            <CardContent>
+              <TextField
+                name="licenseeName"
+                label="License holder name"
+                type="text"
+                value={values.licenseeName}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                helperText={touched.licenseeName ? errors.licenseeName : ''}
+                error={touched.licenseeName && Boolean(errors.licenseeName)}
+                margin="dense"
+                variant="outlined"
+                fullWidth
+              />
+              <TextField
+                name="licenseeSurname"
+                label="License holder surname"
+                type="text"
+                value={values.licenseeSurname}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                helperText={
+                  touched.licenseeSurname ? errors.licenseeSurname : ''
+                }
+                error={
+                  touched.licenseeSurname && Boolean(errors.licenseeSurname)
+                }
+                margin="dense"
+                variant="outlined"
+                fullWidth
+              />
+              {state.license === 'commercial' && (
+                <TextField
+                  name="licenseeCompany"
+                  label="License holder company"
+                  type="text"
+                  value={values.licenseeCompany}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  helperText={
+                    touched.licenseeCompany ? errors.licenseeCompany : ''
+                  }
+                  error={
+                    touched.licenseeCompany && Boolean(errors.licenseeCompany)
+                  }
+                  margin="dense"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+            </CardContent>
+            <CardActions className={classes.actions}>
+              <Button type="submit" color="primary" disabled={isSubmitting}>
+                Save license
+              </Button>
+            </CardActions>
+          </Card>
+        </form>
+      </div>
     );
   };
 

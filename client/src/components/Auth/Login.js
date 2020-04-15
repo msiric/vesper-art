@@ -73,10 +73,10 @@ const Login = () => {
   return (
     <div className={classes.container}>
       <form className={classes.form} onSubmit={handleSubmit}>
-        <Typography variant="h6" align="center">
-          Log in
-        </Typography>
         <Card className={classes.card}>
+          <Typography variant="h6" align="center">
+            Log in
+          </Typography>
           <CardContent>
             <TextField
               name="username"

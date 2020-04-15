@@ -3,7 +3,9 @@ const { isAuthenticated } = require('../../../utils/helpers');
 const licenseController = require('../../../controllers/licenseController');
 
 router
-  .route('/license_information/:id')
-  .get(isAuthenticated, licenseController.getLicenseInformation);
+  .route('/license/:id')
+  .get(isAuthenticated, licenseController.getLicense)
+  .post(isAuthenticated, licenseController.addLicense)
+  .delete(isAuthenticated, licenseController.deleteLicense);
 
 module.exports = router;

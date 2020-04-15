@@ -17,12 +17,4 @@ router
   .route('/remove_from_cart')
   .delete(isAuthenticated, checkoutController.deleteFromCart);
 
-router
-  .route('/increase_quantity')
-  .post(isAuthenticated, checkoutController.increaseArtwork);
-
-router
-  .route('/decrease_quantity')
-  .post(isAuthenticated, checkoutController.decreaseArtwork);
-
 module.exports = router;

@@ -54,10 +54,10 @@ const Signup = () => {
   return (
     <div className={classes.container}>
       <form className={classes.form} onSubmit={handleSubmit}>
-        <Typography variant="h6" align="center">
-          Sign up
-        </Typography>
         <Card className={classes.card}>
+          <Typography variant="h6" align="center">
+            Sign up
+          </Typography>
           <CardContent>
             <TextField
               name="username"

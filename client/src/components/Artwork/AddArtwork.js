@@ -19,101 +19,91 @@ import ax from '../../axios.config';
 import deleteEmptyValues from '../../utils/deleteEmptyValues';
 import AddArtworkStyles from './AddArtwork.style';
 
-// form
-// artworkMedia file req
-// artworkTitle text req
-// artworkAvailability select (available/unavailable) req
-// artworkType select (commercial/free) opt -> dep on availability
-// artworkPrice number/text? opt -> dep on availability/type
-// artworkLicense select (commercial/personal) opt -> dep on availability/type
-// artworkCommercial number/text? opt -> dep on availability/type/license
-// artworkCategory select (???) ???
-// artworkDescription text req
-
-const artworkMediaConfig = {
-  size: 1000 * 1024,
-  format: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
-};
-
-const validationSchema = Yup.object().shape({
-  artworkMedia: Yup.mixed()
-    .test(
-      'fileSize',
-      `File needs to be less than ${artworkMediaConfig.size}MB`,
-      (value) => value[0] && value[0].size <= artworkMediaConfig.size
-    )
-    .test(
-      'fileType',
-      `File needs to be in one of the following formats: ${artworkMediaConfig.format}`,
-      (value) => value[0] && artworkMediaConfig.format.includes(value[0].type)
-    )
-    .required('Artwork needs to have a file'),
-  artworkTitle: Yup.string().trim().required('Artwork title is required'),
-  artworkAvailability: Yup.string()
-    .matches(/(available|unavailable)/)
-    .required('Artwork availability is required'),
-  artworkType: Yup.string()
-    .notRequired()
-    .when('artworkAvailability', {
-      is: 'available',
-      then: Yup.string()
-        .matches(/(commercial|free)/)
-        .required('Artwork type is required'),
-    }),
-  artworkLicense: Yup.string()
-    .notRequired()
-    .when('artworkAvailability', {
-      is: 'available',
-      then: Yup.string()
-        .matches(/(commercial|personal)/)
-        .required('Artwork license is required'),
-    }),
-  artworkPrice: Yup.number()
-    .notRequired()
-    .when(['artworkAvailability', 'artworkType'], {
-      is: (artworkAvailability, artworkType) =>
-        artworkAvailability === 'available' && artworkType === 'commercial',
-      then: Yup.number()
-        .positive('Artwork price cannot be negative')
-        .integer()
-        .min(10)
-        .max(100000)
-        .required('Artwork price is required'),
-    }),
-  artworkUse: Yup.string()
-    .notRequired()
-    .when(['artworkAvailability', 'artworkLicense'], {
-      is: (artworkAvailability, artworkLicense) =>
-        artworkAvailability === 'available' && artworkLicense === 'commercial',
-      then: Yup.string()
-        .matches(/(separate|included)/)
-        .required('Commercial use is required'),
-    }),
-  artworkCommercial: Yup.number()
-    .notRequired()
-    .when(['artworkAvailability', 'artworkLicense', 'artworkUse'], {
-      is: (artworkAvailability, artworkLicense, artworkUse) =>
-        artworkAvailability === 'available' &&
-        artworkLicense === 'commercial' &&
-        artworkUse === 'separate',
-      then: Yup.number()
-        .positive('Commercial license cannot be negative')
-        .integer()
-        .min(5)
-        .max(100000)
-        .required('Commercial license is required'),
-    }),
-  artworkCategory: '',
-  artworkDescription: Yup.string()
-    .trim()
-    .required('Artwork description is required'),
-});
-
 const AddArtwork = () => {
   const [store, dispatch] = useContext(Context);
   const history = useHistory();
 
   const classes = AddArtworkStyles();
+
+  const artworkMediaConfig = {
+    size: 1000 * 1024,
+    format: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
+  };
+
+  const validationSchema = Yup.object().shape({
+    artworkMedia: Yup.mixed()
+      .test(
+        'fileSize',
+        `File needs to be less than ${artworkMediaConfig.size}MB`,
+        (value) => value[0] && value[0].size <= artworkMediaConfig.size
+      )
+      .test(
+        'fileType',
+        `File needs to be in one of the following formats: ${artworkMediaConfig.format}`,
+        (value) => value[0] && artworkMediaConfig.format.includes(value[0].type)
+      )
+      .required('Artwork needs to have a file'),
+    artworkTitle: Yup.string().trim().required('Artwork title is required'),
+    artworkAvailability: Yup.string()
+      .matches(/(available|unavailable)/)
+      .required('Artwork availability is required'),
+    artworkType: Yup.string()
+      .notRequired()
+      .when('artworkAvailability', {
+        is: 'available',
+        then: Yup.string()
+          .matches(/(commercial|free)/)
+          .required('Artwork type is required'),
+      }),
+    artworkLicense: Yup.string()
+      .notRequired()
+      .when('artworkAvailability', {
+        is: 'available',
+        then: Yup.string()
+          .matches(/(commercial|personal)/)
+          .required('Artwork license is required'),
+      }),
+    artworkPrice: Yup.number()
+      .notRequired()
+      .when(['artworkAvailability', 'artworkType'], {
+        is: (artworkAvailability, artworkType) =>
+          artworkAvailability === 'available' && artworkType === 'commercial',
+        then: Yup.number()
+          .positive('Artwork price cannot be negative')
+          .integer()
+          .min(10)
+          .max(100000)
+          .required('Artwork price is required'),
+      }),
+    artworkUse: Yup.string()
+      .notRequired()
+      .when(['artworkAvailability', 'artworkLicense'], {
+        is: (artworkAvailability, artworkLicense) =>
+          artworkAvailability === 'available' &&
+          artworkLicense === 'commercial',
+        then: Yup.string()
+          .matches(/(separate|included)/)
+          .required('Commercial use is required'),
+      }),
+    artworkCommercial: Yup.number()
+      .notRequired()
+      .when(['artworkAvailability', 'artworkLicense', 'artworkUse'], {
+        is: (artworkAvailability, artworkLicense, artworkUse) =>
+          artworkAvailability === 'available' &&
+          artworkLicense === 'commercial' &&
+          artworkUse === 'separate',
+        then: Yup.number()
+          .positive('Commercial license cannot be negative')
+          .integer()
+          .min(5)
+          .max(100000)
+          .required('Commercial license is required'),
+      }),
+    artworkCategory: '',
+    artworkDescription: Yup.string()
+      .trim()
+      .required('Artwork description is required'),
+  });
 
   const {
     setFieldValue,
@@ -163,10 +153,10 @@ const AddArtwork = () => {
     <Container fixed className={classes.fixed}>
       <div className={classes.container}>
         <form className={classes.form} onSubmit={handleSubmit}>
-          <Typography variant="h6" align="center">
-            Add artwork
-          </Typography>
           <Card className={classes.card}>
+            <Typography variant="h6" align="center">
+              Add artwork
+            </Typography>
             <CardContent>
               <UploadInput name="artworkMedia" setFieldValue={setFieldValue} />
               <TextField
