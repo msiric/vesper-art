@@ -10,6 +10,6 @@ router
   .route('/orders/bought')
   .get(isAuthenticated, orderController.getBoughtOrders);
 
-router.route('/orders/:id').get(isAuthenticated, orderController.getOrderId);
+router.route('/orders/:orderId').get(isAuthenticated, orderController.getOrder);
 
 module.exports = router;

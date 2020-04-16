@@ -10,55 +10,53 @@ const postReview = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const orderId = req.body.orderId;
-    const rating = req.body.rating;
-    const review = req.body.review;
-    const artworkId = req.params.id;
-    if (rating) {
+    const { orderId, reviewRating, reviewContent } = req.body;
+    const { artworkId } = req.params;
+    if (reviewRating) {
       const foundOrder = await Order.findOne({
         $and: [
           { _id: orderId },
           { buyer: res.locals.user.id },
-          { details: { $elemMatch: { artwork: artworkId } } }
-        ]
+          { details: { $elemMatch: { artwork: artworkId } } },
+        ],
       })
         .populate('buyer')
         .deepPopulate('details.artwork.owner')
         .session(session);
       if (foundOrder) {
         const foundReview = await Review.findOne({
-          $and: [{ artwork: artworkId }, { owner: res.locals.user.id }]
+          $and: [{ artwork: artworkId }, { owner: res.locals.user.id }],
         }).session(session);
         if (!foundReview) {
           const newReview = new Review();
           newReview.order = foundOrder._id;
           newReview.artwork = artworkId;
           newReview.owner = res.locals.user.id;
-          if (review) newReview.review = review;
-          newReview.rating = rating;
+          if (reviewContent) newReview.review = reviewContent;
+          newReview.rating = reviewRating;
           await newReview.save({ session });
-          const seller = foundOrder.details.find(item =>
+          const seller = foundOrder.details.find((item) =>
             item.artwork.equals(artworkId)
           ).artwork.owner;
           const orderPath = '/orders/' + foundOrder._id;
           let notification = new Notification();
           notification.receivers.push({
             user: seller._id,
-            read: false
+            read: false,
           });
           notification.link = orderPath;
           notification.message = `${foundOrder.buyer.name} left a review on your artwork!`;
           notification.read = [];
           await notification.save({ session });
           sellerRating = (
-            (parseInt(seller.rating) + parseInt(rating)) /
+            (parseInt(seller.rating) + parseInt(reviewRating)) /
             parseInt(seller.reviews + 1)
           ).toFixed(2);
           await User.updateOne(
             { _id: seller._id },
             {
               rating: sellerRating,
-              $inc: { reviews: 1, notifications: 1 }
+              $inc: { reviews: 1, notifications: 1 },
             }
           ).session(session);
           if (users[seller._id]) {
@@ -85,5 +83,5 @@ const postReview = async (req, res, next) => {
 };
 
 module.exports = {
-  postReview
+  postReview,
 };

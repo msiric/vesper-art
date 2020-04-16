@@ -13,11 +13,10 @@ const requestRoutes = require('./routers/requestRouter');
 const conversationRoutes = require('./routers/conversationRouter');
 const workRouter = require('./routers/workRouter');
 const reviewRouter = require('./routers/reviewRouter');
-const promocodeRouter = require('./routers/promocodeRouter');
+const discountRouter = require('./routers/discountRouter');
 const ticketRouter = require('./routers/ticketRouter');
 const validatorRouter = require('./routers/validatorRouter');
 const notificationRouter = require('./routers/notificationRouter');
-const licenseRouter = require('./routers/licenseRouter');
 const checkoutRouter = require('./routers/checkoutRouter');
 const authRouter = require('./routers/authRouter');
 
@@ -30,11 +29,10 @@ router.use('/', requestRoutes);
 router.use('/', conversationRoutes);
 router.use('/', workRouter);
 router.use('/', reviewRouter);
-router.use('/', promocodeRouter);
+router.use('/', discountRouter);
 router.use('/', ticketRouter);
 router.use('/', validatorRouter);
 router.use('/', notificationRouter);
-router.use('/', licenseRouter);
 router.use('/', checkoutRouter);
 router.use('/auth', authRouter);
 

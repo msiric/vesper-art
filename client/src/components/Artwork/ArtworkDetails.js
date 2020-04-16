@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
+import SelectInput from '../../shared/SelectInput/SelectInput';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -32,10 +33,12 @@ import ax from '../../axios.config';
 import ArtworkDetailsStyles from './ArtworkDetails.style';
 
 const validationSchema = Yup.object().shape({
-  licenseeName: Yup.string().trim().required('License holder name is required'),
-  licenseeSurname: Yup.string()
+  licenseType: Yup.string()
+    .matches(/(personal|commercial)/)
+    .required('License type is required'),
+  licenseeName: Yup.string()
     .trim()
-    .required('License holder surname is required'),
+    .required('License holder full name is required'),
   licenseeCompany: Yup.string()
     .notRequired()
     .when('commercial', {
@@ -68,15 +71,22 @@ const ArtworkDetails = ({ match }) => {
     values,
     errors,
   } = useFormik({
+    enableReinitialize: true,
     initialValues: {
+      licenseType: state.license,
       licenseeName: '',
-      licenseeSurname: '',
       licenseeCompany: '',
     },
     validationSchema,
     async onSubmit(values) {
       try {
-        console.log(values);
+        await ax.post(`/api/cart/${match.params.id}`, values);
+        handleModalClose();
+        dispatch({
+          type: 'updateCart',
+          cart: { ...store.user.cart, [match.params.id]: true },
+          cartSize: store.user.cartSize + 1,
+        });
       } catch (err) {
         console.log(err);
       }
@@ -350,9 +360,22 @@ const ArtworkDetails = ({ match }) => {
                     {`Add ${state.license} license`}
                   </Typography>
                   <CardContent>
+                    <SelectInput
+                      name="licenseType"
+                      label="License type"
+                      value={values.licenseType}
+                      className={classes.license}
+                      disabled
+                      options={[
+                        {
+                          value: state.license,
+                          text: state.license,
+                        },
+                      ]}
+                    />
                     <TextField
                       name="licenseeName"
-                      label="License holder name"
+                      label="License holder full name"
                       type="text"
                       value={values.licenseeName}
                       onChange={handleChange}
@@ -362,24 +385,6 @@ const ArtworkDetails = ({ match }) => {
                       }
                       error={
                         touched.licenseeName && Boolean(errors.licenseeName)
-                      }
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                    <TextField
-                      name="licenseeSurname"
-                      label="License holder surname"
-                      type="text"
-                      value={values.licenseeSurname}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={
-                        touched.licenseeSurname ? errors.licenseeSurname : ''
-                      }
-                      error={
-                        touched.licenseeSurname &&
-                        Boolean(errors.licenseeSurname)
                       }
                       margin="dense"
                       variant="outlined"

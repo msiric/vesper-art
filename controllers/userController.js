@@ -8,8 +8,9 @@ const createError = require('http-errors');
 
 const getUserProfile = async (req, res, next) => {
   try {
+    const { userName } = req.params;
     const foundUser = await User.findOne({
-      $and: [{ _id: req.params.id }, { active: true }],
+      $and: [{ name: userName }, { active: true }],
     });
     if (foundUser) {
       const foundArtwork = await Artwork.find({
@@ -32,13 +33,14 @@ const updateUserProfile = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { username, email, description } = req.body;
     const foundUser = await User.findOne({
       $and: [{ _id: res.locals.user.id }, { active: true }],
     }).session(session);
     if (foundUser) {
-      if (req.body.name) foundUser.name = req.body.name;
-      if (req.body.email) foundUser.email = req.body.email;
-      if (req.body.description) foundUser.description = req.body.description;
+      if (username) foundUser.name = username;
+      if (email) foundUser.email = email;
+      if (description) foundUser.description = description;
       await foundUser.save({ session });
       await session.commitTransaction();
       return res
@@ -75,9 +77,7 @@ const updateUserPassword = async (req, res, next) => {
       session
     );
     if (foundUser) {
-      let current = req.body.current;
-      let change = req.body.password;
-      let confirm = req.body.confirm;
+      const { current, password, confirm } = req.body;
       if (current && change && confirm) {
         if (foundUser.comparePassword(current)) {
           if (change === confirm) {
@@ -116,7 +116,7 @@ const updateUserPreferences = async (req, res, next) => {
       session
     );
     if (foundUser) {
-      let customWork = req.body.work;
+      const { customWork } = req.body;
       foundUser.customWork = customWork ? true : false;
       await foundUser.save({ session });
       await session.commitTransaction();

@@ -69,6 +69,15 @@ const reducer = (state, action) => {
           cartSize: action.cartSize,
         },
       };
+    case 'updateCart':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          cart: action.cart,
+          cartSize: action.cartSize,
+        },
+      };
     default:
       return state;
   }

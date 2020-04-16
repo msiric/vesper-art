@@ -3,7 +3,7 @@ const { isAuthenticated } = require('../../../utils/helpers');
 const workController = require('../../../controllers/workController');
 
 router
-  .route('/custom_work/:id')
+  .route('/custom_work/:workId')
   .get(isAuthenticated, workController.getUserCustomWork);
 
 module.exports = router;

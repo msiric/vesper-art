@@ -37,7 +37,7 @@ const UserSchema = new Schema({
       licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }],
     },
   ],
-  discount: { type: Schema.Types.ObjectId, ref: 'Promocode' },
+  discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
   inbox: Number,
   notifications: Number,
   rating: Number,

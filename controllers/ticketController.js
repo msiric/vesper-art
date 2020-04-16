@@ -7,19 +7,18 @@ const createError = require('http-errors');
 // treba sredit
 const postTicket = async (req, res, next) => {
   try {
-    let id;
-    const sender = req.user.email;
-    const { title, body } = req.body;
+    const userEmail = req.user.email;
+    const { ticketTitle, ticketBody } = req.body;
 
-    if ((sender, title, body)) {
+    if ((userEmail, ticketTitle, ticketBody)) {
       const newTicket = new Ticket();
       newTicket.owner = req.user._id;
-      newTicket.title = title;
-      newTicket.body = body;
+      newTicket.title = ticketTitle;
+      newTicket.body = ticketBody;
       newTicket.resolved = false;
       const savedTicket = await newTicket.save();
-      id = savedTicket._id;
-      res.locals.email = { id, sender, title, body };
+      const ticketId = savedTicket._id;
+      res.locals.email = { ticketId, userEmail, ticketTitle, ticketBody };
       emailController.postTicket(req, res, next);
     } else {
       throw createError(400, 'All fields are required');
@@ -31,5 +30,5 @@ const postTicket = async (req, res, next) => {
 };
 
 module.exports = {
-  postTicket
+  postTicket,
 };

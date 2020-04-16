@@ -7,9 +7,10 @@ const LicenseSchema = new Schema({
   fingerprint: String,
   type: String,
   credentials: String,
+  company: String,
   active: Boolean,
   price: Number,
-  created: { type: Date, default: Date.now }
+  created: { type: Date, default: Date.now },
 });
 
 const License = mongoose.model('License', LicenseSchema);

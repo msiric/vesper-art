@@ -11,6 +11,7 @@ const postComment = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { content } = req.body;
     const foundArtwork = await Artwork.find({
       $and: [{ owner: artworkId }, { active: true }],
     }).session(session);
@@ -20,7 +21,7 @@ const postComment = async (req, res, next) => {
       const comment = new Comment();
       comment.artwork = artworkId;
       comment.owner = res.locals.user.id;
-      comment.content = req.body.content;
+      comment.content = content;
       comment.modified = false;
       const savedComment = await comment.save({ session });
       foundArtwork.comments.push(savedComment._id);
@@ -38,6 +39,7 @@ const postComment = async (req, res, next) => {
 
 const patchComment = async (req, res, next) => {
   const { artworkId, commentId } = req.params;
+  const { content } = req.body;
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -56,7 +58,7 @@ const patchComment = async (req, res, next) => {
         if (!foundArtwork || foundComment.artwork !== foundArtwork._id) {
           throw createError(400, 'Artwork not found');
         } else {
-          if (req.body.content) foundComment.content = req.body.content;
+          if (content) foundComment.content = content;
           foundComment.modified = true;
           await foundComment.save({ session });
           await session.commitTransaction();

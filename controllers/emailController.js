@@ -12,17 +12,17 @@ function postTicket(req, res, next) {
       service: 'Gmail',
       auth: {
         user: config.email,
-        pass: config.password
-      }
+        pass: config.password,
+      },
     });
     host = req.get('host');
     mailOptions = {
       from: res.locals.email.sender,
       to: config.email,
       subject: `Support ticket (#${res.locals.email.id}): ${res.locals.email.title}`,
-      html: res.locals.email.body
+      html: res.locals.email.body,
     };
-    smtpTransport.sendMail(mailOptions, function(error, response) {
+    smtpTransport.sendMail(mailOptions, function (error, response) {
       if (error) {
         throw createError(400, 'Email could not be sent');
       } else {
@@ -36,19 +36,20 @@ function postTicket(req, res, next) {
 
 const sendConfirmation = (req, res) => {
   try {
+    const { email, token } = req.body;
     let mailOptions, host, link;
     const smtpTransport = nodemailer.createTransport({
       service: 'Gmail',
       auth: {
         user: config.email,
-        pass: config.password
-      }
+        pass: config.password,
+      },
     });
     host = req.get('host');
-    recipient = req.body.email;
-    token = req.body.token;
-    if (recipient && token) {
-      link = 'http://' + req.get('host') + '/verify/' + token;
+    recipient = email;
+    id = token;
+    if (recipient && id) {
+      link = 'http://' + req.get('host') + '/verify/' + id;
       mailOptions = {
         from: 'vesper',
         to: recipient,
@@ -56,9 +57,9 @@ const sendConfirmation = (req, res) => {
         html:
           'Hello,<br>Please click on the link to verify your email.<br><a href=' +
           link +
-          '>Click here to verify</a>'
+          '>Click here to verify</a>',
       };
-      smtpTransport.sendMail(mailOptions, function(error, response) {
+      smtpTransport.sendMail(mailOptions, function (error, response) {
         if (error) {
           return res.status(400).json({ message: 'Email could not be sent' });
         } else {
@@ -80,8 +81,9 @@ const verifyToken = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { tokenId } = req.params;
     const foundUser = await User.findOne({
-      secretToken: req.params.token
+      secretToken: tokenId,
     }).session(session);
     if (foundUser) {
       foundUser.secretToken = null;
@@ -105,11 +107,10 @@ const forgotPassword = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    crypto.randomBytes(20, async function(err, buf) {
+    const { email } = req.body;
+    crypto.randomBytes(20, async function (err, buf) {
       const token = buf.toString('hex');
-      const foundUser = await User.findOne({ email: req.body.email }).session(
-        session
-      );
+      const foundUser = await User.findOne({ email: email }).session(session);
       if (!foundUser) {
         throw createError(400, 'No account with that email address exists');
       }
@@ -121,8 +122,8 @@ const forgotPassword = async (req, res, next) => {
         service: 'Gmail',
         auth: {
           user: config.email,
-          pass: config.password
-        }
+          pass: config.password,
+        },
       });
       mailOptions = {
         from: 'vesper',
@@ -136,9 +137,9 @@ const forgotPassword = async (req, res, next) => {
           '/reset/' +
           token +
           '"</a><br>' +
-          'If you did not request this, please ignore this email and your password will remain unchanged.'
+          'If you did not request this, please ignore this email and your password will remain unchanged.',
       };
-      smtpTransport.sendMail(mailOptions, async function(error, response) {
+      smtpTransport.sendMail(mailOptions, async function (error, response) {
         if (error) {
           throw createError(400, 'Could not send email');
         } else {
@@ -159,9 +160,10 @@ const forgotPassword = async (req, res, next) => {
 const getToken = async (req, res) => {
   try {
     if (!req.user) {
+      const { tokenId } = req.params;
       const foundUser = await User.findOne({
-        resetPasswordToken: req.params.token,
-        resetPasswordExpires: { $gt: Date.now() }
+        resetPasswordToken: tokenId,
+        resetPasswordExpires: { $gt: Date.now() },
       });
       if (!foundUser) {
         throw createError(400, 'Token is invalid or has expired');
@@ -181,23 +183,25 @@ const resendToken = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { tokenId } = req.params;
+    const { password, confirm } = req.body;
     const foundUser = await User.findOne({
-      resetPasswordToken: req.params.token,
-      resetPasswordExpires: { $gt: Date.now() }
+      resetPasswordToken: tokenId,
+      resetPasswordExpires: { $gt: Date.now() },
     }).session(session);
     if (!foundUser) {
       throw createError(400, 'Token is invalid or has expired');
-    } else if (req.body.password !== req.body.confirm) {
+    } else if (password !== confirm) {
       throw createError(400, 'Passwords do not match');
-    } else if (user.password === req.body.password) {
+    } else if (user.password === password) {
       throw createError(400, 'New password is identical to the old one');
     } else {
-      foundUser.password = req.body.password;
+      foundUser.password = password;
       foundUser.resetPasswordToken = null;
       foundUser.resetPasswordExpires = null;
 
-      await foundUser.save(function(err) {
-        req.logIn(foundUser, function(err) {
+      await foundUser.save(function (err) {
+        req.logIn(foundUser, function (err) {
           callback(err, foundUser);
         });
       });
@@ -206,17 +210,17 @@ const resendToken = async (req, res) => {
       service: 'Gmail',
       auth: {
         user: config.email,
-        pass: config.password
-      }
+        pass: config.password,
+      },
     });
     mailOptions = {
       from: 'vesper',
       to: foundUser.email,
       subject: 'Password change',
       html:
-        'You are receiving this because you just changed your password <br><br> If you did not request this, please contact us immediately.'
+        'You are receiving this because you just changed your password <br><br> If you did not request this, please contact us immediately.',
     };
-    smtpTransport.sendMail(mailOptions, async function(error, response) {
+    smtpTransport.sendMail(mailOptions, async function (error, response) {
       if (error) {
         throw createError(400, 'Could not send email');
       } else {
@@ -238,5 +242,5 @@ module.exports = {
   verifyToken,
   forgotPassword,
   getToken,
-  resendToken
+  resendToken,
 };

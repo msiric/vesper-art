@@ -9,8 +9,8 @@ const getConversations = async (req, res, next) => {
     const conversations = await Conversation.find({
       $or: [
         { initiator: res.locals.user.id },
-        { participant: res.locals.user.id }
-      ]
+        { participant: res.locals.user.id },
+      ],
     })
       .populate('initiator')
       .populate('participant')
@@ -28,10 +28,10 @@ const getConversation = async (req, res, next) => {
   // on send show receiver photo, username and last message, handle inbox value on client side when inside the conversation
   try {
     let decreaseInbox = false;
-    const userId = req.params.id;
+    const { userId } = req.params;
     if (mongoose.Types.ObjectId.isValid(userId)) {
       const userExists = await User.findOne({
-        _id: userId
+        _id: userId,
       }).session(session);
       if (userExists) {
         req.session.participantId = userId;
@@ -43,15 +43,15 @@ const getConversation = async (req, res, next) => {
         const conversations = await Conversation.find({
           $or: [
             { initiator: res.locals.user.id },
-            { participant: res.locals.user.id }
-          ]
+            { participant: res.locals.user.id },
+          ],
         })
           .populate('initiator')
           .populate('participant')
           .deepPopulate('messages.owner')
           .session(session);
         const conversation = await Conversation.findOne({
-          tag: req.session.convoId
+          tag: req.session.convoId,
         })
           .populate('initiator')
           .populate('participant')
@@ -65,17 +65,17 @@ const getConversation = async (req, res, next) => {
         ) {
           await Conversation.updateOne(
             {
-              tag: req.session.convoId
+              tag: req.session.convoId,
             },
             {
               $set: {
-                read: true
-              }
+                read: true,
+              },
             }
           ).session(session);
           await User.updateOne(
             {
-              _id: res.locals.user.id
+              _id: res.locals.user.id,
             },
             { $inc: { inbox: -1 } }
           ).session(session);
@@ -85,7 +85,7 @@ const getConversation = async (req, res, next) => {
         res.json({
           conversations: conversations,
           conversation: conversation,
-          decreaseInbox: decreaseInbox
+          decreaseInbox: decreaseInbox,
         });
       } else {
         throw createError(400, 'User not found');
@@ -107,32 +107,34 @@ const newConversation = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    if (!req.params.id) {
+    const { userId } = req.params;
+    const { reply } = req.body;
+    if (!userId) {
       throw createError(400, 'Invalid parameter');
     }
 
-    if (!req.body.composedMessage) {
+    if (!reply) {
       throw createError(400, 'Message cannot be empty');
     }
 
     const conversation = new Conversation();
 
     conversation.initiator = res.locals.user.id;
-    conversation.participant = req.params.id;
+    conversation.participant = userId;
 
     const savedConversation = await conversation.save({ session });
 
     const message = new Message();
 
     message.conversationId = savedConversation._id;
-    body = req.body.composedMessage;
+    body = reply;
     author = res.locals.user.id;
 
     await message.save({ session });
 
     await session.commitTransaction();
     return res.status(200).json({
-      conversationId: savedConversation._id
+      conversationId: savedConversation._id,
     });
   } catch (err) {
     await session.abortTransaction();
@@ -144,10 +146,11 @@ const newConversation = async (req, res, next) => {
 
 const sendReply = async (req, res, next) => {
   try {
+    const { userId } = req.params;
+    const { reply } = req.body;
     const message = new Message();
-
-    message.conversationId = req.params.id;
-    message.body = req.body.composedMessage;
+    message.conversationId = userId;
+    message.body = reply;
     message.author = res.locals.user.id;
     await message.save();
     return res.status(200).json({ message: 'Reply successfully sent!' });
@@ -160,5 +163,5 @@ module.exports = {
   getConversations,
   getConversation,
   newConversation,
-  sendReply
+  sendReply,
 };

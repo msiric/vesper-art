@@ -4,7 +4,16 @@ const artworkController = require('../../../controllers/artworkController');
 
 router.route('/artwork').get(artworkController.getArtwork);
 
-router.route('/artwork/:id').get(artworkController.getArtworkDetails);
+router.route('/artwork/:artworkId').get(artworkController.getArtworkDetails);
+
+router
+  .route('/artwork/:artworkId/licenses')
+  .get(isAuthenticated, artworkController.getLicenses)
+  .post(isAuthenticated, artworkController.addLicense);
+
+router
+  .route('/artwork/:artworkId/licenses/:licenseId')
+  .delete(isAuthenticated, artworkController.deleteLicense);
 
 router
   .route('/my_artwork')
@@ -15,13 +24,13 @@ router
   .post(isAuthenticated, artworkController.postNewArtwork);
 
 router
-  .route('/edit_artwork/:id')
+  .route('/edit_artwork/:artworkId')
   .get(isAuthenticated, artworkController.editArtwork)
   .patch(isAuthenticated, artworkController.updateArtwork)
   .delete(isAuthenticated, artworkController.deleteArtwork);
 
 router
-  .route('/save_artwork/:id')
+  .route('/save_artwork/:artworkId')
   .post(isAuthenticated, artworkController.saveArtwork)
   .delete(isAuthenticated, artworkController.unsaveArtwork);
 

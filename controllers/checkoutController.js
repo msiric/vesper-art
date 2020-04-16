@@ -3,7 +3,7 @@ const stripe = require('stripe')('sk_test_gBneokmqdbgLUsAQcHZuR4h500k4P1wiBq');
 const Artwork = require('../models/artwork');
 const License = require('../models/license');
 const Order = require('../models/order');
-const Promocode = require('../models/promocode');
+const Discount = require('../models/discount');
 const User = require('../models/user');
 const Notification = require('../models/notification');
 const crypto = require('crypto');
@@ -20,8 +20,8 @@ const getProcessCart = async (req, res, next) => {
     subtotal: 0,
     license: 0,
     foundUser: null,
+    discountId: null,
     discount: null,
-    promo: null,
     artwork: null,
   };
 
@@ -38,7 +38,10 @@ const getProcessCart = async (req, res, next) => {
       if (foundUser.cart.length > 0) {
         artworkInfo.foundUser = foundUser;
         foundUser.cart.map(function (item) {
-          if (item.artwork.active) {
+          if (
+            item.artwork.active &&
+            item.artwork.current.availability === 'available'
+          ) {
             artworkInfo.price += item.artwork.current.price;
             item.licenses.map(function (license) {
               artworkInfo.license += license.price;
@@ -51,14 +54,14 @@ const getProcessCart = async (req, res, next) => {
         artworkInfo.cartIsEmpty = true;
       }
       if (foundUser.discount) {
-        const foundPromocode = await Promocode.findOne({
+        const foundDiscount = await Discount.findOne({
           $and: [{ _id: foundUser.discount }, { active: true }],
         });
-        if (foundPromocode) {
-          artworkInfo.discount = foundPromocode.discount * 100;
-          artworkInfo.promo = foundPromocode._id;
+        if (foundDiscount) {
+          artworkInfo.discountId = foundDiscount._id;
+          artworkInfo.discount = foundDiscount.discount * 100;
           artworkInfo.totalPrice =
-            artworkInfo.totalPrice * (1 - foundPromocode.discount);
+            artworkInfo.totalPrice * (1 - foundDiscount.discount);
         }
       }
       artworkInfo.totalPrice = artworkInfo.totalPrice + fee;
@@ -68,8 +71,8 @@ const getProcessCart = async (req, res, next) => {
         subtotal: parseFloat(artworkInfo.subtotal.toFixed(12)),
         license: parseFloat(artworkInfo.license.toFixed(12)),
         cartIsEmpty: artworkInfo.cartIsEmpty,
+        discountId: artworkInfo.discountId,
         discountPercentage: artworkInfo.discount,
-        promo: artworkInfo.promo,
       });
     } else {
       throw createError(400, 'User not found');
@@ -93,7 +96,10 @@ const getPaymentCart = async (req, res, next) => {
     if (foundUser) {
       let amount = 0;
       foundUser.cart.map(function (item) {
-        if (item.artwork.active) {
+        if (
+          item.artwork.active &&
+          item.artwork.current.availability === 'available'
+        ) {
           amount += item.artwork.current.price;
           item.licenses.map(function (license) {
             amount += license.price;
@@ -101,7 +107,7 @@ const getPaymentCart = async (req, res, next) => {
         }
       });
       if (foundUser.discount) {
-        const foundDiscount = await Promocode.findOne({
+        const foundDiscount = await Discount.findOne({
           $and: [
             {
               _id: foundUser.discount,
@@ -132,6 +138,7 @@ const postPaymentCart = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { stripeToken } = req.body;
     const foundUser = await User.findOne({
       $and: [{ _id: res.locals.user.id }, { active: true }],
     })
@@ -146,7 +153,10 @@ const postPaymentCart = async (req, res, next) => {
       let licenses = [];
       let discount;
       foundUser.cart.map(function (item) {
-        if (item.artwork.active) {
+        if (
+          item.artwork.active &&
+          item.artwork.current.availability === 'available'
+        ) {
           paid += item.artwork.current.price;
           item.licenses.map(function (license) {
             paid += license.price;
@@ -155,7 +165,7 @@ const postPaymentCart = async (req, res, next) => {
         }
       });
       if (foundUser.discount) {
-        const foundDiscount = await Promocode.findOne({
+        const foundDiscount = await Discount.findOne({
           $and: [
             {
               _id: foundUser.discount,
@@ -178,7 +188,7 @@ const postPaymentCart = async (req, res, next) => {
       });
       if (customer) {
         const source = await stripe.customers.createSource(customer.id, {
-          source: req.body.stripeToken,
+          source: stripeToken,
         });
         if (source) {
           await stripe.charges.create({
@@ -194,7 +204,10 @@ const postPaymentCart = async (req, res, next) => {
           order.bulk = foundUser.cart.length > 1 ? true : false;
           order.discount = discount ? discount._id : null;
           foundUser.cart.map(function (item) {
-            if (item.artwork.active) {
+            if (
+              item.artwork.active &&
+              item.artwork.current.availability === 'available'
+            ) {
               let licenses = [];
               totalAmount += item.artwork.current.price;
               item.licenses.map(function (license) {
@@ -230,7 +243,10 @@ const postPaymentCart = async (req, res, next) => {
           // emit to multiple sellers (needs testing)
           let notification = new Notification();
           foundUser.cart.map(async function (item) {
-            if (item.artwork.active) {
+            if (
+              item.artwork.active &&
+              item.artwork.current.availability === 'available'
+            ) {
               notification.receivers.push({
                 user: item.artwork.owner,
                 read: false,
@@ -242,7 +258,10 @@ const postPaymentCart = async (req, res, next) => {
           notification.read = [];
           await notification.save({ session });
           foundUser.cart.map(async function (item) {
-            if (item.artwork.active) {
+            if (
+              item.artwork.active &&
+              item.artwork.current.availability === 'available'
+            ) {
               let funds = 0;
               funds += item.artwork.current.price;
               item.licenses.map(function (license) {
@@ -291,8 +310,9 @@ const addToCart = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { licenseType, licenseCredentials, artworkId } = req.body;
-    if ((licenseType, licenseCredentials, artworkId)) {
+    const { artworkId } = req.params;
+    const { licenseType, licenseeName, licenseeCompany } = req.body;
+    if ((licenseType, licenseeName)) {
       const foundArtwork = await Artwork.findOne({
         $and: [{ _id: artworkId }, { active: true }],
       })
@@ -302,53 +322,45 @@ const addToCart = async (req, res, next) => {
         )
         .session(session);
       if (foundArtwork) {
+        const foundUser = await User.findOne({
+          $and: [{ _id: res.locals.user.id }, { active: true }],
+        });
         if (
-          req.user.cart.some((item) => item.artwork.equals(foundArtwork._id))
+          foundUser.cart.some((item) => item.artwork.equals(foundArtwork._id))
         ) {
           throw createError(400, 'Item already in cart');
         } else {
-          if (
-            foundArtwork.current.availability === 'available' &&
-            foundArtwork.current.type === 'commercial'
-          ) {
+          if (foundArtwork.current.availability === 'available') {
             if (licenseType == 'personal' || licenseType == 'commercial') {
-              if (
-                !(
-                  licenseType == 'commercial' &&
-                  foundArtwork.current.type == 'personal'
-                )
-              ) {
-                const newLicense = new License();
-                newLicense.owner = res.locals.user.id;
-                newLicense.artwork = foundArtwork._id;
-                newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
-                newLicense.type = licenseType;
-                newLicense.credentials = licenseCredentials;
-                newLicense.active = false;
-                newLicense.price =
-                  licenseType == 'commercial'
-                    ? foundArtwork.current.commercial
-                    : 0;
+              const newLicense = new License();
+              newLicense.owner = res.locals.user.id;
+              newLicense.artwork = foundArtwork._id;
+              newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+              newLicense.type = licenseType;
+              newLicense.credentials = licenseeName;
+              newLicense.company = licenseeCompany;
+              newLicense.active = false;
+              newLicense.price =
+                licenseType == 'commercial'
+                  ? foundArtwork.current.commercial
+                  : 0;
 
-                const savedLicense = await newLicense.save({ session });
-                await User.updateOne(
-                  {
-                    _id: res.locals.user.id,
-                  },
-                  {
-                    $push: {
-                      cart: {
-                        artwork: foundArtwork._id,
-                        licenses: savedLicense._id,
-                      },
+              const savedLicense = await newLicense.save({ session });
+              await User.updateOne(
+                {
+                  _id: res.locals.user.id,
+                },
+                {
+                  $push: {
+                    cart: {
+                      artwork: foundArtwork._id,
+                      licenses: savedLicense._id,
                     },
-                  }
-                ).session(session);
-                await session.commitTransaction();
-                res.status(200).json({ message: 'Added to cart' });
-              } else {
-                throw createError(400, 'Invalid license type');
-              }
+                  },
+                }
+              ).session(session);
+              await session.commitTransaction();
+              res.status(200).json({ message: 'Added to cart' });
             } else {
               throw createError(400, 'Invalid license type');
             }

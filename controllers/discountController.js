@@ -1,37 +1,37 @@
 const mongoose = require('mongoose');
-const Promocode = require('../models/promocode');
+const Discount = require('../models/discount');
 const User = require('../models/user');
 const createError = require('http-errors');
 
 // needs transaction (done)
 // treba sredit
-const postPromocode = async (req, res, next) => {
+const postDiscount = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    let promocode = req.body.promocode;
-    if (!req.user.discount) {
-      const foundPromocode = await Promocode.findOne({
-        name: promocode
+    const { discount } = req.body;
+    if (!discount) {
+      const foundDiscount = await Discount.findOne({
+        name: discount,
       }).session(session);
-      if (foundPromocode) {
-        if (foundPromocode.active) {
+      if (foundDiscount) {
+        if (foundDiscount.active) {
           await User.updateOne(
             {
-              $and: [{ _id: req.user._id }, { active: true }]
+              $and: [{ _id: req.user._id }, { active: true }],
             },
-            { discount: foundPromocode._id }
+            { discount: foundDiscount._id }
           ).session(session);
           await session.commitTransaction();
           return res.status(200).json('Discount applied');
         } else {
-          throw createError(400, 'Promo code expired');
+          throw createError(400, 'Discount expired');
         }
       } else {
-        throw createError(400, 'Promo code not found');
+        throw createError(400, 'Discount not found');
       }
     } else {
-      throw createError(400, 'You already have an active promo code');
+      throw createError(400, 'You already have an active discount');
     }
   } catch (err) {
     await session.abortTransaction();
@@ -42,28 +42,28 @@ const postPromocode = async (req, res, next) => {
 };
 
 // needs transaction (done)
-const deletePromocode = async (req, res, next) => {
+const deleteDiscount = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    let promocode = req.body.promocode;
-    const foundPromocode = Promocode.findOne({
-      _id: promocode
+    const { discount } = req.body;
+    const foundDiscount = Discount.findOne({
+      _id: discount,
     }).session(session);
-    if (foundPromocode) {
+    if (foundDiscount) {
       await User.updateOne(
         {
-          _id: res.locals.user.id
+          _id: res.locals.user.id,
         },
         {
-          discount: null
+          discount: null,
         }
       ).session(session);
 
       await session.commitTransaction();
-      return res.status(200).json('Promocode removed');
+      return res.status(200).json('Discount removed');
     } else {
-      throw createError(400, 'Promo code not found');
+      throw createError(400, 'Discount not found');
     }
   } catch (err) {
     await session.abortTransaction();
@@ -74,6 +74,6 @@ const deletePromocode = async (req, res, next) => {
 };
 
 module.exports = {
-  postPromocode,
-  deletePromocode
+  postDiscount,
+  deleteDiscount,
 };

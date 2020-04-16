@@ -11,21 +11,22 @@ const postSignUp = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { email, username, password } = req.body;
     const foundUser = await User.findOne({
-      $or: [{ email: req.body.email }, { name: req.body.username }],
+      $or: [{ email: email }, { name: username }],
     }).session(session);
     if (foundUser) {
       throw createError(400, 'Account with that email/username already exists');
     } else {
       let verificationInfo = {
         token: randomString.generate(),
-        email: req.body.email,
+        email: email,
       };
       let user = new User();
-      user.name = req.body.username;
-      user.email = req.body.email;
+      user.name = username;
+      user.email = email;
       user.photo = user.gravatar();
-      user.password = req.body.password;
+      user.password = password;
       user.customWork = true;
       user.secretToken = verificationInfo.token;
       user.verified = false;
@@ -59,8 +60,9 @@ const postLogIn = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { username, password } = req.body;
     const foundUser = await User.findOne({
-      $or: [{ email: req.body.username }, { name: req.body.username }],
+      $or: [{ email: username }, { name: username }],
     }).session(session);
 
     if (!foundUser) {
@@ -70,10 +72,7 @@ const postLogIn = async (req, res, next) => {
       );
     }
 
-    const valid = await bcrypt.compareSync(
-      req.body.password,
-      foundUser.password
-    );
+    const valid = await bcrypt.compareSync(password, foundUser.password);
 
     if (!valid) {
       throw createError(
@@ -136,7 +135,7 @@ const postRefreshToken = async (req, res, next) => {
 
 const postRevokeToken = async (req, res, next) => {
   try {
-    const userId = req.params.id;
+    const { userId } = req.params;
 
     await User.findOneAndUpdate({ _id: userId }, { $inc: { jwtVersion: 1 } });
 

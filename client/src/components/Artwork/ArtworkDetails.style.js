@@ -49,6 +49,9 @@ const ArtworkDetailsStyles = makeStyles((muiTheme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  license: {
+    textTransform: 'capitalize',
+  },
 }));
 
 export default ArtworkDetailsStyles;

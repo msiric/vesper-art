@@ -7,12 +7,12 @@ router
   .get(isAuthenticated, conversationController.getConversations);
 
 router
-  .route('/conversations/:id')
+  .route('/conversations/:userId')
   .get(isAuthenticated, conversationController.getConversation)
   .post(isAuthenticated, conversationController.sendReply);
 
 router
-  .route('/conversations/new/:id')
+  .route('/conversations/new/:userId')
   .post(isAuthenticated, conversationController.newConversation);
 
 module.exports = router;

@@ -3,20 +3,18 @@ const { isAuthenticated } = require('../../../utils/helpers');
 const userController = require('../../../controllers/userController');
 
 router
-  .route('/user/:id')
+  .route('/user/:userName')
   .get(userController.getUserProfile)
-  .patch(isAuthenticated, userController.updateUserProfile);
+  .patch(isAuthenticated, userController.updateUserProfile)
+  .delete(isAuthenticated, userController.deleteUser);
 
-router.route('/settings').get(isAuthenticated, userController.getUserSettings);
+router
+  .route('/settings')
+  .get(isAuthenticated, userController.getUserSettings)
+  .patch(isAuthenticated, userController.updateUserPreferences);
 
 router
   .route('/new_password')
   .post(isAuthenticated, userController.updateUserPassword);
-
-router
-  .route('/update_preferences')
-  .patch(isAuthenticated, userController.updateUserPreferences);
-
-router.route('/delete_user').delete(isAuthenticated, userController.deleteUser);
 
 module.exports = router;

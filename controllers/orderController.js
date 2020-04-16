@@ -67,12 +67,13 @@ const getBoughtOrders = async (req, res, next) => {
 };
 
 // moze to bolje
-const getOrderId = async (req, res, next) => {
+const getOrder = async (req, res, next) => {
   let order;
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const foundOrder = await Order.findOne({ _id: req.params.id })
+    const { orderId } = req.params;
+    const foundOrder = await Order.findOne({ _id: orderId })
       .populate('buyer')
       .populate('discount')
       .deepPopulate('details.version details.artwork.owner details.licenses')
@@ -167,7 +168,7 @@ const getOrderId = async (req, res, next) => {
 };
 
 module.exports = {
-  getOrderId,
+  getOrder,
   getSoldOrders,
   getBoughtOrders,
 };

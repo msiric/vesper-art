@@ -4,8 +4,8 @@ const createError = require('http-errors');
 
 const getUserCustomWork = async (req, res, next) => {
   try {
-    req.session.workId = req.params.id;
-    const foundWork = await Work.findOne({ _id: req.params.workId })
+    const { workId } = req.params;
+    const foundWork = await Work.findOne({ _id: workId })
       .populate('buyer')
       .populate('seller')
       .deepPopulate('messages.owner');
@@ -20,5 +20,5 @@ const getUserCustomWork = async (req, res, next) => {
 };
 
 module.exports = {
-  getUserCustomWork
+  getUserCustomWork,
 };
