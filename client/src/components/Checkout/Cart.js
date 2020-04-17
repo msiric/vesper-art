@@ -1,112 +1,69 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
-import { useHistory } from 'react-router-dom';
+import SelectInput from '../../shared/SelectInput/SelectInput';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import {
+  Modal,
   Container,
+  Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  Divider,
+  CircularProgress,
   Card,
-  Typography,
+  CardMedia,
   CardContent,
   CardActions,
+  Typography,
   TextField,
+  Paper,
   Button,
+  FormControl,
+  MenuItem,
+  InputLabel,
+  Select,
+  Link as Anchor,
 } from '@material-ui/core';
-import UploadInput from '../../shared/UploadInput/UploadInput';
-import SelectInput from '../../shared/SelectInput/SelectInput';
-import PriceInput from '../../shared/PriceInput/PriceInput';
+import { Link, useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
-import deleteEmptyValues from '../../utils/deleteEmptyValues';
 import CartStyles from './Cart.style';
 
-const artworkMediaConfig = {
-  size: 1000 * 1024,
-  format: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
-};
-
 const validationSchema = Yup.object().shape({
-  artworkMedia: Yup.mixed()
-    .test(
-      'fileSize',
-      `File needs to be less than ${artworkMediaConfig.size}MB`,
-      (value) => value[0] && value[0].size <= artworkMediaConfig.size
-    )
-    .test(
-      'fileType',
-      `File needs to be in one of the following formats: ${artworkMediaConfig.format}`,
-      (value) => value[0] && artworkMediaConfig.format.includes(value[0].type)
-    )
-    .required('Artwork needs to have a file'),
-  artworkTitle: Yup.string().trim().required('Artwork title is required'),
-  artworkAvailability: Yup.string()
-    .matches(/(available|unavailable)/)
-    .required('Artwork availability is required'),
-  artworkType: Yup.string()
-    .notRequired()
-    .when('artworkAvailability', {
-      is: 'available',
-      then: Yup.string()
-        .matches(/(commercial|free)/)
-        .required('Artwork type is required'),
-    }),
-  artworkLicense: Yup.string()
-    .notRequired()
-    .when('artworkAvailability', {
-      is: 'available',
-      then: Yup.string()
-        .matches(/(commercial|personal)/)
-        .required('Artwork license is required'),
-    }),
-  artworkPrice: Yup.number()
-    .notRequired()
-    .when(['artworkAvailability', 'artworkType'], {
-      is: (artworkAvailability, artworkType) =>
-        artworkAvailability === 'available' && artworkType === 'commercial',
-      then: Yup.number()
-        .positive('Artwork price cannot be negative')
-        .integer()
-        .min(10)
-        .max(100000)
-        .required('Artwork price is required'),
-    }),
-  artworkUse: Yup.string()
-    .notRequired()
-    .when(['artworkAvailability', 'artworkLicense'], {
-      is: (artworkAvailability, artworkLicense) =>
-        artworkAvailability === 'available' && artworkLicense === 'commercial',
-      then: Yup.string()
-        .matches(/(separate|included)/)
-        .required('Commercial use is required'),
-    }),
-  artworkCommercial: Yup.number()
-    .notRequired()
-    .when(['artworkAvailability', 'artworkLicense', 'artworkUse'], {
-      is: (artworkAvailability, artworkLicense, artworkUse) =>
-        artworkAvailability === 'available' &&
-        artworkLicense === 'commercial' &&
-        artworkUse === 'separate',
-      then: Yup.number()
-        .positive('Commercial license cannot be negative')
-        .integer()
-        .min(5)
-        .max(100000)
-        .required('Commercial license is required'),
-    }),
-  artworkCategory: '',
-  artworkDescription: Yup.string()
+  licenseType: Yup.string()
+    .matches(/(personal|commercial)/)
+    .required('License type is required'),
+  licenseeName: Yup.string()
     .trim()
-    .required('Artwork description is required'),
+    .required('License holder full name is required'),
+  licenseeCompany: Yup.string()
+    .notRequired()
+    .when('commercial', {
+      is: 'commercial',
+      then: Yup.string().trim().required('License holder company is required'),
+    }),
 });
 
 const Cart = () => {
   const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({
+    loading: false,
+    artwork: {},
+    license: 'personal',
+    modal: {
+      open: false,
+    },
+  });
   const history = useHistory();
 
   const classes = CartStyles();
 
   const {
-    setFieldValue,
     isSubmitting,
+    resetForm,
     handleSubmit,
     handleChange,
     handleBlur,
@@ -114,209 +71,174 @@ const Cart = () => {
     values,
     errors,
   } = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      artworkMedia: '',
-      artworkTitle: '',
-      artworkType: '',
-      artworkAvailability: '',
-      artworkPrice: '',
-      artworkLicense: '',
-      artworkUse: '',
-      artworkCommercial: '',
-      artworkCategory: '',
-      artworkDescription: '',
+      licenseType: state.license,
+      licenseeName: '',
+      licenseeCompany: '',
     },
     validationSchema,
     async onSubmit(values) {
-      const formData = new FormData();
-      formData.append('artworkMedia', values.artworkMedia[0]);
       try {
-        const {
-          data: { artworkCover, artworkMedia },
-        } = await ax.post('/api/artwork_media_upload', formData);
-        values.artworkCover = artworkCover;
-        values.artworkMedia = artworkMedia;
-        const data = deleteEmptyValues(values);
-        await ax.post('/api/add_artwork', data);
-        history.push({
-          pathname: '/',
-          state: { message: 'Artwork published' },
-        });
       } catch (err) {
         console.log(err);
       }
     },
   });
 
+  const fetchCart = async () => {
+    try {
+      // const { data } = await ax.get(`/api/cart`);
+      // setState({ ...state, loading: false, cart: data.artwork });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
+
+  const handleModalOpen = () => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: {
+        ...prevState.modal,
+        open: true,
+      },
+    }));
+  };
+
+  const handleModalClose = () => {
+    resetForm();
+    setState((prevState) => ({
+      ...prevState,
+      modal: {
+        ...prevState.modal,
+        open: false,
+        body: ``,
+      },
+    }));
+  };
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
   return (
     <Container fixed className={classes.fixed}>
-      <div className={classes.container}>
-        <form className={classes.form} onSubmit={handleSubmit}>
-          <Card className={classes.card}>
-            <Typography variant="h6" align="center">
-              Add artwork
-            </Typography>
-            <CardContent>
-              <UploadInput name="artworkMedia" setFieldValue={setFieldValue} />
-              <TextField
-                name="artworkTitle"
-                label="Title"
-                type="text"
-                value={values.artworkTitle}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                helperText={touched.artworkTitle ? errors.artworkTitle : ''}
-                error={touched.artworkTitle && Boolean(errors.artworkTitle)}
-                margin="dense"
-                variant="outlined"
-                fullWidth
-              />
-              <SelectInput
-                name="artworkAvailability"
-                label="Availability"
-                value={values.artworkAvailability}
-                handleChange={handleChange}
-                handleBlur={handleBlur}
-                helperText={
-                  touched.artworkAvailability ? errors.artworkAvailability : ''
-                }
-                error={
-                  touched.artworkAvailability &&
-                  Boolean(errors.artworkAvailability)
-                }
-                options={[
-                  { value: '' },
-                  { value: 'available', text: 'Available for download' },
-                  { value: 'unavailable', text: 'Only for preview' },
-                ]}
-              />
-              {values.artworkAvailability === 'available' && (
-                <SelectInput
-                  name="artworkType"
-                  label="Type"
-                  value={values.artworkType}
-                  handleChange={handleChange}
-                  handleBlur={handleBlur}
-                  helperText={touched.artworkType ? errors.artworkType : ''}
-                  error={touched.artworkType && Boolean(errors.artworkType)}
-                  options={[
-                    { value: '' },
-                    { value: 'commercial', text: 'Commercial' },
-                    { value: 'free', text: 'Free' },
-                  ]}
-                />
-              )}
-              {values.artworkAvailability === 'available' && (
-                <SelectInput
-                  name="artworkLicense"
-                  label="License"
-                  value={values.artworkLicense}
-                  handleChange={handleChange}
-                  handleBlur={handleBlur}
-                  helperText={
-                    touched.artworkLicense ? errors.artworkLicense : ''
-                  }
-                  error={
-                    touched.artworkLicense && Boolean(errors.artworkLicense)
-                  }
-                  options={[
-                    { value: '' },
-                    { value: 'commercial', text: 'Commercial' },
-                    { value: 'personal', text: 'Personal' },
-                  ]}
-                />
-              )}
-              {values.artworkAvailability === 'available' &&
-                values.artworkType === 'commercial' && (
-                  <PriceInput
-                    name="artworkPrice"
-                    label="Price"
-                    value={values.artworkPrice}
-                    handleChange={handleChange}
-                    handleBlur={handleBlur}
-                    helperText={touched.artworkPrice ? errors.artworkPrice : ''}
-                    error={touched.artworkPrice && Boolean(errors.artworkPrice)}
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-              {values.artworkAvailability === 'available' &&
-                values.artworkLicense === 'commercial' && (
-                  <SelectInput
-                    name="artworkUse"
-                    label="Commercial use"
-                    value={values.artworkUse}
-                    handleChange={handleChange}
-                    handleBlur={handleBlur}
-                    helperText={touched.artworkUse ? errors.artworkUse : ''}
-                    error={touched.artworkUse && Boolean(errors.artworkUse)}
-                    options={[
-                      { value: '' },
-                      {
-                        value: 'separate',
-                        text: 'Charge commercial license separately',
-                      },
-                      {
-                        value: 'included',
-                        text:
-                          values.artworkAvailability === 'available' &&
-                          values.artworkType === 'commercial'
-                            ? 'Include commercial license in the price'
-                            : 'Offer commercial license free of charge',
-                      },
-                    ]}
-                  />
-                )}
-              {values.artworkAvailability === 'available' &&
-                values.artworkLicense === 'commercial' &&
-                values.artworkUse === 'separate' && (
-                  <PriceInput
-                    name="artworkCommercial"
-                    label="Commercial license"
-                    value={values.artworkCommercial}
-                    handleChange={handleChange}
-                    handleBlur={handleBlur}
-                    helperText={
-                      touched.artworkCommercial ? errors.artworkCommercial : ''
-                    }
-                    error={
-                      touched.artworkCommercial &&
-                      Boolean(errors.artworkCommercial)
-                    }
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-              <TextField
-                name="artworkDescription"
-                label="Description"
-                type="text"
-                value={values.artworkDescription}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                helperText={
-                  touched.artworkDescription ? errors.artworkDescription : ''
-                }
-                error={
-                  touched.artworkDescription &&
-                  Boolean(errors.artworkDescription)
-                }
-                margin="dense"
-                variant="outlined"
-                fullWidth
-                multiline
-              />
-            </CardContent>
-            <CardActions className={classes.actions}>
-              <Button type="submit" color="primary" disabled={isSubmitting}>
-                Publish artwork
-              </Button>
-            </CardActions>
-          </Card>
-        </form>
-      </div>
+      <Grid container className={classes.container} spacing={2}>
+        {state.loading ? (
+          <Grid item xs={12} className={classes.loader}>
+            <CircularProgress />
+          </Grid>
+        ) : (
+          <>
+            <Grid item sm={12} md={7} className={classes.grid}>
+              <Paper className={classes.paper}>
+                <Card className={classes.root}></Card>
+              </Paper>
+              <br />
+            </Grid>
+            <Grid item sm={12} md={5} className={classes.grid}>
+              <Paper className={classes.paper}>
+                <Card className={classes.root}>
+                  <CardContent></CardContent>
+                </Card>
+              </Paper>
+              <br />
+              <Paper className={classes.paper}>
+                <Card className={classes.root}>
+                  <CardContent></CardContent>
+                  <CardActions></CardActions>
+                </Card>
+              </Paper>
+            </Grid>
+          </>
+        )}
+        <div>
+          <Modal
+            open={false}
+            onClose={handleModalClose}
+            aria-labelledby="License modal"
+            className={classes.modal}
+          >
+            <form className={classes.form} onSubmit={handleSubmit}>
+              <div className={classes.licenseContainer}>
+                <Card className={classes.card}>
+                  <Typography variant="h6" align="center">
+                    Manage licenses
+                  </Typography>
+                  <CardContent>
+                    <SelectInput
+                      name="licenseType"
+                      label="License type"
+                      value={values.licenseType}
+                      className={classes.license}
+                      disabled
+                      options={[
+                        {
+                          value: state.license,
+                          text: state.license,
+                        },
+                      ]}
+                    />
+                    <TextField
+                      name="licenseeName"
+                      label="License holder full name"
+                      type="text"
+                      value={values.licenseeName}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={
+                        touched.licenseeName ? errors.licenseeName : ''
+                      }
+                      error={
+                        touched.licenseeName && Boolean(errors.licenseeName)
+                      }
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                    />
+                    {state.license === 'commercial' && (
+                      <TextField
+                        name="licenseeCompany"
+                        label="License holder company"
+                        type="text"
+                        value={values.licenseeCompany}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        helperText={
+                          touched.licenseeCompany ? errors.licenseeCompany : ''
+                        }
+                        error={
+                          touched.licenseeCompany &&
+                          Boolean(errors.licenseeCompany)
+                        }
+                        margin="dense"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    )}
+                  </CardContent>
+                  <CardActions className={classes.actions}>
+                    <Button
+                      type="submit"
+                      color="primary"
+                      disabled={isSubmitting}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      type="button"
+                      color="error"
+                      onClick={handleModalClose}
+                    >
+                      Close
+                    </Button>
+                  </CardActions>
+                </Card>
+              </div>
+            </form>
+          </Modal>
+        </div>
+      </Grid>
     </Container>
   );
 };
