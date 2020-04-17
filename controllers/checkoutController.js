@@ -13,7 +13,7 @@ const fee = 3.15;
 const commission = 0.1;
 
 const getProcessCart = async (req, res, next) => {
-  let artworkInfo = {
+  /*   let artworkInfo = {
     cartIsEmpty: false,
     price: 0,
     totalPrice: 0,
@@ -23,8 +23,8 @@ const getProcessCart = async (req, res, next) => {
     discountId: null,
     discount: null,
     artwork: null,
-  };
-
+  }; */
+  let foundDiscount = null;
   const foundUser = await User.findOne({
     $and: [{ _id: res.locals.user.id }, { active: true }],
   })
@@ -35,7 +35,7 @@ const getProcessCart = async (req, res, next) => {
     .populate('cart.licenses');
   try {
     if (foundUser) {
-      if (foundUser.cart.length > 0) {
+      /*       if (foundUser.cart.length > 0) {
         artworkInfo.foundUser = foundUser;
         foundUser.cart.map(function (item) {
           if (
@@ -52,27 +52,23 @@ const getProcessCart = async (req, res, next) => {
         artworkInfo.totalPrice = artworkInfo.price + artworkInfo.license;
       } else {
         artworkInfo.cartIsEmpty = true;
-      }
-      if (foundUser.discount) {
-        const foundDiscount = await Discount.findOne({
+      } */
+      if (foundUser.discount)
+        foundDiscount = await Discount.findOne({
           $and: [{ _id: foundUser.discount }, { active: true }],
         });
-        if (foundDiscount) {
-          artworkInfo.discountId = foundDiscount._id;
-          artworkInfo.discount = foundDiscount.discount * 100;
-          artworkInfo.totalPrice =
-            artworkInfo.totalPrice * (1 - foundDiscount.discount);
-        }
-      }
-      artworkInfo.totalPrice = artworkInfo.totalPrice + fee;
+
+      /*       artworkInfo.totalPrice = artworkInfo.totalPrice + fee; */
       res.json({
-        foundUser: artworkInfo.foundUser,
+        cart: foundUser.cart,
+        discount: foundDiscount,
+        /*         foundUser: artworkInfo.foundUser,
         totalPrice: parseFloat(artworkInfo.totalPrice.toFixed(12)),
         subtotal: parseFloat(artworkInfo.subtotal.toFixed(12)),
         license: parseFloat(artworkInfo.license.toFixed(12)),
         cartIsEmpty: artworkInfo.cartIsEmpty,
         discountId: artworkInfo.discountId,
-        discountPercentage: artworkInfo.discount,
+        discountPercentage: artworkInfo.discount, */
       });
     } else {
       throw createError(400, 'User not found');

@@ -7,12 +7,6 @@ import {
   Modal,
   Container,
   Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  Avatar,
-  ListItemText,
-  Divider,
   CircularProgress,
   Card,
   CardMedia,
@@ -21,14 +15,12 @@ import {
   Typography,
   TextField,
   Paper,
+  List,
+  ListItem,
+  ListItemText,
   Button,
-  FormControl,
-  MenuItem,
-  InputLabel,
-  Select,
-  Link as Anchor,
 } from '@material-ui/core';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
 import CartStyles from './Cart.style';
 
@@ -50,9 +42,9 @@ const validationSchema = Yup.object().shape({
 const Cart = () => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
-    loading: false,
-    artwork: {},
-    license: 'personal',
+    loading: true,
+    cart: [],
+    discount: null,
     modal: {
       open: false,
     },
@@ -88,8 +80,13 @@ const Cart = () => {
 
   const fetchCart = async () => {
     try {
-      // const { data } = await ax.get(`/api/cart`);
-      // setState({ ...state, loading: false, cart: data.artwork });
+      const { data } = await ax.get(`/api/cart`);
+      setState({
+        ...state,
+        loading: false,
+        cart: data.cart,
+        discount: data.discount,
+      });
     } catch (err) {
       setState({ ...state, loading: false });
     }
@@ -130,25 +127,67 @@ const Cart = () => {
           </Grid>
         ) : (
           <>
-            <Grid item sm={12} md={7} className={classes.grid}>
-              <Paper className={classes.paper}>
-                <Card className={classes.root}></Card>
-              </Paper>
+            <Grid item sm={12} md={8} className={classes.artwork}>
+              {state.cart.map((item) => (
+                <Card className={classes.root}>
+                  <CardMedia
+                    className={classes.cover}
+                    image={item.artwork.current.cover}
+                    title={item.artwork.current.title}
+                  />
+                  <div className={classes.details}>
+                    <CardContent className={classes.content}>
+                      <Typography component="h5" variant="h5">
+                        {item.artwork.current.title}
+                      </Typography>
+                      <Typography variant="subtitle1" color="textSecondary">
+                        {item.artwork.current.price
+                          ? `$${item.artwork.current.price}`
+                          : 'Free'}
+                      </Typography>
+                    </CardContent>
+                    <div className={classes.controls}></div>
+                  </div>
+                </Card>
+              ))}
               <br />
             </Grid>
-            <Grid item sm={12} md={5} className={classes.grid}>
-              <Paper className={classes.paper}>
-                <Card className={classes.root}>
-                  <CardContent></CardContent>
-                </Card>
-              </Paper>
+            <Grid item sm={12} md={4} className={classes.actions}>
+              <Card className={classes.details}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Order summary
+                  </Typography>
+                  <List disablePadding>
+                    {state.cart.map((item) => (
+                      <ListItem
+                        className={classes.listItem}
+                        key={item.artwork.current._id}
+                      >
+                        <ListItemText
+                          primary={item.artwork.current.title}
+                          secondary={item.artwork.current.description}
+                        />
+                        <Typography variant="body2">
+                          {item.artwork.current.price}
+                        </Typography>
+                      </ListItem>
+                    ))}
+                    <ListItem className={classes.listItem}>
+                      <ListItemText primary="Total" />
+                      <Typography variant="subtitle1" className={classes.total}>
+                        {/* {state.cart.reduce(
+                          (a, b) =>
+                            a.artwork.current.price + b.artwork.current.price,
+                          0
+                        )} */}
+                        TOTAL
+                      </Typography>
+                    </ListItem>
+                  </List>
+                </CardContent>
+              </Card>
               <br />
-              <Paper className={classes.paper}>
-                <Card className={classes.root}>
-                  <CardContent></CardContent>
-                  <CardActions></CardActions>
-                </Card>
-              </Paper>
             </Grid>
           </>
         )}
