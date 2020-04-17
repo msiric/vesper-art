@@ -47,7 +47,7 @@ const App = () => {
             return object;
           }, {}),
           cart: data.user.cart.reduce(function (object, item) {
-            object[item] = true;
+            object[item.artwork] = true;
             return object;
           }, {}),
           cartSize: Object.keys(data.user.cart).length,

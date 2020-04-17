@@ -84,7 +84,7 @@ const ArtworkDetails = ({ match }) => {
         handleModalClose();
         dispatch({
           type: 'updateCart',
-          cart: { ...store.user.cart, [match.params.id]: true },
+          cart: { ...store.user.cart, [state.artwork._id]: true },
           cartSize: store.user.cartSize + 1,
         });
       } catch (err) {
@@ -276,7 +276,8 @@ const ArtworkDetails = ({ match }) => {
                           : `$${state.artwork.current.commercial}`
                         : 'Showcase'}
                     </Typography>
-                    {state.artwork.current.availability === 'available' ? (
+                    {state.artwork.current.availability === 'available' &&
+                    !store.user.cart[state.artwork._id] ? (
                       <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="artworkLicense">
                           License
@@ -303,9 +304,15 @@ const ArtworkDetails = ({ match }) => {
                     state.artwork.current.availability === 'available' ? (
                       state.license === 'personal' ? (
                         state.artwork.current.price ? (
-                          <Button onClick={() => handleModalOpen()}>
-                            Add to cart
-                          </Button>
+                          store.user.cart[state.artwork._id] ? (
+                            <Button component={Link} to={'/cart/'}>
+                              In cart
+                            </Button>
+                          ) : (
+                            <Button onClick={() => handleModalOpen()}>
+                              Add to cart
+                            </Button>
+                          )
                         ) : (
                           <Button
                             onClick={() =>

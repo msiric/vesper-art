@@ -59,5 +59,11 @@
   "devDependencies": {
     "dotenv": "^8.1.0",
     "kill-port": "^1.6.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "client/*"
+    ],
+    "delay": "2500"
   }
 }

@@ -39,19 +39,8 @@ const getArtworkDetails = async (req, res, next) => {
         '_id cover created title price type license availability description use commercial'
       );
     if (foundArtwork) {
-      const savedArtwork =
-        req.user && req.user.savedArtwork.includes(artworkId) ? true : false;
-      const inCart =
-        req.user &&
-        req.user.cart.length > 0 &&
-        req.user.cart.some((item) => item.artwork._id.equals(artworkId))
-          ? true
-          : false;
-
       return res.json({
         artwork: foundArtwork,
-        inCart,
-        savedArtwork,
       });
     } else {
       throw createError(400, 'Artwork not found');

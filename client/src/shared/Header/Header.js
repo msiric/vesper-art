@@ -121,7 +121,12 @@ const Header = () => {
         <p>Notifications</p>
       </MenuItem>
       <MenuItem>
-        <IconButton aria-label="Show cart" color="inherit">
+        <IconButton
+          component={Link}
+          to="/cart"
+          aria-label="Show cart"
+          color="inherit"
+        >
           <Badge badgeContent={store.user.cartSize} color="secondary">
             <CartIcon />
           </Badge>
@@ -206,7 +211,12 @@ const Header = () => {
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
-                <IconButton aria-label="Show cart" color="inherit">
+                <IconButton
+                  component={Link}
+                  to="/cart"
+                  aria-label="Show cart"
+                  color="inherit"
+                >
                   <Badge badgeContent={store.user.cartSize} color="secondary">
                     <CartIcon />
                   </Badge>
