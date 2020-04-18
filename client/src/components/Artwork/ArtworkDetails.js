@@ -129,7 +129,6 @@ const ArtworkDetails = ({ match }) => {
       modal: {
         ...prevState.modal,
         open: false,
-        body: ``,
       },
     }));
   };

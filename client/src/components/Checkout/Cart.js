@@ -46,8 +46,10 @@ const Cart = () => {
     cart: [],
     discount: null,
     modal: {
+      id: null,
       open: false,
     },
+    forms: {},
   });
   const licenses = useRef({
     id: {},
@@ -103,11 +105,12 @@ const Cart = () => {
     }
   };
 
-  const handleModalOpen = () => {
+  const handleModalOpen = (id) => {
     setState((prevState) => ({
       ...prevState,
       modal: {
         ...prevState.modal,
+        id: id,
         open: true,
       },
     }));
@@ -119,8 +122,8 @@ const Cart = () => {
       ...prevState,
       modal: {
         ...prevState.modal,
+        id: null,
         open: false,
-        body: ``,
       },
     }));
   };
@@ -132,8 +135,6 @@ const Cart = () => {
   useEffect(() => {
     fetchCart();
   }, []);
-
-  console.log(state.loading);
 
   return (
     <Container fixed className={classes.fixed}>
@@ -166,6 +167,7 @@ const Cart = () => {
                         <Button
                           type="button"
                           className={classes.manageLicenses}
+                          onClick={() => handleModalOpen(item._id)}
                         >
                           Manage licenses
                         </Button>
@@ -381,88 +383,109 @@ const Cart = () => {
         )}
         <div>
           <Modal
-            open={false}
+            open={state.modal.open}
             onClose={handleModalClose}
             aria-labelledby="License modal"
             className={classes.modal}
           >
-            <form className={classes.form} onSubmit={handleSubmit}>
-              <div className={classes.licenseContainer}>
-                <Card className={classes.card}>
-                  <Typography variant="h6" align="center">
-                    Manage licenses
-                  </Typography>
-                  <CardContent>
-                    <SelectInput
-                      name="licenseType"
-                      label="License type"
-                      value={values.licenseType}
-                      className={classes.license}
-                      disabled
-                      options={[
-                        {
-                          value: state.license,
-                          text: state.license,
-                        },
-                      ]}
-                    />
-                    <TextField
-                      name="licenseeName"
-                      label="License holder full name"
-                      type="text"
-                      value={values.licenseeName}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={
-                        touched.licenseeName ? errors.licenseeName : ''
-                      }
-                      error={
-                        touched.licenseeName && Boolean(errors.licenseeName)
-                      }
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                    {state.license === 'commercial' && (
-                      <TextField
-                        name="licenseeCompany"
-                        label="License holder company"
-                        type="text"
-                        value={values.licenseeCompany}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        helperText={
-                          touched.licenseeCompany ? errors.licenseeCompany : ''
-                        }
-                        error={
-                          touched.licenseeCompany &&
-                          Boolean(errors.licenseeCompany)
-                        }
-                        margin="dense"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    )}
-                  </CardContent>
-                  <CardActions className={classes.actions}>
-                    <Button
-                      type="submit"
-                      color="primary"
-                      disabled={isSubmitting}
-                    >
-                      Save
-                    </Button>
-                    <Button
-                      type="button"
-                      color="error"
-                      onClick={handleModalClose}
-                    >
-                      Close
-                    </Button>
-                  </CardActions>
-                </Card>
-              </div>
-            </form>
+            <div className={classes.licenseContainer}>
+              <Card className={classes.card}>
+                <Typography variant="h6" align="center">
+                  Manage licenses
+                </Typography>
+                {state.modal.id
+                  ? state.cart
+                      .find((item) => item._id === state.modal.id)
+                      .licenses.map((license) => {
+                        return (
+                          <form
+                            className={classes.form}
+                            onSubmit={handleSubmit}
+                          >
+                            <CardContent>
+                              <SelectInput
+                                name="licenseType"
+                                label="License type"
+                                value={values.licenseType}
+                                className={classes.license}
+                                disabled
+                                options={[
+                                  {
+                                    value: state.license,
+                                    text: state.license,
+                                  },
+                                ]}
+                              />
+                              <TextField
+                                name="licenseeName"
+                                label="License holder full name"
+                                type="text"
+                                value={values.licenseeName}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                helperText={
+                                  touched.licenseeName
+                                    ? errors.licenseeName
+                                    : ''
+                                }
+                                error={
+                                  touched.licenseeName &&
+                                  Boolean(errors.licenseeName)
+                                }
+                                margin="dense"
+                                variant="outlined"
+                                fullWidth
+                              />
+                              {state.license === 'commercial' && (
+                                <TextField
+                                  name="licenseeCompany"
+                                  label="License holder company"
+                                  type="text"
+                                  value={values.licenseeCompany}
+                                  onChange={handleChange}
+                                  onBlur={handleBlur}
+                                  helperText={
+                                    touched.licenseeCompany
+                                      ? errors.licenseeCompany
+                                      : ''
+                                  }
+                                  error={
+                                    touched.licenseeCompany &&
+                                    Boolean(errors.licenseeCompany)
+                                  }
+                                  margin="dense"
+                                  variant="outlined"
+                                  fullWidth
+                                />
+                              )}
+                            </CardContent>
+                            <CardActions className={classes.actions}>
+                              <Button
+                                type="submit"
+                                color="primary"
+                                disabled={isSubmitting}
+                              >
+                                Save
+                              </Button>
+                            </CardActions>
+                          </form>
+                        );
+                      })
+                  : null}
+                <CardActions className={classes.actions}>
+                  <Button type="button" color="primary">
+                    Add
+                  </Button>
+                  <Button
+                    type="button"
+                    color="error"
+                    onClick={handleModalClose}
+                  >
+                    Close
+                  </Button>
+                </CardActions>
+              </Card>
+            </div>
           </Modal>
         </div>
       </Grid>
