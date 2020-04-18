@@ -114,6 +114,10 @@ const Cart = () => {
     }));
   };
 
+  const getLength = (condition, array) => {
+    return array.filter((item) => item.type === condition).length;
+  };
+
   useEffect(() => {
     fetchCart();
   }, []);
@@ -141,9 +145,7 @@ const Cart = () => {
                         {item.artwork.current.title}
                       </Typography>
                       <Typography variant="subtitle1" color="textSecondary">
-                        {item.artwork.current.price
-                          ? `$${item.artwork.current.price}`
-                          : 'Free'}
+                        {item.artwork.current.description}
                       </Typography>
                     </CardContent>
                     <div className={classes.controls}></div>
@@ -159,20 +161,74 @@ const Cart = () => {
                     Order summary
                   </Typography>
                   <List disablePadding>
-                    {state.cart.map((item) => (
-                      <ListItem
-                        className={classes.listItem}
-                        key={item.artwork.current._id}
-                      >
-                        <ListItemText
-                          primary={item.artwork.current.title}
-                          secondary={item.artwork.current.description}
-                        />
-                        <Typography variant="body2">
-                          {item.artwork.current.price}
-                        </Typography>
-                      </ListItem>
-                    ))}
+                    {state.cart.map((item) => {
+                      const personalLicenses = {
+                        length: getLength('personal', item.licenses),
+                      };
+                      const commercialLicenses = {
+                        length: getLength('commercial', item.licenses),
+                        amount: item.artwork.current.commercial,
+                      };
+                      return (
+                        <ListItem
+                          className={classes.listItem}
+                          key={item.artwork.current._id}
+                        >
+                          <ListItemText
+                            primary={item.artwork.current.title}
+                            secondary={
+                              <div>
+                                {personalLicenses.length ? (
+                                  <div>
+                                    {personalLicenses.length === 1
+                                      ? `${personalLicenses.length} personal license`
+                                      : `${personalLicenses.length} personal licenses`}
+                                  </div>
+                                ) : null}
+                                {commercialLicenses.length ? (
+                                  <div>
+                                    {commercialLicenses.length === 1
+                                      ? `${commercialLicenses.length} commercial license`
+                                      : `${commercialLicenses.length} commercial licenses`}
+                                  </div>
+                                ) : null}
+                              </div>
+                            }
+                          />
+                          <ListItemText
+                            primary={'Price'}
+                            secondary={
+                              <div>
+                                {personalLicenses.length ? (
+                                  <div>
+                                    {personalLicenses.length *
+                                    item.artwork.current.price
+                                      ? `$${
+                                          personalLicenses.length *
+                                          item.artwork.current.price
+                                        }`
+                                      : 'Free'}
+                                  </div>
+                                ) : null}
+                                {commercialLicenses.length ? (
+                                  <div>
+                                    {commercialLicenses.length *
+                                    (commercialLicenses.amount +
+                                      item.artwork.current.price)
+                                      ? `$${
+                                          commercialLicenses.length *
+                                          (commercialLicenses.amount +
+                                            item.artwork.current.price)
+                                        }`
+                                      : 'Free'}
+                                  </div>
+                                ) : null}
+                              </div>
+                            }
+                          />
+                        </ListItem>
+                      );
+                    })}
                     <ListItem className={classes.listItem}>
                       <ListItemText primary="Total" />
                       <Typography variant="subtitle1" className={classes.total}>
