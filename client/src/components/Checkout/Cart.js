@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
-import SelectInput from '../../shared/SelectInput/SelectInput';
+import SelectField from '../../shared/SelectInput/SelectInput';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -104,6 +104,77 @@ const Cart = () => {
 
   const getLength = (condition, array) => {
     return array.filter((item) => item.type === condition).length;
+  };
+
+  const licenseType = ({ field, form: { errors, touched } }) => {
+    return (
+      <TextField
+        {...field}
+        label="License holder full name"
+        type="text"
+        helperText={touched.licenseeName ? errors.licenseeName : ''}
+        error={touched.licenseeName && Boolean(errors.licenseeName)}
+        margin="dense"
+        variant="outlined"
+        fullWidth
+      />
+    );
+  };
+
+  const licenseeName = ({ field, form: { errors, touched } }) => {
+    return (
+      <TextField
+        {...field}
+        label="License holder full name"
+        type="text"
+        helperText={touched.licenseeName ? errors.licenseeName : ''}
+        error={touched.licenseeName && Boolean(errors.licenseeName)}
+        margin="dense"
+        variant="outlined"
+        fullWidth
+      />
+    );
+  };
+
+  const licenseeCompany = ({ field, form: { errors, touched } }) => {
+    console.log(field);
+  };
+
+  const SelectInput = ({ field, label, errors, touched }) => {
+    console.log(field);
+    return (
+      <SelectField
+        {...field}
+        label={label}
+        helperText={touched.licenseType ? errors.licenseType : ''}
+        error={touched.licenseType && Boolean(errors.licenseType)}
+        options={[
+          {
+            value: 'personal',
+            text: 'Personal',
+          },
+          {
+            value: 'commercial',
+            text: 'Commercial',
+          },
+        ]}
+      />
+    );
+  };
+
+  const TextInput = ({ field, label, errors, touched }) => {
+    return (
+      <TextField
+        {...field}
+        label={label}
+        type="text"
+        helperText={touched.licenseeName ? errors.licenseeName : ''}
+        error={touched.licenseeName && Boolean(errors.licenseeName)}
+        margin="dense"
+        variant="outlined"
+        fullWidth
+      />
+    );
   };
 
   useEffect(() => {
@@ -393,58 +464,90 @@ const Cart = () => {
                               {values.licenses && values.licenses.length > 0 ? (
                                 values.licenses.map((value, index) => (
                                   <div key={index}>
-                                    <SelectInput
+                                    <Field
                                       name={`licenses.${index}.licenseType`}
-                                      label="License type"
-                                      value={value.licenseType}
-                                      className={classes.license}
-                                      options={[
-                                        {
-                                          value: 'personal',
-                                          text: 'Personal',
-                                        },
-                                        {
-                                          value: 'commercial',
-                                          text: 'Commercial',
-                                        },
-                                      ]}
-                                    />
-                                    <TextField
+                                    >
+                                      {({
+                                        field,
+                                        form: { touched, errors },
+                                      }) => (
+                                        <SelectField
+                                          {...field}
+                                          label="License type"
+                                          helperText={
+                                            touched.licenseType
+                                              ? errors.licenseType
+                                              : ''
+                                          }
+                                          error={
+                                            touched.licenseType &&
+                                            Boolean(errors.licenseType)
+                                          }
+                                          options={[
+                                            {
+                                              value: 'personal',
+                                              text: 'Personal',
+                                            },
+                                            {
+                                              value: 'commercial',
+                                              text: 'Commercial',
+                                            },
+                                          ]}
+                                        />
+                                      )}
+                                    </Field>
+                                    <Field
                                       name={`licenses.${index}.licenseeName`}
-                                      label="License holder full name"
-                                      value={value.licenseeName}
-                                      type="text"
-                                      helperText={
-                                        touched.licenseeName
-                                          ? errors.licenseeName
-                                          : ''
-                                      }
-                                      error={
-                                        touched.licenseeName &&
-                                        Boolean(errors.licenseeName)
-                                      }
-                                      margin="dense"
-                                      variant="outlined"
-                                      fullWidth
-                                    />
-                                    <TextField
+                                    >
+                                      {({
+                                        field,
+                                        form: { touched, errors },
+                                      }) => (
+                                        <TextField
+                                          {...field}
+                                          label="License holder full name"
+                                          type="text"
+                                          helperText={
+                                            touched.licenseeName
+                                              ? errors.licenseeName
+                                              : ''
+                                          }
+                                          error={
+                                            touched.licenseeName &&
+                                            Boolean(errors.licenseeName)
+                                          }
+                                          margin="dense"
+                                          variant="outlined"
+                                          fullWidth
+                                        />
+                                      )}
+                                    </Field>
+                                    <Field
                                       name={`licenses.${index}.licenseeCompany`}
-                                      label="License holder company"
-                                      value={value.licenseeCompany}
-                                      type="text"
-                                      helperText={
-                                        touched.licenseeCompany
-                                          ? errors.licenseeCompany
-                                          : ''
-                                      }
-                                      error={
-                                        touched.licenseeCompany &&
-                                        Boolean(errors.licenseeCompany)
-                                      }
-                                      margin="dense"
-                                      variant="outlined"
-                                      fullWidth
-                                    />
+                                    >
+                                      {({
+                                        field,
+                                        form: { touched, errors },
+                                      }) => (
+                                        <TextField
+                                          {...field}
+                                          label="License holder company"
+                                          type="text"
+                                          helperText={
+                                            touched.licenseeCompany
+                                              ? errors.licenseeCompany
+                                              : ''
+                                          }
+                                          error={
+                                            touched.licenseeCompany &&
+                                            Boolean(errors.licenseeCompany)
+                                          }
+                                          margin="dense"
+                                          variant="outlined"
+                                          fullWidth
+                                        />
+                                      )}
+                                    </Field>
                                     <button
                                       type="button"
                                       onClick={() => arrayHelpers.remove(index)}
