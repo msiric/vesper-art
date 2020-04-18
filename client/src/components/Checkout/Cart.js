@@ -18,6 +18,7 @@ import {
   ListItem,
   ListItemText,
   Button,
+  Divider,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
@@ -49,6 +50,7 @@ const Cart = () => {
     },
   });
   const licenses = useRef({
+    id: {},
     personal: {
       length: 0,
       amount: 0,
@@ -142,7 +144,7 @@ const Cart = () => {
           </Grid>
         ) : (
           <>
-            <Grid item sm={12} md={8} className={classes.artwork}>
+            <Grid item xs={12} md={8} className={classes.artwork}>
               {state.cart.map((item) => (
                 <Card className={classes.root}>
                   <CardMedia
@@ -159,14 +161,23 @@ const Cart = () => {
                         {item.artwork.current.description}
                       </Typography>
                     </CardContent>
-                    <div className={classes.controls}></div>
+                    <div className={classes.controls}>
+                      <CardContent className={classes.content}>
+                        <Button
+                          type="button"
+                          className={classes.manageLicenses}
+                        >
+                          Manage licenses
+                        </Button>
+                      </CardContent>
+                    </div>
                   </div>
                 </Card>
               ))}
               <br />
             </Grid>
-            <Grid item sm={12} md={4} className={classes.actions}>
-              <Card className={classes.details}>
+            <Grid item xs={12} md={4} className={classes.actions}>
+              <Card className={classes.summary}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Order summary
@@ -186,36 +197,40 @@ const Cart = () => {
                         commercialLicenses.length *
                         (commercialLicenses.amount +
                           item.artwork.current.price);
-                      console.log(
-                        licenses.current.personal.length,
-                        personalLicenses.length,
-                        item
-                      );
-                      licenses.current = {
-                        personal: {
-                          length:
-                            licenses.current.personal.length +
-                            personalLicenses.length,
-                          amount:
-                            licenses.current.personal.amount +
-                            personalLicenses.total,
-                        },
-                        commercial: {
-                          length:
-                            licenses.current.commercial.length +
-                            commercialLicenses.length,
-                          amount:
-                            licenses.current.commercial.amount +
-                            commercialLicenses.total,
-                        },
-                      };
+                      if (!licenses.current.id[item.artwork.current._id])
+                        licenses.current = {
+                          id: {
+                            ...licenses.current.id,
+                            [item.artwork.current._id]: true,
+                          },
+                          personal: {
+                            length:
+                              licenses.current.personal.length +
+                              personalLicenses.length,
+                            amount:
+                              licenses.current.personal.amount +
+                              personalLicenses.total,
+                          },
+                          commercial: {
+                            length:
+                              licenses.current.commercial.length +
+                              commercialLicenses.length,
+                            amount:
+                              licenses.current.commercial.amount +
+                              commercialLicenses.total,
+                          },
+                        };
                       return (
                         <ListItem
                           className={classes.listItem}
                           key={item.artwork.current._id}
                         >
                           <ListItemText
-                            primary={item.artwork.current.title}
+                            primary={
+                              <Typography>
+                                {item.artwork.current.title}
+                              </Typography>
+                            }
                             secondary={
                               <div>
                                 {personalLicenses.length ? (
@@ -236,9 +251,13 @@ const Cart = () => {
                             }
                           />
                           <ListItemText
-                            primary={'Price'}
+                            primary={
+                              <Typography className={classes.rightList}>
+                                Price
+                              </Typography>
+                            }
                             secondary={
-                              <div>
+                              <div className={classes.rightList}>
                                 {personalLicenses.length ? (
                                   <div>
                                     {personalLicenses.total
@@ -259,32 +278,37 @@ const Cart = () => {
                         </ListItem>
                       );
                     })}
+                    <Divider />
                     <ListItem className={classes.listItem}>
                       <ListItemText
-                        primary="Licenses"
+                        primary={<Typography>Items</Typography>}
                         secondary={
                           <div>
                             {licenses.current.personal.length ? (
                               <div>
                                 {licenses.current.personal.length === 1
-                                  ? `${licenses.current.personal.length} license`
-                                  : `${licenses.current.personal.length} licenses`}
+                                  ? `${licenses.current.personal.length} personal license`
+                                  : `${licenses.current.personal.length} personal licenses`}
                               </div>
                             ) : null}
                             {licenses.current.commercial.length ? (
                               <div>
                                 {licenses.current.commercial.length === 1
-                                  ? `${licenses.current.commercial.length} license`
-                                  : `${licenses.current.commercial.length} licenses`}
+                                  ? `${licenses.current.commercial.length} commercial license`
+                                  : `${licenses.current.commercial.length} commercial licenses`}
                               </div>
                             ) : null}
                           </div>
                         }
                       />
                       <ListItemText
-                        primary="Total"
+                        primary={
+                          <Typography className={classes.rightList}>
+                            Subtotal
+                          </Typography>
+                        }
                         secondary={
-                          <div>
+                          <div className={classes.rightList}>
                             {licenses.current.personal.length ? (
                               <div>
                                 {licenses.current.personal.amount
@@ -300,6 +324,51 @@ const Cart = () => {
                               </div>
                             ) : null}
                           </div>
+                        }
+                      />
+                    </ListItem>
+                    <Divider />
+                    <ListItem className={classes.listItem}>
+                      <ListItemText
+                        primary={<Typography>Order</Typography>}
+                        secondary={
+                          <div>
+                            {licenses.current.personal.length +
+                            licenses.current.commercial.length ? (
+                              <Typography>
+                                {licenses.current.personal.length +
+                                  licenses.current.commercial.length ===
+                                1
+                                  ? `${
+                                      licenses.current.personal.length +
+                                      licenses.current.commercial.length
+                                    } license`
+                                  : `${
+                                      licenses.current.personal.length +
+                                      licenses.current.commercial.length
+                                    } licenses`}
+                              </Typography>
+                            ) : null}
+                          </div>
+                        }
+                      />
+                      <ListItemText
+                        primary={
+                          <Typography className={classes.rightList}>
+                            Total
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography className={classes.rightList}>
+                            {licenses.current.personal.amount +
+                            licenses.current.commercial.amount
+                              ? `$${
+                                  licenses.current.personal.amount +
+                                  licenses.current.commercial.amount
+                                }
+                            `
+                              : 'Free'}
+                          </Typography>
                         }
                       />
                     </ListItem>

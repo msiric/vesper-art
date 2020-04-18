@@ -37,5 +37,20 @@ artepunktTheme.overrides.MuiSnackbarContent = {
     padding: '0 10px',
   },
 };
+artepunktTheme.overrides.MuiListItemText = {
+  multiline: {
+    width: '50%',
+  },
+};
+artepunktTheme.overrides.MuiCardContent = {
+  root: {
+    '&:last-child': {
+      paddingTop: 0,
+      paddingLeft: 0,
+      paddingRight: 0,
+      paddingBottom: 0,
+    },
+  },
+};
 
 export default artepunktTheme;
