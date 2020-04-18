@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import SelectInput from '../../shared/SelectInput/SelectInput';
-import { useFormik } from 'formik';
+import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import {
   Modal,
@@ -66,31 +66,6 @@ const Cart = () => {
 
   const classes = CartStyles();
 
-  const {
-    isSubmitting,
-    resetForm,
-    handleSubmit,
-    handleChange,
-    handleBlur,
-    touched,
-    values,
-    errors,
-  } = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      licenseType: state.license,
-      licenseeName: '',
-      licenseeCompany: '',
-    },
-    validationSchema,
-    async onSubmit(values) {
-      try {
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  });
-
   const fetchCart = async () => {
     try {
       const { data } = await ax.get(`/api/cart`);
@@ -117,7 +92,6 @@ const Cart = () => {
   };
 
   const handleModalClose = () => {
-    resetForm();
     setState((prevState) => ({
       ...prevState,
       modal: {
@@ -393,85 +367,128 @@ const Cart = () => {
                 <Typography variant="h6" align="center">
                   Manage licenses
                 </Typography>
-                {state.modal.id
-                  ? state.cart
-                      .find((item) => item._id === state.modal.id)
-                      .licenses.map((license) => {
-                        return (
-                          <form
-                            className={classes.form}
-                            onSubmit={handleSubmit}
-                          >
-                            <CardContent>
-                              <SelectInput
-                                name="licenseType"
-                                label="License type"
-                                value={values.licenseType}
-                                className={classes.license}
-                                disabled
-                                options={[
-                                  {
-                                    value: state.license,
-                                    text: state.license,
-                                  },
-                                ]}
-                              />
-                              <TextField
-                                name="licenseeName"
-                                label="License holder full name"
-                                type="text"
-                                value={values.licenseeName}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                helperText={
-                                  touched.licenseeName
-                                    ? errors.licenseeName
-                                    : ''
-                                }
-                                error={
-                                  touched.licenseeName &&
-                                  Boolean(errors.licenseeName)
-                                }
-                                margin="dense"
-                                variant="outlined"
-                                fullWidth
-                              />
-                              {state.license === 'commercial' && (
-                                <TextField
-                                  name="licenseeCompany"
-                                  label="License holder company"
-                                  type="text"
-                                  value={values.licenseeCompany}
-                                  onChange={handleChange}
-                                  onBlur={handleBlur}
-                                  helperText={
-                                    touched.licenseeCompany
-                                      ? errors.licenseeCompany
-                                      : ''
+                {state.modal.id ? (
+                  <Formik
+                    initialValues={{
+                      licenses: [
+                        {
+                          licenseType: 'personal',
+                          licenseeName: '',
+                          licenseeCompany: '',
+                        },
+                      ],
+                    }}
+                    onSubmit={(values) =>
+                      setTimeout(() => {
+                        alert(JSON.stringify(values, null, 2));
+                      }, 500)
+                    }
+                  >
+                    {({ values, errors, touched }) => (
+                      <Form>
+                        <FieldArray
+                          name="licenses"
+                          render={(arrayHelpers) => (
+                            <div>
+                              {values.licenses && values.licenses.length > 0 ? (
+                                values.licenses.map((value, index) => (
+                                  <div key={index}>
+                                    <SelectInput
+                                      name={`licenses.${index}.licenseType`}
+                                      label="License type"
+                                      value={value.licenseType}
+                                      className={classes.license}
+                                      options={[
+                                        {
+                                          value: 'personal',
+                                          text: 'Personal',
+                                        },
+                                        {
+                                          value: 'commercial',
+                                          text: 'Commercial',
+                                        },
+                                      ]}
+                                    />
+                                    <TextField
+                                      name={`licenses.${index}.licenseeName`}
+                                      label="License holder full name"
+                                      value={value.licenseeName}
+                                      type="text"
+                                      helperText={
+                                        touched.licenseeName
+                                          ? errors.licenseeName
+                                          : ''
+                                      }
+                                      error={
+                                        touched.licenseeName &&
+                                        Boolean(errors.licenseeName)
+                                      }
+                                      margin="dense"
+                                      variant="outlined"
+                                      fullWidth
+                                    />
+                                    <TextField
+                                      name={`licenses.${index}.licenseeCompany`}
+                                      label="License holder company"
+                                      value={value.licenseeCompany}
+                                      type="text"
+                                      helperText={
+                                        touched.licenseeCompany
+                                          ? errors.licenseeCompany
+                                          : ''
+                                      }
+                                      error={
+                                        touched.licenseeCompany &&
+                                        Boolean(errors.licenseeCompany)
+                                      }
+                                      margin="dense"
+                                      variant="outlined"
+                                      fullWidth
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => arrayHelpers.remove(index)}
+                                    >
+                                      -
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        arrayHelpers.insert(index, {
+                                          licenseType: 'personal',
+                                          licenseeName: '',
+                                          licenseeCompany: '',
+                                        })
+                                      }
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                ))
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    arrayHelpers.push({
+                                      licenseType: 'personal',
+                                      licenseeName: '',
+                                      licenseeCompany: '',
+                                    })
                                   }
-                                  error={
-                                    touched.licenseeCompany &&
-                                    Boolean(errors.licenseeCompany)
-                                  }
-                                  margin="dense"
-                                  variant="outlined"
-                                  fullWidth
-                                />
+                                >
+                                  Add a license
+                                </button>
                               )}
-                            </CardContent>
-                            <CardActions className={classes.actions}>
-                              <Button
-                                type="submit"
-                                color="primary"
-                                disabled={isSubmitting}
-                              >
-                                Save
-                              </Button>
-                            </CardActions>
-                          </form>
-                        );
-                      })
-                  : null}
+                              <div>
+                                <button type="submit">Submit</button>
+                              </div>
+                            </div>
+                          )}
+                        />
+                      </Form>
+                    )}
+                  </Formik>
+                ) : null}
                 <CardActions className={classes.actions}>
                   <Button type="button" color="primary">
                     Add
