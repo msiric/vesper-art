@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import SelectInput from '../../shared/SelectInput/SelectInput';
 import { useFormik } from 'formik';
@@ -14,7 +14,6 @@ import {
   CardActions,
   Typography,
   TextField,
-  Paper,
   List,
   ListItem,
   ListItemText,
@@ -47,6 +46,16 @@ const Cart = () => {
     discount: null,
     modal: {
       open: false,
+    },
+  });
+  const licenses = useRef({
+    personal: {
+      length: 0,
+      amount: 0,
+    },
+    commercial: {
+      length: 0,
+      amount: 0,
     },
   });
   const history = useHistory();
@@ -122,6 +131,8 @@ const Cart = () => {
     fetchCart();
   }, []);
 
+  console.log(state.loading);
+
   return (
     <Container fixed className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>
@@ -169,6 +180,35 @@ const Cart = () => {
                         length: getLength('commercial', item.licenses),
                         amount: item.artwork.current.commercial,
                       };
+                      personalLicenses.total =
+                        personalLicenses.length * item.artwork.current.price;
+                      commercialLicenses.total =
+                        commercialLicenses.length *
+                        (commercialLicenses.amount +
+                          item.artwork.current.price);
+                      console.log(
+                        licenses.current.personal.length,
+                        personalLicenses.length,
+                        item
+                      );
+                      licenses.current = {
+                        personal: {
+                          length:
+                            licenses.current.personal.length +
+                            personalLicenses.length,
+                          amount:
+                            licenses.current.personal.amount +
+                            personalLicenses.total,
+                        },
+                        commercial: {
+                          length:
+                            licenses.current.commercial.length +
+                            commercialLicenses.length,
+                          amount:
+                            licenses.current.commercial.amount +
+                            commercialLicenses.total,
+                        },
+                      };
                       return (
                         <ListItem
                           className={classes.listItem}
@@ -201,25 +241,15 @@ const Cart = () => {
                               <div>
                                 {personalLicenses.length ? (
                                   <div>
-                                    {personalLicenses.length *
-                                    item.artwork.current.price
-                                      ? `$${
-                                          personalLicenses.length *
-                                          item.artwork.current.price
-                                        }`
+                                    {personalLicenses.total
+                                      ? `$${personalLicenses.total}`
                                       : 'Free'}
                                   </div>
                                 ) : null}
                                 {commercialLicenses.length ? (
                                   <div>
-                                    {commercialLicenses.length *
-                                    (commercialLicenses.amount +
-                                      item.artwork.current.price)
-                                      ? `$${
-                                          commercialLicenses.length *
-                                          (commercialLicenses.amount +
-                                            item.artwork.current.price)
-                                        }`
+                                    {commercialLicenses.total
+                                      ? `$${commercialLicenses.total}`
                                       : 'Free'}
                                   </div>
                                 ) : null}
@@ -230,15 +260,48 @@ const Cart = () => {
                       );
                     })}
                     <ListItem className={classes.listItem}>
-                      <ListItemText primary="Total" />
-                      <Typography variant="subtitle1" className={classes.total}>
-                        {/* {state.cart.reduce(
-                          (a, b) =>
-                            a.artwork.current.price + b.artwork.current.price,
-                          0
-                        )} */}
-                        TOTAL
-                      </Typography>
+                      <ListItemText
+                        primary="Licenses"
+                        secondary={
+                          <div>
+                            {licenses.current.personal.length ? (
+                              <div>
+                                {licenses.current.personal.length === 1
+                                  ? `${licenses.current.personal.length} license`
+                                  : `${licenses.current.personal.length} licenses`}
+                              </div>
+                            ) : null}
+                            {licenses.current.commercial.length ? (
+                              <div>
+                                {licenses.current.commercial.length === 1
+                                  ? `${licenses.current.commercial.length} license`
+                                  : `${licenses.current.commercial.length} licenses`}
+                              </div>
+                            ) : null}
+                          </div>
+                        }
+                      />
+                      <ListItemText
+                        primary="Total"
+                        secondary={
+                          <div>
+                            {licenses.current.personal.length ? (
+                              <div>
+                                {licenses.current.personal.amount
+                                  ? `$${licenses.current.personal.amount}`
+                                  : 'Free'}
+                              </div>
+                            ) : null}
+                            {licenses.current.commercial.length ? (
+                              <div>
+                                {licenses.current.commercial.amount
+                                  ? `$${licenses.current.commercial.amount}`
+                                  : 'Free'}
+                              </div>
+                            ) : null}
+                          </div>
+                        }
+                      />
                     </ListItem>
                   </List>
                 </CardContent>
