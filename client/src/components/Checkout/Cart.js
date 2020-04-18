@@ -106,77 +106,6 @@ const Cart = () => {
     return array.filter((item) => item.type === condition).length;
   };
 
-  const licenseType = ({ field, form: { errors, touched } }) => {
-    return (
-      <TextField
-        {...field}
-        label="License holder full name"
-        type="text"
-        helperText={touched.licenseeName ? errors.licenseeName : ''}
-        error={touched.licenseeName && Boolean(errors.licenseeName)}
-        margin="dense"
-        variant="outlined"
-        fullWidth
-      />
-    );
-  };
-
-  const licenseeName = ({ field, form: { errors, touched } }) => {
-    return (
-      <TextField
-        {...field}
-        label="License holder full name"
-        type="text"
-        helperText={touched.licenseeName ? errors.licenseeName : ''}
-        error={touched.licenseeName && Boolean(errors.licenseeName)}
-        margin="dense"
-        variant="outlined"
-        fullWidth
-      />
-    );
-  };
-
-  const licenseeCompany = ({ field, form: { errors, touched } }) => {
-    console.log(field);
-  };
-
-  const SelectInput = ({ field, label, errors, touched }) => {
-    console.log(field);
-    return (
-      <SelectField
-        {...field}
-        label={label}
-        helperText={touched.licenseType ? errors.licenseType : ''}
-        error={touched.licenseType && Boolean(errors.licenseType)}
-        options={[
-          {
-            value: 'personal',
-            text: 'Personal',
-          },
-          {
-            value: 'commercial',
-            text: 'Commercial',
-          },
-        ]}
-      />
-    );
-  };
-
-  const TextInput = ({ field, label, errors, touched }) => {
-    return (
-      <TextField
-        {...field}
-        label={label}
-        type="text"
-        helperText={touched.licenseeName ? errors.licenseeName : ''}
-        error={touched.licenseeName && Boolean(errors.licenseeName)}
-        margin="dense"
-        variant="outlined"
-        fullWidth
-      />
-    );
-  };
-
   useEffect(() => {
     fetchCart();
   }, []);
@@ -441,21 +370,24 @@ const Cart = () => {
                 {state.modal.id ? (
                   <Formik
                     initialValues={{
-                      licenses: [
-                        {
-                          licenseType: 'personal',
-                          licenseeName: '',
-                          licenseeCompany: '',
-                        },
-                      ],
+                      licenses: state.modal.id
+                        ? state.cart
+                            .find((item) => item._id === state.modal.id)
+                            .licenses.map((license) => ({
+                              licenseType: license.type,
+                              licenseeName: license.credentials,
+                              licenseeCompany: license.company,
+                            }))
+                        : [],
                     }}
+                    validationSchema={validationSchema}
                     onSubmit={(values) =>
                       setTimeout(() => {
                         alert(JSON.stringify(values, null, 2));
                       }, 500)
                     }
                   >
-                    {({ values, errors, touched }) => (
+                    {({ values, errors, touched, enableReinitialize }) => (
                       <Form>
                         <FieldArray
                           name="licenses"
@@ -466,18 +398,20 @@ const Cart = () => {
                                   <div key={index}>
                                     <Field
                                       name={`licenses.${index}.licenseType`}
+                                      as="select"
                                     >
                                       {({
                                         field,
                                         form: { touched, errors },
+                                        meta,
                                       }) => (
                                         <SelectField
                                           {...field}
+                                          handleChange={field.onChange}
+                                          handleBlur={field.onBlur}
                                           label="License type"
                                           helperText={
-                                            touched.licenseType
-                                              ? errors.licenseType
-                                              : ''
+                                            meta.touched ? meta.error : ''
                                           }
                                           error={
                                             touched.licenseType &&
@@ -502,15 +436,14 @@ const Cart = () => {
                                       {({
                                         field,
                                         form: { touched, errors },
+                                        meta,
                                       }) => (
                                         <TextField
                                           {...field}
                                           label="License holder full name"
                                           type="text"
                                           helperText={
-                                            touched.licenseeName
-                                              ? errors.licenseeName
-                                              : ''
+                                            meta.touched ? meta.error : ''
                                           }
                                           error={
                                             touched.licenseeName &&
@@ -528,15 +461,14 @@ const Cart = () => {
                                       {({
                                         field,
                                         form: { touched, errors },
+                                        meta,
                                       }) => (
                                         <TextField
                                           {...field}
                                           label="License holder company"
                                           type="text"
                                           helperText={
-                                            touched.licenseeCompany
-                                              ? errors.licenseeCompany
-                                              : ''
+                                            meta.touched ? meta.error : ''
                                           }
                                           error={
                                             touched.licenseeCompany &&
@@ -548,62 +480,64 @@ const Cart = () => {
                                         />
                                       )}
                                     </Field>
-                                    <button
+                                    <Button
                                       type="button"
+                                      color="error"
                                       onClick={() => arrayHelpers.remove(index)}
                                     >
-                                      -
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        arrayHelpers.insert(index, {
-                                          licenseType: 'personal',
-                                          licenseeName: '',
-                                          licenseeCompany: '',
-                                        })
-                                      }
-                                    >
-                                      +
-                                    </button>
+                                      Delete
+                                    </Button>
                                   </div>
                                 ))
                               ) : (
-                                <button
+                                <Button
                                   type="button"
+                                  color="error"
                                   onClick={() =>
                                     arrayHelpers.push({
-                                      licenseType: 'personal',
+                                      licenseType: '',
                                       licenseeName: '',
                                       licenseeCompany: '',
                                     })
                                   }
                                 >
                                   Add a license
-                                </button>
+                                </Button>
                               )}
                               <div>
-                                <button type="submit">Submit</button>
+                                <Button
+                                  type="button"
+                                  color="primary"
+                                  onClick={() =>
+                                    arrayHelpers.push({
+                                      licenseType: '',
+                                      licenseeName: '',
+                                      licenseeCompany: '',
+                                    })
+                                  }
+                                >
+                                  Add
+                                </Button>
                               </div>
                             </div>
                           )}
                         />
+                        <CardActions className={classes.actions}>
+                          <Button type="submit" color="primary">
+                            Save
+                          </Button>
+                          <Button
+                            type="button"
+                            color="error"
+                            onClick={handleModalClose}
+                          >
+                            Close
+                          </Button>
+                        </CardActions>
                       </Form>
                     )}
                   </Formik>
                 ) : null}
-                <CardActions className={classes.actions}>
-                  <Button type="button" color="primary">
-                    Add
-                  </Button>
-                  <Button
-                    type="button"
-                    color="error"
-                    onClick={handleModalClose}
-                  >
-                    Close
-                  </Button>
-                </CardActions>
               </Card>
             </div>
           </Modal>
