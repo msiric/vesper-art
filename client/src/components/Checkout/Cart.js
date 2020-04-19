@@ -405,26 +405,80 @@ const Cart = () => {
                           name="licenses"
                           render={(arrayHelpers) => (
                             <div>
-                              {values.licenses && values.licenses.length > 0 ? (
-                                values.licenses.map((value, index) => (
-                                  <div key={index}>
-                                    <Field
-                                      name={`licenses.${index}.licenseType`}
-                                      as="select"
-                                    >
-                                      {({
-                                        field,
-                                        form: { touched, errors },
-                                        meta,
-                                      }) =>
-                                        state.modal.artwork.current &&
-                                        state.modal.artwork.current.license ===
-                                          'commercial' ? (
-                                          <SelectField
+                              {values.licenses && values.licenses.length > 0
+                                ? values.licenses.map((value, index) => (
+                                    <div key={index}>
+                                      <Field
+                                        name={`licenses.${index}.licenseType`}
+                                        as="select"
+                                      >
+                                        {({
+                                          field,
+                                          form: { touched, errors },
+                                          meta,
+                                        }) =>
+                                          state.modal.artwork.current &&
+                                          state.modal.artwork.current
+                                            .license === 'commercial' ? (
+                                            <SelectField
+                                              {...field}
+                                              handleChange={field.onChange}
+                                              handleBlur={field.onBlur}
+                                              label="License type"
+                                              helperText={
+                                                meta.touched && meta.error
+                                              }
+                                              error={
+                                                meta.touched &&
+                                                Boolean(meta.error)
+                                              }
+                                              options={[
+                                                {
+                                                  value: 'personal',
+                                                  text: 'Personal',
+                                                },
+                                                {
+                                                  value: 'commercial',
+                                                  text: 'Commercial',
+                                                },
+                                              ]}
+                                            />
+                                          ) : (
+                                            <SelectField
+                                              {...field}
+                                              handleChange={field.onChange}
+                                              handleBlur={field.onBlur}
+                                              label="License type"
+                                              helperText={
+                                                meta.touched && meta.error
+                                              }
+                                              error={
+                                                meta.touched &&
+                                                Boolean(meta.error)
+                                              }
+                                              options={[
+                                                {
+                                                  value: 'personal',
+                                                  text: 'Personal',
+                                                },
+                                              ]}
+                                              disabled
+                                            />
+                                          )
+                                        }
+                                      </Field>
+                                      <Field
+                                        name={`licenses.${index}.licenseeName`}
+                                      >
+                                        {({
+                                          field,
+                                          form: { touched, errors },
+                                          meta,
+                                        }) => (
+                                          <TextField
                                             {...field}
-                                            handleChange={field.onChange}
-                                            handleBlur={field.onBlur}
-                                            label="License type"
+                                            label="License holder full name"
+                                            type="text"
                                             helperText={
                                               meta.touched && meta.error
                                             }
@@ -432,23 +486,24 @@ const Cart = () => {
                                               meta.touched &&
                                               Boolean(meta.error)
                                             }
-                                            options={[
-                                              {
-                                                value: 'personal',
-                                                text: 'Personal',
-                                              },
-                                              {
-                                                value: 'commercial',
-                                                text: 'Commercial',
-                                              },
-                                            ]}
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
                                           />
-                                        ) : (
-                                          <SelectField
+                                        )}
+                                      </Field>
+                                      <Field
+                                        name={`licenses.${index}.licenseeCompany`}
+                                      >
+                                        {({
+                                          field,
+                                          form: { touched, errors },
+                                          meta,
+                                        }) => (
+                                          <TextField
                                             {...field}
-                                            handleChange={field.onChange}
-                                            handleBlur={field.onBlur}
-                                            label="License type"
+                                            label="License holder company"
+                                            type="text"
                                             helperText={
                                               meta.touched && meta.error
                                             }
@@ -456,102 +511,47 @@ const Cart = () => {
                                               meta.touched &&
                                               Boolean(meta.error)
                                             }
-                                            options={[
-                                              {
-                                                value: 'personal',
-                                                text: 'Personal',
-                                              },
-                                            ]}
-                                            disabled
+                                            margin="dense"
+                                            variant="outlined"
+                                            fullWidth
                                           />
-                                        )
-                                      }
-                                    </Field>
-                                    <Field
-                                      name={`licenses.${index}.licenseeName`}
-                                    >
-                                      {({
-                                        field,
-                                        form: { touched, errors },
-                                        meta,
-                                      }) => (
-                                        <TextField
-                                          {...field}
-                                          label="License holder full name"
-                                          type="text"
-                                          helperText={
-                                            meta.touched && meta.error
-                                          }
-                                          error={
-                                            meta.touched && Boolean(meta.error)
-                                          }
-                                          margin="dense"
-                                          variant="outlined"
-                                          fullWidth
-                                        />
-                                      )}
-                                    </Field>
-                                    <Field
-                                      name={`licenses.${index}.licenseeCompany`}
-                                    >
-                                      {({
-                                        field,
-                                        form: { touched, errors },
-                                        meta,
-                                      }) => (
-                                        <TextField
-                                          {...field}
-                                          label="License holder company"
-                                          type="text"
-                                          helperText={
-                                            meta.touched && meta.error
-                                          }
-                                          error={
-                                            meta.touched && Boolean(meta.error)
-                                          }
-                                          margin="dense"
-                                          variant="outlined"
-                                          fullWidth
-                                        />
-                                      )}
-                                    </Field>
-                                    <Button
-                                      type="button"
-                                      color="error"
-                                      onClick={() => arrayHelpers.remove(index)}
-                                    >
-                                      Delete
-                                    </Button>
-                                  </div>
-                                ))
-                              ) : (
-                                <Button
-                                  type="button"
-                                  color="error"
-                                  onClick={() =>
-                                    arrayHelpers.push({
-                                      licenseType: '',
-                                      licenseeName: '',
-                                      licenseeCompany: '',
-                                    })
-                                  }
-                                >
-                                  Add a license
-                                </Button>
-                              )}
+                                        )}
+                                      </Field>
+                                      <Button
+                                        type="button"
+                                        color="error"
+                                        onClick={() =>
+                                          arrayHelpers.remove(index)
+                                        }
+                                      >
+                                        Delete license
+                                      </Button>
+                                    </div>
+                                  ))
+                                : null}
                               <div>
                                 <Button
                                   type="button"
                                   color="primary"
                                   onClick={() =>
-                                    arrayHelpers.push({
-                                      licenseType: '',
-                                      licenseeName: '',
-                                      licenseeCompany: '',
-                                    })
+                                    arrayHelpers.push(
+                                      state.modal.artwork.current &&
+                                        state.modal.artwork.current.license ===
+                                          'commercial'
+                                        ? {
+                                            licenseType: '',
+                                            licenseeName: '',
+                                            licenseeCompany: '',
+                                          }
+                                        : {
+                                            licenseType: 'personal',
+                                            licenseeName: '',
+                                            licenseeCompany: '',
+                                          }
+                                    )
                                   }
                                 >
-                                  Add
+                                  Add license
                                 </Button>
                               </div>
                             </div>
