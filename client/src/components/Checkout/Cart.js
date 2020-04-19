@@ -25,18 +25,24 @@ import ax from '../../axios.config';
 import CartStyles from './Cart.style';
 
 const validationSchema = Yup.object().shape({
-  licenseType: Yup.string()
-    .matches(/(personal|commercial)/)
-    .required('License type is required'),
-  licenseeName: Yup.string()
-    .trim()
-    .required('License holder full name is required'),
-  licenseeCompany: Yup.string()
-    .notRequired()
-    .when('commercial', {
-      is: 'commercial',
-      then: Yup.string().trim().required('License holder company is required'),
-    }),
+  licenses: Yup.array().of(
+    Yup.object().shape({
+      licenseType: Yup.string()
+        .matches(/(personal|commercial)/)
+        .required('License type is required'),
+      licenseeName: Yup.string()
+        .trim()
+        .required('License holder full name is required'),
+      licenseeCompany: Yup.string()
+        .notRequired()
+        .when('commercial', {
+          is: 'commercial',
+          then: Yup.string()
+            .trim()
+            .required('License holder company is required'),
+        }),
+    })
+  ),
 });
 
 const Cart = () => {
@@ -47,6 +53,8 @@ const Cart = () => {
     discount: null,
     modal: {
       id: null,
+      licenses: [{ licenseType: '', licenseeName: '', licenseeCompany: '' }],
+      artwork: {},
       open: false,
     },
     forms: {},
@@ -81,11 +89,21 @@ const Cart = () => {
   };
 
   const handleModalOpen = (id) => {
+    const value = state.cart.find((item) => item._id === id);
     setState((prevState) => ({
       ...prevState,
       modal: {
         ...prevState.modal,
         id: id,
+        licenses:
+          id && value
+            ? value.licenses.map((license) => ({
+                licenseType: license.type,
+                licenseeName: license.credentials,
+                licenseeCompany: license.company,
+              }))
+            : [{ licenseType: '', licenseeName: '', licenseeCompany: '' }],
+        artwork: id && value ? value.artwork : {},
         open: true,
       },
     }));
@@ -97,6 +115,8 @@ const Cart = () => {
       modal: {
         ...prevState.modal,
         id: null,
+        licenses: [{ licenseType: '', licenseeName: '', licenseeCompany: '' }],
+        artwork: {},
         open: false,
       },
     }));
@@ -370,15 +390,7 @@ const Cart = () => {
                 {state.modal.id ? (
                   <Formik
                     initialValues={{
-                      licenses: state.modal.id
-                        ? state.cart
-                            .find((item) => item._id === state.modal.id)
-                            .licenses.map((license) => ({
-                              licenseType: license.type,
-                              licenseeName: license.credentials,
-                              licenseeCompany: license.company,
-                            }))
-                        : [],
+                      licenses: state.modal.licenses,
                     }}
                     validationSchema={validationSchema}
                     onSubmit={(values) =>
@@ -404,31 +416,56 @@ const Cart = () => {
                                         field,
                                         form: { touched, errors },
                                         meta,
-                                      }) => (
-                                        <SelectField
-                                          {...field}
-                                          handleChange={field.onChange}
-                                          handleBlur={field.onBlur}
-                                          label="License type"
-                                          helperText={
-                                            meta.touched ? meta.error : ''
-                                          }
-                                          error={
-                                            touched.licenseType &&
-                                            Boolean(errors.licenseType)
-                                          }
-                                          options={[
-                                            {
-                                              value: 'personal',
-                                              text: 'Personal',
-                                            },
-                                            {
-                                              value: 'commercial',
-                                              text: 'Commercial',
-                                            },
-                                          ]}
-                                        />
-                                      )}
+                                      }) =>
+                                        state.modal.artwork.current &&
+                                        state.modal.artwork.current.license ===
+                                          'commercial' ? (
+                                          <SelectField
+                                            {...field}
+                                            handleChange={field.onChange}
+                                            handleBlur={field.onBlur}
+                                            label="License type"
+                                            helperText={
+                                              meta.touched && meta.error
+                                            }
+                                            error={
+                                              meta.touched &&
+                                              Boolean(meta.error)
+                                            }
+                                            options={[
+                                              {
+                                                value: 'personal',
+                                                text: 'Personal',
+                                              },
+                                              {
+                                                value: 'commercial',
+                                                text: 'Commercial',
+                                              },
+                                            ]}
+                                          />
+                                        ) : (
+                                          <SelectField
+                                            {...field}
+                                            handleChange={field.onChange}
+                                            handleBlur={field.onBlur}
+                                            label="License type"
+                                            helperText={
+                                              meta.touched && meta.error
+                                            }
+                                            error={
+                                              meta.touched &&
+                                              Boolean(meta.error)
+                                            }
+                                            options={[
+                                              {
+                                                value: 'personal',
+                                                text: 'Personal',
+                                              },
+                                            ]}
+                                            disabled
+                                          />
+                                        )
+                                      }
                                     </Field>
                                     <Field
                                       name={`licenses.${index}.licenseeName`}
@@ -443,11 +480,10 @@ const Cart = () => {
                                           label="License holder full name"
                                           type="text"
                                           helperText={
-                                            meta.touched ? meta.error : ''
+                                            meta.touched && meta.error
                                           }
                                           error={
-                                            touched.licenseeName &&
-                                            Boolean(errors.licenseeName)
+                                            meta.touched && Boolean(meta.error)
                                           }
                                           margin="dense"
                                           variant="outlined"
@@ -468,11 +504,10 @@ const Cart = () => {
                                           label="License holder company"
                                           type="text"
                                           helperText={
-                                            meta.touched ? meta.error : ''
+                                            meta.touched && meta.error
                                           }
                                           error={
-                                            touched.licenseeCompany &&
-                                            Boolean(errors.licenseeCompany)
+                                            meta.touched && Boolean(meta.error)
                                           }
                                           margin="dense"
                                           variant="outlined"
