@@ -384,7 +384,7 @@ const deleteFromCart = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { artworkId } = req.body;
+    const { artworkId } = req.params;
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: artworkId }, { active: true }],
     })

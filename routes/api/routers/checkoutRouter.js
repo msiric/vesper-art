@@ -5,7 +5,7 @@ const checkoutController = require('../../../controllers/checkoutController');
 router.route('/cart').get(isAuthenticated, checkoutController.getProcessCart);
 
 router
-  .route('/cart/:artworkId')
+  .route('/cart/artwork/:artworkId')
   .post(isAuthenticated, checkoutController.addToCart)
   .delete(isAuthenticated, checkoutController.deleteFromCart);
 

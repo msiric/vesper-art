@@ -80,7 +80,7 @@ const ArtworkDetails = ({ match }) => {
     validationSchema,
     async onSubmit(values) {
       try {
-        await ax.post(`/api/cart/${match.params.id}`, values);
+        await ax.post(`/api/cart/artwork/${match.params.id}`, values);
         handleModalClose();
         dispatch({
           type: 'updateCart',

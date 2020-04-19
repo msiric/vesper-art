@@ -49,6 +49,10 @@ const CartStyles = makeStyles((muiTheme) => ({
   manageLicenses: {
     padding: '8px 16px',
   },
+  content: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
 }));
 
 export default CartStyles;

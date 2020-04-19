@@ -9,11 +9,11 @@ router.route('/artwork/:artworkId').get(artworkController.getArtworkDetails);
 router
   .route('/artwork/:artworkId/licenses')
   .get(isAuthenticated, artworkController.getLicenses)
-  .post(isAuthenticated, artworkController.addLicense);
+  .post(isAuthenticated, artworkController.saveLicenses);
 
-router
-  .route('/artwork/:artworkId/licenses/:licenseId')
-  .delete(isAuthenticated, artworkController.deleteLicense);
+// router
+//   .route('/artwork/:artworkId/licenses/:licenseId')
+//   .delete(isAuthenticated, artworkController.deleteLicense);
 
 router
   .route('/my_artwork')

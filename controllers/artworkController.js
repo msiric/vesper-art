@@ -6,6 +6,7 @@ const Version = require('../models/version');
 const License = require('../models/license');
 const Comment = require('../models/comment');
 const Order = require('../models/order');
+const crypto = require('crypto');
 const createError = require('http-errors');
 const { sanitize } = require('../utils/helpers');
 const postArtworkValidator = require('../utils/validation/postArtworkValidator');
@@ -523,12 +524,12 @@ const getLicenses = async (req, res, next) => {
 };
 
 // needs transaction (done)
-const addLicense = async (req, res, next) => {
+const saveLicenses = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const { artworkId } = req.params;
-    const { licenseType, licenseeName, licenseeCompany } = req.body;
+    const { licenses } = req.body;
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: artworkId }, { active: true }],
     })
@@ -538,41 +539,38 @@ const addLicense = async (req, res, next) => {
       )
       .session(session);
     if (foundArtwork) {
-      if (licenseType == 'personal' || licenseType == 'commercial') {
-        if (
-          !(
-            licenseType == 'commercial' &&
-            foundArtwork.current.type == 'personal'
-          )
-        ) {
-          const newLicense = new License();
-          newLicense.owner = res.locals.user.id;
-          newLicense.artwork = foundArtwork._id;
-          newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
-          newLicense.type = licenseType;
-          newLicense.credentials = licenseeName;
-          newLicense.company = licenseeCompany;
-          newLicense.active = false;
-          newLicense.price =
-            licenseType == 'commercial' ? foundArtwork.current.commercial : 0;
-          await newLicense.save({ session });
-          await User.updateOne(
-            {
-              _id: res.locals.user.id,
-              cart: { $elemMatch: { artwork: foundArtwork._id } },
-            },
-            {
-              $push: { 'cart.$.licenses': savedLicense._id },
-            }
-          ).session(session);
-          await session.commitTransaction();
-          res.status(200).json({ message: 'Artwork quantity increased' });
-        } else {
-          throw createError(400, 'Invalid license type');
+      const licenseSet = [];
+      const licenseIds = [];
+      licenses.forEach(async (license) => {
+        const newLicense = new License();
+        newLicense.owner = res.locals.user.id;
+        newLicense.artwork = foundArtwork._id;
+        newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+        newLicense.type = license.licenseType;
+        newLicense.credentials = license.licenseeName;
+        newLicense.company = license.licenseeCompany;
+        newLicense.active = false;
+        newLicense.price =
+          license.licenseType == 'commercial'
+            ? foundArtwork.current.commercial
+            : 0;
+        licenseSet.push(newLicense);
+      });
+      const savedLicenses = await License.insertMany(licenseSet, { session });
+      savedLicenses.forEach((license) => {
+        licenseIds.push(license._id);
+      });
+      await User.updateOne(
+        {
+          _id: res.locals.user.id,
+          cart: { $elemMatch: { artwork: foundArtwork._id } },
+        },
+        {
+          $set: { 'cart.$.licenses': licenseIds },
         }
-      } else {
-        throw createError(400, 'Invalid license type');
-      }
+      ).session(session);
+      await session.commitTransaction();
+      res.status(200).json({ message: 'Licenses saved' });
     } else {
       throw createError(400, 'Artwork not found');
     }
@@ -586,64 +584,64 @@ const addLicense = async (req, res, next) => {
 };
 
 // needs transaction (done)
-const deleteLicense = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { artworkId, licenseId } = req.params;
-    const foundLicense = await License.find({
-      $and: [
-        { artwork: artworkId },
-        { owner: res.locals.user.id },
-        { active: false },
-      ],
-    }).session(session);
-    if (foundLicense) {
-      if (foundLicense.length > 1) {
-        const targetLicense = foundLicense.find((license) =>
-          license._id.equals(licenseId)
-        );
-        if (targetLicense) {
-          await User.updateOne(
-            {
-              _id: res.locals.user.id,
-              cart: { $elemMatch: { artwork: targetLicense.artwork } },
-            },
-            {
-              $pull: {
-                'cart.$.licenses': targetLicense._id,
-              },
-            }
-          ).session(session);
-          await License.remove({
-            $and: [
-              { _id: targetLicense._id },
-              { owner: res.locals.user.id },
-              { active: false },
-            ],
-          }).session(session);
-          await session.commitTransaction();
-          res.status(200).json({ message: 'License deleted' });
-        } else {
-          throw createError(400, 'License not found');
-        }
-      } else {
-        throw createError(
-          400,
-          'At least one license needs to be associated with an artwork in cart'
-        );
-      }
-    } else {
-      throw createError(400, 'License not found');
-    }
-  } catch (err) {
-    await session.abortTransaction();
-    console.log(err);
-    next(err, res);
-  } finally {
-    session.endSession();
-  }
-};
+// const deleteLicense = async (req, res, next) => {
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
+//   try {
+//     const { artworkId, licenseId } = req.params;
+//     const foundLicense = await License.find({
+//       $and: [
+//         { artwork: artworkId },
+//         { owner: res.locals.user.id },
+//         { active: false },
+//       ],
+//     }).session(session);
+//     if (foundLicense) {
+//       if (foundLicense.length > 1) {
+//         const targetLicense = foundLicense.find((license) =>
+//           license._id.equals(licenseId)
+//         );
+//         if (targetLicense) {
+//           await User.updateOne(
+//             {
+//               _id: res.locals.user.id,
+//               cart: { $elemMatch: { artwork: targetLicense.artwork } },
+//             },
+//             {
+//               $pull: {
+//                 'cart.$.licenses': targetLicense._id,
+//               },
+//             }
+//           ).session(session);
+//           await License.remove({
+//             $and: [
+//               { _id: targetLicense._id },
+//               { owner: res.locals.user.id },
+//               { active: false },
+//             ],
+//           }).session(session);
+//           await session.commitTransaction();
+//           res.status(200).json({ message: 'License deleted' });
+//         } else {
+//           throw createError(400, 'License not found');
+//         }
+//       } else {
+//         throw createError(
+//           400,
+//           'At least one license needs to be associated with an artwork in cart'
+//         );
+//       }
+//     } else {
+//       throw createError(400, 'License not found');
+//     }
+//   } catch (err) {
+//     await session.abortTransaction();
+//     console.log(err);
+//     next(err, res);
+//   } finally {
+//     session.endSession();
+//   }
+// };
 
 module.exports = {
   getArtwork,
@@ -656,6 +654,5 @@ module.exports = {
   saveArtwork,
   unsaveArtwork,
   getLicenses,
-  addLicense,
-  deleteLicense,
+  saveLicenses,
 };

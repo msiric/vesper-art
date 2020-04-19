@@ -88,6 +88,24 @@ const Cart = () => {
     }
   };
 
+  const resetRef = () => {
+    licenses.current = {
+      id: {},
+      personal: {
+        length: 0,
+        amount: 0,
+      },
+      commercial: {
+        length: 0,
+        amount: 0,
+      },
+    };
+  };
+
+  const getLength = (condition, array) => {
+    return array.filter((item) => item.type === condition).length;
+  };
+
   const handleModalOpen = (id) => {
     const value = state.cart.find((item) => item._id === id);
     setState((prevState) => ({
@@ -122,8 +140,22 @@ const Cart = () => {
     }));
   };
 
-  const getLength = (condition, array) => {
-    return array.filter((item) => item.type === condition).length;
+  const handleCartDelete = async (id) => {
+    await ax.delete(`/api/cart/artwork/${id}`);
+    const index = state.cart.findIndex((item) => item.artwork._id === id);
+    if (index !== -1) {
+      resetRef();
+      setState((prevState) => ({
+        ...prevState,
+        cart: state.cart.filter((item) => item.artwork._id !== id),
+      }));
+      // fix cart
+      // dispatch({
+      //   type: 'updateCart',
+      //   cart: { ...store.user.cart, [state.artwork._id]: true },
+      //   cartSize: store.user.cartSize + 1,
+      // });
+    }
   };
 
   useEffect(() => {
@@ -137,7 +169,7 @@ const Cart = () => {
           <Grid item xs={12} className={classes.loader}>
             <CircularProgress />
           </Grid>
-        ) : (
+        ) : state.cart.length ? (
           <>
             <Grid item xs={12} md={8} className={classes.artwork}>
               {state.cart.map((item) => (
@@ -164,6 +196,13 @@ const Cart = () => {
                           onClick={() => handleModalOpen(item._id)}
                         >
                           Manage licenses
+                        </Button>
+                        <Button
+                          type="button"
+                          className={classes.manageLicenses}
+                          onClick={() => handleCartDelete(item.artwork._id)}
+                        >
+                          Remove from cart
                         </Button>
                       </CardContent>
                     </div>
@@ -276,6 +315,7 @@ const Cart = () => {
                     })}
                     <Divider />
                     <ListItem className={classes.listItem}>
+                      {console.log(licenses.current)}
                       <ListItemText
                         primary={<Typography>Items</Typography>}
                         secondary={
@@ -374,6 +414,10 @@ const Cart = () => {
               <br />
             </Grid>
           </>
+        ) : (
+          <Grid item xs={12}>
+            <p>Cart empty</p>
+          </Grid>
         )}
         <div>
           <Modal
@@ -393,11 +437,33 @@ const Cart = () => {
                       licenses: state.modal.licenses,
                     }}
                     validationSchema={validationSchema}
-                    onSubmit={(values) =>
-                      setTimeout(() => {
-                        alert(JSON.stringify(values, null, 2));
-                      }, 500)
-                    }
+                    onSubmit={async (values) => {
+                      await ax.post(
+                        `/api/artwork/${state.modal.artwork._id}/licenses`,
+                        values
+                      );
+                      const index = state.cart.findIndex(
+                        (item) => item._id === state.modal.id
+                      );
+                      if (index !== -1) {
+                        resetRef();
+                        setState((prevState) => ({
+                          ...prevState,
+                          cart: [
+                            ...state.cart.slice(0, index),
+                            {
+                              ...state.cart[index],
+                              licenses: values.licenses.map((license) => ({
+                                type: license.licenseType,
+                                credentials: license.licenseeName,
+                                company: license.licenseeCompany,
+                              })),
+                            },
+                            ...state.cart.slice(index + 1),
+                          ],
+                        }));
+                      }
+                    }}
                   >
                     {({ values, errors, touched, enableReinitialize }) => (
                       <Form>
