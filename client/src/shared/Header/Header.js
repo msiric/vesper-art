@@ -15,13 +15,13 @@ import {
   Menu,
 } from '@material-ui/core';
 import {
-  AddBox as AddIcon,
-  Menu as MenuIcon,
-  Search as SearchIcon,
-  AccountCircle as AccountIcon,
-  Mail as MailIcon,
-  Notifications as NotificationsIcon,
-  MoreVert as MoreIcon,
+  AddBoxRounded as AddIcon,
+  MenuRounded as MenuIcon,
+  SearchRounded as SearchIcon,
+  AccountCircleRounded as AccountIcon,
+  MailRounded as MailIcon,
+  NotificationsRounded as NotificationsIcon,
+  MoreVertRounded as MoreIcon,
   ShoppingCartRounded as CartIcon,
 } from '@material-ui/icons';
 import HeaderStyles from './Header.style';

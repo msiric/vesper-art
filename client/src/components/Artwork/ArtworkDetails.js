@@ -10,6 +10,8 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  IconButton,
+  ListItemSecondaryAction,
   Avatar,
   ListItemText,
   Divider,
@@ -28,6 +30,7 @@ import {
   Select,
   Link as Anchor,
 } from '@material-ui/core';
+import { MoreVertRounded as MoreIcon } from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
 import ArtworkDetailsStyles from './ArtworkDetails.style';
@@ -195,6 +198,11 @@ const ArtworkDetails = ({ match }) => {
                                   }
                                   secondary={<>{comment.content}</>}
                                 />
+                                <ListItemSecondaryAction>
+                                  <IconButton edge="end" aria-label="More">
+                                    <MoreIcon />
+                                  </IconButton>
+                                </ListItemSecondaryAction>
                               </ListItem>
                               <Divider />
                             </React.Fragment>

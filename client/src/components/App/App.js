@@ -3,7 +3,7 @@ import Router from '../Router/Router';
 import { Context } from '../Store/Store';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { CssBaseline, IconButton } from '@material-ui/core';
-import { Close as CloseIcon } from '@material-ui/icons';
+import { CloseRounded as CloseIcon } from '@material-ui/icons';
 import { SnackbarProvider } from 'notistack';
 import { artepunktTheme } from '../../constants/theme';
 import axios from 'axios';
