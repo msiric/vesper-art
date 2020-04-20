@@ -78,6 +78,14 @@ const reducer = (state, action) => {
           cartSize: action.cartSize,
         },
       };
+    case 'updateSaves':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          saved: action.saved,
+        },
+      };
     default:
       return state;
   }

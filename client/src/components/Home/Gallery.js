@@ -158,10 +158,9 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
     try {
       await ax.post(`/api/save_artwork/${id}`);
       dispatch({
-        type: 'setUser',
-        ...store,
+        type: 'updateSaves',
         saved: {
-          ...store.saved,
+          ...store.user.saved,
           [id]: true,
         },
       });
@@ -182,10 +181,9 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
     try {
       await ax.delete(`/api/save_artwork/${id}`);
       dispatch({
-        type: 'setUser',
-        ...store,
+        type: 'updateSaves',
         saved: {
-          ...store.saved,
+          ...store.user.saved,
           [id]: false,
         },
       });
