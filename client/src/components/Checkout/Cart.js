@@ -149,12 +149,11 @@ const Cart = () => {
         ...prevState,
         cart: state.cart.filter((item) => item.artwork._id !== id),
       }));
-      // fix cart
-      // dispatch({
-      //   type: 'updateCart',
-      //   cart: { ...store.user.cart, [state.artwork._id]: true },
-      //   cartSize: store.user.cartSize + 1,
-      // });
+      dispatch({
+        type: 'updateCart',
+        cart: { ...store.user.cart, [id]: false },
+        cartSize: store.user.cartSize - 1,
+      });
     }
   };
 
