@@ -199,6 +199,37 @@ const ArtworkDetails = ({ match }) => {
                       ) : (
                         <p>No comments</p>
                       )}
+                      <form
+                        className={classes.commentForm}
+                        onSubmit={handleSubmit}
+                      >
+                        <TextField
+                          name="commentContent"
+                          label="Type a comment..."
+                          type="text"
+                          value={values.commentContent}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={
+                            touched.commentContent ? errors.commentContent : ''
+                          }
+                          error={
+                            touched.commentContent &&
+                            Boolean(errors.commentContent)
+                          }
+                          margin="dense"
+                          variant="outlined"
+                          fullWidth
+                          multiline
+                        />
+                        <Button
+                          type="submit"
+                          color="primary"
+                          disabled={isSubmitting}
+                        >
+                          Post
+                        </Button>
+                      </form>
                     </Typography>
                   </CardContent>
                 </Card>
@@ -359,7 +390,7 @@ const ArtworkDetails = ({ match }) => {
             aria-labelledby="License modal"
             className={classes.modal}
           >
-            <form className={classes.form} onSubmit={handleSubmit}>
+            <form className={classes.licenseForm} onSubmit={handleSubmit}>
               <div className={classes.licenseContainer}>
                 <Card className={classes.card}>
                   <Typography variant="h6" align="center">

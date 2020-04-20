@@ -52,6 +52,12 @@ const ArtworkDetailsStyles = makeStyles((muiTheme) => ({
   license: {
     textTransform: 'capitalize',
   },
+  commentForm: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
 }));
 
 export default ArtworkDetailsStyles;
