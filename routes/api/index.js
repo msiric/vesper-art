@@ -18,6 +18,7 @@ const ticketRouter = require('./routers/ticketRouter');
 const validatorRouter = require('./routers/validatorRouter');
 const notificationRouter = require('./routers/notificationRouter');
 const checkoutRouter = require('./routers/checkoutRouter');
+const commentRouter = require('./routers/commentRouter');
 const authRouter = require('./routers/authRouter');
 
 router.use('/', userRoutes);
@@ -34,6 +35,7 @@ router.use('/', ticketRouter);
 router.use('/', validatorRouter);
 router.use('/', notificationRouter);
 router.use('/', checkoutRouter);
+router.use('/', commentRouter);
 router.use('/auth', authRouter);
 
 router.use((req, res, next) => {

@@ -437,7 +437,7 @@ const Cart = () => {
                     }}
                     validationSchema={validationSchema}
                     onSubmit={async (values) => {
-                      await ax.post(
+                      const { data } = await ax.post(
                         `/api/artwork/${state.modal.artwork._id}/licenses`,
                         values
                       );
@@ -452,11 +452,7 @@ const Cart = () => {
                             ...state.cart.slice(0, index),
                             {
                               ...state.cart[index],
-                              licenses: values.licenses.map((license) => ({
-                                type: license.licenseType,
-                                credentials: license.licenseeName,
-                                company: license.licenseeCompany,
-                              })),
+                              licenses: data.licenses,
                             },
                             ...state.cart.slice(index + 1),
                           ],

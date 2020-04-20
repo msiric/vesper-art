@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import SelectInput from '../../shared/SelectInput/SelectInput';
-import { useFormik } from 'formik';
+import { useFormik, Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import {
   Modal,
@@ -32,7 +32,11 @@ import { Link, useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
 import ArtworkDetailsStyles from './ArtworkDetails.style';
 
-const validationSchema = Yup.object().shape({
+const commentValidation = Yup.object().shape({
+  commentContent: Yup.string().trim().required('Comment cannot be empty'),
+});
+
+const licenseValidation = Yup.object().shape({
   licenseType: Yup.string()
     .matches(/(personal|commercial)/)
     .required('License type is required'),
@@ -77,7 +81,7 @@ const ArtworkDetails = ({ match }) => {
       licenseeName: '',
       licenseeCompany: '',
     },
-    validationSchema,
+    validationSchema: licenseValidation,
     async onSubmit(values) {
       try {
         await ax.post(`/api/cart/artwork/${match.params.id}`, values);
@@ -199,37 +203,60 @@ const ArtworkDetails = ({ match }) => {
                       ) : (
                         <p>No comments</p>
                       )}
-                      <form
-                        className={classes.commentForm}
-                        onSubmit={handleSubmit}
+                      <Formik
+                        initialValues={{
+                          commentContent: '',
+                        }}
+                        validationSchema={commentValidation}
+                        onSubmit={async (values) => {
+                          const { data } = await ax.post(
+                            `/api/artwork/${state.artwork._id}/comment`,
+                            values
+                          );
+                          setState({
+                            ...state,
+                            artwork: {
+                              ...state.artwork,
+                              comments: [
+                                ...state.artwork.comments,
+                                {
+                                  ...data.comment,
+                                  owner: {
+                                    _id: store.user.id,
+                                    name: store.user.name,
+                                    photo: store.user.photo,
+                                  },
+                                },
+                              ],
+                            },
+                          });
+                        }}
                       >
-                        <TextField
-                          name="commentContent"
-                          label="Type a comment..."
-                          type="text"
-                          value={values.commentContent}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          helperText={
-                            touched.commentContent ? errors.commentContent : ''
-                          }
-                          error={
-                            touched.commentContent &&
-                            Boolean(errors.commentContent)
-                          }
-                          margin="dense"
-                          variant="outlined"
-                          fullWidth
-                          multiline
-                        />
-                        <Button
-                          type="submit"
-                          color="primary"
-                          disabled={isSubmitting}
-                        >
-                          Post
-                        </Button>
-                      </form>
+                        {({ values, errors, touched }) => (
+                          <Form className={classes.commentForm}>
+                            <Field name="commentContent">
+                              {({ field, form: { touched, errors }, meta }) => (
+                                <TextField
+                                  {...field}
+                                  onBlur={() => null}
+                                  label="Type a comment..."
+                                  type="text"
+                                  helperText={meta.touched && meta.error}
+                                  error={meta.touched && Boolean(meta.error)}
+                                  margin="dense"
+                                  variant="outlined"
+                                  fullWidth
+                                  multiline
+                                />
+                              )}
+                            </Field>
+
+                            <Button type="submit" color="primary" fullWidth>
+                              Post
+                            </Button>
+                          </Form>
+                        )}
+                      </Formik>
                     </Typography>
                   </CardContent>
                 </Card>

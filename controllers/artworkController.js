@@ -33,8 +33,8 @@ const getArtworkDetails = async (req, res, next) => {
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: artworkId }, { active: true }],
     })
+      .deepPopulate('comments.owner')
       .populate('owner')
-      .populate('comments')
       .populate(
         'current',
         '_id cover created title price type license availability description use commercial'
@@ -570,7 +570,9 @@ const saveLicenses = async (req, res, next) => {
         }
       ).session(session);
       await session.commitTransaction();
-      res.status(200).json({ message: 'Licenses saved' });
+      res
+        .status(200)
+        .json({ message: 'Licenses saved', licenses: savedLicenses });
     } else {
       throw createError(400, 'Artwork not found');
     }

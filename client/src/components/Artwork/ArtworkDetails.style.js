@@ -56,7 +56,7 @@ const ArtworkDetailsStyles = makeStyles((muiTheme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
 }));
 

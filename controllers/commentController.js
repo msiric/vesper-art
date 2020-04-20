@@ -11,7 +11,7 @@ const postComment = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { content } = req.body;
+    const { commentContent } = req.body;
     const foundArtwork = await Artwork.find({
       $and: [{ owner: artworkId }, { active: true }],
     }).session(session);
@@ -21,13 +21,20 @@ const postComment = async (req, res, next) => {
       const comment = new Comment();
       comment.artwork = artworkId;
       comment.owner = res.locals.user.id;
-      comment.content = content;
+      comment.content = commentContent;
       comment.modified = false;
       const savedComment = await comment.save({ session });
-      foundArtwork.comments.push(savedComment._id);
-      await foundArtwork.save({ session });
+      await Artwork.updateOne(
+        {
+          _id: artworkId,
+        },
+        { $push: { comments: savedComment._id } }
+      ).session(session);
       await session.commitTransaction();
-      res.status(200).json({ message: 'Comment posted successfully' });
+      res.status(200).json({
+        message: 'Comment posted successfully',
+        comment: savedComment,
+      });
     }
   } catch (err) {
     await session.abortTransaction();
