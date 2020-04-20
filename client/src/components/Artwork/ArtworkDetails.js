@@ -28,9 +28,14 @@ import {
   MenuItem,
   InputLabel,
   Select,
+  Popover,
   Link as Anchor,
 } from '@material-ui/core';
-import { MoreVertRounded as MoreIcon } from '@material-ui/icons';
+import {
+  MoreVertRounded as MoreIcon,
+  DeleteRounded as DeleteIcon,
+  EditRounded as EditIcon,
+} from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
 import ArtworkDetailsStyles from './ArtworkDetails.style';
@@ -61,6 +66,11 @@ const ArtworkDetails = ({ match }) => {
     artwork: {},
     license: 'personal',
     modal: {
+      open: false,
+    },
+    popover: {
+      id: null,
+      anchorEl: null,
       open: false,
     },
   });
@@ -144,6 +154,50 @@ const ArtworkDetails = ({ match }) => {
     setState({ ...state, license: value });
   };
 
+  const handlePopoverOpen = (e, id) => {
+    setState((prevState) => ({
+      ...prevState,
+      popover: {
+        id: id,
+        anchorEl: e.currentTarget,
+        open: true,
+      },
+    }));
+  };
+
+  const handlePopoverClose = (e) => {
+    setState((prevState) => ({
+      ...prevState,
+      popover: {
+        id: null,
+        anchorEl: null,
+        open: false,
+      },
+    }));
+  };
+
+  const handleEditComment = (id) => {
+    console.log(id);
+  };
+
+  const handleDeleteComment = async (id) => {
+    await ax.delete(`/api/artwork/${match.params.id}/comment/${id}`);
+    setState((prevState) => ({
+      ...prevState,
+      artwork: {
+        ...prevState.artwork,
+        comments: prevState.artwork.comments.filter(
+          (comment) => comment._id !== id
+        ),
+      },
+      popover: {
+        id: null,
+        anchorEl: null,
+        open: false,
+      },
+    }));
+  };
+
   useEffect(() => {
     fetchArtwork();
   }, []);
@@ -168,6 +222,7 @@ const ArtworkDetails = ({ match }) => {
                 </Card>
               </Paper>
               <br />
+
               <Paper className={classes.paper}>
                 <Card className={classes.root}>
                   <CardContent>
@@ -188,18 +243,33 @@ const ArtworkDetails = ({ match }) => {
                                   <Avatar
                                     alt={comment.owner.name}
                                     src={comment.owner.photo}
+                                    component={Link}
+                                    to={`/user/${comment.owner.name}`}
+                                    className={classes.noLink}
                                   />
                                 </ListItemAvatar>
                                 <ListItemText
                                   primary={
-                                    <Typography className={classes.fonts}>
+                                    <Typography
+                                      component={Link}
+                                      to={`/user/${comment.owner.name}`}
+                                      className={`${classes.fonts} ${classes.noLink}`}
+                                    >
                                       {comment.owner.name}
                                     </Typography>
                                   }
-                                  secondary={<>{comment.content}</>}
+                                  secondary={
+                                    <Typography>{comment.content}</Typography>
+                                  }
                                 />
                                 <ListItemSecondaryAction>
-                                  <IconButton edge="end" aria-label="More">
+                                  <IconButton
+                                    onClick={(e) =>
+                                      handlePopoverOpen(e, comment._id)
+                                    }
+                                    edge="end"
+                                    aria-label="More"
+                                  >
                                     <MoreIcon />
                                   </IconButton>
                                 </ListItemSecondaryAction>
@@ -216,7 +286,7 @@ const ArtworkDetails = ({ match }) => {
                           commentContent: '',
                         }}
                         validationSchema={commentValidation}
-                        onSubmit={async (values) => {
+                        onSubmit={async (values, { resetForm }) => {
                           const { data } = await ax.post(
                             `/api/artwork/${state.artwork._id}/comment`,
                             values
@@ -238,6 +308,7 @@ const ArtworkDetails = ({ match }) => {
                               ],
                             },
                           });
+                          resetForm();
                         }}
                       >
                         {({ values, errors, touched }) => (
@@ -258,7 +329,6 @@ const ArtworkDetails = ({ match }) => {
                                 />
                               )}
                             </Field>
-
                             <Button type="submit" color="primary" fullWidth>
                               Post
                             </Button>
@@ -505,6 +575,43 @@ const ArtworkDetails = ({ match }) => {
           </Modal>
         </div>
       </Grid>
+      <Popover
+        open={state.popover.open}
+        anchorEl={state.popover.anchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        transition
+      >
+        <div className={classes.moreOptions}>
+          <Button
+            variant="contained"
+            color="error"
+            className={classes.button}
+            startIcon={<EditIcon />}
+            onClick={() => handleEditComment(state.popover.id)}
+            fullWidth
+          >
+            Edit
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            className={classes.button}
+            startIcon={<DeleteIcon />}
+            onClick={() => handleDeleteComment(state.popover.id)}
+            fullWidth
+          >
+            Delete
+          </Button>
+        </div>
+      </Popover>
     </Container>
   );
 };

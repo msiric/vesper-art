@@ -58,6 +58,16 @@ const ArtworkDetailsStyles = makeStyles((muiTheme) => ({
     alignItems: 'center',
     flexDirection: 'column',
   },
+  noLink: {
+    textDecoration: 'none',
+    color: 'inherit',
+  },
+  moreOptions: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
 }));
 
 export default ArtworkDetailsStyles;

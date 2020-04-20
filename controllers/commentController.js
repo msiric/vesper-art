@@ -56,25 +56,25 @@ const patchComment = async (req, res, next) => {
     if (!foundComment) {
       throw createError(400, 'Comment not found');
     } else {
-      if (foundComment.owner !== res.locals.user.id) {
-        throw createError(400, 'You are not allowed to modify this comment');
-      } else {
+      if (foundComment.owner.equals(res.locals.user.id)) {
         const foundArtwork = await Artwork.findOne({
           _id: artworkId,
         }).session(session);
-        if (!foundArtwork || foundComment.artwork !== foundArtwork._id) {
-          throw createError(400, 'Artwork not found');
-        } else {
-          if (content) foundComment.content = content;
+        if (foundArtwork || foundComment.artwork.equals(foundArtwork._id)) {
+          foundComment.content = content;
           foundComment.modified = true;
           await foundComment.save({ session });
           await session.commitTransaction();
+          res.json({
+            message: 'Comment updated successfully',
+          });
+        } else {
+          throw createError(400, 'Artwork not found');
         }
+      } else {
+        throw createError(400, 'You are not allowed to modify this comment');
       }
     }
-    res.json({
-      message: 'Comment updated successfully',
-    });
   } catch (err) {
     console.log(err);
     await session.abortTransaction();
@@ -85,7 +85,7 @@ const patchComment = async (req, res, next) => {
 };
 
 // delete comment from artwork array (in process)
-const deleteComment = async (req, res) => {
+const deleteComment = async (req, res, next) => {
   const { artworkId, commentId } = req.params;
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -96,27 +96,29 @@ const deleteComment = async (req, res) => {
     if (!foundComment) {
       throw createError(400, 'Comment not found');
     } else {
-      if (foundComment.owner !== res.locals.user.id) {
-        throw createError(400, 'You are not allowed to delete this comment');
-      } else {
+      if (foundComment.owner.equals(res.locals.user.id)) {
         const foundArtwork = await Artwork.findOne({
           _id: artworkId,
         }).session(session);
-        if (!foundArtwork || foundComment.artwork !== foundArtwork._id) {
-          throw createError(400, 'Artwork not found');
-        } else {
-          foundArtwork.comments.filter((comment) => comment._id !== commentId);
-          await foundArtwork.save({ session });
+        if (foundArtwork || foundComment.artwork.equals(foundArtwork._id)) {
+          await Artwork.updateOne(
+            { _id: artworkId },
+            { $pull: { comments: commentId } }
+          ).session(session);
           await Comment.deleteOne({
             _id: commentId,
           }).session(session);
           await session.commitTransaction();
+          res.json({
+            message: 'Comment deleted successfully',
+          });
+        } else {
+          throw createError(400, 'Artwork not found');
         }
+      } else {
+        throw createError(400, 'You are not allowed to delete this comment');
       }
     }
-    res.json({
-      message: 'Comment deleted successfully',
-    });
   } catch (err) {
     console.log(err);
     await session.abortTransaction();
