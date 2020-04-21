@@ -46,7 +46,7 @@ const postComment = async (req, res, next) => {
 
 const patchComment = async (req, res, next) => {
   const { artworkId, commentId } = req.params;
-  const { content } = req.body;
+  const { commentContent } = req.body;
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -61,7 +61,7 @@ const patchComment = async (req, res, next) => {
           _id: artworkId,
         }).session(session);
         if (foundArtwork || foundComment.artwork.equals(foundArtwork._id)) {
-          foundComment.content = content;
+          foundComment.content = commentContent;
           foundComment.modified = true;
           await foundComment.save({ session });
           await session.commitTransaction();

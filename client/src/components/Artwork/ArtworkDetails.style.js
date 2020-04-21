@@ -52,11 +52,28 @@ const ArtworkDetailsStyles = makeStyles((muiTheme) => ({
   license: {
     textTransform: 'capitalize',
   },
-  commentForm: {
+  postComment: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
+  },
+  editComment: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column',
+  },
+  editCommentForm: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  editCommentActions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   noLink: {
     textDecoration: 'none',
