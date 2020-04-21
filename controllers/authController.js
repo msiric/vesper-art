@@ -21,11 +21,7 @@ const postSignUp = async (req, res, next) => {
     if (foundUser) {
       throw createError(400, 'Account with that email/username already exists');
     } else {
-      let verificationInfo = {
-        token: randomString.generate(),
-        email: email,
-      };
-      let user = new User();
+      const user = new User();
       user.name = username;
       user.email = email;
       user.photo = user.gravatar();
@@ -45,11 +41,22 @@ const postSignUp = async (req, res, next) => {
       user.outgoingFunds = 0;
       user.active = true;
       await user.save({ session });
-      await axios.post('http://localhost:3000/send_email', verificationInfo, {
-        proxy: false,
-      });
+      const protocol = req.protocol;
+      const host = req.get('host');
+      const token = randomString.generate();
+      const link = `${protocol}://${host}/verify_token/${token}`;
+      await mailer.sendEmail(
+        config.app,
+        email,
+        'Please confirm your email',
+        `Hello,
+        Please click on the link to verify your email:
+
+        <a href=${link}>Click here to verify</a>`
+      );
       await session.commitTransaction();
-      return res.redirect('/signup');
+      res.status(200).json({ message: 'Verify your email address' });
+      await session.commitTransaction();
     }
   } catch (err) {
     await session.abortTransaction();
@@ -139,55 +146,15 @@ const postRefreshToken = async (req, res, next) => {
 const postRevokeToken = async (req, res, next) => {
   try {
     const { userId } = req.params;
-
     await User.findOneAndUpdate({ _id: userId }, { $inc: { jwtVersion: 1 } });
-
     res.status(200);
   } catch (err) {
     next(err, res);
   }
 };
 
-const sendConfirmation = async (req, res) => {
-  try {
-    const { email, token } = req.body;
-    const host = req.get('host');
-    const link = `http://${host}/verify/${token}`;
-    await mailer.sendEmail(
-      config.app,
-      email,
-      'Please confirm your email',
-      `Hello,
-        Please click on the link to verify your email:
-
-        <a href=${link}>Click here to verify</a>`
-    );
-    await session.commitTransaction();
-    res.status(200).json({ message: 'Email sent' });
-  } catch (err) {
-    next(err, res);
-  }
-};
-
-const getToken = async (req, res) => {
-  try {
-    const { tokenId } = req.params;
-    const foundUser = await User.findOne({
-      resetPasswordToken: tokenId,
-      resetPasswordExpires: { $gt: Date.now() },
-    });
-    if (!foundUser) {
-      throw createError(400, 'Token is invalid or has expired');
-    } else {
-      res.status(200).json('Token found');
-    }
-  } catch (err) {
-    next(err, res);
-  }
-};
-
 // needs transaction (not tested)
-const verifyToken = async (req, res, next) => {
+const verifySignUpToken = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -212,8 +179,60 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
+const forgotPassword = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const { email } = req.body;
+    crypto.randomBytes(20, async function (err, buf) {
+      const token = buf.toString('hex');
+      const foundUser = await User.findOne({ email: email }).session(session);
+      if (!foundUser) {
+        throw createError(400, 'No account with that email address exists');
+      } else {
+        foundUser.resetPasswordToken = token;
+        foundUser.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        await foundUser.save({ session });
+        await mailer.sendEmail(
+          config.app,
+          foundUser.email,
+          'Reset your password',
+          `You are receiving this because you have requested to reset the password for your account.
+        Please click on the following link, or paste this into your browser to complete the process:
+        
+        <a href="http://${req.headers.host}/reset_password/${token}"</a>`
+        );
+        await session.commitTransaction();
+        res.status(200).json({ message: 'Password reset' });
+      }
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    next(err, res);
+  } finally {
+    session.endSession();
+  }
+};
+
+const verifyResetPassToken = async (req, res) => {
+  try {
+    const { tokenId } = req.params;
+    const foundUser = await User.findOne({
+      resetPasswordToken: tokenId,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    if (!foundUser) {
+      throw createError(400, 'Token is invalid or has expired');
+    } else {
+      res.status(200).json('Token found');
+    }
+  } catch (err) {
+    next(err, res);
+  }
+};
+
 // needs transaction (not tested)
-const resendToken = async (req, res) => {
+const resetPassword = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -258,50 +277,14 @@ const resendToken = async (req, res) => {
   }
 };
 
-const forgotPassword = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { email } = req.body;
-    crypto.randomBytes(20, async function (err, buf) {
-      const token = buf.toString('hex');
-      const foundUser = await User.findOne({ email: email }).session(session);
-      if (!foundUser) {
-        throw createError(400, 'No account with that email address exists');
-      } else {
-        foundUser.resetPasswordToken = token;
-        foundUser.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-        await foundUser.save({ session });
-        await mailer.sendEmail(
-          config.app,
-          foundUser.email,
-          'Reset your password',
-          `You are receiving this because you have requested to reset the password for your account.
-        Please click on the following link, or paste this into your browser to complete the process:
-        
-        <a href="http://${req.headers.host}/reset/${token}"</a>`
-        );
-        await session.commitTransaction();
-        res.status(200).json({ message: 'Password reset' });
-      }
-    });
-  } catch (err) {
-    await session.abortTransaction();
-    next(err, res);
-  } finally {
-    session.endSession();
-  }
-};
-
 module.exports = {
   postSignUp,
   postLogIn,
   postLogOut,
   postRefreshToken,
   postRevokeToken,
-  sendConfirmation,
-  getToken,
-  verifyToken,
-  resendToken,
+  verifySignUpToken,
+  verifyResetPassToken,
   forgotPassword,
+  resetPassword,
 };

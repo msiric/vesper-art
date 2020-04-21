@@ -13,28 +13,21 @@ router.route('/logout').post(isAuthenticated, authController.postLogOut);
 
 router.route('/refresh_token').post(authController.postRefreshToken);
 
-// TEST
-
 router.route('/revoke_token/:userId').post(authController.postRevokeToken);
 
-router.route('/send_email').post(authController.sendConfirmation);
+// TEST
 
-router.route('/verify/:tokenId').get(authController.verifyToken);
+router
+  .route('/verify_token/:tokenId')
+  .get(isNotAuthenticated, authController.verifySignUpToken);
 
-router.route('/forgot').get(function (req, res) {
-  if (!req.user) {
-    res.json({
-      user: req.user,
-    });
-  } else {
-    res.redirect('/');
-  }
-});
+router
+  .route('/forgot_password')
+  .post(isNotAuthenticated, authController.forgotPassword);
 
-router.route('/forgot').post(authController.forgotPassword);
-
-router.route('/reset/:tokenId').get(authController.getToken);
-
-router.route('/reset/:tokenId').post(authController.resendToken);
+router
+  .route('/reset_password/:tokenId')
+  .get(isNotAuthenticated, authController.verifyResetPassToken)
+  .post(isNotAuthenticated, authController.resetPassword);
 
 module.exports = router;
