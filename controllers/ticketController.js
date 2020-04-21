@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Ticket = require('../models/ticket');
-const emailController = require('./emailController');
+const mailer = require('../utils/email');
 const createError = require('http-errors');
 
 // how to handle transactions?
@@ -18,8 +18,14 @@ const postTicket = async (req, res, next) => {
       newTicket.resolved = false;
       const savedTicket = await newTicket.save();
       const ticketId = savedTicket._id;
-      res.locals.email = { ticketId, userEmail, ticketTitle, ticketBody };
-      emailController.postTicket(req, res, next);
+      await mailer.sendEmail(
+        userEmail,
+        config.email,
+        `Support ticket (#${ticketId}): ${ticketTitle}`,
+        ticketBody
+      );
+      await session.commitTransaction();
+      res.status(200).json({ message: 'Ticket successfully sent' });
     } else {
       throw createError(400, 'All fields are required');
     }

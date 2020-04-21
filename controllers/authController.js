@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
-const Email = require('./emailController');
 const auth = require('../utils/auth');
 const randomString = require('randomstring');
 const axios = require('axios');
 const bcrypt = require('bcrypt-nodejs');
+const crypto = require('crypto');
+const mailer = require('../utils/email');
+const config = require('../config/mailer');
 const createError = require('http-errors');
 
 // needs transaction (not tested)
@@ -73,7 +75,7 @@ const postLogIn = async (req, res, next) => {
       );
     }
 
-    const valid = await bcrypt.compareSync(password, foundUser.password);
+    const valid = bcrypt.compareSync(password, foundUser.password);
 
     if (!valid) {
       throw createError(
@@ -146,10 +148,160 @@ const postRevokeToken = async (req, res, next) => {
   }
 };
 
+const sendConfirmation = async (req, res) => {
+  try {
+    const { email, token } = req.body;
+    const host = req.get('host');
+    const link = `http://${host}/verify/${token}`;
+    await mailer.sendEmail(
+      config.app,
+      email,
+      'Please confirm your email',
+      `Hello,
+        Please click on the link to verify your email:
+
+        <a href=${link}>Click here to verify</a>`
+    );
+    await session.commitTransaction();
+    res.status(200).json({ message: 'Email sent' });
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+const getToken = async (req, res) => {
+  try {
+    const { tokenId } = req.params;
+    const foundUser = await User.findOne({
+      resetPasswordToken: tokenId,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    if (!foundUser) {
+      throw createError(400, 'Token is invalid or has expired');
+    } else {
+      res.status(200).json('Token found');
+    }
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+// needs transaction (not tested)
+const verifyToken = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const { tokenId } = req.params;
+    const foundUser = await User.findOne({
+      secretToken: tokenId,
+    }).session(session);
+    if (foundUser) {
+      foundUser.secretToken = null;
+      foundUser.verified = true;
+      await foundUser.save({ session });
+      await session.commitTransaction();
+      res.status(200).json({ message: 'Token successfully verified' });
+    } else {
+      throw createError(400, 'Verification token could not be found');
+    }
+  } catch (err) {
+    await session.abortTransaction();
+    next(err, res);
+  } finally {
+    session.endSession();
+  }
+};
+
+// needs transaction (not tested)
+const resendToken = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const { tokenId } = req.params;
+    const { password, confirm } = req.body;
+    const foundUser = await User.findOne({
+      resetPasswordToken: tokenId,
+      resetPasswordExpires: { $gt: Date.now() },
+    }).session(session);
+    if (!foundUser) {
+      throw createError(400, 'Token is invalid or has expired');
+    } else if (password !== confirm) {
+      throw createError(400, 'Passwords do not match');
+    } else if (user.password === password) {
+      throw createError(400, 'New password is identical to the old one');
+    } else {
+      foundUser.password = password;
+      foundUser.resetPasswordToken = null;
+      foundUser.resetPasswordExpires = null;
+
+      await foundUser.save(function (err) {
+        req.logIn(foundUser, function (err) {
+          callback(err, foundUser);
+        });
+      });
+    }
+    await mailer.sendEmail(
+      config.app,
+      foundUser.email,
+      'Password change',
+      `You are receiving this because you just changed your password.
+        
+      If you did not request this, please contact us immediately.`
+    );
+    await session.commitTransaction();
+    res.status(200).json({ message: 'Password reset' });
+  } catch (err) {
+    await session.abortTransaction();
+    next(err, res);
+  } finally {
+    session.endSession();
+  }
+};
+
+const forgotPassword = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const { email } = req.body;
+    crypto.randomBytes(20, async function (err, buf) {
+      const token = buf.toString('hex');
+      const foundUser = await User.findOne({ email: email }).session(session);
+      if (!foundUser) {
+        throw createError(400, 'No account with that email address exists');
+      } else {
+        foundUser.resetPasswordToken = token;
+        foundUser.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        await foundUser.save({ session });
+        await mailer.sendEmail(
+          config.app,
+          foundUser.email,
+          'Reset your password',
+          `You are receiving this because you have requested to reset the password for your account.
+        Please click on the following link, or paste this into your browser to complete the process:
+        
+        <a href="http://${req.headers.host}/reset/${token}"</a>`
+        );
+        await session.commitTransaction();
+        res.status(200).json({ message: 'Password reset' });
+      }
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    next(err, res);
+  } finally {
+    session.endSession();
+  }
+};
+
 module.exports = {
   postSignUp,
   postLogIn,
   postLogOut,
   postRefreshToken,
   postRevokeToken,
+  sendConfirmation,
+  getToken,
+  verifyToken,
+  resendToken,
+  forgotPassword,
 };
