@@ -2,7 +2,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const AppStyles = makeStyles((muiTheme) => ({
   alert: {
-    width: '100%',
+    left: '50% !important',
+    transform: 'translateX(-50%) !important',
   },
 }));
 
