@@ -42,6 +42,7 @@ const UserSchema = new Schema({
   notifications: Number,
   rating: Number,
   reviews: Number,
+  artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   earnings: Number,
   incomingFunds: Number,

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
+const Email = require('./emailController');
 const auth = require('../utils/auth');
 const randomString = require('randomstring');
 const axios = require('axios');

@@ -7,7 +7,6 @@ const createError = require('http-errors');
 
 function postTicket(req, res, next) {
   try {
-    let mailOptions, host, link;
     const smtpTransport = nodemailer.createTransport({
       service: 'Gmail',
       auth: {
@@ -15,8 +14,7 @@ function postTicket(req, res, next) {
         pass: config.password,
       },
     });
-    host = req.get('host');
-    mailOptions = {
+    const mailOptions = {
       from: res.locals.email.sender,
       to: config.email,
       subject: `Support ticket (#${res.locals.email.id}): ${res.locals.email.title}`,
@@ -37,7 +35,6 @@ function postTicket(req, res, next) {
 const sendConfirmation = (req, res) => {
   try {
     const { email, token } = req.body;
-    let mailOptions, host, link;
     const smtpTransport = nodemailer.createTransport({
       service: 'Gmail',
       auth: {
@@ -45,19 +42,17 @@ const sendConfirmation = (req, res) => {
         pass: config.password,
       },
     });
-    host = req.get('host');
-    recipient = email;
-    id = token;
-    if (recipient && id) {
-      link = 'http://' + req.get('host') + '/verify/' + id;
-      mailOptions = {
+    const host = req.get('host');
+    if (email && token) {
+      const link = `http://${host}/verify/${token}`;
+      const mailOptions = {
         from: 'vesper',
-        to: recipient,
+        to: email,
         subject: 'Please confirm your email',
-        html:
-          'Hello,<br>Please click on the link to verify your email.<br><a href=' +
-          link +
-          '>Click here to verify</a>',
+        html: `Hello,
+        Please click on the link to verify your email:
+
+        <a href=${link}>Click here to verify</a>`,
       };
       smtpTransport.sendMail(mailOptions, function (error, response) {
         if (error) {
@@ -129,15 +124,10 @@ const forgotPassword = async (req, res, next) => {
         from: 'vesper',
         to: foundUser.email,
         subject: 'Reset your password',
-        html:
-          'You are receiving this because you have requested to reset the password for your account.<br>' +
-          'Please click on the following link, or paste this into your browser to complete the process:<br><br>' +
-          '<a href="http://' +
-          req.headers.host +
-          '/reset/' +
-          token +
-          '"</a><br>' +
-          'If you did not request this, please ignore this email and your password will remain unchanged.',
+        html: `You are receiving this because you have requested to reset the password for your account.
+          Please click on the following link, or paste this into your browser to complete the process:
+          
+          <a href="http://${req.headers.host}/reset/${token}"</a>`,
       };
       smtpTransport.sendMail(mailOptions, async function (error, response) {
         if (error) {
@@ -217,8 +207,9 @@ const resendToken = async (req, res) => {
       from: 'vesper',
       to: foundUser.email,
       subject: 'Password change',
-      html:
-        'You are receiving this because you just changed your password <br><br> If you did not request this, please contact us immediately.',
+      html: `You are receiving this because you just changed your password.
+        
+        If you did not request this, please contact us immediately.`,
     };
     smtpTransport.sendMail(mailOptions, async function (error, response) {
       if (error) {

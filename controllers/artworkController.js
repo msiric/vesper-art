@@ -93,6 +93,10 @@ const postNewArtwork = async (req, res, next) => {
     newArtwork.comments = [];
     newArtwork.current = savedVersion._id;
     await newArtwork.save({ session });
+    await User.updateOne(
+      { _id: res.locals.user.id },
+      { $push: { artwork: newArtwork._id } }
+    ).session(session);
     await session.commitTransaction();
     return res.status(200).json('/my_artwork');
   } catch (err) {
@@ -259,7 +263,6 @@ const updateArtwork = async (req, res, next) => {
         foundArtwork.versions.push(foundArtwork.current._id);
         foundArtwork.current = savedVersion._id;
       }
-
       await foundArtwork.save({ session });
       await session.commitTransaction();
       return res.status(200).json('/my_artwork');
