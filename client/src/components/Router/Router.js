@@ -93,7 +93,7 @@ const routes = [
   // User router
   {
     path: '/user/:id',
-    Component: lazy(() => import('../User/User')),
+    Component: lazy(() => import('../User/Profile')),
     exact: true,
     type: 'public',
   },
