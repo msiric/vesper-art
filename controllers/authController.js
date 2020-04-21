@@ -14,7 +14,11 @@ const postSignUp = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { email, username, password } = req.body;
+    const { email, username, password, confirm } = req.body;
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const token = randomString.generate();
+    const link = `${protocol}://${host}/verify_token/${token}`;
     const foundUser = await User.findOne({
       $or: [{ email: email }, { name: username }],
     }).session(session);
@@ -27,7 +31,7 @@ const postSignUp = async (req, res, next) => {
       user.photo = user.gravatar();
       user.password = password;
       user.customWork = true;
-      user.secretToken = verificationInfo.token;
+      user.secretToken = token;
       user.verified = false;
       user.cart = [];
       user.discount = null;
@@ -35,16 +39,13 @@ const postSignUp = async (req, res, next) => {
       user.notifications = 0;
       user.rating = 0;
       user.reviews = 0;
+      user.artwork = [];
       user.savedArtwork = [];
       user.earnings = 0;
       user.incomingFunds = 0;
       user.outgoingFunds = 0;
       user.active = true;
       await user.save({ session });
-      const protocol = req.protocol;
-      const host = req.get('host');
-      const token = randomString.generate();
-      const link = `${protocol}://${host}/verify_token/${token}`;
       await mailer.sendEmail(
         config.app,
         email,
@@ -154,7 +155,7 @@ const postRevokeToken = async (req, res, next) => {
 };
 
 // needs transaction (not tested)
-const verifySignUpToken = async (req, res, next) => {
+const verifyRegisterToken = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -214,23 +215,6 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
-const verifyResetPassToken = async (req, res) => {
-  try {
-    const { tokenId } = req.params;
-    const foundUser = await User.findOne({
-      resetPasswordToken: tokenId,
-      resetPasswordExpires: { $gt: Date.now() },
-    });
-    if (!foundUser) {
-      throw createError(400, 'Token is invalid or has expired');
-    } else {
-      res.status(200).json('Token found');
-    }
-  } catch (err) {
-    next(err, res);
-  }
-};
-
 // needs transaction (not tested)
 const resetPassword = async (req, res) => {
   const session = await mongoose.startSession();
@@ -283,8 +267,7 @@ module.exports = {
   postLogOut,
   postRefreshToken,
   postRevokeToken,
-  verifySignUpToken,
-  verifyResetPassToken,
+  verifyRegisterToken,
   forgotPassword,
   resetPassword,
 };

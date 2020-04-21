@@ -15,11 +15,9 @@ router.route('/refresh_token').post(authController.postRefreshToken);
 
 router.route('/revoke_token/:userId').post(authController.postRevokeToken);
 
-// TEST
-
 router
   .route('/verify_token/:tokenId')
-  .get(isNotAuthenticated, authController.verifySignUpToken);
+  .get(isNotAuthenticated, authController.verifyRegisterToken);
 
 router
   .route('/forgot_password')
@@ -27,7 +25,6 @@ router
 
 router
   .route('/reset_password/:tokenId')
-  .get(isNotAuthenticated, authController.verifyResetPassToken)
   .post(isNotAuthenticated, authController.resetPassword);
 
 module.exports = router;

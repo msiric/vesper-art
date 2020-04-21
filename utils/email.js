@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const config = require('../config/mailer');
 const createError = require('http-errors');
 
-const sendEmail = async ({ sender, receiver, subject, html }) => {
+const sendEmail = async (sender, receiver, subject, html) => {
   try {
     const smtpTransport = nodemailer.createTransport({
       service: 'Gmail',
@@ -19,6 +19,7 @@ const sendEmail = async ({ sender, receiver, subject, html }) => {
     };
     await smtpTransport.sendMail(mailOptions);
   } catch (err) {
+    console.log(err);
     throw createError(400, 'Email failed to send');
   }
 };

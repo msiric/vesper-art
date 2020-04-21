@@ -43,6 +43,24 @@ const routes = [
     exact: true,
     type: 'auth',
   },
+  {
+    path: '/verify_token/:id',
+    Component: lazy(() => import('../Auth/VerifyToken')),
+    exact: true,
+    type: 'auth',
+  },
+  {
+    path: '/forgot_password',
+    Component: lazy(() => import('../Auth/ForgotPassword')),
+    exact: true,
+    type: 'auth',
+  },
+  {
+    path: '/reset_password/:id',
+    Component: lazy(() => import('../Auth/ResetPassword')),
+    exact: true,
+    type: 'auth',
+  },
   // Conversations router
   {
     path: '/conversations',

@@ -106,6 +106,9 @@ const Login = () => {
             />
           </CardContent>
           <CardActions className={classes.actions}>
+            <Button component={Link} to="/forgot_password" color="primary">
+              Forgot password
+            </Button>
             <Button component={Link} to="/signup" color="primary">
               Sign up
             </Button>
