@@ -11,18 +11,19 @@ const getUserProfile = async (req, res, next) => {
     const { userName } = req.params;
     const foundUser = await User.findOne({
       $and: [{ name: userName }, { active: true }],
-    }).deepPopulate(
-      'artwork.current',
-      '_id cover created title price type license availability description use commercial'
-    );
+    });
+    // }).deepPopulate(
+    //   'artwork.current',
+    //   '_id cover created title price type license availability description use commercial'
+    // );
     if (foundUser) {
-      /* const foundArtwork = await Artwork.find({
+      const foundArtwork = await Artwork.find({
         $and: [{ owner: foundUser._id }, { active: true }],
       }).populate(
         'current',
         '_id cover created title price type license availability description use commercial'
-      ); */
-      return res.json({ user: foundUser /* artwork: foundArtwork */ });
+      );
+      return res.json({ user: foundUser, artwork: foundArtwork });
     } else {
       throw createError(400, 'User not found');
     }

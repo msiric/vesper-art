@@ -3,6 +3,7 @@ import { Context } from '../Store/Store';
 import SelectInput from '../../shared/SelectInput/SelectInput';
 import { useFormik, Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
+import Gallery from '../Home/Gallery';
 import {
   Modal,
   Container,
@@ -17,6 +18,7 @@ import {
   Divider,
   CircularProgress,
   Card,
+  CardHeader,
   CardMedia,
   CardContent,
   CardActions,
@@ -35,8 +37,11 @@ import {
   MoreVertRounded as MoreIcon,
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
+  FavoriteBorderRounded as SaveIcon,
+  FavoriteRounded as SavedIcon,
+  ShareRounded as ShareIcon,
+  LinkRounded as CopyIcon,
 } from '@material-ui/icons';
-import Masonry from 'react-mason';
 import { Link, useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
 import ProfileStyles from './Profile.style';
@@ -57,7 +62,7 @@ const Profile = ({ match }) => {
       setState({
         ...state,
         loading: false,
-        user: data.user,
+        user: { ...data.user, artwork: data.artwork },
       });
     } catch (err) {
       setState({ ...state, loading: false });
@@ -128,7 +133,7 @@ const Profile = ({ match }) => {
                   Artwork
                 </Typography>
                 {state.user.artwork.length ? (
-                  <Masonry>{state.user.artwork}</Masonry>
+                  <Gallery elements={state.user.artwork} />
                 ) : (
                   <Typography variant="h6" align="center">
                     This user has no artwork to display
