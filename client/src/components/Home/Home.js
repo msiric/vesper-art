@@ -27,7 +27,6 @@ const Home = ({ location, enqueueSnackbar }) => {
 
   useEffect(() => {
     fetchArtwork();
-    console.log(location);
     if (location.state && location.state.message) {
       enqueueSnackbar(location.state.message, {
         variant: 'success',

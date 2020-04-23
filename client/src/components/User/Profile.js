@@ -75,7 +75,7 @@ const Profile = ({ match }) => {
 
   return (
     <Container fixed className={classes.fixed}>
-      <Grid container spacing={2}>
+      <Grid container className={classes.container} spacing={2}>
         {state.loading ? (
           <Grid item xs={12} className={classes.loader}>
             <CircularProgress />
@@ -89,7 +89,7 @@ const Profile = ({ match }) => {
                     <CardMedia
                       className={classes.cover}
                       image={state.user.photo}
-                      title="Avatar"
+                      title={state.user.name}
                     />
                   </Grid>
                   <Grid item>
@@ -98,29 +98,30 @@ const Profile = ({ match }) => {
                         {state.user.name}
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
-                        {state.user.description || 'No description available'}
+                        {state.user.description ||
+                          'This user provided no description about themself'}
                       </Typography>
                       <Grid container>
-                        {/* {member.github && (
-                          <IconButton
-                            aria-label="github"
-                            component="a"
-                            href={`https://github.com/${state.user.name}`}
-                            className={classes.icon}
-                          >
-                            <GitHubIcon fontSize="inherit" />
-                          </IconButton>
-                        )}
-                        {member.twitter && (
-                          <IconButton
-                            aria-label="twitter"
-                            component="a"
-                            href={`https://twitter.com/${state.user.name}`}
-                            className={classes.icon}
-                          >
-                            <TwitterIcon fontSize="inherit" />
-                          </IconButton>
-                        )} */}
+                        {/* {state.user.github && (
+                              <IconButton
+                                aria-label="github"
+                                component="a"
+                                href={`https://github.com/${state.user.github}`}
+                                className={classes.icon}
+                              >
+                                <GitHubIcon fontSize="inherit" />
+                              </IconButton>
+                            )}
+                            {state.user.twitter && (
+                              <IconButton
+                                aria-label="twitter"
+                                component="a"
+                                href={`https://twitter.com/${state.user.twitter}`}
+                                className={classes.icon}
+                              >
+                                <TwitterIcon fontSize="inherit" />
+                              </IconButton>
+                            )} */}
                       </Grid>
                     </div>
                   </Grid>

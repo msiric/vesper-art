@@ -34,6 +34,9 @@ const GalleryStyles = makeStyles((muiTheme) => ({
   socialButton: {
     display: 'flex',
   },
+  link: {
+    textDecoration: 'none',
+  },
 }));
 
 export default GalleryStyles;

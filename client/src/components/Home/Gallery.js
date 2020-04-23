@@ -17,6 +17,7 @@ import {
   FavoriteRounded as SavedIcon,
   ShareRounded as ShareIcon,
   LinkRounded as CopyIcon,
+  EditRounded as EditIcon,
 } from '@material-ui/icons';
 import {
   FacebookShareButton,
@@ -48,7 +49,7 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
     return (
       <Card key={index} className={classes.root}>
         <CardHeader
-          title={element.owner.name}
+          title={element.current.title}
           subheader={
             element.current.availability === 'available'
               ? element.current.price
@@ -65,12 +66,26 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
           title={element.current.title}
         />
         <CardContent>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {element.current.title}
+          <Typography
+            component={Link}
+            to={`/user/${element.owner.name}`}
+            variant="body1"
+            color="textSecondary"
+            className={classes.link}
+          >
+            {element.owner.name}
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          {store.user.saved[element._id] ? (
+          {store.user.authenticated && element.owner._id === store.user.id ? (
+            <IconButton
+              component={Link}
+              to={`/edit_artwork/${element._id}`}
+              aria-label="Unsave artwork"
+            >
+              <EditIcon />
+            </IconButton>
+          ) : store.user.saved[element._id] ? (
             <IconButton
               onClick={() => handleUnsaveArtwork(element._id)}
               aria-label="Unsave artwork"

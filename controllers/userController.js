@@ -19,10 +19,12 @@ const getUserProfile = async (req, res, next) => {
     if (foundUser) {
       const foundArtwork = await Artwork.find({
         $and: [{ owner: foundUser._id }, { active: true }],
-      }).populate(
-        'current',
-        '_id cover created title price type license availability description use commercial'
-      );
+      })
+        .populate('owner')
+        .populate(
+          'current',
+          '_id cover created title price type license availability description use commercial'
+        );
       return res.json({ user: foundUser, artwork: foundArtwork });
     } else {
       throw createError(400, 'User not found');

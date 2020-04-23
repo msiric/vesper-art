@@ -32,11 +32,22 @@ const ArtworkDetailsStyles = makeStyles((muiTheme) => ({
     paddingTop: '100%',
   },
   avatar: {
-    paddingTop: '30%',
+    width: muiTheme.spacing(10),
+    height: muiTheme.spacing(10),
+    margin: muiTheme.spacing(2),
+    borderRadius: '50%',
+    flexShrink: 0,
+    backgroundColor: muiTheme.palette.background.default,
   },
   root: {
     width: '100%',
     backgroundColor: muiTheme.palette.background.paper,
+  },
+  user: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
   },
   fonts: {
     fontWeight: 'bold',

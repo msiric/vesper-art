@@ -23,6 +23,10 @@ import {
   NotificationsRounded as NotificationsIcon,
   MoreVertRounded as MoreIcon,
   ShoppingCartRounded as CartIcon,
+  AssessmentRounded as DashboardIcon,
+  AssignmentRounded as OrdersIcon,
+  FavoriteRounded as SavedIcon,
+  SettingsRounded as SettingsIcon,
 } from '@material-ui/icons';
 import HeaderStyles from './Header.style';
 
@@ -80,6 +84,15 @@ const Header = () => {
       <MenuItem component={Link} to={`/user/${store.user.name}`}>
         Profile
       </MenuItem>
+      <MenuItem component={Link} to="/dashboard">
+        Dashboard
+      </MenuItem>
+      <MenuItem component={Link} to="/orders">
+        Orders
+      </MenuItem>
+      <MenuItem component={Link} to="/saved_artwork">
+        Saved artwork
+      </MenuItem>
       <MenuItem component={Link} to="/settings">
         Settings
       </MenuItem>
@@ -102,7 +115,7 @@ const Header = () => {
         <IconButton color="inherit">
           <AddIcon />
         </IconButton>
-        <p>Artwork</p>
+        <p>Add artwork</p>
       </MenuItem>
       <MenuItem>
         <IconButton aria-label="Show messages" color="inherit">
@@ -120,13 +133,8 @@ const Header = () => {
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
-      <MenuItem>
-        <IconButton
-          component={Link}
-          to="/cart"
-          aria-label="Show cart"
-          color="inherit"
-        >
+      <MenuItem component={Link} to="/cart">
+        <IconButton aria-label="Show cart" color="inherit">
           <Badge badgeContent={store.user.cartSize} color="secondary">
             <CartIcon />
           </Badge>
@@ -136,7 +144,6 @@ const Header = () => {
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           aria-label="Show profile"
-          aria-controls="primary-search-account-menu"
           aria-haspopup="true"
           color="inherit"
         >
@@ -146,6 +153,7 @@ const Header = () => {
       </MenuItem>
     </Menu>
   );
+
   const renderUnauthMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}

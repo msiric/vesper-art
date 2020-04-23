@@ -475,7 +475,7 @@ const ArtworkDetails = ({ match }) => {
             </Grid>
             <Grid item sm={12} md={5} className={classes.grid}>
               <Paper className={classes.paper}>
-                <Card className={classes.root}>
+                <Card className={classes.user}>
                   <CardMedia
                     className={classes.avatar}
                     image={state.artwork.owner.photo}
