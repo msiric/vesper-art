@@ -50,43 +50,6 @@ const getUserSettings = async (req, res, next) => {
   }
 };
 
-const getUserSaves = async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const foundUser = await User.findOne({
-      $and: [{ _id: userId }, { active: true }],
-    });
-    if (foundUser) {
-      return res.json({ savedArtwork: foundUser.savedArtwork });
-    } else {
-      throw createError(400, 'User not found');
-    }
-  } catch (err) {
-    next(err, res);
-  }
-};
-
-const deleteUserSave = async (req, res, next) => {
-  try {
-    const { userName, artworkId } = req.params;
-    await User.updateOne(
-      {
-        $and: [{ _id: userId }, { active: true }],
-      },
-      {
-        $pull: { savedArtwork: artworkId },
-      }
-    );
-    if (foundUser) {
-      return res.json({ savedArtwork: foundUser.savedArtwork });
-    } else {
-      throw createError(400, 'User not found');
-    }
-  } catch (err) {
-    next(err, res);
-  }
-};
-
 // needs transaction (done)
 const updateUserProfile = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -595,8 +558,6 @@ const deleteUser = async (req, res, next) => {
 module.exports = {
   getUserProfile,
   getUserSettings,
-  getUserSaves,
-  deleteUserSave,
   updateUserProfile,
   updateUserPassword,
   updateUserPreferences,

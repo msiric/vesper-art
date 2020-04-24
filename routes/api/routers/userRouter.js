@@ -9,14 +9,6 @@ router
   .delete(isAuthenticated, userController.deleteUser);
 
 router
-  .route('/user/:userId/saved_artwork')
-  .get(isAuthenticated, userController.getUserSaves);
-
-router
-  .route('/user/:userId/saved_artwork/:artworkId')
-  .delete(isAuthenticated, userController.deleteUserSave);
-
-router
   .route('/user/:userId/settings')
   .get(isAuthenticated, userController.getUserSettings)
   .patch(isAuthenticated, userController.updateUserPreferences);

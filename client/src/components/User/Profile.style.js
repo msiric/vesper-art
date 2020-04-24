@@ -1,6 +1,9 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const Profile = makeStyles((muiTheme) => ({
+  tabs: {
+    backgroundColor: muiTheme.palette.background.paper,
+  },
   fixed: {
     height: '100%',
   },

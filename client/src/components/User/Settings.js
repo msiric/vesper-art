@@ -109,6 +109,7 @@ const Settings = () => {
                 />
               )}
               <p>Change password</p>
+              <p>Show purchases/saved artwork</p>
               <p>Notifications</p>
               <p>Payment method</p>
               <p>Billing information</p>

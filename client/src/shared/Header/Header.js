@@ -90,9 +90,6 @@ const Header = () => {
       <MenuItem component={Link} to="/orders">
         Orders
       </MenuItem>
-      <MenuItem component={Link} to="/saved_artwork">
-        Saved artwork
-      </MenuItem>
       <MenuItem component={Link} to="/settings">
         Settings
       </MenuItem>
