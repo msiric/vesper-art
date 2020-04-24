@@ -105,53 +105,33 @@ const Profile = ({ match }) => {
           </Grid>
         ) : state.user._id ? (
           <>
-            <Grid item sm={12} className={classes.grid}>
-              <Paper className={classes.user} variant="outlined">
-                <Grid container wrap="nowrap">
-                  <Grid item>
-                    <CardMedia
-                      className={classes.cover}
-                      image={state.user.photo}
-                      title={state.user.name}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <div className={classes.details}>
-                      <Typography component="h3" variant="h6">
+            <Grid item xs={12} md={4} className={classes.grid}>
+              <Paper className={classes.paper}>
+                <Card className={classes.user}>
+                  <CardMedia
+                    className={classes.avatar}
+                    image={state.user.photo}
+                    title={state.user.name}
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      <Anchor component={Link} to={`/user/${state.user.name}`}>
                         {state.user.name}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {state.user.description ||
-                          'This user provided no description about themself'}
-                      </Typography>
-                      <Grid container>
-                        {/* {state.user.github && (
-                              <IconButton
-                                aria-label="github"
-                                component="a"
-                                href={`https://github.com/${state.user.github}`}
-                                className={classes.icon}
-                              >
-                                <GitHubIcon fontSize="inherit" />
-                              </IconButton>
-                            )}
-                            {state.user.twitter && (
-                              <IconButton
-                                aria-label="twitter"
-                                component="a"
-                                href={`https://twitter.com/${state.user.twitter}`}
-                                className={classes.icon}
-                              >
-                                <TwitterIcon fontSize="inherit" />
-                              </IconButton>
-                            )} */}
-                      </Grid>
-                    </div>
-                  </Grid>
-                </Grid>
+                      </Anchor>
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      {state.user.description ||
+                        "This user doesn't have much to say about themself"}
+                    </Typography>
+                  </CardContent>
+                </Card>
               </Paper>
             </Grid>
-            <Grid item sm={12} className={classes.grid}>
+            <Grid item xs={12} md={8} className={classes.grid}>
               <Paper className={classes.artwork} variant="outlined">
                 <div className={classes.tabs}>
                   <AppBar position="static" color="default">

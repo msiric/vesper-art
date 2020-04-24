@@ -20,7 +20,21 @@ const Profile = makeStyles((muiTheme) => ({
   details: {
     margin: muiTheme.spacing(1, 1, 1, 0),
   },
-  cover: {
+  paper: {
+    height: '100%',
+    width: '100%',
+    padding: muiTheme.spacing(2),
+    boxSizing: 'border-box',
+    textAlign: 'center',
+    color: muiTheme.palette.text.secondary,
+  },
+  user: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  avatar: {
     width: muiTheme.spacing(10),
     height: muiTheme.spacing(10),
     margin: muiTheme.spacing(2),
@@ -31,9 +45,6 @@ const Profile = makeStyles((muiTheme) => ({
   icon: {
     fontSize: 18,
     padding: muiTheme.spacing(1),
-  },
-  user: {
-    height: '15vh',
   },
   artwork: {
     height: '75vh',
