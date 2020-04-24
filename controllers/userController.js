@@ -34,14 +34,68 @@ const getUserProfile = async (req, res, next) => {
   }
 };
 
+const getUserSettings = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const foundUser = await User.findOne({
+      $and: [{ _id: userId }, { active: true }],
+    });
+    if (foundUser) {
+      return res.json({ user: foundUser });
+    } else {
+      throw createError(400, 'User not found');
+    }
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+const getUserSaves = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const foundUser = await User.findOne({
+      $and: [{ _id: userId }, { active: true }],
+    });
+    if (foundUser) {
+      return res.json({ savedArtwork: foundUser.savedArtwork });
+    } else {
+      throw createError(400, 'User not found');
+    }
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+const deleteUserSave = async (req, res, next) => {
+  try {
+    const { userName, artworkId } = req.params;
+    await User.updateOne(
+      {
+        $and: [{ _id: userId }, { active: true }],
+      },
+      {
+        $pull: { savedArtwork: artworkId },
+      }
+    );
+    if (foundUser) {
+      return res.json({ savedArtwork: foundUser.savedArtwork });
+    } else {
+      throw createError(400, 'User not found');
+    }
+  } catch (err) {
+    next(err, res);
+  }
+};
+
 // needs transaction (done)
 const updateUserProfile = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { userId } = req.params;
     const { username, email, description } = req.body;
     const foundUser = await User.findOne({
-      $and: [{ _id: res.locals.user.id }, { active: true }],
+      $and: [{ _id: userId }, { active: true }],
     }).session(session);
     if (foundUser) {
       if (username) foundUser.name = username;
@@ -63,25 +117,13 @@ const updateUserProfile = async (req, res, next) => {
   }
 };
 
-// treba sredit
-const getUserSettings = async (req, res, next) => {
-  try {
-    return res
-      .status(200)
-      .render('accounts/settings', { customWork: req.user.customWork });
-  } catch (err) {
-    next(err, res);
-  }
-};
-
 // needs transaction (done)
 const updateUserPassword = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
-      session
-    );
+    const { userId } = req.params;
+    const foundUser = await User.findOne({ _id: userId }).session(session);
     if (foundUser) {
       const { current, password, confirm } = req.body;
       if (current && change && confirm) {
@@ -118,9 +160,8 @@ const updateUserPreferences = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
-      session
-    );
+    const { userId } = req.params;
+    const foundUser = await User.findOne({ _id: userId }).session(session);
     if (foundUser) {
       const { customWork } = req.body;
       foundUser.customWork = customWork ? true : false;
@@ -168,7 +209,7 @@ const updateUserPreferences = async (req, res, next) => {
             facebookId: null,
             googleId: null,
             customWork: false,
-            secretToken: null,
+            verificationToken: null,
             verified: false,
             resetPasswordToken: null,
             resetPasswordExpires: null,
@@ -211,8 +252,9 @@ const deleteUser = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { userId } = req.params;
     const foundUser = await User.findOne({
-      $and: [{ _id: res.locals.user.id }, { active: true }],
+      $and: [{ _id: userId }, { active: true }],
     }).session(session);
     if (foundUser) {
       const foundArtwork = await Artwork.find({
@@ -261,7 +303,7 @@ const deleteUser = async (req, res, next) => {
                   facebookId: null,
                   googleId: null,
                   customWork: false,
-                  secretToken: null,
+                  verificationToken: null,
                   verified: false,
                   resetPasswordToken: null,
                   resetPasswordExpires: null,
@@ -334,7 +376,7 @@ const deleteUser = async (req, res, next) => {
                       facebookId: null,
                       googleId: null,
                       customWork: false,
-                      secretToken: null,
+                      verificationToken: null,
                       verified: false,
                       resetPasswordToken: null,
                       resetPasswordExpires: null,
@@ -422,7 +464,7 @@ const deleteUser = async (req, res, next) => {
                       facebookId: null,
                       googleId: null,
                       customWork: false,
-                      secretToken: null,
+                      verificationToken: null,
                       verified: false,
                       resetPasswordToken: null,
                       resetPasswordExpires: null,
@@ -506,7 +548,7 @@ const deleteUser = async (req, res, next) => {
                     facebookId: null,
                     googleId: null,
                     customWork: false,
-                    secretToken: null,
+                    verificationToken: null,
                     verified: false,
                     resetPasswordToken: null,
                     resetPasswordExpires: null,
@@ -552,8 +594,10 @@ const deleteUser = async (req, res, next) => {
 
 module.exports = {
   getUserProfile,
-  updateUserProfile,
   getUserSettings,
+  getUserSaves,
+  deleteUserSave,
+  updateUserProfile,
   updateUserPassword,
   updateUserPreferences,
   deleteUser,

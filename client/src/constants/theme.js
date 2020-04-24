@@ -52,5 +52,10 @@ artepunktTheme.overrides.MuiCardContent = {
     },
   },
 };
+artepunktTheme.overrides.MuiCardActions = {
+  root: {
+    justifyContent: 'center',
+  },
+};
 
 export default artepunktTheme;

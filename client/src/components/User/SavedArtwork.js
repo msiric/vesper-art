@@ -31,7 +31,6 @@ import {
   InputLabel,
   Select,
   Popover,
-  Chip,
   Link as Anchor,
 } from '@material-ui/core';
 import {
@@ -42,30 +41,28 @@ import {
   FavoriteRounded as SavedIcon,
   ShareRounded as ShareIcon,
   LinkRounded as CopyIcon,
-  EmailRounded as EmailIcon,
-  DoneRounded as CheckIcon,
 } from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
-import SettingsStyles from './Settings.style';
+import SavedArtworkStyles from './SavedArtwork.style';
 
-const Settings = () => {
+const SavedArtwork = () => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
-    user: {},
+    artwork: [],
   });
   const history = useHistory();
 
-  const classes = SettingsStyles();
+  const classes = SavedArtworkStyles();
 
-  const fetchSettings = async () => {
+  const fetchUser = async () => {
     try {
-      const { data } = await ax.get(`/api/user/${store.user.id}/settings`);
+      const { data } = await ax.get(`/api/user/${store.user.id}/saved_artwork`);
       setState({
         ...state,
         loading: false,
-        user: data.user,
+        artwork: data.savedArtwork,
       });
     } catch (err) {
       setState({ ...state, loading: false });
@@ -73,7 +70,7 @@ const Settings = () => {
   };
 
   useEffect(() => {
-    fetchSettings();
+    fetchUser();
   }, []);
 
   return (
@@ -83,44 +80,27 @@ const Settings = () => {
           <Grid item xs={12} className={classes.loader}>
             <CircularProgress />
           </Grid>
-        ) : state.user._id ? (
-          <Grid item sm={12} className={classes.grid}>
-            <Paper className={classes.artwork} variant="outlined">
-              <Typography variant="h6" align="center">
-                Settings
-              </Typography>
-              <p>{state.user.email}</p>
-              {state.user.verified ? (
-                <Chip
-                  icon={<EmailIcon />}
-                  label="Email verified"
-                  clickable
-                  color="primary"
-                  onDelete={() => null}
-                  deleteIcon={<CheckIcon />}
-                />
-              ) : (
-                <Chip
-                  icon={<EmailIcon />}
-                  label="Email not verified"
-                  clickable
-                  color="error"
-                  onDelete={() => null}
-                />
-              )}
-              <p>Change password</p>
-              <p>Notifications</p>
-              <p>Payment method</p>
-              <p>Billing information</p>
-              <p>Deactivate account</p>
-            </Paper>
-          </Grid>
         ) : (
-          history.push('/')
+          <>
+            <Grid item sm={12} className={classes.grid}>
+              <Paper className={classes.artwork} variant="outlined">
+                <Typography variant="h6" align="center">
+                  Saved artwork
+                </Typography>
+                {state.artwork.length ? (
+                  <Gallery elements={state.artwork} />
+                ) : (
+                  <Typography variant="h6" align="center">
+                    You have no saved artwork
+                  </Typography>
+                )}
+              </Paper>
+            </Grid>
+          </>
         )}
       </Grid>
     </Container>
   );
 };
 
-export default Settings;
+export default SavedArtwork;

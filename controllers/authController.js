@@ -31,7 +31,7 @@ const postSignUp = async (req, res, next) => {
       user.photo = user.gravatar();
       user.password = password;
       user.customWork = true;
-      user.secretToken = token;
+      user.verificationToken = token;
       user.verified = false;
       user.cart = [];
       user.discount = null;
@@ -75,48 +75,51 @@ const postLogIn = async (req, res, next) => {
     const foundUser = await User.findOne({
       $or: [{ email: username }, { name: username }],
     }).session(session);
-
     if (!foundUser) {
       throw createError(
         400,
         'Account with provided credentials does not exist'
       );
+    } else if (!foundUser.active) {
+      throw createError(400, 'This account is no longer active');
+    } else if (!foundUser.verified) {
+      throw createError(400, 'Please verify your account');
+    } else {
+      const valid = bcrypt.compareSync(password, foundUser.password);
+
+      if (!valid) {
+        throw createError(
+          400,
+          'Account with provided credentials does not exist'
+        );
+      }
+
+      const tokenPayload = {
+        id: foundUser._id,
+        active: foundUser.active,
+        jwtVersion: foundUser.jwtVersion,
+      };
+
+      const userInfo = {
+        id: foundUser._id,
+        name: foundUser.name,
+        email: foundUser.email,
+        photo: foundUser.photo,
+        messages: foundUser.inbox,
+        notifications: foundUser.notifications,
+        cart: foundUser.cart,
+        saved: foundUser.savedArtwork,
+        active: foundUser.active,
+        jwtVersion: foundUser.jwtVersion,
+      };
+
+      auth.sendRefreshToken(res, auth.createRefreshToken(tokenPayload));
+
+      res.json({
+        accessToken: auth.createAccessToken(tokenPayload),
+        user: userInfo,
+      });
     }
-
-    const valid = bcrypt.compareSync(password, foundUser.password);
-
-    if (!valid) {
-      throw createError(
-        400,
-        'Account with provided credentials does not exist'
-      );
-    }
-
-    const tokenPayload = {
-      id: foundUser._id,
-      active: foundUser.active,
-      jwtVersion: foundUser.jwtVersion,
-    };
-
-    const userInfo = {
-      id: foundUser._id,
-      name: foundUser.name,
-      email: foundUser.email,
-      photo: foundUser.photo,
-      messages: foundUser.inbox,
-      notifications: foundUser.notifications,
-      cart: foundUser.cart,
-      saved: foundUser.savedArtwork,
-      active: foundUser.active,
-      jwtVersion: foundUser.jwtVersion,
-    };
-
-    auth.sendRefreshToken(res, auth.createRefreshToken(tokenPayload));
-
-    res.json({
-      accessToken: auth.createAccessToken(tokenPayload),
-      user: userInfo,
-    });
   } catch (err) {
     console.log(err);
     await session.abortTransaction();
@@ -161,10 +164,10 @@ const verifyRegisterToken = async (req, res, next) => {
   try {
     const { tokenId } = req.params;
     const foundUser = await User.findOne({
-      secretToken: tokenId,
+      verificationToken: tokenId,
     }).session(session);
     if (foundUser) {
-      foundUser.secretToken = null;
+      foundUser.verificationToken = null;
       foundUser.verified = true;
       await foundUser.save({ session });
       await session.commitTransaction();

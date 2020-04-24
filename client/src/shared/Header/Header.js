@@ -200,7 +200,7 @@ const Header = () => {
             />
           </div>
           <div className={classes.grow} />
-          {window.accessToken ? (
+          {store.user.authenticated ? (
             <>
               <div className={classes.sectionDesktop}>
                 <IconButton component={Link} to="/add_artwork" color="inherit">
@@ -277,7 +277,7 @@ const Header = () => {
           )}
         </Toolbar>
       </AppBar>
-      {window.accessToken ? renderAuthMobileMenu : renderUnauthMobileMenu}
+      {store.user.authenticated ? renderAuthMobileMenu : renderUnauthMobileMenu}
       {renderMenu}
     </>
   );

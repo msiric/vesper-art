@@ -116,6 +116,12 @@ const routes = [
     type: 'public',
   },
   {
+    path: '/saved_artwork',
+    Component: lazy(() => import('../User/SavedArtwork')),
+    exact: true,
+    type: 'protected',
+  },
+  {
     path: '/settings',
     Component: lazy(() => import('../User/Settings')),
     exact: true,

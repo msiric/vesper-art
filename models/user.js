@@ -26,7 +26,7 @@ const UserSchema = new Schema({
   facebookId: String,
   googleId: String,
   customWork: Boolean,
-  secretToken: String,
+  verificationToken: String,
   verified: Boolean,
   resetPasswordToken: String,
   resetPasswordExpires: Date,

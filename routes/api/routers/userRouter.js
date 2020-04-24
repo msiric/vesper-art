@@ -9,12 +9,20 @@ router
   .delete(isAuthenticated, userController.deleteUser);
 
 router
-  .route('/settings')
+  .route('/user/:userId/saved_artwork')
+  .get(isAuthenticated, userController.getUserSaves);
+
+router
+  .route('/user/:userId/saved_artwork/:artworkId')
+  .delete(isAuthenticated, userController.deleteUserSave);
+
+router
+  .route('/user/:userId/settings')
   .get(isAuthenticated, userController.getUserSettings)
   .patch(isAuthenticated, userController.updateUserPreferences);
 
 router
-  .route('/new_password')
+  .route('/user/:userId/update_password')
   .post(isAuthenticated, userController.updateUserPassword);
 
 module.exports = router;
