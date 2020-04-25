@@ -145,6 +145,7 @@ const Profile = ({ match }) => {
                     >
                       <Tab label="User artwork" {...a11yProps(0)} />
                       <Tab label="Saved artwork" {...a11yProps(1)} />
+                      <Tab label="Purchased artwork" {...a11yProps(2)} />
                     </Tabs>
                   </AppBar>
                   <SwipeableViews
@@ -167,6 +168,15 @@ const Profile = ({ match }) => {
                       ) : (
                         <Typography variant="h6" align="center">
                           You have no saved artwork
+                        </Typography>
+                      )}
+                    </Box>
+                    <Box hidden={state.tabs.value !== 2}>
+                      {state.user.purchasedArtwork.length ? (
+                        <Gallery elements={state.user.purchasedArtwork} />
+                      ) : (
+                        <Typography variant="h6" align="center">
+                          You have no purchased artwork
                         </Typography>
                       )}
                     </Box>

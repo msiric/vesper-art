@@ -32,15 +32,22 @@ import {
   Select,
   Popover,
   Chip,
+  ExpansionPanel,
+  ExpansionPanelDetails,
+  ExpansionPanelSummary,
+  ListItemIcon,
+  ListSubheader,
+  Switch,
   Link as Anchor,
 } from '@material-ui/core';
 import {
   MoreVertRounded as MoreIcon,
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
-  FavoriteBorderRounded as SaveIcon,
-  FavoriteRounded as SavedIcon,
+  CancelRounded as CancelIcon,
+  FavoriteRounded as SaveIcon,
   ShareRounded as ShareIcon,
+  ShoppingBasketRounded as PurchaseIcon,
   LinkRounded as CopyIcon,
   EmailRounded as EmailIcon,
   DoneRounded as CheckIcon,
@@ -54,6 +61,13 @@ const Settings = () => {
   const [state, setState] = useState({
     loading: true,
     user: {},
+    panel: {
+      expanded: '',
+    },
+    switch: {
+      purchases: true,
+      saves: true,
+    },
   });
   const history = useHistory();
 
@@ -66,10 +80,29 @@ const Settings = () => {
         ...state,
         loading: false,
         user: data.user,
+        panel: {
+          expanded: false,
+        },
       });
     } catch (err) {
       setState({ ...state, loading: false });
     }
+  };
+
+  const handlePanelChange = (visible) => (e, isExpanded) => {
+    setState((prevState) => ({
+      ...prevState,
+      panel: { ...prevState.panel, expanded: isExpanded ? visible : '' },
+    }));
+  };
+
+  const [checked, setChecked] = React.useState(['wifi']);
+
+  const handleSwitchToggle = (key, value) => () => {
+    setState((prevState) => ({
+      ...prevState,
+      switch: { ...prevState.switch, [key]: value },
+    }));
   };
 
   useEffect(() => {
@@ -89,31 +122,217 @@ const Settings = () => {
               <Typography variant="h6" align="center">
                 Settings
               </Typography>
-              <p>{state.user.email}</p>
-              {state.user.verified ? (
-                <Chip
-                  icon={<EmailIcon />}
-                  label="Email verified"
-                  clickable
-                  color="primary"
-                  onDelete={() => null}
-                  deleteIcon={<CheckIcon />}
-                />
-              ) : (
-                <Chip
-                  icon={<EmailIcon />}
-                  label="Email not verified"
-                  clickable
-                  color="error"
-                  onDelete={() => null}
-                />
-              )}
-              <p>Change password</p>
-              <p>Show purchases/saved artwork</p>
-              <p>Notifications</p>
-              <p>Payment method</p>
-              <p>Billing information</p>
-              <p>Deactivate account</p>
+              <div className={classes.root}>
+                <ExpansionPanel
+                  expanded={state.panel.expanded === 'panel1'}
+                  onChange={handlePanelChange('panel1')}
+                >
+                  <ExpansionPanelSummary
+                    expandIcon={
+                      state.panel.expanded === 'panel1' ? (
+                        <CancelIcon />
+                      ) : (
+                        <EditIcon />
+                      )
+                    }
+                    aria-controls="panel1bh-content"
+                    id="panel1bh-header"
+                  >
+                    <Typography className={classes.heading}>
+                      Change email address
+                    </Typography>
+                    <Typography className={classes.secondaryHeading}>
+                      {state.user.email}{' '}
+                      {state.user.verified ? (
+                        <Chip
+                          label="Verified"
+                          clickable
+                          color="primary"
+                          onDelete={() => null}
+                          deleteIcon={<CheckIcon />}
+                        />
+                      ) : (
+                        <Chip
+                          label="Not verified"
+                          clickable
+                          color="error"
+                          onDelete={() => null}
+                        />
+                      )}
+                    </Typography>
+                  </ExpansionPanelSummary>
+                  <ExpansionPanelDetails>
+                    <Typography>
+                      Nulla facilisi. Phasellus sollicitudin nulla et quam
+                      mattis feugiat. Aliquam eget maximus est, id dignissim
+                      quam.
+                    </Typography>
+                  </ExpansionPanelDetails>
+                </ExpansionPanel>
+                <ExpansionPanel
+                  expanded={state.panel.expanded === 'panel2'}
+                  onChange={handlePanelChange('panel2')}
+                >
+                  <ExpansionPanelSummary
+                    expandIcon={
+                      state.panel.expanded === 'panel2' ? (
+                        <CancelIcon />
+                      ) : (
+                        <EditIcon />
+                      )
+                    }
+                    aria-controls="panel2bh-content"
+                    id="panel2bh-header"
+                  >
+                    <Typography className={classes.heading}>
+                      Change password
+                    </Typography>
+                    <Typography className={classes.secondaryHeading}>
+                      *********
+                    </Typography>
+                  </ExpansionPanelSummary>
+                  <ExpansionPanelDetails>
+                    <Typography>
+                      Donec placerat, lectus sed mattis semper, neque lectus
+                      feugiat lectus, varius pulvinar diam eros in elit.
+                      Pellentesque convallis laoreet laoreet.
+                    </Typography>
+                  </ExpansionPanelDetails>
+                </ExpansionPanel>
+                <br />
+                <ExpansionPanel
+                  expanded={state.panel.expanded === 'panel3'}
+                  onChange={handlePanelChange('panel3')}
+                >
+                  <ExpansionPanelSummary
+                    expandIcon={
+                      state.panel.expanded === 'panel3' ? (
+                        <CancelIcon />
+                      ) : (
+                        <EditIcon />
+                      )
+                    }
+                    aria-controls="panel3bh-content"
+                    id="panel3bh-header"
+                  >
+                    <Typography className={classes.heading}>
+                      Preferences
+                    </Typography>
+                    <Typography className={classes.secondaryHeading}>
+                      Change purchases and saved artwork visibility
+                    </Typography>
+                  </ExpansionPanelSummary>
+                  <ExpansionPanelDetails>
+                    <List
+                      subheader={
+                        <ListSubheader>Display publicly:</ListSubheader>
+                      }
+                      className={classes.list}
+                    >
+                      <ListItem>
+                        <ListItemIcon>
+                          <PurchaseIcon />
+                        </ListItemIcon>
+                        <ListItemText
+                          id="switch-list-label-purchases"
+                          primary="Purchases"
+                        />
+                        <ListItemSecondaryAction>
+                          <Switch
+                            edge="end"
+                            onChange={handleSwitchToggle(
+                              'purchases',
+                              !state.switch.purchases
+                            )}
+                            checked={state.switch.purchases}
+                            inputProps={{
+                              'aria-labelledby': 'switch-list-label-purchases',
+                            }}
+                          />
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemIcon>
+                          <SaveIcon />
+                        </ListItemIcon>
+                        <ListItemText
+                          id="switch-list-label-saves"
+                          primary="Saved artwork"
+                        />
+                        <ListItemSecondaryAction>
+                          <Switch
+                            edge="end"
+                            onChange={handleSwitchToggle(
+                              'saves',
+                              !state.switch.saves
+                            )}
+                            checked={state.switch.saves}
+                            inputProps={{
+                              'aria-labelledby': 'switch-list-label-saves',
+                            }}
+                          />
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    </List>
+                  </ExpansionPanelDetails>
+                </ExpansionPanel>
+                <br />
+                <ExpansionPanel
+                  expanded={state.panel.expanded === 'panel4'}
+                  onChange={handlePanelChange('panel4')}
+                >
+                  <ExpansionPanelSummary
+                    expandIcon={
+                      state.panel.expanded === 'panel4' ? (
+                        <CancelIcon />
+                      ) : (
+                        <EditIcon />
+                      )
+                    }
+                    aria-controls="panel4bh-content"
+                    id="panel4bh-header"
+                  >
+                    <Typography className={classes.heading}>
+                      Payment and billing
+                    </Typography>
+                    <Typography className={classes.secondaryHeading}>
+                      Change payment method and billing information
+                    </Typography>
+                  </ExpansionPanelSummary>
+                  <ExpansionPanelDetails>
+                    <Typography>
+                      Change payment method and billing information
+                    </Typography>
+                  </ExpansionPanelDetails>
+                </ExpansionPanel>
+                <br />
+                <ExpansionPanel
+                  expanded={state.panel.expanded === 'panel5'}
+                  onChange={handlePanelChange('panel5')}
+                >
+                  <ExpansionPanelSummary
+                    expandIcon={
+                      state.panel.expanded === 'panel5' ? (
+                        <CancelIcon />
+                      ) : (
+                        <EditIcon />
+                      )
+                    }
+                    aria-controls="panel5bh-content"
+                    id="panel4bh-header"
+                  >
+                    <Typography className={classes.heading}>
+                      Account settings
+                    </Typography>
+                    <Typography className={classes.secondaryHeading}>
+                      Deactivate account
+                    </Typography>
+                  </ExpansionPanelSummary>
+                  <ExpansionPanelDetails>
+                    <Typography>Deactivate account</Typography>
+                  </ExpansionPanelDetails>
+                </ExpansionPanel>
+              </div>
             </Paper>
           </Grid>
         ) : (

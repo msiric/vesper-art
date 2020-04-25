@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 const auth = require('../utils/auth');
 const randomString = require('randomstring');
-const axios = require('axios');
 const bcrypt = require('bcrypt-nodejs');
 const crypto = require('crypto');
 const mailer = require('../utils/email');
@@ -31,6 +30,8 @@ const postSignUp = async (req, res, next) => {
       user.photo = user.gravatar();
       user.password = password;
       user.customWork = true;
+      displayPurchases = true;
+      displaySaves = true;
       user.verificationToken = token;
       user.verified = false;
       user.cart = [];
@@ -41,6 +42,7 @@ const postSignUp = async (req, res, next) => {
       user.reviews = 0;
       user.artwork = [];
       user.savedArtwork = [];
+      user.purchasedArtwork = [];
       user.earnings = 0;
       user.incomingFunds = 0;
       user.outgoingFunds = 0;

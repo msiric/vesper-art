@@ -35,6 +35,19 @@ const Settings = makeStyles((muiTheme) => ({
   artwork: {
     height: '75vh',
   },
+  heading: {
+    fontSize: muiTheme.typography.pxToRem(15),
+    flexBasis: '33.33%',
+    flexShrink: 0,
+  },
+  secondaryHeading: {
+    fontSize: muiTheme.typography.pxToRem(15),
+    color: muiTheme.palette.text.secondary,
+  },
+  list: {
+    width: '100%',
+    backgroundColor: muiTheme.palette.background.paper,
+  },
 }));
 
 export default Settings;

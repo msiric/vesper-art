@@ -126,8 +126,9 @@ const updateUserPreferences = async (req, res, next) => {
     const { userId } = req.params;
     const foundUser = await User.findOne({ _id: userId }).session(session);
     if (foundUser) {
-      const { customWork } = req.body;
-      foundUser.customWork = customWork ? true : false;
+      const { purchases, saves } = req.body;
+      foundUser.displayPurchases = purchases ? true : false;
+      foundUser.displaySaves = saves ? true : false;
       await foundUser.save({ session });
       await session.commitTransaction();
       return res
@@ -266,6 +267,8 @@ const deleteUser = async (req, res, next) => {
                   facebookId: null,
                   googleId: null,
                   customWork: false,
+                  displayPurchases: false,
+                  displaySaves: false,
                   verificationToken: null,
                   verified: false,
                   resetPasswordToken: null,
@@ -278,6 +281,7 @@ const deleteUser = async (req, res, next) => {
                   reviews: null,
                   artwork: null,
                   savedArtwork: null,
+                  purchasedArtwork: null,
                   earnings: null,
                   incomingFunds: null,
                   outgoingFunds: null,
@@ -339,6 +343,8 @@ const deleteUser = async (req, res, next) => {
                       facebookId: null,
                       googleId: null,
                       customWork: false,
+                      displayPurchases: false,
+                      displaySaves: false,
                       verificationToken: null,
                       verified: false,
                       resetPasswordToken: null,
@@ -351,6 +357,7 @@ const deleteUser = async (req, res, next) => {
                       reviews: null,
                       artwork: null,
                       savedArtwork: null,
+                      purchasedArtwork: null,
                       earnings: null,
                       incomingFunds: null,
                       outgoingFunds: null,
@@ -427,6 +434,8 @@ const deleteUser = async (req, res, next) => {
                       facebookId: null,
                       googleId: null,
                       customWork: false,
+                      displayPurchases: false,
+                      displaySaves: false,
                       verificationToken: null,
                       verified: false,
                       resetPasswordToken: null,
@@ -439,6 +448,7 @@ const deleteUser = async (req, res, next) => {
                       reviews: null,
                       artwork: null,
                       savedArtwork: null,
+                      purchasedArtwork: null,
                       earnings: null,
                       incomingFunds: null,
                       outgoingFunds: null,
@@ -511,6 +521,8 @@ const deleteUser = async (req, res, next) => {
                     facebookId: null,
                     googleId: null,
                     customWork: false,
+                    displayPurchases: false,
+                    displaySaves: false,
                     verificationToken: null,
                     verified: false,
                     resetPasswordToken: null,
@@ -523,6 +535,7 @@ const deleteUser = async (req, res, next) => {
                     reviews: null,
                     artwork: null,
                     savedArtwork: null,
+                    purchasedArtwork: null,
                     earnings: null,
                     incomingFunds: null,
                     outgoingFunds: null,
