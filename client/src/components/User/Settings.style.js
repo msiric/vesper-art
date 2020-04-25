@@ -48,6 +48,9 @@ const Settings = makeStyles((muiTheme) => ({
     width: '100%',
     backgroundColor: muiTheme.palette.background.paper,
   },
+  column: {
+    flexDirection: 'column',
+  },
 }));
 
 export default Settings;

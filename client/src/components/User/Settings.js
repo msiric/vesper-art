@@ -41,6 +41,7 @@ import {
   Link as Anchor,
 } from '@material-ui/core';
 import {
+  CheckCircleRounded as ConfirmIcon,
   MoreVertRounded as MoreIcon,
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
@@ -63,10 +64,6 @@ const Settings = () => {
     user: {},
     panel: {
       expanded: '',
-    },
-    switch: {
-      purchases: true,
-      saves: true,
     },
   });
   const history = useHistory();
@@ -99,8 +96,12 @@ const Settings = () => {
   const handleSwitchToggle = (key, value) => () => {
     setState((prevState) => ({
       ...prevState,
-      switch: { ...prevState.switch, [key]: value },
+      user: { ...prevState.user, [key]: value },
     }));
+  };
+
+  const handleSavePreferences = () => {
+    console.log('ae');
   };
 
   useEffect(() => {
@@ -220,7 +221,7 @@ const Settings = () => {
                       Change purchases and saved artwork visibility
                     </Typography>
                   </ExpansionPanelSummary>
-                  <ExpansionPanelDetails>
+                  <ExpansionPanelDetails className={classes.column}>
                     <List
                       subheader={
                         <ListSubheader>Display publicly:</ListSubheader>
@@ -239,10 +240,10 @@ const Settings = () => {
                           <Switch
                             edge="end"
                             onChange={handleSwitchToggle(
-                              'purchases',
-                              !state.switch.purchases
+                              'displayPurchases',
+                              !state.user.displayPurchases
                             )}
-                            checked={state.switch.purchases}
+                            checked={state.user.displayPurchases}
                             inputProps={{
                               'aria-labelledby': 'switch-list-label-purchases',
                             }}
@@ -261,10 +262,10 @@ const Settings = () => {
                           <Switch
                             edge="end"
                             onChange={handleSwitchToggle(
-                              'saves',
-                              !state.switch.saves
+                              'displaySaves',
+                              !state.user.displaySaves
                             )}
-                            checked={state.switch.saves}
+                            checked={state.user.displaySaves}
                             inputProps={{
                               'aria-labelledby': 'switch-list-label-saves',
                             }}
@@ -272,6 +273,16 @@ const Settings = () => {
                         </ListItemSecondaryAction>
                       </ListItem>
                     </List>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      startIcon={<ConfirmIcon />}
+                      onClick={handleSavePreferences}
+                      fullWidth
+                    >
+                      Save
+                    </Button>
                   </ExpansionPanelDetails>
                 </ExpansionPanel>
                 <br />
