@@ -96,8 +96,6 @@ const Settings = () => {
     }));
   };
 
-  const [checked, setChecked] = React.useState(['wifi']);
-
   const handleSwitchToggle = (key, value) => () => {
     setState((prevState) => ({
       ...prevState,
