@@ -57,6 +57,28 @@ import { Link, useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
 import SettingsStyles from './Settings.style';
 
+const emailValidation = Yup.object().shape({
+  email: Yup.string()
+    .email('Invalid email')
+    .trim()
+    .required('Email cannot be empty'),
+});
+
+const passwordValidation = Yup.object().shape({
+  current: Yup.string().required('Enter your password'),
+  password: Yup.string()
+    .min(8, 'Password must contain at least 8 characters')
+    .required('Enter new password'),
+  confirmPassword: Yup.string()
+    .required('Confirm your password')
+    .oneOf([Yup.ref('password')], 'Passwords do not match'),
+});
+
+const preferencesValidation = Yup.object().shape({
+  displayPurchases: Yup.boolean().required('Purchases need to have a value'),
+  displaySaves: Yup.boolean().required('Saves need to have a value'),
+});
+
 const Settings = () => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
@@ -161,11 +183,56 @@ const Settings = () => {
                     </Typography>
                   </ExpansionPanelSummary>
                   <ExpansionPanelDetails>
-                    <Typography>
-                      Nulla facilisi. Phasellus sollicitudin nulla et quam
-                      mattis feugiat. Aliquam eget maximus est, id dignissim
-                      quam.
-                    </Typography>
+                    <Formik
+                      initialValues={{
+                        email: '',
+                      }}
+                      enableReinitialize
+                      validationSchema={emailValidation}
+                      onSubmit={async (values, { resetForm }) => {
+                        const { data } = await ax.patch(
+                          `/api/user/${store.user.id}/update_email`,
+                          values
+                        );
+
+                        setState((prevState) => ({
+                          ...prevState,
+                          user: {
+                            ...prevState.user,
+                            email: values.email,
+                            verified: false,
+                          },
+                        }));
+                        resetForm();
+                      }}
+                    >
+                      {({ values, errors, touched }) => (
+                        <Form className={classes.updateEmail}>
+                          <div>
+                            <Field name="email">
+                              {({ field, form: { touched, errors }, meta }) => (
+                                <TextField
+                                  {...field}
+                                  onBlur={() => null}
+                                  label="Update email address"
+                                  type="text"
+                                  helperText={meta.touched && meta.error}
+                                  error={meta.touched && Boolean(meta.error)}
+                                  margin="dense"
+                                  variant="outlined"
+                                  fullWidth
+                                />
+                              )}
+                            </Field>
+                          </div>
+                          <div>
+                            <Button type="submit" color="primary" fullWidth>
+                              Update
+                            </Button>
+                          </div>
+                        </Form>
+                      )}
+                    </Formik>
                   </ExpansionPanelDetails>
                 </ExpansionPanel>
                 <ExpansionPanel
@@ -191,11 +258,79 @@ const Settings = () => {
                     </Typography>
                   </ExpansionPanelSummary>
                   <ExpansionPanelDetails>
-                    <Typography>
-                      Donec placerat, lectus sed mattis semper, neque lectus
-                      feugiat lectus, varius pulvinar diam eros in elit.
-                      Pellentesque convallis laoreet laoreet.
-                    </Typography>
+                    <Formik
+                      initialValues={{
+                        current: '',
+                        password: '',
+                        confirmPassword: '',
+                      }}
+                      enableReinitialize
+                      validationSchema={passwordValidation}
+                      onSubmit={async (values, { resetForm }) => {
+                        const { data } = await ax.patch(
+                          `/api/user/${store.user.id}/update_password`,
+                          values
+                        );
+                        resetForm();
+                      }}
+                    >
+                      {({ values, errors, touched }) => (
+                        <Form className={classes.updatePassword}>
+                          <div>
+                            <Field name="current">
+                              {({ field, form: { touched, errors }, meta }) => (
+                                <TextField
+                                  {...field}
+                                  onBlur={() => null}
+                                  label="Enter current password"
+                                  type="password"
+                                  helperText={meta.touched && meta.error}
+                                  error={meta.touched && Boolean(meta.error)}
+                                  margin="dense"
+                                  variant="outlined"
+                                  fullWidth
+                                />
+                              )}
+                            </Field>
+                            <Field name="password">
+                              {({ field, form: { touched, errors }, meta }) => (
+                                <TextField
+                                  {...field}
+                                  onBlur={() => null}
+                                  label="Enter new password"
+                                  type="password"
+                                  helperText={meta.touched && meta.error}
+                                  error={meta.touched && Boolean(meta.error)}
+                                  margin="dense"
+                                  variant="outlined"
+                                  fullWidth
+                                />
+                              )}
+                            </Field>
+                            <Field name="confirmPassword">
+                              {({ field, form: { touched, errors }, meta }) => (
+                                <TextField
+                                  {...field}
+                                  onBlur={() => null}
+                                  label="Confirm password"
+                                  type="password"
+                                  helperText={meta.touched && meta.error}
+                                  error={meta.touched && Boolean(meta.error)}
+                                  margin="dense"
+                                  variant="outlined"
+                                  fullWidth
+                                />
+                              )}
+                            </Field>
+                          </div>
+                          <div>
+                            <Button type="submit" color="primary" fullWidth>
+                              Update
+                            </Button>
+                          </div>
+                        </Form>
+                      )}
+                    </Formik>
                   </ExpansionPanelDetails>
                 </ExpansionPanel>
                 <br />

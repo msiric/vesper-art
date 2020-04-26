@@ -14,24 +14,25 @@ const postSignUp = async (req, res, next) => {
   session.startTransaction();
   try {
     const { email, username, password, confirm } = req.body;
-    const protocol = req.protocol;
-    const host = req.get('host');
-    const token = randomString.generate();
-    const link = `${protocol}://${host}/verify_token/${token}`;
     const foundUser = await User.findOne({
       $or: [{ email: email }, { name: username }],
     }).session(session);
     if (foundUser) {
       throw createError(400, 'Account with that email/username already exists');
     } else {
+      const protocol = req.protocol;
+      const host = req.get('host');
+      const token = randomString.generate();
+      const link = `${protocol}://${host}/verify_token/${token}`;
+
       const user = new User();
       user.name = username;
       user.email = email;
       user.photo = user.gravatar();
       user.password = password;
       user.customWork = true;
-      displayPurchases = true;
-      displaySaves = true;
+      user.displayPurchases = true;
+      user.displaySaves = true;
       user.verificationToken = token;
       user.verified = false;
       user.cart = [];
@@ -178,6 +179,7 @@ const verifyRegisterToken = async (req, res, next) => {
       throw createError(400, 'Verification token could not be found');
     }
   } catch (err) {
+    console.log(err);
     await session.abortTransaction();
     next(err, res);
   } finally {

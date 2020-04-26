@@ -93,7 +93,7 @@ const artworkMediaUpload = multer({
           cb(null, filePath);
         },
         transform: function (req, file, cb) {
-          cb(null, sharp().resize(500, null));
+          cb(null, sharp().resize({ width: 500 }));
         },
       },
     ],
@@ -138,7 +138,7 @@ const artworkMediaEdit = multer({
           cb(null, filePath);
         },
         transform: function (req, file, cb) {
-          cb(null, sharp().resize(300, null));
+          cb(null, sharp().resize({ width: 500 }));
         },
       },
     ],

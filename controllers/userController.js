@@ -4,6 +4,9 @@ const Order = require('../models/order');
 const Version = require('../models/version');
 const aws = require('aws-sdk');
 const User = require('../models/user');
+const randomString = require('randomstring');
+const mailer = require('../utils/email');
+const config = require('../config/mailer');
 const createError = require('http-errors');
 
 const getUserProfile = async (req, res, next) => {
@@ -51,26 +54,39 @@ const getUserSettings = async (req, res, next) => {
 };
 
 // needs transaction (done)
-const updateUserProfile = async (req, res, next) => {
+const updateUserEmail = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const { userId } = req.params;
-    const { username, email, description } = req.body;
+    const { email } = req.body;
     const foundUser = await User.findOne({
-      $and: [{ _id: userId }, { active: true }],
+      $and: [{ email: email }, { active: true }],
     }).session(session);
     if (foundUser) {
-      if (username) foundUser.name = username;
-      if (email) foundUser.email = email;
-      if (description) foundUser.description = description;
-      await foundUser.save({ session });
-      await session.commitTransaction();
-      return res
-        .status(200)
-        .json({ message: 'User details successfully updated' });
+      throw createError(400, 'User with entered email already exists');
     } else {
-      throw createError(400, 'User not found');
+      const protocol = req.protocol;
+      const host = req.get('host');
+      const token = randomString.generate();
+      const link = `${protocol}://${host}/verify_token/${token}`;
+      await User.updateOne(
+        {
+          $and: [{ _id: userId }, { active: true }],
+        },
+        { email: email, verificationToken: token, verified: false }
+      ).session(session);
+      await mailer.sendEmail(
+        config.app,
+        email,
+        'Please confirm your email',
+        `Hello,
+        Please click on the link to verify your email:
+
+        <a href=${link}>Click here to verify</a>`
+      );
+      await session.commitTransaction();
+      return res.status(200).json({ message: 'Email successfully updated' });
     }
   } catch (err) {
     await session.abortTransaction();
@@ -88,11 +104,11 @@ const updateUserPassword = async (req, res, next) => {
     const { userId } = req.params;
     const foundUser = await User.findOne({ _id: userId }).session(session);
     if (foundUser) {
-      const { current, password, confirm } = req.body;
-      if (current && change && confirm) {
+      const { current, password, confirmPassword } = req.body;
+      if (current && password && confirmPassword) {
         if (foundUser.comparePassword(current)) {
-          if (change === confirm) {
-            foundUser.password = change;
+          if (password === confirmPassword) {
+            foundUser.password = password;
             await foundUser.save({ session });
             await session.commitTransaction();
             return res
@@ -571,7 +587,7 @@ const deleteUser = async (req, res, next) => {
 module.exports = {
   getUserProfile,
   getUserSettings,
-  updateUserProfile,
+  updateUserEmail,
   updateUserPassword,
   updateUserPreferences,
   deleteUser,
