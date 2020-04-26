@@ -7,6 +7,7 @@ const User = require('../models/user');
 const randomString = require('randomstring');
 const mailer = require('../utils/email');
 const config = require('../config/mailer');
+const auth = require('../utils/auth');
 const createError = require('http-errors');
 
 const getUserProfile = async (req, res, next) => {
@@ -142,9 +143,9 @@ const updateUserPreferences = async (req, res, next) => {
     const { userId } = req.params;
     const foundUser = await User.findOne({ _id: userId }).session(session);
     if (foundUser) {
-      const { purchases, saves } = req.body;
-      foundUser.displayPurchases = purchases ? true : false;
-      foundUser.displaySaves = saves ? true : false;
+      const { displayPurchases, displaySaves } = req.body;
+      foundUser.displayPurchases = displayPurchases;
+      foundUser.displaySaves = displaySaves;
       await foundUser.save({ session });
       await session.commitTransaction();
       return res
@@ -228,7 +229,7 @@ const updateUserPreferences = async (req, res, next) => {
 // needs testing (better way to update already found user)
 // not tested
 // needs transaction (not tested)
-const deleteUser = async (req, res, next) => {
+const deactivateUser = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -244,14 +245,13 @@ const deleteUser = async (req, res, next) => {
         .populate('versions')
         .session(session);
       if (foundArtwork) {
-        foundArtwork.forEach(async function (artwork) {
+        for (let artwork of foundArtwork) {
           const foundOrder = await Order.find({
             details: { $elemMatch: { artwork: artwork._id } },
             details: { $elemMatch: { version: artwork.current._id } },
           })
             .deepPopulate('details.artwork details.version')
             .session(session);
-          console.log('order', foundOrder);
           if (foundOrder.length) {
             await Artwork.updateOne(
               {
@@ -276,7 +276,8 @@ const deleteUser = async (req, res, next) => {
               { _id: foundUser._id },
               {
                 $set: {
-                  name: 'Deleted User',
+                  name: null,
+                  email: null,
                   password: null,
                   photo: foundUser.gravatar(),
                   description: null,
@@ -312,7 +313,6 @@ const deleteUser = async (req, res, next) => {
               res.status(200).json('/');
             });
           } else {
-            console.log('length', artwork.versions.length);
             if (artwork.versions.length) {
               let usedContent = false;
               artwork.versions.map(function (version) {
@@ -323,7 +323,6 @@ const deleteUser = async (req, res, next) => {
                   usedContent = true;
                 }
               });
-              console.log('used content', usedContent);
               if (usedContent) {
                 await Version.remove({
                   _id: artwork.current._id,
@@ -352,7 +351,8 @@ const deleteUser = async (req, res, next) => {
                   { _id: foundUser._id },
                   {
                     $set: {
-                      name: 'Deleted User',
+                      name: null,
+                      email: null,
                       password: null,
                       photo: foundUser.gravatar(),
                       description: null,
@@ -443,7 +443,8 @@ const deleteUser = async (req, res, next) => {
                   { _id: foundUser._id },
                   {
                     $set: {
-                      name: 'Deleted User',
+                      name: null,
+                      email: null,
                       password: null,
                       photo: foundUser.gravatar(),
                       description: null,
@@ -530,7 +531,8 @@ const deleteUser = async (req, res, next) => {
                 { _id: foundUser._id },
                 {
                   $set: {
-                    name: 'Deleted User',
+                    name: null,
+                    email: null,
                     password: null,
                     photo: foundUser.gravatar(),
                     description: null,
@@ -560,15 +562,15 @@ const deleteUser = async (req, res, next) => {
                   },
                 }
               ).session(session);
-
-              await session.commitTransaction();
-              req.logout();
-              req.session.destroy(function (err) {
-                res.status(200).json('/');
+              auth.sendRefreshToken(res, '');
+              res.json({
+                accessToken: '',
+                user: '',
               });
+              await session.commitTransaction();
             }
           }
-        });
+        }
       } else {
         throw createError(400, 'Artwork not found');
       }
@@ -590,5 +592,5 @@ module.exports = {
   updateUserEmail,
   updateUserPassword,
   updateUserPreferences,
-  deleteUser,
+  deactivateUser,
 };

@@ -2,10 +2,11 @@ const router = require('express').Router();
 const { isAuthenticated } = require('../../../utils/helpers');
 const userController = require('../../../controllers/userController');
 
+router.route('/user/:userName').get(userController.getUserProfile);
+
 router
-  .route('/user/:userName')
-  .get(userController.getUserProfile)
-  .delete(isAuthenticated, userController.deleteUser);
+  .route('/user/:userId')
+  .delete(isAuthenticated, userController.deactivateUser);
 
 router
   .route('/user/:userId/settings')

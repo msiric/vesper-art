@@ -51,25 +51,78 @@ import SwipeableViews from 'react-swipeable-views';
 import ax from '../../axios.config';
 import ProfileStyles from './Profile.style';
 
+const userPhotoConfig = {
+  size: 500 * 1024,
+  format: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
+};
+
+const userValidation = Yup.object().shape({
+  userPhoto: Yup.mixed()
+    .test(
+      'fileSize',
+      `File needs to be less than ${userPhotoConfig.size}MB`,
+      (value) => value[0] && value[0].size <= userPhotoConfig.size
+    )
+    .test(
+      'fileType',
+      `File needs to be in one of the following formats: ${userPhotoConfig.format}`,
+      (value) => value[0] && userPhotoConfig.format.includes(value[0].type)
+    ),
+  userDescription: Yup.string().trim(),
+});
+
 const Profile = ({ match }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
     user: {},
+    modal: { open: false },
     tabs: { value: 0 },
   });
   const history = useHistory();
+
+  const {
+    isSubmitting,
+    resetForm,
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    touched,
+    values,
+    errors,
+  } = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      userPhoto: state.user.photo,
+      userDescription: state.user.description,
+    },
+    validationSchema: userValidation,
+    async onSubmit(values) {
+      try {
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
 
   const classes = ProfileStyles();
 
   const fetchUser = async () => {
     try {
       const { data } = await ax.get(`/api/user/${match.params.id}`);
-      setState({
-        ...state,
-        loading: false,
-        user: { ...data.user, artwork: data.artwork },
-      });
+      if (store.user.id === data.user._id) {
+        setState({
+          ...state,
+          loading: false,
+          user: { ...data.user, editable: true, artwork: data.artwork },
+        });
+      } else {
+        setState({
+          ...state,
+          loading: false,
+          user: { ...data.user, editable: false, artwork: data.artwork },
+        });
+      }
     } catch (err) {
       setState({ ...state, loading: false });
     }
@@ -90,6 +143,27 @@ const Profile = ({ match }) => {
 
   const handleChangeIndex = (index) => {
     setState((prevState) => setState({ ...prevState, tabs: { value: index } }));
+  };
+
+  const handleModalOpen = () => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: {
+        ...prevState.modal,
+        open: true,
+      },
+    }));
+  };
+
+  const handleModalClose = () => {
+    resetForm();
+    setState((prevState) => ({
+      ...prevState,
+      modal: {
+        ...prevState.modal,
+        open: false,
+      },
+    }));
   };
 
   useEffect(() => {
@@ -129,65 +203,205 @@ const Profile = ({ match }) => {
                     </Typography>
                   </CardContent>
                 </Card>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  startIcon={<EditIcon />}
+                  onClick={handleModalOpen}
+                  fullWidth
+                >
+                  Edit info
+                </Button>
               </Paper>
             </Grid>
             <Grid item xs={12} md={8} className={classes.grid}>
-              <Paper className={classes.artwork} variant="outlined">
-                <div className={classes.tabs}>
-                  <AppBar position="static" color="default">
-                    <Tabs
-                      value={state.tabs.value}
-                      onChange={handleTabsChange}
-                      indicatorColor="primary"
-                      textColor="primary"
-                      variant="fullWidth"
-                      aria-label="full width tabs example"
+              {state.user.editable ? (
+                <Paper className={classes.artwork} variant="outlined">
+                  <div className={classes.tabs}>
+                    <AppBar position="static" color="default">
+                      <Tabs
+                        value={state.tabs.value}
+                        onChange={handleTabsChange}
+                        indicatorColor="primary"
+                        textColor="primary"
+                        variant="fullWidth"
+                        aria-label="full width tabs example"
+                      >
+                        <Tab label="User artwork" {...a11yProps(0)} />
+                        <Tab label="Saved artwork" {...a11yProps(1)} />
+                        <Tab label="Purchased artwork" {...a11yProps(2)} />
+                      </Tabs>
+                    </AppBar>
+                    <SwipeableViews
+                      axis="x"
+                      index={state.tabs.value}
+                      onChangeIndex={handleChangeIndex}
                     >
-                      <Tab label="User artwork" {...a11yProps(0)} />
-                      <Tab label="Saved artwork" {...a11yProps(1)} />
-                      <Tab label="Purchased artwork" {...a11yProps(2)} />
-                    </Tabs>
-                  </AppBar>
-                  <SwipeableViews
-                    axis="x"
-                    index={state.tabs.value}
-                    onChangeIndex={handleChangeIndex}
-                  >
-                    <Box hidden={state.tabs.value !== 0}>
-                      {state.user.artwork.length ? (
-                        <Gallery elements={state.user.artwork} />
-                      ) : (
-                        <Typography variant="h6" align="center">
-                          This user has no artwork to display
-                        </Typography>
-                      )}
-                    </Box>
-                    <Box hidden={state.tabs.value !== 1}>
-                      {state.user.savedArtwork.length ? (
-                        <Gallery elements={state.user.savedArtwork} />
-                      ) : (
-                        <Typography variant="h6" align="center">
-                          You have no saved artwork
-                        </Typography>
-                      )}
-                    </Box>
-                    <Box hidden={state.tabs.value !== 2}>
-                      {state.user.purchasedArtwork.length ? (
-                        <Gallery elements={state.user.purchasedArtwork} />
-                      ) : (
-                        <Typography variant="h6" align="center">
-                          You have no purchased artwork
-                        </Typography>
-                      )}
-                    </Box>
-                  </SwipeableViews>
-                </div>
-              </Paper>
+                      <Box hidden={state.tabs.value !== 0}>
+                        {state.user.artwork.length ? (
+                          <Gallery elements={state.user.artwork} />
+                        ) : (
+                          <Typography variant="h6" align="center">
+                            You have no artwork to display
+                          </Typography>
+                        )}
+                      </Box>
+                      <Box hidden={state.tabs.value !== 1}>
+                        {state.user.savedArtwork.length ? (
+                          <Gallery elements={state.user.savedArtwork} />
+                        ) : (
+                          <Typography variant="h6" align="center">
+                            You have no saved artwork
+                          </Typography>
+                        )}
+                      </Box>
+                      <Box hidden={state.tabs.value !== 2}>
+                        {state.user.purchasedArtwork.length ? (
+                          <Gallery elements={state.user.purchasedArtwork} />
+                        ) : (
+                          <Typography variant="h6" align="center">
+                            You have no purchased artwork
+                          </Typography>
+                        )}
+                      </Box>
+                    </SwipeableViews>
+                  </div>
+                </Paper>
+              ) : (
+                <Paper className={classes.artwork} variant="outlined">
+                  <div className={classes.tabs}>
+                    <AppBar position="static" color="default">
+                      <Tabs
+                        value={state.tabs.value}
+                        onChange={handleTabsChange}
+                        indicatorColor="primary"
+                        textColor="primary"
+                        variant="fullWidth"
+                        aria-label="full width tabs example"
+                      >
+                        <Tab label="User artwork" {...a11yProps(0)} />
+                        {state.user.displaySaves ? (
+                          <Tab label="Saved artwork" {...a11yProps(1)} />
+                        ) : null}
+                        {state.user.displayPurchases ? (
+                          <Tab label="Purchased artwork" {...a11yProps(2)} />
+                        ) : null}
+                      </Tabs>
+                    </AppBar>
+                    <SwipeableViews
+                      axis="x"
+                      index={state.tabs.value}
+                      onChangeIndex={handleChangeIndex}
+                    >
+                      <Box hidden={state.tabs.value !== 0}>
+                        {state.user.artwork.length ? (
+                          <Gallery elements={state.user.artwork} />
+                        ) : (
+                          <Typography variant="h6" align="center">
+                            This user has no artwork to display
+                          </Typography>
+                        )}
+                      </Box>
+                      {state.user.displaySaves ? (
+                        <Box hidden={state.tabs.value !== 1}>
+                          {state.user.savedArtwork.length ? (
+                            <Gallery elements={state.user.savedArtwork} />
+                          ) : (
+                            <Typography variant="h6" align="center">
+                              This user has no saved artwork
+                            </Typography>
+                          )}
+                        </Box>
+                      ) : null}
+                      {state.user.displayPurchases ? (
+                        <Box hidden={state.tabs.value !== 2}>
+                          {state.user.purchasedArtwork.length ? (
+                            <Gallery elements={state.user.purchasedArtwork} />
+                          ) : (
+                            <Typography variant="h6" align="center">
+                              This user has no purchased artwork
+                            </Typography>
+                          )}
+                        </Box>
+                      ) : null}
+                    </SwipeableViews>
+                  </div>
+                </Paper>
+              )}
             </Grid>
           </>
         ) : (
           history.push('/')
         )}
+        <div>
+          <Modal
+            open={state.modal.open}
+            onClose={handleModalClose}
+            aria-labelledby="Edit info"
+            className={classes.modal}
+          >
+            <form className={classes.userForm} onSubmit={handleSubmit}>
+              <div className={classes.userContainer}>
+                <Card className={classes.card}>
+                  <Typography variant="h6" align="center">
+                    Edit info
+                  </Typography>
+                  <CardContent>
+                    <SelectInput
+                      name="licenseType"
+                      label="License type"
+                      value={values.licenseType}
+                      className={classes.license}
+                      disabled
+                      options={[
+                        {
+                          value: state.license,
+                          text: state.license,
+                        },
+                      ]}
+                    />
+                    <TextField
+                      name="userDescription"
+                      label="Description"
+                      type="text"
+                      value={values.userDescription}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={
+                        touched.userDescription ? errors.userDescription : ''
+                      }
+                      error={
+                        touched.userDescription &&
+                        Boolean(errors.userDescription)
+                      }
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  </CardContent>
+                  <CardActions className={classes.actions}>
+                    <Button
+                      type="submit"
+                      color="primary"
+                      disabled={isSubmitting}
+                    >
+                      Update
+                    </Button>
+                    <Button
+                      type="button"
+                      color="error"
+                      onClick={handleModalClose}
+                    >
+                      Close
+                    </Button>
+                  </CardActions>
+                </Card>
+              </div>
+            </form>
+          </Modal>
+        </div>
       </Grid>
     </Container>
   );

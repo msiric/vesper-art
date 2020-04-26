@@ -52,6 +52,7 @@ import {
   LinkRounded as CopyIcon,
   EmailRounded as EmailIcon,
   DoneRounded as CheckIcon,
+  RemoveCircleRounded as DeactivateIcon,
 } from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
@@ -115,15 +116,8 @@ const Settings = () => {
     }));
   };
 
-  const handleSwitchToggle = (key, value) => () => {
-    setState((prevState) => ({
-      ...prevState,
-      user: { ...prevState.user, [key]: value },
-    }));
-  };
-
-  const handleSavePreferences = () => {
-    console.log('ae');
+  const handleDeactivateUser = async () => {
+    await ax.delete(`/api/user/${store.user.id}`);
   };
 
   useEffect(() => {
@@ -363,61 +357,117 @@ const Settings = () => {
                       }
                       className={classes.list}
                     >
-                      <ListItem>
-                        <ListItemIcon>
-                          <PurchaseIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                          id="switch-list-label-purchases"
-                          primary="Purchases"
-                        />
-                        <ListItemSecondaryAction>
-                          <Switch
-                            edge="end"
-                            onChange={handleSwitchToggle(
-                              'displayPurchases',
-                              !state.user.displayPurchases
-                            )}
-                            checked={state.user.displayPurchases}
-                            inputProps={{
-                              'aria-labelledby': 'switch-list-label-purchases',
-                            }}
-                          />
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                      <ListItem>
-                        <ListItemIcon>
-                          <SaveIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                          id="switch-list-label-saves"
-                          primary="Saved artwork"
-                        />
-                        <ListItemSecondaryAction>
-                          <Switch
-                            edge="end"
-                            onChange={handleSwitchToggle(
-                              'displaySaves',
-                              !state.user.displaySaves
-                            )}
-                            checked={state.user.displaySaves}
-                            inputProps={{
-                              'aria-labelledby': 'switch-list-label-saves',
-                            }}
-                          />
-                        </ListItemSecondaryAction>
-                      </ListItem>
+                      <Formik
+                        initialValues={{
+                          displayPurchases: state.user.displayPurchases,
+                          displaySaves: state.user.displaySaves,
+                        }}
+                        enableReinitialize
+                        validationSchema={preferencesValidation}
+                        onSubmit={async (values, { resetForm }) => {
+                          await ax.patch(
+                            `/api/user/${store.user.id}/preferences`,
+                            values
+                          );
+                          setState((prevState) => ({
+                            ...prevState,
+                            user: {
+                              ...prevState.user,
+                              displayPurchases: values.displayPurchases,
+                              displaySaves: values.displaySaves,
+                            },
+                          }));
+                          resetForm();
+                        }}
+                      >
+                        {({ values, errors, touched }) => (
+                          <Form className={classes.updatePassword}>
+                            <div>
+                              <ListItem>
+                                <ListItemIcon>
+                                  <PurchaseIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                  id="switch-list-label-purchases"
+                                  primary="Purchases"
+                                />
+                                <ListItemSecondaryAction>
+                                  <Field name="displayPurchases">
+                                    {({
+                                      field,
+                                      form: { setFieldValue, touched, errors },
+                                      meta,
+                                    }) => (
+                                      <Switch
+                                        {...field}
+                                        edge="end"
+                                        onChange={(e) =>
+                                          setFieldValue(
+                                            'displayPurchases',
+                                            e.target.checked
+                                          )
+                                        }
+                                        checked={values.displayPurchases}
+                                        inputProps={{
+                                          'aria-labelledby':
+                                            'switch-list-label-purchases',
+                                        }}
+                                      />
+                                    )}
+                                  </Field>
+                                </ListItemSecondaryAction>
+                              </ListItem>
+                              <ListItem>
+                                <ListItemIcon>
+                                  <SaveIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                  id="switch-list-label-saves"
+                                  primary="Saved artwork"
+                                />
+                                <ListItemSecondaryAction>
+                                  <Field name="displaySaves">
+                                    {({
+                                      field,
+                                      form: { setFieldValue, touched, errors },
+                                      meta,
+                                    }) => (
+                                      <Switch
+                                        {...field}
+                                        edge="end"
+                                        onChange={(e) =>
+                                          setFieldValue(
+                                            'displaySaves',
+                                            e.target.checked
+                                          )
+                                        }
+                                        checked={values.displaySaves}
+                                        inputProps={{
+                                          'aria-labelledby':
+                                            'switch-list-label-saves',
+                                        }}
+                                      />
+                                    )}
+                                  </Field>
+                                </ListItemSecondaryAction>
+                              </ListItem>
+                            </div>
+                            <div>
+                              <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                className={classes.button}
+                                startIcon={<ConfirmIcon />}
+                                fullWidth
+                              >
+                                Update
+                              </Button>
+                            </div>
+                          </Form>
+                        )}
+                      </Formik>
                     </List>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      className={classes.button}
-                      startIcon={<ConfirmIcon />}
-                      onClick={handleSavePreferences}
-                      fullWidth
-                    >
-                      Save
-                    </Button>
                   </ExpansionPanelDetails>
                 </ExpansionPanel>
                 <br />
@@ -474,6 +524,17 @@ const Settings = () => {
                   </ExpansionPanelSummary>
                   <ExpansionPanelDetails>
                     <Typography>Deactivate account</Typography>
+                    <Button
+                      type="button"
+                      variant="contained"
+                      color="error"
+                      className={classes.button}
+                      startIcon={<DeactivateIcon />}
+                      onClick={handleDeactivateUser}
+                      fullWidth
+                    >
+                      Deactivate
+                    </Button>
                   </ExpansionPanelDetails>
                 </ExpansionPanel>
               </div>
