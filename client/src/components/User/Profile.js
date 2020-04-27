@@ -49,6 +49,7 @@ import {
 } from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
+import formatDate from '../../utils/formatDate';
 import ax from '../../axios.config';
 import ProfileStyles from './Profile.style';
 
@@ -211,6 +212,13 @@ const Profile = ({ match }) => {
                     >
                       {state.user.description ||
                         "This user doesn't have much to say about themself"}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      {`Joined ${formatDate(state.user.created, 'month')}`}
                     </Typography>
                   </CardContent>
                 </Card>

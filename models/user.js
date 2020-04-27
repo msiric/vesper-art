@@ -51,6 +51,7 @@ const UserSchema = new Schema({
   incomingFunds: Number,
   outgoingFunds: Number,
   active: Boolean,
+  created: { type: Date, default: Date.now },
 });
 
 UserSchema.pre('save', function (next) {
