@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import SelectInput from '../../shared/SelectInput/SelectInput';
 import { useFormik, Formik, Form, Field } from 'formik';
+import UploadInput from '../../shared/UploadInput/UploadInput';
 import * as Yup from 'yup';
 import Gallery from '../Home/Gallery';
 import {
@@ -83,6 +84,7 @@ const Profile = ({ match }) => {
 
   const {
     isSubmitting,
+    setFieldValue,
     resetForm,
     handleSubmit,
     handleChange,
@@ -99,6 +101,15 @@ const Profile = ({ match }) => {
     validationSchema: userValidation,
     async onSubmit(values) {
       try {
+        if (values.userPhoto.length) {
+          const formData = new FormData();
+          formData.append('userPhoto', values.userPhoto[0]);
+          const {
+            data: { userPhoto },
+          } = await ax.post('/api/profile_image_upload', formData);
+          values.userPhoto = userPhoto;
+        }
+        await ax.patch(`/api/user/${store.user.id}`, values);
       } catch (err) {
         console.log(err);
       }
@@ -349,18 +360,9 @@ const Profile = ({ match }) => {
                     Edit info
                   </Typography>
                   <CardContent>
-                    <SelectInput
-                      name="licenseType"
-                      label="License type"
-                      value={values.licenseType}
-                      className={classes.license}
-                      disabled
-                      options={[
-                        {
-                          value: state.license,
-                          text: state.license,
-                        },
-                      ]}
+                    <UploadInput
+                      name="userPhoto"
+                      setFieldValue={setFieldValue}
                     />
                     <TextField
                       name="userDescription"

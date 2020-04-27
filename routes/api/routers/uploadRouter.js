@@ -7,7 +7,7 @@ const profilePhotoUpload = upload.profilePhotoUpload;
 const artworkMediaUpload = upload.artworkMediaUpload;
 const artworkMediaEdit = upload.artworkMediaEdit;
 
-const profilePhotoSingleUpload = profilePhotoUpload.single('image');
+const profilePhotoSingleUpload = profilePhotoUpload.single('userPhoto');
 const artworkMediaSingleUpload = artworkMediaUpload.single('artworkMedia');
 const artworkMediaSingleEdit = artworkMediaEdit.single('artworkMedia');
 

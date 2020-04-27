@@ -6,6 +6,7 @@ router.route('/user/:userName').get(userController.getUserProfile);
 
 router
   .route('/user/:userId')
+  .patch(isAuthenticated, userController.updateUserProfile)
   .delete(isAuthenticated, userController.deactivateUser);
 
 router

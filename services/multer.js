@@ -41,7 +41,7 @@ const profilePhotoUpload = multer({
   storage: multerS3({
     s3: s3,
     bucket: 'vesper-testing',
-    limits: { fileSize: 2 * 1024 * 1024 },
+    limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
     key: function (req, file, cb) {
       const token = req.headers['authorization'].split(' ')[1];
@@ -60,7 +60,7 @@ const artworkMediaUpload = multer({
   storage: multerS3({
     s3: s3,
     bucket: 'vesper-testing',
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: { fileSize: 10 * 1024 * 1024 },
     acl: 'public-read',
     shouldTransform: function (req, file, cb) {
       cb(null, true);
@@ -105,7 +105,7 @@ const artworkMediaEdit = multer({
   storage: multerS3({
     s3: s3,
     bucket: 'vesper-testing',
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: { fileSize: 10 * 1024 * 1024 },
     acl: 'public-read',
     shouldTransform: function (req, file, cb) {
       cb(null, true);

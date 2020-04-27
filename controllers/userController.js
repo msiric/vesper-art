@@ -15,7 +15,9 @@ const getUserProfile = async (req, res, next) => {
     const { userName } = req.params;
     const foundUser = await User.findOne({
       $and: [{ name: userName }, { active: true }],
-    });
+    })
+      .populate('purchasedArtwork')
+      .deepPopulate('savedArtwork.current');
     // }).deepPopulate(
     //   'artwork.current',
     //   '_id cover created title price type license availability description use commercial'
@@ -35,6 +37,32 @@ const getUserProfile = async (req, res, next) => {
     }
   } catch (err) {
     next(err, res);
+  }
+};
+
+const updateUserProfile = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const { userId } = req.params;
+    const { userPhoto, userDescription } = req.body;
+    const foundUser = await User.findOne({
+      $and: [{ _id: userId }, { active: true }],
+    });
+    if (foundUser) {
+      if (userPhoto) foundUser.photo = userPhoto;
+      if (userDescription) foundUser.description = userDescription;
+      await foundUser.save({ session });
+      await session.commitTransaction();
+      return res.status(200).json({ message: 'User details updated' });
+    } else {
+      throw createError(400, 'User not found');
+    }
+  } catch (err) {
+    await session.abortTransaction();
+    next(err, res);
+  } finally {
+    session.endSession();
   }
 };
 
@@ -588,6 +616,7 @@ const deactivateUser = async (req, res, next) => {
 
 module.exports = {
   getUserProfile,
+  updateUserProfile,
   getUserSettings,
   updateUserEmail,
   updateUserPassword,
