@@ -23,6 +23,7 @@ const UserSchema = new Schema({
   password: String,
   photo: String,
   description: String,
+  country: String,
   facebookId: String,
   googleId: String,
   customWork: Boolean,

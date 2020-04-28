@@ -47,6 +47,18 @@ import {
   ShareRounded as ShareIcon,
   LinkRounded as CopyIcon,
 } from '@material-ui/icons';
+import {
+  FacebookShareButton,
+  WhatsappShareButton,
+  RedditShareButton,
+  TwitterShareButton,
+  FacebookIcon,
+  WhatsappIcon,
+  RedditIcon,
+  TwitterIcon,
+} from 'react-share';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { withSnackbar } from 'notistack';
 import { Link, useHistory } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
 import formatDate from '../../utils/formatDate';
@@ -73,7 +85,7 @@ const userValidation = Yup.object().shape({
   userDescription: Yup.string().trim(),
 });
 
-const Profile = ({ match }) => {
+const Profile = ({ match, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
@@ -81,6 +93,8 @@ const Profile = ({ match }) => {
     modal: { open: false },
     tabs: { value: 0 },
   });
+  const url = window.location;
+  const title = store.main.brand;
   const history = useHistory();
 
   const {
@@ -233,6 +247,80 @@ const Profile = ({ match }) => {
                 >
                   Edit info
                 </Button>
+                <br />
+                <br />
+                <Card className={classes.user}>
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      Share this artist
+                    </Typography>
+                    <div className={classes.shareContainer}>
+                      <div className={classes.socialContainer}>
+                        <div className={classes.copyButton}>
+                          <CopyToClipboard
+                            text={url}
+                            onCopy={() =>
+                              enqueueSnackbar('Link copied', {
+                                variant: 'success',
+                                autoHideDuration: 1000,
+                                anchorOrigin: {
+                                  vertical: 'top',
+                                  horizontal: 'center',
+                                },
+                              })
+                            }
+                          >
+                            <CopyIcon />
+                          </CopyToClipboard>
+                        </div>
+                        Copy link
+                      </div>
+                      <div className={classes.socialContainer}>
+                        <FacebookShareButton
+                          url={url}
+                          quote={title}
+                          className={classes.socialButton}
+                        >
+                          <FacebookIcon size={32} round />
+                        </FacebookShareButton>
+                        Facebook
+                      </div>
+                      <div className={classes.socialContainer}>
+                        <TwitterShareButton
+                          url={url}
+                          title={title}
+                          className={classes.socialButton}
+                        >
+                          <TwitterIcon size={32} round />
+                        </TwitterShareButton>
+                        Twitter
+                      </div>
+                      <div className={classes.socialContainer}>
+                        <RedditShareButton
+                          url={url}
+                          title={title}
+                          windowWidth={660}
+                          windowHeight={460}
+                          className={classes.socialButton}
+                        >
+                          <RedditIcon size={32} round />
+                        </RedditShareButton>
+                        Reddit
+                      </div>
+                      <div className={classes.socialContainer}>
+                        <WhatsappShareButton
+                          url={url}
+                          title={title}
+                          separator=":: "
+                          className={classes.socialButton}
+                        >
+                          <WhatsappIcon size={32} round />
+                        </WhatsappShareButton>
+                        WhatsApp
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </Paper>
             </Grid>
             <Grid item xs={12} md={8} className={classes.grid}>
@@ -417,4 +505,4 @@ const Profile = ({ match }) => {
   );
 };
 
-export default Profile;
+export default withSnackbar(Profile);

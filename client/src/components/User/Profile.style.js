@@ -49,6 +49,37 @@ const Profile = makeStyles((muiTheme) => ({
   artwork: {
     height: '75vh',
   },
+  shareContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  socialContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  copyButton: {
+    display: 'flex',
+    borderRadius: '50%',
+    backgroundColor: 'white',
+    height: 31,
+    width: 31,
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    border: '1px solid',
+    margin: '5px 10px',
+  },
+  socialButton: {
+    display: 'flex',
+    margin: '5px 10px',
+  },
+  link: {
+    textDecoration: 'none',
+  },
 }));
 
 export default Profile;

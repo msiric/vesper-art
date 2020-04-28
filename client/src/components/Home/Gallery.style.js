@@ -30,6 +30,7 @@ const GalleryStyles = makeStyles((muiTheme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
+    border: '1px solid',
   },
   socialButton: {
     display: 'flex',
