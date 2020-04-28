@@ -171,8 +171,7 @@ const updateUserPreferences = async (req, res, next) => {
     const { userId } = req.params;
     const foundUser = await User.findOne({ _id: userId }).session(session);
     if (foundUser) {
-      const { displayPurchases, displaySaves } = req.body;
-      foundUser.displayPurchases = displayPurchases;
+      const { displaySaves } = req.body;
       foundUser.displaySaves = displaySaves;
       await foundUser.save({ session });
       await session.commitTransaction();
@@ -312,7 +311,6 @@ const deactivateUser = async (req, res, next) => {
                   facebookId: null,
                   googleId: null,
                   customWork: false,
-                  displayPurchases: false,
                   displaySaves: false,
                   verificationToken: null,
                   verified: false,
@@ -327,10 +325,7 @@ const deactivateUser = async (req, res, next) => {
                   artwork: null,
                   savedArtwork: null,
                   purchasedArtwork: null,
-                  earnings: null,
-                  incomingFunds: null,
-                  outgoingFunds: null,
-                  escrow: null,
+                  stripeAccountId: null,
                   active: false,
                 },
               }
@@ -387,7 +382,6 @@ const deactivateUser = async (req, res, next) => {
                       facebookId: null,
                       googleId: null,
                       customWork: false,
-                      displayPurchases: false,
                       displaySaves: false,
                       verificationToken: null,
                       verified: false,
@@ -402,10 +396,7 @@ const deactivateUser = async (req, res, next) => {
                       artwork: null,
                       savedArtwork: null,
                       purchasedArtwork: null,
-                      earnings: null,
-                      incomingFunds: null,
-                      outgoingFunds: null,
-                      escrow: null,
+                      stripeAccountId: null,
                       active: false,
                     },
                   }
@@ -479,7 +470,6 @@ const deactivateUser = async (req, res, next) => {
                       facebookId: null,
                       googleId: null,
                       customWork: false,
-                      displayPurchases: false,
                       displaySaves: false,
                       verificationToken: null,
                       verified: false,
@@ -494,10 +484,7 @@ const deactivateUser = async (req, res, next) => {
                       artwork: null,
                       savedArtwork: null,
                       purchasedArtwork: null,
-                      earnings: null,
-                      incomingFunds: null,
-                      outgoingFunds: null,
-                      escrow: null,
+                      stripeAccountId: null,
                       active: false,
                     },
                   }
@@ -567,7 +554,6 @@ const deactivateUser = async (req, res, next) => {
                     facebookId: null,
                     googleId: null,
                     customWork: false,
-                    displayPurchases: false,
                     displaySaves: false,
                     verificationToken: null,
                     verified: false,
@@ -582,10 +568,7 @@ const deactivateUser = async (req, res, next) => {
                     artwork: null,
                     savedArtwork: null,
                     purchasedArtwork: null,
-                    earnings: null,
-                    incomingFunds: null,
-                    outgoingFunds: null,
-                    escrow: null,
+                    stripeAccountId: null,
                     active: false,
                   },
                 }

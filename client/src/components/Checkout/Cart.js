@@ -2,6 +2,7 @@ import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import SelectField from '../../shared/SelectInput/SelectInput';
 import { Formik, Form, Field, FieldArray } from 'formik';
+import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
 import {
   Modal,
@@ -408,6 +409,16 @@ const Cart = () => {
                       />
                     </ListItem>
                   </List>
+                  <Button
+                    component={Link}
+                    to="/checkout"
+                    type="button"
+                    color="primary"
+                    fullWidth
+                  >
+                    Continue
+                  </Button>
+                  <p>You won't be charged yet</p>
                 </CardContent>
               </Card>
               <br />

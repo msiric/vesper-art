@@ -76,7 +76,6 @@ const passwordValidation = Yup.object().shape({
 });
 
 const preferencesValidation = Yup.object().shape({
-  displayPurchases: Yup.boolean().required('Purchases need to have a value'),
   displaySaves: Yup.boolean().required('Saves need to have a value'),
 });
 
@@ -347,7 +346,7 @@ const Settings = () => {
                       Preferences
                     </Typography>
                     <Typography className={classes.secondaryHeading}>
-                      Change purchases and saved artwork visibility
+                      Change saved artwork visibility
                     </Typography>
                   </ExpansionPanelSummary>
                   <ExpansionPanelDetails className={classes.column}>
@@ -359,7 +358,6 @@ const Settings = () => {
                     >
                       <Formik
                         initialValues={{
-                          displayPurchases: state.user.displayPurchases,
                           displaySaves: state.user.displaySaves,
                         }}
                         enableReinitialize
@@ -373,7 +371,6 @@ const Settings = () => {
                             ...prevState,
                             user: {
                               ...prevState.user,
-                              displayPurchases: values.displayPurchases,
                               displaySaves: values.displaySaves,
                             },
                           }));
@@ -383,40 +380,6 @@ const Settings = () => {
                         {({ values, errors, touched }) => (
                           <Form className={classes.updatePassword}>
                             <div>
-                              <ListItem>
-                                <ListItemIcon>
-                                  <PurchaseIcon />
-                                </ListItemIcon>
-                                <ListItemText
-                                  id="switch-list-label-purchases"
-                                  primary="Purchases"
-                                />
-                                <ListItemSecondaryAction>
-                                  <Field name="displayPurchases">
-                                    {({
-                                      field,
-                                      form: { setFieldValue, touched, errors },
-                                      meta,
-                                    }) => (
-                                      <Switch
-                                        {...field}
-                                        edge="end"
-                                        onChange={(e) =>
-                                          setFieldValue(
-                                            'displayPurchases',
-                                            e.target.checked
-                                          )
-                                        }
-                                        checked={values.displayPurchases}
-                                        inputProps={{
-                                          'aria-labelledby':
-                                            'switch-list-label-purchases',
-                                        }}
-                                      />
-                                    )}
-                                  </Field>
-                                </ListItemSecondaryAction>
-                              </ListItem>
                               <ListItem>
                                 <ListItemIcon>
                                   <SaveIcon />

@@ -31,7 +31,6 @@ const postSignUp = async (req, res, next) => {
       user.photo = user.gravatar();
       user.password = password;
       user.customWork = true;
-      user.displayPurchases = true;
       user.displaySaves = true;
       user.verificationToken = token;
       user.verified = false;
@@ -44,9 +43,7 @@ const postSignUp = async (req, res, next) => {
       user.artwork = [];
       user.savedArtwork = [];
       user.purchasedArtwork = [];
-      user.earnings = 0;
-      user.incomingFunds = 0;
-      user.outgoingFunds = 0;
+      user.stripeAccountId = null;
       user.active = true;
       await user.save({ session });
       await mailer.sendEmail(

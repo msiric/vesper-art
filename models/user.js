@@ -27,7 +27,6 @@ const UserSchema = new Schema({
   facebookId: String,
   googleId: String,
   customWork: Boolean,
-  displayPurchases: Boolean,
   displaySaves: Boolean,
   verificationToken: String,
   verified: Boolean,
@@ -48,9 +47,7 @@ const UserSchema = new Schema({
   artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   purchasedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
-  earnings: Number,
-  incomingFunds: Number,
-  outgoingFunds: Number,
+  stripeAccountId: String,
   active: Boolean,
   created: { type: Date, default: Date.now },
 });

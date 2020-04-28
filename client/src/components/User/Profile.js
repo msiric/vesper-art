@@ -338,7 +338,6 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       >
                         <Tab label="User artwork" {...a11yProps(0)} />
                         <Tab label="Saved artwork" {...a11yProps(1)} />
-                        <Tab label="Purchased artwork" {...a11yProps(2)} />
                       </Tabs>
                     </AppBar>
                     <SwipeableViews
@@ -392,9 +391,6 @@ const Profile = ({ match, enqueueSnackbar }) => {
                         {state.user.displaySaves ? (
                           <Tab label="Saved artwork" {...a11yProps(1)} />
                         ) : null}
-                        {state.user.displayPurchases ? (
-                          <Tab label="Purchased artwork" {...a11yProps(2)} />
-                        ) : null}
                       </Tabs>
                     </AppBar>
                     <SwipeableViews
@@ -418,17 +414,6 @@ const Profile = ({ match, enqueueSnackbar }) => {
                           ) : (
                             <Typography variant="h6" align="center">
                               This user has no saved artwork
-                            </Typography>
-                          )}
-                        </Box>
-                      ) : null}
-                      {state.user.displayPurchases ? (
-                        <Box hidden={state.tabs.value !== 2}>
-                          {state.user.purchasedArtwork.length ? (
-                            <Gallery elements={state.user.purchasedArtwork} />
-                          ) : (
-                            <Typography variant="h6" align="center">
-                              This user has no purchased artwork
                             </Typography>
                           )}
                         </Box>
