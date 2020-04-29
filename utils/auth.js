@@ -5,8 +5,10 @@ const createAccessToken = (user) => {
   return jwt.sign(
     {
       id: user.id,
-      active: user.active,
+      name: user.name,
+      stripeId: user.stripeId,
       jwtVersion: user.jwtVersion,
+      active: user.active,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {

@@ -69,6 +69,7 @@ const updateUserProfile = async (req, res, next) => {
 };
 
 const getUserSettings = async (req, res, next) => {
+  console.log(res.locals.user);
   try {
     const { userId } = req.params;
     const foundUser = await User.findOne({

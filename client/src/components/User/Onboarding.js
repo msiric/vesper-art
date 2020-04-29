@@ -66,12 +66,14 @@ function Onboarding() {
     validationSchema,
     async onSubmit(values) {
       try {
-        await ax.patch(`/api/user/${store.user.id}`, values);
-        const { data } = await ax.post('/stripe/authorize', {
-          country: values.userCountry,
-          email: store.user.email,
-        });
-        window.location.href = data.url;
+        if (!store.user.stripeId) {
+          await ax.patch(`/api/user/${store.user.id}`, values);
+          const { data } = await ax.post('/stripe/authorize', {
+            country: values.userCountry,
+            email: store.user.email,
+          });
+          window.location.href = data.url;
+        }
       } catch (err) {
         console.log(err);
       }
@@ -86,41 +88,48 @@ function Onboarding() {
             <Card className={classes.card}>
               <CardContent className={classes.content}>
                 <MonetizationIcon className={classes.media} />
-                <Typography variant="subtitle1" className={classes.heading}>
-                  Start getting paid
-                </Typography>
-                <Typography color="textSecondary" className={classes.text}>
-                  On the next page you will be taken to Stripe's website where
-                  you will finish the onboarding process. This is mandatory in
-                  order to secure your balance and to generate payouts on
-                  demand. It goes without saying that having Stripe keep track
-                  of your balance and handle all the transactions is much more
-                  secure and reliable than doing this ourselves, so you can rest
-                  assured that your earnings are safe and protected at all
-                  times.
-                </Typography>
-                <Typography color="textSecondary" className={classes.text}>
-                  Note: We do not save any information that you enter on the
-                  next page except the ID that Stripe returns back
-                </Typography>
-                {store.user.country ? (
-                  supportedCountries[store.user.country] ? (
+                {store.user.stripeId ? (
+                  <Typography variant="subtitle1" className={classes.heading}>
+                    You already went through the onboarding process
+                  </Typography>
+                ) : (
+                  <>
+                    <Typography variant="subtitle1" className={classes.heading}>
+                      Start getting paid
+                    </Typography>
+                    <Typography color="textSecondary" className={classes.text}>
+                      On the next page you will be taken to Stripe's website
+                      where you will finish the onboarding process. This is
+                      mandatory in order to secure your balance and to generate
+                      payouts on demand. It goes without saying that having
+                      Stripe keep track of your balance and handle all the
+                      transactions is much more secure and reliable than doing
+                      this ourselves, so you can rest assured that your earnings
+                      are safe and protected at all times.
+                    </Typography>
+                    <Typography color="textSecondary" className={classes.text}>
+                      Note: We do not save any information that you enter on the
+                      next page except the ID that Stripe returns back
+                    </Typography>
+                    store.user.country ? (
+                    supportedCountries[store.user.country] ? (
                     <Typography color="textSecondary" className={classes.text}>
                       Please confirm your country Note: Stripe currently only
                       supports these countries:
                     </Typography>
-                  ) : (
+                    ) : (
                     <Typography color="textSecondary" className={classes.text}>
                       Your currently saved country is not supported for Stripe
                       payments. Note: Stripe currently only supports these
                       countries:
                     </Typography>
-                  )
-                ) : (
-                  <Typography color="textSecondary" className={classes.text}>
-                    Please select your country Note: Stripe currently only
-                    supports these countries:
-                  </Typography>
+                    ) ) : (
+                    <Typography color="textSecondary" className={classes.text}>
+                      Please select your country Note: Stripe currently only
+                      supports these countries:
+                    </Typography>
+                    )
+                  </>
                 )}
                 <SelectInput
                   name="userCountry"

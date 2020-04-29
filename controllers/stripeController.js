@@ -78,8 +78,6 @@ const assignStripeId = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
-  console.log(req.session.id, req.session.name);
-
   if (req.session.state != req.query.state) {
     throw createError(500, 'There was an error onboarding you');
   }
