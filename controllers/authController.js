@@ -5,6 +5,7 @@ const randomString = require('randomstring');
 const bcrypt = require('bcrypt-nodejs');
 const crypto = require('crypto');
 const mailer = require('../utils/email');
+const secret = require('../config/secret');
 const config = require('../config/mailer');
 const createError = require('http-errors');
 
@@ -20,10 +21,8 @@ const postSignUp = async (req, res, next) => {
     if (foundUser) {
       throw createError(400, 'Account with that email/username already exists');
     } else {
-      const protocol = req.protocol;
-      const host = req.get('host');
       const token = randomString.generate();
-      const link = `${protocol}://${host}/verify_token/${token}`;
+      const link = `${secret.server.clientDomain}/verify_token/${token}`;
 
       const user = new User();
       user.name = username;
@@ -43,7 +42,8 @@ const postSignUp = async (req, res, next) => {
       user.artwork = [];
       user.savedArtwork = [];
       user.purchasedArtwork = [];
-      user.stripeAccountId = null;
+      user.country = null;
+      user.stripeId = null;
       user.active = true;
       await user.save({ session });
       await mailer.sendEmail(
@@ -99,8 +99,10 @@ const postLogIn = async (req, res, next) => {
 
       const tokenPayload = {
         id: foundUser._id,
-        active: foundUser.active,
+        name: foundUser.name,
         jwtVersion: foundUser.jwtVersion,
+        stripeId: foundUser.stripeId,
+        active: foundUser.active,
       };
 
       const userInfo = {
@@ -113,6 +115,8 @@ const postLogIn = async (req, res, next) => {
         cart: foundUser.cart,
         saved: foundUser.savedArtwork,
         active: foundUser.active,
+        stripeId: foundUser.stripeId,
+        country: foundUser.country,
         jwtVersion: foundUser.jwtVersion,
       };
 
@@ -198,8 +202,8 @@ const forgotPassword = async (req, res, next) => {
       if (!foundUser) {
         throw createError(400, 'No account with that email address exists');
       } else {
-        foundUser.resetPasswordToken = token;
-        foundUser.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        foundUser.resetToken = token;
+        foundUser.resetExpiry = Date.now() + 3600000; // 1 hour
         await foundUser.save({ session });
         await mailer.sendEmail(
           config.app,
@@ -208,7 +212,7 @@ const forgotPassword = async (req, res, next) => {
           `You are receiving this because you have requested to reset the password for your account.
         Please click on the following link, or paste this into your browser to complete the process:
         
-        <a href="http://${req.headers.host}/reset_password/${token}"</a>`
+        <a href="${secret.server.clientDomain}/reset_password/${token}"</a>`
         );
         await session.commitTransaction();
         res.status(200).json({ message: 'Password reset' });
@@ -230,8 +234,8 @@ const resetPassword = async (req, res) => {
     const { tokenId } = req.params;
     const { password, confirm } = req.body;
     const foundUser = await User.findOne({
-      resetPasswordToken: tokenId,
-      resetPasswordExpires: { $gt: Date.now() },
+      resetToken: tokenId,
+      resetExpiry: { $gt: Date.now() },
     }).session(session);
     if (!foundUser) {
       throw createError(400, 'Token is invalid or has expired');
@@ -241,8 +245,8 @@ const resetPassword = async (req, res) => {
       throw createError(400, 'New password is identical to the old one');
     } else {
       foundUser.password = password;
-      foundUser.resetPasswordToken = null;
-      foundUser.resetPasswordExpires = null;
+      foundUser.resetToken = null;
+      foundUser.resetExpiry = null;
 
       await foundUser.save(function (err) {
         req.logIn(foundUser, function (err) {

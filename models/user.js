@@ -30,8 +30,8 @@ const UserSchema = new Schema({
   displaySaves: Boolean,
   verificationToken: String,
   verified: Boolean,
-  resetPasswordToken: String,
-  resetPasswordExpires: Date,
+  resetToken: String,
+  resetExpiry: Date,
   jwtVersion: { type: Number, default: 0 },
   cart: [
     {
@@ -47,7 +47,7 @@ const UserSchema = new Schema({
   artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   purchasedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
-  stripeAccountId: String,
+  stripeId: String,
   active: Boolean,
   created: { type: Date, default: Date.now },
 });

@@ -10,18 +10,15 @@ const querystring = require('querystring');
 const redirectToStripe = async (req, res, next) => {
   try {
     const user = res.locals.user;
-    if (!user.stripeAccountId) {
+    if (!user.stripeId) {
       throw createError(
         400,
         'You need to complete the onboarding process before accessing your Stripe dashboard'
       );
     }
-    const loginLink = await stripe.accounts.createLoginLink(
-      user.stripeAccountId,
-      {
-        redirect_url: `${config.server.serverDomain}/stripe/dashboard`,
-      }
-    );
+    const loginLink = await stripe.accounts.createLoginLink(user.stripeId, {
+      redirect_url: `${config.server.serverDomain}/stripe/dashboard`,
+    });
     if (req.query.account) {
       loginLink.url = `${loginLink.url}#/account`;
     }
@@ -36,6 +33,7 @@ const redirectToStripe = async (req, res, next) => {
 
 const onboardUser = async (req, res, next) => {
   try {
+    const { country, email } = req.body;
     req.session.state = Math.random().toString(36).slice(2);
     req.session.id = res.locals.user.id;
     req.session.name = res.locals.user.name;
@@ -48,6 +46,11 @@ const onboardUser = async (req, res, next) => {
     parameters = Object.assign(parameters, {
       redirect_uri: `${config.server.serverDomain}/stripe/token`,
       'stripe_user[business_type]': 'individual',
+      'stripe_user[business_name]': undefined,
+      'stripe_user[first_name]': undefined,
+      'stripe_user[last_name]': undefined,
+      'stripe_user[email]': email || undefined,
+      'stripe_user[country]': country || undefined,
 
       // If we're suggesting this account have the `card_payments` capability,
       // we can pass some additional fields to prefill:
@@ -75,6 +78,8 @@ const assignStripeId = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
+  console.log(req.session.id, req.session.name);
+
   if (req.session.state != req.query.state) {
     throw createError(500, 'There was an error onboarding you');
   }
@@ -98,19 +103,21 @@ const assignStripeId = async (req, res, next) => {
       throw createError(500, expressAuthorized.error);
     }
 
+    console.log(expressAuthorized);
+
     await User.updateOne(
       { _id: req.session.id },
-      { stripeAccountId: expressAuthorized.stripe_user_id }
+      { stripeId: expressAuthorized.data.stripe_user_id }
     ).session(session);
+
+    const username = req.session.name;
 
     req.session.state = null;
     req.session.id = null;
     req.session.name = null;
 
     await session.commitTransaction();
-    return res.redirect(
-      `${config.server.publicDomain}/user/${req.session.name}`
-    );
+    return res.redirect(`/user/${username}`);
   } catch (err) {
     await session.abortTransaction();
     console.log(err);
@@ -123,7 +130,7 @@ const assignStripeId = async (req, res, next) => {
 const createPayout = async (req, res, next) => {
   try {
     const balance = await stripe.balance.retrieve({
-      stripe_account: res.locals.user.stripeAccountId,
+      stripe_account: res.locals.user.stripeId,
     });
     const { amount, currency } = balance.available[0];
     await stripe.payouts.create(
@@ -133,7 +140,7 @@ const createPayout = async (req, res, next) => {
         statement_descriptor: config.server.appName,
       },
       {
-        stripe_account: res.locals.user.stripeAccountId,
+        stripe_account: res.locals.user.stripeId,
       }
     );
     res.status(200).json({

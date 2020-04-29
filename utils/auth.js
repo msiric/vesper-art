@@ -41,8 +41,10 @@ const updateAccessToken = async (req, res, next) => {
 
   const tokenPayload = {
     id: foundUser._id,
-    active: foundUser.active,
+    name: foundUser.name,
     jwtVersion: foundUser.jwtVersion,
+    stripeId: foundUser.stripeId,
+    active: foundUser.active,
   };
 
   const userInfo = {
@@ -55,6 +57,8 @@ const updateAccessToken = async (req, res, next) => {
     cart: foundUser.cart,
     saved: foundUser.savedArtwork,
     active: foundUser.active,
+    stripeId: foundUser.stripeId,
+    country: foundUser.country,
     jwtVersion: foundUser.jwtVersion,
   };
 

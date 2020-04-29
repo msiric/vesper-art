@@ -6,9 +6,9 @@ router
   .route('/dashboard')
   .get(isAuthenticated, stripeController.redirectToStripe);
 
-router.route('/authorize').get(isAuthenticated, stripeController.onboardUser);
+router.route('/authorize').post(isAuthenticated, stripeController.onboardUser);
 
-router.route('/token').get(isAuthenticated, stripeController.assignStripeId);
+router.route('/token').get(stripeController.assignStripeId);
 
 router.route('/payout').post(isAuthenticated, stripeController.createPayout);
 

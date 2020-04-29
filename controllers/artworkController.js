@@ -75,7 +75,7 @@ const postNewArtwork = async (req, res, next) => {
     const { error, value } = postArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
     if (
-      !res.locals.user.stripeAccountId &&
+      !res.locals.user.stripeId &&
       (value.artworkPrice || value.artworkCommercial)
     )
       throw createError(
@@ -158,7 +158,7 @@ const updateArtwork = async (req, res, next) => {
     const { error, value } = putArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
     if (
-      !res.locals.user.stripeAccountId &&
+      !res.locals.user.stripeId &&
       (value.artworkPrice || value.artworkCommercial)
     )
       throw createError(

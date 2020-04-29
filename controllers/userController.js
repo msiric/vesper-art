@@ -7,6 +7,7 @@ const User = require('../models/user');
 const randomString = require('randomstring');
 const mailer = require('../utils/email');
 const config = require('../config/mailer');
+const secret = require('../config/secret');
 const auth = require('../utils/auth');
 const createError = require('http-errors');
 
@@ -45,13 +46,14 @@ const updateUserProfile = async (req, res, next) => {
   session.startTransaction();
   try {
     const { userId } = req.params;
-    const { userPhoto, userDescription } = req.body;
+    const { userPhoto, userDescription, userCountry } = req.body;
     const foundUser = await User.findOne({
       $and: [{ _id: userId }, { active: true }],
     });
     if (foundUser) {
       if (userPhoto) foundUser.photo = userPhoto;
       if (userDescription) foundUser.description = userDescription;
+      if (userCountry) foundUser.country = userCountry;
       await foundUser.save({ session });
       await session.commitTransaction();
       return res.status(200).json({ message: 'User details updated' });
@@ -95,10 +97,8 @@ const updateUserEmail = async (req, res, next) => {
     if (foundUser) {
       throw createError(400, 'User with entered email already exists');
     } else {
-      const protocol = req.protocol;
-      const host = req.get('host');
       const token = randomString.generate();
-      const link = `${protocol}://${host}/verify_token/${token}`;
+      const link = `${secret.server.clientDomain}/verify_token/${token}`;
       await User.updateOne(
         {
           $and: [{ _id: userId }, { active: true }],
@@ -191,9 +191,9 @@ const updateUserPreferences = async (req, res, next) => {
 
 const getUserDashboard = async (req, res, next) => {
   try {
-    const pilot = res.locals.user;
+    const user = res.locals.user;
     const balance = await stripe.balance.retrieve({
-      stripe_account: pilot.stripeAccountId,
+      stripe_account: user.stripeId,
     });
 
     res.render('dashboard', {
@@ -239,8 +239,8 @@ const getUserDashboard = async (req, res, next) => {
             customWork: false,
             verificationToken: null,
             verified: false,
-            resetPasswordToken: null,
-            resetPasswordExpires: null,
+            resetToken: null,
+            resetExpiry: null,
             cart: null,
             discount: null,
             inbox: null,
@@ -334,8 +334,8 @@ const deactivateUser = async (req, res, next) => {
                   displaySaves: false,
                   verificationToken: null,
                   verified: false,
-                  resetPasswordToken: null,
-                  resetPasswordExpires: null,
+                  resetToken: null,
+                  resetExpiry: null,
                   cart: null,
                   discount: null,
                   inbox: null,
@@ -345,7 +345,7 @@ const deactivateUser = async (req, res, next) => {
                   artwork: null,
                   savedArtwork: null,
                   purchasedArtwork: null,
-                  stripeAccountId: null,
+                  stripeId: null,
                   active: false,
                 },
               }
@@ -405,8 +405,8 @@ const deactivateUser = async (req, res, next) => {
                       displaySaves: false,
                       verificationToken: null,
                       verified: false,
-                      resetPasswordToken: null,
-                      resetPasswordExpires: null,
+                      resetToken: null,
+                      resetExpiry: null,
                       cart: null,
                       discount: null,
                       inbox: null,
@@ -416,7 +416,7 @@ const deactivateUser = async (req, res, next) => {
                       artwork: null,
                       savedArtwork: null,
                       purchasedArtwork: null,
-                      stripeAccountId: null,
+                      stripeId: null,
                       active: false,
                     },
                   }
@@ -493,8 +493,8 @@ const deactivateUser = async (req, res, next) => {
                       displaySaves: false,
                       verificationToken: null,
                       verified: false,
-                      resetPasswordToken: null,
-                      resetPasswordExpires: null,
+                      resetToken: null,
+                      resetExpiry: null,
                       cart: null,
                       discount: null,
                       inbox: null,
@@ -504,7 +504,7 @@ const deactivateUser = async (req, res, next) => {
                       artwork: null,
                       savedArtwork: null,
                       purchasedArtwork: null,
-                      stripeAccountId: null,
+                      stripeId: null,
                       active: false,
                     },
                   }
@@ -577,8 +577,8 @@ const deactivateUser = async (req, res, next) => {
                     displaySaves: false,
                     verificationToken: null,
                     verified: false,
-                    resetPasswordToken: null,
-                    resetPasswordExpires: null,
+                    resetToken: null,
+                    resetExpiry: null,
                     cart: null,
                     discount: null,
                     inbox: null,
@@ -588,7 +588,7 @@ const deactivateUser = async (req, res, next) => {
                     artwork: null,
                     savedArtwork: null,
                     purchasedArtwork: null,
-                    stripeAccountId: null,
+                    stripeId: null,
                     active: false,
                   },
                 }

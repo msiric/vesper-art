@@ -40,6 +40,8 @@ const reducer = (state, action) => {
           notifications: action.notifications,
           saved: action.saved,
           cart: action.cart,
+          stripeId: action.stripeId,
+          country: action.country,
           cartSize: action.cartSize,
         },
       };
@@ -66,6 +68,8 @@ const reducer = (state, action) => {
           notifications: action.notifications,
           saved: action.saved,
           cart: action.cart,
+          stripeId: action.stripeId,
+          country: action.country,
           cartSize: action.cartSize,
         },
       };

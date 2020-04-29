@@ -16,7 +16,7 @@ const config = require('./config/secret');
 router.get('/dashboard', isAuthenticated, async (req, res) => {
   // Retrieve the balance from Stripe
   const balance = await stripe.balance.retrieve({
-    stripe_account: req.user.stripeAccountId,
+    stripe_account: req.user.stripeId,
   });
   // Fetch the pilot's recent rides
   const rides = await req.user.listRecentRides();
@@ -68,7 +68,7 @@ router.post('/rides', isAuthenticated, async (req, res, next) => {
         // the `amountForPilot` method simply computes `ride.amount * 0.8`
         amount: ride.amountForPilot(),
         // The destination of this charge is the pilot's Stripe account
-        destination: req.user.stripeAccountId,
+        destination: req.user.stripeId,
       },
     });
     // Add the Stripe charge reference to the ride and save it

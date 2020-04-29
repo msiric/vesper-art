@@ -50,6 +50,8 @@ const App = () => {
             object[item.artwork] = true;
             return object;
           }, {}),
+          stripeId: data.user.stripeId,
+          country: data.user.country,
           cartSize: Object.keys(data.user.cart).length,
         });
       } else {

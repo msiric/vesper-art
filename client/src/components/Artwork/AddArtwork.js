@@ -156,7 +156,7 @@ const AddArtwork = () => {
             <Typography variant="h6" align="center">
               Add artwork
             </Typography>
-            {!store.user.stripeAccountId
+            {!store.user.stripeId
               ? 'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
               : null}
             <CardContent>
@@ -207,7 +207,7 @@ const AddArtwork = () => {
                     {
                       value: 'commercial',
                       text: 'Commercial',
-                      disabled: store.user.stripeAccountId ? false : true,
+                      disabled: store.user.stripeId ? false : true,
                     },
                     { value: 'free', text: 'Free' },
                   ]}
@@ -263,7 +263,7 @@ const AddArtwork = () => {
                       {
                         value: 'separate',
                         text: 'Charge commercial license separately',
-                        disabled: store.user.stripeAccountId ? false : true,
+                        disabled: store.user.stripeId ? false : true,
                       },
                       values.artworkAvailability && values.artworkType
                         ? {
