@@ -8,4 +8,11 @@ module.exports = function (app) {
       changeOrigin: true,
     })
   );
+  app.use(
+    '/stripe',
+    createProxyMiddleware({
+      target: 'http://localhost:5000/',
+      changeOrigin: true,
+    })
+  );
 };

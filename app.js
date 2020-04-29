@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const session = require('cookie-session');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -16,7 +17,7 @@ const io = require('socket.io')(http);
 app.use(
   cors({
     origin: 'http://localhost:3000',
-    credentials: true
+    credentials: true,
   })
 );
 
@@ -24,9 +25,17 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(
+  session({
+    cookie: { maxAge: 60000 },
+    secret: config.mongo.secret,
+    signed: true,
+    resave: true,
+  })
+);
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   'use strict';
   req.io = io;
   next();
@@ -35,7 +44,7 @@ app.use(function(req, res, next) {
 mongoose.connect(
   config.mongo.database,
   { useNewUrlParser: true, useUnifiedTopology: true },
-  function(err) {
+  function (err) {
     if (err) console.log(err);
     console.log('Connected to the database');
   }
@@ -44,8 +53,10 @@ mongoose.connect(
 mongoose.set('useCreateIndex', true);
 
 const apiRouter = require('./routes/api');
+const stripeRouter = require('./routes/stripe');
 
 app.use('/api', apiRouter);
+app.use('/stripe', stripeRouter);
 
 app.use((req, res, next) => {
   createError(404);

@@ -17,7 +17,6 @@ const createAccessToken = (user) => {
 
 const updateAccessToken = async (req, res, next) => {
   const token = req.cookies.jid;
-  console.log('token', token);
   if (!token) {
     return { ok: false, accessToken: '' };
   }

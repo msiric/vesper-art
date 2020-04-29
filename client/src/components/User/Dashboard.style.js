@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const OnboardingStyles = makeStyles((muiTheme) => ({
+const DashboardStyles = makeStyles((muiTheme) => ({
   root: {
     display: 'flex',
     alignItems: 'center',
@@ -39,4 +39,4 @@ const OnboardingStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-export default OnboardingStyles;
+export default DashboardStyles;

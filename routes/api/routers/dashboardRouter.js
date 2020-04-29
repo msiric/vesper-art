@@ -16,7 +16,7 @@ const config = require('./config/secret');
 router.get('/dashboard', isAuthenticated, async (req, res) => {
   // Retrieve the balance from Stripe
   const balance = await stripe.balance.retrieve({
-    stripe_account: req.user.stripeAccountId
+    stripe_account: req.user.stripeAccountId,
   });
   // Fetch the pilot's recent rides
   const rides = await req.user.listRecentRides();
@@ -31,15 +31,10 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
     balancePending: balance.pending[0].amount,
     ridesTotalAmount: ridesTotalAmount,
     rides: rides,
-    showBanner: !!showBanner || req.query.showBanner
+    showBanner: !!showBanner || req.query.showBanner,
   });
 });
 
-/**
- * POST /pilots/rides
- *
- * Generate a test ride with sample data for the logged-in pilot.
- */
 router.post('/rides', isAuthenticated, async (req, res, next) => {
   // Find a random passenger
   const passenger = await Passenger.getRandom();
@@ -48,7 +43,7 @@ router.post('/rides', isAuthenticated, async (req, res, next) => {
     pilot: req.user.id,
     passenger: passenger.id,
     // Generate a random amount between $10 and $100 for this ride
-    amount: getRandomInt(1000, 10000)
+    amount: getRandomInt(1000, 10000),
   });
   // Save the ride
   await ride.save();
@@ -73,8 +68,8 @@ router.post('/rides', isAuthenticated, async (req, res, next) => {
         // the `amountForPilot` method simply computes `ride.amount * 0.8`
         amount: ride.amountForPilot(),
         // The destination of this charge is the pilot's Stripe account
-        destination: req.user.stripeAccountId
-      }
+        destination: req.user.stripeAccountId,
+      },
     });
     // Add the Stripe charge reference to the ride and save it
     ride.stripeChargeId = charge.id;
@@ -87,144 +82,6 @@ router.post('/rides', isAuthenticated, async (req, res, next) => {
   }
   res.redirect('/pilots/dashboard');
 });
-
-/**
- * GET /pilots/signup
- *
- * Display the signup form on the right step depending on the current completion.
- */
-router.get('/signup', (req, res) => {
-  let step = 'account';
-  // Naive way to identify which step we're on: check for the presence of user profile data
-  if (req.user) {
-    if (
-      req.user.type === 'individual'
-        ? !req.user.firstName || !req.user.lastName
-        : !req.user.businessName
-    ) {
-      step = 'profile';
-    } else if (!req.user.stripeAccountId) {
-      step = 'payments';
-    } else {
-      step = 'done';
-    }
-  }
-  res.render('signup', { step: step });
-});
-
-/**
- * POST /pilots/signup
- *
- * Create a user and update profile information during the pilot onboarding process.
- */
-router.post('/signup', async (req, res, next) => {
-  const body = Object.assign({}, req.body, {
-    // Use `type` instead of `pilot-type` for saving to the DB.
-    type: req.body['pilot-type'],
-    'pilot-type': undefined
-  });
-
-  // Check if we have a logged-in pilot
-  let pilot = req.user;
-  if (!pilot) {
-    try {
-      // Try to create and save a new pilot
-      pilot = new Pilot(body);
-      pilot = await pilot.save();
-      // Sign in and redirect to continue the signup process
-      req.logIn(pilot, err => {
-        if (err) next(err);
-        return res.redirect('/pilots/signup');
-      });
-    } catch (err) {
-      // Show an error message to the user
-      const errors = Object.keys(err.errors).map(
-        field => err.errors[field].message
-      );
-      res.render('signup', { step: 'account', error: errors[0] });
-    }
-  } else {
-    try {
-      // Try to update the logged-in pilot using the newly entered profile data
-      pilot.set(body);
-      await pilot.save();
-      return res.redirect('/pilots/stripe/authorize');
-    } catch (err) {
-      next(err);
-    }
-  }
-});
-
-/**
- * GET /pilots/login
- *
- * Simple pilot login.
- */
-router.get('/login', (req, res) => {
-  res.render('login');
-});
-
-/**
- * GET /pilots/login
- *
- * Simple pilot login.
- */
-router.post(
-  '/login',
-  passport.authenticate('pilot-login', {
-    successRedirect: '/pilots/dashboard',
-    failureRedirect: '/pilots/login'
-  })
-);
-
-/**
- * GET /pilots/logout
- *
- * Delete the pilot from the session.
- */
-router.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect('/');
-});
-
-// Serialize the pilot's sessions for Passport
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-passport.deserializeUser(async (id, done) => {
-  try {
-    let user = await Pilot.findById(id);
-    done(null, user);
-  } catch (err) {
-    done(err);
-  }
-});
-
-// Define the login strategy for pilots based on email and password
-passport.use(
-  'pilot-login',
-  new LocalStrategy(
-    {
-      usernameField: 'email',
-      passwordField: 'password'
-    },
-    async (email, password, done) => {
-      let user;
-      try {
-        user = await Pilot.findOne({ email });
-        if (!user) {
-          return done(null, false, { message: 'Unknown user' });
-        }
-      } catch (err) {
-        return done(err);
-      }
-      if (!user.validatePassword(password)) {
-        return done(null, false, { message: 'Invalid password' });
-      }
-      return done(null, user);
-    }
-  )
-);
 
 // Function that returns a test card token for Stripe
 function getTestSource(behavior) {

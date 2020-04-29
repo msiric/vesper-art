@@ -116,6 +116,12 @@ const routes = [
     type: 'public',
   },
   {
+    path: '/dashboard',
+    Component: lazy(() => import('../User/Dashboard')),
+    exact: true,
+    type: 'protected',
+  },
+  {
     path: '/settings',
     Component: lazy(() => import('../User/Settings')),
     exact: true,

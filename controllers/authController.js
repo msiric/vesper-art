@@ -15,7 +15,7 @@ const postSignUp = async (req, res, next) => {
   try {
     const { email, username, password, confirm } = req.body;
     const foundUser = await User.findOne({
-      $or: [{ email: email }, { name: username }],
+      $and: [{ $or: [{ email: email }, { name: username }] }, { active: true }],
     }).session(session);
     if (foundUser) {
       throw createError(400, 'Account with that email/username already exists');
@@ -73,7 +73,10 @@ const postLogIn = async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const foundUser = await User.findOne({
-      $or: [{ email: username }, { name: username }],
+      $and: [
+        { $or: [{ email: username }, { name: username }] },
+        { active: true },
+      ],
     }).session(session);
     if (!foundUser) {
       throw createError(

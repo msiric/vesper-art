@@ -1,23 +1,10 @@
-import React, { useContext } from 'react';
-import { Context } from '../Store/Store';
-import { Link } from 'react-router-dom';
+import React from 'react';
 import { Grow, Card, CardContent, Typography, Button } from '@material-ui/core';
 import { MonetizationOnRounded as MonetizationIcon } from '@material-ui/icons';
-import ax from '../../axios.config';
-import OnboardingStyles from './Onboarding.style';
+import DashboardStyles from './Dashboard.style';
 
-function Onboarding() {
-  const [store, dispatch] = useContext(Context);
-  const classes = OnboardingStyles();
-
-  const handleOnboardClick = async () => {
-    try {
-      const { data } = await ax.get('/stripe/authorize');
-      window.location.href = data.url;
-    } catch (err) {
-      console.log(err);
-    }
-  };
+function Dashboard() {
+  const classes = DashboardStyles();
 
   return (
     <div className={classes.root}>
@@ -43,7 +30,6 @@ function Onboarding() {
                 page except the ID that Stripe returns back
               </Typography>
               <Button
-                onClick={handleOnboardClick}
                 type="submit"
                 variant="contained"
                 color="primary"
@@ -60,4 +46,4 @@ function Onboarding() {
   );
 }
 
-export default Onboarding;
+export default Dashboard;

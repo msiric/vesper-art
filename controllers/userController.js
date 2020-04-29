@@ -189,6 +189,26 @@ const updateUserPreferences = async (req, res, next) => {
   }
 };
 
+const getUserDashboard = async (req, res, next) => {
+  try {
+    const pilot = res.locals.user;
+    const balance = await stripe.balance.retrieve({
+      stripe_account: pilot.stripeAccountId,
+    });
+
+    res.render('dashboard', {
+      pilot: pilot,
+      balanceAvailable: balance.available[0].amount,
+      balancePending: balance.pending[0].amount,
+      ridesTotalAmount: ridesTotalAmount,
+      rides: rides,
+      showBanner: !!showBanner || req.query.showBanner,
+    });
+  } catch (err) {
+    next(err, res);
+  }
+};
+
 /* const deleteUser = async (req, res, next) => {
   try {
     const foundUser = await User.findOne({
