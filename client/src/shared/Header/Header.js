@@ -84,6 +84,9 @@ const Header = () => {
       <MenuItem component={Link} to={`/user/${store.user.name}`}>
         Profile
       </MenuItem>
+      <MenuItem component={Link} to="/onboarding">
+        Become a seller
+      </MenuItem>
       <MenuItem component={Link} to="/dashboard">
         Dashboard
       </MenuItem>

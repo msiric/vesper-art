@@ -121,6 +121,12 @@ const routes = [
     exact: true,
     type: 'protected',
   },
+  {
+    path: '/onboarding',
+    Component: lazy(() => import('../User/Onboarding')),
+    exact: true,
+    type: 'protected',
+  },
 ];
 
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
