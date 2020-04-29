@@ -589,15 +589,17 @@ const Cart = () => {
                                           />
                                         )}
                                       </Field>
-                                      <Button
-                                        type="button"
-                                        color="error"
-                                        onClick={() =>
-                                          arrayHelpers.remove(index)
-                                        }
-                                      >
-                                        Delete license
-                                      </Button>
+                                      {values.licenses.length > 1 ? (
+                                        <Button
+                                          type="button"
+                                          color="error"
+                                          onClick={() =>
+                                            arrayHelpers.remove(index)
+                                          }
+                                        >
+                                          Delete license
+                                        </Button>
+                                      ) : null}
                                     </div>
                                   ))
                                 : null}

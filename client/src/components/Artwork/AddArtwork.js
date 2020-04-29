@@ -156,6 +156,9 @@ const AddArtwork = () => {
             <Typography variant="h6" align="center">
               Add artwork
             </Typography>
+            {!store.user.stripeAccountId
+              ? 'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
+              : null}
             <CardContent>
               <UploadInput name="artworkMedia" setFieldValue={setFieldValue} />
               <TextField
@@ -201,7 +204,11 @@ const AddArtwork = () => {
                   error={touched.artworkType && Boolean(errors.artworkType)}
                   options={[
                     { value: '' },
-                    { value: 'commercial', text: 'Commercial' },
+                    {
+                      value: 'commercial',
+                      text: 'Commercial',
+                      disabled: store.user.stripeAccountId ? false : true,
+                    },
                     { value: 'free', text: 'Free' },
                   ]}
                 />
@@ -256,15 +263,17 @@ const AddArtwork = () => {
                       {
                         value: 'separate',
                         text: 'Charge commercial license separately',
+                        disabled: store.user.stripeAccountId ? false : true,
                       },
-                      {
-                        value: 'included',
-                        text:
-                          values.artworkAvailability === 'available' &&
-                          values.artworkType === 'commercial'
-                            ? 'Include commercial license in the price'
-                            : 'Offer commercial license free of charge',
-                      },
+                      values.artworkAvailability && values.artworkType
+                        ? {
+                            value: 'included',
+                            text: 'Include commercial license in the price',
+                          }
+                        : {
+                            value: 'included',
+                            text: 'Offer commercial license free of charge',
+                          },
                     ]}
                   />
                 )}

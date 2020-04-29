@@ -74,6 +74,14 @@ const postNewArtwork = async (req, res, next) => {
   try {
     const { error, value } = postArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
+    if (
+      !res.locals.user.stripeAccountId &&
+      (value.artworkPrice || value.artworkCommercial)
+    )
+      throw createError(
+        400,
+        'Please complete the Stripe onboarding process before making your artwork commercially available'
+      );
     const newVersion = new Version();
     newVersion.cover = value.artworkCover || '';
     newVersion.media = value.artworkMedia || '';
@@ -149,6 +157,14 @@ const updateArtwork = async (req, res, next) => {
       .session(session);
     const { error, value } = putArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
+    if (
+      !res.locals.user.stripeAccountId &&
+      (value.artworkPrice || value.artworkCommercial)
+    )
+      throw createError(
+        400,
+        'Please complete the Stripe onboarding process before making your artwork commercially available'
+      );
     if (foundArtwork) {
       const newVersion = new Version();
       newVersion.cover = value.artworkCover || '';
@@ -533,51 +549,55 @@ const saveLicenses = async (req, res, next) => {
   try {
     const { artworkId } = req.params;
     const { licenses } = req.body;
-    const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: artworkId }, { active: true }],
-    })
-      .populate(
-        'current',
-        '_id cover created title price type license availability description use commercial'
-      )
-      .session(session);
-    if (foundArtwork) {
-      const licenseSet = [];
-      const licenseIds = [];
-      licenses.forEach(async (license) => {
-        const newLicense = new License();
-        newLicense.owner = res.locals.user.id;
-        newLicense.artwork = foundArtwork._id;
-        newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
-        newLicense.type = license.licenseType;
-        newLicense.credentials = license.licenseeName;
-        newLicense.company = license.licenseeCompany;
-        newLicense.active = false;
-        newLicense.price =
-          license.licenseType == 'commercial'
-            ? foundArtwork.current.commercial
-            : 0;
-        licenseSet.push(newLicense);
-      });
-      const savedLicenses = await License.insertMany(licenseSet, { session });
-      savedLicenses.forEach((license) => {
-        licenseIds.push(license._id);
-      });
-      await User.updateOne(
-        {
-          _id: res.locals.user.id,
-          cart: { $elemMatch: { artwork: foundArtwork._id } },
-        },
-        {
-          $set: { 'cart.$.licenses': licenseIds },
-        }
-      ).session(session);
-      await session.commitTransaction();
-      res
-        .status(200)
-        .json({ message: 'Licenses saved', licenses: savedLicenses });
+    if (licenses.length) {
+      const foundArtwork = await Artwork.findOne({
+        $and: [{ _id: artworkId }, { active: true }],
+      })
+        .populate(
+          'current',
+          '_id cover created title price type license availability description use commercial'
+        )
+        .session(session);
+      if (foundArtwork) {
+        const licenseSet = [];
+        const licenseIds = [];
+        licenses.forEach(async (license) => {
+          const newLicense = new License();
+          newLicense.owner = res.locals.user.id;
+          newLicense.artwork = foundArtwork._id;
+          newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+          newLicense.type = license.licenseType;
+          newLicense.credentials = license.licenseeName;
+          newLicense.company = license.licenseeCompany;
+          newLicense.active = false;
+          newLicense.price =
+            license.licenseType == 'commercial'
+              ? foundArtwork.current.commercial
+              : 0;
+          licenseSet.push(newLicense);
+        });
+        const savedLicenses = await License.insertMany(licenseSet, { session });
+        savedLicenses.forEach((license) => {
+          licenseIds.push(license._id);
+        });
+        await User.updateOne(
+          {
+            _id: res.locals.user.id,
+            cart: { $elemMatch: { artwork: foundArtwork._id } },
+          },
+          {
+            $set: { 'cart.$.licenses': licenseIds },
+          }
+        ).session(session);
+        await session.commitTransaction();
+        res
+          .status(200)
+          .json({ message: 'Licenses saved', licenses: savedLicenses });
+      } else {
+        throw createError(400, 'Artwork not found');
+      }
     } else {
-      throw createError(400, 'Artwork not found');
+      throw createError(400, 'Artwork needs to have at least one license');
     }
   } catch (err) {
     await session.abortTransaction();

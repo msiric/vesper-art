@@ -39,7 +39,7 @@ const SelectInput = ({
               <em>None</em>
             </MenuItem>
           ) : (
-            <MenuItem key={index} value={item.value}>
+            <MenuItem key={index} value={item.value} disabled={item.disabled}>
               {item.text}
             </MenuItem>
           )
