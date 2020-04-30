@@ -13,10 +13,11 @@ const OrderSchema = new Schema({
     },
   ],
   discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
-  paid: Number,
-  sold: Number,
+  amount: Number,
+  fee: Number,
   status: Number,
   bulk: Boolean,
+  chargeId: String,
   created: { type: Date, default: Date.now },
 });
 
