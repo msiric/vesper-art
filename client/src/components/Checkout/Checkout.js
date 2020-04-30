@@ -1,6 +1,7 @@
 import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import SelectField from '../../shared/SelectInput/SelectInput';
+import StripeCardSection from './StripeCardSection';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -92,7 +93,7 @@ const Checkout = () => {
         ) : state.cart.length ? (
           <>
             <Grid item xs={12} md={8} className={classes.artwork}>
-              <br />
+              <StripeCardSection />
             </Grid>
             <Grid item xs={12} md={4} className={classes.actions}>
               <Card className={classes.summary}>

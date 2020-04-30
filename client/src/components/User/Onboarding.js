@@ -111,24 +111,34 @@ function Onboarding() {
                       Note: We do not save any information that you enter on the
                       next page except the ID that Stripe returns back
                     </Typography>
-                    store.user.country ? (
-                    supportedCountries[store.user.country] ? (
-                    <Typography color="textSecondary" className={classes.text}>
-                      Please confirm your country Note: Stripe currently only
-                      supports these countries:
-                    </Typography>
+                    {store.user.country ? (
+                      supportedCountries[store.user.country] ? (
+                        <Typography
+                          color="textSecondary"
+                          className={classes.text}
+                        >
+                          Please confirm your country Note: Stripe currently
+                          only supports these countries:
+                        </Typography>
+                      ) : (
+                        <Typography
+                          color="textSecondary"
+                          className={classes.text}
+                        >
+                          Your currently saved country is not supported for
+                          Stripe payments. Note: Stripe currently only supports
+                          these countries:
+                        </Typography>
+                      )
                     ) : (
-                    <Typography color="textSecondary" className={classes.text}>
-                      Your currently saved country is not supported for Stripe
-                      payments. Note: Stripe currently only supports these
-                      countries:
-                    </Typography>
-                    ) ) : (
-                    <Typography color="textSecondary" className={classes.text}>
-                      Please select your country Note: Stripe currently only
-                      supports these countries:
-                    </Typography>
-                    )
+                      <Typography
+                        color="textSecondary"
+                        className={classes.text}
+                      >
+                        Please select your country Note: Stripe currently only
+                        supports these countries:
+                      </Typography>
+                    )}
                   </>
                 )}
                 <SelectInput
