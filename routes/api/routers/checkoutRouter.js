@@ -2,6 +2,10 @@ const router = require('express').Router();
 const { isAuthenticated } = require('../../../utils/helpers');
 const checkoutController = require('../../../controllers/checkoutController');
 
+router
+  .route('/secret')
+  .get(isAuthenticated, checkoutController.getStripeSecret);
+
 router.route('/cart').get(isAuthenticated, checkoutController.getProcessCart);
 
 router

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const stripe = require('stripe')('sk_test_gBneokmqdbgLUsAQcHZuR4h500k4P1wiBq');
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const Artwork = require('../models/artwork');
 const License = require('../models/license');
 const Order = require('../models/order');
@@ -11,6 +11,19 @@ const createError = require('http-errors');
 
 const fee = 3.15;
 const commission = 0.1;
+
+const getStripeSecret = async (req, res, next) => {
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: 1099,
+      currency: 'eur',
+      metadata: { integration_check: 'accept_a_payment' },
+    });
+  } catch (err) {
+    console.log(err);
+    next(err, res);
+  }
+};
 
 const getProcessCart = async (req, res, next) => {
   /*   let artworkInfo = {
@@ -423,6 +436,7 @@ const deleteFromCart = async (req, res, next) => {
 };
 
 module.exports = {
+  getStripeSecret,
   getProcessCart,
   getPaymentCart,
   postPaymentCart,
