@@ -7,16 +7,87 @@ import {
   Paper,
   IconButton,
   Icon,
+  Button,
   Divider,
   Typography,
 } from '@material-ui/core';
+import { ResponsiveLine } from '@nivo/line';
+import { useTheme } from '@material-ui/core/styles';
 import DashboardStyles from './Dashboard.style';
 
 function Dashboard() {
   const [store, dispatch] = useContext(Context);
-  const [state, setState] = useState({ loading: false });
+  const [state, setState] = useState({ loading: false, range: 'week' });
 
+  const theme = useTheme();
   const classes = DashboardStyles();
+
+  function handleChangeRange(range) {
+    setState((prevState) => ({ ...prevState, range }));
+  }
+
+  const buttons = [
+    { key: 'week', text: 'This week' },
+    { key: 'month', text: 'This month' },
+    { key: 'year', text: 'This year' },
+  ];
+
+  const data = [
+    {
+      id: 'japan',
+      color: 'hsl(348, 70%, 50%)',
+      data: [
+        {
+          x: 'plane',
+          y: 84,
+        },
+        {
+          x: 'helicopter',
+          y: 102,
+        },
+        {
+          x: 'boat',
+          y: 128,
+        },
+        {
+          x: 'train',
+          y: 112,
+        },
+        {
+          x: 'subway',
+          y: 46,
+        },
+        {
+          x: 'bus',
+          y: 46,
+        },
+        {
+          x: 'car',
+          y: 146,
+        },
+        {
+          x: 'moto',
+          y: 59,
+        },
+        {
+          x: 'bicycle',
+          y: 41,
+        },
+        {
+          x: 'horse',
+          y: 284,
+        },
+        {
+          x: 'skateboard',
+          y: 143,
+        },
+        {
+          x: 'others',
+          y: 140,
+        },
+      ],
+    },
+  ];
 
   return (
     <Container fixed className={classes.fixed}>
@@ -84,7 +155,109 @@ function Dashboard() {
                 </div>
               </Paper>
             </Grid>
-            <Grid item xs={12} md={8} className={classes.grid}></Grid>
+            <Grid item md={12} className={classes.grid}>
+              <Paper className="w-full rounded-8 shadow-none border-1">
+                <div className="flex items-center justify-between px-16 py-16 border-b-1">
+                  <Typography className="text-16">Title</Typography>
+                  <div className="items-center">
+                    {buttons.map((button) => {
+                      return (
+                        <Button
+                          key={button.key}
+                          className="normal-case shadow-none px-16"
+                          onClick={() => handleChangeRange(button.key)}
+                          color={
+                            state.range === button.key ? 'secondary' : 'default'
+                          }
+                          variant={
+                            state.range === button.key ? 'contained' : 'text'
+                          }
+                        >
+                          {button.text}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <Grid item xs={12} md={8} className={classes.grid}>
+                  <div className="flex flex-row flex-wrap">
+                    <div className="w-full md:w-1/2 p-8 min-h-420 h-420">
+                      <ResponsiveLine
+                        data={data}
+                        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+                        xScale={{ type: 'point' }}
+                        yScale={{
+                          type: 'linear',
+                          min: 'auto',
+                          max: 'auto',
+                          stacked: true,
+                          reverse: false,
+                        }}
+                        curve="natural"
+                        axisTop={null}
+                        axisRight={null}
+                        axisBottom={{
+                          orient: 'bottom',
+                          tickSize: 5,
+                          tickPadding: 15,
+                          tickRotation: 0,
+                          legend: '',
+                          legendOffset: 35,
+                          legendPosition: 'middle',
+                        }}
+                        axisLeft={{
+                          orient: 'left',
+                          tickSize: 5,
+                          tickPadding: 10,
+                          tickRotation: 0,
+                          legend: '',
+                          legendOffset: -45,
+                          legendPosition: 'middle',
+                        }}
+                        enableGridX={false}
+                        enableGridY={false}
+                        colors={{ scheme: 'nivo' }}
+                        pointSize={8}
+                        pointColor={{ theme: 'background' }}
+                        pointBorderWidth={2}
+                        pointBorderColor={{ from: 'serieColor' }}
+                        pointLabel="y"
+                        pointLabelYOffset={-12}
+                        enableArea={true}
+                        useMesh={true}
+                        legends={[
+                          {
+                            anchor: 'top',
+                            direction: 'row',
+                            justify: false,
+                            translateX: 100,
+                            translateY: 0,
+                            itemsSpacing: 0,
+                            itemDirection: 'left-to-right',
+                            itemWidth: 80,
+                            itemHeight: 20,
+                            itemOpacity: 0.75,
+                            symbolSize: 12,
+                            symbolShape: 'circle',
+                            symbolBorderColor: 'rgba(0, 0, 0, .5)',
+                            effects: [
+                              {
+                                on: 'hover',
+                                style: {
+                                  itemBackground: 'rgba(0, 0, 0, .03)',
+                                  itemOpacity: 1,
+                                },
+                              },
+                            ],
+                          },
+                        ]}
+                      />
+                    </div>
+                    <div className="flex w-full md:w-1/2 flex-wrap p-8"></div>
+                  </div>
+                </Grid>
+              </Paper>
+            </Grid>
           </>
         )}
       </Grid>
