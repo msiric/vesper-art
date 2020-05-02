@@ -2,6 +2,7 @@ import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import { StateProvider } from '../Store/Stripe';
 import SelectField from '../../shared/SelectInput/SelectInput';
+import NumberFormat from 'react-number-format';
 import Main from './Main';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
@@ -195,16 +196,30 @@ const Checkout = () => {
                                 <div className={classes.rightList}>
                                   {personalLicenses.length ? (
                                     <div>
-                                      {personalLicenses.total
-                                        ? `$${personalLicenses.total}`
-                                        : 'Free'}
+                                      {personalLicenses.total ? (
+                                        <NumberFormat
+                                          value={personalLicenses.total}
+                                          displayType={'text'}
+                                          thousandSeparator={true}
+                                          prefix={'$'}
+                                        />
+                                      ) : (
+                                        'Free'
+                                      )}
                                     </div>
                                   ) : null}
                                   {commercialLicenses.length ? (
                                     <div>
-                                      {commercialLicenses.total
-                                        ? `$${commercialLicenses.total}`
-                                        : 'Free'}
+                                      {commercialLicenses.total ? (
+                                        <NumberFormat
+                                          value={commercialLicenses.total}
+                                          displayType={'text'}
+                                          thousandSeparator={true}
+                                          prefix={'$'}
+                                        />
+                                      ) : (
+                                        'Free'
+                                      )}
                                     </div>
                                   ) : null}
                                 </div>
@@ -247,16 +262,30 @@ const Checkout = () => {
                             <div className={classes.rightList}>
                               {licenses.current.personal.length ? (
                                 <div>
-                                  {licenses.current.personal.amount
-                                    ? `$${licenses.current.personal.amount}`
-                                    : 'Free'}
+                                  {licenses.current.personal.amount ? (
+                                    <NumberFormat
+                                      value={licenses.current.personal.amount}
+                                      displayType={'text'}
+                                      thousandSeparator={true}
+                                      prefix={'$'}
+                                    />
+                                  ) : (
+                                    'Free'
+                                  )}
                                 </div>
                               ) : null}
                               {licenses.current.commercial.length ? (
                                 <div>
-                                  {licenses.current.commercial.amount
-                                    ? `$${licenses.current.commercial.amount}`
-                                    : 'Free'}
+                                  {licenses.current.commercial.amount ? (
+                                    <NumberFormat
+                                      value={licenses.current.commercial.amount}
+                                      displayType={'text'}
+                                      thousandSeparator={true}
+                                      prefix={'$'}
+                                    />
+                                  ) : (
+                                    'Free'
+                                  )}
                                 </div>
                               ) : null}
                             </div>
@@ -286,11 +315,16 @@ const Checkout = () => {
                               secondary={
                                 <div>
                                   <Typography className={classes.rightList}>
-                                    {`- $${
-                                      (licenses.current.personal.amount +
-                                        licenses.current.commercial.amount) *
-                                      state.discount.discount
-                                    }`}
+                                    <NumberFormat
+                                      value={(
+                                        (licenses.current.personal.amount +
+                                          licenses.current.commercial.amount) *
+                                        state.discount.discount
+                                      ).toFixed(2)}
+                                      displayType={'text'}
+                                      thousandSeparator={true}
+                                      prefix={'- $'}
+                                    />
                                   </Typography>
                                 </div>
                               }
@@ -329,26 +363,38 @@ const Checkout = () => {
                           }
                           secondary={
                             <Typography className={classes.rightList}>
-                              {state.discount
-                                ? licenses.current.personal.amount +
-                                  licenses.current.commercial.amount
-                                  ? `$${
+                              {state.discount ? (
+                                licenses.current.personal.amount +
+                                licenses.current.commercial.amount ? (
+                                  <NumberFormat
+                                    value={
                                       licenses.current.personal.amount +
                                       licenses.current.commercial.amount -
                                       (licenses.current.personal.amount +
                                         licenses.current.commercial.amount) *
                                         state.discount.discount
                                     }
-                            `
-                                  : 'Free'
-                                : licenses.current.personal.amount +
-                                  licenses.current.commercial.amount
-                                ? `$${
+                                    displayType={'text'}
+                                    thousandSeparator={true}
+                                    prefix={'$'}
+                                  />
+                                ) : (
+                                  'Free'
+                                )
+                              ) : licenses.current.personal.amount +
+                                licenses.current.commercial.amount ? (
+                                <NumberFormat
+                                  value={
                                     licenses.current.personal.amount +
                                     licenses.current.commercial.amount
                                   }
-                            `
-                                : 'Free'}
+                                  displayType={'text'}
+                                  thousandSeparator={true}
+                                  prefix={'$'}
+                                />
+                              ) : (
+                                'Free'
+                              )}
                             </Typography>
                           }
                         />

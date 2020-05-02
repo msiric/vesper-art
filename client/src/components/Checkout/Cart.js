@@ -3,6 +3,7 @@ import { Context } from '../Store/Store';
 import SelectField from '../../shared/SelectInput/SelectInput';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import { Link } from 'react-router-dom';
+import NumberFormat from 'react-number-format';
 import * as Yup from 'yup';
 import {
   Modal,
@@ -295,16 +296,30 @@ const Cart = () => {
                               <div className={classes.rightList}>
                                 {personalLicenses.length ? (
                                   <div>
-                                    {personalLicenses.total
-                                      ? `$${personalLicenses.total}`
-                                      : 'Free'}
+                                    {personalLicenses.total ? (
+                                      <NumberFormat
+                                        value={personalLicenses.total}
+                                        displayType={'text'}
+                                        thousandSeparator={true}
+                                        prefix={'$'}
+                                      />
+                                    ) : (
+                                      'Free'
+                                    )}
                                   </div>
                                 ) : null}
                                 {commercialLicenses.length ? (
                                   <div>
-                                    {commercialLicenses.total
-                                      ? `$${commercialLicenses.total}`
-                                      : 'Free'}
+                                    {commercialLicenses.total ? (
+                                      <NumberFormat
+                                        value={commercialLicenses.total}
+                                        displayType={'text'}
+                                        thousandSeparator={true}
+                                        prefix={'$'}
+                                      />
+                                    ) : (
+                                      'Free'
+                                    )}
                                   </div>
                                 ) : null}
                               </div>
@@ -347,16 +362,30 @@ const Cart = () => {
                           <div className={classes.rightList}>
                             {licenses.current.personal.length ? (
                               <div>
-                                {licenses.current.personal.amount
-                                  ? `$${licenses.current.personal.amount}`
-                                  : 'Free'}
+                                {licenses.current.personal.amount ? (
+                                  <NumberFormat
+                                    value={licenses.current.personal.amount}
+                                    displayType={'text'}
+                                    thousandSeparator={true}
+                                    prefix={'$'}
+                                  />
+                                ) : (
+                                  'Free'
+                                )}
                               </div>
                             ) : null}
                             {licenses.current.commercial.length ? (
                               <div>
-                                {licenses.current.commercial.amount
-                                  ? `$${licenses.current.commercial.amount}`
-                                  : 'Free'}
+                                {licenses.current.commercial.amount ? (
+                                  <NumberFormat
+                                    value={licenses.current.commercial.amount}
+                                    displayType={'text'}
+                                    thousandSeparator={true}
+                                    prefix={'$'}
+                                  />
+                                ) : (
+                                  'Free'
+                                )}
                               </div>
                             ) : null}
                           </div>
@@ -397,13 +426,19 @@ const Cart = () => {
                         secondary={
                           <Typography className={classes.rightList}>
                             {licenses.current.personal.amount +
-                            licenses.current.commercial.amount
-                              ? `$${
+                            licenses.current.commercial.amount ? (
+                              <NumberFormat
+                                value={
                                   licenses.current.personal.amount +
                                   licenses.current.commercial.amount
                                 }
-                            `
-                              : 'Free'}
+                                displayType={'text'}
+                                thousandSeparator={true}
+                                prefix={'$'}
+                              />
+                            ) : (
+                              'Free'
+                            )}
                           </Typography>
                         }
                       />
