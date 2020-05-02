@@ -1,48 +1,94 @@
-import React from 'react';
-import { Grow, Card, CardContent, Typography, Button } from '@material-ui/core';
-import { MonetizationOnRounded as MonetizationIcon } from '@material-ui/icons';
+import React, { useContext, useState, useEffect } from 'react';
+import { Context } from '../Store/Store';
+import {
+  Container,
+  Grid,
+  CircularProgress,
+  Paper,
+  IconButton,
+  Icon,
+  Divider,
+  Typography,
+} from '@material-ui/core';
 import DashboardStyles from './Dashboard.style';
 
 function Dashboard() {
+  const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({ loading: false });
+
   const classes = DashboardStyles();
 
   return (
-    <div className={classes.root}>
-      <div className={classes.container}>
-        <Grow in>
-          <Card className={classes.card}>
-            <CardContent className={classes.content}>
-              <MonetizationIcon className={classes.media} />
-              <Typography variant="subtitle1" className={classes.heading}>
-                Start getting paid
-              </Typography>
-              <Typography color="textSecondary" className={classes.text}>
-                On the next page you will be taken to Stripe's website where you
-                will finish the onboarding process. This is mandatory in order
-                to secure your balance and to generate payouts on demand. It
-                goes without saying that having Stripe keep track of your
-                balance and handle all the transactions is much more secure and
-                reliable than doing this ourselves, so you can rest assured that
-                your earnings are safe and protected at all times.
-              </Typography>
-              <Typography color="textSecondary" className={classes.text}>
-                NOTE: We do not save any information that you enter on the next
-                page except the ID that Stripe returns back
-              </Typography>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                fullWidth
-              >
-                Continue
-              </Button>
-            </CardContent>
-          </Card>
-        </Grow>
-      </div>
-    </div>
+    <Container fixed className={classes.fixed}>
+      <Grid container className={classes.container} spacing={2}>
+        {state.loading ? (
+          <Grid item xs={12} className={classes.loader}>
+            <CircularProgress />
+          </Grid>
+        ) : (
+          <>
+            <Grid item xs={12} md={12} className={classes.grid}>
+              <div className={classes.header}>
+                <div className={classes.headerContent}>
+                  <Typography className={classes.heading} variant="h4">
+                    {store.user.name}
+                  </Typography>
+                </div>
+              </div>
+            </Grid>
+            <Grid item xs={12} md={4} className={classes.grid}>
+              <Paper className={classes.box}>
+                <div className={classes.boxData}>
+                  <Typography className={classes.boxMain}>4.3</Typography>
+                  <Typography className={classes.boxAlt} color="textSecondary">
+                    Rating
+                  </Typography>
+                </div>
+                <Divider />
+                <div className={classes.boxFooter}>
+                  <Typography className={classes.text} color="textSecondary">
+                    <span>WAT</span>:<b className={classes.count}>C</b>
+                  </Typography>
+                </div>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={4} className={classes.grid}>
+              <Paper className={classes.box}>
+                <div className={classes.boxData}>
+                  <Typography className={classes.boxMain}>7</Typography>
+                  <Typography className={classes.boxAlt} color="textSecondary">
+                    Orders
+                  </Typography>
+                </div>
+                <Divider />
+                <div className={classes.boxFooter}>
+                  <Typography className={classes.text} color="textSecondary">
+                    <span>WAT</span>:<b className={classes.count}>C</b>
+                  </Typography>
+                </div>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={4} className={classes.grid}>
+              <Paper className={classes.box}>
+                <div className={classes.boxData}>
+                  <Typography className={classes.boxMain}>$120</Typography>
+                  <Typography className={classes.boxAlt} color="textSecondary">
+                    Earnings
+                  </Typography>
+                </div>
+                <Divider />
+                <div className={classes.boxFooter}>
+                  <Typography className={classes.text} color="textSecondary">
+                    <span>WAT</span>:<b className={classes.count}>C</b>
+                  </Typography>
+                </div>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={8} className={classes.grid}></Grid>
+          </>
+        )}
+      </Grid>
+    </Container>
   );
 }
 

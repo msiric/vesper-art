@@ -1,41 +1,63 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const DashboardStyles = makeStyles((muiTheme) => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-    flexDirection: 'column',
+  fixed: {
+    height: '100%',
   },
   container: {
+    flex: 1,
+  },
+  loader: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  header: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
+    justifyContent: 'space-between',
+    padding: '24px 24px 0 24px',
+    backgroundColor: muiTheme.palette.primary.main,
   },
-  card: {
-    width: '100%',
-    maxWidth: 384,
-  },
-  content: {
+  headerContent: {
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    padding: 48,
-  },
-  media: {
-    margin: 32,
-    fontSize: '8rem',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   heading: {
-    marginBottom: 40,
+    padding: 'auto 0',
+    [muiTheme.breakpoints.down('sm')]: {
+      padding: 'auto 24px',
+    },
+  },
+  box: {
+    width: '100%',
+  },
+  boxData: {
+    textAlign: 'center',
+    padding: '12px auto 28px auto',
+  },
+  boxMain: {
+    fontSize: 72,
+    color: 'red',
+  },
+  boxAlt: {
+    fontSize: 16,
+  },
+  boxFooter: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: 'auto 16px',
+    height: 52,
   },
   text: {
-    marginBottom: 16,
+    fontSize: 15,
+    display: 'flex',
+    width: '100%',
+  },
+  count: {
+    padding: 'auto 8px',
   },
 }));
 
