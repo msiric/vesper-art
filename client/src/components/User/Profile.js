@@ -629,15 +629,6 @@ const Profile = ({ match, enqueueSnackbar }) => {
                           </Typography>
                         )}
                       </Box>
-                      <Box hidden={state.tabs.value !== 2}>
-                        {state.user.purchasedArtwork.length ? (
-                          <Gallery elements={state.user.purchasedArtwork} />
-                        ) : (
-                          <Typography variant="h6" align="center">
-                            You have no purchased artwork
-                          </Typography>
-                        )}
-                      </Box>
                     </SwipeableViews>
                   </div>
                 </Paper>

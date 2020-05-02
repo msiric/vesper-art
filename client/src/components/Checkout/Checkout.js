@@ -27,6 +27,10 @@ import { loadStripe } from '@stripe/stripe-js';
 import ax from '../../axios.config';
 import CheckoutStyles from './Checkout.style';
 
+const validationSchema = Yup.object().shape({
+  discountCode: Yup.string().trim().required('Discount cannot be empty'),
+});
+
 const Checkout = () => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
@@ -297,18 +301,41 @@ const Checkout = () => {
                         />
                       </ListItem>
                     </List>
-                    <TextField
-                      name="discount"
-                      label="Discount"
-                      type="text"
-                      value=""
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                    <Button type="button" color="primary" fullWidth>
-                      Apply
-                    </Button>
+                    <Formik
+                      initialValues={{
+                        discountCode: '',
+                      }}
+                      validationSchema={validationSchema}
+                      onSubmit={async (values) => {
+                        const { data } = await ax.post('/api/discount', values);
+                      }}
+                    >
+                      {({ values, errors, touched, enableReinitialize }) => (
+                        <Form>
+                          <Field name="discountCode">
+                            {({ field, form: { touched, errors }, meta }) => (
+                              <TextField
+                                {...field}
+                                onBlur={() => null}
+                                label="Discount"
+                                type="text"
+                                helperText={meta.touched && meta.error}
+                                error={meta.touched && Boolean(meta.error)}
+                                margin="dense"
+                                variant="outlined"
+                                fullWidth
+                              />
+                            )}
+                          </Field>
+
+                          <CardActions className={classes.actions}>
+                            <Button type="submit" color="primary" fullWidth>
+                              Apply
+                            </Button>
+                          </CardActions>
+                        </Form>
+                      )}
+                    </Formik>
                   </CardContent>
                 </Card>
                 <br />

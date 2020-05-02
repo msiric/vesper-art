@@ -9,29 +9,25 @@ const postDiscount = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { discount } = req.body;
-    if (!discount) {
-      const foundDiscount = await Discount.findOne({
-        name: discount,
-      }).session(session);
-      if (foundDiscount) {
-        if (foundDiscount.active) {
-          await User.updateOne(
-            {
-              $and: [{ _id: req.user._id }, { active: true }],
-            },
-            { discount: foundDiscount._id }
-          ).session(session);
-          await session.commitTransaction();
-          return res.status(200).json('Discount applied');
-        } else {
-          throw createError(400, 'Discount expired');
-        }
+    const { discountCode } = req.body;
+    const foundDiscount = await Discount.findOne({
+      name: discountCode,
+    }).session(session);
+    if (foundDiscount) {
+      if (foundDiscount.active) {
+        await User.updateOne(
+          {
+            $and: [{ _id: req.user._id }, { active: true }],
+          },
+          { discount: foundDiscount._id }
+        ).session(session);
+        await session.commitTransaction();
+        return res.status(200).json('Discount applied');
       } else {
-        throw createError(400, 'Discount not found');
+        throw createError(400, 'Discount expired');
       }
     } else {
-      throw createError(400, 'You already have an active discount');
+      throw createError(400, 'Discount not found');
     }
   } catch (err) {
     await session.abortTransaction();
@@ -46,9 +42,9 @@ const deleteDiscount = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { discount } = req.body;
+    const { discountCode } = req.body;
     const foundDiscount = Discount.findOne({
-      _id: discount,
+      _id: discountCode,
     }).session(session);
     if (foundDiscount) {
       await User.updateOne(

@@ -53,10 +53,10 @@ const PaymentForm = () => {
           required
           fullWidth
           InputProps={{
-            inputComponent: StripeInput,
             inputProps: {
               component: CardNumberElement,
             },
+            inputComponent: StripeInput,
           }}
           InputLabelProps={{ shrink: true }}
         />

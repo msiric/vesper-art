@@ -16,9 +16,7 @@ const getUserProfile = async (req, res, next) => {
     const { userName } = req.params;
     const foundUser = await User.findOne({
       $and: [{ name: userName }, { active: true }],
-    })
-      .populate('purchasedArtwork')
-      .deepPopulate('savedArtwork.current');
+    }).deepPopulate('savedArtwork.current');
     // }).deepPopulate(
     //   'artwork.current',
     //   '_id cover created title price type license availability description use commercial'
@@ -341,11 +339,11 @@ const deactivateUser = async (req, res, next) => {
                   discount: null,
                   inbox: null,
                   notifications: null,
-                  rating: null,
                   reviews: null,
                   artwork: null,
                   savedArtwork: null,
-                  purchasedArtwork: null,
+                  purchases: null,
+                  sales: null,
                   stripeId: null,
                   active: false,
                 },
@@ -412,11 +410,11 @@ const deactivateUser = async (req, res, next) => {
                       discount: null,
                       inbox: null,
                       notifications: null,
-                      rating: null,
                       reviews: null,
                       artwork: null,
                       savedArtwork: null,
-                      purchasedArtwork: null,
+                      sales: null,
+                      purchases: null,
                       stripeId: null,
                       active: false,
                     },
@@ -500,11 +498,11 @@ const deactivateUser = async (req, res, next) => {
                       discount: null,
                       inbox: null,
                       notifications: null,
-                      rating: null,
                       reviews: null,
                       artwork: null,
                       savedArtwork: null,
-                      purchasedArtwork: null,
+                      sales: null,
+                      purchases: null,
                       stripeId: null,
                       active: false,
                     },
@@ -584,11 +582,11 @@ const deactivateUser = async (req, res, next) => {
                     discount: null,
                     inbox: null,
                     notifications: null,
-                    rating: null,
                     reviews: null,
                     artwork: null,
                     savedArtwork: null,
-                    purchasedArtwork: null,
+                    sales: null,
+                    purchases: null,
                     stripeId: null,
                     active: false,
                   },

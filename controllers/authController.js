@@ -37,11 +37,11 @@ const postSignUp = async (req, res, next) => {
       user.discount = null;
       user.inbox = 0;
       user.notifications = 0;
-      user.rating = 0;
-      user.reviews = 0;
+      user.reviews = [];
       user.artwork = [];
       user.savedArtwork = [];
-      user.purchasedArtwork = [];
+      user.purchases = [];
+      user.sales = [];
       user.country = null;
       user.stripeId = null;
       user.active = true;
