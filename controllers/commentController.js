@@ -33,7 +33,7 @@ const postComment = async (req, res, next) => {
       await session.commitTransaction();
       res.status(200).json({
         message: 'Comment posted successfully',
-        comment: savedComment,
+        payload: savedComment,
       });
     }
   } catch (err) {

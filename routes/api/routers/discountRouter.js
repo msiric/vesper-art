@@ -4,7 +4,10 @@ const discountController = require('../../../controllers/discountController');
 
 router
   .route('/discount')
-  .post(isAuthenticated, discountController.postDiscount)
+  .post(isAuthenticated, discountController.postDiscount);
+
+router
+  .route('/discount/:discountId')
   .delete(isAuthenticated, discountController.deleteDiscount);
 
 module.exports = router;

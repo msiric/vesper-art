@@ -431,7 +431,7 @@ const ArtworkDetails = ({ match }) => {
                               comments: [
                                 ...state.artwork.comments,
                                 {
-                                  ...data.comment,
+                                  ...data.payload,
                                   owner: {
                                     _id: store.user.id,
                                     name: store.user.name,

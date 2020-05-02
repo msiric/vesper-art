@@ -10,26 +10,36 @@ const postDiscount = async (req, res, next) => {
   session.startTransaction();
   try {
     const { discountCode } = req.body;
-    const foundDiscount = await Discount.findOne({
-      name: discountCode,
+    const foundUser = User.findOne({
+      $and: [{ _id: res.locals.user.id }, { active: true }],
     }).session(session);
-    if (foundDiscount) {
-      if (foundDiscount.active) {
-        await User.updateOne(
-          {
-            $and: [{ _id: req.user._id }, { active: true }],
-          },
-          { discount: foundDiscount._id }
-        ).session(session);
-        await session.commitTransaction();
-        return res.status(200).json('Discount applied');
+    if (!foundUser.discount) {
+      const foundDiscount = await Discount.findOne({
+        name: discountCode,
+      }).session(session);
+      if (foundDiscount) {
+        if (foundDiscount.active) {
+          await User.updateOne(
+            {
+              $and: [{ _id: res.locals.user.id }, { active: true }],
+            },
+            { discount: foundDiscount._id }
+          ).session(session);
+          await session.commitTransaction();
+          return res
+            .status(200)
+            .json({ message: 'Discount applied', payload: foundDiscount });
+        } else {
+          throw createError(400, 'Discount expired');
+        }
       } else {
-        throw createError(400, 'Discount expired');
+        throw createError(400, 'Discount not found');
       }
     } else {
-      throw createError(400, 'Discount not found');
+      throw createError(400, 'User already has an applied discount');
     }
   } catch (err) {
+    console.log(err);
     await session.abortTransaction();
     next(err, res);
   } finally {
@@ -42,26 +52,31 @@ const deleteDiscount = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { discountCode } = req.body;
+    const { discountId } = req.params;
     const foundDiscount = Discount.findOne({
-      _id: discountCode,
+      _id: discountId,
     }).session(session);
-    if (foundDiscount) {
+    const foundUser = User.findOne({
+      $and: [
+        { _id: res.locals.user.id },
+        { discount: discountId },
+        { active: true },
+      ],
+    }).session(session);
+    if (foundDiscount && foundUser) {
       await User.updateOne(
         {
-          _id: res.locals.user.id,
+          $and: [{ _id: res.locals.user.id }, { active: true }],
         },
-        {
-          discount: null,
-        }
+        { discount: foundDiscount._id }
       ).session(session);
-
       await session.commitTransaction();
       return res.status(200).json('Discount removed');
     } else {
       throw createError(400, 'Discount not found');
     }
   } catch (err) {
+    console.log(err);
     await session.abortTransaction();
     next(err, res);
   } finally {

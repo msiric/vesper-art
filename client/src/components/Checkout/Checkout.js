@@ -86,6 +86,14 @@ const Checkout = () => {
     return array.filter((item) => item.type === condition).length;
   };
 
+  const handleRemoveDiscount = async () => {
+    await ax.delete(`/api/discount/${state.discount._id}`);
+    setState((prevState) => ({
+      ...prevState,
+      discount: null,
+    }));
+  };
+
   useEffect(() => {
     fetchCart();
   }, []);
@@ -256,28 +264,61 @@ const Checkout = () => {
                         />
                       </ListItem>
                       <Divider />
+                      {state.discount ? (
+                        <>
+                          <ListItem className={classes.listItem}>
+                            <ListItemText
+                              primary={<Typography>Discount</Typography>}
+                              secondary={
+                                <div>
+                                  <Typography>{`${state.discount.name} (${
+                                    state.discount.discount * 100
+                                  }%)`}</Typography>
+                                </div>
+                              }
+                            />
+                            <ListItemText
+                              primary={
+                                <Typography className={classes.rightList}>
+                                  Amount
+                                </Typography>
+                              }
+                              secondary={
+                                <div>
+                                  <Typography className={classes.rightList}>
+                                    {`- $${
+                                      (licenses.current.personal.amount +
+                                        licenses.current.commercial.amount) *
+                                      state.discount.discount
+                                    }`}
+                                  </Typography>
+                                </div>
+                              }
+                            />
+                          </ListItem>
+                          <Divider />
+                        </>
+                      ) : null}
                       <ListItem className={classes.listItem}>
                         <ListItemText
                           primary={<Typography>Order</Typography>}
                           secondary={
-                            <div>
-                              {licenses.current.personal.length +
-                              licenses.current.commercial.length ? (
-                                <Typography>
-                                  {licenses.current.personal.length +
-                                    licenses.current.commercial.length ===
-                                  1
-                                    ? `${
-                                        licenses.current.personal.length +
-                                        licenses.current.commercial.length
-                                      } license`
-                                    : `${
-                                        licenses.current.personal.length +
-                                        licenses.current.commercial.length
-                                      } licenses`}
-                                </Typography>
-                              ) : null}
-                            </div>
+                            licenses.current.personal.length +
+                            licenses.current.commercial.length ? (
+                              <Typography>
+                                {licenses.current.personal.length +
+                                  licenses.current.commercial.length ===
+                                1
+                                  ? `${
+                                      licenses.current.personal.length +
+                                      licenses.current.commercial.length
+                                    } license`
+                                  : `${
+                                      licenses.current.personal.length +
+                                      licenses.current.commercial.length
+                                    } licenses`}
+                              </Typography>
+                            ) : null
                           }
                         />
                         <ListItemText
@@ -288,8 +329,20 @@ const Checkout = () => {
                           }
                           secondary={
                             <Typography className={classes.rightList}>
-                              {licenses.current.personal.amount +
-                              licenses.current.commercial.amount
+                              {state.discount
+                                ? licenses.current.personal.amount +
+                                  licenses.current.commercial.amount
+                                  ? `$${
+                                      licenses.current.personal.amount +
+                                      licenses.current.commercial.amount -
+                                      (licenses.current.personal.amount +
+                                        licenses.current.commercial.amount) *
+                                        state.discount.discount
+                                    }
+                            `
+                                  : 'Free'
+                                : licenses.current.personal.amount +
+                                  licenses.current.commercial.amount
                                 ? `$${
                                     licenses.current.personal.amount +
                                     licenses.current.commercial.amount
@@ -301,41 +354,58 @@ const Checkout = () => {
                         />
                       </ListItem>
                     </List>
-                    <Formik
-                      initialValues={{
-                        discountCode: '',
-                      }}
-                      validationSchema={validationSchema}
-                      onSubmit={async (values) => {
-                        const { data } = await ax.post('/api/discount', values);
-                      }}
-                    >
-                      {({ values, errors, touched, enableReinitialize }) => (
-                        <Form>
-                          <Field name="discountCode">
-                            {({ field, form: { touched, errors }, meta }) => (
-                              <TextField
-                                {...field}
-                                onBlur={() => null}
-                                label="Discount"
-                                type="text"
-                                helperText={meta.touched && meta.error}
-                                error={meta.touched && Boolean(meta.error)}
-                                margin="dense"
-                                variant="outlined"
-                                fullWidth
-                              />
-                            )}
-                          </Field>
-
-                          <CardActions className={classes.actions}>
-                            <Button type="submit" color="primary" fullWidth>
-                              Apply
-                            </Button>
-                          </CardActions>
-                        </Form>
-                      )}
-                    </Formik>
+                    {state.discount ? (
+                      <Button
+                        type="button"
+                        color="error"
+                        onClick={handleRemoveDiscount}
+                        fullWidth
+                      >
+                        Remove discount
+                      </Button>
+                    ) : (
+                      <Formik
+                        initialValues={{
+                          discountCode: '',
+                        }}
+                        validationSchema={validationSchema}
+                        onSubmit={async (values) => {
+                          const { data } = await ax.post(
+                            '/api/discount',
+                            values
+                          );
+                          setState((prevState) => ({
+                            ...prevState,
+                            discount: data.payload,
+                          }));
+                        }}
+                      >
+                        {({ values, errors, touched, enableReinitialize }) => (
+                          <Form>
+                            <Field name="discountCode">
+                              {({ field, form: { touched, errors }, meta }) => (
+                                <TextField
+                                  {...field}
+                                  onBlur={() => null}
+                                  label="Discount"
+                                  type="text"
+                                  helperText={meta.touched && meta.error}
+                                  error={meta.touched && Boolean(meta.error)}
+                                  margin="dense"
+                                  variant="outlined"
+                                  fullWidth
+                                />
+                              )}
+                            </Field>
+                            <CardActions className={classes.actions}>
+                              <Button type="submit" color="primary" fullWidth>
+                                Apply
+                              </Button>
+                            </CardActions>
+                          </Form>
+                        )}
+                      </Formik>
+                    )}
                   </CardContent>
                 </Card>
                 <br />
