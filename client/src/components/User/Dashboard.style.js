@@ -59,6 +59,33 @@ const DashboardStyles = makeStyles((muiTheme) => ({
   count: {
     padding: 'auto 8px',
   },
+  actions: {
+    width: '100%',
+  },
+  actionsContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  actionsHeading: {
+    fontSize: 16,
+  },
+  buttonContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  button: {
+    padding: 'auto 16px',
+  },
+  graph: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  graphContainer: {
+    width: '100%',
+    height: 420,
+  },
 }));
 
 export default DashboardStyles;

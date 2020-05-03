@@ -156,15 +156,17 @@ function Dashboard() {
               </Paper>
             </Grid>
             <Grid item md={12} className={classes.grid}>
-              <Paper className="w-full rounded-8 shadow-none border-1">
-                <div className="flex items-center justify-between px-16 py-16 border-b-1">
-                  <Typography className="text-16">Title</Typography>
-                  <div className="items-center">
+              <Paper className={classes.actions}>
+                <div className={classes.actionsContainer}>
+                  <Typography className={classes.actionsHeading}>
+                    Title
+                  </Typography>
+                  <div className={classes.buttonContainer}>
                     {buttons.map((button) => {
                       return (
                         <Button
                           key={button.key}
-                          className="normal-case shadow-none px-16"
+                          className={classes.button}
                           onClick={() => handleChangeRange(button.key)}
                           color={
                             state.range === button.key ? 'secondary' : 'default'
@@ -179,9 +181,10 @@ function Dashboard() {
                     })}
                   </div>
                 </div>
+                <Divider />
                 <Grid item xs={12} md={8} className={classes.grid}>
-                  <div className="flex flex-row flex-wrap">
-                    <div className="w-full md:w-1/2 p-8 min-h-420 h-420">
+                  <div className={classes.graph}>
+                    <div className={classes.graphContainer}>
                       <ResponsiveLine
                         data={data}
                         margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
@@ -253,7 +256,11 @@ function Dashboard() {
                         ]}
                       />
                     </div>
-                    <div className="flex w-full md:w-1/2 flex-wrap p-8"></div>
+                  </div>
+                </Grid>
+                <Grid item xs={12} md={4} className={classes.grid}>
+                  <div className={classes.controls}>
+                    <div className={classes.controlsContainer}></div>
                   </div>
                 </Grid>
               </Paper>
