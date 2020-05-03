@@ -1,7 +1,6 @@
-import React, { useEffect, useContext, lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import MainLayout from '../../layouts/MainLayout';
 import AuthLayout from '../../layouts/AuthLayout';
-import { Context } from '../Store/Store';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 
 const routes = [
@@ -186,8 +185,6 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
 );
 
 const Router = () => {
-  const [store] = useContext(Context);
-
   return (
     <BrowserRouter>
       <Route

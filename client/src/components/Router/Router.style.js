@@ -1,10 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const AppStyles = makeStyles((muiTheme) => ({
-  alert: {
-    left: '50% !important',
-    transform: 'translateX(-50%) !important',
-  },
+const RouterStyles = makeStyles((muiTheme) => ({
   fixed: {
     height: '100%',
   },
@@ -19,4 +15,4 @@ const AppStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-export default AppStyles;
+export default RouterStyles;

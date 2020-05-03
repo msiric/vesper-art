@@ -3,6 +3,7 @@ import React, { createContext, useReducer } from 'react';
 const store = {
   main: {
     loading: true,
+    error: false,
     auth: 'jwt',
     brand: 'test',
     theme: 'light',
@@ -26,6 +27,7 @@ const reducer = (state, action) => {
         ...state,
         main: {
           loading: action.loading,
+          error: action.error,
           auth: action.auth,
           brand: action.brand,
           theme: action.theme,
@@ -50,6 +52,7 @@ const reducer = (state, action) => {
         ...state,
         main: {
           loading: action.loading,
+          error: action.error,
           auth: action.auth,
           brand: action.brand,
           theme: action.theme,
