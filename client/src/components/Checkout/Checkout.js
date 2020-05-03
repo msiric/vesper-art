@@ -32,46 +32,13 @@ const validationSchema = Yup.object().shape({
   discountCode: Yup.string().trim().required('Discount cannot be empty'),
 });
 
-const Checkout = () => {
+const Checkout = ({ match, location }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
-    cart: [],
-    discount: null,
-  });
-  const licenses = useRef({
-    id: {},
-    personal: {
-      length: 0,
-      amount: 0,
-    },
-    commercial: {
-      length: 0,
-      amount: 0,
-    },
-  });
-  const history = useHistory();
-
-  const classes = CheckoutStyles();
-
-  const fetchCart = async () => {
-    try {
-      const { data } = await ax.get(`/api/cart`);
-
-      setState({
-        ...state,
-        loading: false,
-        artwork: data.artwork,
-        discount: data.discount,
-      });
-    } catch (err) {
-      setState({ ...state, loading: false });
-    }
-  };
-
-  const resetRef = () => {
-    licenses.current = {
-      id: {},
+    artwork: {},
+    licenses: [],
+    summary: {
       personal: {
         length: 0,
         amount: 0,
@@ -80,11 +47,31 @@ const Checkout = () => {
         length: 0,
         amount: 0,
       },
-    };
+    },
+    discount: null,
+  });
+
+  const history = useHistory();
+
+  const classes = CheckoutStyles();
+
+  const fetchArtwork = async () => {
+    try {
+      const { data } = await ax.get(`/api/checkout/${match.params.id}`);
+      setState({
+        ...state,
+        loading: false,
+        artwork: data.artwork,
+        licenses: [location.state.payload],
+        discount: data.discount,
+      });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
   };
 
-  const getLength = (condition, array) => {
-    return array.filter((item) => item.type === condition).length;
+  const getLicenseLength = (condition, array) => {
+    return array.filter((item) => item.licenseType === condition).length;
   };
 
   const handleRemoveDiscount = async () => {
@@ -96,8 +83,39 @@ const Checkout = () => {
   };
 
   useEffect(() => {
-    fetchCart();
+    fetchArtwork();
   }, []);
+
+  useEffect(() => {
+    if (state.artwork._id) {
+      const personalLicensesLength = getLicenseLength(
+        'personal',
+        state.licenses
+      );
+      const commercialLicensesLength = getLicenseLength(
+        'commercial',
+        state.licenses
+      );
+      const personalLicensesAmount =
+        personalLicensesLength * state.artwork.current.price;
+      const commercialLicensesAmount =
+        commercialLicensesLength *
+        (state.artwork.current.price + state.artwork.current.commercial);
+      setState((prevState) => ({
+        ...prevState,
+        summary: {
+          personal: {
+            length: personalLicensesLength,
+            amount: personalLicensesAmount,
+          },
+          commercial: {
+            length: commercialLicensesLength,
+            amount: commercialLicensesAmount,
+          },
+        },
+      }));
+    }
+  }, [state.licenses]);
 
   return (
     <StateProvider>
@@ -107,7 +125,7 @@ const Checkout = () => {
             <Grid item xs={12} className={classes.loader}>
               <CircularProgress />
             </Grid>
-          ) : state.cart.length ? (
+          ) : state.artwork._id ? (
             <>
               <Grid item xs={12} md={8} className={classes.artwork}>
                 <Main />
@@ -119,134 +137,95 @@ const Checkout = () => {
                       Order summary
                     </Typography>
                     <List disablePadding>
-                      {state.cart.map((item) => {
-                        const personalLicenses = {
-                          length: getLength('personal', item.licenses),
-                        };
-                        const commercialLicenses = {
-                          length: getLength('commercial', item.licenses),
-                          amount: item.artwork.current.commercial,
-                        };
-                        personalLicenses.total =
-                          personalLicenses.length * item.artwork.current.price;
-                        commercialLicenses.total =
-                          commercialLicenses.length *
-                          (commercialLicenses.amount +
-                            item.artwork.current.price);
-                        if (!licenses.current.id[item.artwork.current._id])
-                          licenses.current = {
-                            id: {
-                              ...licenses.current.id,
-                              [item.artwork.current._id]: true,
-                            },
-                            personal: {
-                              length:
-                                licenses.current.personal.length +
-                                personalLicenses.length,
-                              amount:
-                                licenses.current.personal.amount +
-                                personalLicenses.total,
-                            },
-                            commercial: {
-                              length:
-                                licenses.current.commercial.length +
-                                commercialLicenses.length,
-                              amount:
-                                licenses.current.commercial.amount +
-                                commercialLicenses.total,
-                            },
-                          };
-                        return (
-                          <ListItem
-                            className={classes.listItem}
-                            key={item.artwork.current._id}
-                          >
-                            <ListItemText
-                              primary={
-                                <Typography>
-                                  {item.artwork.current.title}
-                                </Typography>
-                              }
-                              secondary={
+                      <ListItem
+                        className={classes.listItem}
+                        key={state.artwork.current._id}
+                      >
+                        <ListItemText
+                          primary={
+                            <Typography>
+                              {state.artwork.current.title}
+                            </Typography>
+                          }
+                          secondary={
+                            <div>
+                              {state.summary.personal.length ? (
                                 <div>
-                                  {personalLicenses.length ? (
-                                    <div>
-                                      {personalLicenses.length === 1
-                                        ? `${personalLicenses.length} personal license`
-                                        : `${personalLicenses.length} personal licenses`}
-                                    </div>
-                                  ) : null}
-                                  {commercialLicenses.length ? (
-                                    <div>
-                                      {commercialLicenses.length === 1
-                                        ? `${commercialLicenses.length} commercial license`
-                                        : `${commercialLicenses.length} commercial licenses`}
-                                    </div>
-                                  ) : null}
+                                  {state.summary.personal.length === 1
+                                    ? `${state.summary.personal.length} personal license`
+                                    : `${state.summary.personal.length} personal licenses`}
                                 </div>
-                              }
-                            />
-                            <ListItemText
-                              primary={
-                                <Typography className={classes.rightList}>
-                                  Price
-                                </Typography>
-                              }
-                              secondary={
-                                <div className={classes.rightList}>
-                                  {personalLicenses.length ? (
-                                    <div>
-                                      {personalLicenses.total ? (
-                                        <NumberFormat
-                                          value={personalLicenses.total}
-                                          displayType={'text'}
-                                          thousandSeparator={true}
-                                          prefix={'$'}
-                                        />
-                                      ) : (
-                                        'Free'
-                                      )}
-                                    </div>
-                                  ) : null}
-                                  {commercialLicenses.length ? (
-                                    <div>
-                                      {commercialLicenses.total ? (
-                                        <NumberFormat
-                                          value={commercialLicenses.total}
-                                          displayType={'text'}
-                                          thousandSeparator={true}
-                                          prefix={'$'}
-                                        />
-                                      ) : (
-                                        'Free'
-                                      )}
-                                    </div>
-                                  ) : null}
+                              ) : null}
+                              {state.summary.commercial.length ? (
+                                <div>
+                                  {state.summary.commercial.length === 1
+                                    ? `${state.summary.commercial.length} commercial licenses`
+                                    : `${state.summary.commercial.length} commercial licenses`}
                                 </div>
-                              }
-                            />
-                          </ListItem>
-                        );
-                      })}
+                              ) : null}
+                            </div>
+                          }
+                        />
+                        <ListItemText
+                          primary={
+                            <Typography className={classes.rightList}>
+                              Price
+                            </Typography>
+                          }
+                          secondary={
+                            <div className={classes.rightList}>
+                              {state.summary.personal.length ? (
+                                <div>
+                                  {state.summary.personal.amount ? (
+                                    <NumberFormat
+                                      value={state.summary.personal.amount}
+                                      displayType={'text'}
+                                      thousandSeparator={true}
+                                      prefix={'$'}
+                                    />
+                                  ) : (
+                                    'Free'
+                                  )}
+                                </div>
+                              ) : null}
+                              {state.summary.commercial.length ? (
+                                <div>
+                                  {state.summary.commercial.amount ? (
+                                    <NumberFormat
+                                      value={state.summary.commercial.amount}
+                                      displayType={'text'}
+                                      thousandSeparator={true}
+                                      prefix={'$'}
+                                    />
+                                  ) : (
+                                    'Free'
+                                  )}
+                                </div>
+                              ) : null}
+                            </div>
+                          }
+                        />
+                      </ListItem>
+
                       <Divider />
                       <ListItem className={classes.listItem}>
-                        {console.log(licenses.current)}
+                        {console.log(state.summary)}
                         <ListItemText
                           primary={<Typography>Items</Typography>}
                           secondary={
                             <div>
-                              {licenses.current.personal.length ? (
+                              {state.summary.personal.length ? (
                                 <div>
-                                  {licenses.current.personal.length === 1
-                                    ? `${licenses.current.personal.length} personal license`
-                                    : `${licenses.current.personal.length} personal licenses`}
+                                  {state.summary.personal.length === 1
+                                    ? `${state.summary.personal.length} personal license`
+                                    : `${state.summary.personal.length} personal licenses`}
                                 </div>
                               ) : null}
-                              {licenses.current.commercial.length ? (
+                              {state.summary.commercial.length ? (
                                 <div>
-                                  {licenses.current.commercial.length === 1
-                                    ? `${licenses.current.commercial.length} commercial license`
-                                    : `${licenses.current.commercial.length} commercial licenses`}
+                                  {state.summary.commercial.length === 1
+                                    ? `${state.summary.commercial.length} commercial license`
+                                    : `${state.summary.commercial.length} commercial licenses`}
                                 </div>
                               ) : null}
                             </div>
@@ -260,11 +239,11 @@ const Checkout = () => {
                           }
                           secondary={
                             <div className={classes.rightList}>
-                              {licenses.current.personal.length ? (
+                              {state.summary.personal.length ? (
                                 <div>
-                                  {licenses.current.personal.amount ? (
+                                  {state.summary.personal.amount ? (
                                     <NumberFormat
-                                      value={licenses.current.personal.amount}
+                                      value={state.summary.personal.amount}
                                       displayType={'text'}
                                       thousandSeparator={true}
                                       prefix={'$'}
@@ -274,11 +253,11 @@ const Checkout = () => {
                                   )}
                                 </div>
                               ) : null}
-                              {licenses.current.commercial.length ? (
+                              {state.summary.commercial.length ? (
                                 <div>
-                                  {licenses.current.commercial.amount ? (
+                                  {state.summary.commercial.amount ? (
                                     <NumberFormat
-                                      value={licenses.current.commercial.amount}
+                                      value={state.summary.commercial.amount}
                                       displayType={'text'}
                                       thousandSeparator={true}
                                       prefix={'$'}
@@ -317,8 +296,8 @@ const Checkout = () => {
                                   <Typography className={classes.rightList}>
                                     <NumberFormat
                                       value={(
-                                        (licenses.current.personal.amount +
-                                          licenses.current.commercial.amount) *
+                                        (state.summary.personal.amount +
+                                          state.summary.commercial.amount) *
                                         state.discount.discount
                                       ).toFixed(2)}
                                       displayType={'text'}
@@ -337,19 +316,19 @@ const Checkout = () => {
                         <ListItemText
                           primary={<Typography>Order</Typography>}
                           secondary={
-                            licenses.current.personal.length +
-                            licenses.current.commercial.length ? (
+                            state.summary.personal.length +
+                            state.summary.commercial.length ? (
                               <Typography>
-                                {licenses.current.personal.length +
-                                  licenses.current.commercial.length ===
+                                {state.summary.personal.length +
+                                  state.summary.commercial.length ===
                                 1
                                   ? `${
-                                      licenses.current.personal.length +
-                                      licenses.current.commercial.length
+                                      state.summary.personal.length +
+                                      state.summary.commercial.length
                                     } license`
                                   : `${
-                                      licenses.current.personal.length +
-                                      licenses.current.commercial.length
+                                      state.summary.personal.length +
+                                      state.summary.commercial.length
                                     } licenses`}
                               </Typography>
                             ) : null
@@ -364,14 +343,14 @@ const Checkout = () => {
                           secondary={
                             <Typography className={classes.rightList}>
                               {state.discount ? (
-                                licenses.current.personal.amount +
-                                licenses.current.commercial.amount ? (
+                                state.summary.personal.amount +
+                                state.summary.commercial.amount ? (
                                   <NumberFormat
                                     value={
-                                      licenses.current.personal.amount +
-                                      licenses.current.commercial.amount -
-                                      (licenses.current.personal.amount +
-                                        licenses.current.commercial.amount) *
+                                      state.summary.personal.amount +
+                                      state.summary.commercial.amount -
+                                      (state.summary.personal.amount +
+                                        state.summary.commercial.amount) *
                                         state.discount.discount
                                     }
                                     displayType={'text'}
@@ -381,12 +360,12 @@ const Checkout = () => {
                                 ) : (
                                   'Free'
                                 )
-                              ) : licenses.current.personal.amount +
-                                licenses.current.commercial.amount ? (
+                              ) : state.summary.personal.amount +
+                                state.summary.commercial.amount ? (
                                 <NumberFormat
                                   value={
-                                    licenses.current.personal.amount +
-                                    licenses.current.commercial.amount
+                                    state.summary.personal.amount +
+                                    state.summary.commercial.amount
                                   }
                                   displayType={'text'}
                                   thousandSeparator={true}
@@ -458,7 +437,7 @@ const Checkout = () => {
               </Grid>
             </>
           ) : (
-            state.stripe
+            'a'
           )}
         </Grid>
       </Container>

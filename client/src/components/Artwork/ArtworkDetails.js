@@ -533,7 +533,8 @@ const ArtworkDetails = ({ match }) => {
                         </Typography>
                       </>
                     ) : null}
-                    {state.artwork.current.availability === 'available' &&
+                    {/* $CART */}
+                    {/* {state.artwork.current.availability === 'available' &&
                     !store.user.cart[state.artwork._id] ? (
                       <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="artworkLicense">
@@ -554,7 +555,7 @@ const ArtworkDetails = ({ match }) => {
                           ) : null}
                         </Select>
                       </FormControl>
-                    ) : null}
+                    ) : null} */}
                   </CardContent>
                   <CardActions>
                     {state.artwork.owner._id !== store.user.id &&

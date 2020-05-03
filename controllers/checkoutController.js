@@ -92,7 +92,8 @@ const getProcessCart = async (req, res, next) => {
   }
 };
 
-const getPaymentCart = async (req, res, next) => {
+// $CART
+const getPaymentCart_Old = async (req, res, next) => {
   try {
     const foundUser = await User.findOne({
       $and: [{ _id: res.locals.user.id }, { active: true }],
@@ -131,6 +132,32 @@ const getPaymentCart = async (req, res, next) => {
       amount = amount + fee;
       res.json({
         amount: parseFloat(amount.toFixed(12)),
+      });
+    } else {
+      throw createError(400, 'User not found');
+    }
+  } catch (err) {
+    console.log(err);
+    next(err, res);
+  }
+};
+
+const getCheckout = async (req, res, next) => {
+  try {
+    const { artworkId } = req.params;
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: artworkId }, { active: true }],
+    }).populate(
+      'current',
+      '_id cover created title price type license availability description use commercial'
+    );
+    if (foundArtwork) {
+      const foundUser = await User.findOne({
+        $and: [{ _id: res.locals.user.id }, { active: true }],
+      }).populate('discount');
+      res.json({
+        artwork: foundArtwork,
+        discount: foundUser.discount,
       });
     } else {
       throw createError(400, 'User not found');
@@ -438,7 +465,9 @@ const deleteFromCart = async (req, res, next) => {
 module.exports = {
   getStripeSecret,
   getProcessCart,
-  getPaymentCart,
+  // $CART
+  /* getPaymentCart */
+  getCheckout,
   postPaymentCart,
   addToCart,
   deleteFromCart,
