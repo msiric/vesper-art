@@ -17,6 +17,7 @@ const DashboardStyles = makeStyles((muiTheme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
+    height: 120,
     padding: '24px 24px 0 24px',
     backgroundColor: muiTheme.palette.primary.main,
   },
@@ -40,7 +41,6 @@ const DashboardStyles = makeStyles((muiTheme) => ({
   },
   boxMain: {
     fontSize: 72,
-    color: 'red',
   },
   boxAlt: {
     fontSize: 16,
@@ -85,6 +85,32 @@ const DashboardStyles = makeStyles((muiTheme) => ({
   graphContainer: {
     width: '100%',
     height: 420,
+  },
+  graphArea: {
+    display: 'flex',
+  },
+  controls: {
+    height: '100%',
+    minHeight: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  item: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  itemData: {
+    textAlign: 'center',
+    padding: '12px auto 28px auto',
+  },
+  itemMain: {
+    fontSize: 42,
+  },
+  itemAlt: {
+    fontSize: 16,
   },
 }));
 

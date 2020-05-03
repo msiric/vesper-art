@@ -183,124 +183,109 @@ function Dashboard() {
                   </div>
                 </div>
                 <Divider />
-                <Grid item xs={12} md={8} className={classes.grid}>
-                  <div className={classes.graph}>
-                    <div className={classes.graphContainer}>
-                      <ResponsiveLine
-                        data={data}
-                        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-                        xScale={{ type: 'point' }}
-                        yScale={{
-                          type: 'linear',
-                          min: 'auto',
-                          max: 'auto',
-                          stacked: true,
-                          reverse: false,
-                        }}
-                        curve="natural"
-                        axisTop={null}
-                        axisRight={null}
-                        axisBottom={{
-                          orient: 'bottom',
-                          tickSize: 5,
-                          tickPadding: 15,
-                          tickRotation: 0,
-                          legend: '',
-                          legendOffset: 35,
-                          legendPosition: 'middle',
-                        }}
-                        axisLeft={{
-                          orient: 'left',
-                          tickSize: 5,
-                          tickPadding: 10,
-                          tickRotation: 0,
-                          legend: '',
-                          legendOffset: -45,
-                          legendPosition: 'middle',
-                        }}
-                        enableGridX={false}
-                        enableGridY={false}
-                        colors={{ scheme: 'nivo' }}
-                        pointSize={8}
-                        pointColor={{ theme: 'background' }}
-                        pointBorderWidth={2}
-                        pointBorderColor={{ from: 'serieColor' }}
-                        pointLabel="y"
-                        pointLabelYOffset={-12}
-                        enableArea={true}
-                        useMesh={true}
-                        legends={[
-                          {
-                            anchor: 'top',
-                            direction: 'row',
-                            justify: false,
-                            translateX: 100,
-                            translateY: 0,
-                            itemsSpacing: 0,
-                            itemDirection: 'left-to-right',
-                            itemWidth: 80,
-                            itemHeight: 20,
-                            itemOpacity: 0.75,
-                            symbolSize: 12,
-                            symbolShape: 'circle',
-                            symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                            effects: [
-                              {
-                                on: 'hover',
-                                style: {
-                                  itemBackground: 'rgba(0, 0, 0, .03)',
-                                  itemOpacity: 1,
-                                },
-                              },
-                            ],
-                          },
-                        ]}
-                      />
+                <div className={classes.graphArea}>
+                  <Grid item xs={12} md={8} className={classes.grid}>
+                    <div className={classes.graph}>
+                      <div className={classes.graphContainer}>
+                        <ResponsiveLine
+                          data={data}
+                          margin={{
+                            top: 50,
+                            right: 110,
+                            bottom: 50,
+                            left: 60,
+                          }}
+                          xScale={{ type: 'point' }}
+                          yScale={{
+                            type: 'linear',
+                            min: 0,
+                            max: 'auto',
+                            stacked: true,
+                            reverse: false,
+                          }}
+                          curve="natural"
+                          axisTop={null}
+                          axisRight={null}
+                          axisBottom={{
+                            orient: 'bottom',
+                            tickSize: 5,
+                            tickPadding: 15,
+                            tickRotation: 0,
+                            legend: '',
+                            legendOffset: 35,
+                            legendPosition: 'middle',
+                          }}
+                          axisLeft={{
+                            orient: 'left',
+                            tickSize: 5,
+                            tickPadding: 10,
+                            tickRotation: 0,
+                            legend: '',
+                            legendOffset: -45,
+                            legendPosition: 'middle',
+                          }}
+                          enableGridX={false}
+                          enableGridY={false}
+                          colors={{ scheme: 'nivo' }}
+                          pointSize={8}
+                          pointColor={{ theme: 'background' }}
+                          pointBorderWidth={2}
+                          pointBorderColor={{ from: 'serieColor' }}
+                          pointLabel="y"
+                          pointLabelYOffset={-12}
+                          enableArea={true}
+                          useMesh={true}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </Grid>
-                <Grid item xs={12} md={4} className={classes.grid}>
-                  <div className={classes.controls}>
-                    <Paper className={classes.box}>
-                      <div className={classes.boxData}>
-                        <Typography className={classes.boxMain}>4.3</Typography>
-                        <Typography
-                          className={classes.boxAlt}
-                          color="textSecondary"
-                        >
-                          Rating
-                        </Typography>
-                      </div>
-                      <Divider />
-                    </Paper>
-                    <Paper className={classes.box}>
-                      <div className={classes.boxData}>
-                        <Typography className={classes.boxMain}>7</Typography>
-                        <Typography
-                          className={classes.boxAlt}
-                          color="textSecondary"
-                        >
-                          Orders
-                        </Typography>
-                      </div>
-                      <Divider />
-                    </Paper>
-                    <Paper className={classes.box}>
-                      <div className={classes.boxData}>
-                        <Typography className={classes.boxMain}>
-                          $120
-                        </Typography>
-                        <Typography
-                          className={classes.boxAlt}
-                          color="textSecondary"
-                        >
-                          Earnings
-                        </Typography>
-                      </div>
-                      <Divider />
-                    </Paper>
-                  </div>
-                </Grid>
+                  </Grid>
+                  <Grid item xs={12} md={4} className={classes.grid}>
+                    <div className={classes.controls}>
+                      <Paper className={classes.item}>
+                        <div className={classes.itemData}>
+                          <Typography className={classes.itemMain}>
+                            4.3
+                          </Typography>
+                          <Typography
+                            className={classes.itemAlt}
+                            color="textSecondary"
+                          >
+                            Rating
+                          </Typography>
+                        </div>
+                        <Divider />
+                      </Paper>
+                      <Paper className={classes.item}>
+                        <div className={classes.itemData}>
+                          <Typography className={classes.itemMain}>
+                            7
+                          </Typography>
+                          <Typography
+                            className={classes.itemAlt}
+                            color="textSecondary"
+                          >
+                            Orders
+                          </Typography>
+                        </div>
+                        <Divider />
+                      </Paper>
+                      <Paper className={classes.item}>
+                        <div className={classes.itemData}>
+                          <Typography className={classes.itemMain}>
+                            $120
+                          </Typography>
+                          <Typography
+                            className={classes.itemAlt}
+                            color="textSecondary"
+                          >
+                            Earnings
+                          </Typography>
+                        </div>
+                        <Divider />
+                      </Paper>
+                    </div>
+                  </Grid>
+                </div>
               </Paper>
             </Grid>
           </>
