@@ -132,14 +132,15 @@ const Header = () => {
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
-      <MenuItem component={Link} to="/cart">
+      {/* $CART */}
+      {/* <MenuItem component={Link} to="/cart">
         <IconButton aria-label="Show cart" color="inherit">
           <Badge badgeContent={store.user.cartSize} color="secondary">
             <CartIcon />
           </Badge>
         </IconButton>
         <p>Cart</p>
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           aria-label="Show profile"
@@ -215,7 +216,7 @@ const Header = () => {
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
-                <IconButton
+                {/* <IconButton
                   component={Link}
                   to="/cart"
                   aria-label="Show cart"
@@ -224,7 +225,7 @@ const Header = () => {
                   <Badge badgeContent={store.user.cartSize} color="secondary">
                     <CartIcon />
                   </Badge>
-                </IconButton>
+                </IconButton> */}
                 <IconButton
                   edge="end"
                   aria-label="Show profile"

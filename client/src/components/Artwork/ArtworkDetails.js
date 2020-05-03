@@ -98,12 +98,18 @@ const ArtworkDetails = ({ match }) => {
     validationSchema: licenseValidation,
     async onSubmit(values) {
       try {
-        await ax.post(`/api/cart/artwork/${match.params.id}`, values);
-        handleModalClose();
-        dispatch({
-          type: 'updateCart',
-          cart: { ...store.user.cart, [state.artwork._id]: true },
-          cartSize: store.user.cartSize + 1,
+        // $CART
+        // await ax.post(`/api/cart/artwork/${match.params.id}`, values);
+        // handleModalClose();
+        // dispatch({
+        //   type: 'updateCart',
+        //   cart: { ...store.user.cart, [state.artwork._id]: true },
+        //   cartSize: store.user.cartSize + 1,
+        // });
+
+        history.push({
+          pathname: `/checkout/${match.params.id}`,
+          state: { payload: values },
         });
       } catch (err) {
         console.log(err);
@@ -527,23 +533,6 @@ const ArtworkDetails = ({ match }) => {
                         </Typography>
                       </>
                     ) : null}
-                    <Typography variant="body2" component="p">
-                      {state.artwork.current.availability === 'available'
-                        ? 'Total: '
-                        : null}
-                      {state.artwork.current.availability === 'available'
-                        ? state.artwork.current.price
-                          ? state.license === 'personal'
-                            ? `$${state.artwork.current.price}`
-                            : `$${
-                                state.artwork.current.price +
-                                state.artwork.current.commercial
-                              }`
-                          : state.license === 'personal'
-                          ? 'Free'
-                          : `$${state.artwork.current.commercial}`
-                        : 'Showcase'}
-                    </Typography>
                     {state.artwork.current.availability === 'available' &&
                     !store.user.cart[state.artwork._id] ? (
                       <FormControl className={classes.formControl}>
@@ -578,7 +567,12 @@ const ArtworkDetails = ({ match }) => {
                             </Button>
                           ) : (
                             <Button onClick={() => handleModalOpen()}>
-                              Add to cart
+                              {`Purchase ($${
+                                state.license === 'personal'
+                                  ? state.artwork.current.price
+                                  : state.artwork.current.price +
+                                    state.artwork.current.commercial
+                              })`}
                             </Button>
                           )
                         ) : (
@@ -593,7 +587,12 @@ const ArtworkDetails = ({ match }) => {
                       ) : state.artwork.current.price ||
                         state.artwork.current.commercial ? (
                         <Button onClick={() => handleModalOpen()}>
-                          Add to cart
+                          {`Purchase ($${
+                            state.license === 'personal'
+                              ? state.artwork.current.price
+                              : state.artwork.current.price +
+                                state.artwork.current.commercial
+                          })`}
                         </Button>
                       ) : (
                         <Button

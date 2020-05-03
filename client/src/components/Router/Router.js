@@ -81,15 +81,22 @@ const routes = [
     exact: true,
     type: 'protected',
   },
+  // $CART
   // Checkout router
+  // {
+  //   path: '/cart',
+  //   Component: lazy(() => import('../Checkout/Cart')),
+  //   exact: true,
+  //   type: 'protected',
+  // },
+  // {
+  //   path: '/checkout',
+  //   Component: lazy(() => import('../Checkout/Checkout')),
+  //   exact: true,
+  //   type: 'protected',
+  // },
   {
-    path: '/cart',
-    Component: lazy(() => import('../Checkout/Cart')),
-    exact: true,
-    type: 'protected',
-  },
-  {
-    path: '/checkout',
+    path: '/checkout/:id',
     Component: lazy(() => import('../Checkout/Checkout')),
     exact: true,
     type: 'protected',

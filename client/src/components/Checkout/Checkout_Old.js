@@ -61,7 +61,7 @@ const Checkout = () => {
       setState({
         ...state,
         loading: false,
-        artwork: data.artwork,
+        cart: data.cart,
         discount: data.discount,
       });
     } catch (err) {
