@@ -160,7 +160,7 @@ function Dashboard() {
               <Paper className={classes.actions}>
                 <div className={classes.actionsContainer}>
                   <Typography className={classes.actionsHeading}>
-                    Title
+                    Visualization
                   </Typography>
                   <div className={classes.buttonContainer}>
                     {buttons.map((button) => {
