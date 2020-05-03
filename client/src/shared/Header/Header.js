@@ -92,6 +92,9 @@ const Header = () => {
       <MenuItem component={Link} to="/dashboard">
         Dashboard
       </MenuItem>
+      <MenuItem component={Link} to="/my_artwork">
+        Artwork
+      </MenuItem>
       <MenuItem component={Link} to="/orders">
         Orders
       </MenuItem>
@@ -113,12 +116,6 @@ const Header = () => {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem component={Link} to="/add_artwork">
-        <IconButton color="inherit">
-          <AddIcon />
-        </IconButton>
-        <p>Add artwork</p>
-      </MenuItem>
       <MenuItem>
         <IconButton aria-label="Show messages" color="inherit">
           <Badge badgeContent={store.user.messages} color="secondary">
@@ -205,9 +202,6 @@ const Header = () => {
           {store.user.authenticated ? (
             <>
               <div className={classes.sectionDesktop}>
-                <IconButton component={Link} to="/add_artwork" color="inherit">
-                  <AddIcon />
-                </IconButton>
                 <IconButton aria-label="Show messages" color="inherit">
                   <Badge badgeContent={store.user.messages} color="secondary">
                     <MailIcon />
