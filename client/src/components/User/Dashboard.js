@@ -30,6 +30,7 @@ function Dashboard() {
     { key: 'week', text: 'This week' },
     { key: 'month', text: 'This month' },
     { key: 'year', text: 'This year' },
+    { key: 'all', text: 'All time' },
   ];
 
   const data = [
@@ -260,7 +261,44 @@ function Dashboard() {
                 </Grid>
                 <Grid item xs={12} md={4} className={classes.grid}>
                   <div className={classes.controls}>
-                    <div className={classes.controlsContainer}></div>
+                    <Paper className={classes.box}>
+                      <div className={classes.boxData}>
+                        <Typography className={classes.boxMain}>4.3</Typography>
+                        <Typography
+                          className={classes.boxAlt}
+                          color="textSecondary"
+                        >
+                          Rating
+                        </Typography>
+                      </div>
+                      <Divider />
+                    </Paper>
+                    <Paper className={classes.box}>
+                      <div className={classes.boxData}>
+                        <Typography className={classes.boxMain}>7</Typography>
+                        <Typography
+                          className={classes.boxAlt}
+                          color="textSecondary"
+                        >
+                          Orders
+                        </Typography>
+                      </div>
+                      <Divider />
+                    </Paper>
+                    <Paper className={classes.box}>
+                      <div className={classes.boxData}>
+                        <Typography className={classes.boxMain}>
+                          $120
+                        </Typography>
+                        <Typography
+                          className={classes.boxAlt}
+                          color="textSecondary"
+                        >
+                          Earnings
+                        </Typography>
+                      </div>
+                      <Divider />
+                    </Paper>
                   </div>
                 </Grid>
               </Paper>
