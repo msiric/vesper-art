@@ -15,7 +15,12 @@ router
 
 router
   .route('/checkout')
-  .get(isAuthenticated, checkoutController.getPaymentCart)
+  // $CART
+  /*   .get(isAuthenticated, checkoutController.getPaymentCart) */
   .post(isAuthenticated, checkoutController.postPaymentCart);
+
+router
+  .route('/checkout/:artworkId')
+  .get(isAuthenticated, checkoutController.getCheckout);
 
 module.exports = router;
