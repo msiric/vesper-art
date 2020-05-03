@@ -1,19 +1,19 @@
 module.exports.mongo = {
   database: `mongodb+srv://${process.env.DEV_DB_USER}:${process.env.DEV_DB_PASS}@${process.env.DEV_DB_NAME}-5nkas.mongodb.net/test?retryWrites=true&w=majority`,
-  secret: process.env.SECRET || 'fiverrclone'
+  secret: process.env.DEV_DB_SECRET,
 };
 
 module.exports.server = {
-  appName: 'Blabla',
-  port: process.env.PORT || 3000
+  appName: process.env.APP,
+  clientDomain: process.env.DOMAIN || 'http://localhost:3000',
+  serverDomain: process.env.DOMAIN || 'http://localhost:5000',
+  port: process.env.PORT || 5000,
 };
-// id: AKIA4Q7VKJEHPPHYS3HX
-// secret: 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
 
 module.exports.stripe = {
   secretKey: process.env.STRIPE_SECRET,
   publishableKey: process.env.STRIPE_PUBLISH,
-  clientId: 'YOUR_STRIPE_CLIENT_ID',
+  clientId: process.env.STRIPE_CLIENT,
   authorizeUri: 'https://connect.stripe.com/express/oauth/authorize',
-  tokenUri: 'https://connect.stripe.com/oauth/token'
+  tokenUri: 'https://connect.stripe.com/oauth/token',
 };

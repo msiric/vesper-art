@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "nodemon --delay 2 ./bin/www",
+    "client": "cd client && npm start",
+    "dev": "concurrently \"npm start\" \"npm run client\""
   },
   "author": "",
   "license": "ISC",
@@ -13,19 +15,22 @@
     "@hapi/joi": "^16.1.7",
     "async": "^3.1.0",
     "aws-sdk": "^2.486.0",
-    "axios": "^0.19.0",
+    "axios": "^0.19.2",
     "base64-stream": "^1.0.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.3.1",
+    "concurrently": "^5.1.0",
     "connect-mongo": "^3.0.0",
     "cookie-parser": "^1.4.4",
+    "cookie-session": "^1.4.0",
     "cors": "^2.8.5",
     "escape-html": "^1.0.3",
     "express": "^4.17.1",
     "express-flash": "0.0.2",
     "express-handlebars": "^3.1.0",
     "express-session": "^1.16.2",
+    "form-data": "^3.0.0",
     "hbs": "^4.1.0",
     "joi": "^14.3.1",
     "joi-objectid": "^3.0.1",
@@ -48,11 +53,19 @@
     "pdfkit": "^0.10.0",
     "query-string": "^6.11.1",
     "randomstring": "^1.1.5",
+    "react-mason": "^1.1.2",
     "sharp": "^0.25.1",
     "socket.io": "^2.2.0",
     "stripe": "^7.4.0"
   },
   "devDependencies": {
-    "dotenv": "^8.1.0"
+    "dotenv": "^8.1.0",
+    "kill-port": "^1.6.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "client/*"
+    ],
+    "delay": "2500"
   }
 }

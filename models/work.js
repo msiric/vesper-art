@@ -17,8 +17,6 @@ WorkSchema.plugin(deepPopulate);
 
 const Work = mongoose.model('Work', WorkSchema);
 
-Work.createCollection().then(function(collection) {
-  console.log('Work created');
-});
+Work.createCollection();
 
 module.exports = Work;

@@ -12,8 +12,6 @@ const TicketSchema = new Schema({
 
 const Ticket = mongoose.model('Ticket', TicketSchema);
 
-Ticket.createCollection().then(function(collection) {
-  console.log('Tickets created');
-});
+Ticket.createCollection();
 
 module.exports = Ticket;

@@ -2,28 +2,44 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const createError = require('http-errors');
 const escapeHTML = require('escape-html');
+const jwt = require('jsonwebtoken');
 
-const isLoggedInAPI = (req, res, next) => {
-  if (req.isAuthenticated()) return next();
-  res.status(401).json({ message: 'Unauthorized' });
-};
-
-const isLoggedIn = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
+const isAuthenticated = async (req, res, next) => {
+  const authentication = req.headers['authorization'];
+  if (!authentication) {
+    throw createError(403, 'Forbidden');
   }
-  res.redirect('/login');
+
+  try {
+    const token = authentication.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
+      ignoreExpiration: true,
+    });
+    const data = jwt.decode(token);
+    if (Date.now() >= data.exp * 1000 || !data.active)
+      throw createError(401, 'Not authenticated');
+    res.locals.user = data;
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+
+  return next();
 };
 
-const isLoggedOut = (req, res, next) => {
-  if (!req.isAuthenticated()) return next();
-  res.redirect('/');
+const isNotAuthenticated = async (req, res, next) => {
+  const authentication = req.headers['authorization'];
+  if (authentication) {
+    return console.log('REDIRECT');
+  }
+
+  return next();
 };
 
 const checkParams = (req, res, next) => {
-  const isId = id => (ObjectId(id) ? true : false);
+  const isId = (id) => (ObjectId(id) ? true : false);
   let isValid = true;
-  Object.keys(req.params).forEach(param => {
+  Object.keys(req.params).forEach((param) => {
     const value = req.params[param];
     if (!value) isValid = false;
     else if (!isId(value)) isValid = false;
@@ -33,10 +49,10 @@ const checkParams = (req, res, next) => {
   throw createError(400, 'Invalid route parameter');
 };
 
-const sanitize = body =>
+const sanitize = (body) =>
   Object.keys(body).reduce((obj, key) => {
     if (Array.isArray(body[key])) {
-      obj[key] = body[key].map(elem => {
+      obj[key] = body[key].map((elem) => {
         if (typeof elem === 'object') return sanitize(elem);
         return escapeHTML(elem);
       });
@@ -49,9 +65,8 @@ const sanitize = body =>
   }, {});
 
 module.exports = {
-  isLoggedInAPI,
-  isLoggedIn,
-  isLoggedOut,
+  isAuthenticated,
+  isNotAuthenticated,
   checkParams,
-  sanitize
+  sanitize,
 };

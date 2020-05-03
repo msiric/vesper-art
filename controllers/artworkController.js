@@ -1,32 +1,68 @@
 const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
 const aws = require('aws-sdk');
 const User = require('../models/user');
 const Artwork = require('../models/artwork');
 const Version = require('../models/version');
+const License = require('../models/license');
+const Comment = require('../models/comment');
 const Order = require('../models/order');
-const Review = require('../models/review');
+const crypto = require('crypto');
 const createError = require('http-errors');
 const { sanitize } = require('../utils/helpers');
 const postArtworkValidator = require('../utils/validation/postArtworkValidator');
 const putArtworkValidator = require('../utils/validation/putArtworkValidator');
 
-const getUserArtwork = async (req, res, next) => {
+const getArtwork = async (req, res, next) => {
   try {
-    const foundArtwork = await Artwork.find({
-      $and: [{ owner: req.user._id }, { active: true }]
-    }).populate('current');
-    return res.render('main/my-artwork', { artwork: foundArtwork });
+    const foundArtwork = await Artwork.find({ active: true })
+      .populate('owner')
+      .populate(
+        'current',
+        '_id cover created title price type license availability description use commercial'
+      );
+    return res.json({ artwork: foundArtwork });
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+// treba sredit
+const getArtworkDetails = async (req, res, next) => {
+  try {
+    const { artworkId } = req.params;
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: artworkId }, { active: true }],
+    })
+      .deepPopulate('comments.owner')
+      .populate('owner')
+      .populate(
+        'current',
+        '_id cover created title price type license availability description use commercial'
+      );
+    if (foundArtwork) {
+      return res.json({
+        artwork: foundArtwork,
+      });
+    } else {
+      throw createError(400, 'Artwork not found');
+    }
   } catch (err) {
     console.log(err);
     next(err, res);
   }
 };
 
-const getNewArtwork = async (req, res, next) => {
+const getUserArtwork = async (req, res, next) => {
   try {
-    return res.render('main/add-new-artwork');
+    const foundArtwork = await Artwork.find({
+      $and: [{ owner: res.locals.user.id }, { active: true }],
+    }).populate(
+      'current',
+      '_id cover created title price type license availability description use commercial'
+    );
+    return res.json({ artwork: foundArtwork });
   } catch (err) {
+    console.log(err);
     next(err, res);
   }
 };
@@ -38,33 +74,37 @@ const postNewArtwork = async (req, res, next) => {
   try {
     const { error, value } = postArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
+    if (
+      !res.locals.user.stripeId &&
+      (value.artworkPrice || value.artworkCommercial)
+    )
+      throw createError(
+        400,
+        'Please complete the Stripe onboarding process before making your artwork commercially available'
+      );
     const newVersion = new Version();
-    newVersion.cover = value.artworkCover;
-    newVersion.media = value.artworkMedia;
-    newVersion.title = value.artworkTitle;
-    newVersion.type = value.artworkType;
-    newVersion.category = value.artworkCategory;
-    newVersion.price = 0;
-    newVersion.use = 'personal';
-    newVersion.license = 0;
-    newVersion.available = true;
-    newVersion.about = value.artworkAbout;
-    if (value.artworkType && value.artworkType == 'commercial') {
-      newVersion.price = value.artworkPrice;
-      if (value.artworkLicense && value.artworkLicense == 'commercial') {
-        newVersion.use = 'commercial';
-        newVersion.license = value.artworkCommercial;
-      }
-    } else {
-      newVersion.available =
-        value.artworkAvailable == 'available' ? true : false;
-    }
+    newVersion.cover = value.artworkCover || '';
+    newVersion.media = value.artworkMedia || '';
+    newVersion.title = value.artworkTitle || '';
+    newVersion.type = value.artworkType || '';
+    newVersion.availability = value.artworkAvailability || '';
+    newVersion.license = value.artworkLicense || '';
+    newVersion.use = value.artworkUse || '';
+    newVersion.price = value.artworkPrice || 0;
+    newVersion.commercial = value.artworkCommercial || 0;
+    newVersion.category = value.artworkCategory || '';
+    newVersion.description = value.artworkDescription || '';
     const savedVersion = await newVersion.save({ session });
     const newArtwork = new Artwork();
-    newArtwork.owner = req.user._id;
+    newArtwork.owner = res.locals.user.id;
     newArtwork.active = true;
+    newArtwork.comments = [];
     newArtwork.current = savedVersion._id;
     await newArtwork.save({ session });
+    await User.updateOne(
+      { _id: res.locals.user.id },
+      { $push: { artwork: newArtwork._id } }
+    ).session(session);
     await session.commitTransaction();
     return res.status(200).json('/my_artwork');
   } catch (err) {
@@ -76,53 +116,18 @@ const postNewArtwork = async (req, res, next) => {
   }
 };
 
-const getArtworkDetails = async (req, res, next) => {
-  try {
-    const savedArtwork =
-      req.user && req.user.savedArtwork.includes(req.params.id) ? true : false;
-    const inCart =
-      req.user &&
-      req.user.cart.length > 0 &&
-      req.user.cart.some(item => item.artwork._id.equals(req.params.id))
-        ? true
-        : false;
-    const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: req.params.id }, { active: true }]
-    })
-      .populate('owner')
-      .populate('current');
-    if (foundArtwork) {
-      const foundReview = await Review.find({
-        artwork: req.params.id
-      }).populate('owner');
-      let averageRating = 0;
-      foundReview.forEach(function(review) {
-        averageRating = (review.rating + averageRating) / foundReview.length;
-      });
-      const reviewWithAverage = foundReview;
-      reviewWithAverage.rating = averageRating ? averageRating : null;
-      return res.render('main/artwork-details', {
-        artwork: foundArtwork,
-        review: reviewWithAverage,
-        inCart,
-        savedArtwork
-      });
-    } else {
-      throw createError(400, 'Artwork not found');
-    }
-  } catch (err) {
-    console.log(err);
-    next(err, res);
-  }
-};
-
 const editArtwork = async (req, res, next) => {
   try {
+    const { artworkId } = req.params;
     const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
+      $and: [
+        { _id: artworkId },
+        { owner: res.locals.user.id },
+        { active: true },
+      ],
     }).populate('current');
     if (foundArtwork) {
-      return res.render('main/edit-artwork', { artwork: foundArtwork.current });
+      return res.json({ artwork: foundArtwork.current });
     } else {
       throw createError(400, 'Artwork not found');
     }
@@ -139,58 +144,44 @@ const updateArtwork = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { artworkId } = req.params;
     const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
+      $and: [
+        { _id: artworkId },
+        { owner: res.locals.user.id },
+        { active: true },
+      ],
     })
       .populate('current')
       .populate('versions')
       .session(session);
     const { error, value } = putArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
+    if (
+      !res.locals.user.stripeId &&
+      (value.artworkPrice || value.artworkCommercial)
+    )
+      throw createError(
+        400,
+        'Please complete the Stripe onboarding process before making your artwork commercially available'
+      );
     if (foundArtwork) {
       const newVersion = new Version();
-      newVersion.cover = value.artworkCover
-        ? value.artworkCover
-        : foundArtwork.current.cover;
-      newVersion.media = value.artworkMedia
-        ? value.artworkMedia
-        : foundArtwork.current.media;
-      newVersion.title = value.artworkTitle
-        ? value.artworkTitle
-        : foundArtwork.current.title;
-      newVersion.type = value.artworkType
-        ? value.artworkType
-        : foundArtwork.current.type;
-      newVersion.category = value.artworkCategory
-        ? value.artworkCategory
-        : foundArtwork.current.category;
-      newVersion.about = value.artworkAbout
-        ? value.artworkAbout
-        : foundArtwork.current.about;
-      newVersion.category = value.artworkCategory
-        ? value.artworkCategory
-        : foundArtwork.current.category;
-      if (value.artworkType && value.artworkType == 'commercial') {
-        newVersion.price = value.artworkPrice;
-        newVersion.available = true;
-        if (value.artworkLicense && value.artworkLicense == 'commercial') {
-          newVersion.use = 'commercial';
-          newVersion.license = value.artworkCommercial;
-        } else {
-          newVersion.use = 'personal';
-          newVersion.license = 0;
-        }
-      } else {
-        newVersion.use = 'personal';
-        newVersion.price = 0;
-        newVersion.license = 0;
-        newVersion.available =
-          value.artworkAvailable == 'available' ? true : false;
-      }
+      newVersion.cover = value.artworkCover || '';
+      newVersion.media = value.artworkMedia || '';
+      newVersion.title = value.artworkTitle || '';
+      newVersion.type = value.artworkType || '';
+      newVersion.availability = value.artworkAvailability || '';
+      newVersion.license = value.artworkLicense || '';
+      newVersion.use = value.artworkUse || '';
+      newVersion.price = value.artworkPrice || 0;
+      newVersion.commercial = value.artworkCommercial || 0;
+      newVersion.category = value.artworkCategory || '';
+      newVersion.description = value.artworkDescription || '';
       const savedVersion = await newVersion.save({ session });
       const foundOrder = await Order.find({
         details: { $elemMatch: { artwork: foundArtwork._id } },
-        details: { $elemMatch: { version: foundArtwork.current._id } }
+        details: { $elemMatch: { version: foundArtwork.current._id } },
       })
         .deepPopulate('details.artwork details.version')
         .session(session);
@@ -204,7 +195,7 @@ const updateArtwork = async (req, res, next) => {
             const coverS3 = new aws.S3();
             const coverParams = {
               Bucket: 'vesper-testing',
-              Key: coverFilePath
+              Key: coverFilePath,
             };
 
             await coverS3.deleteObject(coverParams).promise();
@@ -216,24 +207,24 @@ const updateArtwork = async (req, res, next) => {
             const mediaS3 = new aws.S3();
             const mediaParams = {
               Bucket: 'vesper-testing',
-              Key: mediaFilePath
+              Key: mediaFilePath,
             };
 
             await mediaS3.deleteObject(mediaParams).promise();
 
             await Version.remove({
-              _id: foundArtwork.current._id
+              _id: foundArtwork.current._id,
             }).session(session);
             foundArtwork.current = savedVersion._id;
           } else {
             await Version.remove({
-              _id: foundArtwork.current._id
+              _id: foundArtwork.current._id,
             }).session(session);
             foundArtwork.current = savedVersion._id;
           }
         } else {
           let usedContent = false;
-          foundArtwork.versions.map(function(version) {
+          foundArtwork.versions.map(function (version) {
             if (
               version.media == foundArtwork.current.media &&
               version.cover == foundArtwork.current.cover
@@ -243,7 +234,7 @@ const updateArtwork = async (req, res, next) => {
           });
           if (usedContent) {
             await Version.remove({
-              _id: foundArtwork.current._id
+              _id: foundArtwork.current._id,
             }).session(session);
             foundArtwork.current = savedVersion._id;
           } else {
@@ -255,7 +246,7 @@ const updateArtwork = async (req, res, next) => {
               const coverS3 = new aws.S3();
               const coverParams = {
                 Bucket: 'vesper-testing',
-                Key: coverFilePath
+                Key: coverFilePath,
               };
 
               await coverS3.deleteObject(coverParams).promise();
@@ -267,18 +258,18 @@ const updateArtwork = async (req, res, next) => {
               const mediaS3 = new aws.S3();
               const mediaParams = {
                 Bucket: 'vesper-testing',
-                Key: mediaFilePath
+                Key: mediaFilePath,
               };
 
               await mediaS3.deleteObject(mediaParams).promise();
 
               await Version.remove({
-                _id: foundArtwork.current._id
+                _id: foundArtwork.current._id,
               }).session(session);
               foundArtwork.current = savedVersion._id;
             } else {
               await Version.remove({
-                _id: foundArtwork.current._id
+                _id: foundArtwork.current._id,
               }).session(session);
               foundArtwork.current = savedVersion._id;
             }
@@ -288,7 +279,6 @@ const updateArtwork = async (req, res, next) => {
         foundArtwork.versions.push(foundArtwork.current._id);
         foundArtwork.current = savedVersion._id;
       }
-
       await foundArtwork.save({ session });
       await session.commitTransaction();
       return res.status(200).json('/my_artwork');
@@ -304,219 +294,19 @@ const updateArtwork = async (req, res, next) => {
   }
 };
 
-// needs testing
-/* const deleteArtwork = async (req, res, next) => {
-  try {
-    const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
-    })
-      .populate('current')
-      .populate('versions');
-    if (foundArtwork) {
-      const foundOrder = await Order.find({
-        details: { $elemMatch: { artwork: foundArtwork._id } },
-        $or: [
-          {
-            details: { $elemMatch: { version: { $in: foundArtwork.versions } } }
-          },
-          {
-            details: { $elemMatch: { version: foundArtwork.current._id } }
-          }
-        ]
-      }).deepPopulate('details.artwork details.version');
-      if (foundOrder.length) {
-        const usedVersions = [];
-        const allVersions = [];
-        foundArtwork.versions.map(function(item) {
-          allVersions.push(item);
-        });
-        allVersions.push(foundArtwork.current);
-
-        foundOrder.map(function(order) {
-          order.details.map(function(item) {
-            usedVersions.push(item.version);
-          });
-        });
-
-        const unusedVersions = [];
-
-        for (let item of allVersions) {
-          if (!usedVersions.find(value => value._id.equals(item._id))) {
-            unusedVersions.push(item);
-          }
-        }
-
-        if (unusedVersions.length) {
-          const usedCovers = [];
-          const usedMedia = [];
-          let unusedCovers;
-          let unusedMedia;
-          unusedVersions.forEach(async function(version) {
-            let coverLink = version.cover;
-            let mediaLink = version.media;
-
-            foundOrder.map(function(order) {
-              if (order.details.some(item => item.version.cover == coverLink)) {
-                if (!usedCovers.includes(coverLink)) {
-                  usedCovers.push(coverLink);
-                }
-              }
-
-              if (order.details.some(item => item.version.media == mediaLink)) {
-                if (!usedMedia.includes(mediaLink)) {
-                  usedMedia.push(mediaLink);
-                }
-              }
-            });
-
-            const deletedVersion = await Version.remove({
-              _id: version._id
-            });
-
-            if (!deletedVersion) {
-              return res
-                .status(400)
-                .json({ message: 'Version could not be deleted' });
-            }
-          });
-
-          if (usedMedia.length || usedCovers.length) {
-            unusedMedia = unusedVersions.filter(
-              x => !usedMedia.includes(x.media)
-            );
-
-            unusedCovers = unusedVersions.filter(
-              x => !usedCovers.includes(x.cover)
-            );
-
-            unusedMedia.forEach(async function(item) {
-              const mediaFolderName = 'artworkMedia/';
-              const mediaFileName = item.media.split('/').slice(-1)[0];
-              const mediaFilePath = mediaFolderName + mediaFileName;
-              const mediaS3 = new aws.S3();
-              const mediaParams = {
-                Bucket: 'vesper-testing',
-                Key: mediaFilePath
-              };
-
-              await mediaS3.deleteObject(mediaParams).promise();
-            });
-
-            unusedCovers.forEach(async function(item) {
-              const coverFolderName = 'artworkCovers/';
-              const coverFileName = item.cover.split('/').slice(-1)[0];
-              const coverFilePath = coverFolderName + coverFileName;
-              const coverS3 = new aws.S3();
-              const coverParams = {
-                Bucket: 'vesper-testing',
-                Key: coverFilePath
-              };
-
-              await coverS3.deleteObject(coverParams).promise();
-            });
-          }
-        }
-
-        if (
-          unusedVersions.find(value =>
-            value._id.equals(foundArtwork.current._id)
-          )
-        ) {
-          await Artwork.updateOne(
-            {
-              _id: req.params.id
-            },
-            {
-              $pull: {
-                versions: { $in: unusedVersions.map(version => version._id) }
-              },
-              active: false,
-              current: null
-            }
-          );
-        } else {
-          await Artwork.updateOne(
-            {
-              _id: req.params.id
-            },
-            {
-              $pull: {
-                versions: { $in: unusedVersions.map(version => version._id) }
-              },
-              active: false
-            }
-          );
-        }
-
-        return res.status(200).json('/my_artwork');
-      } else {
-        const allVersions = [];
-        foundArtwork.versions.map(function(item) {
-          allVersions.push(item);
-        });
-        allVersions.push(foundArtwork.current);
-
-        allVersions.forEach(async function(version) {
-          const coverFolderName = 'artworkCovers/';
-          const coverFileName = version.cover.split('/').slice(-1)[0];
-          const coverFilePath = coverFolderName + coverFileName;
-          const coverS3 = new aws.S3();
-          const coverParams = {
-            Bucket: 'vesper-testing',
-            Key: coverFilePath
-          };
-
-          await coverS3.deleteObject(coverParams).promise();
-
-          const mediaFolderName = 'artworkMedia/';
-          const mediaFileName = version.media.split('/').slice(-1)[0];
-          const mediaFilePath = mediaFolderName + mediaFileName;
-          const mediaS3 = new aws.S3();
-          const mediaParams = {
-            Bucket: 'vesper-testing',
-            Key: mediaFilePath
-          };
-
-          await mediaS3.deleteObject(mediaParams).promise();
-        });
-
-        const deletedVersion = await Version.remove({
-          _id: { $in: allVersions }
-        });
-        if (deletedVersion) {
-          const deletedArtwork = await Artwork.remove({
-            _id: req.params.id
-          });
-
-          if (deletedArtwork) {
-            return res.status(200).json('/my_artwork');
-          } else {
-            return res
-              .status(400)
-              .json({ message: 'Artwork could not be deleted' });
-          }
-        } else {
-          return res
-            .status(400)
-            .json({ message: 'Version could not be deleted' });
-        }
-      }
-    } else {
-      return res.status(400).json({ message: 'Artwork not found' });
-    }
-  } catch (err) {
-    console.log(err);
-    next(err, res);
-  }
-}; */
-
 // needs transaction (done)
+// delete all comments (not done)
 const deleteArtwork = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { artworkId } = req.params;
     const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: req.params.id }, { owner: req.user._id }, { active: true }]
+      $and: [
+        { _id: artworkId },
+        { owner: res.locals.user.id },
+        { active: true },
+      ],
     })
       .populate('current')
       .populate('versions')
@@ -524,7 +314,7 @@ const deleteArtwork = async (req, res, next) => {
     if (foundArtwork) {
       const foundOrder = await Order.find({
         details: { $elemMatch: { artwork: foundArtwork._id } },
-        details: { $elemMatch: { version: foundArtwork.current._id } }
+        details: { $elemMatch: { version: foundArtwork.current._id } },
       })
         .deepPopulate('details.artwork details.version')
         .session(session);
@@ -532,10 +322,10 @@ const deleteArtwork = async (req, res, next) => {
       if (foundOrder.length) {
         await Artwork.updateOne(
           {
-            _id: req.params.id
+            _id: artworkId,
           },
           {
-            active: false
+            active: false,
           }
         ).session(session);
         await session.commitTransaction();
@@ -544,7 +334,7 @@ const deleteArtwork = async (req, res, next) => {
         console.log('length', foundArtwork.versions.length);
         if (foundArtwork.versions.length) {
           let usedContent = false;
-          foundArtwork.versions.map(function(version) {
+          foundArtwork.versions.map(function (version) {
             if (
               version.media == foundArtwork.current.media &&
               version.cover == foundArtwork.current.cover
@@ -555,15 +345,15 @@ const deleteArtwork = async (req, res, next) => {
           console.log('used content', usedContent);
           if (usedContent) {
             await Version.remove({
-              _id: foundArtwork.current._id
+              _id: foundArtwork.current._id,
             }).session(session);
             await Artwork.updateOne(
               {
-                _id: req.params.id
+                _id: artworkId,
               },
               {
                 current: null,
-                active: false
+                active: false,
               }
             ).session(session);
             await session.commitTransaction();
@@ -577,7 +367,7 @@ const deleteArtwork = async (req, res, next) => {
             const coverS3 = new aws.S3();
             const coverParams = {
               Bucket: 'vesper-testing',
-              Key: coverFilePath
+              Key: coverFilePath,
             };
 
             await coverS3.deleteObject(coverParams).promise();
@@ -590,21 +380,21 @@ const deleteArtwork = async (req, res, next) => {
             const mediaS3 = new aws.S3();
             const mediaParams = {
               Bucket: 'vesper-testing',
-              Key: mediaFilePath
+              Key: mediaFilePath,
             };
 
             await mediaS3.deleteObject(mediaParams).promise();
 
             await Version.remove({
-              _id: foundArtwork.current._id
+              _id: foundArtwork.current._id,
             }).session(session);
             await Artwork.updateOne(
               {
-                _id: req.params.id
+                _id: artworkId,
               },
               {
                 current: null,
-                active: false
+                active: false,
               }
             ).session(session);
             await session.commitTransaction();
@@ -619,7 +409,7 @@ const deleteArtwork = async (req, res, next) => {
           const coverS3 = new aws.S3();
           const coverParams = {
             Bucket: 'vesper-testing',
-            Key: coverFilePath
+            Key: coverFilePath,
           };
 
           await coverS3.deleteObject(coverParams).promise();
@@ -632,16 +422,16 @@ const deleteArtwork = async (req, res, next) => {
           const mediaS3 = new aws.S3();
           const mediaParams = {
             Bucket: 'vesper-testing',
-            Key: mediaFilePath
+            Key: mediaFilePath,
           };
 
           await mediaS3.deleteObject(mediaParams).promise();
 
           await Version.remove({
-            _id: foundArtwork.current._id
+            _id: foundArtwork.current._id,
           }).session(session);
           await Artwork.remove({
-            _id: req.params.id
+            _id: artworkId,
           }).session(session);
           await session.commitTransaction();
           return res.status(200).json('/my_artwork');
@@ -663,32 +453,25 @@ const saveArtwork = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const { artworkId } = req.params;
     const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: req.params.id }, { active: true }]
-    })
-      .populate('current')
-      .session(session);
+      $and: [{ _id: artworkId }, { active: true }],
+    }).session(session);
     if (foundArtwork) {
-      const foundUser = await User.findOne({ _id: req.user._id }).session(
+      const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
         session
       );
       if (foundUser) {
-        let saved;
-        if (foundUser.savedArtwork.includes(foundArtwork._id)) {
+        if (!foundUser.savedArtwork.includes(foundArtwork._id)) {
           await User.updateOne(
             { _id: foundUser._id },
-            { $pull: { savedArtwork: req.params.id } }
+            { $push: { savedArtwork: foundArtwork._id } }
           ).session(session);
-          saved = false;
+          await session.commitTransaction();
+          res.status(200).json({ message: 'Artwork saved' });
         } else {
-          await User.updateOne(
-            { _id: foundUser._id },
-            { $push: { savedArtwork: req.params.id } }
-          ).session(session);
-          saved = true;
+          throw createError(400, 'Artwork could not be saved');
         }
-        await session.commitTransaction();
-        res.status(200).json({ saved });
       } else {
         throw createError(400, 'User not found');
       }
@@ -703,13 +486,198 @@ const saveArtwork = async (req, res, next) => {
     session.endSession();
   }
 };
+
+const unsaveArtwork = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const { artworkId } = req.params;
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: artworkId }, { active: true }],
+    }).session(session);
+    if (foundArtwork) {
+      const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
+        session
+      );
+      if (foundUser) {
+        if (foundUser.savedArtwork.includes(foundArtwork._id)) {
+          await User.updateOne(
+            { _id: foundUser._id },
+            { $pull: { savedArtwork: foundArtwork._id } }
+          ).session(session);
+          await session.commitTransaction();
+          res.status(200).json({ message: 'Artwork unsaved' });
+        } else {
+          throw createError(400, 'Artwork could not be unsaved');
+        }
+      } else {
+        throw createError(400, 'User not found');
+      }
+    } else {
+      throw createError(400, 'Artwork not found');
+    }
+  } catch (err) {
+    await session.abortTransaction();
+    console.log(err);
+    next(err, res);
+  } finally {
+    session.endSession();
+  }
+};
+
+const getLicenses = async (req, res, next) => {
+  try {
+    const { artworkId } = req.params;
+    const foundLicenses = await License.find({
+      $and: [
+        { artwork: artworkId },
+        { owner: res.locals.user.id },
+        { active: false },
+      ],
+    }).sort({ created: -1 });
+    return res.status(200).json(foundLicenses);
+  } catch (err) {
+    console.log(err);
+    next(err, res);
+  }
+};
+
+// needs transaction (done)
+const saveLicenses = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const { artworkId } = req.params;
+    const { licenses } = req.body;
+    if (licenses.length) {
+      const foundArtwork = await Artwork.findOne({
+        $and: [{ _id: artworkId }, { active: true }],
+      })
+        .populate(
+          'current',
+          '_id cover created title price type license availability description use commercial'
+        )
+        .session(session);
+      if (foundArtwork) {
+        const licenseSet = [];
+        const licenseIds = [];
+        licenses.forEach(async (license) => {
+          const newLicense = new License();
+          newLicense.owner = res.locals.user.id;
+          newLicense.artwork = foundArtwork._id;
+          newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+          newLicense.type = license.licenseType;
+          newLicense.credentials = license.licenseeName;
+          newLicense.company = license.licenseeCompany;
+          newLicense.active = false;
+          newLicense.price =
+            license.licenseType == 'commercial'
+              ? foundArtwork.current.commercial
+              : 0;
+          licenseSet.push(newLicense);
+        });
+        const savedLicenses = await License.insertMany(licenseSet, { session });
+        savedLicenses.forEach((license) => {
+          licenseIds.push(license._id);
+        });
+        await User.updateOne(
+          {
+            _id: res.locals.user.id,
+            cart: { $elemMatch: { artwork: foundArtwork._id } },
+          },
+          {
+            $set: { 'cart.$.licenses': licenseIds },
+          }
+        ).session(session);
+        await session.commitTransaction();
+        res
+          .status(200)
+          .json({ message: 'Licenses saved', licenses: savedLicenses });
+      } else {
+        throw createError(400, 'Artwork not found');
+      }
+    } else {
+      throw createError(400, 'Artwork needs to have at least one license');
+    }
+  } catch (err) {
+    await session.abortTransaction();
+    console.log(err);
+    next(err, res);
+  } finally {
+    session.endSession();
+  }
+};
+
+// needs transaction (done)
+// const deleteLicense = async (req, res, next) => {
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
+//   try {
+//     const { artworkId, licenseId } = req.params;
+//     const foundLicense = await License.find({
+//       $and: [
+//         { artwork: artworkId },
+//         { owner: res.locals.user.id },
+//         { active: false },
+//       ],
+//     }).session(session);
+//     if (foundLicense) {
+//       if (foundLicense.length > 1) {
+//         const targetLicense = foundLicense.find((license) =>
+//           license._id.equals(licenseId)
+//         );
+//         if (targetLicense) {
+//           await User.updateOne(
+//             {
+//               _id: res.locals.user.id,
+//               cart: { $elemMatch: { artwork: targetLicense.artwork } },
+//             },
+//             {
+//               $pull: {
+//                 'cart.$.licenses': targetLicense._id,
+//               },
+//             }
+//           ).session(session);
+//           await License.remove({
+//             $and: [
+//               { _id: targetLicense._id },
+//               { owner: res.locals.user.id },
+//               { active: false },
+//             ],
+//           }).session(session);
+//           await session.commitTransaction();
+//           res.status(200).json({ message: 'License deleted' });
+//         } else {
+//           throw createError(400, 'License not found');
+//         }
+//       } else {
+//         throw createError(
+//           400,
+//           'At least one license needs to be associated with an artwork in cart'
+//         );
+//       }
+//     } else {
+//       throw createError(400, 'License not found');
+//     }
+//   } catch (err) {
+//     await session.abortTransaction();
+//     console.log(err);
+//     next(err, res);
+//   } finally {
+//     session.endSession();
+//   }
+// };
+
 module.exports = {
+  getArtwork,
   getUserArtwork,
-  getNewArtwork,
   postNewArtwork,
   getArtworkDetails,
   editArtwork,
   updateArtwork,
   deleteArtwork,
-  saveArtwork
+  saveArtwork,
+  unsaveArtwork,
+  getLicenses,
+  saveLicenses,
 };

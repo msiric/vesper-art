@@ -7,8 +7,9 @@ const ArtworkSchema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
   current: { type: Schema.Types.ObjectId, ref: 'Version' },
   versions: [{ type: Schema.Types.ObjectId, ref: 'Version' }],
+  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }], // new
   active: Boolean,
-  created: { type: Date, default: Date.now }
+  created: { type: Date, default: Date.now },
 });
 
 ArtworkSchema.plugin(deepPopulate);
@@ -36,8 +37,6 @@ ArtworkSchema.plugin(deepPopulate);
 
 const Artwork = mongoose.model('Artwork', ArtworkSchema);
 
-Artwork.createCollection().then(function(collection) {
-  console.log('Artwork created');
-});
+Artwork.createCollection();
 
 module.exports = Artwork;

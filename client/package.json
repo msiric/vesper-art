@@ -1,0 +1,54 @@
+{
+  "name": "client3",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^4.9.9",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.48",
+    "@nivo/line": "^0.61.1",
+    "@stripe/react-stripe-js": "^1.1.2",
+    "@stripe/stripe-js": "^1.5.0",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "formik": "^2.1.4",
+    "lodash": "^4.17.15",
+    "notistack": "^0.9.9",
+    "react": "^16.13.1",
+    "react-copy-to-clipboard": "^5.0.2",
+    "react-dom": "^16.13.1",
+    "react-dropzone": "^10.2.2",
+    "react-mason": "^1.1.2",
+    "react-number-format": "^4.4.1",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.1",
+    "react-share": "^4.1.0",
+    "react-swipeable-views": "^0.13.9",
+    "yup": "^0.28.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "http-proxy-middleware": "^1.0.3"
+  }
+}

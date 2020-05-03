@@ -3,11 +3,12 @@ const multer = require('multer');
 const multerS3 = require('multer-s3-transform');
 const path = require('path');
 const sharp = require('sharp');
+const jwt = require('jsonwebtoken');
 
 aws.config.update({
   secretAccessKey: 'TZhmTLVh6KSBJRfYK2aq2eqoiYbIEncgzUptgGON',
   accessKeyId: 'AKIAIVOLPF2TBRAQ4CEQ',
-  region: 'eu-west-3'
+  region: 'eu-west-3',
 });
 
 const s3 = new aws.S3();
@@ -40,16 +41,18 @@ const profilePhotoUpload = multer({
   storage: multerS3({
     s3: s3,
     bucket: 'vesper-testing',
-    limits: { fileSize: 2 * 1024 * 1024 },
+    limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
-    key: function(req, file, cb) {
+    key: function (req, file, cb) {
+      const token = req.headers['authorization'].split(' ')[1];
+      const data = jwt.decode(token);
       const fileName =
-        req.user._id + Date.now().toString() + path.extname(file.originalname);
+        data.id + Date.now().toString() + path.extname(file.originalname);
       const folderName = 'profilePhotos/';
       const filePath = folderName + fileName;
       cb(null, filePath);
-    }
-  })
+    },
+  }),
 });
 
 const artworkMediaUpload = multer({
@@ -57,44 +60,44 @@ const artworkMediaUpload = multer({
   storage: multerS3({
     s3: s3,
     bucket: 'vesper-testing',
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: { fileSize: 10 * 1024 * 1024 },
     acl: 'public-read',
-    shouldTransform: function(req, file, cb) {
+    shouldTransform: function (req, file, cb) {
       cb(null, true);
     },
     transforms: [
       {
         id: 'image',
-        key: function(req, file, cb) {
+        key: function (req, file, cb) {
+          const token = req.headers['authorization'].split(' ')[1];
+          const data = jwt.decode(token);
           const fileName =
-            req.user._id +
-            Date.now().toString() +
-            path.extname(file.originalname);
+            data.id + Date.now().toString() + path.extname(file.originalname);
           const folderName = 'artworkMedia/';
           const filePath = folderName + fileName;
           cb(null, filePath);
         },
-        transform: function(req, file, cb) {
+        transform: function (req, file, cb) {
           cb(null, sharp());
-        }
+        },
       },
       {
         id: 'cover',
-        key: function(req, file, cb) {
+        key: function (req, file, cb) {
+          const token = req.headers['authorization'].split(' ')[1];
+          const data = jwt.decode(token);
           const fileName =
-            req.user._id +
-            Date.now().toString() +
-            path.extname(file.originalname);
+            data.id + Date.now().toString() + path.extname(file.originalname);
           const folderName = 'artworkCovers/';
           const filePath = folderName + fileName;
           cb(null, filePath);
         },
-        transform: function(req, file, cb) {
-          cb(null, sharp().resize(300, null));
-        }
-      }
-    ]
-  })
+        transform: function (req, file, cb) {
+          cb(null, sharp().resize({ width: 500 }));
+        },
+      },
+    ],
+  }),
 });
 
 const artworkMediaEdit = multer({
@@ -102,102 +105,48 @@ const artworkMediaEdit = multer({
   storage: multerS3({
     s3: s3,
     bucket: 'vesper-testing',
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: { fileSize: 10 * 1024 * 1024 },
     acl: 'public-read',
-    shouldTransform: function(req, file, cb) {
+    shouldTransform: function (req, file, cb) {
       cb(null, true);
     },
     transforms: [
       {
         id: 'image',
-        key: function(req, file, cb) {
+        key: function (req, file, cb) {
+          const token = req.headers['authorization'].split(' ')[1];
+          const data = jwt.decode(token);
           const fileName =
-            req.user._id +
-            Date.now().toString() +
-            path.extname(file.originalname);
+            data.id + Date.now().toString() + path.extname(file.originalname);
           const folderName = 'artworkMedia/';
           const filePath = folderName + fileName;
           cb(null, filePath);
         },
-        transform: function(req, file, cb) {
+        transform: function (req, file, cb) {
           cb(null, sharp());
-        }
+        },
       },
       {
         id: 'cover',
-        key: function(req, file, cb) {
+        key: function (req, file, cb) {
+          const token = req.headers['authorization'].split(' ')[1];
+          const data = jwt.decode(token);
           const fileName =
-            req.user._id +
-            Date.now().toString() +
-            path.extname(file.originalname);
+            data.id + Date.now().toString() + path.extname(file.originalname);
           const folderName = 'artworkCovers/';
           const filePath = folderName + fileName;
           cb(null, filePath);
         },
-        transform: function(req, file, cb) {
-          cb(null, sharp().resize(300, null));
-        }
-      }
-    ]
-  })
+        transform: function (req, file, cb) {
+          cb(null, sharp().resize({ width: 500 }));
+        },
+      },
+    ],
+  }),
 });
-
-/* const artworkCoverEdit = multer({
-  fileFilter: fileFilter,
-  storage: multerS3({
-    s3: s3,
-    bucket: 'vesper-testing',
-    limits: { fileSize: 5 * 1024 * 1024 },
-    acl: 'public-read',
-    key: function(req, file, callback) {
-      const fileName =
-        req.user._id + Date.now().toString() + path.extname(file.originalname);
-      const folderName = 'artworkCovers/';
-      const filePath = folderName + fileName;
-      callback(null, filePath);
-    }
-  })
-}); */
-
-/* const artworkMediaUpload = multer({
-  fileFilter: fileFilter,
-  storage: multerS3({
-    s3: s3,
-    bucket: 'vesper-testing',
-    limits: { fileSize: 20 * 1024 * 1024 },
-    acl: 'public-read',
-    key: function(req, file, callback) {
-      const fileName =
-        req.user._id + Date.now().toString() + path.extname(file.originalname);
-      const folderName = 'artworkMedia/';
-      const filePath = folderName + fileName;
-      callback(null, filePath);
-    }
-  })
-}); */
-
-/* const artworkMediaEdit = multer({
-  fileFilter: fileFilter,
-  storage: multerS3({
-    s3: s3,
-    bucket: 'vesper-testing',
-    limits: { fileSize: 20 * 1024 * 1024 },
-    acl: 'public-read',
-    key: function(req, file, callback) {
-      const fileName =
-        req.user._id + Date.now().toString() + path.extname(file.originalname);
-      const folderName = 'artworkMedia/';
-      const filePath = folderName + fileName;
-      callback(null, filePath);
-    }
-  })
-}); */
 
 module.exports = {
   profilePhotoUpload: profilePhotoUpload,
-  /*   artworkCoverUpload: artworkCoverUpload,
-  artworkCoverEdit: artworkCoverEdit, */
   artworkMediaUpload: artworkMediaUpload,
-  artworkMediaEdit: artworkMediaEdit
-  /*   artworkMediaEdit: artworkMediaEdit */
+  artworkMediaEdit: artworkMediaEdit,
 };

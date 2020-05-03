@@ -10,51 +10,53 @@ const UserSchema = new Schema({
     trim: true,
     index: {
       unique: true,
-      partialFilterExpression: { email: { $exists: true } }
-    }
+      partialFilterExpression: { email: { $exists: true } },
+    },
   },
   name: {
     type: String,
     index: {
       unique: true,
-      partialFilterExpression: { email: { $exists: true } }
-    }
+      partialFilterExpression: { email: { $exists: true } },
+    },
   },
   password: String,
   photo: String,
-  about: String,
-  facebookId: String,
-  googleId: String,
+  description: String,
+  country: String,
   customWork: Boolean,
-  secretToken: String,
+  displaySaves: Boolean,
+  verificationToken: String,
   verified: Boolean,
-  resetPasswordToken: String,
-  resetPasswordExpires: Date,
+  resetToken: String,
+  resetExpiry: Date,
+  jwtVersion: { type: Number, default: 0 },
   cart: [
     {
       artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
-      licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }]
-    }
+      licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }],
+    },
   ],
-  discount: { type: Schema.Types.ObjectId, ref: 'Promocode' },
+  discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
   inbox: Number,
   notifications: Number,
-  rating: Number,
-  reviews: Number,
+  reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
+  artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
-  earnings: Number,
-  incomingFunds: Number,
-  outgoingFunds: Number,
-  active: Boolean
+  purchases: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
+  sales: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
+  stripeId: String,
+  active: Boolean,
+  created: { type: Date, default: Date.now },
 });
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   var user = this;
   if (!user.isModified('password')) return next();
   if (user.password) {
-    bcrypt.genSalt(10, function(err, salt) {
+    bcrypt.genSalt(10, function (err, salt) {
       if (err) return next(err);
-      bcrypt.hash(user.password, salt, null, function(err, hash) {
+      bcrypt.hash(user.password, salt, null, function (err, hash) {
         if (err) return next(err);
         user.password = hash;
         next(err);
@@ -65,24 +67,19 @@ UserSchema.pre('save', function(next) {
 
 UserSchema.plugin(deepPopulate);
 
-UserSchema.methods.comparePassword = function(password) {
+UserSchema.methods.comparePassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 
-UserSchema.methods.gravatar = function(size) {
+UserSchema.methods.gravatar = function (size) {
   if (!size) size = 200;
   if (!this.email) return 'https://gravatar.com/avatar/?s=' + size + '&d=retro';
-  var md5 = crypto
-    .createHash('md5')
-    .update(this.email)
-    .digest('hex');
+  var md5 = crypto.createHash('md5').update(this.email).digest('hex');
   return 'https://gravatar.com/avatar/' + md5 + '?s=' + size + '&d=retro';
 };
 
 const User = mongoose.model('User', UserSchema);
 
-User.createCollection().then(function(collection) {
-  console.log('Users created');
-});
+User.createCollection();
 
 module.exports = User;

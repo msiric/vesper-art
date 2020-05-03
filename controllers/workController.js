@@ -4,13 +4,13 @@ const createError = require('http-errors');
 
 const getUserCustomWork = async (req, res, next) => {
   try {
-    req.session.workId = req.params.workId;
-    const foundWork = await Work.findOne({ _id: req.params.workId })
+    const { workId } = req.params;
+    const foundWork = await Work.findOne({ _id: workId })
       .populate('buyer')
       .populate('seller')
       .deepPopulate('messages.owner');
     if (foundWork) {
-      return res.render('work/work-room', { work: foundWork });
+      return res.json({ work: foundWork });
     } else {
       throw createError(400, 'Custom work not found');
     }
@@ -20,5 +20,5 @@ const getUserCustomWork = async (req, res, next) => {
 };
 
 module.exports = {
-  getUserCustomWork
+  getUserCustomWork,
 };

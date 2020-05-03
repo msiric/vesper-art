@@ -3,40 +3,50 @@ Joi.objectId = require('joi-objectid')(Joi);
 
 const schema = Joi.object().keys({
   artworkTitle: Joi.string().required(),
-  artworkType: Joi.string()
-    .valid('commercial', 'showcase')
-    .required(),
-  artworkAvailable: Joi.string()
+  artworkAvailability: Joi.string()
     .valid('available', 'unavailable')
     .required(),
-  artworkPrice: Joi.when('type', {
-    is: 'commercial',
-    then: Joi.number()
-      .integer()
-      .required()
+  artworkType: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.string().valid('commercial', 'free').required(),
+    otherwise: Joi.forbidden(),
   }),
-  artworkLicense: Joi.when('type', {
-    is: 'commercial',
-    then: Joi.when('use', {
+  artworkLicense: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.string().valid('commercial', 'personal').required(),
+    otherwise: Joi.forbidden(),
+  }),
+  artworkPrice: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.when('artworkType', {
       is: 'commercial',
-      then: Joi.string()
-        .valid('commercial', 'personal')
-        .required()
-    })
+      then: Joi.number().integer().required(),
+      otherwise: Joi.forbidden(),
+    }),
   }),
-  artworkCommercial: Joi.when('type', {
-    is: 'commercial',
-    then: Joi.when('use', {
+  artworkUse: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.when('artworkLicense', {
       is: 'commercial',
-      then: Joi.number()
-        .integer()
-        .required()
-    })
+      then: Joi.string().valid('separate', 'included').required(),
+      otherwise: Joi.forbidden(),
+    }),
   }),
-  artworkCategory: Joi.string().required(),
-  artworkAbout: Joi.string().required(),
+  artworkCommercial: Joi.when('artworkAvailability', {
+    is: 'available',
+    then: Joi.when('artworkLicense', {
+      is: 'commercial',
+      then: Joi.when('artworkUse', {
+        is: 'separate',
+        then: Joi.number().integer().required(),
+        otherwise: Joi.forbidden(),
+      }),
+    }),
+  }),
+  // artworkCategory: Joi.string().required(),
+  artworkDescription: Joi.string().required(),
   artworkMedia: Joi.string().required(),
-  artworkCover: Joi.string().required()
+  artworkCover: Joi.string().required(),
 });
 
-module.exports = data => Joi.validate(data, schema);
+module.exports = (data) => Joi.validate(data, schema);

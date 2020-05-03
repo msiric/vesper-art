@@ -9,23 +9,22 @@ const OrderSchema = new Schema({
       seller: { type: Schema.Types.ObjectId, ref: 'User' },
       version: { type: Schema.Types.ObjectId, ref: 'Version' },
       artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
-      licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }]
-    }
+      licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }],
+    },
   ],
-  discount: { type: Schema.Types.ObjectId, ref: 'Promocode' },
-  paid: Number,
-  sold: Number,
+  discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
+  amount: Number,
+  fee: Number,
   status: Number,
   bulk: Boolean,
-  created: { type: Date, default: Date.now }
+  chargeId: String,
+  created: { type: Date, default: Date.now },
 });
 
 OrderSchema.plugin(deepPopulate);
 
 const Order = mongoose.model('Order', OrderSchema);
 
-Order.createCollection().then(function(collection) {
-  console.log('Orders created');
-});
+Order.createCollection();
 
 module.exports = Order;

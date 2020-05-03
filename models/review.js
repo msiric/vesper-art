@@ -12,8 +12,6 @@ const ReviewSchema = new Schema({
 
 const Review = mongoose.model('Review', ReviewSchema);
 
-Review.createCollection().then(function(collection) {
-  console.log('Reviews created');
-});
+Review.createCollection();
 
 module.exports = Review;
