@@ -2,7 +2,11 @@ import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import { ContactMail, Info, Payment } from '@material-ui/icons';
+import {
+  CardMembershipRounded as LicenseIcon,
+  ContactMailRounded as BillingIcon,
+  PaymentRounded as PaymentIcon,
+} from '@material-ui/icons';
 
 const style = makeStyles((theme) => ({
   root: {
@@ -29,9 +33,9 @@ const StepperIcon = ({ active, completed, icon }) => {
   const classes = style();
 
   const icons = {
-    1: <ContactMail />,
-    2: <Payment />,
-    3: <Payment />,
+    1: <LicenseIcon />,
+    2: <BillingIcon />,
+    3: <PaymentIcon />,
   };
 
   return (

@@ -3,8 +3,8 @@ const { isAuthenticated } = require('../../../utils/helpers');
 const checkoutController = require('../../../controllers/checkoutController');
 
 router
-  .route('/secret')
-  .get(isAuthenticated, checkoutController.getStripeSecret);
+  .route('/payment_intent/:artworkId')
+  .post(isAuthenticated, checkoutController.createPaymentIntent);
 
 // router.route('/cart').get(isAuthenticated, checkoutController.getProcessCart);
 

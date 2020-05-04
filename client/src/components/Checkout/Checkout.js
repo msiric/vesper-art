@@ -62,7 +62,10 @@ const Checkout = ({ match, location }) => {
         ...state,
         loading: false,
         artwork: data.artwork,
-        licenses: [location.state.payload],
+        licenses:
+          location.state && location.state.payload
+            ? [location.state.payload]
+            : [],
         discount: data.discount,
       });
     } catch (err) {
@@ -80,6 +83,13 @@ const Checkout = ({ match, location }) => {
       ...prevState,
       discount: null,
     }));
+  };
+
+  const handleLicenseSave = (licenses) => {
+    setState({
+      ...state,
+      licenses: licenses,
+    });
   };
 
   useEffect(() => {
@@ -125,10 +135,14 @@ const Checkout = ({ match, location }) => {
             <Grid item xs={12} className={classes.loader}>
               <CircularProgress />
             </Grid>
-          ) : state.artwork._id ? (
+          ) : state.licenses.length && state.artwork._id ? (
             <>
               <Grid item xs={12} md={8} className={classes.artwork}>
-                <Main />
+                <Main
+                  artwork={state.artwork}
+                  licenses={state.licenses}
+                  handleLicenseSave={handleLicenseSave}
+                />
               </Grid>
               <Grid item xs={12} md={4} className={classes.actions}>
                 <Card className={classes.summary}>
@@ -163,6 +177,10 @@ const Checkout = ({ match, location }) => {
                                     : `${state.summary.commercial.length} commercial licenses`}
                                 </div>
                               ) : null}
+                              {!state.summary.personal.length &&
+                              !state.summary.commercial.length
+                                ? 'No licenses found'
+                                : null}
                             </div>
                           }
                         />
@@ -184,7 +202,7 @@ const Checkout = ({ match, location }) => {
                                       prefix={'$'}
                                     />
                                   ) : (
-                                    'Free'
+                                    '$0'
                                   )}
                                 </div>
                               ) : null}
@@ -198,10 +216,14 @@ const Checkout = ({ match, location }) => {
                                       prefix={'$'}
                                     />
                                   ) : (
-                                    'Free'
+                                    '$0'
                                   )}
                                 </div>
                               ) : null}
+                              {!state.summary.personal.length &&
+                              !state.summary.commercial.length
+                                ? '$0'
+                                : null}
                             </div>
                           }
                         />
@@ -228,6 +250,10 @@ const Checkout = ({ match, location }) => {
                                     : `${state.summary.commercial.length} commercial licenses`}
                                 </div>
                               ) : null}
+                              {!state.summary.personal.length &&
+                              !state.summary.commercial.length
+                                ? 'No licenses found'
+                                : null}
                             </div>
                           }
                         />
@@ -249,7 +275,7 @@ const Checkout = ({ match, location }) => {
                                       prefix={'$'}
                                     />
                                   ) : (
-                                    'Free'
+                                    '$0'
                                   )}
                                 </div>
                               ) : null}
@@ -263,10 +289,14 @@ const Checkout = ({ match, location }) => {
                                       prefix={'$'}
                                     />
                                   ) : (
-                                    'Free'
+                                    '$0'
                                   )}
                                 </div>
                               ) : null}
+                              {!state.summary.personal.length &&
+                              !state.summary.commercial.length
+                                ? '$0'
+                                : null}
                             </div>
                           }
                         />
@@ -331,7 +361,9 @@ const Checkout = ({ match, location }) => {
                                       state.summary.commercial.length
                                     } licenses`}
                               </Typography>
-                            ) : null
+                            ) : (
+                              'No licenses found'
+                            )
                           }
                         />
                         <ListItemText
@@ -358,7 +390,7 @@ const Checkout = ({ match, location }) => {
                                     prefix={'$'}
                                   />
                                 ) : (
-                                  'Free'
+                                  '$0'
                                 )
                               ) : state.summary.personal.amount +
                                 state.summary.commercial.amount ? (
@@ -372,7 +404,7 @@ const Checkout = ({ match, location }) => {
                                   prefix={'$'}
                                 />
                               ) : (
-                                'Free'
+                                '$0'
                               )}
                             </Typography>
                           }
@@ -437,7 +469,7 @@ const Checkout = ({ match, location }) => {
               </Grid>
             </>
           ) : (
-            'a'
+            history.push('/')
           )}
         </Grid>
       </Container>
