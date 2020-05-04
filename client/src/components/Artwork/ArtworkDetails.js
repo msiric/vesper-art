@@ -528,13 +528,18 @@ const ArtworkDetails = ({ match }) => {
                         <Typography variant="body2" component="p">
                           Commercial license:
                           {state.artwork.current.commercial
-                            ? ` $${state.artwork.current.commercial}`
+                            ? ` $${
+                                state.artwork.current.price +
+                                state.artwork.current.commercial
+                              }`
+                            : state.artwork.current.price
+                            ? ` $${state.artwork.current.price}`
                             : ' Free'}
                         </Typography>
                       </>
                     ) : null}
                     {/* $CART */}
-                    {/* {state.artwork.current.availability === 'available' &&
+                    {state.artwork.current.availability === 'available' &&
                     !store.user.cart[state.artwork._id] ? (
                       <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="artworkLicense">
@@ -555,7 +560,7 @@ const ArtworkDetails = ({ match }) => {
                           ) : null}
                         </Select>
                       </FormControl>
-                    ) : null} */}
+                    ) : null}
                   </CardContent>
                   <CardActions>
                     {state.artwork.owner._id !== store.user.id &&

@@ -15,6 +15,7 @@ import {
   SentimentVeryDissatisfied,
 } from '@material-ui/icons';
 import StepperIcons from './StepperIcons';
+import LicenseForm from './LicenseForm';
 import BillingForm from './BillingForm';
 import PaymentForm from './PaymentForm';
 import {
@@ -23,6 +24,8 @@ import {
   CardCvcElement,
 } from '@stripe/react-stripe-js';
 import { useStateValue } from '../Store/Stripe';
+import { useHistory } from 'react-router-dom';
+import ax from '../../axios.config';
 import StepConnector from './StepConnector';
 
 // OVERALL STYLE
@@ -48,18 +51,26 @@ const style = makeStyles((theme) => ({
   },
 }));
 
-const StepContent = ({ step }) => {
+const StepContent = ({ step, artwork, licenses, handleLicenseSave }) => {
   switch (step) {
     case 0:
-      return <BillingForm />;
+      return (
+        <LicenseForm
+          artwork={artwork}
+          licenses={licenses}
+          handleLicenseSave={handleLicenseSave}
+        />
+      );
     case 1:
+      return <BillingForm />;
+    case 2:
       return <PaymentForm />;
     default:
       return <></>;
   }
 };
 
-const Steppers = () => {
+const Steppers = ({ artwork, licenses, handleLicenseSave }) => {
   const classes = style();
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -70,8 +81,10 @@ const Steppers = () => {
   const elements = useElements();
   const [{ formValues }, dispatch] = useStateValue();
 
+  const history = useHistory();
+
   const handleNext = () => {
-    if (activeStep === 1) {
+    if (activeStep === 2) {
       capture();
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -80,6 +93,21 @@ const Steppers = () => {
   const handleBack = () =>
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   const handleReset = () => setActiveStep(0);
+
+  const createPaymentIntent = async () => {
+    try {
+      await ax.post(`/api/payment_intent/${artwork._id}`, {
+        licenses: licenses,
+      });
+      handleNext();
+    } catch (err) {
+      console.log(err);
+      history.push({
+        pathname: '/',
+        state: { message: 'An error occurred' },
+      });
+    }
+  };
 
   const clientSecretDataObjectConverter = ({
     staff,
@@ -124,6 +152,32 @@ const Steppers = () => {
     },
   });
 
+  const handleSubmit = async (e) => {
+    /*     e.preventDefault();
+    setProcessing(true);
+
+    const payload = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: elements.getElement(CardElement),
+        billing_details: {
+          name: e.target.name.value
+        }
+      }
+    });
+
+    if (payload.error) {
+      setError(`Payment failed: ${payload.error.message}`);
+      setProcessing(false);
+      console.log("[error]", payload.error);
+    } else {
+      setError(null);
+      setSucceeded(true);
+      setProcessing(false);
+      setMetadata(payload.paymentIntent);
+      console.log("[PaymentIntent]", payload.paymentIntent);
+    } */
+  };
+
   const capture = async () => {
     /*     setLoading(true);
 
@@ -156,14 +210,14 @@ const Steppers = () => {
         activeStep={activeStep}
       >
         {/* Change the number of loops here based on StepContent */}
-        {[1, 2].map((e) => (
+        {[1, 2, 3].map((e) => (
           <Step key={e}>
             <StepLabel StepIconComponent={StepperIcons} />
           </Step>
         ))}
       </Stepper>
       <Box className={classes.mainBox}>
-        {activeStep === 2 ? (
+        {activeStep === 3 ? (
           <Grid
             container
             spacing={3}
@@ -195,7 +249,12 @@ const Steppers = () => {
             }}
           >
             <Grid container spacing={3}>
-              <StepContent step={activeStep} />
+              <StepContent
+                step={activeStep}
+                artwork={artwork}
+                licenses={licenses}
+                handleLicenseSave={handleLicenseSave}
+              />
               <Grid container item justify="flex-end">
                 <Button
                   disabled={activeStep === 0}
@@ -204,21 +263,34 @@ const Steppers = () => {
                 >
                   Back
                 </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  type="submit"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <CircularProgress size={24} />
-                  ) : activeStep === 1 ? (
-                    'Pay'
-                  ) : (
-                    'Next'
-                  )}
-                </Button>
+                {activeStep === 0 ? (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                    type="button"
+                    onClick={createPaymentIntent}
+                    disabled={loading}
+                  >
+                    {loading ? <CircularProgress size={24} /> : 'Next'}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <CircularProgress size={24} />
+                    ) : activeStep === 2 ? (
+                      'Pay'
+                    ) : (
+                      'Next'
+                    )}
+                  </Button>
+                )}
               </Grid>
             </Grid>
           </form>
