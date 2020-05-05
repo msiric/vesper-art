@@ -1,13 +1,16 @@
 import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
-import { StateProvider } from '../Store/Stripe';
 import SelectField from '../../shared/SelectInput/SelectInput';
 import NumberFormat from 'react-number-format';
-import Main from './Main';
 import Summary from './Summary';
+import Steppers from './Steppers';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import {
+  Box,
+  Paper,
   Modal,
   Container,
   Grid,
@@ -25,7 +28,6 @@ import {
   Divider,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { loadStripe } from '@stripe/stripe-js';
 import ax from '../../axios.config';
 import CheckoutStyles from './Checkout.style';
 
@@ -36,6 +38,11 @@ const validationSchema = Yup.object().shape({
 const Checkout = ({ match, location }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
+    stripe: null,
+    artwork: {},
+    billing: {},
+    licenses: [],
+    discount: {},
     loading: true,
   });
 
@@ -43,13 +50,90 @@ const Checkout = ({ match, location }) => {
 
   const classes = CheckoutStyles();
 
-  const fetchArtwork = async () => {
+  const handleLicenseSave = async (licenses, progressed) => {
     try {
+      console.log('$TODO CREATE OR UPDATE INTENT ON SERVER');
+      // const intentId = await ax.post(
+      //   `/api/payment_intent/${state.artwork._id}`,
+      //   {
+      //     licenses: licenses,
+      //   }
+      // );
+      if (progressed) {
+        const intentId = 'a';
+        const versionId = state.artwork.current._id.toString();
+        const storageObject = {
+          versionId: versionId,
+          intentId: intentId,
+          licenseList: licenses,
+        };
+        window.sessionStorage.setItem(
+          state.artwork._id,
+          JSON.stringify(storageObject)
+        );
+      } else {
+        setState((prevState) => ({
+          ...prevState,
+          licenses: licenses,
+        }));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleBillingSave = async (billing) => {
+    setState((prevState) => ({
+      ...prevState,
+      billing: billing,
+    }));
+  };
+
+  const handleDiscountEdit = (discount) => {
+    setState((prevState) => ({
+      ...prevState,
+      discount: discount,
+    }));
+  };
+
+  const retrieveLicenseInformation = (artwork) => {
+    const checkoutItem = JSON.parse(
+      window.sessionStorage.getItem(artwork._id.toString())
+    );
+    if (checkoutItem) {
+      const currentId = artwork.current._id.toString();
+      if (checkoutItem.versionId === currentId) {
+        return checkoutItem.licenseList;
+      } else {
+        window.sessionStorage.removeItem(artwork._id);
+        console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
+      }
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const billing = {
+        firstname: '',
+        lastname: '',
+        email: '',
+        address: '',
+        zip: '',
+        city: '',
+        country: '',
+      };
       const { data } = await ax.get(`/api/checkout/${match.params.id}`);
+      const stripe = await loadStripe(
+        'pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z'
+      );
+      const licenses = retrieveLicenseInformation(data.artwork);
       setState({
         ...state,
         loading: false,
+        stripe: stripe,
         artwork: data.artwork,
+        licenses: licenses ? licenses : [],
+        billing: billing,
         discount: data.discount,
       });
     } catch (err) {
@@ -58,7 +142,7 @@ const Checkout = ({ match, location }) => {
   };
 
   useEffect(() => {
-    fetchArtwork();
+    fetchData();
   }, []);
 
   return (
@@ -70,34 +154,38 @@ const Checkout = ({ match, location }) => {
           </Grid>
         ) : state.artwork._id ? (
           <>
-            <StateProvider
-              definedState={{
-                main: {
-                  artwork: state.artwork,
-                  discount: state.discount,
-                  step: 0,
-                },
-                formValues: {
-                  licenses: [],
-                  date: '',
-                  firstname: '',
-                  lastname: '',
-                  email: '',
-                  address: '',
-                  zip: '',
-                  city: '',
-                  country: '',
-                },
-              }}
-            >
-              <Grid item xs={12} md={8} className={classes.artwork}>
-                <Main />
-              </Grid>
-              <Grid item xs={12} md={4} className={classes.actions}>
-                <Summary />
-                <br />
-              </Grid>
-            </StateProvider>
+            <Grid item xs={12} md={8} className={classes.artwork}>
+              <Box component="main">
+                <Container maxWidth="md">
+                  {state.loading ? (
+                    <CircularProgress />
+                  ) : (
+                    <Paper elevation={5}>
+                      {state.stripe ? (
+                        <Elements stripe={state.stripe}>
+                          <Steppers
+                            artwork={state.artwork}
+                            licenses={state.licenses}
+                            billing={state.billing}
+                            handleLicenseSave={handleLicenseSave}
+                            handleBillingSave={handleBillingSave}
+                          />
+                        </Elements>
+                      ) : null}
+                    </Paper>
+                  )}
+                </Container>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={4} className={classes.actions}>
+              <Summary
+                artwork={state.artwork}
+                licenses={state.licenses}
+                discount={state.discount}
+                handleDiscountEdit={handleDiscountEdit}
+              />
+              <br />
+            </Grid>
           </>
         ) : (
           history.push('/')

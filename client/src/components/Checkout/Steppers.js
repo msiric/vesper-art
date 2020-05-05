@@ -23,7 +23,6 @@ import {
   useElements,
   CardCvcElement,
 } from '@stripe/react-stripe-js';
-import { useStateValue } from '../Store/Stripe';
 import { useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
 import * as Yup from 'yup';
@@ -52,66 +51,47 @@ const style = makeStyles((theme) => ({
   },
 }));
 
-const StepContent = ({ step }) => {
-  switch (step) {
-    case 0:
-      return <LicenseForm />;
-    case 1:
-      return <BillingForm />;
-    case 2:
-      return <PaymentForm />;
-    default:
-      return <></>;
-  }
-};
-
-const Steppers = () => {
+const Steppers = ({
+  artwork,
+  licenses,
+  billing,
+  handleLicenseSave,
+  handleBillingSave,
+}) => {
   const classes = style();
-  const [loading, setLoading] = useState(false);
-  const [cardStatus, setCardStatus] = useState(true);
-  const [cardMessage, setCardMessage] = useState('');
-
-  const stripe = useStripe();
-  const elements = useElements();
-  const [{ main, formValues }, dispatch] = useStateValue();
+  const [state, setState] = useState({
+    step: 0,
+  });
 
   const history = useHistory();
 
-  const handleNext = () => {
-    if (main.step === 2) {
-      capture();
-    } else {
-      handleStepChange(1);
-    }
-  };
-  const handleBack = () => handleStepChange(-1);
-
   const handleStepChange = (value) => {
-    dispatch({
-      type: 'editMainValue',
-      key: 'step',
-      value: main.step + value,
-    });
+    setState((prevState) => ({
+      ...prevState,
+      step: prevState.step + value,
+    }));
   };
 
-  useEffect(() => {
-    const checkoutItem = JSON.parse(
-      window.sessionStorage.getItem(main.artwork._id)
-    );
-    if (checkoutItem) {
-      const currentId = main.artwork.current._id.toString();
-      if (checkoutItem.versionId === currentId) {
-        dispatch({
-          type: 'editFormValue',
-          key: 'licenses',
-          value: [...formValues.licenses, ...checkoutItem.licenseList],
-        });
-      } else {
-        window.sessionStorage.removeItem(main.artwork._id);
-        console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
-      }
-    }
-  }, []);
+  const renderForm = ({ step, handleStepChange }) => {
+    if (step === 0)
+      return (
+        <LicenseForm
+          artwork={artwork}
+          licenses={licenses}
+          handleStepChange={handleStepChange}
+          handleLicenseSave={handleLicenseSave}
+        />
+      );
+    else if (step === 1)
+      return (
+        <BillingForm
+          billing={billing}
+          handleStepChange={handleStepChange}
+          handleBillingSave={handleBillingSave}
+        />
+      );
+    else return <PaymentForm handleStepChange={handleStepChange} />;
+  };
 
   const clientSecretDataObjectConverter = ({
     staff,
@@ -210,7 +190,7 @@ const Steppers = () => {
       <Stepper
         alternativeLabel
         connector={<StepConnector />}
-        activeStep={main.step}
+        activeStep={state.step}
       >
         {/* Change the number of loops here based on StepContent */}
         {[1, 2, 3].map((e) => (
@@ -220,7 +200,7 @@ const Steppers = () => {
         ))}
       </Stepper>
       <Box className={classes.mainBox}>
-        {main.step === 3 ? (
+        {state.step === 3 ? (
           <Grid
             container
             spacing={3}
@@ -229,7 +209,7 @@ const Steppers = () => {
             alignItems="center"
             style={{ height: '400px' }}
           >
-            {cardStatus ? (
+            {/*             {cardStatus ? (
               <SentimentVerySatisfied fontSize="large" color="primary" />
             ) : (
               <SentimentVeryDissatisfied fontSize="large" color="error" />
@@ -237,11 +217,14 @@ const Steppers = () => {
             <Typography variant="h4">{cardMessage}</Typography>
             <Button onClick={handleBack} className={classes.button}>
               Back
-            </Button>
+            </Button> */}
           </Grid>
         ) : (
           <Grid container spacing={3}>
-            <StepContent step={main.step} />
+            {renderForm({
+              step: state.step,
+              handleStepChange: handleStepChange,
+            })}
           </Grid>
         )}
       </Box>

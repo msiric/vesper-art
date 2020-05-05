@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Paper, Box, CircularProgress } from '@material-ui/core';
-import Stepper from './Stepper';
+import Steppers from './Steppers';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
@@ -35,7 +35,7 @@ const Main = ({}) => {
           <Paper elevation={5}>
             {state.stripe ? (
               <Elements stripe={state.stripe}>
-                <Stepper />
+                <Steppers />
               </Elements>
             ) : null}
           </Paper>
