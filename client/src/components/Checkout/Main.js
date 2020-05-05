@@ -4,13 +4,7 @@ import Stepper from './Stepper';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
-const Main = ({
-  artwork,
-  licenses,
-  handleLicenseSave,
-  step,
-  handleStepChange,
-}) => {
+const Main = ({}) => {
   const [state, setState] = useState({ loading: true, stripe: null });
 
   const fetchStripePromise = async () => {
@@ -41,13 +35,7 @@ const Main = ({
           <Paper elevation={5}>
             {state.stripe ? (
               <Elements stripe={state.stripe}>
-                <Stepper
-                  artwork={artwork}
-                  licenses={licenses}
-                  handleLicenseSave={handleLicenseSave}
-                  step={step}
-                  handleStepChange={handleStepChange}
-                />
+                <Stepper />
               </Elements>
             ) : null}
           </Paper>

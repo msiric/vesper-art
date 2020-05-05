@@ -68,16 +68,16 @@ const BillingForm = () => {
       <Grid item xs={12} sm={6}>
         <TextField
           label="Street Address"
-          name="address1"
+          name="address"
           variant="outlined"
           margin="dense"
           required
           fullWidth
-          value={formValues.line1}
+          value={formValues.address}
           onChange={(e) =>
             dispatch({
               type: 'editFormValue',
-              key: 'line1',
+              key: 'address',
               value: e.target.value,
             })
           }
@@ -86,16 +86,16 @@ const BillingForm = () => {
       <Grid item xs={12} sm={6}>
         <TextField
           label="Postal Code"
-          name="postal_code"
+          name="zip"
           variant="outlined"
           margin="dense"
           required
           fullWidth
-          value={formValues.postal_code}
+          value={formValues.zip}
           onChange={(e) =>
             dispatch({
               type: 'editFormValue',
-              key: 'postal_code',
+              key: 'zip',
               value: e.target.value,
             })
           }

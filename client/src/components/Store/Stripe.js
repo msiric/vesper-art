@@ -1,13 +1,19 @@
 import React, { createContext, useContext, useReducer } from 'react';
 
 const initialState = {
+  main: {
+    artwork: '',
+    discount: '',
+    step: 0,
+  },
   formValues: {
+    licenses: [],
     date: '',
     firstname: '',
     lastname: '',
     email: '',
-    line1: '',
-    postal_code: '',
+    address: '',
+    zip: '',
     city: '',
     country: '',
   },
@@ -15,6 +21,9 @@ const initialState = {
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case 'editMainValue':
+      state.main[action.key.toLowerCase()] = action.value;
+      return { ...state };
     case 'editFormValue':
       state.formValues[action.key.toLowerCase()] = action.value;
       return { ...state };
@@ -31,8 +40,10 @@ const reducer = (state, action) => {
 
 const StateContext = createContext();
 
-export const StateProvider = ({ children }) => (
-  <StateContext.Provider value={useReducer(reducer, initialState)}>
+export const StateProvider = ({ children, definedState }) => (
+  <StateContext.Provider
+    value={useReducer(reducer, definedState ? definedState : initialState)}
+  >
     {children}
   </StateContext.Provider>
 );
