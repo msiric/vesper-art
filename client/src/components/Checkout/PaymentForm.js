@@ -1,5 +1,5 @@
 import React from 'react'; //, {useState }
-import { TextField, Grid, Typography } from '@material-ui/core';
+import { TextField, Grid, Typography, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   CardCvcElement,
@@ -8,9 +8,20 @@ import {
 } from '@stripe/react-stripe-js';
 import { useStateValue } from '../Store/Stripe';
 import StripeInput from './StripeInput';
+import PaymentFormStyles from './PaymentForm.style';
 
 const PaymentForm = () => {
-  const [{ formValues }, dispatch] = useStateValue();
+  const [{ main, formValues }, dispatch] = useStateValue();
+
+  const classes = PaymentFormStyles();
+
+  const handleStepChange = (value) => {
+    dispatch({
+      type: 'editMainValue',
+      key: 'step',
+      value: main.step + value,
+    });
+  };
 
   const cardsLogo = [
     'amex',
@@ -94,6 +105,20 @@ const PaymentForm = () => {
           }}
           InputLabelProps={{ shrink: true }}
         />
+      </Grid>
+      <Grid container item justify="flex-end">
+        <Button className={classes.button} onClick={() => handleStepChange(-1)}>
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          type="submit"
+          disabled={!formValues.licenses.length}
+        >
+          Pay
+        </Button>
       </Grid>
     </>
   );

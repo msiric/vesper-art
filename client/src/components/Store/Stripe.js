@@ -7,15 +7,16 @@ const initialState = {
     step: 0,
   },
   formValues: {
-    licenses: [],
-    date: '',
-    firstname: '',
-    lastname: '',
-    email: '',
-    address: '',
-    zip: '',
-    city: '',
-    country: '',
+    licenses: [{ licenseType: '', licenseeName: '', licenseeCompany: '' }],
+    billing: {
+      firstname: '',
+      lastname: '',
+      email: '',
+      address: '',
+      zip: '',
+      city: '',
+      country: '',
+    },
   },
 };
 

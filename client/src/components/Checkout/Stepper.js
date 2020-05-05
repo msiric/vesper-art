@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Stepper,
@@ -52,68 +52,6 @@ const style = makeStyles((theme) => ({
   },
 }));
 
-const licenseValidation = Yup.object().shape({
-  licenses: Yup.array().of(
-    Yup.object().shape({
-      licenseType: Yup.string()
-        .matches(/(personal|commercial)/)
-        .required('License type is required'),
-      licenseeName: Yup.string()
-        .trim()
-        .required('License holder full name is required'),
-      licenseeCompany: Yup.string()
-        .notRequired()
-        .when('commercial', {
-          is: 'commercial',
-          then: Yup.string()
-            .trim()
-            .required('License holder company is required'),
-        }),
-    })
-  ),
-});
-
-const billingValidation = Yup.object().shape({
-  firstname: Yup.string()
-    .matches(/(personal|commercial)/)
-    .required('License type is required'),
-  lastname: Yup.string()
-    .trim()
-    .required('License holder full name is required'),
-  email: Yup.string()
-    .notRequired()
-    .when('commercial', {
-      is: 'commercial',
-      then: Yup.string().trim().required('License holder company is required'),
-    }),
-  address: Yup.string()
-    .notRequired()
-    .when('commercial', {
-      is: 'commercial',
-      then: Yup.string().trim().required('License holder company is required'),
-    }),
-  zip: Yup.string()
-    .notRequired()
-    .when('commercial', {
-      is: 'commercial',
-      then: Yup.string().trim().required('License holder company is required'),
-    }),
-  city: Yup.string()
-    .notRequired()
-    .when('commercial', {
-      is: 'commercial',
-      then: Yup.string().trim().required('License holder company is required'),
-    }),
-  country: Yup.string()
-    .notRequired()
-    .when('commercial', {
-      is: 'commercial',
-      then: Yup.string().trim().required('License holder company is required'),
-    }),
-});
-
-const paymentValidation = Yup.object().shape({});
-
 const StepContent = ({ step }) => {
   switch (step) {
     case 0:
@@ -139,8 +77,6 @@ const Steppers = () => {
 
   const history = useHistory();
 
-  let validationSchema = licenseValidation;
-
   const handleNext = () => {
     if (main.step === 2) {
       capture();
@@ -157,6 +93,25 @@ const Steppers = () => {
       value: main.step + value,
     });
   };
+
+  useEffect(() => {
+    const checkoutItem = JSON.parse(
+      window.sessionStorage.getItem(main.artwork._id)
+    );
+    if (checkoutItem) {
+      const currentId = main.artwork.current._id.toString();
+      if (checkoutItem.versionId === currentId) {
+        dispatch({
+          type: 'editFormValue',
+          key: 'licenses',
+          value: [...formValues.licenses, ...checkoutItem.licenseList],
+        });
+      } else {
+        window.sessionStorage.removeItem(main.artwork._id);
+        console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
+      }
+    }
+  }, []);
 
   const clientSecretDataObjectConverter = ({
     staff,
@@ -250,9 +205,6 @@ const Steppers = () => {
     setLoading(false); */
   };
 
-  if (main.step === 1) validationSchema = billingValidation;
-  else if (main.step === 2) validationSchema = paymentValidation;
-
   return (
     <>
       <Stepper
@@ -288,43 +240,9 @@ const Steppers = () => {
             </Button>
           </Grid>
         ) : (
-          <form
-            autoComplete="off"
-            className={classes.form}
-            validationSchema={validationSchema}
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleNext();
-            }}
-          >
-            <Grid container spacing={3}>
-              <StepContent step={main.step} />
-              <Grid container item justify="flex-end">
-                <Button
-                  disabled={main.step === 0}
-                  className={classes.button}
-                  onClick={handleBack}
-                >
-                  Back
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  type="submit"
-                  disabled={loading || !formValues.licenses.length}
-                >
-                  {loading ? (
-                    <CircularProgress size={24} />
-                  ) : main.step === 2 ? (
-                    'Pay'
-                  ) : (
-                    'Next'
-                  )}
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
+          <Grid container spacing={3}>
+            <StepContent step={main.step} />
+          </Grid>
         )}
       </Box>
     </>
