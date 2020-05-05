@@ -539,7 +539,7 @@ const ArtworkDetails = ({ match }) => {
                       </>
                     ) : null}
                     {/* $CART */}
-                    {state.artwork.current.availability === 'available' &&
+                    {/*                     {state.artwork.current.availability === 'available' &&
                     !store.user.cart[state.artwork._id] ? (
                       <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="artworkLicense">
@@ -560,7 +560,7 @@ const ArtworkDetails = ({ match }) => {
                           ) : null}
                         </Select>
                       </FormControl>
-                    ) : null}
+                    ) : null} */}
                   </CardContent>
                   <CardActions>
                     {state.artwork.owner._id !== store.user.id &&
@@ -572,13 +572,11 @@ const ArtworkDetails = ({ match }) => {
                               In cart
                             </Button>
                           ) : (
-                            <Button onClick={() => handleModalOpen()}>
-                              {`Purchase ($${
-                                state.license === 'personal'
-                                  ? state.artwork.current.price
-                                  : state.artwork.current.price +
-                                    state.artwork.current.commercial
-                              })`}
+                            <Button
+                              component={Link}
+                              to={`/checkout/${match.params.id}`}
+                            >
+                              Continue
                             </Button>
                           )
                         ) : (
@@ -592,13 +590,11 @@ const ArtworkDetails = ({ match }) => {
                         )
                       ) : state.artwork.current.price ||
                         state.artwork.current.commercial ? (
-                        <Button onClick={() => handleModalOpen()}>
-                          {`Purchase ($${
-                            state.license === 'personal'
-                              ? state.artwork.current.price
-                              : state.artwork.current.price +
-                                state.artwork.current.commercial
-                          })`}
+                        <Button
+                          component={Link}
+                          to={`/checkout/${match.params.id}`}
+                        >
+                          Continue
                         </Button>
                       ) : (
                         <Button
