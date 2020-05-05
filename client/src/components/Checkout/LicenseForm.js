@@ -42,7 +42,9 @@ const LicenseForm = ({ artwork, licenses, handleLicenseSave }) => {
 
       <Formik
         initialValues={{
-          licenses: licenses,
+          licenses: licenses.length
+            ? licenses
+            : [{ licenseType: '', licenseeName: '', licenseeCompany: '' }],
         }}
         validationSchema={validationSchema}
         onSubmit={async (values) => {
