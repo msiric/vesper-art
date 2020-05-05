@@ -138,7 +138,7 @@ const Checkout = ({ match, location }) => {
       if (checkoutItem.versionId === currentId) {
         setState((prevState) => ({
           ...prevState,
-          licenses: { ...prevState.licenses, ...checkoutItem.licenseList },
+          licenses: [...prevState.licenses, ...checkoutItem.licenseList],
         }));
       } else {
         history.push({
