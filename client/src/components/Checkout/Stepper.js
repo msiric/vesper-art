@@ -26,6 +26,7 @@ import {
 import { useStateValue } from '../Store/Stripe';
 import { useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
+import * as Yup from 'yup';
 import StepConnector from './StepConnector';
 
 // OVERALL STYLE
@@ -51,16 +52,72 @@ const style = makeStyles((theme) => ({
   },
 }));
 
-const StepContent = ({ step, artwork, licenses, handleLicenseSave }) => {
+const licenseValidation = Yup.object().shape({
+  licenses: Yup.array().of(
+    Yup.object().shape({
+      licenseType: Yup.string()
+        .matches(/(personal|commercial)/)
+        .required('License type is required'),
+      licenseeName: Yup.string()
+        .trim()
+        .required('License holder full name is required'),
+      licenseeCompany: Yup.string()
+        .notRequired()
+        .when('commercial', {
+          is: 'commercial',
+          then: Yup.string()
+            .trim()
+            .required('License holder company is required'),
+        }),
+    })
+  ),
+});
+
+const billingValidation = Yup.object().shape({
+  firstname: Yup.string()
+    .matches(/(personal|commercial)/)
+    .required('License type is required'),
+  lastname: Yup.string()
+    .trim()
+    .required('License holder full name is required'),
+  email: Yup.string()
+    .notRequired()
+    .when('commercial', {
+      is: 'commercial',
+      then: Yup.string().trim().required('License holder company is required'),
+    }),
+  address: Yup.string()
+    .notRequired()
+    .when('commercial', {
+      is: 'commercial',
+      then: Yup.string().trim().required('License holder company is required'),
+    }),
+  zip: Yup.string()
+    .notRequired()
+    .when('commercial', {
+      is: 'commercial',
+      then: Yup.string().trim().required('License holder company is required'),
+    }),
+  city: Yup.string()
+    .notRequired()
+    .when('commercial', {
+      is: 'commercial',
+      then: Yup.string().trim().required('License holder company is required'),
+    }),
+  country: Yup.string()
+    .notRequired()
+    .when('commercial', {
+      is: 'commercial',
+      then: Yup.string().trim().required('License holder company is required'),
+    }),
+});
+
+const paymentValidation = Yup.object().shape({});
+
+const StepContent = ({ step }) => {
   switch (step) {
     case 0:
-      return (
-        <LicenseForm
-          artwork={artwork}
-          licenses={licenses}
-          handleLicenseSave={handleLicenseSave}
-        />
-      );
+      return <LicenseForm />;
     case 1:
       return <BillingForm />;
     case 2:
@@ -70,13 +127,7 @@ const StepContent = ({ step, artwork, licenses, handleLicenseSave }) => {
   }
 };
 
-const Steppers = ({
-  step,
-  handleStepChange,
-  artwork,
-  licenses,
-  handleLicenseSave,
-}) => {
+const Steppers = () => {
   const classes = style();
   const [loading, setLoading] = useState(false);
   const [cardStatus, setCardStatus] = useState(true);
@@ -84,18 +135,28 @@ const Steppers = ({
 
   const stripe = useStripe();
   const elements = useElements();
-  const [{ formValues }, dispatch] = useStateValue();
+  const [{ main, formValues }, dispatch] = useStateValue();
 
   const history = useHistory();
 
+  let validationSchema = licenseValidation;
+
   const handleNext = () => {
-    if (step === 2) {
+    if (main.step === 2) {
       capture();
     } else {
       handleStepChange(1);
     }
   };
   const handleBack = () => handleStepChange(-1);
+
+  const handleStepChange = (value) => {
+    dispatch({
+      type: 'editMainValue',
+      key: 'step',
+      value: main.step + value,
+    });
+  };
 
   const clientSecretDataObjectConverter = ({
     staff,
@@ -119,7 +180,7 @@ const Steppers = ({
   });
 
   const stripeDataObjectConverter = (
-    { firstname, lastname, email, line1, line2, postal_code, city, country },
+    { firstname, lastname, email, address, zip, city, country },
     cardElement
   ) => ({
     payment_method: {
@@ -128,9 +189,8 @@ const Steppers = ({
         address: {
           city,
           country: country.code,
-          line1,
-          line2,
-          postal_code,
+          address,
+          zip,
           state: null,
         },
         email,
@@ -190,9 +250,16 @@ const Steppers = ({
     setLoading(false); */
   };
 
+  if (main.step === 1) validationSchema = billingValidation;
+  else if (main.step === 2) validationSchema = paymentValidation;
+
   return (
     <>
-      <Stepper alternativeLabel connector={<StepConnector />} activeStep={step}>
+      <Stepper
+        alternativeLabel
+        connector={<StepConnector />}
+        activeStep={main.step}
+      >
         {/* Change the number of loops here based on StepContent */}
         {[1, 2, 3].map((e) => (
           <Step key={e}>
@@ -201,7 +268,7 @@ const Steppers = ({
         ))}
       </Stepper>
       <Box className={classes.mainBox}>
-        {step === 3 ? (
+        {main.step === 3 ? (
           <Grid
             container
             spacing={3}
@@ -224,21 +291,17 @@ const Steppers = ({
           <form
             autoComplete="off"
             className={classes.form}
+            validationSchema={validationSchema}
             onSubmit={(e) => {
               e.preventDefault();
               handleNext();
             }}
           >
             <Grid container spacing={3}>
-              <StepContent
-                step={step}
-                artwork={artwork}
-                licenses={licenses}
-                handleLicenseSave={handleLicenseSave}
-              />
+              <StepContent step={main.step} />
               <Grid container item justify="flex-end">
                 <Button
-                  disabled={step === 0}
+                  disabled={main.step === 0}
                   className={classes.button}
                   onClick={handleBack}
                 >
@@ -249,11 +312,11 @@ const Steppers = ({
                   color="primary"
                   className={classes.button}
                   type="submit"
-                  disabled={loading || !licenses.length}
+                  disabled={loading || !formValues.licenses.length}
                 >
                   {loading ? (
                     <CircularProgress size={24} />
-                  ) : step === 2 ? (
+                  ) : main.step === 2 ? (
                     'Pay'
                   ) : (
                     'Next'

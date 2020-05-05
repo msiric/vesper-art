@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useStateValue } from '../Store/Stripe';
 import {
   TextField,
   Grid,
@@ -33,7 +34,58 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const LicenseForm = ({ artwork, licenses, handleLicenseSave }) => {
+const LicenseForm = () => {
+  const [{ main, formValues }, dispatch] = useStateValue();
+
+  useEffect(() => {
+    const checkoutItem = JSON.parse(
+      window.sessionStorage.getItem(main.artwork._id)
+    );
+    if (checkoutItem) {
+      const currentId = main.artwork.current._id.toString();
+      if (checkoutItem.versionId === currentId) {
+        dispatch({
+          type: 'editFormValue',
+          key: 'licenses',
+          value: [...formValues.licenses, ...checkoutItem.licenseList],
+        });
+      } else {
+        window.sessionStorage.removeItem(main.artwork._id);
+        console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
+      }
+    }
+  }, [main.artwork]);
+
+  const handleLicenseSave = async (licenses) => {
+    try {
+      console.log('$TODO CREATE OR UPDATE INTENT ON SERVER');
+      // const intentId = await ax.post(
+      //   `/api/payment_intent/${state.artwork._id}`,
+      //   {
+      //     licenses: licenses,
+      //   }
+      // );
+      const intentId = 'a';
+      const versionId = main.artwork.current._id.toString();
+      const storageObject = {
+        versionId: versionId,
+        intentId: intentId,
+        licenseList: licenses,
+      };
+      window.sessionStorage.setItem(
+        main.artwork._id,
+        JSON.stringify(storageObject)
+      );
+      dispatch({
+        type: 'editFormValue',
+        key: 'licenses',
+        value: licenses,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const classes = LicenseFormStyles();
 
   return (
@@ -42,10 +94,11 @@ const LicenseForm = ({ artwork, licenses, handleLicenseSave }) => {
 
       <Formik
         initialValues={{
-          licenses: licenses.length
-            ? licenses
+          licenses: formValues.licenses
+            ? formValues.licenses
             : [{ licenseType: '', licenseeName: '', licenseeCompany: '' }],
         }}
+        enableReinitialize
         validationSchema={validationSchema}
         onSubmit={async (values) => {
           handleLicenseSave(values.licenses);
@@ -65,8 +118,8 @@ const LicenseForm = ({ artwork, licenses, handleLicenseSave }) => {
                             as="select"
                           >
                             {({ field, form: { touched, errors }, meta }) =>
-                              artwork.current &&
-                              artwork.current.license === 'commercial' ? (
+                              main.artwork.current &&
+                              main.artwork.current.license === 'commercial' ? (
                                 <SelectField
                                   {...field}
                                   handleChange={field.onChange}
@@ -150,8 +203,8 @@ const LicenseForm = ({ artwork, licenses, handleLicenseSave }) => {
                       color="primary"
                       onClick={() =>
                         arrayHelpers.push(
-                          artwork.current &&
-                            artwork.current.license === 'commercial'
+                          main.artwork.current &&
+                            main.artwork.current.license === 'commercial'
                             ? {
                                 licenseType: '',
                                 licenseeName: '',
