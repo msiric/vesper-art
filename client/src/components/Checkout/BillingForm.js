@@ -3,7 +3,6 @@ import { TextField, Grid, Typography, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
-import { useStateValue } from '../Store/Stripe';
 import BillingFormStyles from './BillingForm.style';
 
 const validationSchema = Yup.object().shape({
@@ -20,27 +19,18 @@ const validationSchema = Yup.object().shape({
   country: Yup.string().trim().required('License holder full name is required'),
 });
 
-const BillingForm = () => {
-  const [{ main, formValues }, dispatch] = useStateValue();
-
+const BillingForm = ({ billing, handleStepChange, handleBillingSave }) => {
   const classes = BillingFormStyles();
-
-  const handleStepChange = (value) => {
-    dispatch({
-      type: 'editMainValue',
-      key: 'step',
-      value: main.step + value,
-    });
-  };
 
   return (
     <>
       <Formik
-        initialValues={{ ...formValues.billing }}
+        initialValues={{ ...billing }}
         enableReinitialize
         validationSchema={validationSchema}
         onSubmit={async (values) => {
           /* handleLicenseSave(values.billing); */
+          handleBillingSave(values);
           handleStepChange(1);
         }}
       >
@@ -166,14 +156,6 @@ const BillingForm = () => {
                       {...params}
                     />
                   )}
-                  value={formValues.country}
-                  onChange={(event, value) => {
-                    dispatch({
-                      type: 'editFormValue',
-                      key: 'country',
-                      value: value,
-                    });
-                  }}
                 />
               </Grid>
             </Grid>
@@ -189,7 +171,6 @@ const BillingForm = () => {
                 color="primary"
                 className={classes.button}
                 type="submit"
-                disabled={!formValues.licenses.length}
               >
                 Next
               </Button>

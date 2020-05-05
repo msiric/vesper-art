@@ -1,6 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useStateValue } from '../Store/Stripe';
-import { StateProvider } from '../Store/Stripe';
 import SelectField from '../../shared/SelectInput/SelectInput';
 import NumberFormat from 'react-number-format';
 import Main from './Main';
@@ -32,9 +30,14 @@ const validationSchema = Yup.object().shape({
   discountCode: Yup.string().trim().required('Discount cannot be empty'),
 });
 
-const Summary = ({ match, location }) => {
-  const [{ main, formValues }, dispatch] = useStateValue();
-
+const Summary = ({
+  match,
+  location,
+  artwork,
+  licenses,
+  discount,
+  handleDiscountEdit,
+}) => {
   const [state, setState] = useState({
     summary: {
       personal: {
@@ -56,30 +59,15 @@ const Summary = ({ match, location }) => {
     return array.filter((item) => item.licenseType === condition).length;
   };
 
-  const handleRemoveDiscount = async () => {
-    await ax.delete(`/api/discount/${main.discount._id}`);
-    dispatch({
-      type: 'editMainValue',
-      key: 'discount',
-      value: null,
-    });
-  };
-
   useEffect(() => {
-    if (main.artwork._id) {
-      const personalLicensesLength = getLicenseLength(
-        'personal',
-        formValues.licenses
-      );
-      const commercialLicensesLength = getLicenseLength(
-        'commercial',
-        formValues.licenses
-      );
+    if (artwork._id) {
+      const personalLicensesLength = getLicenseLength('personal', licenses);
+      const commercialLicensesLength = getLicenseLength('commercial', licenses);
       const personalLicensesAmount =
-        personalLicensesLength * main.artwork.current.price;
+        personalLicensesLength * artwork.current.price;
       const commercialLicensesAmount =
         commercialLicensesLength *
-        (main.artwork.current.price + main.artwork.current.commercial);
+        (artwork.current.price + artwork.current.commercial);
       setState((prevState) => ({
         ...prevState,
         summary: {
@@ -94,7 +82,7 @@ const Summary = ({ match, location }) => {
         },
       }));
     }
-  }, [formValues.licenses]);
+  }, [licenses]);
 
   return (
     <Card className={classes.summary}>
@@ -103,9 +91,9 @@ const Summary = ({ match, location }) => {
           Order summary
         </Typography>
         <List disablePadding>
-          <ListItem className={classes.listItem} key={main.artwork.current._id}>
+          <ListItem className={classes.listItem} key={artwork.current._id}>
             <ListItemText
-              primary={<Typography>{main.artwork.current.title}</Typography>}
+              primary={<Typography>{artwork.current.title}</Typography>}
               secondary={
                 <div>
                   {state.summary.personal.length ? (
@@ -243,15 +231,15 @@ const Summary = ({ match, location }) => {
             />
           </ListItem>
           <Divider />
-          {main.discount ? (
+          {discount ? (
             <>
               <ListItem className={classes.listItem}>
                 <ListItemText
                   primary={<Typography>Discount</Typography>}
                   secondary={
                     <div>
-                      <Typography>{`${main.discount.name} (${
-                        main.discount.discount * 100
+                      <Typography>{`${discount.name} (${
+                        discount.discount * 100
                       }%)`}</Typography>
                     </div>
                   }
@@ -269,7 +257,7 @@ const Summary = ({ match, location }) => {
                           value={(
                             (state.summary.personal.amount +
                               state.summary.commercial.amount) *
-                            main.discount.discount
+                            discount.discount
                           ).toFixed(2)}
                           displayType={'text'}
                           thousandSeparator={true}
@@ -313,7 +301,7 @@ const Summary = ({ match, location }) => {
               }
               secondary={
                 <Typography className={classes.rightList}>
-                  {main.discount ? (
+                  {discount ? (
                     state.summary.personal.amount +
                     state.summary.commercial.amount ? (
                       <NumberFormat
@@ -322,7 +310,7 @@ const Summary = ({ match, location }) => {
                           state.summary.commercial.amount -
                           (state.summary.personal.amount +
                             state.summary.commercial.amount) *
-                            main.discount.discount
+                            discount.discount
                         }
                         displayType={'text'}
                         thousandSeparator={true}
@@ -350,11 +338,11 @@ const Summary = ({ match, location }) => {
             />
           </ListItem>
         </List>
-        {main.discount ? (
+        {discount ? (
           <Button
             type="button"
             color="error"
-            onClick={handleRemoveDiscount}
+            onClick={() => handleDiscountEdit(null)}
             fullWidth
           >
             Remove discount
@@ -367,11 +355,7 @@ const Summary = ({ match, location }) => {
             validationSchema={validationSchema}
             onSubmit={async (values) => {
               const { data } = await ax.post('/api/discount', values);
-              dispatch({
-                type: 'editMainValue',
-                key: 'discount',
-                value: data.payload,
-              });
+              handleDiscountEdit(data.payload);
             }}
           >
             {({ values, errors, touched, enableReinitialize }) => (

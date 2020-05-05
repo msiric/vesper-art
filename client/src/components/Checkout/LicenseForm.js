@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { useStateValue } from '../Store/Stripe';
 import {
   TextField,
   Grid,
@@ -34,59 +33,29 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const LicenseForm = () => {
-  const [{ main, formValues }, dispatch] = useStateValue();
-
+const LicenseForm = ({
+  artwork,
+  licenses,
+  handleStepChange,
+  handleLicenseSave,
+}) => {
   const classes = LicenseFormStyles();
 
-  const handleStepChange = (value) => {
-    dispatch({
-      type: 'editMainValue',
-      key: 'step',
-      value: main.step + value,
-    });
-  };
-
-  const handleLicenseSave = async (licenses) => {
-    try {
-      console.log('$TODO CREATE OR UPDATE INTENT ON SERVER');
-      // const intentId = await ax.post(
-      //   `/api/payment_intent/${state.artwork._id}`,
-      //   {
-      //     licenses: licenses,
-      //   }
-      // );
-      const intentId = 'a';
-      const versionId = main.artwork.current._id.toString();
-      const storageObject = {
-        versionId: versionId,
-        intentId: intentId,
-        licenseList: licenses,
-      };
-      window.sessionStorage.setItem(
-        main.artwork._id,
-        JSON.stringify(storageObject)
-      );
-      dispatch({
-        type: 'editFormValue',
-        key: 'licenses',
-        value: licenses,
-      });
-    } catch (err) {
-      console.log(err);
-    }
+  const handleNextClick = (values) => {
+    handleLicenseSave(values.licenses, true);
+    handleStepChange(1);
   };
 
   return (
     <>
       <Formik
         initialValues={{
-          licenses: formValues.licenses,
+          licenses: licenses,
         }}
         enableReinitialize
         validationSchema={validationSchema}
         onSubmit={async (values) => {
-          handleLicenseSave(values.licenses);
+          handleLicenseSave(values.licenses, false);
         }}
       >
         {({ values, errors, touched, enableReinitialize }) => (
@@ -105,9 +74,8 @@ const LicenseForm = () => {
                               as="select"
                             >
                               {({ field, form: { touched, errors }, meta }) =>
-                                main.artwork.current &&
-                                main.artwork.current.license ===
-                                  'commercial' ? (
+                                artwork.current &&
+                                artwork.current.license === 'commercial' ? (
                                   <SelectField
                                     {...field}
                                     handleChange={field.onChange}
@@ -191,8 +159,8 @@ const LicenseForm = () => {
                         color="primary"
                         onClick={() =>
                           arrayHelpers.push(
-                            main.artwork.current &&
-                              main.artwork.current.license === 'commercial'
+                            artwork.current &&
+                              artwork.current.license === 'commercial'
                               ? {
                                   licenseType: '',
                                   licenseeName: '',
@@ -223,12 +191,12 @@ const LicenseForm = () => {
                 Back
               </Button>
               <Button
-                onClick={() => handleStepChange(1)}
+                onClick={() => handleNextClick(values)}
                 variant="contained"
                 color="primary"
                 className={classes.button}
                 type="button"
-                disabled={!formValues.licenses.length}
+                disabled={!licenses.length}
               >
                 Next
               </Button>

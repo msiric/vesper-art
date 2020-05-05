@@ -6,22 +6,11 @@ import {
   CardNumberElement,
   CardExpiryElement,
 } from '@stripe/react-stripe-js';
-import { useStateValue } from '../Store/Stripe';
 import StripeInput from './StripeInput';
 import PaymentFormStyles from './PaymentForm.style';
 
-const PaymentForm = () => {
-  const [{ main, formValues }, dispatch] = useStateValue();
-
+const PaymentForm = ({ handleStepChange }) => {
   const classes = PaymentFormStyles();
-
-  const handleStepChange = (value) => {
-    dispatch({
-      type: 'editMainValue',
-      key: 'step',
-      value: main.step + value,
-    });
-  };
 
   const cardsLogo = [
     'amex',
@@ -115,7 +104,6 @@ const PaymentForm = () => {
           color="primary"
           className={classes.button}
           type="submit"
-          disabled={!formValues.licenses.length}
         >
           Pay
         </Button>
