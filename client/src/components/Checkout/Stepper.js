@@ -70,9 +70,14 @@ const StepContent = ({ step, artwork, licenses, handleLicenseSave }) => {
   }
 };
 
-const Steppers = ({ artwork, licenses, handleLicenseSave }) => {
+const Steppers = ({
+  step,
+  handleStepChange,
+  artwork,
+  licenses,
+  handleLicenseSave,
+}) => {
   const classes = style();
-  const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [cardStatus, setCardStatus] = useState(true);
   const [cardMessage, setCardMessage] = useState('');
@@ -84,30 +89,13 @@ const Steppers = ({ artwork, licenses, handleLicenseSave }) => {
   const history = useHistory();
 
   const handleNext = () => {
-    if (activeStep === 2) {
+    if (step === 2) {
       capture();
     } else {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      handleStepChange(1);
     }
   };
-  const handleBack = () =>
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  const handleReset = () => setActiveStep(0);
-
-  const createPaymentIntent = async () => {
-    try {
-      await ax.post(`/api/payment_intent/${artwork._id}`, {
-        licenses: licenses,
-      });
-      handleNext();
-    } catch (err) {
-      console.log(err);
-      history.push({
-        pathname: '/',
-        state: { message: 'An error occurred' },
-      });
-    }
-  };
+  const handleBack = () => handleStepChange(-1);
 
   const clientSecretDataObjectConverter = ({
     staff,
@@ -204,11 +192,7 @@ const Steppers = ({ artwork, licenses, handleLicenseSave }) => {
 
   return (
     <>
-      <Stepper
-        alternativeLabel
-        connector={<StepConnector />}
-        activeStep={activeStep}
-      >
+      <Stepper alternativeLabel connector={<StepConnector />} activeStep={step}>
         {/* Change the number of loops here based on StepContent */}
         {[1, 2, 3].map((e) => (
           <Step key={e}>
@@ -217,7 +201,7 @@ const Steppers = ({ artwork, licenses, handleLicenseSave }) => {
         ))}
       </Stepper>
       <Box className={classes.mainBox}>
-        {activeStep === 3 ? (
+        {step === 3 ? (
           <Grid
             container
             spacing={3}
@@ -232,11 +216,8 @@ const Steppers = ({ artwork, licenses, handleLicenseSave }) => {
               <SentimentVeryDissatisfied fontSize="large" color="error" />
             )}
             <Typography variant="h4">{cardMessage}</Typography>
-            <Button
-              onClick={cardStatus ? handleReset : handleBack}
-              className={classes.button}
-            >
-              {cardStatus ? 'Reset' : 'Back'}
+            <Button onClick={handleBack} className={classes.button}>
+              Back
             </Button>
           </Grid>
         ) : (
@@ -250,47 +231,34 @@ const Steppers = ({ artwork, licenses, handleLicenseSave }) => {
           >
             <Grid container spacing={3}>
               <StepContent
-                step={activeStep}
+                step={step}
                 artwork={artwork}
                 licenses={licenses}
                 handleLicenseSave={handleLicenseSave}
               />
               <Grid container item justify="flex-end">
                 <Button
-                  disabled={activeStep === 0}
+                  disabled={step === 0}
                   className={classes.button}
                   onClick={handleBack}
                 >
                   Back
                 </Button>
-                {activeStep === 0 ? (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    type="button"
-                    onClick={createPaymentIntent}
-                    disabled={loading}
-                  >
-                    {loading ? <CircularProgress size={24} /> : 'Next'}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    type="submit"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <CircularProgress size={24} />
-                    ) : activeStep === 2 ? (
-                      'Pay'
-                    ) : (
-                      'Next'
-                    )}
-                  </Button>
-                )}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  type="submit"
+                  disabled={loading || !licenses.length}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} />
+                  ) : step === 2 ? (
+                    'Pay'
+                  ) : (
+                    'Next'
+                  )}
+                </Button>
               </Grid>
             </Grid>
           </form>

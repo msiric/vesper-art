@@ -48,6 +48,7 @@ const Checkout = ({ match, location }) => {
         amount: 0,
       },
     },
+    step: 0,
     discount: null,
   });
 
@@ -85,16 +86,68 @@ const Checkout = ({ match, location }) => {
     }));
   };
 
-  const handleLicenseSave = (licenses) => {
-    setState({
-      ...state,
-      licenses: licenses,
-    });
+  const handleStepChange = (value) => {
+    setState((prevState) => ({
+      ...prevState,
+      step: prevState.step + value,
+    }));
+  };
+
+  const handleLicenseSave = async (licenses) => {
+    try {
+      // const intentId = await ax.post(
+      //   `/api/payment_intent/${state.artwork._id}`,
+      //   {
+      //     licenses: licenses,
+      //   }
+      // );
+      const intentId = 'a';
+      const versionId = state.artwork.current._id.toString();
+      const storageObject = {
+        versionId: versionId,
+        intentId: intentId,
+        licenseList: licenses,
+      };
+      window.sessionStorage.setItem(
+        state.artwork._id,
+        JSON.stringify(storageObject)
+      );
+      setState({
+        ...state,
+        licenses: licenses,
+      });
+    } catch (err) {
+      console.log(err);
+      history.push({
+        pathname: '/',
+        state: { message: 'An error occurred' },
+      });
+    }
   };
 
   useEffect(() => {
     fetchArtwork();
   }, []);
+
+  useEffect(() => {
+    const checkoutItem = JSON.parse(
+      window.sessionStorage.getItem(state.artwork._id)
+    );
+    if (checkoutItem) {
+      const currentId = state.artwork.current._id.toString();
+      if (checkoutItem.versionId === currentId) {
+        setState((prevState) => ({
+          ...prevState,
+          licenses: { ...prevState.licenses, ...checkoutItem.licenseList },
+        }));
+      } else {
+        history.push({
+          pathname: `/artwork/${state.artwork._id}`,
+          state: { message: 'Artwork has been updated' },
+        });
+      }
+    }
+  }, [state.artwork]);
 
   useEffect(() => {
     if (state.artwork._id) {
@@ -135,13 +188,15 @@ const Checkout = ({ match, location }) => {
             <Grid item xs={12} className={classes.loader}>
               <CircularProgress />
             </Grid>
-          ) : state.licenses.length && state.artwork._id ? (
+          ) : state.artwork._id ? (
             <>
               <Grid item xs={12} md={8} className={classes.artwork}>
                 <Main
                   artwork={state.artwork}
                   licenses={state.licenses}
                   handleLicenseSave={handleLicenseSave}
+                  step={state.step}
+                  handleStepChange={handleStepChange}
                 />
               </Grid>
               <Grid item xs={12} md={4} className={classes.actions}>

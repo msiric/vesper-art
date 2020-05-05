@@ -4,7 +4,13 @@ import Stepper from './Stepper';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
-const Main = ({ artwork, licenses, handleLicenseSave }) => {
+const Main = ({
+  artwork,
+  licenses,
+  handleLicenseSave,
+  step,
+  handleStepChange,
+}) => {
   const [state, setState] = useState({ loading: true, stripe: null });
 
   const fetchStripePromise = async () => {
@@ -39,6 +45,8 @@ const Main = ({ artwork, licenses, handleLicenseSave }) => {
                   artwork={artwork}
                   licenses={licenses}
                   handleLicenseSave={handleLicenseSave}
+                  step={step}
+                  handleStepChange={handleStepChange}
                 />
               </Elements>
             ) : null}
