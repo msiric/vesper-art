@@ -1,22 +1,18 @@
 import React from 'react';
 import { TextField, Grid, Typography, Button } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import BillingFormStyles from './BillingForm.style';
 
 const validationSchema = Yup.object().shape({
-  firstname: Yup.string()
-    .matches(/(personal|commercial)/)
-    .required('License type is required'),
-  lastname: Yup.string()
-    .trim()
-    .required('License holder full name is required'),
-  email: Yup.string().trim().required('License holder full name is required'),
-  address: Yup.string().trim().required('License holder full name is required'),
-  zip: Yup.string().trim().required('License holder full name is required'),
-  city: Yup.string().trim().required('License holder full name is required'),
-  country: Yup.string().trim().required('License holder full name is required'),
+  firstname: Yup.string().trim().required('First name is required'),
+  lastname: Yup.string().trim().required('Last name is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
+  address: Yup.string().trim().required('Address is required'),
+  zip: Yup.string().trim().required('Postal code is required'),
+  city: Yup.string().trim().required('City is required'),
+  country: Yup.string().trim().required('Country is required'),
 });
 
 const BillingForm = ({ billing, handleStepChange, handleBillingSave }) => {
@@ -142,21 +138,26 @@ const BillingForm = ({ billing, handleStepChange, handleBillingSave }) => {
                 </Field>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Autocomplete
-                  options={countries}
-                  getOptionLabel={(option) => option.name}
-                  renderInput={(params) => (
-                    <TextField
+                <Field name="country">
+                  {({
+                    field,
+                    form: { touched, errors, setFieldValue, setTouched },
+                    meta,
+                  }) => (
+                    <AutocompleteInput
+                      {...field}
+                      options={countries}
+                      handleChange={(e, value) =>
+                        setFieldValue('country', value || '')
+                      }
+                      handleBlur={() => setTouched({ country: true })}
+                      getOptionLabel={(option) => option.name}
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
                       label="Country"
-                      name="country"
-                      variant="outlined"
-                      margin="dense"
-                      required
-                      fullWidth
-                      {...params}
                     />
                   )}
-                />
+                </Field>
               </Grid>
             </Grid>
             <Grid container item justify="flex-end">
