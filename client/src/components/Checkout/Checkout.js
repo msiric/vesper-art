@@ -39,6 +39,7 @@ const Checkout = ({ match, location }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     stripe: null,
+    secret: null,
     artwork: {},
     billing: {},
     licenses: [],
@@ -50,33 +51,26 @@ const Checkout = ({ match, location }) => {
 
   const classes = CheckoutStyles();
 
-  const handleLicenseSave = async (licenses, progressed) => {
+  const handleSecretSave = (value) => {
+    setState((prevState) => ({ ...prevState, secret: value }));
+  };
+
+  const handleLicenseSave = async (licenses) => {
     try {
-      console.log('$TODO CREATE OR UPDATE INTENT ON SERVER');
-      // const intentId = await ax.post(
-      //   `/api/payment_intent/${state.artwork._id}`,
-      //   {
-      //     licenses: licenses,
-      //   }
-      // );
-      if (progressed) {
-        const intentId = 'a';
-        const versionId = state.artwork.current._id.toString();
-        const storageObject = {
-          versionId: versionId,
-          intentId: intentId,
-          licenseList: licenses,
-        };
-        window.sessionStorage.setItem(
-          state.artwork._id,
-          JSON.stringify(storageObject)
-        );
-      } else {
-        setState((prevState) => ({
-          ...prevState,
-          licenses: licenses,
-        }));
-      }
+      const versionId = state.artwork.current._id.toString();
+      const storageObject = {
+        versionId: versionId,
+        intentId: null,
+        licenseList: licenses,
+      };
+      window.sessionStorage.setItem(
+        state.artwork._id,
+        JSON.stringify(storageObject)
+      );
+      setState((prevState) => ({
+        ...prevState,
+        licenses: licenses,
+      }));
     } catch (err) {
       console.log(err);
     }
@@ -167,6 +161,8 @@ const Checkout = ({ match, location }) => {
                             artwork={state.artwork}
                             licenses={state.licenses}
                             billing={state.billing}
+                            discount={state.discount}
+                            handleSecretSave={handleSecretSave}
                             handleLicenseSave={handleLicenseSave}
                             handleBillingSave={handleBillingSave}
                           />

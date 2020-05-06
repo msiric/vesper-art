@@ -81,14 +81,14 @@ const Header = () => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem component={Link} to={`/user/${store.user.name}`}>
-        Profile
-      </MenuItem>
-      {!store.user.stripeId ? (
+      {!store.user.stripeId && (
         <MenuItem component={Link} to="/onboarding">
           Become a seller
         </MenuItem>
-      ) : null}
+      )}
+      <MenuItem component={Link} to={`/user/${store.user.name}`}>
+        Profile
+      </MenuItem>
       <MenuItem component={Link} to="/dashboard">
         Dashboard
       </MenuItem>

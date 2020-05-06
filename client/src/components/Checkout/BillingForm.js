@@ -25,7 +25,6 @@ const BillingForm = ({ billing, handleStepChange, handleBillingSave }) => {
         enableReinitialize
         validationSchema={validationSchema}
         onSubmit={async (values) => {
-          /* handleLicenseSave(values.billing); */
           handleBillingSave(values);
           handleStepChange(1);
         }}
@@ -141,7 +140,7 @@ const BillingForm = ({ billing, handleStepChange, handleBillingSave }) => {
                 <Field name="country">
                   {({
                     field,
-                    form: { touched, errors, setFieldValue, setTouched },
+                    form: { touched, errors, setFieldValue, setFieldTouched },
                     meta,
                   }) => (
                     <AutocompleteInput
@@ -150,7 +149,7 @@ const BillingForm = ({ billing, handleStepChange, handleBillingSave }) => {
                       handleChange={(e, value) =>
                         setFieldValue('country', value || '')
                       }
-                      handleBlur={() => setTouched({ country: true })}
+                      handleBlur={() => setFieldTouched('country', true)}
                       getOptionLabel={(option) => option.name}
                       helperText={meta.touched && meta.error}
                       error={meta.touched && Boolean(meta.error)}
