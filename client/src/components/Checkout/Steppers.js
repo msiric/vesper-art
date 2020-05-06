@@ -55,6 +55,8 @@ const Steppers = ({
   artwork,
   licenses,
   billing,
+  discount,
+  handleSecretSave,
   handleLicenseSave,
   handleBillingSave,
 }) => {
@@ -78,6 +80,7 @@ const Steppers = ({
         <LicenseForm
           artwork={artwork}
           licenses={licenses}
+          handleSecretSave={handleSecretSave}
           handleStepChange={handleStepChange}
           handleLicenseSave={handleLicenseSave}
         />

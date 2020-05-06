@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Grid,
   Typography,
   Button,
   CardActions,
+  CircularProgress,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import SelectField from '../../shared/SelectInput/SelectInput';
 import * as Yup from 'yup';
+import ax from '../../axios.config';
 import LicenseFormStyles from './LicenseForm.style';
 
 const validationSchema = Yup.object().shape({
@@ -36,14 +38,50 @@ const validationSchema = Yup.object().shape({
 const LicenseForm = ({
   artwork,
   licenses,
+  handleSecretSave,
   handleStepChange,
   handleLicenseSave,
 }) => {
+  const [state, setState] = useState({ loading: false });
   const classes = LicenseFormStyles();
 
-  const handleNextClick = (values) => {
-    handleLicenseSave(values.licenses, true);
-    handleStepChange(1);
+  const retrieveIntentId = () => {
+    const checkoutItem = JSON.parse(
+      window.sessionStorage.getItem(artwork._id.toString())
+    );
+    if (checkoutItem) {
+      const currentId = artwork.current._id.toString();
+      if (checkoutItem.versionId === currentId) {
+        return checkoutItem.intentId;
+      } else {
+        window.sessionStorage.removeItem(artwork._id);
+        console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
+      }
+    }
+  };
+
+  const handleNextClick = async (values) => {
+    try {
+      setState((prevState) => ({ ...prevState, loading: true }));
+      const intentId = retrieveIntentId();
+      const { data } = await ax.post(`/api/payment_intent/${artwork._id}`, {
+        licenses,
+        intentId,
+      });
+      const versionId = artwork.current._id.toString();
+      const storageObject = {
+        versionId: versionId,
+        intentId: data.intent.id,
+        licenseList: licenses,
+      };
+      window.sessionStorage.setItem(artwork._id, JSON.stringify(storageObject));
+      handleSecretSave(data.intent.secret);
+      handleStepChange(1);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setState((prevState) => ({ ...prevState, loading: false }));
+    }
   };
 
   return (
@@ -55,7 +93,7 @@ const LicenseForm = ({
         enableReinitialize
         validationSchema={validationSchema}
         onSubmit={async (values) => {
-          handleLicenseSave(values.licenses, false);
+          handleLicenseSave(values.licenses);
         }}
       >
         {({ values, errors, touched, enableReinitialize }) => (
@@ -198,7 +236,11 @@ const LicenseForm = ({
                 type="button"
                 disabled={!licenses.length}
               >
-                Next
+                {state.loading ? (
+                  <CircularProgress color="secondary" size={24} />
+                ) : (
+                  'Next'
+                )}
               </Button>
             </Grid>
           </Form>

@@ -10,10 +10,16 @@ const crypto = require('crypto');
 const currency = require('currency.js');
 const createError = require('http-errors');
 
-const createPaymentIntent = async (req, res, next) => {
+const managePaymentIntent = async (req, res, next) => {
   try {
-    /* const { artworkId } = req.params;
-    const { licenses } = req.body;
+    const intent = await stripe.paymentIntents.retrieve('asdfasdf', function (
+      err,
+      paymentIntent
+    ) {
+      // asynchronously called
+    });
+    const { artworkId } = req.params;
+    const { licenses, intentId } = req.body;
     const foundUser = await User.findOne({
       $and: [{ _id: res.locals.user.id }, { active: true }],
     }).populate('discount');
@@ -68,16 +74,100 @@ const createPaymentIntent = async (req, res, next) => {
           'total',
           total.intValue
         );
-        const paymentIntent = await stripe.paymentIntents.create({
-          payment_method_types: ['card'],
-          amount: buyerTotal.intValue,
-          currency: 'usd',
-          application_fee_amount: platformTotal.intValue,
-          transfer_data: {
-            destination: foundArtwork.owner.stripeId,
+        const paymentIntent = intentId
+          ? await stripe.paymentIntents.update(intentId, {
+              amount: buyerTotal.intValue,
+              application_fee_amount: platformTotal.intValue,
+            })
+          : await stripe.paymentIntents.create({
+              payment_method_types: ['card'],
+              amount: buyerTotal.intValue,
+              currency: 'usd',
+              application_fee_amount: platformTotal.intValue,
+              transfer_data: {
+                destination: foundArtwork.owner.stripeId,
+              },
+            });
+        res.json({
+          intent: {
+            id: paymentIntent.id,
+            secret: paymentIntent.client_secret,
           },
         });
+      } else {
+        throw createError(400, 'Artwork not found');
+      }
+    } else {
+      throw createError(400, 'User not found');
+    }
+  } catch (err) {
+    console.log(err);
+    next(err, res);
+  }
+};
 
+const updatePaymentIntent = async (req, res, next) => {
+  try {
+    /* const { artworkId } = req.params;
+    const { licenses, intentId } = req.body;
+    const foundUser = await User.findOne({
+      $and: [{ _id: res.locals.user.id }, { active: true }],
+    }).populate('discount');
+    if (foundUser) {
+      const foundArtwork = await Artwork.findOne({
+        $and: [{ _id: artworkId }, { active: true }],
+      })
+        .populate('owner')
+        .populate(
+          'current',
+          '_id cover created title price type license availability description use commercial'
+        );
+      if (foundArtwork) {
+        let personalLicenses = 0;
+        let commercialLicenses = 0;
+        licenses.map((license) => {
+          if (license.licenseType === 'personal')
+            personalLicenses += foundArtwork.current.price;
+          else if (license.licenseType === 'commercial')
+            commercialLicenses +=
+              foundArtwork.current.price + foundArtwork.current.commercial;
+        });
+        const buyerFee = currency(personalLicenses)
+          .add(commercialLicenses)
+          .multiply(0.05)
+          .add(2.45);
+        const sellerFee = currency(0.85);
+        const discount = foundUser.discount
+          ? currency(personalLicenses)
+              .add(commercialLicenses)
+              .multiply(foundUser.discount.discount)
+          : 0;
+        const buyerTotal = currency(personalLicenses)
+          .add(commercialLicenses)
+          .subtract(discount)
+          .add(buyerFee);
+        const sellerTotal = currency(personalLicenses)
+          .add(commercialLicenses)
+          .multiply(sellerFee);
+        const platformTotal = currency(buyerTotal).subtract(sellerTotal);
+        const stripeFees = currency(1.03).add(2).add(0.3);
+        const total = currency(platformTotal).subtract(stripeFees);
+        console.log(
+          'buyerTotal',
+          buyerTotal.intValue,
+          'sellerTotal',
+          sellerTotal.intValue,
+          'platformTotal',
+          platformTotal.intValue,
+          'stripeFees',
+          stripeFees.intValue,
+          'total',
+          total.intValue
+        );
+        const paymentIntent = await stripe.paymentIntents.update(intentId, {
+          amount: buyerTotal.intValue,
+          application_fee_amount: platformTotal.intValue,
+        });
         res.json({
           intent: paymentIntent.client_secret,
         });
@@ -531,7 +621,7 @@ const deleteFromCart = async (req, res, next) => {
 };
 
 module.exports = {
-  createPaymentIntent,
+  managePaymentIntent,
   getProcessCart,
   // $CART
   /* getPaymentCart */

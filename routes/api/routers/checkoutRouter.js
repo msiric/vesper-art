@@ -4,7 +4,7 @@ const checkoutController = require('../../../controllers/checkoutController');
 
 router
   .route('/payment_intent/:artworkId')
-  .post(isAuthenticated, checkoutController.createPaymentIntent);
+  .post(isAuthenticated, checkoutController.managePaymentIntent);
 
 // router.route('/cart').get(isAuthenticated, checkoutController.getProcessCart);
 
