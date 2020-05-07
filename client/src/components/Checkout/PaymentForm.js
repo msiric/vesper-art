@@ -5,12 +5,24 @@ import {
   CardCvcElement,
   CardNumberElement,
   CardExpiryElement,
+  useStripe,
+  useElements,
 } from '@stripe/react-stripe-js';
 import StripeInput from './StripeInput';
 import PaymentFormStyles from './PaymentForm.style';
 
-const PaymentForm = ({ handleStepChange }) => {
+const PaymentForm = ({
+  secret,
+  artwork,
+  licenses,
+  billing,
+  discount,
+  handleStepChange,
+}) => {
   const classes = PaymentFormStyles();
+
+  const stripe = useStripe();
+  const elements = useElements();
 
   const cardsLogo = [
     'amex',
@@ -24,6 +36,43 @@ const PaymentForm = ({ handleStepChange }) => {
     'visa',
     'visaelectron',
   ];
+
+  const handlePaymentSubmit = async () => {
+    if (!secret || !stripe || !elements) {
+      // $TODO Enqueue error;
+    }
+    const cardElement = elements.getElement(CardNumberElement);
+    const stripeData = {
+      payment_method: {
+        card: cardElement,
+        billing_details: {
+          address: {
+            city: billing.city,
+            country: billing.country.code,
+            line1: billing.address,
+            line2: null,
+            postal_code: billing.zip,
+            state: null,
+          },
+          email: billing.email,
+          name: `${billing.firstname} ${billing.lastname}`,
+          phone: null,
+        },
+      },
+    };
+    const { paymentIntent, error } = await stripe.confirmCardPayment(
+      secret,
+      stripeData
+    );
+
+    if (error) {
+      console.log('fail');
+      console.log(error);
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      console.log('success');
+      console.log(paymentIntent);
+    }
+  };
 
   return (
     <>
@@ -104,6 +153,7 @@ const PaymentForm = ({ handleStepChange }) => {
           color="primary"
           className={classes.button}
           type="submit"
+          onClick={handlePaymentSubmit}
         >
           Pay
         </Button>

@@ -158,6 +158,7 @@ const Checkout = ({ match, location }) => {
                       {state.stripe ? (
                         <Elements stripe={state.stripe}>
                           <Steppers
+                            secret={state.secret}
                             artwork={state.artwork}
                             licenses={state.licenses}
                             billing={state.billing}
