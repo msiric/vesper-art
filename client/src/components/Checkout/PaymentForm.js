@@ -95,7 +95,7 @@ const PaymentForm = ({
       </Grid>
       <Grid item xs={12} sm={12}>
         <TextField
-          label="Credit Card Number"
+          label="Credit card number"
           name="ccnumber"
           variant="outlined"
           margin="dense"
@@ -112,7 +112,7 @@ const PaymentForm = ({
       </Grid>
       <Grid item xs={6} sm={6}>
         <TextField
-          label="Expiration Date"
+          label="Expiration date"
           name="ccexp"
           variant="outlined"
           margin="dense"
