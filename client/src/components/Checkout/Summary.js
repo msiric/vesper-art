@@ -106,7 +106,7 @@ const Summary = ({
                   {state.summary.commercial.length ? (
                     <div>
                       {state.summary.commercial.length === 1
-                        ? `${state.summary.commercial.length} commercial licenses`
+                        ? `${state.summary.commercial.length} commercial license`
                         : `${state.summary.commercial.length} commercial licenses`}
                     </div>
                   ) : null}
@@ -273,6 +273,39 @@ const Summary = ({
           ) : null}
           <ListItem className={classes.listItem}>
             <ListItemText
+              primary={<Typography>Platform fee</Typography>}
+              secondary={
+                <div>
+                  <Typography>Fixed fee</Typography>
+                </div>
+              }
+            />
+            <ListItemText
+              primary={
+                <Typography className={classes.rightList}>Amount</Typography>
+              }
+              secondary={
+                <div>
+                  <Typography className={classes.rightList}>
+                    <NumberFormat
+                      value={(
+                        (state.summary.personal.amount +
+                          state.summary.commercial.amount) *
+                          0.05 +
+                        2.35
+                      ).toFixed(2)}
+                      displayType={'text'}
+                      thousandSeparator={true}
+                      prefix={'$'}
+                    />
+                  </Typography>
+                </div>
+              }
+            />
+          </ListItem>
+          <Divider />
+          <ListItem className={classes.listItem}>
+            <ListItemText
               primary={<Typography>Order</Typography>}
               secondary={
                 state.summary.personal.length +
@@ -305,13 +338,17 @@ const Summary = ({
                     state.summary.personal.amount +
                     state.summary.commercial.amount ? (
                       <NumberFormat
-                        value={
+                        value={(
                           state.summary.personal.amount +
                           state.summary.commercial.amount -
                           (state.summary.personal.amount +
                             state.summary.commercial.amount) *
-                            discount.discount
-                        }
+                            discount.discount +
+                          ((state.summary.personal.amount +
+                            state.summary.commercial.amount) *
+                            0.05 +
+                            2.35)
+                        ).toFixed(2)}
                         displayType={'text'}
                         thousandSeparator={true}
                         prefix={'$'}
@@ -322,10 +359,14 @@ const Summary = ({
                   ) : state.summary.personal.amount +
                     state.summary.commercial.amount ? (
                     <NumberFormat
-                      value={
+                      value={(
                         state.summary.personal.amount +
-                        state.summary.commercial.amount
-                      }
+                        state.summary.commercial.amount +
+                        ((state.summary.personal.amount +
+                          state.summary.commercial.amount) *
+                          0.05 +
+                          2.35)
+                      ).toFixed(2)}
                       displayType={'text'}
                       thousandSeparator={true}
                       prefix={'$'}

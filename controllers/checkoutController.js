@@ -45,7 +45,7 @@ const managePaymentIntent = async (req, res, next) => {
         const buyerFee = currency(personalLicenses)
           .add(commercialLicenses)
           .multiply(0.05)
-          .add(2.45);
+          .add(2.35);
         const sellerFee = currency(0.85);
         const discount = foundUser.discount
           ? currency(personalLicenses)
@@ -59,7 +59,7 @@ const managePaymentIntent = async (req, res, next) => {
         const sellerTotal = currency(personalLicenses)
           .add(commercialLicenses)
           .multiply(sellerFee);
-        const platformTotal = currency(buyerTotal).subtract(sellerTotal);
+        const platformTotal = buyerFee;
         const stripeFees = currency(1.03).add(2).add(0.3);
         const total = currency(platformTotal).subtract(stripeFees);
         console.log(
