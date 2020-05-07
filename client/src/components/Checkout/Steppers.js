@@ -52,10 +52,12 @@ const style = makeStyles((theme) => ({
 }));
 
 const Steppers = ({
+  secret,
   artwork,
   licenses,
   billing,
   discount,
+  handlePaymentSubmit,
   handleSecretSave,
   handleLicenseSave,
   handleBillingSave,
@@ -93,7 +95,18 @@ const Steppers = ({
           handleBillingSave={handleBillingSave}
         />
       );
-    else return <PaymentForm handleStepChange={handleStepChange} />;
+    else
+      return (
+        <PaymentForm
+          secret={secret}
+          artwork={artwork}
+          licenses={licenses}
+          discount={discount}
+          billing={billing}
+          handlePaymentSubmit={handlePaymentSubmit}
+          handleStepChange={handleStepChange}
+        />
+      );
   };
 
   const clientSecretDataObjectConverter = ({
