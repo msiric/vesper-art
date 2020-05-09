@@ -64,7 +64,7 @@ const LicenseForm = ({
     try {
       setState((prevState) => ({ ...prevState, loading: true }));
       const intentId = retrieveIntentId();
-      const { data } = await ax.post(`/api/payment_intent/${artwork._id}`, {
+      const { data } = await ax.post(`/stripe/intent/${artwork._id}`, {
         licenses,
         intentId,
       });
