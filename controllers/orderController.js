@@ -1,13 +1,66 @@
 const mongoose = require('mongoose');
 const Order = require('../models/order');
 const User = require('../models/user');
+const License = require('../models/license');
 const Notification = require('../models/notification');
 const createError = require('http-errors');
+const crypto = require('crypto');
 
 const createOrder = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const orderData = JSON.parse('orderData');
+    // $TODO notification
+    const buyerId = mongoose.Types.ObjectId(orderData.buyerId);
+    const sellerId = mongoose.Types.ObjectId(orderData.sellerId);
+    const artworkId = mongoose.Types.ObjectId(orderData.artworkId);
+    const versionId = mongoose.Types.ObjectId(orderData.versionId);
+    const discountId = mongoose.Types.ObjectId(orderData.discountId);
+    const licenseSet = [];
+    const licenseIds = [];
+    orderData.licenses.forEach(async (license) => {
+      const newLicense = new License();
+      newLicense.owner = buyerId;
+      newLicense.artwork = artworkId;
+      newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+      newLicense.type = license.licenseType;
+      newLicense.credentials = license.licenseeName;
+      newLicense.company = license.licenseeCompany;
+      newLicense.active = true;
+      newLicense.price =
+        license.licenseType == 'commercial'
+          ? foundArtwork.current.commercial
+          : 0;
+      licenseSet.push(newLicense);
+    });
+    const savedLicenses = await License.insertMany(licenseSet, { session });
+    savedLicenses.forEach((license) => {
+      licenseIds.push(license._id);
+    });
+    const newOrder = new Order();
+    newOrder.buyer = buyerId;
+    newOrder.seller = sellerId;
+    newOrder.artwork = artworkId;
+    newOrder.version = versionId;
+    newOrder.discount = discountId;
+    newOrder.licenses = licenseIds;
+    newOrder.review = null;
+    newOrder.amount = orderData.amount;
+    newOrder.fee = orderData.fee;
+    newOrder.status = 'completed';
+    newOrder.intent = '$TODO retrieve payment intent id';
+    const savedOrder = await newOrder.save({ session });
+    await User.updateOne(
+      { _id: buyerId },
+      { $push: { purchases: savedOrder._id } }
+    ).session(session);
+    await User.updateOne(
+      { _id: sellerId },
+      { $push: { sales: savedOrder._id } }
+    ).session(session);
+    await session.commitTransaction();
+    return res.status(200).json('/');
   } catch (err) {
     await session.abortTransaction();
     console.log(err);

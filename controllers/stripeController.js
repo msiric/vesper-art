@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 const Artwork = require('../models/artwork');
 const config = require('../config/secret');
+const Order = require('../models/order');
+const License = require('../models/license');
+const Notification = require('../models/notification');
+const crypto = require('crypto');
 const createError = require('http-errors');
 const axios = require('axios');
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
@@ -20,18 +24,16 @@ const receiveWebhookEvent = async (req, res, next) => {
       endpointSecret
     );
 
-    // Handle the event
     switch (event.type) {
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object;
-        console.log('PaymentIntent was successful!');
+        await createOrder(paymentIntent);
+        console.log('done');
         break;
       default:
-        // Unexpected event type
         return res.status(400).end();
     }
 
-    // Return a 200 response to acknowledge receipt of the event
     res.status(200).json({ received: true });
   } catch (err) {
     console.log(err);
@@ -97,6 +99,17 @@ const managePaymentIntent = async (req, res, next) => {
           'total',
           total.intValue
         );
+
+        const orderData = {
+          buyerId: foundUser._id,
+          sellerId: foundArtwork.owner._id,
+          artworkId: foundArtwork._id,
+          versionId: foundArtwork.current._id,
+          discountId: foundUser.discount._id,
+          amount: buyerTotal.intValue,
+          fee: platformTotal.intValue,
+          licenses: licenses,
+        };
         const paymentIntent = intentId
           ? await stripe.paymentIntents.update(intentId, {
               amount: buyerTotal.intValue,
@@ -109,6 +122,9 @@ const managePaymentIntent = async (req, res, next) => {
               application_fee_amount: platformTotal.intValue,
               transfer_data: {
                 destination: foundArtwork.owner.stripeId,
+              },
+              metadata: {
+                orderData: JSON.stringify(orderData),
               },
             });
         res.json({
@@ -269,6 +285,72 @@ const createPayout = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     next(err, res);
+  }
+};
+
+const createOrder = async (intent) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const orderData = JSON.parse(intent.metadata.orderData);
+    const intentId = intent.id;
+    console.log(orderData);
+    // $TODO notification
+    const buyerId = mongoose.Types.ObjectId(orderData.buyerId);
+    const sellerId = mongoose.Types.ObjectId(orderData.sellerId);
+    const artworkId = mongoose.Types.ObjectId(orderData.artworkId);
+    const versionId = mongoose.Types.ObjectId(orderData.versionId);
+    const discountId = mongoose.Types.ObjectId(orderData.discountId);
+    const licenseSet = [];
+    const licenseIds = [];
+    orderData.licenses.forEach(async (license) => {
+      const newLicense = new License();
+      newLicense.owner = buyerId;
+      newLicense.artwork = artworkId;
+      newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+      newLicense.type = license.licenseType;
+      newLicense.credentials = license.licenseeName;
+      newLicense.company = license.licenseeCompany;
+      newLicense.active = true;
+      newLicense.price =
+        license.licenseType == 'commercial'
+          ? foundArtwork.current.commercial
+          : 0;
+      licenseSet.push(newLicense);
+    });
+    const savedLicenses = await License.insertMany(licenseSet, { session });
+    savedLicenses.forEach((license) => {
+      licenseIds.push(license._id);
+    });
+    const newOrder = new Order();
+    newOrder.buyer = buyerId;
+    newOrder.seller = sellerId;
+    newOrder.artwork = artworkId;
+    newOrder.version = versionId;
+    newOrder.discount = discountId;
+    newOrder.licenses = licenseIds;
+    newOrder.review = null;
+    newOrder.amount = orderData.amount;
+    newOrder.fee = orderData.fee;
+    newOrder.status = 'completed';
+    newOrder.intent = intentId;
+    const savedOrder = await newOrder.save({ session });
+    await User.updateOne(
+      { _id: buyerId },
+      { $push: { purchases: savedOrder._id } }
+    ).session(session);
+    await User.updateOne(
+      { _id: sellerId },
+      { $push: { sales: savedOrder._id } }
+    ).session(session);
+    await session.commitTransaction();
+    return true;
+  } catch (err) {
+    console.log(err);
+    await session.abortTransaction();
+    return false;
+  } finally {
+    session.endSession();
   }
 };
 
