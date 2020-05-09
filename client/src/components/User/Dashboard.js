@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 import { ResponsiveLine } from '@nivo/line';
 import { useTheme } from '@material-ui/core/styles';
+import ax from '../../axios.config';
 import DashboardStyles from './Dashboard.style';
 
 function Dashboard() {
@@ -21,6 +22,15 @@ function Dashboard() {
 
   const theme = useTheme();
   const classes = DashboardStyles();
+
+  const fetchData = async () => {
+    try {
+      const { data } = await ax.get(`/api/user/${store.user.id}/statistics`);
+      console.log(data);
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
 
   function handleChangeRange(range) {
     setState((prevState) => ({ ...prevState, range }));
@@ -89,6 +99,10 @@ function Dashboard() {
       ],
     },
   ];
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <Container fixed className={classes.fixed}>
