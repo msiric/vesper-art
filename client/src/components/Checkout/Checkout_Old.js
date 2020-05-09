@@ -128,11 +128,10 @@ const Checkout = () => {
                           amount: item.artwork.current.commercial,
                         };
                         personalLicenses.total =
-                          personalLicenses.length * item.artwork.current.price;
+                          personalLicenses.length *
+                          item.artwork.current.personal;
                         commercialLicenses.total =
-                          commercialLicenses.length *
-                          (commercialLicenses.amount +
-                            item.artwork.current.price);
+                          commercialLicenses.length * commercialLicenses.amount;
                         if (!licenses.current.id[item.artwork.current._id])
                           licenses.current = {
                             id: {

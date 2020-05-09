@@ -57,7 +57,7 @@ const validationSchema = Yup.object().shape({
         .matches(/(commercial|personal)/)
         .required('Artwork license is required'),
     }),
-  artworkPrice: Yup.number()
+  artworkPersonal: Yup.number()
     .notRequired()
     .when(['artworkAvailability', 'artworkType'], {
       is: (artworkAvailability, artworkType) =>
@@ -119,9 +119,9 @@ const AddArtwork = () => {
       artworkTitle: '',
       artworkType: '',
       artworkAvailability: '',
-      artworkPrice: '',
       artworkLicense: '',
       artworkUse: '',
+      artworkPersonal: '',
       artworkCommercial: '',
       artworkCategory: '',
       artworkDescription: '',
@@ -236,13 +236,17 @@ const AddArtwork = () => {
               {values.artworkAvailability === 'available' &&
                 values.artworkType === 'commercial' && (
                   <PriceInput
-                    name="artworkPrice"
+                    name="artworkPersonal"
                     label="Price"
-                    value={values.artworkPrice}
+                    value={values.artworkPersonal}
                     handleChange={handleChange}
                     handleBlur={handleBlur}
-                    helperText={touched.artworkPrice ? errors.artworkPrice : ''}
-                    error={touched.artworkPrice && Boolean(errors.artworkPrice)}
+                    helperText={
+                      touched.artworkPersonal ? errors.artworkPersonal : ''
+                    }
+                    error={
+                      touched.artworkPersonal && Boolean(errors.artworkPersonal)
+                    }
                     margin="dense"
                     variant="outlined"
                     fullWidth

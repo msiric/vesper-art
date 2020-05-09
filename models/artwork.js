@@ -18,7 +18,7 @@ ArtworkSchema.plugin(deepPopulate);
   appId: 'P9R2R1LI94',
   apiKey: 'a34d14a54aa9d16c44914324bf41076b',
   indexName: 'ArtworkSchema', //The name of the index in Algolia, you can also pass in a function
-  selector: 'title _id owner category about price cover', //You can decide which field that are getting synced to Algolia (same as selector in mongoose)
+  selector: 'title _id owner category about personal cover', //You can decide which field that are getting synced to Algolia (same as selector in mongoose)
   populate: {
     path: 'owner',
     select: 'name'

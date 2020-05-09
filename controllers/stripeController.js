@@ -55,21 +55,20 @@ const managePaymentIntent = async (req, res, next) => {
         .populate('owner')
         .populate(
           'current',
-          '_id cover created title price type license availability description use commercial'
+          '_id cover created title personal type license availability description use commercial'
         );
       if (foundArtwork) {
         let personalLicenses = 0;
         let commercialLicenses = 0;
         licenses.map((license) => {
           if (license.licenseType === 'personal') {
-            personalLicenses += foundArtwork.current.price;
+            personalLicenses += foundArtwork.current.personal;
             license.licensePrice = currency(
-              foundArtwork.current.price
+              foundArtwork.current.personal
             ).intValue;
           } else if (license.licenseType === 'commercial') {
-            commercialLicenses +=
-              foundArtwork.current.price + foundArtwork.current.commercial;
-            license.licensePrice = currency(foundArtwork.current.price).add(
+            commercialLicenses += foundArtwork.current.commercial;
+            license.licensePrice = currency(
               foundArtwork.current.commercial
             ).intValue;
           }

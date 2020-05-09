@@ -1,12 +1,10 @@
 let socket;
-$(function() {
+$(function () {
   socket = io();
   console.log(socket);
 
-  let badge = $('#cart_items')
-    .eq(0)
-    .html();
-  $('.cart-promocode-panel').on('click', '#cart-apply-promocode', function() {
+  let badge = $('#cart_items').eq(0).html();
+  $('.cart-promocode-panel').on('click', '#cart-apply-promocode', function () {
     applyPromocode(
       'cart',
       '#cart-promocode-amount',
@@ -21,7 +19,7 @@ $(function() {
   $('.package-promocode-panel').on(
     'click',
     '#package-apply-promocode',
-    function() {
+    function () {
       applyPromocode(
         'package',
         '#package-promocode-amount',
@@ -44,9 +42,9 @@ $(function() {
         type: 'POST',
         url: '/apply_promocode',
         data: {
-          promocode: amount
+          promocode: amount,
         },
-        success: function(data) {
+        success: function (data) {
           if (data.warningUnfound) {
             $('.single-package-message')
               .addClass('alert alert-danger')
@@ -79,12 +77,12 @@ $(function() {
             );
             window.location.reload(true);
           }
-        }
+        },
       });
     }
   }
 
-  $('.cart-promocode-panel').on('click', '.cart-remove-promocode', function() {
+  $('.cart-promocode-panel').on('click', '.cart-remove-promocode', function () {
     removePromocode(
       'cart',
       '.cart-remove-promocode',
@@ -101,7 +99,7 @@ $(function() {
   $('.package-promocode-panel').on(
     'click',
     '.package-remove-promocode',
-    function() {
+    function () {
       removePromocode(
         'package',
         '.package-remove-promocode',
@@ -135,9 +133,9 @@ $(function() {
         type: 'POST',
         url: '/remove_promocode',
         data: {
-          promocode: promo_id
+          promocode: promo_id,
         },
-        success: function(data) {
+        success: function (data) {
           $(text).remove();
           $(remove).remove();
           $(panel).append(
@@ -150,12 +148,12 @@ $(function() {
               '">Apply</button></span></div>'
           );
           window.location.reload(true);
-        }
+        },
       });
     }
   }
 
-  $('#add-license-form').on('submit', function(e) {
+  $('#add-license-form').on('submit', function (e) {
     e.preventDefault();
     const artwork_id = $('#artwork_id').val();
 
@@ -168,7 +166,7 @@ $(function() {
         type: 'POST',
         url: '/add_to_cart',
         data: data,
-        success: function(data) {
+        success: function (data) {
           $('.order-card .name').append(
             '<a href="/checkout/cart" class="btn btn-success" id="in-cart">In cart</a>'
           );
@@ -185,12 +183,12 @@ $(function() {
               .html(data.message);
             $('#add-license-modal').modal('hide');
           }
-        }
+        },
       });
     }
   });
 
-  $('#remove-from-cart').on('click', function(e) {
+  $('#remove-from-cart').on('click', function (e) {
     e.preventDefault();
     let artwork_id = $('#remove-from-cart').val();
     if (artwork_id === '') {
@@ -200,31 +198,31 @@ $(function() {
         type: 'DELETE',
         url: '/remove_from_cart',
         data: {
-          artworkId: artwork_id
+          artworkId: artwork_id,
         },
-        success: function(data) {
+        success: function (data) {
           window.location.reload();
-        }
+        },
       });
     }
   });
 
-  $('#increase-artwork-quantity').click(function() {
+  $('#increase-artwork-quantity').click(function () {
     $('#display-licenses-modal').modal('hide');
     $('#increase-license-modal').modal('show');
     $('#save-license-button').val($(this).val());
   });
 
-  $('.display-artwork-licenses').click(function() {
+  $('.display-artwork-licenses').click(function () {
     let artworkId = $(this).val();
     $('#increase-artwork-quantity').val(artworkId);
     $.ajax({
       type: 'GET',
       url: '/license_information/' + artworkId,
-      success: function(data) {
+      success: function (data) {
         $('#display-licenses-panel').empty();
         if (data.length == 1) {
-          data.forEach(function(license) {
+          data.forEach(function (license) {
             $('#display-licenses-panel').append(`
             <div id="${license.artwork}" class="form-group">
               <label>License credentials</label>
@@ -236,7 +234,7 @@ $(function() {
             </div>`);
           });
         } else {
-          data.forEach(function(license) {
+          data.forEach(function (license) {
             $('#display-licenses-panel').append(`
             <div id="${license.artwork}" class="license-information form-group">
               <label>License credentials</label>
@@ -251,11 +249,11 @@ $(function() {
           });
         }
         $('#display-licenses-modal').modal('show');
-      }
+      },
     });
   });
 
-  $('#increase-license-form').on('submit', function(e) {
+  $('#increase-license-form').on('submit', function (e) {
     e.preventDefault();
     let artwork_id = $('#save-license-button').val();
 
@@ -268,9 +266,9 @@ $(function() {
         type: 'POST',
         url: '/increase_artwork_quantity',
         data: data,
-        success: function() {
+        success: function () {
           window.location.reload();
-        }
+        },
       });
     }
   });
@@ -278,7 +276,7 @@ $(function() {
   $('#display-licenses-panel').on(
     'click',
     '.delete-license-button',
-    function() {
+    function () {
       let licenseId = $(this).val();
       let artworkId = $('.delete-license-button')
         .closest('.license-information')
@@ -291,20 +289,20 @@ $(function() {
           url: '/decrease_artwork_quantity',
           data: {
             licenseId: licenseId,
-            artworkId: artworkId
+            artworkId: artworkId,
           },
-          success: function() {
+          success: function () {
             window.location.reload();
           },
-          error: function(err) {
+          error: function (err) {
             console.log(err);
-          }
+          },
         });
       }
     }
   );
 
-  $('#profile-photo-upload').on('change', function() {
+  $('#profile-photo-upload').on('change', function () {
     const fileInput = $('#profile-photo-upload')[0];
     const file = fileInput.files[0];
     const imageType = /image.*/;
@@ -323,19 +321,19 @@ $(function() {
           contentType: false,
           cache: false,
           data: formData,
-          success: function(data) {
+          success: function (data) {
             $('#profile-photo').attr('src', data.imageUrl);
             $('#profile-nav-photo').attr('src', data.imageUrl);
           },
-          error: function(err) {
+          error: function (err) {
             console.log(err);
-          }
+          },
         });
       }
     }
   });
 
-  $('#artwork-upload-form').on('submit', function(e) {
+  $('#artwork-upload-form').on('submit', function (e) {
     e.preventDefault();
     const mediaInput = $('#artwork-media-upload')[0];
     const mediaFile = mediaInput.files[0];
@@ -357,7 +355,7 @@ $(function() {
           contentType: false,
           cache: false,
           data: formData,
-          success: function(data) {
+          success: function (data) {
             artworkCoverContent = data.coverUrl;
             artworkMediaContent = data.originalUrl;
             const artworkCover = artworkCoverContent;
@@ -365,7 +363,7 @@ $(function() {
             const artworkTitle = $('input[name=artworkTitle]').val();
             const artworkType = $('select[name=artworkType]').val();
             const artworkCategory = $('select[name=artworkCategory]').val();
-            const artworkPrice = $('input[name=artworkPrice]').val();
+            const artworkPersonal = $('input[name=artworkPersonal]').val();
             const artworkLicense = $('select[name=artworkLicense]').val();
             const artworkAvailable = $('select[name=artworkAvailable]').val();
             const artworkCommercial = $('input[name=artworkCommercial]').val();
@@ -379,29 +377,29 @@ $(function() {
                 artworkTitle,
                 artworkType,
                 artworkCategory,
-                artworkPrice,
+                artworkPersonal,
                 artworkLicense,
                 artworkAvailable,
                 artworkCommercial,
-                artworkAbout
+                artworkAbout,
               },
-              success: function(url) {
+              success: function (url) {
                 window.location.href = url;
               },
-              error: function(err) {
+              error: function (err) {
                 console.log(err);
-              }
+              },
             });
           },
-          error: function(err) {
+          error: function (err) {
             console.log(err);
-          }
+          },
         });
       }
     }
   });
 
-  $('#artwork-edit-form').on('submit', function(e) {
+  $('#artwork-edit-form').on('submit', function (e) {
     e.preventDefault();
     const urlId = window.location.href.substring(
       window.location.href.lastIndexOf('/') + 1
@@ -425,14 +423,14 @@ $(function() {
           contentType: false,
           cache: false,
           data: formData,
-          success: function(data) {
+          success: function (data) {
             artworkCoverContent = data.coverUrl;
             artworkMediaContent = data.originalUrl;
             saveArtwork();
           },
-          error: function(err) {
+          error: function (err) {
             console.log(err);
-          }
+          },
         });
       }
     } else {
@@ -445,7 +443,7 @@ $(function() {
       const artworkTitle = $('input[name=artworkTitle]').val();
       const artworkType = $('select[name=artworkType]').val();
       const artworkCategory = $('select[name=artworkCategory]').val();
-      const artworkPrice = $('input[name=artworkPrice]').val();
+      const artworkPersonal = $('input[name=artworkPersonal]').val();
       const artworkLicense = $('select[name=artworkLicense]').val();
       const artworkAvailable = $('select[name=artworkAvailable]').val();
       const artworkCommercial = $('input[name=artworkCommercial]').val();
@@ -459,23 +457,23 @@ $(function() {
           artworkTitle,
           artworkType,
           artworkCategory,
-          artworkPrice,
+          artworkPersonal,
           artworkLicense,
           artworkAvailable,
           artworkCommercial,
-          artworkAbout
+          artworkAbout,
         },
-        success: function(url) {
+        success: function (url) {
           window.location.href = url;
         },
-        error: function(err) {
+        error: function (err) {
           console.log(err);
-        }
+        },
       });
     }
   });
 
-  $('#artwork-delete-button').on('click', function(e) {
+  $('#artwork-delete-button').on('click', function (e) {
     e.preventDefault();
     if (confirm('Are you sure you want to delete this artwork?')) {
       const artworkId = window.location.href.substring(
@@ -484,9 +482,9 @@ $(function() {
       $.ajax({
         type: 'DELETE',
         url: '/edit_artwork/' + artworkId,
-        success: function(url) {
+        success: function (url) {
           window.location.href = url;
-        }
+        },
       });
     }
   });
@@ -502,39 +500,39 @@ function deleteRequest(requestId) {
     $.ajax({
       type: 'DELETE',
       url: '/request/' + requestId,
-      success: function() {
+      success: function () {
         window.location.href = '/';
       },
-      error: function(err) {
+      error: function (err) {
         console.log(err);
-      }
+      },
     });
   }
 }
 
-$('#user-delete-button').on('click', function(e) {
+$('#user-delete-button').on('click', function (e) {
   e.preventDefault();
   if (confirm('Are you sure you want to delete your account?')) {
     $.ajax({
       type: 'POST',
       url: '/delete_user',
-      success: function(data) {
+      success: function (data) {
         window.location.href = data;
       },
-      error: function(err) {
+      error: function (err) {
         console.log(err);
-      }
+      },
     });
   }
 });
 
 // add artwork id value to hidden input before publishing the review
-$('.rate-artwork').click(function() {
+$('.rate-artwork').click(function () {
   $('#modal-id-input').val(this.id);
 });
 
 // validate all inputs and :id
-$('#rate-artwork-form').on('submit', function(e) {
+$('#rate-artwork-form').on('submit', function (e) {
   e.preventDefault();
   const artworkId = $('#modal-id-input').val();
   const orderId = window.location.href.substring(
@@ -547,19 +545,19 @@ $('#rate-artwork-form').on('submit', function(e) {
       type: 'POST',
       data: data,
       url: `/rate_artwork/${artworkId}`,
-      success: function(data) {
+      success: function (data) {
         console.log(data);
       },
-      error: function(err) {
+      error: function (err) {
         console.log(err);
-      }
+      },
     });
   } else {
     console.log('Something went wrong');
   }
 });
 
-$('#contact-support-form').on('submit', function(e) {
+$('#contact-support-form').on('submit', function (e) {
   e.preventDefault();
   const data = $('#contact-support-form').serialize();
 
@@ -567,38 +565,38 @@ $('#contact-support-form').on('submit', function(e) {
     type: 'POST',
     data: data,
     url: `/contact_support/`,
-    success: function(data) {
+    success: function (data) {
       console.log(data);
     },
-    error: function(err) {
+    error: function (err) {
       console.log(err);
-    }
+    },
   });
 });
 
-$('.save-artwork-button').on('click', function() {
+$('.save-artwork-button').on('click', function () {
   const artworkId = this.id;
   if (artworkId) {
     $.ajax({
       type: 'POST',
       url: `/save_artwork/${artworkId}`,
-      success: function(data) {
+      success: function (data) {
         if (data.saved) {
           $('.save-artwork-button').html('Remove artwork');
         } else {
           $('.save-artwork-button').html('Save artwork');
         }
       },
-      error: function(err) {
+      error: function (err) {
         console.log(err);
-      }
+      },
     });
   } else {
     console.log('Something went wrong');
   }
 });
 
-$('#validate-license-form').on('submit', function(e) {
+$('#validate-license-form').on('submit', function (e) {
   e.preventDefault();
   const data = $('#validate-license-form').serialize();
 
@@ -606,40 +604,40 @@ $('#validate-license-form').on('submit', function(e) {
     type: 'POST',
     data: data,
     url: `/validator`,
-    success: function(data) {
+    success: function (data) {
       console.log(data.foundLicense);
     },
-    error: function(err) {
+    error: function (err) {
       console.log(err);
-    }
+    },
   });
 });
 
-$('#retrieve-license-button').on('click', function() {
+$('#retrieve-license-button').on('click', function () {
   $.ajax({
     type: 'POST',
     data: data,
     url: `/validator`,
-    success: function(data) {
+    success: function (data) {
       let newTab = window.open();
       newTab.document.write(
         `<iframe src="data:application/pdf;base64,${data.pdf}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`
       );
     },
-    error: function(err) {
+    error: function (err) {
       console.log(err);
-    }
+    },
   });
 });
 
-$(function() {
-  socket.on('increaseInbox', function(data) {
+$(function () {
+  socket.on('increaseInbox', function (data) {
     if (window.location.pathname != '/conversations/' + data.url) {
       console.log('increaseInbox');
       $('.message-badge').html(parseInt($('.message-badge').html()) + 1);
     }
   });
-  socket.on('increaseNotif', function() {
+  socket.on('increaseNotif', function () {
     console.log('increaseNotif');
     $('.notification-badge').html(
       parseInt($('.notification-badge').html()) + 1

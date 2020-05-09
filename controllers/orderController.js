@@ -31,7 +31,7 @@ const createOrder = async (req, res, next) => {
       newLicense.price =
         license.licenseType == 'commercial'
           ? foundArtwork.current.commercial
-          : 0;
+          : foundArtwork.current.personal;
       licenseSet.push(newLicense);
     });
     const savedLicenses = await License.insertMany(licenseSet, { session });
@@ -93,7 +93,7 @@ const getOrder = async (req, res, next) => {
         let sold = 0;
         foundOrder.details.forEach(function (item) {
           if (item.seller.equals(res.locals.user.id)) {
-            sold += item.version.price;
+            sold += item.version.personal;
             item.licenses.map(function (license) {
               sold += license.price;
             });
@@ -112,7 +112,7 @@ const getOrder = async (req, res, next) => {
         const details = [];
         let paid = 0;
         foundOrder.details.forEach(function (item) {
-          paid += item.version.price;
+          paid += item.version.personal;
           item.licenses.map(function (license) {
             paid += license.price;
           });
@@ -183,7 +183,7 @@ const getSoldOrders = async (req, res, next) => {
       let sold = 0;
       order.details.forEach(function (item) {
         if (item.seller.equals(res.locals.user.id)) {
-          sold += item.version.price;
+          sold += item.version.personal;
           item.licenses.map(function (license) {
             sold += license.price;
           });
@@ -213,7 +213,7 @@ const getBoughtOrders = async (req, res, next) => {
         const details = [];
         let paid = 0;
         order.details.forEach(function(item) {
-          paid += item.version.price;
+          paid += item.version.personal;
           item.licenses.map(function(license) {
             paid += license.price;
           });

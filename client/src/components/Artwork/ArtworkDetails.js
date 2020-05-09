@@ -521,19 +521,16 @@ const ArtworkDetails = ({ match }) => {
                       <>
                         <Typography variant="body2" component="p">
                           Artwork price:
-                          {state.artwork.current.price
-                            ? ` $${state.artwork.current.price}`
+                          {state.artwork.current.personal
+                            ? ` $${state.artwork.current.personal}`
                             : ' Free'}
                         </Typography>
                         <Typography variant="body2" component="p">
                           Commercial license:
                           {state.artwork.current.commercial
-                            ? ` $${
-                                state.artwork.current.price +
-                                state.artwork.current.commercial
-                              }`
-                            : state.artwork.current.price
-                            ? ` $${state.artwork.current.price}`
+                            ? ` $${state.artwork.current.commercial}`
+                            : state.artwork.current.personal
+                            ? ` $${state.artwork.current.personal}`
                             : ' Free'}
                         </Typography>
                       </>
@@ -566,7 +563,7 @@ const ArtworkDetails = ({ match }) => {
                     {state.artwork.owner._id !== store.user.id &&
                     state.artwork.current.availability === 'available' ? (
                       state.license === 'personal' ? (
-                        state.artwork.current.price ? (
+                        state.artwork.current.personal ? (
                           store.user.cart[state.artwork._id] ? (
                             <Button component={Link} to={'/cart/'}>
                               In cart
@@ -588,7 +585,7 @@ const ArtworkDetails = ({ match }) => {
                             Download
                           </Button>
                         )
-                      ) : state.artwork.current.price ||
+                      ) : state.artwork.current.personal ||
                         state.artwork.current.commercial ? (
                         <Button
                           component={Link}

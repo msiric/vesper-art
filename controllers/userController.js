@@ -19,7 +19,7 @@ const getUserProfile = async (req, res, next) => {
     }).deepPopulate('savedArtwork.current');
     // }).deepPopulate(
     //   'artwork.current',
-    //   '_id cover created title price type license availability description use commercial'
+    //   '_id cover created title personal type license availability description use commercial'
     // );
     if (foundUser) {
       const foundArtwork = await Artwork.find({
@@ -28,7 +28,7 @@ const getUserProfile = async (req, res, next) => {
         .populate('owner')
         .populate(
           'current',
-          '_id cover created title price type license availability description use commercial'
+          '_id cover created title personal type license availability description use commercial'
         );
       return res.json({ user: foundUser, artwork: foundArtwork });
     } else {
@@ -50,7 +50,7 @@ const getUserStatistics = async (req, res, next) => {
       .populate('sales');
     // }).deepPopulate(
     //   'artwork.current',
-    //   '_id cover created title price type license availability description use commercial'
+    //   '_id cover created title personal type license availability description use commercial'
     // );
     if (foundUser) {
       return res.json({ user: foundUser });
