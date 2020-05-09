@@ -4,65 +4,16 @@ const User = require('../models/user');
 const Notification = require('../models/notification');
 const createError = require('http-errors');
 
-const getSoldOrders = async (req, res, next) => {
+const createOrder = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    const foundOrders = await Order.find({
-      details: { $elemMatch: { seller: res.locals.user.id } },
-    })
-      .populate('buyer')
-      .deepPopulate('details.version details.licenses');
-    foundOrders.forEach(function (order) {
-      const details = [];
-      let sold = 0;
-      order.details.forEach(function (item) {
-        if (item.seller.equals(res.locals.user.id)) {
-          sold += item.version.price;
-          item.licenses.map(function (license) {
-            sold += license.price;
-          });
-          details.push({
-            licenses: item.licenses,
-            seller: item.seller,
-            version: item.version,
-          });
-        }
-      });
-      order.details = details;
-      order.sold = sold;
-    });
-    res.json({ order: foundOrders });
   } catch (err) {
+    await session.abortTransaction();
     console.log(err);
     next(err, res);
-  }
-};
-
-const getBoughtOrders = async (req, res, next) => {
-  try {
-    const foundOrders = await Order.find({ buyer: res.locals.user.id })
-      .populate('buyer')
-      .deepPopulate('details.version details.licenses');
-    /*       foundOrders.forEach(function(order) {
-        const details = [];
-        let paid = 0;
-        order.details.forEach(function(item) {
-          paid += item.version.price;
-          item.licenses.map(function(license) {
-            paid += license.price;
-          });
-          details.push({
-            licenses: item.licenses,
-            buyer: item.buyer,
-            version: item.version
-          });
-        });
-        order.details = details;
-        order.paid = paid;
-      }); */
-    res.json({ order: foundOrders });
-  } catch (err) {
-    console.log(err);
-    next(err, res);
+  } finally {
+    session.endSession();
   }
 };
 
@@ -167,7 +118,70 @@ const getOrder = async (req, res, next) => {
   }
 };
 
+const getSoldOrders = async (req, res, next) => {
+  try {
+    const foundOrders = await Order.find({
+      details: { $elemMatch: { seller: res.locals.user.id } },
+    })
+      .populate('buyer')
+      .deepPopulate('details.version details.licenses');
+    foundOrders.forEach(function (order) {
+      const details = [];
+      let sold = 0;
+      order.details.forEach(function (item) {
+        if (item.seller.equals(res.locals.user.id)) {
+          sold += item.version.price;
+          item.licenses.map(function (license) {
+            sold += license.price;
+          });
+          details.push({
+            licenses: item.licenses,
+            seller: item.seller,
+            version: item.version,
+          });
+        }
+      });
+      order.details = details;
+      order.sold = sold;
+    });
+    res.json({ order: foundOrders });
+  } catch (err) {
+    console.log(err);
+    next(err, res);
+  }
+};
+
+const getBoughtOrders = async (req, res, next) => {
+  try {
+    const foundOrders = await Order.find({ buyer: res.locals.user.id })
+      .populate('buyer')
+      .deepPopulate('details.version details.licenses');
+    /*       foundOrders.forEach(function(order) {
+        const details = [];
+        let paid = 0;
+        order.details.forEach(function(item) {
+          paid += item.version.price;
+          item.licenses.map(function(license) {
+            paid += license.price;
+          });
+          details.push({
+            licenses: item.licenses,
+            buyer: item.buyer,
+            version: item.version
+          });
+        });
+        order.details = details;
+        order.paid = paid;
+      }); */
+    res.json({ order: foundOrders });
+  } catch (err) {
+    console.log(err);
+    next(err, res);
+  }
+};
+
 module.exports = {
+  createOrder,
   getOrder,
   getSoldOrders,
   getBoughtOrders,
