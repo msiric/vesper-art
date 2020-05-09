@@ -9,6 +9,7 @@ const Order = require('../models/order');
 const crypto = require('crypto');
 const createError = require('http-errors');
 const { sanitize } = require('../utils/helpers');
+const currency = require('currency.js');
 const postArtworkValidator = require('../utils/validation/postArtworkValidator');
 const putArtworkValidator = require('../utils/validation/putArtworkValidator');
 
@@ -18,7 +19,7 @@ const getArtwork = async (req, res, next) => {
       .populate('owner')
       .populate(
         'current',
-        '_id cover created title price type license availability description use commercial'
+        '_id cover created title personal type license availability description use commercial'
       );
     return res.json({ artwork: foundArtwork });
   } catch (err) {
@@ -37,7 +38,7 @@ const getArtworkDetails = async (req, res, next) => {
       .populate('owner')
       .populate(
         'current',
-        '_id cover created title price type license availability description use commercial'
+        '_id cover created title personal type license availability description use commercial'
       );
     if (foundArtwork) {
       return res.json({
@@ -58,7 +59,7 @@ const getUserArtwork = async (req, res, next) => {
       $and: [{ owner: res.locals.user.id }, { active: true }],
     }).populate(
       'current',
-      '_id cover created title price type license availability description use commercial'
+      '_id cover created title personal type license availability description use commercial'
     );
     return res.json({ artwork: foundArtwork });
   } catch (err) {
@@ -76,7 +77,7 @@ const postNewArtwork = async (req, res, next) => {
     if (error) throw createError(400, error);
     if (
       !res.locals.user.stripeId &&
-      (value.artworkPrice || value.artworkCommercial)
+      (value.artworkPersonal || value.artworkCommercial)
     )
       throw createError(
         400,
@@ -90,8 +91,8 @@ const postNewArtwork = async (req, res, next) => {
     newVersion.availability = value.artworkAvailability || '';
     newVersion.license = value.artworkLicense || '';
     newVersion.use = value.artworkUse || '';
-    newVersion.price = value.artworkPrice || 0;
-    newVersion.commercial = value.artworkCommercial || 0;
+    newVersion.personal = currency(value.artworkPersonal).intValue || 0;
+    newVersion.commercial = currency(value.artworkCommercial).intValue || 0;
     newVersion.category = value.artworkCategory || '';
     newVersion.description = value.artworkDescription || '';
     const savedVersion = await newVersion.save({ session });
@@ -159,7 +160,7 @@ const updateArtwork = async (req, res, next) => {
     if (error) throw createError(400, error);
     if (
       !res.locals.user.stripeId &&
-      (value.artworkPrice || value.artworkCommercial)
+      (value.artworkPersonal || value.artworkCommercial)
     )
       throw createError(
         400,
@@ -174,8 +175,8 @@ const updateArtwork = async (req, res, next) => {
       newVersion.availability = value.artworkAvailability || '';
       newVersion.license = value.artworkLicense || '';
       newVersion.use = value.artworkUse || '';
-      newVersion.price = value.artworkPrice || 0;
-      newVersion.commercial = value.artworkCommercial || 0;
+      newVersion.personal = currency(value.artworkPersonal).intValue || 0;
+      newVersion.commercial = currency(value.artworkCommercial).intValue || 0;
       newVersion.category = value.artworkCategory || '';
       newVersion.description = value.artworkDescription || '';
       const savedVersion = await newVersion.save({ session });
@@ -555,7 +556,7 @@ const saveLicenses = async (req, res, next) => {
       })
         .populate(
           'current',
-          '_id cover created title price type license availability description use commercial'
+          '_id cover created title personal type license availability description use commercial'
         )
         .session(session);
       if (foundArtwork) {
@@ -573,7 +574,7 @@ const saveLicenses = async (req, res, next) => {
           newLicense.price =
             license.licenseType == 'commercial'
               ? foundArtwork.current.commercial
-              : 0;
+              : foundArtwork.current.personal;
           licenseSet.push(newLicense);
         });
         const savedLicenses = await License.insertMany(licenseSet, { session });

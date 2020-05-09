@@ -16,7 +16,7 @@ const schema = Joi.object().keys({
     then: Joi.string().valid('commercial', 'personal').required(),
     otherwise: Joi.forbidden(),
   }),
-  artworkPrice: Joi.when('artworkAvailability', {
+  artworkPersonal: Joi.when('artworkAvailability', {
     is: 'available',
     then: Joi.when('artworkType', {
       is: 'commercial',

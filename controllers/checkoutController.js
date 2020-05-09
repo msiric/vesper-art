@@ -27,7 +27,7 @@ const getProcessCart = async (req, res, next) => {
   })
     .deepPopulate(
       'cart.artwork.current',
-      '_id cover created title price type license availability description use commercial'
+      '_id cover created title personal type license availability description use commercial'
     )
     .populate('cart.licenses');
   try {
@@ -84,7 +84,7 @@ const getPaymentCart_Old = async (req, res, next) => {
     })
       .deepPopulate(
         'cart.artwork.current',
-        '_id cover created title price type license availability description use commercial'
+        '_id cover created title personal type license availability description use commercial'
       )
       .populate('cart.licenses');
     if (foundUser) {
@@ -94,7 +94,7 @@ const getPaymentCart_Old = async (req, res, next) => {
           item.artwork.active &&
           item.artwork.current.availability === 'available'
         ) {
-          amount += item.artwork.current.price;
+          amount += item.artwork.current.personal;
           item.licenses.map(function (license) {
             amount += license.price;
           });
@@ -133,7 +133,7 @@ const getCheckout = async (req, res, next) => {
       $and: [{ _id: artworkId }, { active: true }],
     }).populate(
       'current',
-      '_id cover created title price type license availability description use commercial'
+      '_id cover created title personal type license availability description use commercial'
     );
     if (foundArtwork) {
       const foundUser = await User.findOne({
@@ -164,7 +164,7 @@ const postPaymentCart = async (req, res, next) => {
     })
       .deepPopulate(
         'cart.artwork.current',
-        '_id cover created title price type license availability description use commercial'
+        '_id cover created title personal type license availability description use commercial'
       )
       .populate('cart.licenses')
       .session(session);
@@ -177,7 +177,7 @@ const postPaymentCart = async (req, res, next) => {
           item.artwork.active &&
           item.artwork.current.availability === 'available'
         ) {
-          paid += item.artwork.current.price;
+          paid += item.artwork.current.personal;
           item.licenses.map(function (license) {
             paid += license.price;
             licenses.push(license._id);
@@ -229,7 +229,7 @@ const postPaymentCart = async (req, res, next) => {
               item.artwork.current.availability === 'available'
             ) {
               let licenses = [];
-              totalAmount += item.artwork.current.price;
+              totalAmount += item.artwork.current.personal;
               item.licenses.map(function (license) {
                 totalAmount += license.price;
                 licenses.push(license._id);
@@ -283,7 +283,7 @@ const postPaymentCart = async (req, res, next) => {
               item.artwork.current.availability === 'available'
             ) {
               let funds = 0;
-              funds += item.artwork.current.price;
+              funds += item.artwork.current.personal;
               item.licenses.map(function (license) {
                 funds += license.price;
               });
@@ -338,7 +338,7 @@ const addToCart = async (req, res, next) => {
       })
         .populate(
           'current',
-          '_id cover created title price type license availability description use commercial'
+          '_id cover created title personal type license availability description use commercial'
         )
         .session(session);
       if (foundArtwork) {
@@ -363,7 +363,7 @@ const addToCart = async (req, res, next) => {
               newLicense.price =
                 licenseType == 'commercial'
                   ? foundArtwork.current.commercial
-                  : 0;
+                  : foundArtwork.current.personal;
 
               const savedLicense = await newLicense.save({ session });
               await User.updateOne(
@@ -414,7 +414,7 @@ const deleteFromCart = async (req, res, next) => {
     })
       .populate(
         'current',
-        '_id cover created title price type license availability description use commercial'
+        '_id cover created title personal type license availability description use commercial'
       )
       .session(session);
     if (foundArtwork) {

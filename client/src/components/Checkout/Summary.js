@@ -64,10 +64,9 @@ const Summary = ({
       const personalLicensesLength = getLicenseLength('personal', licenses);
       const commercialLicensesLength = getLicenseLength('commercial', licenses);
       const personalLicensesAmount =
-        personalLicensesLength * artwork.current.price;
+        personalLicensesLength * artwork.current.personal;
       const commercialLicensesAmount =
-        commercialLicensesLength *
-        (artwork.current.price + artwork.current.commercial);
+        commercialLicensesLength * artwork.current.commercial;
       setState((prevState) => ({
         ...prevState,
         summary: {

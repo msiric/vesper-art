@@ -228,11 +228,11 @@ const Cart = () => {
                         amount: item.artwork.current.commercial,
                       };
                       personalLicenses.total =
-                        personalLicenses.length * item.artwork.current.price;
+                        personalLicenses.length * item.artwork.current.personal;
                       commercialLicenses.total =
                         commercialLicenses.length *
                         (commercialLicenses.amount +
-                          item.artwork.current.price);
+                          item.artwork.current.personal);
                       if (!licenses.current.id[item.artwork.current._id])
                         licenses.current = {
                           id: {

@@ -9,7 +9,7 @@ const VersionSchema = new Schema({
   description: String,
   license: String,
   use: String,
-  price: Number,
+  personal: Number,
   commercial: Number,
   availability: String,
   cover: { type: String, default: 'http://placehold.it/350x150' },
