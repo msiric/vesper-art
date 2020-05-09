@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const bodyParser = require('body-parser');
 const session = require('cookie-session');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
@@ -21,8 +22,15 @@ app.use(
   })
 );
 
+app.use(
+  bodyParser.json({
+    verify: function (req, res, buf) {
+      if (req.originalUrl.startsWith('/stripe')) req.rawBody = buf.toString();
+    },
+  })
+);
+
 app.use(morgan('dev'));
-app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(

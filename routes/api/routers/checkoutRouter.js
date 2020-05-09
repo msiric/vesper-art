@@ -2,10 +2,6 @@ const router = require('express').Router();
 const { isAuthenticated } = require('../../../utils/helpers');
 const checkoutController = require('../../../controllers/checkoutController');
 
-router
-  .route('/payment_intent/:artworkId')
-  .post(isAuthenticated, checkoutController.managePaymentIntent);
-
 // router.route('/cart').get(isAuthenticated, checkoutController.getProcessCart);
 
 // router
