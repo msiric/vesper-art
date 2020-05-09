@@ -4,20 +4,16 @@ const Schema = mongoose.Schema;
 
 const OrderSchema = new Schema({
   buyer: { type: Schema.Types.ObjectId, ref: 'User' },
-  details: [
-    {
-      seller: { type: Schema.Types.ObjectId, ref: 'User' },
-      version: { type: Schema.Types.ObjectId, ref: 'Version' },
-      artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
-      licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }],
-    },
-  ],
+  seller: { type: Schema.Types.ObjectId, ref: 'User' },
+  artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
+  version: { type: Schema.Types.ObjectId, ref: 'Version' },
+  licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }],
   discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
+  review: { type: Schema.Types.ObjectId, ref: 'Review' },
   amount: Number,
   fee: Number,
-  status: Number,
-  bulk: Boolean,
-  chargeId: String,
+  status: String,
+  intent: String,
   created: { type: Date, default: Date.now },
 });
 
