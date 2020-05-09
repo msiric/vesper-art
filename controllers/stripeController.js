@@ -61,11 +61,18 @@ const managePaymentIntent = async (req, res, next) => {
         let personalLicenses = 0;
         let commercialLicenses = 0;
         licenses.map((license) => {
-          if (license.licenseType === 'personal')
+          if (license.licenseType === 'personal') {
             personalLicenses += foundArtwork.current.price;
-          else if (license.licenseType === 'commercial')
+            license.licensePrice = currency(
+              foundArtwork.current.price
+            ).intValue;
+          } else if (license.licenseType === 'commercial') {
             commercialLicenses +=
               foundArtwork.current.price + foundArtwork.current.commercial;
+            license.licensePrice = currency(foundArtwork.current.price).add(
+              foundArtwork.current.commercial
+            ).intValue;
+          }
         });
         const buyerFee = currency(personalLicenses)
           .add(commercialLicenses)
@@ -303,6 +310,7 @@ const createOrder = async (intent) => {
     const discountId = mongoose.Types.ObjectId(orderData.discountId);
     const licenseSet = [];
     const licenseIds = [];
+    console.log(orderData.licenses);
     orderData.licenses.forEach(async (license) => {
       const newLicense = new License();
       newLicense.owner = buyerId;
@@ -312,10 +320,7 @@ const createOrder = async (intent) => {
       newLicense.credentials = license.licenseeName;
       newLicense.company = license.licenseeCompany;
       newLicense.active = true;
-      newLicense.price =
-        license.licenseType == 'commercial'
-          ? foundArtwork.current.commercial
-          : 0;
+      newLicense.price = license.licensePrice;
       licenseSet.push(newLicense);
     });
     const savedLicenses = await License.insertMany(licenseSet, { session });

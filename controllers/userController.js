@@ -39,6 +39,29 @@ const getUserProfile = async (req, res, next) => {
   }
 };
 
+const getUserStatistics = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const foundUser = await User.findOne({
+      $and: [{ _id: userId }, { active: true }],
+    })
+      // $TODO multiple deep populates
+      .deepPopulate('purchases')
+      .populate('sales');
+    // }).deepPopulate(
+    //   'artwork.current',
+    //   '_id cover created title price type license availability description use commercial'
+    // );
+    if (foundUser) {
+      return res.json({ user: foundUser });
+    } else {
+      throw createError(400, 'User not found');
+    }
+  } catch (err) {
+    next(err, res);
+  }
+};
+
 const updateUserProfile = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -618,6 +641,7 @@ const deactivateUser = async (req, res, next) => {
 
 module.exports = {
   getUserProfile,
+  getUserStatistics,
   updateUserProfile,
   getUserSettings,
   updateUserEmail,
