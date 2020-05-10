@@ -93,7 +93,7 @@ const postNewArtwork = async (req, res, next) => {
     newVersion.use = value.artworkUse || '';
     newVersion.personal = currency(value.artworkPersonal).intValue || 0;
     newVersion.commercial =
-      currency(value.artworkCommercial).intValue ||
+      currency(value.artworkCommercial).add(value.artworkPersonal).intValue ||
       currency(value.artworkPersonal).intValue;
     newVersion.category = value.artworkCategory || '';
     newVersion.description = value.artworkDescription || '';
@@ -179,7 +179,7 @@ const updateArtwork = async (req, res, next) => {
       newVersion.use = value.artworkUse || '';
       newVersion.personal = currency(value.artworkPersonal).intValue || 0;
       newVersion.commercial =
-        currency(value.artworkCommercial).intValue ||
+        currency(value.artworkCommercial).add(value.artworkPersonal).intValue ||
         currency(value.artworkPersonal).intValue;
       newVersion.category = value.artworkCategory || '';
       newVersion.description = value.artworkDescription || '';
