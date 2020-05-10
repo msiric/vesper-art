@@ -16,10 +16,31 @@ import {
 
 const rows = [
   {
+    id: 'cover',
+    align: 'left',
+    disablePadding: false,
+    label: 'Cover',
+    sort: true,
+  },
+  {
     id: 'id',
     align: 'left',
     disablePadding: false,
     label: 'Order ID',
+    sort: true,
+  },
+  {
+    id: 'title',
+    align: 'right',
+    disablePadding: false,
+    label: 'Title',
+    sort: true,
+  },
+  {
+    id: 'seller',
+    align: 'right',
+    disablePadding: false,
+    label: 'Artist',
     sort: true,
   },
   {
@@ -41,6 +62,13 @@ const rows = [
     align: 'right',
     disablePadding: false,
     label: 'Review',
+    sort: true,
+  },
+  {
+    id: 'status',
+    align: 'right',
+    disablePadding: false,
+    label: 'Status',
     sort: true,
   },
 ];

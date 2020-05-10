@@ -8,7 +8,9 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
+import { withSnackbar } from 'notistack';
 import StripeInput from './StripeInput';
+import { useHistory } from 'react-router-dom';
 import PaymentFormStyles from './PaymentForm.style';
 
 const PaymentForm = ({
@@ -18,11 +20,13 @@ const PaymentForm = ({
   billing,
   discount,
   handleStepChange,
+  enqueueSnackbar,
 }) => {
   const classes = PaymentFormStyles();
 
   const stripe = useStripe();
   const elements = useElements();
+  const history = useHistory();
 
   const cardsLogo = [
     'amex',
@@ -70,7 +74,15 @@ const PaymentForm = ({
       console.log(error);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       console.log('success');
-      console.log(paymentIntent);
+      enqueueSnackbar('Payment successful', {
+        variant: 'success',
+        autoHideDuration: 1000,
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
+      history.push('/orders');
     }
   };
 
@@ -162,4 +174,4 @@ const PaymentForm = ({
   );
 };
 
-export default PaymentForm;
+export default withSnackbar(PaymentForm);

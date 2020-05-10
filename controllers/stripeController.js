@@ -28,7 +28,6 @@ const receiveWebhookEvent = async (req, res, next) => {
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object;
         await createOrder(paymentIntent);
-        console.log('done');
         break;
       default:
         return res.status(400).end();
@@ -93,18 +92,6 @@ const managePaymentIntent = async (req, res, next) => {
         const platformTotal = buyerFee;
         const stripeFees = currency(1.03).add(2).add(0.3);
         const total = currency(platformTotal).subtract(stripeFees);
-        console.log(
-          'buyerTotal',
-          buyerTotal.intValue,
-          'sellerTotal',
-          sellerTotal.intValue,
-          'platformTotal',
-          platformTotal.intValue,
-          'stripeFees',
-          stripeFees.intValue,
-          'total',
-          total.intValue
-        );
 
         const orderData = {
           buyerId: foundUser._id,
@@ -112,7 +99,8 @@ const managePaymentIntent = async (req, res, next) => {
           artworkId: foundArtwork._id,
           versionId: foundArtwork.current._id,
           discountId: foundUser.discount._id,
-          amount: buyerTotal.intValue,
+          paid: buyerTotal.intValue,
+          sold: sellerTotal.intValue,
           fee: platformTotal.intValue,
           licenses: licenses,
         };
@@ -245,8 +233,6 @@ const assignStripeId = async (req, res, next) => {
       throw createError(500, expressAuthorized.error);
     }
 
-    console.log(expressAuthorized);
-
     await User.updateOne(
       { _id: req.session.id },
       { stripeId: expressAuthorized.data.stripe_user_id }
@@ -300,7 +286,6 @@ const createOrder = async (intent) => {
   try {
     const orderData = JSON.parse(intent.metadata.orderData);
     const intentId = intent.id;
-    console.log(orderData);
     // $TODO notification
     const buyerId = mongoose.Types.ObjectId(orderData.buyerId);
     const sellerId = mongoose.Types.ObjectId(orderData.sellerId);
@@ -309,7 +294,6 @@ const createOrder = async (intent) => {
     const discountId = mongoose.Types.ObjectId(orderData.discountId);
     const licenseSet = [];
     const licenseIds = [];
-    console.log(orderData.licenses);
     orderData.licenses.forEach(async (license) => {
       const newLicense = new License();
       newLicense.owner = buyerId;
@@ -334,7 +318,8 @@ const createOrder = async (intent) => {
     newOrder.discount = discountId;
     newOrder.licenses = licenseIds;
     newOrder.review = null;
-    newOrder.amount = orderData.amount;
+    newOrder.paid = orderData.paid;
+    newOrder.sold = orderData.sold;
     newOrder.fee = orderData.fee;
     newOrder.status = 'completed';
     newOrder.intent = intentId;
