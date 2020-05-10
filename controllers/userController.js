@@ -44,16 +44,9 @@ const getUserStatistics = async (req, res, next) => {
     const { userId } = req.params;
     const foundUser = await User.findOne({
       $and: [{ _id: userId }, { active: true }],
-    })
-      // $TODO multiple deep populates
-      .deepPopulate('purchases')
-      .populate('sales');
-    // }).deepPopulate(
-    //   'artwork.current',
-    //   '_id cover created title personal type license availability description use commercial'
-    // );
+    }).deepPopulate('purchases.review');
     if (foundUser) {
-      return res.json({ user: foundUser });
+      return res.json({ statistics: foundUser });
     } else {
       throw createError(400, 'User not found');
     }

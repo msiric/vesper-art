@@ -18,7 +18,13 @@ import DashboardStyles from './Dashboard.style';
 
 function Dashboard() {
   const [store, dispatch] = useContext(Context);
-  const [state, setState] = useState({ loading: false, range: 'week' });
+  const [state, setState] = useState({
+    loading: false,
+    currentStats: {},
+    selectedStats: {},
+    display: 'purchases',
+    range: 'week',
+  });
 
   const theme = useTheme();
   const classes = DashboardStyles();
@@ -26,7 +32,22 @@ function Dashboard() {
   const fetchData = async () => {
     try {
       const { data } = await ax.get(`/api/user/${store.user.id}/statistics`);
-      console.log(data);
+      const currentStats = {
+        ratings: null,
+        reviews: null,
+        review: null,
+        orders: data.statistics.purchases.length,
+        spent: null,
+      };
+      data.statistics.purchases.map((purchase) => {
+        currentStats.ratings += purchase.rating ? purchase.rating : 0;
+        currentStats.reviews += purchase.rating ? 1 : 0;
+        currentStats.spent += purchase.paid;
+      });
+      currentStats.review = currentStats.reviews
+        ? currentStats.ratings / currentStats.reviews
+        : 0;
+      setState((prevState) => ({ ...prevState, currentStats: currentStats }));
     } catch (err) {
       setState({ ...state, loading: false });
     }
@@ -125,7 +146,9 @@ function Dashboard() {
             <Grid item xs={12} md={4} className={classes.grid}>
               <Paper className={classes.box}>
                 <div className={classes.boxData}>
-                  <Typography className={classes.boxMain}>4.3</Typography>
+                  <Typography className={classes.boxMain}>
+                    {state.currentStats.review}
+                  </Typography>
                   <Typography className={classes.boxAlt} color="textSecondary">
                     Rating
                   </Typography>
@@ -141,7 +164,9 @@ function Dashboard() {
             <Grid item xs={12} md={4} className={classes.grid}>
               <Paper className={classes.box}>
                 <div className={classes.boxData}>
-                  <Typography className={classes.boxMain}>7</Typography>
+                  <Typography className={classes.boxMain}>
+                    {state.currentStats.orders}
+                  </Typography>
                   <Typography className={classes.boxAlt} color="textSecondary">
                     Orders
                   </Typography>
@@ -157,9 +182,11 @@ function Dashboard() {
             <Grid item xs={12} md={4} className={classes.grid}>
               <Paper className={classes.box}>
                 <div className={classes.boxData}>
-                  <Typography className={classes.boxMain}>$120</Typography>
+                  <Typography className={classes.boxMain}>
+                    ${state.currentStats.spent}
+                  </Typography>
                   <Typography className={classes.boxAlt} color="textSecondary">
-                    Earnings
+                    {state.display === 'purchases' ? 'Spent' : 'Earned'}
                   </Typography>
                 </div>
                 <Divider />
