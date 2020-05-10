@@ -173,16 +173,10 @@ const getOrder = async (req, res, next) => {
 
 const getSoldOrders = async (req, res, next) => {
   try {
-    const foundOrders = await Order.find({
-      details: { $elemMatch: { seller: res.locals.user.id } },
-    })
-      .populate('buyer')
-      .populate('artwork')
-      .populate('version')
-      .populate('licenses')
-      .populate('discount')
-      .populate('review');
-    res.json({ sales: foundOrders });
+    const foundUser = await User.findOne({
+      _id: res.locals.user.id,
+    }).deepPopulate('sales.buyer sales.version sales.review');
+    res.json({ sales: foundUser.sales });
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -191,14 +185,10 @@ const getSoldOrders = async (req, res, next) => {
 
 const getBoughtOrders = async (req, res, next) => {
   try {
-    const foundOrders = await Order.find({ buyer: res.locals.user.id })
-      .populate('seller')
-      .populate('artwork')
-      .populate('version')
-      .populate('licenses')
-      .populate('discount')
-      .populate('review');
-    res.json({ purchases: foundOrders });
+    const foundUser = await User.findOne({
+      _id: res.locals.user.id,
+    }).deepPopulate('sales.seller sales.version sales.review');
+    res.json({ purchases: foundUser.purchases });
   } catch (err) {
     console.log(err);
     next(err, res);
