@@ -12,7 +12,7 @@ const OrderSchema = new Schema({
   discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
   review: { type: Schema.Types.ObjectId, ref: 'Review' },
   paid: { type: Number, get: formatPrice },
-  sold: { type: Number, get: formatPrice },
+  earned: { type: Number, get: formatPrice },
   fee: { type: Number, get: formatPrice },
   status: String,
   intent: String,

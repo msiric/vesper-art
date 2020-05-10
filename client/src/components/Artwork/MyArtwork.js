@@ -2,7 +2,6 @@ import _ from 'lodash';
 import {
   Paper,
   Button,
-  Link,
   Icon,
   Typography,
   Input,
@@ -12,14 +11,16 @@ import {
   TablePagination,
   TableRow,
 } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
+import ax from '../../axios.config';
 import ProductsTableHead from './Head';
 
 function ProductsTable() {
   const [state, setState] = useState({
     loading: false,
-    orders: [{ id: 1, price: 15, date: Date.now(), review: 4.5 }],
+    artwork: [],
     search: '',
     page: 0,
     rows: 10,
@@ -31,15 +32,28 @@ function ProductsTable() {
 
   const history = useHistory();
 
+  const fetchArtwork = async () => {
+    try {
+      const { data } = await ax.get(`/api/my_artwork`);
+      setState({
+        ...state,
+        loading: false,
+        artwork: data.artwork,
+      });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
+
   useEffect(() => {
-    //get data
+    fetchArtwork();
   }, []);
 
   useEffect(() => {
     if (state.search) {
       setState((prevState) => ({
         ...prevState,
-        orders: _.filter(prevState.orders, (item) =>
+        artwork: _.filter(prevState.artwork, (item) =>
           item.id.toLowerCase().includes(state.search.toLowerCase())
         ),
         page: 0,
@@ -47,10 +61,10 @@ function ProductsTable() {
     } else {
       setState((prevState) => ({
         ...prevState,
-        orders: prevState.orders,
+        artwork: prevState.artwork,
       }));
     }
-  }, [state.orders, state.search]);
+  }, [state.artwork, state.search]);
 
   function handleRequestSort(e, property) {
     const id = property;
@@ -91,16 +105,15 @@ function ProductsTable() {
   };
 
   function handleRowClick(id) {
-    history.push(`/orders/${id}`);
+    history.push(`/artwork/${id}`);
   }
 
   return (
     <>
       <div className="flex flex-1 w-full items-center justify-between">
         <div className="flex items-center">
-          <Icon className="text-32">shopping_basket</Icon>
           <Typography className="hidden sm:flex mx-0 sm:mx-12" variant="h6">
-            Products
+            My artwork
           </Typography>
         </div>
 
@@ -109,8 +122,6 @@ function ProductsTable() {
             className="flex items-center w-full max-w-512 px-8 py-4 rounded-8"
             elevation={1}
           >
-            <Icon color="action">search</Icon>
-
             <Input
               placeholder="Search"
               className="flex flex-1 mx-8"
@@ -126,26 +137,24 @@ function ProductsTable() {
         </div>
         <Button
           component={Link}
-          to="/apps/e-commerce/products/new"
-          className="whitespace-no-wrap normal-case"
+          to="/add_artwork"
           variant="contained"
           color="secondary"
         >
-          <span className="hidden sm:flex">Add New Product</span>
-          <span className="flex sm:hidden">New</span>
+          Add new artwork
         </Button>
       </div>
       <div className="w-full flex flex-col">
         <Table className="min-w-xl" aria-labelledby="tableTitle">
           <ProductsTableHead
-            order={state.sort}
+            artwork={state.sort}
             handleRequestSort={handleRequestSort}
-            rowCount={state.orders.length}
+            rowCount={state.artwork.length}
           />
 
           <TableBody>
             {_.orderBy(
-              state.orders,
+              state.artwork,
               [
                 (o) => {
                   switch (state.sort.id) {
@@ -172,22 +181,26 @@ function ProductsTable() {
                     role="checkbox"
                     tabIndex={-1}
                     key={n.id}
-                    onClick={(e) => handleRowClick(n.id)}
+                    onClick={(e) => handleRowClick(n._id)}
                   >
-                    <TableCell component="th" scope="row">
-                      {n.id}
+                    <TableCell component="th" scope="row" align="left">
+                      <img src={n.current.cover} alt={n.name} />
                     </TableCell>
 
                     <TableCell component="th" scope="row" align="right">
-                      {n.price}
+                      {n.current.title}
                     </TableCell>
 
                     <TableCell component="th" scope="row" align="right">
-                      {n.date}
+                      {n.current.type}
                     </TableCell>
 
                     <TableCell component="th" scope="row" align="right">
-                      {n.review}
+                      ${n.current.personal}
+                    </TableCell>
+
+                    <TableCell component="th" scope="row" align="right">
+                      ${n.current.commercial}
                     </TableCell>
                   </TableRow>
                 );
@@ -197,7 +210,7 @@ function ProductsTable() {
         <TablePagination
           className="overflow-hidden"
           component="div"
-          count={state.orders.length}
+          count={state.artwork.length}
           rowsPerPage={state.rows}
           page={state.page}
           backIconButtonProps={{

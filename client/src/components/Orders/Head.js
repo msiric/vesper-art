@@ -37,17 +37,17 @@ const rows = [
     sort: true,
   },
   {
-    id: 'seller',
+    id: 'user',
     align: 'right',
     disablePadding: false,
-    label: 'Artist',
+    label: 'User',
     sort: true,
   },
   {
-    id: 'price',
+    id: 'amount',
     align: 'right',
     disablePadding: false,
-    label: 'Price',
+    label: 'Amount',
     sort: true,
   },
   {

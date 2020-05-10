@@ -218,11 +218,15 @@ const Orders = () => {
                     </TableCell>
 
                     <TableCell component="th" scope="row" align="right">
-                      {n.seller.name}
+                      {state.display === 'purchases'
+                        ? n.seller.name
+                        : n.buyer.name}
                     </TableCell>
 
                     <TableCell component="th" scope="row" align="right">
-                      {`$${n.paid}`}
+                      {state.display === 'purchases'
+                        ? `$${n.paid}`
+                        : `$${n.earned}`}
                     </TableCell>
 
                     <TableCell component="th" scope="row" align="right">
