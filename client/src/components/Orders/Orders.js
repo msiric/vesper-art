@@ -11,16 +11,24 @@ import {
   TableCell,
   TablePagination,
   TableRow,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
+import ax from '../../axios.config';
+import formatDate from '../../utils/formatDate';
 import ProductsTableHead from './Head';
+import OrdersStyles from './Orders.style';
 
-function ProductsTable() {
+const Orders = () => {
   const [state, setState] = useState({
-    loading: false,
-    orders: [{ id: 1, price: 15, date: Date.now(), review: 4.5 }],
+    loading: true,
+    orders: [],
     search: '',
+    display: 'purchases',
     page: 0,
     rows: 10,
     sort: {
@@ -28,12 +36,26 @@ function ProductsTable() {
       id: null,
     },
   });
+  const classes = OrdersStyles();
 
   const history = useHistory();
 
+  const fetchOrders = async () => {
+    try {
+      const { data } = await ax.get(`/api/orders/${state.display}`);
+      setState({
+        ...state,
+        loading: false,
+        orders: data[state.display],
+      });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
+
   useEffect(() => {
-    //get data
-  }, []);
+    fetchOrders();
+  }, [state.display]);
 
   useEffect(() => {
     if (state.search) {
@@ -90,6 +112,13 @@ function ProductsTable() {
     }));
   };
 
+  const handleSelectChange = (e) => {
+    setState((prevState) => ({
+      ...prevState,
+      display: e.target.value,
+    }));
+  };
+
   function handleRowClick(id) {
     history.push(`/orders/${id}`);
   }
@@ -98,10 +127,24 @@ function ProductsTable() {
     <>
       <div className="flex flex-1 w-full items-center justify-between">
         <div className="flex items-center">
-          <Icon className="text-32">shopping_basket</Icon>
-          <Typography className="hidden sm:flex mx-0 sm:mx-12" variant="h6">
-            Products
+          <Typography
+            className="hidden sm:flex mx-0 sm:mx-12 capitalize"
+            variant="h6"
+          >
+            {state.display}
           </Typography>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel id="data-display">Displayed data</InputLabel>
+            <Select
+              labelId="data-display"
+              value={state.display}
+              onChange={handleSelectChange}
+              label="Displayed data"
+            >
+              <MenuItem value="purchases">Purchases</MenuItem>
+              <MenuItem value="sales">Sales</MenuItem>
+            </Select>
+          </FormControl>
         </div>
 
         <div className="flex flex-1 items-center justify-center px-12">
@@ -109,8 +152,6 @@ function ProductsTable() {
             className="flex items-center w-full max-w-512 px-8 py-4 rounded-8"
             elevation={1}
           >
-            <Icon color="action">search</Icon>
-
             <Input
               placeholder="Search"
               className="flex flex-1 mx-8"
@@ -124,16 +165,6 @@ function ProductsTable() {
             />
           </Paper>
         </div>
-        <Button
-          component={Link}
-          to="/apps/e-commerce/products/new"
-          className="whitespace-no-wrap normal-case"
-          variant="contained"
-          color="secondary"
-        >
-          <span className="hidden sm:flex">Add New Product</span>
-          <span className="flex sm:hidden">New</span>
-        </Button>
       </div>
       <div className="w-full flex flex-col">
         <Table className="min-w-xl" aria-labelledby="tableTitle">
@@ -174,20 +205,36 @@ function ProductsTable() {
                     key={n.id}
                     onClick={(e) => handleRowClick(n.id)}
                   >
+                    <TableCell component="th" scope="row" align="left">
+                      <img src={n.version.cover} alt={n.name} />
+                    </TableCell>
+
                     <TableCell component="th" scope="row">
                       {n.id}
                     </TableCell>
 
                     <TableCell component="th" scope="row" align="right">
-                      {n.price}
+                      {n.version.title}
                     </TableCell>
 
                     <TableCell component="th" scope="row" align="right">
-                      {n.date}
+                      {n.seller.name}
                     </TableCell>
 
                     <TableCell component="th" scope="row" align="right">
-                      {n.review}
+                      {`$${n.paid}`}
+                    </TableCell>
+
+                    <TableCell component="th" scope="row" align="right">
+                      {formatDate(n.created, 'full')}
+                    </TableCell>
+
+                    <TableCell component="th" scope="row" align="right">
+                      {n.review || 'Not rated'}
+                    </TableCell>
+
+                    <TableCell component="th" scope="row" align="right">
+                      {n.status}
                     </TableCell>
                   </TableRow>
                 );
@@ -212,6 +259,6 @@ function ProductsTable() {
       </div>
     </>
   );
-}
+};
 
-export default withRouter(ProductsTable);
+export default withRouter(Orders);

@@ -177,27 +177,12 @@ const getSoldOrders = async (req, res, next) => {
       details: { $elemMatch: { seller: res.locals.user.id } },
     })
       .populate('buyer')
-      .deepPopulate('details.version details.licenses');
-    foundOrders.forEach(function (order) {
-      const details = [];
-      let sold = 0;
-      order.details.forEach(function (item) {
-        if (item.seller.equals(res.locals.user.id)) {
-          sold += item.version.personal;
-          item.licenses.map(function (license) {
-            sold += license.price;
-          });
-          details.push({
-            licenses: item.licenses,
-            seller: item.seller,
-            version: item.version,
-          });
-        }
-      });
-      order.details = details;
-      order.sold = sold;
-    });
-    res.json({ order: foundOrders });
+      .populate('artwork')
+      .populate('version')
+      .populate('licenses')
+      .populate('discount')
+      .populate('review');
+    res.json({ sales: foundOrders });
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -207,26 +192,13 @@ const getSoldOrders = async (req, res, next) => {
 const getBoughtOrders = async (req, res, next) => {
   try {
     const foundOrders = await Order.find({ buyer: res.locals.user.id })
-      .populate('buyer')
-      .deepPopulate('details.version details.licenses');
-    /*       foundOrders.forEach(function(order) {
-        const details = [];
-        let paid = 0;
-        order.details.forEach(function(item) {
-          paid += item.version.personal;
-          item.licenses.map(function(license) {
-            paid += license.price;
-          });
-          details.push({
-            licenses: item.licenses,
-            buyer: item.buyer,
-            version: item.version
-          });
-        });
-        order.details = details;
-        order.paid = paid;
-      }); */
-    res.json({ order: foundOrders });
+      .populate('seller')
+      .populate('artwork')
+      .populate('version')
+      .populate('licenses')
+      .populate('discount')
+      .populate('review');
+    res.json({ purchases: foundOrders });
   } catch (err) {
     console.log(err);
     next(err, res);
