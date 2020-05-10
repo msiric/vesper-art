@@ -3,6 +3,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const createError = require('http-errors');
 const escapeHTML = require('escape-html');
 const jwt = require('jsonwebtoken');
+const currency = require('currency.js');
 
 const isAuthenticated = async (req, res, next) => {
   const authentication = req.headers['authorization'];
@@ -49,6 +50,10 @@ const checkParams = (req, res, next) => {
   throw createError(400, 'Invalid route parameter');
 };
 
+const formatPrice = (value) => {
+  return currency(value).divide(100);
+};
+
 const sanitize = (body) =>
   Object.keys(body).reduce((obj, key) => {
     if (Array.isArray(body[key])) {
@@ -68,5 +73,6 @@ module.exports = {
   isAuthenticated,
   isNotAuthenticated,
   checkParams,
+  formatPrice,
   sanitize,
 };

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const { formatPrice } = require('../utils/helpers');
 
 const LicenseSchema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
@@ -9,9 +10,12 @@ const LicenseSchema = new Schema({
   credentials: String,
   company: String,
   active: Boolean,
-  price: Number,
+  price: { type: Number, get: formatPrice },
   created: { type: Date, default: Date.now },
 });
+
+LicenseSchema.set('toObject', { getters: true });
+LicenseSchema.set('toJSON', { getters: true });
 
 const License = mongoose.model('License', LicenseSchema);
 

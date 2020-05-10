@@ -92,7 +92,9 @@ const postNewArtwork = async (req, res, next) => {
     newVersion.license = value.artworkLicense || '';
     newVersion.use = value.artworkUse || '';
     newVersion.personal = currency(value.artworkPersonal).intValue || 0;
-    newVersion.commercial = currency(value.artworkCommercial).intValue || 0;
+    newVersion.commercial =
+      currency(value.artworkCommercial).intValue ||
+      currency(value.artworkPersonal).intValue;
     newVersion.category = value.artworkCategory || '';
     newVersion.description = value.artworkDescription || '';
     const savedVersion = await newVersion.save({ session });
@@ -176,7 +178,9 @@ const updateArtwork = async (req, res, next) => {
       newVersion.license = value.artworkLicense || '';
       newVersion.use = value.artworkUse || '';
       newVersion.personal = currency(value.artworkPersonal).intValue || 0;
-      newVersion.commercial = currency(value.artworkCommercial).intValue || 0;
+      newVersion.commercial =
+        currency(value.artworkCommercial).intValue ||
+        currency(value.artworkPersonal).intValue;
       newVersion.category = value.artworkCategory || '';
       newVersion.description = value.artworkDescription || '';
       const savedVersion = await newVersion.save({ session });
