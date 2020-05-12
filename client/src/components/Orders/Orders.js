@@ -19,7 +19,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
-import formatDate from '../../utils/formatDate';
+import { format } from 'date-fns';
 import ProductsTableHead from './Head';
 import OrdersStyles from './Orders.style';
 
@@ -230,7 +230,7 @@ const Orders = () => {
                     </TableCell>
 
                     <TableCell component="th" scope="row" align="right">
-                      {formatDate(n.created, 'full')}
+                      {format(new Date(n.created), 'dd/MM/yyyy')}
                     </TableCell>
 
                     <TableCell component="th" scope="row" align="right">

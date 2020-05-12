@@ -39,12 +39,44 @@ const getUserProfile = async (req, res, next) => {
   }
 };
 
-const getUserStatistics = async (req, res, next) => {
+const getUserSales = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { from, to } = req.query;
+    const foundUser =
+      from && to
+        ? await User.findOne({
+            $and: [
+              { _id: userId },
+              { active: true },
+              { created: { $lt: new Date(from), $gte: new Date(to) } },
+            ],
+          }).deepPopulate(
+            'purchases.review purchases.version purchases.licenses sales.review sales.version sales.licenses'
+          )
+        : await User.findOne({
+            $and: [{ _id: userId }, { active: true }],
+          }).deepPopulate(
+            'purchases.review purchases.version purchases.licenses sales.review sales.version sales.licenses'
+          );
+    if (foundUser) {
+      return res.json({ statistics: foundUser });
+    } else {
+      throw createError(400, 'User not found');
+    }
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+const getUserPurchases = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const foundUser = await User.findOne({
       $and: [{ _id: userId }, { active: true }],
-    }).deepPopulate('purchases.review');
+    }).deepPopulate(
+      'purchases.review purchases.version purchases.licenses sales.review sales.version sales.licenses'
+    );
     if (foundUser) {
       return res.json({ statistics: foundUser });
     } else {
@@ -634,7 +666,8 @@ const deactivateUser = async (req, res, next) => {
 
 module.exports = {
   getUserProfile,
-  getUserStatistics,
+  getUserSales,
+  getUserPurchases,
   updateUserProfile,
   getUserSettings,
   updateUserEmail,

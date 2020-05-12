@@ -82,7 +82,14 @@ const PaymentForm = ({
           horizontal: 'center',
         },
       });
-      history.push('/orders');
+      enqueueSnackbar('Your purchase will appear in the "orders" page soon', {
+        variant: 'success',
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
     }
   };
 

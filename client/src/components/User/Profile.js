@@ -61,7 +61,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { withSnackbar } from 'notistack';
 import { Link, useHistory } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
-import formatDate from '../../utils/formatDate';
+import { format } from 'date-fns';
 import ax from '../../axios.config';
 import ProfileStyles from './Profile.style';
 
@@ -498,7 +498,10 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       color="textSecondary"
                       component="p"
                     >
-                      {`Joined ${formatDate(state.user.created, 'month')}`}
+                      {`Joined ${format(
+                        new Date(state.user.created),
+                        'MMM yyyy'
+                      )}`}
                     </Typography>
                   </CardContent>
                 </Card>
