@@ -378,6 +378,7 @@ const Summary = ({
             />
           </ListItem>
         </List>
+        {/* Update intent when discount changes */}
         {discount ? (
           <Button
             type="button"
