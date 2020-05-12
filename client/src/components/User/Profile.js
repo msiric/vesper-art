@@ -502,17 +502,20 @@ const Profile = ({ match, enqueueSnackbar }) => {
                     </Typography>
                   </CardContent>
                 </Card>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  startIcon={<EditIcon />}
-                  onClick={handleModalOpen}
-                  fullWidth
-                >
-                  Edit info
-                </Button>
+                {state.user.editable ? (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                    startIcon={<EditIcon />}
+                    onClick={handleModalOpen}
+                    fullWidth
+                  >
+                    Edit info
+                  </Button>
+                ) : null}
+
                 <br />
                 <br />
                 <Card className={classes.user}>

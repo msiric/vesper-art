@@ -140,6 +140,7 @@ const Orders = () => {
               value={state.display}
               onChange={handleSelectChange}
               label="Displayed data"
+              margin="dense"
             >
               <MenuItem value="purchases">Purchases</MenuItem>
               <MenuItem value="sales">Sales</MenuItem>
