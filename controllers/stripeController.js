@@ -257,23 +257,30 @@ const assignStripeId = async (req, res, next) => {
 
 const createPayout = async (req, res, next) => {
   try {
-    const balance = await stripe.balance.retrieve({
-      stripe_account: res.locals.user.stripeId,
+    const foundUser = await User.findOne({
+      $and: [{ _id: res.locals.user.id }, { active: true }],
     });
-    const { amount, currency } = balance.available[0];
-    await stripe.payouts.create(
-      {
-        amount: amount,
-        currency: currency,
-        statement_descriptor: config.server.appName,
-      },
-      {
-        stripe_account: res.locals.user.stripeId,
-      }
-    );
-    res.status(200).json({
-      message: 'Payout successfully created',
-    });
+    if (foundUser.stripeId) {
+      const balance = await stripe.balance.retrieve({
+        stripe_account: foundUser.stripeId,
+      });
+      const { amount, currency } = balance.available[0];
+      await stripe.payouts.create(
+        {
+          amount: amount,
+          currency: currency,
+          statement_descriptor: config.server.appName,
+        },
+        {
+          stripe_account: foundUser.stripeId,
+        }
+      );
+      res.status(200).json({
+        message: 'Payout successfully created',
+      });
+    } else {
+      throw createError(400, 'Cannot create payout for this user');
+    }
   } catch (err) {
     console.log(err);
     next(err, res);
