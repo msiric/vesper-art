@@ -187,7 +187,7 @@ const getBoughtOrders = async (req, res, next) => {
   try {
     const foundUser = await User.findOne({
       _id: res.locals.user.id,
-    }).deepPopulate('sales.seller sales.version sales.review');
+    }).deepPopulate('purchases.seller purchases.version purchases.review');
     res.json({ purchases: foundUser.purchases });
   } catch (err) {
     console.log(err);

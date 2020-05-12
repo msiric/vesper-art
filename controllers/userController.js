@@ -10,6 +10,7 @@ const config = require('../config/mailer');
 const secret = require('../config/secret');
 const auth = require('../utils/auth');
 const createError = require('http-errors');
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const getUserProfile = async (req, res, next) => {
   try {
@@ -41,13 +42,20 @@ const getUserProfile = async (req, res, next) => {
 
 const getUserStatistics = async (req, res, next) => {
   try {
+    // brisanje accounta
+    /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
+    }); */
     const { userId } = req.params;
     const foundUser = await User.findOne({
       $and: [{ _id: userId }, { active: true }],
     }).deepPopulate(
       'purchases.version purchases.licenses sales.version sales.licenses'
     );
-    return res.json({ statistics: foundUser });
+    const balance = await stripe.balance.retrieve({
+      stripe_account: foundUser.stripeId,
+    });
+    const { amount, currency } = balance.available[0];
+    return res.json({ statistics: foundUser, amount: amount });
   } catch (err) {
     next(err, res);
   }
@@ -68,7 +76,7 @@ const getUserSales = async (req, res, next) => {
         : await Order.find({
             $and: [{ seller: userId }],
           }).populate('review version licenses sales.review');
-    return res.json({ statistics: foundOrders });
+    return res.json({ statistics: foundOrders, amount: amount });
   } catch (err) {
     next(err, res);
   }

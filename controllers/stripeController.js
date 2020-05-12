@@ -89,7 +89,7 @@ const managePaymentIntent = async (req, res, next) => {
         const sellerTotal = currency(personalLicenses)
           .add(commercialLicenses)
           .multiply(sellerFee);
-        const platformTotal = buyerFee;
+        const platformTotal = currency(buyerTotal).subtract(sellerTotal);
         const stripeFees = currency(1.03).add(2).add(0.3);
         const total = currency(platformTotal).subtract(stripeFees);
 
@@ -98,7 +98,7 @@ const managePaymentIntent = async (req, res, next) => {
           sellerId: foundArtwork.owner._id,
           artworkId: foundArtwork._id,
           versionId: foundArtwork.current._id,
-          discountId: foundUser.discount._id,
+          discountId: foundUser.discount ? foundUser.discount._id : null,
           spent: buyerTotal.intValue,
           earned: sellerTotal.intValue,
           fee: platformTotal.intValue,
@@ -114,6 +114,7 @@ const managePaymentIntent = async (req, res, next) => {
               amount: buyerTotal.intValue,
               currency: 'usd',
               application_fee_amount: platformTotal.intValue,
+              on_behalf_of: foundArtwork.owner.stripeId,
               transfer_data: {
                 destination: foundArtwork.owner.stripeId,
               },
