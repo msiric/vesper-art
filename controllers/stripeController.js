@@ -99,7 +99,7 @@ const managePaymentIntent = async (req, res, next) => {
           artworkId: foundArtwork._id,
           versionId: foundArtwork.current._id,
           discountId: foundUser.discount._id,
-          paid: buyerTotal.intValue,
+          spent: buyerTotal.intValue,
           earned: sellerTotal.intValue,
           fee: platformTotal.intValue,
           licenses: licenses,
@@ -325,7 +325,7 @@ const createOrder = async (intent) => {
     newOrder.discount = discountId;
     newOrder.licenses = licenseIds;
     newOrder.review = null;
-    newOrder.paid = orderData.paid;
+    newOrder.spent = orderData.spent;
     newOrder.earned = orderData.earned;
     newOrder.fee = orderData.fee;
     newOrder.status = 'completed';
