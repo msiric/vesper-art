@@ -18,7 +18,6 @@ const DateRangePicker = ({
       endText={toLabel}
       value={selectedDate}
       onChange={(date) => handleChange(date)}
-      onAccept={handleApply}
       inputFormat="dd/MM/yyyy"
       renderInput={(startProps, endProps) => (
         <>

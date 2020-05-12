@@ -11,7 +11,7 @@ const OrderSchema = new Schema({
   licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }],
   discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
   review: { type: Schema.Types.ObjectId, ref: 'Review' },
-  paid: { type: Number, get: formatPrice },
+  spent: { type: Number, get: formatPrice },
   earned: { type: Number, get: formatPrice },
   fee: { type: Number, get: formatPrice },
   status: String,

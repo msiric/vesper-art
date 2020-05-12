@@ -39,31 +39,36 @@ const getUserProfile = async (req, res, next) => {
   }
 };
 
+const getUserStatistics = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const foundUser = await User.findOne({
+      $and: [{ _id: userId }, { active: true }],
+    }).deepPopulate(
+      'purchases.version purchases.licenses sales.version sales.licenses'
+    );
+    return res.json({ statistics: foundUser });
+  } catch (err) {
+    next(err, res);
+  }
+};
+
 const getUserSales = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const { from, to } = req.query;
-    const foundUser =
+    const foundOrders =
       from && to
-        ? await User.findOne({
+        ? await Order.find({
             $and: [
-              { _id: userId },
-              { active: true },
-              { created: { $lt: new Date(from), $gte: new Date(to) } },
+              { seller: userId },
+              { created: { $gte: new Date(from), $lt: new Date(to) } },
             ],
-          }).deepPopulate(
-            'purchases.review purchases.version purchases.licenses sales.review sales.version sales.licenses'
-          )
-        : await User.findOne({
-            $and: [{ _id: userId }, { active: true }],
-          }).deepPopulate(
-            'purchases.review purchases.version purchases.licenses sales.review sales.version sales.licenses'
-          );
-    if (foundUser) {
-      return res.json({ statistics: foundUser });
-    } else {
-      throw createError(400, 'User not found');
-    }
+          }).populate('review version licenses sales.review')
+        : await Order.find({
+            $and: [{ seller: userId }],
+          }).populate('review version licenses sales.review');
+    return res.json({ statistics: foundOrders });
   } catch (err) {
     next(err, res);
   }
@@ -72,16 +77,19 @@ const getUserSales = async (req, res, next) => {
 const getUserPurchases = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const foundUser = await User.findOne({
-      $and: [{ _id: userId }, { active: true }],
-    }).deepPopulate(
-      'purchases.review purchases.version purchases.licenses sales.review sales.version sales.licenses'
-    );
-    if (foundUser) {
-      return res.json({ statistics: foundUser });
-    } else {
-      throw createError(400, 'User not found');
-    }
+    const { from, to } = req.query;
+    const foundOrders =
+      from && to
+        ? await Order.find({
+            $and: [
+              { buyer: userId },
+              { created: { $gte: new Date(from), $lt: new Date(to) } },
+            ],
+          }).populate('review version licenses sales.review')
+        : await Order.find({
+            $and: [{ buyer: userId }],
+          }).populate('review version licenses sales.review');
+    return res.json({ statistics: foundOrders });
   } catch (err) {
     next(err, res);
   }
@@ -666,6 +674,7 @@ const deactivateUser = async (req, res, next) => {
 
 module.exports = {
   getUserProfile,
+  getUserStatistics,
   getUserSales,
   getUserPurchases,
   updateUserProfile,

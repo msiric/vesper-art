@@ -27,8 +27,12 @@ function Dashboard() {
     loading: false,
     currentStats: {},
     selectedStats: {},
-    display: 'purchases',
+    display: {
+      type: 'purchases',
+      label: 'spent',
+    },
     dates: [null, null],
+    visualization: false,
   });
 
   const theme = useTheme();
@@ -37,30 +41,16 @@ function Dashboard() {
   const fetchCurrentData = async () => {
     try {
       const { data } = await ax.get(`/api/user/${store.user.id}/statistics`);
-      const currentStats = {
-        ratings: 0,
-        reviews: 0,
-        review: 0,
-        orders: data.statistics.purchases.length,
-        spent: 0,
-        licenses: {
-          personal: 0,
-          commercial: 0,
-        },
-      };
       console.log(data);
-      data.statistics.purchases.map((purchase) => {
-        currentStats.ratings += purchase.rating ? purchase.rating : 0;
-        currentStats.reviews += purchase.rating ? 1 : 0;
-        currentStats.spent += purchase.paid;
-        purchase.licenses.map((license) => {
-          if (license.type === 'personal') currentStats.licenses.personal++;
-          else currentStats.licenses.commercial++;
-        });
-      });
-      currentStats.review = currentStats.reviews
-        ? currentStats.ratings / currentStats.reviews
-        : 0;
+      const currentStats = {
+        review: data.statistics.rating,
+        orders: data.statistics[state.display.type].length,
+        spent: data.statistics[state.display.type].length
+          ? data.statistics[state.display.type].reduce(
+              (a, b) => a + b[state.display.label]
+            )
+          : 0,
+      };
       setState((prevState) => ({ ...prevState, currentStats: currentStats }));
     } catch (err) {
       setState({ ...state, loading: false });
@@ -70,9 +60,30 @@ function Dashboard() {
   const fetchSelectedData = async (from, to) => {
     try {
       const { data } = await ax.get(
-        `/api/user/${store.user.id}/sales?from=${from}&to=${to}`
+        `/api/user/${store.user.id}/${[
+          state.display.type,
+        ]}?from=${from}&to=${to}`
       );
-      console.log(data);
+      const selectedStats = {
+        spent: data.statistics.length
+          ? data.statistics.reduce((a, b) => a + b[state.display.label])
+          : 0,
+        licenses: {
+          personal: 0,
+          commercial: 0,
+        },
+      };
+      data.statistics.map((item) => {
+        item.licenses.map((license) => {
+          if (license.type === 'personal') selectedStats.licenses.personal++;
+          else selectedStats.licenses.commercial++;
+        });
+      });
+      setState((prevState) => ({
+        ...prevState,
+        visualization: true,
+        selectedStats: selectedStats,
+      }));
     } catch (err) {
       setState({ ...state, loading: false });
     }
@@ -82,12 +93,8 @@ function Dashboard() {
     setState((prevState) => ({ ...prevState, dates: dates }));
   };
 
-  const handleDateApply = () => {
-    console.log(state.dates);
-    fetchSelectedData(
-      format(new Date(state.dates[0]), 'dd/MM/yyyy'),
-      format(new Date(state.dates[1]), 'dd/MM/yyyy')
-    );
+  const formatDate = (date) => {
+    return format(new Date(date), 'MM/dd/yyyy');
   };
 
   const data = [
@@ -148,8 +155,17 @@ function Dashboard() {
   ];
 
   useEffect(() => {
-    fetchCurrentData(state.dates);
+    fetchCurrentData();
   }, []);
+
+  useEffect(() => {
+    if (state.dates[0] && state.dates[1]) {
+      const dateFrom = formatDate(new Date(state.dates[0]));
+      const dateTo = formatDate(new Date(state.dates[1]));
+      console.log(dateFrom, dateTo);
+      fetchSelectedData(dateFrom, dateTo);
+    }
+  }, [state.dates]);
 
   return (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
@@ -216,13 +232,13 @@ function Dashboard() {
                 <Paper className={classes.box}>
                   <div className={classes.boxData}>
                     <Typography className={classes.boxMain}>
-                      ${state.currentStats.spent}
+                      ${state.currentStats[state.display.label]}
                     </Typography>
                     <Typography
                       className={classes.boxAlt}
                       color="textSecondary"
                     >
-                      {state.display === 'purchases' ? 'Spent' : 'Earned'}
+                      {state.display.label}
                     </Typography>
                   </div>
                   <Divider />
@@ -237,120 +253,123 @@ function Dashboard() {
                 <Paper className={classes.actions}>
                   <div className={classes.actionsContainer}>
                     <Typography className={classes.actionsHeading}>
-                      Visualization
+                      {state.visualization
+                        ? 'Visualization'
+                        : 'Select date range'}
                     </Typography>
                     <DateRangePicker
                       fromLabel="From"
                       toLabel="To"
                       selectedDate={state.dates}
                       handleChange={(dates) => handleDateChange(dates)}
-                      handleApply={handleDateApply}
                     />
                   </div>
                   <Divider />
-                  <div className={classes.graphArea}>
-                    <Grid item xs={12} md={8} className={classes.grid}>
-                      <div className={classes.graph}>
-                        <div className={classes.graphContainer}>
-                          <ResponsiveLine
-                            data={data}
-                            margin={{
-                              top: 50,
-                              right: 110,
-                              bottom: 50,
-                              left: 60,
-                            }}
-                            xScale={{ type: 'point' }}
-                            yScale={{
-                              type: 'linear',
-                              min: 0,
-                              max: 'auto',
-                              stacked: true,
-                              reverse: false,
-                            }}
-                            curve="natural"
-                            axisTop={null}
-                            axisRight={null}
-                            axisBottom={{
-                              orient: 'bottom',
-                              tickSize: 5,
-                              tickPadding: 15,
-                              tickRotation: 0,
-                              legend: '',
-                              legendOffset: 35,
-                              legendPosition: 'middle',
-                            }}
-                            axisLeft={{
-                              orient: 'left',
-                              tickSize: 5,
-                              tickPadding: 10,
-                              tickRotation: 0,
-                              legend: '',
-                              legendOffset: -45,
-                              legendPosition: 'middle',
-                            }}
-                            enableGridX={false}
-                            enableGridY={false}
-                            colors={{ scheme: 'nivo' }}
-                            pointSize={8}
-                            pointColor={{ theme: 'background' }}
-                            pointBorderWidth={2}
-                            pointBorderColor={{ from: 'serieColor' }}
-                            pointLabel="y"
-                            pointLabelYOffset={-12}
-                            enableArea={true}
-                            useMesh={true}
-                          />
+                  {state.visualization && (
+                    <div className={classes.graphArea}>
+                      <Grid item xs={12} md={8} className={classes.grid}>
+                        <div className={classes.graph}>
+                          <div className={classes.graphContainer}>
+                            <ResponsiveLine
+                              data={data}
+                              margin={{
+                                top: 50,
+                                right: 110,
+                                bottom: 50,
+                                left: 60,
+                              }}
+                              xScale={{ type: 'point' }}
+                              yScale={{
+                                type: 'linear',
+                                min: 0,
+                                max: 'auto',
+                                stacked: true,
+                                reverse: false,
+                              }}
+                              curve="natural"
+                              axisTop={null}
+                              axisRight={null}
+                              axisBottom={{
+                                orient: 'bottom',
+                                tickSize: 5,
+                                tickPadding: 15,
+                                tickRotation: 0,
+                                legend: '',
+                                legendOffset: 35,
+                                legendPosition: 'middle',
+                              }}
+                              axisLeft={{
+                                orient: 'left',
+                                tickSize: 5,
+                                tickPadding: 10,
+                                tickRotation: 0,
+                                legend: '',
+                                legendOffset: -45,
+                                legendPosition: 'middle',
+                              }}
+                              enableGridX={false}
+                              enableGridY={false}
+                              colors={{ scheme: 'nivo' }}
+                              pointSize={8}
+                              pointColor={{ theme: 'background' }}
+                              pointBorderWidth={2}
+                              pointBorderColor={{ from: 'serieColor' }}
+                              pointLabel="y"
+                              pointLabelYOffset={-12}
+                              enableArea={true}
+                              useMesh={true}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    </Grid>
-                    <Grid item xs={12} md={4} className={classes.grid}>
-                      <div className={classes.controls}>
-                        <Paper className={classes.item}>
-                          <div className={classes.itemData}>
-                            <Typography className={classes.itemMain}>
-                              4.3
-                            </Typography>
-                            <Typography
-                              className={classes.itemAlt}
-                              color="textSecondary"
-                            >
-                              Rating
-                            </Typography>
-                          </div>
-                          <Divider />
-                        </Paper>
-                        <Paper className={classes.item}>
-                          <div className={classes.itemData}>
-                            <Typography className={classes.itemMain}>
-                              7
-                            </Typography>
-                            <Typography
-                              className={classes.itemAlt}
-                              color="textSecondary"
-                            >
-                              Orders
-                            </Typography>
-                          </div>
-                          <Divider />
-                        </Paper>
-                        <Paper className={classes.item}>
-                          <div className={classes.itemData}>
-                            <Typography className={classes.itemMain}>
-                              $120
-                            </Typography>
-                            <Typography
-                              className={classes.itemAlt}
-                              color="textSecondary"
-                            >
-                              Earnings
-                            </Typography>
-                          </div>
-                          <Divider />
-                        </Paper>
-                      </div>
-                    </Grid>
-                  </div>
+                      </Grid>
+                      <Grid item xs={12} md={4} className={classes.grid}>
+                        <div className={classes.controls}>
+                          <Paper className={classes.item}>
+                            <div className={classes.itemData}>
+                              <Typography className={classes.itemMain}>
+                                ${state.selectedStats[state.display.label]}
+                              </Typography>
+                              <Typography
+                                className={classes.itemAlt}
+                                color="textSecondary"
+                              >
+                                {state.display.label}
+                              </Typography>
+                            </div>
+                            <Divider />
+                          </Paper>
+                          <Paper className={classes.item}>
+                            <div className={classes.itemData}>
+                              <Typography className={classes.itemMain}>
+                                {state.selectedStats.licenses.personal}
+                              </Typography>
+                              <Typography
+                                className={classes.itemAlt}
+                                color="textSecondary"
+                              >
+                                Personal licenses
+                              </Typography>
+                            </div>
+                            <Divider />
+                          </Paper>
+                          <Paper className={classes.item}>
+                            <div className={classes.itemData}>
+                              <Typography className={classes.itemMain}>
+                                {state.selectedStats.licenses.commercial}
+                              </Typography>
+                              <Typography
+                                className={classes.itemAlt}
+                                color="textSecondary"
+                              >
+                                Commercial licenses
+                              </Typography>
+                            </div>
+                            <Divider />
+                          </Paper>
+                        </div>
+                      </Grid>
+                    </div>
+                  )}
                 </Paper>
               </Grid>
             </>

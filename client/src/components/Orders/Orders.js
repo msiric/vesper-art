@@ -226,7 +226,7 @@ const Orders = () => {
 
                     <TableCell component="th" scope="row" align="right">
                       {state.display === 'purchases'
-                        ? `$${n.paid}`
+                        ? `$${n.spent}`
                         : `$${n.earned}`}
                     </TableCell>
 
