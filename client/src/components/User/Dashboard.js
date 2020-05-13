@@ -25,6 +25,28 @@ function Dashboard() {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: false,
+    graphData: [
+      {
+        id: 'personal',
+        color: 'hsl(348, 70%, 50%)',
+        data: [
+          {
+            x: 0,
+            y: 0,
+          },
+        ],
+      },
+      {
+        id: 'commercial',
+        color: 'hsl(348, 70%, 50%)',
+        data: [
+          {
+            x: 0,
+            y: 0,
+          },
+        ],
+      },
+    ],
     currentStats: {},
     selectedStats: {},
     display: {
@@ -73,14 +95,38 @@ function Dashboard() {
           commercial: 0,
         },
       };
+      const graphData = [
+        {
+          id: 'personal',
+          color: 'hsl(348, 70%, 50%)',
+          data: [],
+        },
+        {
+          id: 'commercial',
+          color: 'hsl(348, 70%, 50%)',
+          data: [],
+        },
+      ];
       data.statistics.map((item) => {
         item.licenses.map((license) => {
-          if (license.type === 'personal') selectedStats.licenses.personal++;
-          else selectedStats.licenses.commercial++;
+          if (license.type === 'personal') {
+            selectedStats.licenses.personal++;
+            graphData[0].data.push({
+              x: item.created,
+              y: `1 personal license`,
+            });
+          } else {
+            selectedStats.licenses.commercial++;
+            graphData[1].data.push({
+              x: item.created,
+              y: `1 commercial license`,
+            });
+          }
         });
       });
       setState((prevState) => ({
         ...prevState,
+        graphData: graphData,
         visualization: true,
         selectedStats: selectedStats,
       }));
@@ -93,66 +139,9 @@ function Dashboard() {
     setState((prevState) => ({ ...prevState, dates: dates }));
   };
 
-  const formatDate = (date) => {
-    return format(new Date(date), 'MM/dd/yyyy');
+  const formatDate = (date, type) => {
+    return format(new Date(date), type);
   };
-
-  const data = [
-    {
-      id: 'japan',
-      color: 'hsl(348, 70%, 50%)',
-      data: [
-        {
-          x: 'plane',
-          y: 84,
-        },
-        {
-          x: 'helicopter',
-          y: 102,
-        },
-        {
-          x: 'boat',
-          y: 128,
-        },
-        {
-          x: 'train',
-          y: 112,
-        },
-        {
-          x: 'subway',
-          y: 46,
-        },
-        {
-          x: 'bus',
-          y: 46,
-        },
-        {
-          x: 'car',
-          y: 146,
-        },
-        {
-          x: 'moto',
-          y: 59,
-        },
-        {
-          x: 'bicycle',
-          y: 41,
-        },
-        {
-          x: 'horse',
-          y: 284,
-        },
-        {
-          x: 'skateboard',
-          y: 143,
-        },
-        {
-          x: 'others',
-          y: 140,
-        },
-      ],
-    },
-  ];
 
   useEffect(() => {
     fetchCurrentData();
@@ -160,9 +149,8 @@ function Dashboard() {
 
   useEffect(() => {
     if (state.dates[0] && state.dates[1]) {
-      const dateFrom = formatDate(new Date(state.dates[0]));
-      const dateTo = formatDate(new Date(state.dates[1]));
-      console.log(dateFrom, dateTo);
+      const dateFrom = formatDate(new Date(state.dates[0]), 'MM/dd/yyyy');
+      const dateTo = formatDate(new Date(state.dates[1]), 'MM/dd/yyyy');
       fetchSelectedData(dateFrom, dateTo);
     }
   }, [state.dates]);
@@ -190,7 +178,7 @@ function Dashboard() {
                 <Paper className={classes.box}>
                   <div className={classes.boxData}>
                     <Typography className={classes.boxMain}>
-                      {state.currentStats.review}
+                      {state.currentStats.review || 'No reviews'}
                     </Typography>
                     <Typography
                       className={classes.boxAlt}
@@ -271,7 +259,7 @@ function Dashboard() {
                         <div className={classes.graph}>
                           <div className={classes.graphContainer}>
                             <ResponsiveLine
-                              data={data}
+                              data={state.graphData}
                               margin={{
                                 top: 50,
                                 right: 110,
