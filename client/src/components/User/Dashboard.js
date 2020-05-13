@@ -16,7 +16,15 @@ import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker';
 import { LocalizationProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
 import { format } from 'date-fns';
-import { ResponsiveLine } from '@nivo/line';
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+} from 'recharts';
 import { useTheme } from '@material-ui/core/styles';
 import ax from '../../axios.config';
 import DashboardStyles from './Dashboard.style';
@@ -27,24 +35,9 @@ function Dashboard() {
     loading: false,
     graphData: [
       {
-        id: 'personal',
-        color: 'hsl(348, 70%, 50%)',
-        data: [
-          {
-            x: 0,
-            y: 0,
-          },
-        ],
-      },
-      {
-        id: 'commercial',
-        color: 'hsl(348, 70%, 50%)',
-        data: [
-          {
-            x: 0,
-            y: 0,
-          },
-        ],
+        date: null,
+        pl: 4000,
+        cl: 2400,
       },
     ],
     currentStats: {},
@@ -63,13 +56,13 @@ function Dashboard() {
   const fetchCurrentData = async () => {
     try {
       const { data } = await ax.get(`/api/user/${store.user.id}/statistics`);
-      console.log(data);
       const currentStats = {
         review: data.statistics.rating,
         orders: data.statistics[state.display.type].length,
         spent: data.statistics[state.display.type].length
           ? data.statistics[state.display.type].reduce(
-              (a, b) => a + b[state.display.label]
+              (a, b) => a + b[state.display.label],
+              0
             )
           : 0,
       };
@@ -88,38 +81,27 @@ function Dashboard() {
       );
       const selectedStats = {
         spent: data.statistics.length
-          ? data.statistics.reduce((a, b) => a + b[state.display.label])
+          ? data.statistics.reduce((a, b) => a + b[state.display.label], 0)
           : 0,
         licenses: {
           personal: 0,
           commercial: 0,
         },
       };
-      const graphData = [
-        {
-          id: 'personal',
-          color: 'hsl(348, 70%, 50%)',
-          data: [],
-        },
-        {
-          id: 'commercial',
-          color: 'hsl(348, 70%, 50%)',
-          data: [],
-        },
-      ];
+      const graphData = [];
       data.statistics.map((item) => {
         item.licenses.map((license) => {
           if (license.type === 'personal') {
             selectedStats.licenses.personal++;
-            graphData[0].data.push({
-              x: item.created,
-              y: `1 personal license`,
+            graphData.push({
+              date: formatDate(item.created, 'dd/MM/yyyy'),
+              pl: 1,
             });
           } else {
             selectedStats.licenses.commercial++;
-            graphData[1].data.push({
-              x: item.created,
-              y: `1 commercial license`,
+            graphData.push({
+              date: formatDate(item.created, 'dd/MM/yyyy'),
+              cl: 1,
             });
           }
         });
@@ -258,55 +240,35 @@ function Dashboard() {
                       <Grid item xs={12} md={8} className={classes.grid}>
                         <div className={classes.graph}>
                           <div className={classes.graphContainer}>
-                            <ResponsiveLine
+                            <LineChart
+                              width={730}
+                              height={400}
                               data={state.graphData}
                               margin={{
-                                top: 50,
-                                right: 110,
-                                bottom: 50,
-                                left: 60,
+                                top: 5,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
                               }}
-                              xScale={{ type: 'point' }}
-                              yScale={{
-                                type: 'linear',
-                                min: 0,
-                                max: 'auto',
-                                stacked: true,
-                                reverse: false,
-                              }}
-                              curve="natural"
-                              axisTop={null}
-                              axisRight={null}
-                              axisBottom={{
-                                orient: 'bottom',
-                                tickSize: 5,
-                                tickPadding: 15,
-                                tickRotation: 0,
-                                legend: '',
-                                legendOffset: 35,
-                                legendPosition: 'middle',
-                              }}
-                              axisLeft={{
-                                orient: 'left',
-                                tickSize: 5,
-                                tickPadding: 10,
-                                tickRotation: 0,
-                                legend: '',
-                                legendOffset: -45,
-                                legendPosition: 'middle',
-                              }}
-                              enableGridX={false}
-                              enableGridY={false}
-                              colors={{ scheme: 'nivo' }}
-                              pointSize={8}
-                              pointColor={{ theme: 'background' }}
-                              pointBorderWidth={2}
-                              pointBorderColor={{ from: 'serieColor' }}
-                              pointLabel="y"
-                              pointLabelYOffset={-12}
-                              enableArea={true}
-                              useMesh={true}
-                            />
+                            >
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="date" />
+                              <YAxis allowDecimals={false} />
+                              <Tooltip />
+                              <Legend />
+                              <Line
+                                name="Personal licenses"
+                                type="monotone"
+                                dataKey="pl"
+                                stroke="#8884d8"
+                              />
+                              <Line
+                                name="Commercial licenses"
+                                type="monotone"
+                                dataKey="cl"
+                                stroke="#82ca9d"
+                              />
+                            </LineChart>
                           </div>
                         </div>
                       </Grid>
