@@ -64,6 +64,8 @@ const Login = () => {
             object[item] = true;
             return object;
           }, {}),
+          stripeId: data.user.stripeId,
+          country: data.user.country,
           cartSize: Object.keys(data.user.cart).length,
         });
       }

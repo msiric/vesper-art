@@ -65,6 +65,9 @@ const Header = () => {
         credentials: 'include',
       },
     });
+    dispatch({
+      type: 'resetUser',
+    });
     window.accessToken = data.accessToken;
     handleMenuClose();
     history.push('/login');
