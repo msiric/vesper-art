@@ -76,7 +76,7 @@ const getUserSales = async (req, res, next) => {
         : await Order.find({
             $and: [{ seller: userId }],
           }).populate('review version licenses sales.review');
-    return res.json({ statistics: foundOrders, amount: amount });
+    return res.json({ statistics: foundOrders });
   } catch (err) {
     next(err, res);
   }

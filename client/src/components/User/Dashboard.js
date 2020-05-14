@@ -11,11 +11,15 @@ import {
   Divider,
   Typography,
   TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@material-ui/core';
 import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker';
 import { LocalizationProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
-import { format, eachDayOfInterval } from 'date-fns';
+import { format, eachDayOfInterval, subDays } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import NumberFormat from 'react-number-format';
 import { useTheme } from '@material-ui/core/styles';
@@ -39,7 +43,7 @@ function Dashboard() {
       type: 'purchases',
       label: 'spent',
     },
-    dates: [null, null],
+    dates: [new Date(subDays(new Date(), 7)), new Date()],
     visualization: false,
   });
 
@@ -50,12 +54,15 @@ function Dashboard() {
       const { data } = await ax.get(`/api/user/${store.user.id}/statistics`);
       const currentStats = {
         review: data.statistics.rating,
+        licenses: data.statistics.purchases
+          .map((item) => item.licenses.length)
+          .reduce((a, b) => a + b, 0),
         orders: data.statistics[state.display.type].length,
-        spent: data.statistics[state.display.type].length
-          ? data.statistics[state.display.type].reduce(
-              (a, b) => a + b[state.display.label],
-              0
-            )
+        spent: data.statistics.purchases.length
+          ? data.statistics.purchases.reduce((a, b) => a + b.spent, 0)
+          : 0,
+        earned: data.statistics.sales.length
+          ? data.statistics.sales.reduce((a, b) => a + b.earned, 0)
           : 0,
       };
       setState((prevState) => ({
@@ -70,13 +77,14 @@ function Dashboard() {
 
   const fetchSelectedData = async (from, to) => {
     try {
+      setState({ ...state, loading: true });
       const { data } = await ax.get(
         `/api/user/${store.user.id}/${[
           state.display.type,
         ]}?from=${from}&to=${to}`
       );
       const selectedStats = {
-        spent: data.statistics.length
+        [state.display.label]: data.statistics.length
           ? data.statistics.reduce((a, b) => a + b[state.display.label], 0)
           : 0,
         licenses: {
@@ -85,8 +93,8 @@ function Dashboard() {
         },
       };
       const datesArray = eachDayOfInterval({
-        start: new Date(formatDate(from, 'yyyy, MM, dd')),
-        end: new Date(formatDate(to, 'yyyy, MM, dd')),
+        start: new Date(from),
+        end: new Date(to),
       });
       const graphData = {};
       for (let date of datesArray) {
@@ -136,10 +144,21 @@ function Dashboard() {
         graphData: formattedGraphData,
         visualization: true,
         selectedStats: selectedStats,
+        loading: false,
       }));
     } catch (err) {
       setState({ ...state, loading: false });
     }
+  };
+
+  const handleSelectChange = (e) => {
+    setState((prevState) => ({
+      ...prevState,
+      display: {
+        type: e.target.value,
+        label: e.target.value === 'purchases' ? 'spent' : 'earned',
+      },
+    }));
   };
 
   const handleDateChange = (dates) => {
@@ -160,7 +179,7 @@ function Dashboard() {
       const dateTo = formatDate(new Date(state.dates[1]), 'MM/dd/yyyy');
       fetchSelectedData(dateFrom, dateTo);
     }
-  }, [state.dates]);
+  }, [state.dates, state.display.type]);
 
   return (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
@@ -177,11 +196,44 @@ function Dashboard() {
               </div>
             </Grid>
             <Grid item xs={12} md={4} className={classes.grid}>
+              <div className="flex items-center">
+                <Typography
+                  className="hidden sm:flex mx-0 sm:mx-12 capitalize"
+                  variant="h6"
+                >
+                  {state.display.type}
+                </Typography>
+                <FormControl variant="outlined" className={classes.formControl}>
+                  <InputLabel id="data-display">Displayed data</InputLabel>
+                  <Select
+                    labelId="data-display"
+                    value={state.display.type}
+                    onChange={handleSelectChange}
+                    label="Displayed data"
+                    margin="dense"
+                  >
+                    <MenuItem value="purchases">Purchases</MenuItem>
+                    <MenuItem value="sales">Sales</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
               <Paper className={classes.box}>
                 {state.loading ? (
                   <Grid item xs={12} className={classes.loader}>
                     <CircularProgress />
                   </Grid>
+                ) : state.display.type === 'purchases' ? (
+                  <div className={classes.boxData}>
+                    <Typography className={classes.boxMain}>
+                      {state.currentStats.licenses}
+                    </Typography>
+                    <Typography
+                      className={classes.boxAlt}
+                      color="textSecondary"
+                    >
+                      Licenses
+                    </Typography>
+                  </div>
                 ) : (
                   <div className={classes.boxData}>
                     <Typography className={classes.boxMain}>
@@ -284,91 +336,117 @@ function Dashboard() {
                     <Grid item xs={12} md={8} className={classes.grid}>
                       <div className={classes.graph}>
                         <div className={classes.graphContainer}>
-                          <LineChart
-                            width={730}
-                            height={400}
-                            data={state.graphData}
-                            margin={{
-                              top: 5,
-                              right: 30,
-                              left: 20,
-                              bottom: 5,
-                            }}
-                          >
-                            <XAxis dataKey="date" />
-                            <YAxis
-                              allowDecimals={false}
-                              domain={['dataMin', 'dataMax']}
-                            />
-                            <Tooltip />
-                            <Legend />
-                            <Line
-                              name="Personal licenses"
-                              type="monotone"
-                              dataKey="pl"
-                              stroke="#8884d8"
-                              activeDot={{ r: 6 }}
-                            />
-                            <Line
-                              name="Commercial licenses"
-                              type="monotone"
-                              dataKey="cl"
-                              stroke="#82ca9d"
-                              activeDot={{ r: 6 }}
-                            />
-                          </LineChart>
+                          {state.loading ? (
+                            <Grid item xs={12} className={classes.loader}>
+                              <CircularProgress />
+                            </Grid>
+                          ) : (
+                            <LineChart
+                              width={730}
+                              height={400}
+                              data={state.graphData}
+                              margin={{
+                                top: 5,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                              }}
+                            >
+                              <XAxis dataKey="date" />
+                              <YAxis
+                                allowDecimals={false}
+                                domain={['dataMin', 'dataMax']}
+                              />
+                              <Tooltip />
+                              <Legend />
+                              <Line
+                                name="Personal licenses"
+                                type="monotone"
+                                dataKey="pl"
+                                stroke="#8884d8"
+                                activeDot={{ r: 6 }}
+                              />
+                              <Line
+                                name="Commercial licenses"
+                                type="monotone"
+                                dataKey="cl"
+                                stroke="#82ca9d"
+                                activeDot={{ r: 6 }}
+                              />
+                            </LineChart>
+                          )}
                         </div>
                       </div>
                     </Grid>
                     <Grid item xs={12} md={4} className={classes.grid}>
                       <div className={classes.controls}>
                         <Paper className={classes.item}>
-                          <div className={classes.itemData}>
-                            <Typography className={classes.itemMain}>
-                              <NumberFormat
-                                value={state.selectedStats[state.display.label]}
-                                displayType={'text'}
-                                thousandSeparator={true}
-                                decimalScale={2}
-                                decimalScale={2}
-                                prefix={'$'}
-                              />
-                            </Typography>
-                            <Typography
-                              className={classes.itemAlt}
-                              color="textSecondary"
-                            >
-                              {state.display.label}
-                            </Typography>
-                          </div>
+                          {state.loading ? (
+                            <Grid item xs={12} className={classes.loader}>
+                              <CircularProgress />
+                            </Grid>
+                          ) : (
+                            <div className={classes.itemData}>
+                              <Typography className={classes.itemMain}>
+                                <NumberFormat
+                                  value={
+                                    state.selectedStats[state.display.label]
+                                  }
+                                  displayType={'text'}
+                                  thousandSeparator={true}
+                                  decimalScale={2}
+                                  decimalScale={2}
+                                  prefix={'$'}
+                                />
+                              </Typography>
+                              <Typography
+                                className={classes.itemAlt}
+                                color="textSecondary"
+                              >
+                                {state.display.label}
+                              </Typography>
+                            </div>
+                          )}
                           <Divider />
                         </Paper>
                         <Paper className={classes.item}>
-                          <div className={classes.itemData}>
-                            <Typography className={classes.itemMain}>
-                              {state.selectedStats.licenses.personal}
-                            </Typography>
-                            <Typography
-                              className={classes.itemAlt}
-                              color="textSecondary"
-                            >
-                              Personal licenses
-                            </Typography>
-                          </div>
+                          {state.loading ? (
+                            <Grid item xs={12} className={classes.loader}>
+                              <CircularProgress />
+                            </Grid>
+                          ) : (
+                            <div className={classes.itemData}>
+                              <Typography className={classes.itemMain}>
+                                {state.selectedStats.licenses.personal}
+                              </Typography>
+                              <Typography
+                                className={classes.itemAlt}
+                                color="textSecondary"
+                              >
+                                Personal licenses
+                              </Typography>
+                            </div>
+                          )}
                           <Divider />
                         </Paper>
                         <Paper className={classes.item}>
-                          <div className={classes.itemData}>
-                            <Typography className={classes.itemMain}>
-                              {state.selectedStats.licenses.commercial}
-                            </Typography>
-                            <Typography
-                              className={classes.itemAlt}
-                              color="textSecondary"
-                            >
-                              Commercial licenses
-                            </Typography>
-                          </div>
+                          {state.loading ? (
+                            <Grid item xs={12} className={classes.loader}>
+                              <CircularProgress />
+                            </Grid>
+                          ) : (
+                            <div className={classes.itemData}>
+                              <Typography className={classes.itemMain}>
+                                {state.selectedStats.licenses.commercial}
+                              </Typography>
+                              <Typography
+                                className={classes.itemAlt}
+                                color="textSecondary"
+                              >
+                                Commercial licenses
+                              </Typography>
+                            </div>
+                          )}
                           <Divider />
                         </Paper>
                       </div>
