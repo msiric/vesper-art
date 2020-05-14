@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import { useHistory } from 'react-router-dom';
 import { useFormik } from 'formik';
@@ -100,9 +100,26 @@ const validationSchema = Yup.object().shape({
 
 const AddArtwork = () => {
   const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({
+    loading: true,
+    capabilities: {},
+  });
   const history = useHistory();
 
   const classes = AddArtworkStyles();
+
+  const fetchAccount = async () => {
+    try {
+      const { data } = await ax.get(`/stripe/account/${store.user.stripeId}`);
+      setState({ ...state, loading: false, capabilities: data.capabilities });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
+
+  useEffect(() => {
+    if (store.user.stripeId) fetchAccount();
+  }, []);
 
   const {
     setFieldValue,
@@ -158,6 +175,9 @@ const AddArtwork = () => {
             </Typography>
             {!store.user.stripeId
               ? 'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
+              : state.capabilities.cardPayments !== 'active' ||
+                state.capabilities.platformPayments !== 'active'
+              ? 'To make your artwork commercially available, complete your Stripe account information'
               : null}
             <CardContent>
               <UploadInput name="artworkMedia" setFieldValue={setFieldValue} />
@@ -207,7 +227,12 @@ const AddArtwork = () => {
                     {
                       value: 'commercial',
                       text: 'Commercial',
-                      disabled: store.user.stripeId ? false : true,
+                      disabled:
+                        store.user.stripeId &&
+                        state.capabilities.cardPayments === 'active' &&
+                        state.capabilities.platformPayments === 'active'
+                          ? false
+                          : true,
                     },
                     { value: 'free', text: 'Free' },
                   ]}
@@ -267,7 +292,12 @@ const AddArtwork = () => {
                       {
                         value: 'separate',
                         text: 'Charge commercial license separately',
-                        disabled: store.user.stripeId ? false : true,
+                        disabled:
+                          store.user.stripeId &&
+                          state.capabilities.cardPayments === 'active' &&
+                          state.capabilities.platformPayments === 'active'
+                            ? false
+                            : true,
                       },
                       values.artworkAvailability && values.artworkType
                         ? {

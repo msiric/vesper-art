@@ -6,7 +6,7 @@ const createAccessToken = (user) => {
     {
       id: user.id,
       name: user.name,
-      stripeId: user.stripeId,
+      onboarded: user.onboarded,
       jwtVersion: user.jwtVersion,
       active: user.active,
     },
@@ -45,7 +45,7 @@ const updateAccessToken = async (req, res, next) => {
     id: foundUser._id,
     name: foundUser.name,
     jwtVersion: foundUser.jwtVersion,
-    stripeId: foundUser.stripeId,
+    onboarded: !!foundUser.stripeId,
     active: foundUser.active,
   };
 

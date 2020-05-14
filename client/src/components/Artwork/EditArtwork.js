@@ -107,15 +107,28 @@ const EditArtwork = ({ match }) => {
     loading: true,
     isDeleting: false,
     artwork: {},
+    capabilities: {},
   });
   const history = useHistory();
 
   const classes = EditArtworkStyles();
 
-  const fetchArtwork = async () => {
+  const fetchData = async () => {
     try {
-      const { data } = await ax.get(`/api/edit_artwork/${match.params.id}`);
-      setState({ ...state, loading: false, artwork: data.artwork });
+      const {
+        data: { artwork },
+      } = await ax.get(`/api/edit_artwork/${match.params.id}`);
+      const {
+        data: { capabilities },
+      } = store.user.stripeId
+        ? await ax.get(`/stripe/account/${store.user.stripeId}`)
+        : { data: { capabilities: {} } };
+      setState({
+        ...state,
+        loading: false,
+        artwork: artwork,
+        capabilities: capabilities,
+      });
     } catch (err) {
       setState({ ...state, loading: false });
     }
@@ -135,7 +148,7 @@ const EditArtwork = ({ match }) => {
   };
 
   useEffect(() => {
-    fetchArtwork();
+    fetchData();
   }, []);
 
   const {
@@ -198,6 +211,9 @@ const EditArtwork = ({ match }) => {
               </Typography>
               {!store.user.stripeId
                 ? 'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
+                : state.capabilities.cardPayments !== 'active' ||
+                  state.capabilities.platformPayments !== 'active'
+                ? 'To make your artwork commercially available, complete your Stripe account information'
                 : null}
               <CardContent>
                 <UploadInput
@@ -252,7 +268,12 @@ const EditArtwork = ({ match }) => {
                       {
                         value: 'commercial',
                         text: 'Commercial',
-                        disabled: store.user.stripeId ? false : true,
+                        disabled:
+                          store.user.stripeId &&
+                          state.capabilities.cardPayments === 'active' &&
+                          state.capabilities.platformPayments === 'active'
+                            ? false
+                            : true,
                       },
                       { value: 'free', text: 'Free' },
                     ]}
@@ -313,7 +334,12 @@ const EditArtwork = ({ match }) => {
                         {
                           value: 'separate',
                           text: 'Charge commercial license separately',
-                          disabled: store.user.stripeId ? false : true,
+                          disabled:
+                            store.user.stripeId &&
+                            state.capabilities.cardPayments === 'active' &&
+                            state.capabilities.platformPayments === 'active'
+                              ? false
+                              : true,
                         },
                         values.artworkAvailability && values.artworkType
                           ? {

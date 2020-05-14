@@ -40,6 +40,24 @@ const receiveWebhookEvent = async (req, res, next) => {
   }
 };
 
+const getStripeUser = async (req, res, next) => {
+  try {
+    const { accountId } = req.params;
+
+    const foundAccount = await stripe.accounts.retrieve(accountId);
+
+    res.status(200).json({
+      capabilities: {
+        cardPayments: foundAccount.capabilities.card_payments,
+        platformPayments: foundAccount.capabilities.platform_payments,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    next(err, res);
+  }
+};
+
 const managePaymentIntent = async (req, res, next) => {
   try {
     const { artworkId } = req.params;
@@ -143,13 +161,13 @@ const managePaymentIntent = async (req, res, next) => {
 const redirectToStripe = async (req, res, next) => {
   try {
     const user = res.locals.user;
-    if (!user.stripeId) {
+    if (!user.onboarded) {
       throw createError(
         400,
         'You need to complete the onboarding process before accessing your Stripe dashboard'
       );
     }
-    const loginLink = await stripe.accounts.createLoginLink(user.stripeId, {
+    const loginLink = await stripe.accounts.createLoginLink(user.onboarded, {
       redirect_url: `${config.server.serverDomain}/stripe/dashboard`,
     });
     if (req.query.account) {
@@ -353,6 +371,7 @@ const createOrder = async (intent) => {
 
 module.exports = {
   receiveWebhookEvent,
+  getStripeUser,
   managePaymentIntent,
   redirectToStripe,
   onboardUser,
