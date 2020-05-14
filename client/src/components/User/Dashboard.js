@@ -15,16 +15,9 @@ import {
 import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker';
 import { LocalizationProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
-import { format } from 'date-fns';
-import {
-  LineChart,
-  Line,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-} from 'recharts';
+import { format, eachDayOfInterval } from 'date-fns';
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import NumberFormat from 'react-number-format';
 import { useTheme } from '@material-ui/core/styles';
 import ax from '../../axios.config';
 import DashboardStyles from './Dashboard.style';
@@ -91,27 +84,56 @@ function Dashboard() {
           commercial: 0,
         },
       };
-      const graphData = [];
+      const datesArray = eachDayOfInterval({
+        start: new Date(formatDate(from, 'yyyy, MM, dd')),
+        end: new Date(formatDate(to, 'yyyy, MM, dd')),
+      });
+      const graphData = {};
+      for (let date of datesArray) {
+        graphData[formatDate(date, 'dd/MM/yyyy')] = {
+          pl: 0,
+          cl: 0,
+        };
+      }
       data.statistics.map((item) => {
         item.licenses.map((license) => {
           if (license.type === 'personal') {
             selectedStats.licenses.personal++;
-            graphData.push({
-              date: formatDate(item.created, 'dd/MM/yyyy'),
-              pl: 1,
-            });
+            if (graphData[formatDate(item.created, 'dd/MM/yyyy')]) {
+              graphData[formatDate(item.created, 'dd/MM/yyyy')] = {
+                ...graphData[formatDate(item.created, 'dd/MM/yyyy')],
+                pl: graphData[formatDate(item.created, 'dd/MM/yyyy')].pl + 1,
+              };
+            } else {
+              graphData.push({
+                date: formatDate(item.created, 'dd/MM/yyyy'),
+                pl: 1,
+              });
+            }
           } else {
             selectedStats.licenses.commercial++;
-            graphData.push({
-              date: formatDate(item.created, 'dd/MM/yyyy'),
-              cl: 1,
-            });
+            if (graphData[formatDate(item.created, 'dd/MM/yyyy')]) {
+              graphData[formatDate(item.created, 'dd/MM/yyyy')] = {
+                ...graphData[formatDate(item.created, 'dd/MM/yyyy')],
+                cl: graphData[formatDate(item.created, 'dd/MM/yyyy')].cl + 1,
+              };
+            } else {
+              graphData.push({
+                date: formatDate(item.created, 'dd/MM/yyyy'),
+                cl: 1,
+              });
+            }
           }
         });
       });
+      const formattedGraphData = Object.entries(graphData).map((item) => ({
+        date: item[0],
+        pl: item[1].pl,
+        cl: item[1].cl,
+      }));
       setState((prevState) => ({
         ...prevState,
-        graphData: graphData,
+        graphData: formattedGraphData,
         visualization: true,
         selectedStats: selectedStats,
       }));
@@ -217,7 +239,13 @@ function Dashboard() {
                 ) : (
                   <div className={classes.boxData}>
                     <Typography className={classes.boxMain}>
-                      ${state.currentStats[state.display.label]}
+                      <NumberFormat
+                        value={state.currentStats[state.display.label]}
+                        displayType={'text'}
+                        thousandSeparator={true}
+                        decimalScale={2}
+                        prefix={'$'}
+                      />
                     </Typography>
                     <Typography
                       className={classes.boxAlt}
@@ -267,9 +295,11 @@ function Dashboard() {
                               bottom: 5,
                             }}
                           >
-                            <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="date" />
-                            <YAxis allowDecimals={false} />
+                            <YAxis
+                              allowDecimals={false}
+                              domain={['dataMin', 'dataMax']}
+                            />
                             <Tooltip />
                             <Legend />
                             <Line
@@ -277,12 +307,14 @@ function Dashboard() {
                               type="monotone"
                               dataKey="pl"
                               stroke="#8884d8"
+                              activeDot={{ r: 6 }}
                             />
                             <Line
                               name="Commercial licenses"
                               type="monotone"
                               dataKey="cl"
                               stroke="#82ca9d"
+                              activeDot={{ r: 6 }}
                             />
                           </LineChart>
                         </div>
@@ -293,7 +325,14 @@ function Dashboard() {
                         <Paper className={classes.item}>
                           <div className={classes.itemData}>
                             <Typography className={classes.itemMain}>
-                              ${state.selectedStats[state.display.label]}
+                              <NumberFormat
+                                value={state.selectedStats[state.display.label]}
+                                displayType={'text'}
+                                thousandSeparator={true}
+                                decimalScale={2}
+                                decimalScale={2}
+                                prefix={'$'}
+                              />
                             </Typography>
                             <Typography
                               className={classes.itemAlt}

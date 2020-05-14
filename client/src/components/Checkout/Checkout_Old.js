@@ -200,6 +200,7 @@ const Checkout = () => {
                                           value={personalLicenses.total}
                                           displayType={'text'}
                                           thousandSeparator={true}
+                                          decimalScale={2}
                                           prefix={'$'}
                                         />
                                       ) : (
@@ -214,6 +215,7 @@ const Checkout = () => {
                                           value={commercialLicenses.total}
                                           displayType={'text'}
                                           thousandSeparator={true}
+                                          decimalScale={2}
                                           prefix={'$'}
                                         />
                                       ) : (
@@ -266,6 +268,7 @@ const Checkout = () => {
                                       value={licenses.current.personal.amount}
                                       displayType={'text'}
                                       thousandSeparator={true}
+                                      decimalScale={2}
                                       prefix={'$'}
                                     />
                                   ) : (
@@ -280,6 +283,7 @@ const Checkout = () => {
                                       value={licenses.current.commercial.amount}
                                       displayType={'text'}
                                       thousandSeparator={true}
+                                      decimalScale={2}
                                       prefix={'$'}
                                     />
                                   ) : (
@@ -322,6 +326,7 @@ const Checkout = () => {
                                       ).toFixed(2)}
                                       displayType={'text'}
                                       thousandSeparator={true}
+                                      decimalScale={2}
                                       prefix={'- $'}
                                     />
                                   </Typography>
@@ -375,6 +380,7 @@ const Checkout = () => {
                                     }
                                     displayType={'text'}
                                     thousandSeparator={true}
+                                    decimalScale={2}
                                     prefix={'$'}
                                   />
                                 ) : (
@@ -389,6 +395,7 @@ const Checkout = () => {
                                   }
                                   displayType={'text'}
                                   thousandSeparator={true}
+                                  decimalScale={2}
                                   prefix={'$'}
                                 />
                               ) : (

@@ -301,6 +301,7 @@ const Cart = () => {
                                         value={personalLicenses.total}
                                         displayType={'text'}
                                         thousandSeparator={true}
+                                        decimalScale={2}
                                         prefix={'$'}
                                       />
                                     ) : (
@@ -315,6 +316,7 @@ const Cart = () => {
                                         value={commercialLicenses.total}
                                         displayType={'text'}
                                         thousandSeparator={true}
+                                        decimalScale={2}
                                         prefix={'$'}
                                       />
                                     ) : (
@@ -367,6 +369,7 @@ const Cart = () => {
                                     value={licenses.current.personal.amount}
                                     displayType={'text'}
                                     thousandSeparator={true}
+                                    decimalScale={2}
                                     prefix={'$'}
                                   />
                                 ) : (
@@ -381,6 +384,7 @@ const Cart = () => {
                                     value={licenses.current.commercial.amount}
                                     displayType={'text'}
                                     thousandSeparator={true}
+                                    decimalScale={2}
                                     prefix={'$'}
                                   />
                                 ) : (
@@ -434,6 +438,7 @@ const Cart = () => {
                                 }
                                 displayType={'text'}
                                 thousandSeparator={true}
+                                decimalScale={2}
                                 prefix={'$'}
                               />
                             ) : (
