@@ -32,7 +32,7 @@ import DashboardStyles from './Dashboard.style';
 function Dashboard() {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
-    loading: false,
+    loading: true,
     graphData: [
       {
         date: null,
@@ -50,7 +50,6 @@ function Dashboard() {
     visualization: false,
   });
 
-  const theme = useTheme();
   const classes = DashboardStyles();
 
   const fetchCurrentData = async () => {
@@ -66,7 +65,11 @@ function Dashboard() {
             )
           : 0,
       };
-      setState((prevState) => ({ ...prevState, currentStats: currentStats }));
+      setState((prevState) => ({
+        ...prevState,
+        currentStats: currentStats,
+        loading: false,
+      }));
     } catch (err) {
       setState({ ...state, loading: false });
     }
@@ -141,23 +144,23 @@ function Dashboard() {
     <LocalizationProvider dateAdapter={DateFnsUtils}>
       <Container fixed className={classes.fixed}>
         <Grid container className={classes.container} spacing={2}>
-          {state.loading ? (
-            <Grid item xs={12} className={classes.loader}>
-              <CircularProgress />
-            </Grid>
-          ) : (
-            <>
-              <Grid item xs={12} md={12} className={classes.grid}>
-                <div className={classes.header}>
-                  <div className={classes.headerContent}>
-                    <Typography className={classes.heading} variant="h4">
-                      {store.user.name}
-                    </Typography>
-                  </div>
+          <>
+            <Grid item xs={12} md={12} className={classes.grid}>
+              <div className={classes.header}>
+                <div className={classes.headerContent}>
+                  <Typography className={classes.heading} variant="h4">
+                    {store.user.name}
+                  </Typography>
                 </div>
-              </Grid>
-              <Grid item xs={12} md={4} className={classes.grid}>
-                <Paper className={classes.box}>
+              </div>
+            </Grid>
+            <Grid item xs={12} md={4} className={classes.grid}>
+              <Paper className={classes.box}>
+                {state.loading ? (
+                  <Grid item xs={12} className={classes.loader}>
+                    <CircularProgress />
+                  </Grid>
+                ) : (
                   <div className={classes.boxData}>
                     <Typography className={classes.boxMain}>
                       {state.currentStats.review || 'No reviews'}
@@ -169,16 +172,22 @@ function Dashboard() {
                       Rating
                     </Typography>
                   </div>
-                  <Divider />
-                  <div className={classes.boxFooter}>
-                    <Typography className={classes.text} color="textSecondary">
-                      <span>WAT</span>:<b className={classes.count}>C</b>
-                    </Typography>
-                  </div>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={4} className={classes.grid}>
-                <Paper className={classes.box}>
+                )}
+                <Divider />
+                <div className={classes.boxFooter}>
+                  <Typography className={classes.text} color="textSecondary">
+                    <span>WAT</span>:<b className={classes.count}>C</b>
+                  </Typography>
+                </div>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={4} className={classes.grid}>
+              <Paper className={classes.box}>
+                {state.loading ? (
+                  <Grid item xs={12} className={classes.loader}>
+                    <CircularProgress />
+                  </Grid>
+                ) : (
                   <div className={classes.boxData}>
                     <Typography className={classes.boxMain}>
                       {state.currentStats.orders}
@@ -190,16 +199,22 @@ function Dashboard() {
                       Orders
                     </Typography>
                   </div>
-                  <Divider />
-                  <div className={classes.boxFooter}>
-                    <Typography className={classes.text} color="textSecondary">
-                      <span>WAT</span>:<b className={classes.count}>C</b>
-                    </Typography>
-                  </div>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={4} className={classes.grid}>
-                <Paper className={classes.box}>
+                )}
+                <Divider />
+                <div className={classes.boxFooter}>
+                  <Typography className={classes.text} color="textSecondary">
+                    <span>WAT</span>:<b className={classes.count}>C</b>
+                  </Typography>
+                </div>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={4} className={classes.grid}>
+              <Paper className={classes.box}>
+                {state.loading ? (
+                  <Grid item xs={12} className={classes.loader}>
+                    <CircularProgress />
+                  </Grid>
+                ) : (
                   <div className={classes.boxData}>
                     <Typography className={classes.boxMain}>
                       ${state.currentStats[state.display.label]}
@@ -211,119 +226,119 @@ function Dashboard() {
                       {state.display.label}
                     </Typography>
                   </div>
-                  <Divider />
-                  <div className={classes.boxFooter}>
-                    <Typography className={classes.text} color="textSecondary">
-                      <span>WAT</span>:<b className={classes.count}>C</b>
-                    </Typography>
-                  </div>
-                </Paper>
-              </Grid>
-              <Grid item md={12} className={classes.grid}>
-                <Paper className={classes.actions}>
-                  <div className={classes.actionsContainer}>
-                    <Typography className={classes.actionsHeading}>
-                      {state.visualization
-                        ? 'Visualization'
-                        : 'Select date range'}
-                    </Typography>
-                    <DateRangePicker
-                      fromLabel="From"
-                      toLabel="To"
-                      selectedDate={state.dates}
-                      handleChange={(dates) => handleDateChange(dates)}
-                    />
-                  </div>
-                  <Divider />
-                  {state.visualization && (
-                    <div className={classes.graphArea}>
-                      <Grid item xs={12} md={8} className={classes.grid}>
-                        <div className={classes.graph}>
-                          <div className={classes.graphContainer}>
-                            <LineChart
-                              width={730}
-                              height={400}
-                              data={state.graphData}
-                              margin={{
-                                top: 5,
-                                right: 30,
-                                left: 20,
-                                bottom: 5,
-                              }}
+                )}
+                <Divider />
+                <div className={classes.boxFooter}>
+                  <Typography className={classes.text} color="textSecondary">
+                    <span>WAT</span>:<b className={classes.count}>C</b>
+                  </Typography>
+                </div>
+              </Paper>
+            </Grid>
+            <Grid item md={12} className={classes.grid}>
+              <Paper className={classes.actions}>
+                <div className={classes.actionsContainer}>
+                  <Typography className={classes.actionsHeading}>
+                    {state.visualization
+                      ? 'Visualization'
+                      : 'Select date range'}
+                  </Typography>
+                  <DateRangePicker
+                    fromLabel="From"
+                    toLabel="To"
+                    selectedDate={state.dates}
+                    handleChange={(dates) => handleDateChange(dates)}
+                  />
+                </div>
+                <Divider />
+                {state.visualization && (
+                  <div className={classes.graphArea}>
+                    <Grid item xs={12} md={8} className={classes.grid}>
+                      <div className={classes.graph}>
+                        <div className={classes.graphContainer}>
+                          <LineChart
+                            width={730}
+                            height={400}
+                            data={state.graphData}
+                            margin={{
+                              top: 5,
+                              right: 30,
+                              left: 20,
+                              bottom: 5,
+                            }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="date" />
+                            <YAxis allowDecimals={false} />
+                            <Tooltip />
+                            <Legend />
+                            <Line
+                              name="Personal licenses"
+                              type="monotone"
+                              dataKey="pl"
+                              stroke="#8884d8"
+                            />
+                            <Line
+                              name="Commercial licenses"
+                              type="monotone"
+                              dataKey="cl"
+                              stroke="#82ca9d"
+                            />
+                          </LineChart>
+                        </div>
+                      </div>
+                    </Grid>
+                    <Grid item xs={12} md={4} className={classes.grid}>
+                      <div className={classes.controls}>
+                        <Paper className={classes.item}>
+                          <div className={classes.itemData}>
+                            <Typography className={classes.itemMain}>
+                              ${state.selectedStats[state.display.label]}
+                            </Typography>
+                            <Typography
+                              className={classes.itemAlt}
+                              color="textSecondary"
                             >
-                              <CartesianGrid strokeDasharray="3 3" />
-                              <XAxis dataKey="date" />
-                              <YAxis allowDecimals={false} />
-                              <Tooltip />
-                              <Legend />
-                              <Line
-                                name="Personal licenses"
-                                type="monotone"
-                                dataKey="pl"
-                                stroke="#8884d8"
-                              />
-                              <Line
-                                name="Commercial licenses"
-                                type="monotone"
-                                dataKey="cl"
-                                stroke="#82ca9d"
-                              />
-                            </LineChart>
+                              {state.display.label}
+                            </Typography>
                           </div>
-                        </div>
-                      </Grid>
-                      <Grid item xs={12} md={4} className={classes.grid}>
-                        <div className={classes.controls}>
-                          <Paper className={classes.item}>
-                            <div className={classes.itemData}>
-                              <Typography className={classes.itemMain}>
-                                ${state.selectedStats[state.display.label]}
-                              </Typography>
-                              <Typography
-                                className={classes.itemAlt}
-                                color="textSecondary"
-                              >
-                                {state.display.label}
-                              </Typography>
-                            </div>
-                            <Divider />
-                          </Paper>
-                          <Paper className={classes.item}>
-                            <div className={classes.itemData}>
-                              <Typography className={classes.itemMain}>
-                                {state.selectedStats.licenses.personal}
-                              </Typography>
-                              <Typography
-                                className={classes.itemAlt}
-                                color="textSecondary"
-                              >
-                                Personal licenses
-                              </Typography>
-                            </div>
-                            <Divider />
-                          </Paper>
-                          <Paper className={classes.item}>
-                            <div className={classes.itemData}>
-                              <Typography className={classes.itemMain}>
-                                {state.selectedStats.licenses.commercial}
-                              </Typography>
-                              <Typography
-                                className={classes.itemAlt}
-                                color="textSecondary"
-                              >
-                                Commercial licenses
-                              </Typography>
-                            </div>
-                            <Divider />
-                          </Paper>
-                        </div>
-                      </Grid>
-                    </div>
-                  )}
-                </Paper>
-              </Grid>
-            </>
-          )}
+                          <Divider />
+                        </Paper>
+                        <Paper className={classes.item}>
+                          <div className={classes.itemData}>
+                            <Typography className={classes.itemMain}>
+                              {state.selectedStats.licenses.personal}
+                            </Typography>
+                            <Typography
+                              className={classes.itemAlt}
+                              color="textSecondary"
+                            >
+                              Personal licenses
+                            </Typography>
+                          </div>
+                          <Divider />
+                        </Paper>
+                        <Paper className={classes.item}>
+                          <div className={classes.itemData}>
+                            <Typography className={classes.itemMain}>
+                              {state.selectedStats.licenses.commercial}
+                            </Typography>
+                            <Typography
+                              className={classes.itemAlt}
+                              color="textSecondary"
+                            >
+                              Commercial licenses
+                            </Typography>
+                          </div>
+                          <Divider />
+                        </Paper>
+                      </div>
+                    </Grid>
+                  </div>
+                )}
+              </Paper>
+            </Grid>
+          </>
         </Grid>
       </Container>
     </LocalizationProvider>
