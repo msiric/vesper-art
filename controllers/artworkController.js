@@ -10,6 +10,7 @@ const crypto = require('crypto');
 const createError = require('http-errors');
 const { sanitize } = require('../utils/helpers');
 const currency = require('currency.js');
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const postArtworkValidator = require('../utils/validation/postArtworkValidator');
 const putArtworkValidator = require('../utils/validation/putArtworkValidator');
 
@@ -75,14 +76,28 @@ const postNewArtwork = async (req, res, next) => {
   try {
     const { error, value } = postArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
-    if (
-      !res.locals.user.stripeId &&
-      (value.artworkPersonal || value.artworkCommercial)
-    )
-      throw createError(
-        400,
-        'Please complete the Stripe onboarding process before making your artwork commercially available'
-      );
+    if (value.artworkPersonal || value.artworkCommercial) {
+      const foundUser = await User.findOne({
+        $and: [{ _id: res.locals.user.id }, { active: true }],
+      });
+      if (!foundUser) throw createError(400, 'User not found');
+      if (!foundUser.stripeId)
+        throw createError(
+          400,
+          'Please complete the Stripe onboarding process before making your artwork commercially available'
+        );
+      const foundAccount = await stripe.accounts.retrieve(foundUser.stripeId);
+      if (
+        (value.artworkPersonal || value.artworkCommercial) &&
+        (foundAccount.capabilities.card_payments !== 'active' ||
+          foundAccount.capabilities.platform_payments !== 'active')
+      ) {
+        throw createError(
+          400,
+          'Please complete your Stripe account before making your artwork commercially available'
+        );
+      }
+    }
     const newVersion = new Version();
     newVersion.cover = value.artworkCover || '';
     newVersion.media = value.artworkMedia || '';
@@ -160,15 +175,29 @@ const updateArtwork = async (req, res, next) => {
       .session(session);
     const { error, value } = putArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
-    if (
-      !res.locals.user.stripeId &&
-      (value.artworkPersonal || value.artworkCommercial)
-    )
-      throw createError(
-        400,
-        'Please complete the Stripe onboarding process before making your artwork commercially available'
-      );
     if (foundArtwork) {
+      if (value.artworkPersonal || value.artworkCommercial) {
+        const foundUser = await User.findOne({
+          $and: [{ _id: res.locals.user.id }, { active: true }],
+        });
+        if (!foundUser) throw createError(400, 'User not found');
+        if (!foundUser.stripeId)
+          throw createError(
+            400,
+            'Please complete the Stripe onboarding process before making your artwork commercially available'
+          );
+        const foundAccount = await stripe.accounts.retrieve(foundUser.stripeId);
+        if (
+          (value.artworkPersonal || value.artworkCommercial) &&
+          (foundAccount.capabilities.card_payments !== 'active' ||
+            foundAccount.capabilities.platform_payments !== 'active')
+        ) {
+          throw createError(
+            400,
+            'Please complete your Stripe account before making your artwork commercially available'
+          );
+        }
+      }
       const newVersion = new Version();
       newVersion.cover = value.artworkCover || '';
       newVersion.media = value.artworkMedia || '';

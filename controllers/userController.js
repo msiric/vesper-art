@@ -256,7 +256,7 @@ const getUserDashboard = async (req, res, next) => {
   try {
     const user = res.locals.user;
     const balance = await stripe.balance.retrieve({
-      stripe_account: user.stripeId,
+      stripe_account: user.onboarded,
     });
 
     res.render('dashboard', {

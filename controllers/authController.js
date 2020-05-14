@@ -101,7 +101,7 @@ const postLogIn = async (req, res, next) => {
         id: foundUser._id,
         name: foundUser.name,
         jwtVersion: foundUser.jwtVersion,
-        stripeId: foundUser.stripeId,
+        onboarded: !!foundUser.stripeId,
         active: foundUser.active,
       };
 

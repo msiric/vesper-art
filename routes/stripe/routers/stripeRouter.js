@@ -8,6 +8,10 @@ router
   .post(stripeController.receiveWebhookEvent);
 
 router
+  .route('/account/:accountId')
+  .get(isAuthenticated, stripeController.getStripeUser);
+
+router
   .route('/intent/:artworkId')
   .post(isAuthenticated, stripeController.managePaymentIntent);
 
