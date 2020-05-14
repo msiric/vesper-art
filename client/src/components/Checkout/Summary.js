@@ -129,6 +129,7 @@ const Summary = ({
                           value={state.summary.personal.amount}
                           displayType={'text'}
                           thousandSeparator={true}
+                          decimalScale={2}
                           prefix={'$'}
                         />
                       ) : (
@@ -143,6 +144,7 @@ const Summary = ({
                           value={state.summary.commercial.amount}
                           displayType={'text'}
                           thousandSeparator={true}
+                          decimalScale={2}
                           prefix={'$'}
                         />
                       ) : (
@@ -200,6 +202,7 @@ const Summary = ({
                           value={state.summary.personal.amount}
                           displayType={'text'}
                           thousandSeparator={true}
+                          decimalScale={2}
                           prefix={'$'}
                         />
                       ) : (
@@ -214,6 +217,7 @@ const Summary = ({
                           value={state.summary.commercial.amount}
                           displayType={'text'}
                           thousandSeparator={true}
+                          decimalScale={2}
                           prefix={'$'}
                         />
                       ) : (
@@ -260,6 +264,7 @@ const Summary = ({
                           ).toFixed(2)}
                           displayType={'text'}
                           thousandSeparator={true}
+                          decimalScale={2}
                           prefix={'- $'}
                         />
                       </Typography>
@@ -295,6 +300,7 @@ const Summary = ({
                       ).toFixed(2)}
                       displayType={'text'}
                       thousandSeparator={true}
+                      decimalScale={2}
                       prefix={'$'}
                     />
                   </Typography>
@@ -350,6 +356,7 @@ const Summary = ({
                         ).toFixed(2)}
                         displayType={'text'}
                         thousandSeparator={true}
+                        decimalScale={2}
                         prefix={'$'}
                       />
                     ) : (
@@ -368,6 +375,7 @@ const Summary = ({
                       ).toFixed(2)}
                       displayType={'text'}
                       thousandSeparator={true}
+                      decimalScale={2}
                       prefix={'$'}
                     />
                   ) : (
