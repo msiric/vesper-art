@@ -299,7 +299,8 @@ const AddArtwork = () => {
                             ? false
                             : true,
                       },
-                      values.artworkAvailability && values.artworkType
+                      values.artworkAvailability === 'available' &&
+                      values.artworkType === 'commercial'
                         ? {
                             value: 'included',
                             text: 'Include commercial license in the price',
