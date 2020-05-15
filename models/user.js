@@ -41,7 +41,7 @@ const UserSchema = new Schema({
   discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
   inbox: Number,
   notifications: Number,
-  reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
+  rating: Number,
   artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   purchases: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
