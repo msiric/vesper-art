@@ -70,94 +70,59 @@ const createOrder = async (req, res, next) => {
   }
 };
 
-// moze to bolje
-const getOrder = async (req, res, next) => {
-  let order;
+const getOrderDetails = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const { orderId } = req.params;
-    const foundOrder = await Order.findOne({ _id: orderId })
+    const foundOrder = await Order.findOne({
+      $and: [
+        {
+          $or: [{ buyer: res.locals.user.id }, { seller: res.locals.user.id }],
+        },
+        { _id: orderId },
+      ],
+    })
       .populate('buyer')
+      .populate('seller')
       .populate('discount')
-      .deepPopulate('details.version details.artwork.owner details.licenses')
+      .populate('version')
+      .populate('artwork')
+      .populate('licenses')
       .session(session);
     if (foundOrder) {
-      foundOrder.discount = foundOrder.discount ? foundOrder.discount : null;
-      if (foundOrder.discount) {
-        foundOrder.discount.discount = foundOrder.discount.discount * 100;
-      }
-      let decreaseNotif = false;
-      if (!foundOrder.buyer._id.equals(res.locals.user.id)) {
-        const details = [];
-        let sold = 0;
-        foundOrder.details.forEach(function (item) {
-          if (item.seller.equals(res.locals.user.id)) {
-            sold += item.version.personal;
-            item.licenses.map(function (license) {
-              sold += license.price;
-            });
-            details.push({
-              licenses: item.licenses,
-              seller: item.seller,
-              version: item.version,
-              artwork: item.artwork,
-            });
-          }
-        });
-        order = foundOrder.toObject();
-        order.details = details;
-        order.sold = sold;
-      } else {
-        const details = [];
-        let paid = 0;
-        foundOrder.details.forEach(function (item) {
-          paid += item.version.personal;
-          item.licenses.map(function (license) {
-            paid += license.price;
-          });
-          details.push({
-            licenses: item.licenses,
-            buyer: item.buyer,
-            version: item.version,
-            artwork: item.artwork,
-          });
-        });
-        order = foundOrder.toObject();
-        order.details = details;
-        order.paid = paid;
-      }
-      if (req.query.ref) {
-        const foundNotif = await Notification.findById({
-          _id: req.query.ref,
-        }).session(session);
-        if (foundNotif) {
-          let changed = false;
-          foundNotif.receivers.forEach(function (receiver) {
-            if (receiver.user.equals(res.locals.user.id)) {
-              if (receiver.read === false) {
-                receiver.read = true;
-                changed = true;
-              }
-            }
-          });
-          if (changed) {
-            await foundNotif.save({ session });
-            await User.updateOne(
-              {
-                _id: res.locals.user.id,
-              },
-              { $inc: { notifications: -1 } },
-              { useFindAndModify: false }
-            ).session(session);
-            decreaseNotif = true;
-          }
-        }
-      }
+      // let decreaseNotif = false;
+      // notif
+      // if (req.query.ref) {
+      //   const foundNotif = await Notification.findById({
+      //     _id: req.query.ref,
+      //   }).session(session);
+      //   if (foundNotif) {
+      //     let changed = false;
+      //     foundNotif.receivers.forEach(function (receiver) {
+      //       if (receiver.user.equals(res.locals.user.id)) {
+      //         if (receiver.read === false) {
+      //           receiver.read = true;
+      //           changed = true;
+      //         }
+      //       }
+      //     });
+      //     if (changed) {
+      //       await foundNotif.save({ session });
+      //       await User.updateOne(
+      //         {
+      //           _id: res.locals.user.id,
+      //         },
+      //         { $inc: { notifications: -1 } },
+      //         { useFindAndModify: false }
+      //       ).session(session);
+      //       decreaseNotif = true;
+      //     }
+      //   }
+      // }
       await session.commitTransaction();
       res.json({
-        order: order,
-        decreaseNotif: decreaseNotif,
+        order: foundOrder,
       });
     } else {
       throw createError(400, 'Order not found');
@@ -197,7 +162,7 @@ const getBoughtOrders = async (req, res, next) => {
 
 module.exports = {
   createOrder,
-  getOrder,
+  getOrderDetails,
   getSoldOrders,
   getBoughtOrders,
 };
