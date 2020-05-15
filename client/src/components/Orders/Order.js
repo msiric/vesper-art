@@ -62,17 +62,6 @@ const Orders = ({ match }) => {
     <>
       <div className="flex flex-1 w-full items-center justify-between">
         <div className="flex flex-1 flex-col items-center sm:items-start">
-          <Typography
-            className="normal-case flex items-center sm:mb-12"
-            component={Link}
-            role="button"
-            to="/orders"
-            color="inherit"
-          >
-            <Icon className="text-20">arrow_back</Icon>
-            <span className="mx-4">Orders</span>
-          </Typography>
-
           <div className="flex flex-col min-w-0 items-center sm:items-start">
             <Typography className="text-16 sm:text-20 truncate">
               {`Order ID: ${state.order._id}`}
@@ -137,6 +126,30 @@ const Orders = ({ match }) => {
                 </div>
               </div>
             </div>
+
+            {state.order.review ? (
+              <div className="pb-48">
+                <div className="pb-16 flex items-center">
+                  <Typography className="h2 mx-16" color="textSecondary">
+                    Review
+                  </Typography>
+                  <Typography className="h2 mx-16" color="textSecondary">
+                    {state.order.review.rating}
+                  </Typography>
+                  <Typography className="h2 mx-16" color="textSecondary">
+                    {state.order.review.review}
+                  </Typography>
+                </div>
+              </div>
+            ) : (
+              <div className="pb-48">
+                <div className="pb-16 flex items-center">
+                  <Typography className="h2 mx-16" color="textSecondary">
+                    Leave a review
+                  </Typography>
+                </div>
+              </div>
+            )}
 
             <div className="pb-48">
               <div className="pb-16 flex items-center">

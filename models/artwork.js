@@ -7,7 +7,8 @@ const ArtworkSchema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
   current: { type: Schema.Types.ObjectId, ref: 'Version' },
   versions: [{ type: Schema.Types.ObjectId, ref: 'Version' }],
-  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }], // new
+  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+  reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
   saves: Number,
   active: Boolean,
   created: { type: Date, default: Date.now },
