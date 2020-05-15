@@ -118,6 +118,7 @@ const postNewArtwork = async (req, res, next) => {
     newArtwork.active = true;
     newArtwork.comments = [];
     newArtwork.current = savedVersion._id;
+    newArtwork.saves = 0;
     await newArtwork.save({ session });
     await User.updateOne(
       { _id: res.locals.user.id },
@@ -501,6 +502,8 @@ const saveArtwork = async (req, res, next) => {
             { _id: foundUser._id },
             { $push: { savedArtwork: foundArtwork._id } }
           ).session(session);
+          foundArtwork.saves++;
+          await foundArtwork.save({ session });
           await session.commitTransaction();
           res.status(200).json({ message: 'Artwork saved' });
         } else {
@@ -539,6 +542,8 @@ const unsaveArtwork = async (req, res, next) => {
             { _id: foundUser._id },
             { $pull: { savedArtwork: foundArtwork._id } }
           ).session(session);
+          foundArtwork.saves--;
+          await foundArtwork.save({ session });
           await session.commitTransaction();
           res.status(200).json({ message: 'Artwork unsaved' });
         } else {

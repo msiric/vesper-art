@@ -8,6 +8,7 @@ const ArtworkSchema = new Schema({
   current: { type: Schema.Types.ObjectId, ref: 'Version' },
   versions: [{ type: Schema.Types.ObjectId, ref: 'Version' }],
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }], // new
+  saves: Number,
   active: Boolean,
   created: { type: Date, default: Date.now },
 });
