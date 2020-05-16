@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Review = require('../models/review');
 const Notification = require('../models/notification');
 const Order = require('../models/order');
+const Artwork = require('../models/artwork');
 const User = require('../models/user');
 const createError = require('http-errors');
 
@@ -10,32 +11,32 @@ const postReview = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { orderId, reviewRating, reviewContent } = req.body;
-    const { artworkId } = req.params;
+    const { reviewRating, reviewContent } = req.body;
+    const { orderId } = req.params;
     if (reviewRating) {
       const foundOrder = await Order.findOne({
-        $and: [
-          { _id: orderId },
-          { buyer: res.locals.user.id },
-          { details: { $elemMatch: { artwork: artworkId } } },
-        ],
+        $and: [{ _id: orderId }, { buyer: res.locals.user.id }],
       })
         .populate('buyer')
-        .deepPopulate('details.artwork.owner')
+        .deepPopulate('artwork.review')
         .session(session);
       if (foundOrder) {
-        const foundReview = await Review.findOne({
-          $and: [{ artwork: artworkId }, { owner: res.locals.user.id }],
-        }).session(session);
-        if (!foundReview) {
+        if (!foundOrder.artwork.review) {
           const newReview = new Review();
           newReview.order = foundOrder._id;
-          newReview.artwork = artworkId;
+          newReview.artwork = foundOrder.artwork._id;
           newReview.owner = res.locals.user.id;
-          if (reviewContent) newReview.review = reviewContent;
           newReview.rating = reviewRating;
-          await newReview.save({ session });
-          const seller = foundOrder.details.find((item) =>
+          if (reviewContent) newReview.content = reviewContent;
+          const savedReview = await newReview.save({ session });
+          const newRating =
+            foundOrder.buyer.rating +
+            (
+              (newReview.rating - foundOrder.buyer.rating) /
+              (foundOrder.buyer.reviews + 1)
+            ).toFixed(2);
+          // notif
+          /*             const seller = foundOrder.details.find((item) =>
             item.artwork.equals(artworkId)
           ).artwork.owner;
           const orderPath = '/orders/' + foundOrder._id;
@@ -47,21 +48,32 @@ const postReview = async (req, res, next) => {
           notification.link = orderPath;
           notification.message = `${foundOrder.buyer.name} left a review on your artwork!`;
           notification.read = [];
-          await notification.save({ session });
-          sellerRating = (
-            (parseInt(seller.rating) + parseInt(reviewRating)) /
-            parseInt(seller.reviews + 1)
-          ).toFixed(2);
+          await notification.save({ session });  */
           await User.updateOne(
-            { _id: seller._id },
             {
-              rating: sellerRating,
-              $inc: { reviews: 1, notifications: 1 },
+              $and: [{ _id: foundOrder.seller._id }, { active: true }],
+            },
+            {
+              rating: newRating,
+              /* $inc: { reviews: 1, notifications: 1 }, */
+              $inc: { reviews: 1 },
             }
           ).session(session);
-          if (users[seller._id]) {
+          await Order.updateOne(
+            {
+              $and: [{ _id: orderId }, { buyer: res.locals.user.id }],
+            },
+            { review: savedReview._id }
+          ).session(session);
+          await Artwork.updateOne(
+            {
+              $and: [{ _id: foundOrder.artwork._id }, { active: true }],
+            },
+            { $push: { reviews: savedReview._id } }
+          ).session(session);
+          /*           if (users[seller._id]) {
             users[seller._id].emit('increaseNotif', {});
-          }
+          } */
           await session.commitTransaction();
           return res.status(200).json('Review successfully published');
         } else {

@@ -4,7 +4,7 @@ const stripeController = require('../../../controllers/stripeController');
 const bodyParser = require('body-parser');
 
 router
-  .route('/webhook', bodyParser.raw({ type: 'application/json' }))
+  .route('/hooks', bodyParser.raw({ type: 'application/json' }))
   .post(stripeController.receiveWebhookEvent);
 
 router

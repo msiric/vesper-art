@@ -37,7 +37,8 @@ const postSignUp = async (req, res, next) => {
       user.discount = null;
       user.inbox = 0;
       user.notifications = 0;
-      user.reviews = [];
+      user.rating = 0;
+      user.reviews = 0;
       user.artwork = [];
       user.savedArtwork = [];
       user.purchases = [];

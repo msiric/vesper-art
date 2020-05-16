@@ -1,3 +1,5 @@
+import React, { useState, useEffect, useContext } from 'react';
+import { Context } from '../Store/Store';
 import _ from 'lodash';
 import {
   Grid,
@@ -19,22 +21,107 @@ import {
   Tabs,
   Tab,
   Avatar,
+  TextField,
 } from '@material-ui/core';
+import * as Yup from 'yup';
+import { Rating } from '@material-ui/lab';
+import { useFormik, Formik, Form, Field } from 'formik';
 import { Link } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
 import ax from '../../axios.config';
 import { format } from 'date-fns';
+import Modal from '../../shared/Modal/Modal';
 import OrderStyles from './Order.style';
 
-const Orders = ({ match }) => {
+const reviewValidation = Yup.object().shape({
+  rating: Yup.number().min(1).max(5).required('Rating cannot be empty'),
+  content: Yup.string().trim().required('Revieww cannot be empty'),
+});
+
+const Order = ({ match }) => {
+  const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
     order: {},
+    modal: {
+      open: false,
+      body: ``,
+    },
   });
   const classes = OrderStyles();
 
   const history = useHistory();
+
+  const modalBody = () => {
+    return (
+      <div className={classes.reviewContainer}>
+        <Formik
+          initialValues={{
+            rating: 0,
+            content: '',
+          }}
+          enableReinitialize
+          validationSchema={reviewValidation}
+          onSubmit={async (values, { resetForm }) => {
+            await ax.post(`/api/rate_artwork/${state.order._id}`, {
+              reviewRating: values.rating,
+              reviewContent: values.content,
+            });
+            setState((prevState) => ({
+              ...prevState,
+              order: {
+                ...prevState.order,
+                review: {
+                  order: prevState.order._id,
+                  artwork: prevState.order.artwork._id,
+                  owner: store.user.id,
+                  rating: values.rating,
+                  content: values.content,
+                },
+              },
+            }));
+            handleModalClose();
+            resetForm();
+          }}
+        >
+          {({ values, errors, touched }) => (
+            <Form className={classes.publishReview}>
+              <div>
+                <Field name="rating">
+                  {({
+                    field,
+                    form: { touched, errors, setFieldValue },
+                    meta,
+                  }) => <Rating {...field} />}
+                </Field>
+                <Field name="content">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      onBlur={() => null}
+                      label="Write your review"
+                      type="text"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      margin="dense"
+                      variant="outlined"
+                      multiline
+                      fullWidth
+                    />
+                  )}
+                </Field>
+              </div>
+              <div>
+                <Button type="submit" color="primary" fullWidth>
+                  Publish
+                </Button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
+    );
+  };
 
   const fetchOrders = async () => {
     try {
@@ -52,6 +139,28 @@ const Orders = ({ match }) => {
 
   const handleChangeTab = (e, value) => {
     setState((prevState) => ({ ...prevState, tab: value }));
+  };
+
+  const handleModalOpen = (id) => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: {
+        ...prevState.modal,
+        open: true,
+        body: modalBody(id),
+      },
+    }));
+  };
+
+  const handleModalClose = () => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: {
+        ...prevState.modal,
+        open: false,
+        body: ``,
+      },
+    }));
   };
 
   useEffect(() => {
@@ -78,8 +187,8 @@ const Orders = ({ match }) => {
         scrollButtons="auto"
         classes={{ root: 'w-full h-64' }}
       >
-        <Tab className="h-64 normal-case" label="Order Details" />
-        <Tab className="h-64 normal-case" label="Products" />
+        <Tab className="h-64 normal-case" label="Order details" />
+        <Tab className="h-64 normal-case" label="Licenses" />
         <Tab className="h-64 normal-case" label="Invoice" />
       </Tabs>
       <div className="p-16 sm:p-24 max-w-2xl w-full">
@@ -88,7 +197,6 @@ const Orders = ({ match }) => {
           <div>
             <div className="pb-48">
               <div className="pb-16 flex items-center">
-                <Icon color="action">account_circle</Icon>
                 <Typography className="h2 mx-16" color="textSecondary">
                   Customer
                 </Typography>
@@ -99,17 +207,18 @@ const Orders = ({ match }) => {
                   <table className="simple">
                     <thead>
                       <tr>
+                        <th>Photo</th>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Phone</th>
-                        <th>Company</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td>
+                          <Avatar src={state.order.buyer.photo} />
+                        </td>
+                        <td>
                           <div className="flex items-center">
-                            <Avatar src={state.order.buyer.photo} />
                             <Typography className="truncate mx-8">
                               {state.order.buyer.name}
                             </Typography>
@@ -137,14 +246,18 @@ const Orders = ({ match }) => {
                     {state.order.review.rating}
                   </Typography>
                   <Typography className="h2 mx-16" color="textSecondary">
-                    {state.order.review.review}
+                    {state.order.review.content}
                   </Typography>
                 </div>
               </div>
             ) : (
               <div className="pb-48">
                 <div className="pb-16 flex items-center">
-                  <Typography className="h2 mx-16" color="textSecondary">
+                  <Typography
+                    onClick={handleModalOpen}
+                    className="h2 mx-16"
+                    color="textSecondary"
+                  >
                     Leave a review
                   </Typography>
                 </div>
@@ -153,9 +266,8 @@ const Orders = ({ match }) => {
 
             <div className="pb-48">
               <div className="pb-16 flex items-center">
-                <Icon color="action">access_time</Icon>
                 <Typography className="h2 mx-16" color="textSecondary">
-                  Order Status
+                  Artwork details
                 </Typography>
               </div>
 
@@ -179,7 +291,6 @@ const Orders = ({ match }) => {
 
             <div className="pb-48">
               <div className="pb-16 flex items-center">
-                <Icon color="action">attach_money</Icon>
                 <Typography className="h2 mx-16" color="textSecondary">
                   Payment
                 </Typography>
@@ -256,8 +367,9 @@ const Orders = ({ match }) => {
         {/* Invoice */}
         {/* {state.tab === 2 && <OrderInvoice order={order} />} */}
       </div>
+      <Modal {...state.modal} handleClose={handleModalClose} />
     </>
   );
 };
 
-export default withRouter(Orders);
+export default withRouter(Order);
