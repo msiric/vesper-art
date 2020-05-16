@@ -163,6 +163,10 @@ const Order = ({ match }) => {
     }));
   };
 
+  const formatDate = (date, type) => {
+    return format(new Date(date), type);
+  };
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -314,7 +318,9 @@ const Order = ({ match }) => {
                         <span className="truncate">{state.order.earned}</span>
                       </td>
                       <td>
-                        <span className="truncate">{state.order.created}</span>
+                        <span className="truncate">
+                          {formatDate(state.order.created, 'dd/MM/yyyy')}
+                        </span>
                       </td>
                     </tr>
                   </tbody>

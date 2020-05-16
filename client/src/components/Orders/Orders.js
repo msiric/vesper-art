@@ -243,7 +243,7 @@ const Orders = () => {
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
-                            {n.review || 'Not rated'}
+                            {n.review.rating || 'Not rated'}
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
