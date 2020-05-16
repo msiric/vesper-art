@@ -89,6 +89,7 @@ const getOrderDetails = async (req, res, next) => {
       .populate('version')
       .populate('artwork')
       .populate('licenses')
+      .populate('review')
       .session(session);
     if (foundOrder) {
       // let decreaseNotif = false;

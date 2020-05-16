@@ -5,8 +5,8 @@ const ReviewSchema = new Schema({
   order: { type: Schema.Types.ObjectId, ref: 'Order' },
   artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
-  review: String,
   rating: Number,
+  content: String,
   created: { type: Date, default: Date.now }
 });
 
