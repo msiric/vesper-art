@@ -74,6 +74,12 @@ const routes = [
     exact: true,
     type: 'public',
   },
+  {
+    path: '/verifier',
+    Component: lazy(() => import('../Home/Verifier')),
+    exact: true,
+    type: 'public',
+  },
   // Notifications router
   {
     path: '/notifications',
