@@ -86,7 +86,7 @@ const getOrderDetails = async (req, res, next) => {
       .populate('discount')
       .populate('version')
       .populate('artwork')
-      .populate('licenses')
+      .deepPopulate('licenses.artwork')
       .populate('review')
       .session(session);
     if (foundOrder) {

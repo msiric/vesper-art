@@ -264,7 +264,7 @@ const Order = ({ match }) => {
             <div className="pb-48">
               <div className="pb-16 flex items-center">
                 <Typography className="h2 mx-16" color="textSecondary">
-                  Artwork details
+                  Artwork
                 </Typography>
               </div>
 
@@ -286,8 +286,8 @@ const Order = ({ match }) => {
                       <td>{state.order.version.title}</td>
                       <td>{state.order.seller.name}</td>
                       <td>{state.order.licenses.length}</td>
-                      <td>{state.order.spent}</td>
-                      <td>{state.order.created}</td>
+                      <td>${state.order.spent}</td>
+                      <td>{formatDate(state.order.created, 'dd/MM/yyyy')}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -295,7 +295,7 @@ const Order = ({ match }) => {
 
               <div className="pb-16 flex items-center">
                 <Typography className="h2 mx-16" color="textSecondary">
-                  Artwork details
+                  Licenses
                 </Typography>
               </div>
 
@@ -304,7 +304,11 @@ const Order = ({ match }) => {
                   <thead>
                     <tr>
                       <th>Fingerprint</th>
+                      <th>Type</th>
+                      <th>Buyer ID</th>
+                      <th>Seller ID</th>
                       <th>Price</th>
+                      <th>Date</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -316,7 +320,23 @@ const Order = ({ match }) => {
                           </Typography>
                         </td>
                         <td className="w-64 text-right">
+                          <span className="truncate">{license.type}</span>
+                        </td>
+                        <td className="w-64 text-right">
+                          <span className="truncate">{license.owner}</span>
+                        </td>
+                        <td className="w-64 text-right">
+                          <span className="truncate">
+                            {license.artwork.owner}
+                          </span>
+                        </td>
+                        <td className="w-64 text-right">
                           <span className="truncate">${license.price}</span>
+                        </td>
+                        <td className="w-64 text-right">
+                          <span className="truncate">
+                            {formatDate(license.created, 'dd/MM/yyyy')}
+                          </span>
                         </td>
                       </tr>
                     ))}
