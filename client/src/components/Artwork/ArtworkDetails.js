@@ -48,15 +48,6 @@ const licenseValidation = Yup.object().shape({
   licenseType: Yup.string()
     .matches(/(personal|commercial)/)
     .required('License type is required'),
-  licenseeName: Yup.string()
-    .trim()
-    .required('License holder full name is required'),
-  licenseeCompany: Yup.string()
-    .notRequired()
-    .when('commercial', {
-      is: 'commercial',
-      then: Yup.string().trim().required('License holder company is required'),
-    }),
 });
 
 const ArtworkDetails = ({ match }) => {
@@ -92,8 +83,6 @@ const ArtworkDetails = ({ match }) => {
     enableReinitialize: true,
     initialValues: {
       licenseType: state.license,
-      licenseeName: '',
-      licenseeCompany: '',
     },
     validationSchema: licenseValidation,
     async onSubmit(values) {
@@ -646,43 +635,6 @@ const ArtworkDetails = ({ match }) => {
                         },
                       ]}
                     />
-                    <TextField
-                      name="licenseeName"
-                      label="License holder full name"
-                      type="text"
-                      value={values.licenseeName}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={
-                        touched.licenseeName ? errors.licenseeName : ''
-                      }
-                      error={
-                        touched.licenseeName && Boolean(errors.licenseeName)
-                      }
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                    {state.license === 'commercial' && (
-                      <TextField
-                        name="licenseeCompany"
-                        label="License holder company"
-                        type="text"
-                        value={values.licenseeCompany}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        helperText={
-                          touched.licenseeCompany ? errors.licenseeCompany : ''
-                        }
-                        error={
-                          touched.licenseeCompany &&
-                          Boolean(errors.licenseeCompany)
-                        }
-                        margin="dense"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    )}
                   </CardContent>
                   <CardActions className={classes.actions}>
                     <Button

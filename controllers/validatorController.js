@@ -6,11 +6,10 @@ const createError = require('http-errors');
 
 const validateLicense = async (req, res, next) => {
   try {
-    const { fingerprint, credentials } = req.body;
+    const { fingerprint } = req.body;
     const foundLicense = await License.findOne({
       fingerprint: fingerprint,
-      credentials: credentials,
-      active: true
+      active: true,
     });
     if (foundLicense) {
       return res.status(200).json({ foundLicense: foundLicense });
@@ -32,11 +31,11 @@ const displayLicense = async (req, res, next) => {
 
     doc.end();
 
-    stream.on('data', function(chunk) {
+    stream.on('data', function (chunk) {
       finalString += chunk;
     });
 
-    stream.on('end', function() {
+    stream.on('end', function () {
       res.json({ pdf: finalString });
     });
   } catch (err) {
@@ -46,5 +45,5 @@ const displayLicense = async (req, res, next) => {
 
 module.exports = {
   validateLicense,
-  displayLicense
+  displayLicense,
 };

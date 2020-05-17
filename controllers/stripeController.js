@@ -326,8 +326,6 @@ const createOrder = async (intent) => {
       newLicense.artwork = artworkId;
       newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
       newLicense.type = license.licenseType;
-      newLicense.credentials = license.licenseeName;
-      newLicense.company = license.licenseeCompany;
       newLicense.active = true;
       newLicense.price = license.licensePrice;
       licenseSet.push(newLicense);

@@ -7,8 +7,6 @@ const LicenseSchema = new Schema({
   artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
   fingerprint: String,
   type: String,
-  credentials: String,
-  company: String,
   active: Boolean,
   price: { type: Number, get: formatPrice },
   created: { type: Date, default: Date.now },
