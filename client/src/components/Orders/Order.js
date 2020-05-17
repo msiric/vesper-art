@@ -191,8 +191,7 @@ const Order = ({ match }) => {
         scrollButtons="auto"
         classes={{ root: 'w-full h-64' }}
       >
-        <Tab className="h-64 normal-case" label="Order details" />
-        <Tab className="h-64 normal-case" label="Licenses" />
+        <Tab className="h-64 normal-case" label="Details" />
         <Tab className="h-64 normal-case" label="Invoice" />
       </Tabs>
       <div className="p-16 sm:p-24 max-w-2xl w-full">
@@ -213,7 +212,6 @@ const Order = ({ match }) => {
                       <tr>
                         <th>Photo</th>
                         <th>Name</th>
-                        <th>Email</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -227,11 +225,6 @@ const Order = ({ match }) => {
                               {state.order.buyer.name}
                             </Typography>
                           </div>
-                        </td>
-                        <td>
-                          <Typography className="truncate">
-                            {state.order.buyer.email}
-                          </Typography>
                         </td>
                       </tr>
                     </tbody>
@@ -279,24 +272,30 @@ const Order = ({ match }) => {
                 <table className="simple">
                   <thead>
                     <tr>
-                      <th>Status</th>
-                      <th>Updated On</th>
+                      <th>Cover</th>
+                      <th>Name</th>
+                      <th>Artist</th>
+                      <th>Licenses</th>
+                      <th>Amount</th>
+                      <th>Date</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>A</td>
-                      <td>B</td>
+                      <td>{state.order.version.cover}</td>
+                      <td>{state.order.version.title}</td>
+                      <td>{state.order.seller.name}</td>
+                      <td>{state.order.licenses.length}</td>
+                      <td>{state.order.spent}</td>
+                      <td>{state.order.created}</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
-            </div>
 
-            <div className="pb-48">
               <div className="pb-16 flex items-center">
                 <Typography className="h2 mx-16" color="textSecondary">
-                  Payment
+                  Artwork details
                 </Typography>
               </div>
 
@@ -304,70 +303,39 @@ const Order = ({ match }) => {
                 <table className="simple">
                   <thead>
                     <tr>
-                      <th>Payment Method</th>
-                      <th>Amount</th>
-                      <th>Date</th>
+                      <th>Fingerprint</th>
+                      <th>Price</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>
-                        <span className="truncate">Credit card</span>
-                      </td>
-                      <td>
-                        <span className="truncate">{state.order.earned}</span>
-                      </td>
-                      <td>
-                        <span className="truncate">
-                          {formatDate(state.order.created, 'dd/MM/yyyy')}
-                        </span>
-                      </td>
-                    </tr>
+                    {state.order.licenses.map((license) => (
+                      <tr key={license._id}>
+                        <td className="w-64">{license._id}</td>
+                        <td>
+                          <Typography
+                            component={Link}
+                            to={`/apps/e-commerce/products/${license._id}`}
+                            className="truncate"
+                            style={{
+                              color: 'inherit',
+                              textDecoration: 'underline',
+                            }}
+                          >
+                            {license.credentials}
+                          </Typography>
+                        </td>
+                        <td className="w-64 text-right">
+                          <span className="truncate">${license.price}</span>
+                        </td>
+                        <td className="w-64 text-right">
+                          <span className="truncate">1</span>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
             </div>
-          </div>
-        )}
-        {/* Products */}
-        {state.tab === 1 && (
-          <div className="table-responsive">
-            <table className="simple">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
-                {state.order.licenses.map((license) => (
-                  <tr key={license._id}>
-                    <td className="w-64">{license._id}</td>
-                    <td>
-                      <Typography
-                        component={Link}
-                        to={`/apps/e-commerce/products/${license._id}`}
-                        className="truncate"
-                        style={{
-                          color: 'inherit',
-                          textDecoration: 'underline',
-                        }}
-                      >
-                        {license.credentials}
-                      </Typography>
-                    </td>
-                    <td className="w-64 text-right">
-                      <span className="truncate">${license.price}</span>
-                    </td>
-                    <td className="w-64 text-right">
-                      <span className="truncate">1</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         )}
         {/* Invoice */}
