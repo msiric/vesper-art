@@ -310,25 +310,13 @@ const Order = ({ match }) => {
                   <tbody>
                     {state.order.licenses.map((license) => (
                       <tr key={license._id}>
-                        <td className="w-64">{license._id}</td>
                         <td>
-                          <Typography
-                            component={Link}
-                            to={`/apps/e-commerce/products/${license._id}`}
-                            className="truncate"
-                            style={{
-                              color: 'inherit',
-                              textDecoration: 'underline',
-                            }}
-                          >
-                            {license.credentials}
+                          <Typography className="truncate">
+                            {license.fingerprint}
                           </Typography>
                         </td>
                         <td className="w-64 text-right">
                           <span className="truncate">${license.price}</span>
-                        </td>
-                        <td className="w-64 text-right">
-                          <span className="truncate">1</span>
                         </td>
                       </tr>
                     ))}
