@@ -1,5 +1,7 @@
 import _ from 'lodash';
 import {
+  Grid,
+  CircularProgress,
   Paper,
   Button,
   Link,
@@ -11,16 +13,24 @@ import {
   TableCell,
   TablePagination,
   TableRow,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
+import ax from '../../axios.config';
+import { format } from 'date-fns';
 import ProductsTableHead from './Head';
+import OrdersStyles from './Orders.style';
 
-function ProductsTable() {
+const Orders = () => {
   const [state, setState] = useState({
-    loading: false,
-    orders: [{ id: 1, price: 15, date: Date.now(), review: 4.5 }],
+    loading: true,
+    orders: [],
     search: '',
+    display: 'purchases',
     page: 0,
     rows: 10,
     sort: {
@@ -28,12 +38,27 @@ function ProductsTable() {
       id: null,
     },
   });
+  const classes = OrdersStyles();
 
   const history = useHistory();
 
+  const fetchOrders = async () => {
+    try {
+      const { data } = await ax.get(`/api/orders/${state.display}`);
+      console.log(data);
+      setState({
+        ...state,
+        loading: false,
+        orders: data[state.display],
+      });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
+
   useEffect(() => {
-    //get data
-  }, []);
+    fetchOrders();
+  }, [state.display]);
 
   useEffect(() => {
     if (state.search) {
@@ -90,128 +115,166 @@ function ProductsTable() {
     }));
   };
 
+  const handleSelectChange = (e) => {
+    setState((prevState) => ({
+      ...prevState,
+      display: e.target.value,
+    }));
+  };
+
   function handleRowClick(id) {
     history.push(`/orders/${id}`);
   }
 
   return (
-    <>
-      <div className="flex flex-1 w-full items-center justify-between">
-        <div className="flex items-center">
-          <Icon className="text-32">shopping_basket</Icon>
-          <Typography className="hidden sm:flex mx-0 sm:mx-12" variant="h6">
-            Products
-          </Typography>
-        </div>
-
-        <div className="flex flex-1 items-center justify-center px-12">
-          <Paper
-            className="flex items-center w-full max-w-512 px-8 py-4 rounded-8"
-            elevation={1}
-          >
-            <Icon color="action">search</Icon>
-
-            <Input
-              placeholder="Search"
-              className="flex flex-1 mx-8"
-              disableUnderline
-              fullWidth
-              value={state.search}
-              inputProps={{
-                'aria-label': 'Search',
-              }}
-              onChange={(e) => handleSearchChange(e)}
-            />
-          </Paper>
-        </div>
-        <Button
-          component={Link}
-          to="/apps/e-commerce/products/new"
-          className="whitespace-no-wrap normal-case"
-          variant="contained"
-          color="secondary"
-        >
-          <span className="hidden sm:flex">Add New Product</span>
-          <span className="flex sm:hidden">New</span>
-        </Button>
-      </div>
-      <div className="w-full flex flex-col">
-        <Table className="min-w-xl" aria-labelledby="tableTitle">
-          <ProductsTableHead
-            order={state.sort}
-            handleRequestSort={handleRequestSort}
-            rowCount={state.orders.length}
-          />
-
-          <TableBody>
-            {_.orderBy(
-              state.orders,
-              [
-                (o) => {
-                  switch (state.sort.id) {
-                    case 'categories': {
-                      return o.categories[0];
-                    }
-                    default: {
-                      return o[state.sort.id];
-                    }
-                  }
-                },
-              ],
-              [state.sort.direction]
-            )
-              .slice(
-                state.page * state.rows,
-                state.page * state.rows + state.rows
-              )
-              .map((n) => {
-                return (
-                  <TableRow
-                    className="h-64 cursor-pointer"
-                    hover
-                    role="checkbox"
-                    tabIndex={-1}
-                    key={n.id}
-                    onClick={(e) => handleRowClick(n.id)}
+    <Grid container className={classes.container}>
+      <Grid item xs={12} className={classes.grid}>
+        {state.loading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <div className="flex flex-1 w-full items-center justify-between">
+              <div className="flex items-center">
+                <Typography
+                  className="hidden sm:flex mx-0 sm:mx-12 capitalize"
+                  variant="h6"
+                >
+                  {state.display}
+                </Typography>
+                <FormControl variant="outlined" className={classes.formControl}>
+                  <InputLabel id="data-display">Displayed data</InputLabel>
+                  <Select
+                    labelId="data-display"
+                    value={state.display}
+                    onChange={handleSelectChange}
+                    label="Displayed data"
+                    margin="dense"
                   >
-                    <TableCell component="th" scope="row">
-                      {n.id}
-                    </TableCell>
+                    <MenuItem value="purchases">Purchases</MenuItem>
+                    <MenuItem value="sales">Sales</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
 
-                    <TableCell component="th" scope="row" align="right">
-                      {n.price}
-                    </TableCell>
+              <div className="flex flex-1 items-center justify-center px-12">
+                <Paper
+                  className="flex items-center w-full max-w-512 px-8 py-4 rounded-8"
+                  elevation={1}
+                >
+                  <Input
+                    placeholder="Search"
+                    className="flex flex-1 mx-8"
+                    disableUnderline
+                    fullWidth
+                    value={state.search}
+                    inputProps={{
+                      'aria-label': 'Search',
+                    }}
+                    onChange={(e) => handleSearchChange(e)}
+                  />
+                </Paper>
+              </div>
+            </div>
+            <div className="w-full flex flex-col">
+              <Table className="min-w-xl" aria-labelledby="tableTitle">
+                <ProductsTableHead
+                  order={state.sort}
+                  handleRequestSort={handleRequestSort}
+                  rowCount={state.orders.length}
+                />
 
-                    <TableCell component="th" scope="row" align="right">
-                      {n.date}
-                    </TableCell>
+                <TableBody>
+                  {_.orderBy(
+                    state.orders,
+                    [
+                      (o) => {
+                        switch (state.sort.id) {
+                          case 'categories': {
+                            return o.categories[0];
+                          }
+                          default: {
+                            return o[state.sort.id];
+                          }
+                        }
+                      },
+                    ],
+                    [state.sort.direction]
+                  )
+                    .slice(
+                      state.page * state.rows,
+                      state.page * state.rows + state.rows
+                    )
+                    .map((n) => {
+                      return (
+                        <TableRow
+                          className="h-64 cursor-pointer"
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={n.id}
+                          onClick={(e) => handleRowClick(n.id)}
+                        >
+                          <TableCell component="th" scope="row" align="left">
+                            <img src={n.version.cover} alt={n.name} />
+                          </TableCell>
 
-                    <TableCell component="th" scope="row" align="right">
-                      {n.review}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-        <TablePagination
-          className="overflow-hidden"
-          component="div"
-          count={state.orders.length}
-          rowsPerPage={state.rows}
-          page={state.page}
-          backIconButtonProps={{
-            'aria-label': 'Previous Page',
-          }}
-          nextIconButtonProps={{
-            'aria-label': 'Next Page',
-          }}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
-      </div>
-    </>
+                          <TableCell component="th" scope="row">
+                            {n.id}
+                          </TableCell>
+
+                          <TableCell component="th" scope="row" align="right">
+                            {n.version.title}
+                          </TableCell>
+
+                          <TableCell component="th" scope="row" align="right">
+                            {state.display === 'purchases'
+                              ? n.seller.name
+                              : n.buyer.name}
+                          </TableCell>
+
+                          <TableCell component="th" scope="row" align="right">
+                            {state.display === 'purchases'
+                              ? `$${n.spent}`
+                              : `$${n.earned}`}
+                          </TableCell>
+
+                          <TableCell component="th" scope="row" align="right">
+                            {format(new Date(n.created), 'dd/MM/yyyy')}
+                          </TableCell>
+
+                          <TableCell component="th" scope="row" align="right">
+                            {n.review.rating || 'Not rated'}
+                          </TableCell>
+
+                          <TableCell component="th" scope="row" align="right">
+                            {n.status}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+              <TablePagination
+                className="overflow-hidden"
+                component="div"
+                count={state.orders.length}
+                rowsPerPage={state.rows}
+                page={state.page}
+                backIconButtonProps={{
+                  'aria-label': 'Previous Page',
+                }}
+                nextIconButtonProps={{
+                  'aria-label': 'Next Page',
+                }}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+              />
+            </div>
+          </>
+        )}
+      </Grid>
+    </Grid>
   );
-}
+};
 
-export default withRouter(ProductsTable);
+export default withRouter(Orders);

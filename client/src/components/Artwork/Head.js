@@ -16,36 +16,43 @@ import {
 
 const rows = [
   {
-    id: 'id',
+    id: 'cover',
     align: 'left',
     disablePadding: false,
-    label: 'Order ID',
+    label: 'Cover',
     sort: true,
   },
   {
-    id: 'price',
-    align: 'right',
+    id: 'title',
+    align: 'left',
     disablePadding: false,
-    label: 'Price',
+    label: 'Title',
     sort: true,
   },
   {
-    id: 'date',
+    id: 'type',
     align: 'right',
     disablePadding: false,
-    label: 'Date',
+    label: 'Type',
     sort: true,
   },
   {
-    id: 'review',
+    id: 'personal',
     align: 'right',
     disablePadding: false,
-    label: 'Review',
+    label: 'Personal license',
+    sort: true,
+  },
+  {
+    id: 'commercial',
+    align: 'right',
+    disablePadding: false,
+    label: 'Commercial license',
     sort: true,
   },
 ];
 
-function ProductsTableHead({ order, handleRequestSort, rowCount }) {
+function ProductsTableHead({ artwork, handleRequestSort, rowCount }) {
   const [state, setState] = useState({
     selectedProductsMenu: null,
   });
@@ -74,7 +81,7 @@ function ProductsTableHead({ order, handleRequestSort, rowCount }) {
               key={row.id}
               align={row.align}
               padding={row.disablePadding ? 'none' : 'default'}
-              sortDirection={order.id === row.id ? order.direction : false}
+              sortDirection={artwork.id === row.id ? artwork.direction : false}
             >
               {row.sort && (
                 <Tooltip
@@ -85,8 +92,8 @@ function ProductsTableHead({ order, handleRequestSort, rowCount }) {
                   enterDelay={300}
                 >
                   <TableSortLabel
-                    active={order.id === row.id}
-                    direction={order.direction}
+                    active={artwork.id === row.id}
+                    direction={artwork.direction}
                     onClick={createSortHandler(row.id)}
                   >
                     {row.label}

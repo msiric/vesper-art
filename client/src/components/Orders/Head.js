@@ -16,6 +16,13 @@ import {
 
 const rows = [
   {
+    id: 'cover',
+    align: 'left',
+    disablePadding: false,
+    label: 'Cover',
+    sort: true,
+  },
+  {
     id: 'id',
     align: 'left',
     disablePadding: false,
@@ -23,10 +30,24 @@ const rows = [
     sort: true,
   },
   {
-    id: 'price',
+    id: 'title',
     align: 'right',
     disablePadding: false,
-    label: 'Price',
+    label: 'Title',
+    sort: true,
+  },
+  {
+    id: 'user',
+    align: 'right',
+    disablePadding: false,
+    label: 'User',
+    sort: true,
+  },
+  {
+    id: 'amount',
+    align: 'right',
+    disablePadding: false,
+    label: 'Amount',
     sort: true,
   },
   {
@@ -41,6 +62,13 @@ const rows = [
     align: 'right',
     disablePadding: false,
     label: 'Review',
+    sort: true,
+  },
+  {
+    id: 'status',
+    align: 'right',
+    disablePadding: false,
+    label: 'Status',
     sort: true,
   },
 ];

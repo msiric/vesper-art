@@ -52,8 +52,8 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
           title={element.current.title}
           subheader={
             element.current.availability === 'available'
-              ? element.current.price
-                ? `$${element.current.price}`
+              ? element.current.personal
+                ? `$${element.current.personal}`
                 : 'Free'
               : 'Showcase'
           }

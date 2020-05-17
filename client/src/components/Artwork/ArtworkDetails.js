@@ -48,15 +48,6 @@ const licenseValidation = Yup.object().shape({
   licenseType: Yup.string()
     .matches(/(personal|commercial)/)
     .required('License type is required'),
-  licenseeName: Yup.string()
-    .trim()
-    .required('License holder full name is required'),
-  licenseeCompany: Yup.string()
-    .notRequired()
-    .when('commercial', {
-      is: 'commercial',
-      then: Yup.string().trim().required('License holder company is required'),
-    }),
 });
 
 const ArtworkDetails = ({ match }) => {
@@ -92,18 +83,22 @@ const ArtworkDetails = ({ match }) => {
     enableReinitialize: true,
     initialValues: {
       licenseType: state.license,
-      licenseeName: '',
-      licenseeCompany: '',
     },
     validationSchema: licenseValidation,
     async onSubmit(values) {
       try {
-        await ax.post(`/api/cart/artwork/${match.params.id}`, values);
-        handleModalClose();
-        dispatch({
-          type: 'updateCart',
-          cart: { ...store.user.cart, [state.artwork._id]: true },
-          cartSize: store.user.cartSize + 1,
+        // $CART
+        // await ax.post(`/api/cart/artwork/${match.params.id}`, values);
+        // handleModalClose();
+        // dispatch({
+        //   type: 'updateCart',
+        //   cart: { ...store.user.cart, [state.artwork._id]: true },
+        //   cartSize: store.user.cartSize + 1,
+        // });
+
+        history.push({
+          pathname: `/checkout/${match.params.id}`,
+          state: { payload: values },
         });
       } catch (err) {
         console.log(err);
@@ -515,36 +510,22 @@ const ArtworkDetails = ({ match }) => {
                       <>
                         <Typography variant="body2" component="p">
                           Artwork price:
-                          {state.artwork.current.price
-                            ? ` $${state.artwork.current.price}`
+                          {state.artwork.current.personal
+                            ? ` $${state.artwork.current.personal}`
                             : ' Free'}
                         </Typography>
                         <Typography variant="body2" component="p">
                           Commercial license:
                           {state.artwork.current.commercial
                             ? ` $${state.artwork.current.commercial}`
+                            : state.artwork.current.personal
+                            ? ` $${state.artwork.current.personal}`
                             : ' Free'}
                         </Typography>
                       </>
                     ) : null}
-                    <Typography variant="body2" component="p">
-                      {state.artwork.current.availability === 'available'
-                        ? 'Total: '
-                        : null}
-                      {state.artwork.current.availability === 'available'
-                        ? state.artwork.current.price
-                          ? state.license === 'personal'
-                            ? `$${state.artwork.current.price}`
-                            : `$${
-                                state.artwork.current.price +
-                                state.artwork.current.commercial
-                              }`
-                          : state.license === 'personal'
-                          ? 'Free'
-                          : `$${state.artwork.current.commercial}`
-                        : 'Showcase'}
-                    </Typography>
-                    {state.artwork.current.availability === 'available' &&
+                    {/* $CART */}
+                    {/*                     {state.artwork.current.availability === 'available' &&
                     !store.user.cart[state.artwork._id] ? (
                       <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="artworkLicense">
@@ -565,20 +546,23 @@ const ArtworkDetails = ({ match }) => {
                           ) : null}
                         </Select>
                       </FormControl>
-                    ) : null}
+                    ) : null} */}
                   </CardContent>
                   <CardActions>
                     {state.artwork.owner._id !== store.user.id &&
                     state.artwork.current.availability === 'available' ? (
                       state.license === 'personal' ? (
-                        state.artwork.current.price ? (
+                        state.artwork.current.personal ? (
                           store.user.cart[state.artwork._id] ? (
                             <Button component={Link} to={'/cart/'}>
                               In cart
                             </Button>
                           ) : (
-                            <Button onClick={() => handleModalOpen()}>
-                              Add to cart
+                            <Button
+                              component={Link}
+                              to={`/checkout/${match.params.id}`}
+                            >
+                              Continue
                             </Button>
                           )
                         ) : (
@@ -590,10 +574,13 @@ const ArtworkDetails = ({ match }) => {
                             Download
                           </Button>
                         )
-                      ) : state.artwork.current.price ||
+                      ) : state.artwork.current.personal ||
                         state.artwork.current.commercial ? (
-                        <Button onClick={() => handleModalOpen()}>
-                          Add to cart
+                        <Button
+                          component={Link}
+                          to={`/checkout/${match.params.id}`}
+                        >
+                          Continue
                         </Button>
                       ) : (
                         <Button
@@ -648,43 +635,6 @@ const ArtworkDetails = ({ match }) => {
                         },
                       ]}
                     />
-                    <TextField
-                      name="licenseeName"
-                      label="License holder full name"
-                      type="text"
-                      value={values.licenseeName}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={
-                        touched.licenseeName ? errors.licenseeName : ''
-                      }
-                      error={
-                        touched.licenseeName && Boolean(errors.licenseeName)
-                      }
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                    {state.license === 'commercial' && (
-                      <TextField
-                        name="licenseeCompany"
-                        label="License holder company"
-                        type="text"
-                        value={values.licenseeCompany}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        helperText={
-                          touched.licenseeCompany ? errors.licenseeCompany : ''
-                        }
-                        error={
-                          touched.licenseeCompany &&
-                          Boolean(errors.licenseeCompany)
-                        }
-                        margin="dense"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    )}
                   </CardContent>
                   <CardActions className={classes.actions}>
                     <Button

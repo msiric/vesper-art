@@ -10,6 +10,7 @@ const config = require('../config/mailer');
 const secret = require('../config/secret');
 const auth = require('../utils/auth');
 const createError = require('http-errors');
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const getUserProfile = async (req, res, next) => {
   try {
@@ -19,7 +20,7 @@ const getUserProfile = async (req, res, next) => {
     }).deepPopulate('savedArtwork.current');
     // }).deepPopulate(
     //   'artwork.current',
-    //   '_id cover created title price type license availability description use commercial'
+    //   '_id cover created title personal type license availability description use commercial'
     // );
     if (foundUser) {
       const foundArtwork = await Artwork.find({
@@ -28,12 +29,75 @@ const getUserProfile = async (req, res, next) => {
         .populate('owner')
         .populate(
           'current',
-          '_id cover created title price type license availability description use commercial'
+          '_id cover created title personal type license availability description use commercial'
         );
       return res.json({ user: foundUser, artwork: foundArtwork });
     } else {
       throw createError(400, 'User not found');
     }
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+const getUserStatistics = async (req, res, next) => {
+  try {
+    // brisanje accounta
+    /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
+    }); */
+    const { userId } = req.params;
+    const foundUser = await User.findOne({
+      $and: [{ _id: userId }, { active: true }],
+    }).deepPopulate(
+      'purchases.version purchases.licenses sales.version sales.licenses'
+    );
+    const balance = await stripe.balance.retrieve({
+      stripe_account: foundUser.stripeId,
+    });
+    const { amount, currency } = balance.available[0];
+    return res.json({ statistics: foundUser, amount: amount });
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+const getUserSales = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { from, to } = req.query;
+    const foundOrders =
+      from && to
+        ? await Order.find({
+            $and: [
+              { seller: userId },
+              { created: { $gte: new Date(from), $lt: new Date(to) } },
+            ],
+          }).populate('review version licenses sales.review')
+        : await Order.find({
+            $and: [{ seller: userId }],
+          }).populate('review version licenses sales.review');
+    return res.json({ statistics: foundOrders });
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+const getUserPurchases = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { from, to } = req.query;
+    const foundOrders =
+      from && to
+        ? await Order.find({
+            $and: [
+              { buyer: userId },
+              { created: { $gte: new Date(from), $lt: new Date(to) } },
+            ],
+          }).populate('review version licenses sales.review')
+        : await Order.find({
+            $and: [{ buyer: userId }],
+          }).populate('review version licenses sales.review');
+    return res.json({ statistics: foundOrders });
   } catch (err) {
     next(err, res);
   }
@@ -192,7 +256,7 @@ const getUserDashboard = async (req, res, next) => {
   try {
     const user = res.locals.user;
     const balance = await stripe.balance.retrieve({
-      stripe_account: user.stripeId,
+      stripe_account: user.onboarded,
     });
 
     res.render('dashboard', {
@@ -339,6 +403,7 @@ const deactivateUser = async (req, res, next) => {
                   discount: null,
                   inbox: null,
                   notifications: null,
+                  rating: null,
                   reviews: null,
                   artwork: null,
                   savedArtwork: null,
@@ -410,6 +475,7 @@ const deactivateUser = async (req, res, next) => {
                       discount: null,
                       inbox: null,
                       notifications: null,
+                      rating: null,
                       reviews: null,
                       artwork: null,
                       savedArtwork: null,
@@ -498,6 +564,7 @@ const deactivateUser = async (req, res, next) => {
                       discount: null,
                       inbox: null,
                       notifications: null,
+                      rating: null,
                       reviews: null,
                       artwork: null,
                       savedArtwork: null,
@@ -582,6 +649,7 @@ const deactivateUser = async (req, res, next) => {
                     discount: null,
                     inbox: null,
                     notifications: null,
+                    rating: null,
                     reviews: null,
                     artwork: null,
                     savedArtwork: null,
@@ -618,6 +686,9 @@ const deactivateUser = async (req, res, next) => {
 
 module.exports = {
   getUserProfile,
+  getUserStatistics,
+  getUserSales,
+  getUserPurchases,
   updateUserProfile,
   getUserSettings,
   updateUserEmail,

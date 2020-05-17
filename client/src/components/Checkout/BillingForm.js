@@ -1,149 +1,183 @@
 import React from 'react';
-import { TextField, Grid, Typography } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useStateValue } from '../Store/Stripe';
+import { TextField, Grid, Typography, Button } from '@material-ui/core';
+import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput';
+import { Formik, Form, Field, FieldArray } from 'formik';
+import * as Yup from 'yup';
+import BillingFormStyles from './BillingForm.style';
 
-const BillingForm = () => {
-  const [{ formValues }, dispatch] = useStateValue();
+const validationSchema = Yup.object().shape({
+  firstname: Yup.string().trim().required('First name is required'),
+  lastname: Yup.string().trim().required('Last name is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
+  address: Yup.string().trim().required('Address is required'),
+  zip: Yup.string().trim().required('Postal code is required'),
+  city: Yup.string().trim().required('City is required'),
+  country: Yup.string().trim().required('Country is required'),
+});
+
+const BillingForm = ({ billing, handleStepChange, handleBillingSave }) => {
+  const classes = BillingFormStyles();
 
   return (
     <>
-      <Grid item xs={12}>
-        <Typography variant="h6">Billing Information</Typography>
-      </Grid>
-      <Grid item xs={12} sm={4}>
-        <TextField
-          label="First Name"
-          name="firstname"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          value={formValues.firstname}
-          onChange={(e) =>
-            dispatch({
-              type: 'editFormValue',
-              key: 'firstname',
-              value: e.target.value,
-            })
-          }
-        />
-      </Grid>
-      <Grid item xs={12} sm={4}>
-        <TextField
-          label="Last Name"
-          name="lastname"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          value={formValues.lastname}
-          onChange={(e) =>
-            dispatch({
-              type: 'editFormValue',
-              key: 'lastname',
-              value: e.target.value,
-            })
-          }
-        />
-      </Grid>
-      <Grid item xs={12} sm={4}>
-        <TextField
-          label="Email Address"
-          name="email"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          value={formValues.email}
-          onChange={(e) =>
-            dispatch({
-              type: 'editFormValue',
-              key: 'email',
-              value: e.target.value,
-            })
-          }
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          label="Street Address"
-          name="address1"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          value={formValues.line1}
-          onChange={(e) =>
-            dispatch({
-              type: 'editFormValue',
-              key: 'line1',
-              value: e.target.value,
-            })
-          }
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          label="Postal Code"
-          name="postal_code"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          value={formValues.postal_code}
-          onChange={(e) =>
-            dispatch({
-              type: 'editFormValue',
-              key: 'postal_code',
-              value: e.target.value,
-            })
-          }
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          label="City"
-          name="city"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          value={formValues.city}
-          onChange={(e) =>
-            dispatch({
-              type: 'editFormValue',
-              key: 'city',
-              value: e.target.value,
-            })
-          }
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <Autocomplete
-          options={countries}
-          getOptionLabel={(option) => option.name}
-          renderInput={(params) => (
-            <TextField
-              label="Country"
-              name="country"
-              variant="outlined"
-              margin="dense"
-              required
-              fullWidth
-              {...params}
-            />
-          )}
-          value={formValues.country}
-          onChange={(event, value) => {
-            dispatch({
-              type: 'editFormValue',
-              key: 'country',
-              value: value,
-            });
-          }}
-        />
-      </Grid>
+      <Formik
+        initialValues={{ ...billing }}
+        enableReinitialize
+        validationSchema={validationSchema}
+        onSubmit={async (values) => {
+          handleBillingSave(values);
+          handleStepChange(1);
+        }}
+      >
+        {({ values, errors, touched, enableReinitialize }) => (
+          <Form>
+            <Grid item xs={12}>
+              <Typography variant="h6">Billing Information</Typography>
+
+              <Grid item xs={12} sm={4}>
+                <Field name="firstname">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      label="First name"
+                      type="text"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                    />
+                  )}
+                </Field>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Field name="lastname">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      label="Last name"
+                      type="text"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                    />
+                  )}
+                </Field>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Field name="email">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      label="Email"
+                      type="text"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                    />
+                  )}
+                </Field>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Field name="address">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      label="Street address"
+                      type="text"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                    />
+                  )}
+                </Field>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Field name="zip">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      label="Postal code"
+                      type="text"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                    />
+                  )}
+                </Field>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Field name="city">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      label="City"
+                      type="text"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                    />
+                  )}
+                </Field>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Field name="country">
+                  {({
+                    field,
+                    form: { touched, errors, setFieldValue, setFieldTouched },
+                    meta,
+                  }) => (
+                    <AutocompleteInput
+                      {...field}
+                      options={countries}
+                      handleChange={(e, value) =>
+                        setFieldValue('country', value || '')
+                      }
+                      handleBlur={() => setFieldTouched('country', true)}
+                      getOptionLabel={(option) => option.name}
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      label="Country"
+                    />
+                  )}
+                </Field>
+              </Grid>
+            </Grid>
+            <Grid container item justify="flex-end">
+              <Button
+                className={classes.button}
+                onClick={() => handleStepChange(-1)}
+              >
+                Back
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                type="submit"
+              >
+                Next
+              </Button>
+            </Grid>
+          </Form>
+        )}
+      </Formik>
     </>
   );
 };

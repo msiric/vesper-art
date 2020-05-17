@@ -10,6 +10,18 @@ router
   .delete(isAuthenticated, userController.deactivateUser);
 
 router
+  .route('/user/:userId/statistics')
+  .get(isAuthenticated, userController.getUserStatistics);
+
+router
+  .route('/user/:userId/sales')
+  .get(isAuthenticated, userController.getUserSales);
+
+router
+  .route('/user/:userId/purchases')
+  .get(isAuthenticated, userController.getUserPurchases);
+
+router
   .route('/user/:userId/settings')
   .get(isAuthenticated, userController.getUserSettings);
 

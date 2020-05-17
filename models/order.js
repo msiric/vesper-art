@@ -1,25 +1,26 @@
 const mongoose = require('mongoose');
 const deepPopulate = require('mongoose-deep-populate')(mongoose);
 const Schema = mongoose.Schema;
+const { formatPrice } = require('../utils/helpers');
 
 const OrderSchema = new Schema({
   buyer: { type: Schema.Types.ObjectId, ref: 'User' },
-  details: [
-    {
-      seller: { type: Schema.Types.ObjectId, ref: 'User' },
-      version: { type: Schema.Types.ObjectId, ref: 'Version' },
-      artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
-      licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }],
-    },
-  ],
+  seller: { type: Schema.Types.ObjectId, ref: 'User' },
+  artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
+  version: { type: Schema.Types.ObjectId, ref: 'Version' },
+  licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }],
   discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
-  amount: Number,
-  fee: Number,
-  status: Number,
-  bulk: Boolean,
-  chargeId: String,
+  review: { type: Schema.Types.ObjectId, ref: 'Review' },
+  spent: { type: Number, get: formatPrice },
+  earned: { type: Number, get: formatPrice },
+  fee: { type: Number, get: formatPrice },
+  status: String,
+  intent: String,
   created: { type: Date, default: Date.now },
 });
+
+OrderSchema.set('toObject', { getters: true });
+OrderSchema.set('toJSON', { getters: true });
 
 OrderSchema.plugin(deepPopulate);
 

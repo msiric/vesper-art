@@ -32,17 +32,6 @@ const validationSchema = Yup.object().shape({
       licenseType: Yup.string()
         .matches(/(personal|commercial)/)
         .required('License type is required'),
-      licenseeName: Yup.string()
-        .trim()
-        .required('License holder full name is required'),
-      licenseeCompany: Yup.string()
-        .notRequired()
-        .when('commercial', {
-          is: 'commercial',
-          then: Yup.string()
-            .trim()
-            .required('License holder company is required'),
-        }),
     })
   ),
 });
@@ -55,7 +44,7 @@ const Cart = () => {
     discount: null,
     modal: {
       id: null,
-      licenses: [{ licenseType: '', licenseeName: '', licenseeCompany: '' }],
+      licenses: [{ licenseType: '' }],
       artwork: {},
       open: false,
     },
@@ -119,10 +108,8 @@ const Cart = () => {
           id && value
             ? value.licenses.map((license) => ({
                 licenseType: license.type,
-                licenseeName: license.credentials,
-                licenseeCompany: license.company,
               }))
-            : [{ licenseType: '', licenseeName: '', licenseeCompany: '' }],
+            : [{ licenseType: '' }],
         artwork: id && value ? value.artwork : {},
         open: true,
       },
@@ -135,7 +122,7 @@ const Cart = () => {
       modal: {
         ...prevState.modal,
         id: null,
-        licenses: [{ licenseType: '', licenseeName: '', licenseeCompany: '' }],
+        licenses: [{ licenseType: '' }],
         artwork: {},
         open: false,
       },
@@ -228,11 +215,11 @@ const Cart = () => {
                         amount: item.artwork.current.commercial,
                       };
                       personalLicenses.total =
-                        personalLicenses.length * item.artwork.current.price;
+                        personalLicenses.length * item.artwork.current.personal;
                       commercialLicenses.total =
                         commercialLicenses.length *
                         (commercialLicenses.amount +
-                          item.artwork.current.price);
+                          item.artwork.current.personal);
                       if (!licenses.current.id[item.artwork.current._id])
                         licenses.current = {
                           id: {
@@ -301,6 +288,7 @@ const Cart = () => {
                                         value={personalLicenses.total}
                                         displayType={'text'}
                                         thousandSeparator={true}
+                                        decimalScale={2}
                                         prefix={'$'}
                                       />
                                     ) : (
@@ -315,6 +303,7 @@ const Cart = () => {
                                         value={commercialLicenses.total}
                                         displayType={'text'}
                                         thousandSeparator={true}
+                                        decimalScale={2}
                                         prefix={'$'}
                                       />
                                     ) : (
@@ -367,6 +356,7 @@ const Cart = () => {
                                     value={licenses.current.personal.amount}
                                     displayType={'text'}
                                     thousandSeparator={true}
+                                    decimalScale={2}
                                     prefix={'$'}
                                   />
                                 ) : (
@@ -381,6 +371,7 @@ const Cart = () => {
                                     value={licenses.current.commercial.amount}
                                     displayType={'text'}
                                     thousandSeparator={true}
+                                    decimalScale={2}
                                     prefix={'$'}
                                   />
                                 ) : (
@@ -434,6 +425,7 @@ const Cart = () => {
                                 }
                                 displayType={'text'}
                                 thousandSeparator={true}
+                                decimalScale={2}
                                 prefix={'$'}
                               />
                             ) : (
@@ -574,56 +566,6 @@ const Cart = () => {
                                           )
                                         }
                                       </Field>
-                                      <Field
-                                        name={`licenses.${index}.licenseeName`}
-                                      >
-                                        {({
-                                          field,
-                                          form: { touched, errors },
-                                          meta,
-                                        }) => (
-                                          <TextField
-                                            {...field}
-                                            label="License holder full name"
-                                            type="text"
-                                            helperText={
-                                              meta.touched && meta.error
-                                            }
-                                            error={
-                                              meta.touched &&
-                                              Boolean(meta.error)
-                                            }
-                                            margin="dense"
-                                            variant="outlined"
-                                            fullWidth
-                                          />
-                                        )}
-                                      </Field>
-                                      <Field
-                                        name={`licenses.${index}.licenseeCompany`}
-                                      >
-                                        {({
-                                          field,
-                                          form: { touched, errors },
-                                          meta,
-                                        }) => (
-                                          <TextField
-                                            {...field}
-                                            label="License holder company"
-                                            type="text"
-                                            helperText={
-                                              meta.touched && meta.error
-                                            }
-                                            error={
-                                              meta.touched &&
-                                              Boolean(meta.error)
-                                            }
-                                            margin="dense"
-                                            variant="outlined"
-                                            fullWidth
-                                          />
-                                        )}
-                                      </Field>
                                       {values.licenses.length > 1 ? (
                                         <Button
                                           type="button"
@@ -649,13 +591,9 @@ const Cart = () => {
                                           'commercial'
                                         ? {
                                             licenseType: '',
-                                            licenseeName: '',
-                                            licenseeCompany: '',
                                           }
                                         : {
                                             licenseType: 'personal',
-                                            licenseeName: '',
-                                            licenseeCompany: '',
                                           }
                                     )
                                   }

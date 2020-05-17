@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Paper, Box, CircularProgress } from '@material-ui/core';
-import CustomizedSteppers from './Stepper';
+import Steppers from './Steppers';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
-const Main = () => {
+const Main = ({}) => {
   const [state, setState] = useState({ loading: true, stripe: null });
 
   const fetchStripePromise = async () => {
@@ -35,7 +35,7 @@ const Main = () => {
           <Paper elevation={5}>
             {state.stripe ? (
               <Elements stripe={state.stripe}>
-                <CustomizedSteppers />
+                <Steppers />
               </Elements>
             ) : null}
           </Paper>

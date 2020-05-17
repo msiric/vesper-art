@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import { useHistory } from 'react-router-dom';
 import { useFormik } from 'formik';
@@ -57,7 +57,7 @@ const validationSchema = Yup.object().shape({
         .matches(/(commercial|personal)/)
         .required('Artwork license is required'),
     }),
-  artworkPrice: Yup.number()
+  artworkPersonal: Yup.number()
     .notRequired()
     .when(['artworkAvailability', 'artworkType'], {
       is: (artworkAvailability, artworkType) =>
@@ -100,9 +100,26 @@ const validationSchema = Yup.object().shape({
 
 const AddArtwork = () => {
   const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({
+    loading: true,
+    capabilities: {},
+  });
   const history = useHistory();
 
   const classes = AddArtworkStyles();
+
+  const fetchAccount = async () => {
+    try {
+      const { data } = await ax.get(`/stripe/account/${store.user.stripeId}`);
+      setState({ ...state, loading: false, capabilities: data.capabilities });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
+
+  useEffect(() => {
+    if (store.user.stripeId) fetchAccount();
+  }, []);
 
   const {
     setFieldValue,
@@ -119,9 +136,9 @@ const AddArtwork = () => {
       artworkTitle: '',
       artworkType: '',
       artworkAvailability: '',
-      artworkPrice: '',
       artworkLicense: '',
       artworkUse: '',
+      artworkPersonal: '',
       artworkCommercial: '',
       artworkCategory: '',
       artworkDescription: '',
@@ -158,6 +175,9 @@ const AddArtwork = () => {
             </Typography>
             {!store.user.stripeId
               ? 'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
+              : state.capabilities.cardPayments !== 'active' ||
+                state.capabilities.platformPayments !== 'active'
+              ? 'To make your artwork commercially available, complete your Stripe account information'
               : null}
             <CardContent>
               <UploadInput name="artworkMedia" setFieldValue={setFieldValue} />
@@ -207,7 +227,12 @@ const AddArtwork = () => {
                     {
                       value: 'commercial',
                       text: 'Commercial',
-                      disabled: store.user.stripeId ? false : true,
+                      disabled:
+                        store.user.stripeId &&
+                        state.capabilities.cardPayments === 'active' &&
+                        state.capabilities.platformPayments === 'active'
+                          ? false
+                          : true,
                     },
                     { value: 'free', text: 'Free' },
                   ]}
@@ -236,13 +261,17 @@ const AddArtwork = () => {
               {values.artworkAvailability === 'available' &&
                 values.artworkType === 'commercial' && (
                   <PriceInput
-                    name="artworkPrice"
+                    name="artworkPersonal"
                     label="Price"
-                    value={values.artworkPrice}
+                    value={values.artworkPersonal}
                     handleChange={handleChange}
                     handleBlur={handleBlur}
-                    helperText={touched.artworkPrice ? errors.artworkPrice : ''}
-                    error={touched.artworkPrice && Boolean(errors.artworkPrice)}
+                    helperText={
+                      touched.artworkPersonal ? errors.artworkPersonal : ''
+                    }
+                    error={
+                      touched.artworkPersonal && Boolean(errors.artworkPersonal)
+                    }
                     margin="dense"
                     variant="outlined"
                     fullWidth
@@ -263,9 +292,15 @@ const AddArtwork = () => {
                       {
                         value: 'separate',
                         text: 'Charge commercial license separately',
-                        disabled: store.user.stripeId ? false : true,
+                        disabled:
+                          store.user.stripeId &&
+                          state.capabilities.cardPayments === 'active' &&
+                          state.capabilities.platformPayments === 'active'
+                            ? false
+                            : true,
                       },
-                      values.artworkAvailability && values.artworkType
+                      values.artworkAvailability === 'available' &&
+                      values.artworkType === 'commercial'
                         ? {
                             value: 'included',
                             text: 'Include commercial license in the price',

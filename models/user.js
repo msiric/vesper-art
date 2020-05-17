@@ -7,6 +7,7 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
   email: {
     type: String,
+    lowercase: true,
     trim: true,
     index: {
       unique: true,
@@ -40,7 +41,8 @@ const UserSchema = new Schema({
   discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
   inbox: Number,
   notifications: Number,
-  reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
+  rating: Number,
+  reviews: Number,
   artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
   purchases: [{ type: Schema.Types.ObjectId, ref: 'Order' }],

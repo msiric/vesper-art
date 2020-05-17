@@ -60,7 +60,7 @@ const validationSchema = Yup.object().shape({
         .matches(/(commercial|personal)/)
         .required('Artwork license is required'),
     }),
-  artworkPrice: Yup.number()
+  artworkPersonal: Yup.number()
     .notRequired()
     .when(['artworkAvailability', 'artworkType'], {
       is: (artworkAvailability, artworkType) =>
@@ -107,15 +107,28 @@ const EditArtwork = ({ match }) => {
     loading: true,
     isDeleting: false,
     artwork: {},
+    capabilities: {},
   });
   const history = useHistory();
 
   const classes = EditArtworkStyles();
 
-  const fetchArtwork = async () => {
+  const fetchData = async () => {
     try {
-      const { data } = await ax.get(`/api/edit_artwork/${match.params.id}`);
-      setState({ ...state, loading: false, artwork: data.artwork });
+      const {
+        data: { artwork },
+      } = await ax.get(`/api/edit_artwork/${match.params.id}`);
+      const {
+        data: { capabilities },
+      } = store.user.stripeId
+        ? await ax.get(`/stripe/account/${store.user.stripeId}`)
+        : { data: { capabilities: {} } };
+      setState({
+        ...state,
+        loading: false,
+        artwork: artwork,
+        capabilities: capabilities,
+      });
     } catch (err) {
       setState({ ...state, loading: false });
     }
@@ -135,7 +148,7 @@ const EditArtwork = ({ match }) => {
   };
 
   useEffect(() => {
-    fetchArtwork();
+    fetchData();
   }, []);
 
   const {
@@ -156,7 +169,7 @@ const EditArtwork = ({ match }) => {
       artworkAvailability: state.artwork.availability || '',
       artworkLicense: state.artwork.license || '',
       artworkUse: state.artwork.use || '',
-      artworkPrice: state.artwork.price || '',
+      artworkPersonal: state.artwork.personal || '',
       artworkCommercial: state.artwork.commercial || '',
       artworkCategory: state.artwork.category || '',
       artworkDescription: state.artwork.description || '',
@@ -198,6 +211,9 @@ const EditArtwork = ({ match }) => {
               </Typography>
               {!store.user.stripeId
                 ? 'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
+                : state.capabilities.cardPayments !== 'active' ||
+                  state.capabilities.platformPayments !== 'active'
+                ? 'To make your artwork commercially available, complete your Stripe account information'
                 : null}
               <CardContent>
                 <UploadInput
@@ -252,7 +268,12 @@ const EditArtwork = ({ match }) => {
                       {
                         value: 'commercial',
                         text: 'Commercial',
-                        disabled: store.user.stripeId ? false : true,
+                        disabled:
+                          store.user.stripeId &&
+                          state.capabilities.cardPayments === 'active' &&
+                          state.capabilities.platformPayments === 'active'
+                            ? false
+                            : true,
                       },
                       { value: 'free', text: 'Free' },
                     ]}
@@ -281,16 +302,17 @@ const EditArtwork = ({ match }) => {
                 {values.artworkAvailability === 'available' &&
                   values.artworkType === 'commercial' && (
                     <PriceInput
-                      name="artworkPrice"
+                      name="artworkPersonal"
                       label="Price"
-                      value={values.artworkPrice}
+                      value={values.artworkPersonal}
                       handleChange={handleChange}
                       handleBlur={handleBlur}
                       helperText={
-                        touched.artworkPrice ? errors.artworkPrice : ''
+                        touched.artworkPersonal ? errors.artworkPersonal : ''
                       }
                       error={
-                        touched.artworkPrice && Boolean(errors.artworkPrice)
+                        touched.artworkPersonal &&
+                        Boolean(errors.artworkPersonal)
                       }
                       margin="dense"
                       variant="outlined"
@@ -312,9 +334,15 @@ const EditArtwork = ({ match }) => {
                         {
                           value: 'separate',
                           text: 'Charge commercial license separately',
-                          disabled: store.user.stripeId ? false : true,
+                          disabled:
+                            store.user.stripeId &&
+                            state.capabilities.cardPayments === 'active' &&
+                            state.capabilities.platformPayments === 'active'
+                              ? false
+                              : true,
                         },
-                        values.artworkAvailability && values.artworkType
+                        values.artworkAvailability === 'available' &&
+                        values.artworkType === 'commercial'
                           ? {
                               value: 'included',
                               text: 'Include commercial license in the price',

@@ -14,8 +14,12 @@ const store = {
     name: null,
     email: null,
     photo: null,
+    messages: null,
+    notifications: null,
     saved: {},
     cart: {},
+    stripeId: null,
+    country: null,
     cartSize: null,
   },
 };
@@ -74,6 +78,24 @@ const reducer = (state, action) => {
           stripeId: action.stripeId,
           country: action.country,
           cartSize: action.cartSize,
+        },
+      };
+    case 'resetUser':
+      return {
+        ...state,
+        user: {
+          authenticated: false,
+          id: null,
+          name: null,
+          email: null,
+          photo: null,
+          messages: null,
+          notifications: null,
+          saved: {},
+          cart: {},
+          stripeId: null,
+          country: null,
+          cartSize: null,
         },
       };
     case 'updateCart':
