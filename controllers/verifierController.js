@@ -4,15 +4,15 @@ const PDFDocument = require('pdfkit');
 const { Base64Encode } = require('base64-stream');
 const createError = require('http-errors');
 
-const validateLicense = async (req, res, next) => {
+const verifyLicense = async (req, res, next) => {
   try {
     const { fingerprint } = req.body;
     const foundLicense = await License.findOne({
       fingerprint: fingerprint,
       active: true,
-    });
+    }).populate('artwork');
     if (foundLicense) {
-      return res.status(200).json({ foundLicense: foundLicense });
+      return res.status(200).json({ license: foundLicense });
     } else {
       throw createError(400, 'License not found');
     }
@@ -44,6 +44,6 @@ const displayLicense = async (req, res, next) => {
 };
 
 module.exports = {
-  validateLicense,
+  verifyLicense,
   displayLicense,
 };
