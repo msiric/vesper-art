@@ -606,8 +606,6 @@ const saveLicenses = async (req, res, next) => {
           newLicense.artwork = foundArtwork._id;
           newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
           newLicense.type = license.licenseType;
-          newLicense.credentials = license.licenseeName;
-          newLicense.company = license.licenseeCompany;
           newLicense.active = false;
           newLicense.price =
             license.licenseType == 'commercial'

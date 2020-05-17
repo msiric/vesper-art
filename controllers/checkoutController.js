@@ -331,8 +331,8 @@ const addToCart = async (req, res, next) => {
   session.startTransaction();
   try {
     const { artworkId } = req.params;
-    const { licenseType, licenseeName, licenseeCompany } = req.body;
-    if ((licenseType, licenseeName)) {
+    const { licenseType } = req.body;
+    if (licenseType) {
       const foundArtwork = await Artwork.findOne({
         $and: [{ _id: artworkId }, { active: true }],
       })
@@ -357,8 +357,6 @@ const addToCart = async (req, res, next) => {
               newLicense.artwork = foundArtwork._id;
               newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
               newLicense.type = licenseType;
-              newLicense.credentials = licenseeName;
-              newLicense.company = licenseeCompany;
               newLicense.active = false;
               newLicense.price =
                 licenseType == 'commercial'

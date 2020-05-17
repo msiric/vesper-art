@@ -20,17 +20,6 @@ const validationSchema = Yup.object().shape({
       licenseType: Yup.string()
         .matches(/(personal|commercial)/)
         .required('License type is required'),
-      licenseeName: Yup.string()
-        .trim()
-        .required('License holder full name is required'),
-      licenseeCompany: Yup.string()
-        .notRequired()
-        .when('commercial', {
-          is: 'commercial',
-          then: Yup.string()
-            .trim()
-            .required('License holder company is required'),
-        }),
     })
   ),
 });
@@ -151,34 +140,6 @@ const LicenseForm = ({
                                 )
                               }
                             </Field>
-                            <Field name={`licenses.${index}.licenseeName`}>
-                              {({ field, form: { touched, errors }, meta }) => (
-                                <TextField
-                                  {...field}
-                                  label="License holder full name"
-                                  type="text"
-                                  helperText={meta.touched && meta.error}
-                                  error={meta.touched && Boolean(meta.error)}
-                                  margin="dense"
-                                  variant="outlined"
-                                  fullWidth
-                                />
-                              )}
-                            </Field>
-                            <Field name={`licenses.${index}.licenseeCompany`}>
-                              {({ field, form: { touched, errors }, meta }) => (
-                                <TextField
-                                  {...field}
-                                  label="License holder company"
-                                  type="text"
-                                  helperText={meta.touched && meta.error}
-                                  error={meta.touched && Boolean(meta.error)}
-                                  margin="dense"
-                                  variant="outlined"
-                                  fullWidth
-                                />
-                              )}
-                            </Field>
                             {values.licenses.length > 1 ? (
                               <Button
                                 type="button"
@@ -201,13 +162,9 @@ const LicenseForm = ({
                               artwork.current.license === 'commercial'
                               ? {
                                   licenseType: '',
-                                  licenseeName: '',
-                                  licenseeCompany: '',
                                 }
                               : {
                                   licenseType: 'personal',
-                                  licenseeName: '',
-                                  licenseeCompany: '',
                                 }
                           )
                         }

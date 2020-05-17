@@ -96,15 +96,6 @@ const licenseValidation = Yup.object().shape({
   licenseType: Yup.string()
     .matches(/(personal|commercial)/)
     .required('License type is required'),
-  licenseeName: Yup.string()
-    .trim()
-    .required('License holder full name is required'),
-  licenseeCompany: Yup.string()
-    .notRequired()
-    .when('commercial', {
-      is: 'commercial',
-      then: Yup.string().trim().required('License holder company is required'),
-    }),
 });
 
 const Settings = () => {
@@ -677,8 +668,6 @@ const Settings = () => {
                     <Formik
                       initialValues={{
                         licenseType: 'personal',
-                        licenseeName: '',
-                        licenseeCompany: '',
                       }}
                       enableReinitialize
                       validationSchema={licenseValidation}
