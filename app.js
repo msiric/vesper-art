@@ -13,7 +13,6 @@ const path = require('path');
 
 const app = express();
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
 
 app.use(
   cors({
@@ -42,12 +41,6 @@ app.use(
   })
 );
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(function (req, res, next) {
-  'use strict';
-  req.io = io;
-  next();
-});
 
 mongoose.connect(
   config.mongo.database,

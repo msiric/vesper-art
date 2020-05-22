@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import ax from '../../axios.config';
 import { useHistory } from 'react-router-dom';
 import { Context } from '../../components/Store/Store';
@@ -28,7 +28,9 @@ import {
   FavoriteRounded as SavedIcon,
   SettingsRounded as SettingsIcon,
 } from '@material-ui/icons';
+import openSocket from 'socket.io-client';
 import HeaderStyles from './Header.style';
+const ENDPOINT = 'http://localhost:5000';
 
 const Header = () => {
   const [store, dispatch] = useContext(Context);
@@ -72,6 +74,13 @@ const Header = () => {
     handleMenuClose();
     history.push('/login');
   };
+
+  useEffect(() => {
+    const socket = openSocket(ENDPOINT);
+    socket.on('sendNotification', (data) => {
+      console.log(data);
+    });
+  });
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
