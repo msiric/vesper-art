@@ -34,6 +34,9 @@ const ENDPOINT = 'http://localhost:5000';
 
 const Header = () => {
   const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({
+    connected: false,
+  });
   const history = useHistory();
 
   const classes = HeaderStyles();
@@ -77,8 +80,21 @@ const Header = () => {
 
   useEffect(() => {
     const socket = openSocket(ENDPOINT);
+    if (!state.connected) {
+      socket.emit('authenticateUser', `Bearer ${window.accessToken}`);
+    }
+    socket.on('authenticatedUser', (data) => {
+      setState({ ...state, connected: true });
+    });
+    socket.on('unauthenticatedUser', (data) => {
+      setState({ ...state, connected: false });
+    });
     socket.on('sendNotification', (data) => {
       console.log(data);
+      dispatch({
+        type: 'updateNotifications',
+        notifications: store.user.notifications + 1,
+      });
     });
   });
 

@@ -115,6 +115,22 @@ const reducer = (state, action) => {
           saved: action.saved,
         },
       };
+    case 'updateMessages':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          messages: action.messages,
+        },
+      };
+    case 'updateNotifications':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          notifications: action.notifications,
+        },
+      };
     default:
       return state;
   }
