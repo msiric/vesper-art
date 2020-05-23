@@ -44,7 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect(
   config.mongo.database,
-  { useNewUrlParser: true, useUnifiedTopology: true },
+  { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
   function (err) {
     if (err) console.log(err);
     console.log('Connected to the database');

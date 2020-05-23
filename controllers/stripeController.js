@@ -12,7 +12,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const FormData = require('form-data');
 const querystring = require('querystring');
 const currency = require('currency.js');
-const { socketApi } = require('../realtime/io');
+const socketApi = require('../realtime/io');
 
 const receiveWebhookEvent = async (req, res, next) => {
   try {

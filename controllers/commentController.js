@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const Artwork = require('../models/artwork');
+const Notification = require('../models/notification');
 const User = require('../models/user');
 const Comment = require('../models/comment');
 const auth = require('../utils/auth');
 const createError = require('http-errors');
+const socketApi = require('../realtime/io');
 
 // needs transaction (not tested)
 const postComment = async (req, res, next) => {
@@ -13,7 +15,7 @@ const postComment = async (req, res, next) => {
   try {
     const { commentContent } = req.body;
     const foundArtwork = await Artwork.find({
-      $and: [{ owner: artworkId }, { active: true }],
+      $and: [{ _id: artworkId }, { active: true }],
     }).session(session);
     if (!foundArtwork) {
       throw createError(400, 'Artwork not found');
@@ -24,12 +26,26 @@ const postComment = async (req, res, next) => {
       comment.content = commentContent;
       comment.modified = false;
       const savedComment = await comment.save({ session });
-      await Artwork.updateOne(
+      const updatedArtwork = await Artwork.findOneAndUpdate(
         {
           _id: artworkId,
         },
-        { $push: { comments: savedComment._id } }
+        { $push: { comments: savedComment._id } },
+        { new: true }
       ).session(session);
+      await User.updateOne(
+        { _id: updatedArtwork.owner },
+        { $inc: { notifications: 1 } }
+      ).session(session);
+      // new start
+      const newNotification = new Notification();
+      newNotification.link = foundArtwork._id;
+      newNotification.type = 'Comment';
+      newNotification.receiver = updatedArtwork.owner;
+      newNotification.read = false;
+      await newNotification.save({ session });
+      socketApi.sendNotification(updatedArtwork.owner, foundArtwork._id);
+      // new end
       await session.commitTransaction();
       res.status(200).json({
         message: 'Comment posted successfully',
@@ -37,6 +53,7 @@ const postComment = async (req, res, next) => {
       });
     }
   } catch (err) {
+    console.log(err);
     await session.abortTransaction();
     next(err, res);
   } finally {

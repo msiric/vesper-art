@@ -5,6 +5,7 @@ const Order = require('../models/order');
 const Artwork = require('../models/artwork');
 const User = require('../models/user');
 const createError = require('http-errors');
+const socketApi = require('../realtime/io');
 
 // needs transaction (done)
 const postReview = async (req, res, next) => {
@@ -55,8 +56,7 @@ const postReview = async (req, res, next) => {
             },
             {
               rating: newRating,
-              /* $inc: { reviews: 1, notifications: 1 }, */
-              $inc: { reviews: 1 },
+              $inc: { reviews: 1, notifications: 1 },
             }
           ).session(session);
           await Order.updateOne(
@@ -71,9 +71,15 @@ const postReview = async (req, res, next) => {
             },
             { $push: { reviews: savedReview._id } }
           ).session(session);
-          /*           if (users[seller._id]) {
-            users[seller._id].emit('increaseNotif', {});
-          } */
+          // new start
+          const newNotification = new Notification();
+          newNotification.link = foundOrder._id;
+          newNotification.type = 'Review';
+          newNotification.receiver = foundOrder.seller;
+          newNotification.read = false;
+          await newNotification.save({ session });
+          socketApi.sendNotification(foundOrder.seller, foundOrder._id);
+          // new end
           await session.commitTransaction();
           return res.status(200).json('Review successfully published');
         } else {

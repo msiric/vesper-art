@@ -34,7 +34,8 @@ io.on('connection', (socket) => {
 // });
 
 socketApi.sendNotification = (id, data) => {
-  io.to(socketApi.connections[id]).emit('sendNotification', data);
+  const userId = id.toString();
+  io.to(socketApi.connections[userId]).emit('sendNotification', data);
 };
 
 module.exports = socketApi;
