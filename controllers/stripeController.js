@@ -12,6 +12,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const FormData = require('form-data');
 const querystring = require('querystring');
 const currency = require('currency.js');
+const { socketApi } = require('../realtime/io');
 
 const receiveWebhookEvent = async (req, res, next) => {
   try {
@@ -354,8 +355,17 @@ const createOrder = async (intent) => {
     ).session(session);
     await User.updateOne(
       { _id: sellerId },
-      { $push: { sales: savedOrder._id } }
+      { $push: { sales: savedOrder._id }, $inc: { notifications: 1 } }
     ).session(session);
+    // new start
+    const newNotification = new Notification();
+    newNotification.link = savedOrder._id;
+    newNotification.type = 'Order';
+    newNotification.receiver = sellerId;
+    newNotification.read = false;
+    await newNotification.save({ session });
+    socketApi.sendNotification(sellerId, savedOrder._id);
+    // new end
     await session.commitTransaction();
     return true;
   } catch (err) {
