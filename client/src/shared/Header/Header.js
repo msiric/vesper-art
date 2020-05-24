@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ax from '../../axios.config';
 import { useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -27,10 +27,7 @@ import {
   FavoriteRounded as SavedIcon,
   SettingsRounded as SettingsIcon,
 } from '@material-ui/icons';
-import openSocket from 'socket.io-client';
-import axios from 'axios';
 import HeaderStyles from './Header.style';
-const ENDPOINT = 'http://localhost:5000';
 
 const Header = React.memo(
   ({ store, dispatch }) => {
@@ -74,43 +71,6 @@ const Header = React.memo(
       handleMenuClose();
       history.push('/login');
     };
-
-    useEffect(() => {
-      const socket = openSocket(ENDPOINT);
-      socket.emit('authenticateUser', `Bearer ${window.accessToken}`);
-      socket.on('sendNotification', (data) => {
-        console.log(data);
-        dispatch({
-          type: 'updateNotifications',
-          notifications: store.user.notifications + 1,
-        });
-      });
-      socket.on('expiredToken', async () => {
-        const { data } = await axios.post(`/api/auth/refresh_token`, {
-          headers: {
-            credentials: 'include',
-          },
-        });
-        window.accessToken = data.accessToken;
-        dispatch({
-          type: 'setUser',
-          authenticated: true,
-          id: data.user.id,
-          name: data.user.name,
-          email: data.user.email,
-          photo: data.user.photo,
-          messages: data.user.messages,
-          notifications: data.user.notifications,
-          saved: data.user.saved.reduce(function (object, item) {
-            object[item] = true;
-            return object;
-          }, {}),
-          stripeId: data.user.stripeId,
-          country: data.user.country,
-          cartSize: Object.keys(data.user.cart).length,
-        });
-      });
-    }, [store.user.authenticated]);
 
     const menuId = 'primary-search-account-menu';
     const renderMenu = (

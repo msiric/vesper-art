@@ -1,8 +1,17 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect, useContext } from 'react';
+import { Context } from '../../components/Store/Store';
 import MainLayout from '../../layouts/MainLayout';
 import AuthLayout from '../../layouts/AuthLayout';
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
-
+import {
+  BrowserRouter,
+  Route,
+  Redirect,
+  Switch,
+  useHistory,
+} from 'react-router-dom';
+import openSocket from 'socket.io-client';
+import axios from 'axios';
+const ENDPOINT = 'http://localhost:5000';
 const routes = [
   // Artwork router
   {
@@ -146,7 +155,6 @@ const routes = [
     type: 'protected',
   },
 ];
-
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   <Route
     {...rest}
@@ -196,8 +204,22 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
     }}
   />
 );
-
 const Router = () => {
+  const [store, dispatch] = useContext(Context);
+
+  const history = useHistory();
+
+  useEffect(() => {
+    const socket = openSocket(ENDPOINT);
+    socket.emit('authenticateUser', `Bearer ${window.accessToken}`);
+    socket.on('sendNotification', (data) => {
+      console.log(data);
+      dispatch({
+        type: 'updateNotifications',
+        notifications: store.user.notifications + 1,
+      });
+    });
+  }, [store.user.authenticated]);
   return (
     <BrowserRouter>
       <Route
@@ -224,5 +246,4 @@ const Router = () => {
     </BrowserRouter>
   );
 };
-
 export default Router;

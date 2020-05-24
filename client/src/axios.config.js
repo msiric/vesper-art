@@ -35,8 +35,8 @@ ax.interceptors.response.use(
       error.response.message === 'Forbidden'
     ) {
       // log out!!!!!
-      /* TokenStorage.clear();
-    router.push({ name: 'root' }); */
+      // TokenStorage.clear();
+      // router.push({ name: 'root' });
 
       return new Promise((resolve, reject) => {
         reject(error);
