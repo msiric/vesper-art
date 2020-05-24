@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import ax from '../../axios.config';
 import { useHistory } from 'react-router-dom';
-import { Context } from '../../components/Store/Store';
 import { Link } from 'react-router-dom';
 import {
   Button,
@@ -29,139 +28,154 @@ import {
   SettingsRounded as SettingsIcon,
 } from '@material-ui/icons';
 import openSocket from 'socket.io-client';
+import axios from 'axios';
 import HeaderStyles from './Header.style';
 const ENDPOINT = 'http://localhost:5000';
 
-const Header = () => {
-  const [store, dispatch] = useContext(Context);
-  const [state, setState] = useState({
-    connected: false,
-  });
-  const history = useHistory();
+const Header = React.memo(
+  ({ store, dispatch }) => {
+    const history = useHistory();
 
-  const classes = HeaderStyles();
+    const classes = HeaderStyles();
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
 
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+    const isMenuOpen = Boolean(anchorEl);
+    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    const handleProfileMenuOpen = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
+    const handleMobileMenuClose = () => {
+      setMobileMoreAnchorEl(null);
+    };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
+    const handleMenuClose = () => {
+      setAnchorEl(null);
+      handleMobileMenuClose();
+    };
 
-  const handleMobileMenuOpen = (event) => {
-    setMobileMoreAnchorEl(event.currentTarget);
-  };
+    const handleMobileMenuOpen = (event) => {
+      setMobileMoreAnchorEl(event.currentTarget);
+    };
 
-  const handleLogout = async () => {
-    const { data } = await ax.post('/api/auth/logout', {
-      headers: {
-        credentials: 'include',
-      },
-    });
-    dispatch({
-      type: 'resetUser',
-    });
-    window.accessToken = data.accessToken;
-    handleMenuClose();
-    history.push('/login');
-  };
-
-  useEffect(() => {
-    const socket = openSocket(ENDPOINT);
-    if (!state.connected) {
-      socket.emit('authenticateUser', `Bearer ${window.accessToken}`);
-    }
-    socket.on('authenticatedUser', (data) => {
-      setState({ ...state, connected: true });
-    });
-    socket.on('unauthenticatedUser', (data) => {
-      setState({ ...state, connected: false });
-    });
-    socket.on('sendNotification', (data) => {
-      console.log(data);
-      dispatch({
-        type: 'updateNotifications',
-        notifications: store.user.notifications + 1,
+    const handleLogout = async () => {
+      const { data } = await ax.post('/api/auth/logout', {
+        headers: {
+          credentials: 'include',
+        },
       });
-    });
-  });
+      dispatch({
+        type: 'resetUser',
+      });
+      window.accessToken = data.accessToken;
+      handleMenuClose();
+      history.push('/login');
+    };
 
-  const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      {!store.user.stripeId && (
-        <MenuItem component={Link} to="/onboarding">
-          Become a seller
+    useEffect(() => {
+      const socket = openSocket(ENDPOINT);
+      socket.emit('authenticateUser', `Bearer ${window.accessToken}`);
+      socket.on('sendNotification', (data) => {
+        console.log(data);
+        dispatch({
+          type: 'updateNotifications',
+          notifications: store.user.notifications + 1,
+        });
+      });
+      socket.on('expiredToken', async () => {
+        const { data } = await axios.post(`/api/auth/refresh_token`, {
+          headers: {
+            credentials: 'include',
+          },
+        });
+        window.accessToken = data.accessToken;
+        dispatch({
+          type: 'setUser',
+          authenticated: true,
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          photo: data.user.photo,
+          messages: data.user.messages,
+          notifications: data.user.notifications,
+          saved: data.user.saved.reduce(function (object, item) {
+            object[item] = true;
+            return object;
+          }, {}),
+          stripeId: data.user.stripeId,
+          country: data.user.country,
+          cartSize: Object.keys(data.user.cart).length,
+        });
+      });
+    }, [store.user.authenticated]);
+
+    const menuId = 'primary-search-account-menu';
+    const renderMenu = (
+      <Menu
+        anchorEl={anchorEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        id={menuId}
+        keepMounted
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={isMenuOpen}
+        onClose={handleMenuClose}
+      >
+        {!store.user.stripeId && (
+          <MenuItem component={Link} to="/onboarding">
+            Become a seller
+          </MenuItem>
+        )}
+        <MenuItem component={Link} to={`/user/${store.user.name}`}>
+          Profile
         </MenuItem>
-      )}
-      <MenuItem component={Link} to={`/user/${store.user.name}`}>
-        Profile
-      </MenuItem>
-      <MenuItem component={Link} to="/dashboard">
-        Dashboard
-      </MenuItem>
-      <MenuItem component={Link} to="/my_artwork">
-        Artwork
-      </MenuItem>
-      <MenuItem component={Link} to="/orders">
-        Orders
-      </MenuItem>
-      <MenuItem component={Link} to="/settings">
-        Settings
-      </MenuItem>
-      <MenuItem onClick={handleLogout}>Log out</MenuItem>
-    </Menu>
-  );
+        <MenuItem component={Link} to="/dashboard">
+          Dashboard
+        </MenuItem>
+        <MenuItem component={Link} to="/my_artwork">
+          Artwork
+        </MenuItem>
+        <MenuItem component={Link} to="/orders">
+          Orders
+        </MenuItem>
+        <MenuItem component={Link} to="/settings">
+          Settings
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>Log out</MenuItem>
+      </Menu>
+    );
 
-  const mobileMenuId = 'primary-search-account-menu-mobile';
-  const renderAuthMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton aria-label="Show messages" color="inherit">
-          <Badge badgeContent={store.user.messages} color="secondary">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton aria-label="Show notifications" color="inherit">
-          <Badge badgeContent={store.user.notifications} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      {/* $CART */}
-      {/* <MenuItem component={Link} to="/cart">
+    const mobileMenuId = 'primary-search-account-menu-mobile';
+    const renderAuthMobileMenu = (
+      <Menu
+        anchorEl={mobileMoreAnchorEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        id={mobileMenuId}
+        keepMounted
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={isMobileMenuOpen}
+        onClose={handleMobileMenuClose}
+      >
+        <MenuItem>
+          <IconButton aria-label="Show messages" color="inherit">
+            <Badge badgeContent={store.user.messages} color="secondary">
+              <MailIcon />
+            </Badge>
+          </IconButton>
+          <p>Messages</p>
+        </MenuItem>
+        <MenuItem>
+          <IconButton aria-label="Show notifications" color="inherit">
+            <Badge badgeContent={store.user.notifications} color="secondary">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+          <p>Notifications</p>
+        </MenuItem>
+        {/* $CART */}
+        {/* <MenuItem component={Link} to="/cart">
         <IconButton aria-label="Show cart" color="inherit">
           <Badge badgeContent={store.user.cartSize} color="secondary">
             <CartIcon />
@@ -169,82 +183,82 @@ const Header = () => {
         </IconButton>
         <p>Cart</p>
       </MenuItem> */}
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          aria-label="Show profile"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountIcon />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
-
-  const renderUnauthMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem component={Link} to="/login">
-        <p>Log in</p>
-      </MenuItem>
-      <MenuItem component={Link} to="/signup">
-        <p>Sign up</p>
-      </MenuItem>
-    </Menu>
-  );
-
-  return (
-    <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography
-            component={Link}
-            to="/"
-            className={classes.title}
-            variant="h6"
-            noWrap
+        <MenuItem onClick={handleProfileMenuOpen}>
+          <IconButton
+            aria-label="Show profile"
+            aria-haspopup="true"
+            color="inherit"
           >
-            Material-UI
-          </Typography>
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
+            <AccountIcon />
+          </IconButton>
+          <p>Profile</p>
+        </MenuItem>
+      </Menu>
+    );
+
+    const renderUnauthMobileMenu = (
+      <Menu
+        anchorEl={mobileMoreAnchorEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        id={mobileMenuId}
+        keepMounted
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={isMobileMenuOpen}
+        onClose={handleMobileMenuClose}
+      >
+        <MenuItem component={Link} to="/login">
+          <p>Log in</p>
+        </MenuItem>
+        <MenuItem component={Link} to="/signup">
+          <p>Sign up</p>
+        </MenuItem>
+      </Menu>
+    );
+
+    return (
+      <>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography
+              component={Link}
+              to="/"
+              className={classes.title}
+              variant="h6"
+              noWrap
+            >
+              Material-UI
+            </Typography>
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <InputBase
+                placeholder="Search…"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{ 'aria-label': 'search' }}
+              />
             </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </div>
-          <div className={classes.grow} />
-          {store.user.authenticated ? (
-            <>
-              <div className={classes.sectionDesktop}>
-                <IconButton aria-label="Show messages" color="inherit">
-                  <Badge badgeContent={store.user.messages} color="secondary">
-                    <MailIcon />
-                  </Badge>
-                </IconButton>
-                <IconButton aria-label="Show notifications" color="inherit">
-                  <Badge
-                    badgeContent={store.user.notifications}
-                    color="secondary"
-                  >
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-                {/* <IconButton
+            <div className={classes.grow} />
+            {store.user.authenticated ? (
+              <>
+                <div className={classes.sectionDesktop}>
+                  <IconButton aria-label="Show messages" color="inherit">
+                    <Badge badgeContent={store.user.messages} color="secondary">
+                      <MailIcon />
+                    </Badge>
+                  </IconButton>
+                  <IconButton aria-label="Show notifications" color="inherit">
+                    <Badge
+                      badgeContent={store.user.notifications}
+                      color="secondary"
+                    >
+                      <NotificationsIcon />
+                    </Badge>
+                  </IconButton>
+                  {/* <IconButton
                   component={Link}
                   to="/cart"
                   aria-label="Show cart"
@@ -254,58 +268,62 @@ const Header = () => {
                     <CartIcon />
                   </Badge>
                 </IconButton> */}
-                <IconButton
-                  edge="end"
-                  aria-label="Show profile"
-                  aria-controls={menuId}
-                  aria-haspopup="true"
-                  onClick={handleProfileMenuOpen}
-                  color="inherit"
-                >
-                  <AccountIcon />
-                </IconButton>
-              </div>
-              <div className={classes.sectionMobile}>
-                <IconButton
-                  aria-label="Show more"
-                  aria-controls={mobileMenuId}
-                  aria-haspopup="true"
-                  onClick={handleMobileMenuOpen}
-                  color="inherit"
-                >
-                  <MoreIcon />
-                </IconButton>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className={classes.sectionDesktop}>
-                <Button component={Link} to="/login" color="default">
-                  Log in
-                </Button>
-                <Button component={Link} to="/signup" color="secondary">
-                  Sign up
-                </Button>
-              </div>
-              <div className={classes.sectionMobile}>
-                <IconButton
-                  aria-label="Show more"
-                  aria-controls={mobileMenuId}
-                  aria-haspopup="true"
-                  onClick={handleMobileMenuOpen}
-                  color="inherit"
-                >
-                  <MoreIcon />
-                </IconButton>
-              </div>
-            </>
-          )}
-        </Toolbar>
-      </AppBar>
-      {store.user.authenticated ? renderAuthMobileMenu : renderUnauthMobileMenu}
-      {renderMenu}
-    </>
-  );
-};
+                  <IconButton
+                    edge="end"
+                    aria-label="Show profile"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={handleProfileMenuOpen}
+                    color="inherit"
+                  >
+                    <AccountIcon />
+                  </IconButton>
+                </div>
+                <div className={classes.sectionMobile}>
+                  <IconButton
+                    aria-label="Show more"
+                    aria-controls={mobileMenuId}
+                    aria-haspopup="true"
+                    onClick={handleMobileMenuOpen}
+                    color="inherit"
+                  >
+                    <MoreIcon />
+                  </IconButton>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={classes.sectionDesktop}>
+                  <Button component={Link} to="/login" color="default">
+                    Log in
+                  </Button>
+                  <Button component={Link} to="/signup" color="secondary">
+                    Sign up
+                  </Button>
+                </div>
+                <div className={classes.sectionMobile}>
+                  <IconButton
+                    aria-label="Show more"
+                    aria-controls={mobileMenuId}
+                    aria-haspopup="true"
+                    onClick={handleMobileMenuOpen}
+                    color="inherit"
+                  >
+                    <MoreIcon />
+                  </IconButton>
+                </div>
+              </>
+            )}
+          </Toolbar>
+        </AppBar>
+        {store.user.authenticated
+          ? renderAuthMobileMenu
+          : renderUnauthMobileMenu}
+        {renderMenu}
+      </>
+    );
+  },
+  (prevProps, nextProps) => console.log(prevProps, nextProps)
+);
 
 export default Header;

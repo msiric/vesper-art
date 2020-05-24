@@ -1,5 +1,4 @@
 const io = require('socket.io')();
-const createError = require('http-errors');
 const jwt = require('jsonwebtoken');
 const socketApi = {};
 
@@ -9,16 +8,28 @@ socketApi.connections = {};
 io.on('connection', (socket) => {
   console.log('A user connected');
   socket.on('authenticateUser', (authentication) => {
-    if (!authentication) throw createError(403, 'Forbidden');
     try {
       const token = authentication.split(' ')[1];
-      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      console.log(authentication);
+      if (!token) {
+        socket.disconnect();
+        return false;
+      }
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
+        ignoreExpiration: true,
+      });
       const data = jwt.decode(token);
-      socketApi.connections[data.id] = socket.id;
-      socket.emit('authenticatedUser');
+      if (Date.now() >= data.exp * 1000 || !data.active) {
+        socket.emit('expiredToken');
+        delete socketApi.connections[data.id];
+      } else {
+        socketApi.connections[data.id] = {
+          id: socket.id,
+          exp: data.exp,
+        };
+      }
     } catch (err) {
       console.log(err);
-      socket.emit('unauthenticatedUser');
     }
   });
 });
@@ -35,7 +46,12 @@ io.on('connection', (socket) => {
 
 socketApi.sendNotification = (id, data) => {
   const userId = id.toString();
-  io.to(socketApi.connections[userId]).emit('sendNotification', data);
+  if (Date.now() < socketApi.connections[userId].exp * 1000)
+    io.to(socketApi.connections[userId].id).emit('sendNotification', data);
+  else {
+    io.to(socketApi.connections[userId].id).emit('expiredToken');
+    delete socketApi.connections[data.id];
+  }
 };
 
 module.exports = socketApi;

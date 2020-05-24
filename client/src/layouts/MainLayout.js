@@ -17,7 +17,7 @@ const MainLayout = ({ children }) => {
         </Backdrop>
       ) : (
         <>
-          <Header />
+          <Header store={store} dispatch={dispatch} />
           {children}
         </>
       )}
