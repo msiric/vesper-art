@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import SelectInput from '../../shared/SelectInput/SelectInput';
 import { Grow, Card, CardContent, Typography, Button } from '@material-ui/core';
 import { MonetizationOnRounded as MonetizationIcon } from '@material-ui/icons';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import OnboardingStyles from './Onboarding.style';
 
 const supportedCountries = [

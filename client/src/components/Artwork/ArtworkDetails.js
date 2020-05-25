@@ -37,7 +37,7 @@ import {
   EditRounded as EditIcon,
 } from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import ArtworkDetailsStyles from './ArtworkDetails.style';
 
 const commentValidation = Yup.object().shape({

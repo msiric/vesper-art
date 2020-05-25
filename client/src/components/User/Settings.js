@@ -58,7 +58,7 @@ import {
 } from '@material-ui/icons';
 import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput';
 import { Link, useHistory } from 'react-router-dom';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import SettingsStyles from './Settings.style';
 
 const emailValidation = Yup.object().shape({

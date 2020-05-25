@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Container, Grid, CircularProgress } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import VerifyTokenStyles from './VerifyToken.style';
 
 const VerifyToken = ({ match }) => {

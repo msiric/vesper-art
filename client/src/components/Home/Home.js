@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store';
 import { Grid, CircularProgress } from '@material-ui/core';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import { withSnackbar } from 'notistack';
 import Gallery from './Gallery';
 import HomeStyles from './Home.style';

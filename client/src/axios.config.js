@@ -1,4 +1,4 @@
-import axios from 'axios';
+/* import axios from 'axios';
 
 const ax = axios.create();
 
@@ -68,3 +68,4 @@ ax.interceptors.response.use(
 );
 
 export default ax;
+ */

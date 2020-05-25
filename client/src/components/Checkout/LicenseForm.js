@@ -11,7 +11,7 @@ import { Autocomplete } from '@material-ui/lab';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import SelectField from '../../shared/SelectInput/SelectInput';
 import * as Yup from 'yup';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import LicenseFormStyles from './LicenseForm.style';
 
 const validationSchema = Yup.object().shape({

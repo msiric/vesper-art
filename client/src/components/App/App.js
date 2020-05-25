@@ -27,13 +27,12 @@ const App = () => {
 
   const getRefreshToken = async () => {
     try {
-      if (!window.accessToken) {
+      if (!store.user.token) {
         const { data } = await axios.post('/api/auth/refresh_token', {
           headers: {
             credentials: 'include',
           },
         });
-        window.accessToken = data.accessToken;
 
         if (data.user) {
           dispatch({
@@ -44,6 +43,7 @@ const App = () => {
             brand: store.main.brand,
             theme: store.main.theme,
             authenticated: true,
+            token: data.accessToken,
             id: data.user.id,
             name: data.user.name,
             email: data.user.email,

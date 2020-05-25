@@ -62,7 +62,7 @@ import { withSnackbar } from 'notistack';
 import { Link, useHistory } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
 import { format } from 'date-fns';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import ProfileStyles from './Profile.style';
 
 const userPhotoConfig = {

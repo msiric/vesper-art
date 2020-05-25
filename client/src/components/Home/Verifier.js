@@ -9,7 +9,7 @@ import {
   Button,
   Typography,
 } from '@material-ui/core';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import { format } from 'date-fns';
 import { withSnackbar } from 'notistack';
 import VerifierStyles from './Verifier.style';

@@ -27,10 +27,10 @@ io.on('connection', (socket) => {
 
 socketApi.sendNotification = (id, data) => {
   const userId = id.toString();
-  if (Date.now() < socketApi.connections[userId].exp * 1000)
-    io.to(socketApi.connections[userId].id).emit('sendNotification', data);
-  else {
-    io.to(socketApi.connections[userId].id).emit('expiredToken');
+  if (socketApi.connections[userId]) {
+    if (Date.now() < socketApi.connections[userId].exp * 1000)
+      io.to(socketApi.connections[userId].id).emit('sendNotification', data);
+    else io.to(socketApi.connections[userId].id).emit('expiredToken');
   }
 };
 

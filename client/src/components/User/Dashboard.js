@@ -23,7 +23,7 @@ import { format, eachDayOfInterval, subDays } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import NumberFormat from 'react-number-format';
 import { useTheme } from '@material-ui/core/styles';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import DashboardStyles from './Dashboard.style';
 
 function Dashboard() {

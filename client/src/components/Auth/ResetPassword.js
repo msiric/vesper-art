@@ -11,7 +11,7 @@ import {
   TextField,
   Button,
 } from '@material-ui/core';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import ResetPasswordStyles from './ResetPassword.style';
 
 const validationSchema = Yup.object().shape({

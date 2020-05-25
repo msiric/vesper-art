@@ -20,7 +20,7 @@ import {
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import { format } from 'date-fns';
 import ProductsTableHead from './Head';
 import OrdersStyles from './Orders.style';

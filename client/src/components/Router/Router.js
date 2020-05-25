@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useEffect, useContext } from 'react';
 import { Context } from '../../components/Store/Store';
+import Interceptor from '../../shared/Interceptor/Interceptor';
 import MainLayout from '../../layouts/MainLayout';
 import AuthLayout from '../../layouts/AuthLayout';
 import {
@@ -12,6 +13,7 @@ import {
 import openSocket from 'socket.io-client';
 import axios from 'axios';
 const ENDPOINT = 'http://localhost:5000';
+
 const routes = [
   // Artwork router
   {
@@ -155,6 +157,7 @@ const routes = [
     type: 'protected',
   },
 ];
+
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   <Route
     {...rest}
@@ -211,9 +214,8 @@ const Router = () => {
 
   useEffect(() => {
     const socket = openSocket(ENDPOINT);
-    socket.emit('authenticateUser', `Bearer ${window.accessToken}`);
+    socket.emit('authenticateUser', `Bearer ${store.user.token}`);
     socket.on('sendNotification', (data) => {
-      console.log(data);
       dispatch({
         type: 'updateNotifications',
       });
@@ -225,15 +227,21 @@ const Router = () => {
             credentials: 'include',
           },
         });
-        window.accessToken = data.accessToken;
         dispatch({
-          type: 'updateEvents',
+          type: 'updateUser',
+          token: data.accessToken,
+          email: data.user.email,
+          photo: data.user.photo,
           messages: data.user.messages,
           notifications: data.user.notifications,
+          saved: data.user.saved,
+          cart: data.user.cart,
+          stripeId: data.user.stripeId,
+          country: data.user.country,
+          cartSize: data.user.cartSize,
         });
-        socket.emit('authenticateUser', `Bearer ${window.accessToken}`);
+        socket.emit('authenticateUser', `Bearer ${data.accessToken}`);
       } catch (err) {
-        window.accessToken = null;
         dispatch({
           type: 'resetUser',
         });
@@ -242,6 +250,7 @@ const Router = () => {
   }, [store.user.authenticated]);
   return (
     <BrowserRouter>
+      <Interceptor />
       <Route
         render={(route) => {
           const { location } = route;
@@ -249,7 +258,7 @@ const Router = () => {
             <Switch location={location}>
               {routes.map(({ path, Component, exact, type }) => (
                 <AppRoute
-                  token={window.accessToken}
+                  token={store.user.token}
                   type={type}
                   path={path}
                   key={path}
