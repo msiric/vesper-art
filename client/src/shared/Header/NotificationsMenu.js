@@ -1,17 +1,7 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import {
-  Button,
-  Menu,
-  MenuItem,
-  List,
-  ListItem,
-  ListItemAvatar,
-  Avatar,
-  ListItemIcon,
-  ListItemText,
-} from '@material-ui/core';
-import { NotificationsRounded as NotificationsIcon } from '@material-ui/icons';
+import { Menu, List } from '@material-ui/core';
+import NotificationItem from './NotificationItem';
 import NotificationsMenuStyles from './NotificationsMenu.style';
 
 const StyledMenu = withStyles({
@@ -34,42 +24,28 @@ const StyledMenu = withStyles({
   />
 ));
 
-const NotificationsMenu = ({ anchorEl, handleNotificationsMenuClose }) => {
+const NotificationsMenu = ({ notifications, handleNotificationsMenuClose }) => {
   const classes = NotificationsMenuStyles();
 
-  return (
+  return notifications.loading ? (
+    'Loading'
+  ) : (
     <StyledMenu
       id="customized-menu"
-      anchorEl={anchorEl}
+      anchorEl={notifications.anchorEl}
       keepMounted
-      open={Boolean(anchorEl)}
+      open={Boolean(notifications.anchorEl)}
       onClose={handleNotificationsMenuClose}
     >
       <List className={classes.root}>
-        <ListItem>
-          <ListItemAvatar>
-            <Avatar>
-              <NotificationsIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary="Photos" secondary="Jan 9, 2014" />
-        </ListItem>
-        <ListItem>
-          <ListItemAvatar>
-            <Avatar>
-              <NotificationsIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary="Work" secondary="Jan 7, 2014" />
-        </ListItem>
-        <ListItem>
-          <ListItemAvatar>
-            <Avatar>
-              <NotificationsIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary="Vacation" secondary="July 20, 2014" />
-        </ListItem>
+        {notifications.data && notifications.data.length
+          ? notifications.data.map((notification) => (
+              <NotificationItem
+                type={notification.type}
+                id={notification.link}
+              />
+            ))
+          : 'No notifications'}
       </List>
     </StyledMenu>
   );

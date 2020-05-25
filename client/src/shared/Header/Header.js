@@ -33,15 +33,14 @@ import HeaderStyles from './Header.style';
 
 const Header = () => {
   const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({
+    profile: { anchorEl: null, mobileAnchorEl: null },
+    notifications: { anchorEl: null, data: null, loading: false },
+  });
 
   const history = useHistory();
 
   const classes = HeaderStyles();
-
-  const [state, setState] = useState({
-    profile: { anchorEl: null, mobileAnchorEl: null },
-    notifications: { anchorEl: null },
-  });
 
   const handleProfileMenuOpen = (e) => {
     setState((prevState) => ({
@@ -83,14 +82,51 @@ const Header = () => {
     }));
   };
 
-  const handleNotificationsMenuOpen = (e) => {
-    setState((prevState) => ({
-      ...prevState,
-      notifications: {
-        ...prevState.notifications,
-        anchorEl: e.currentTarget,
-      },
-    }));
+  const handleNotificationsMenuOpen = async (e) => {
+    if (
+      !state.notifications.data ||
+      state.notifications.data.length !== store.user.notifications
+    ) {
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          loading: true,
+        },
+      }));
+      try {
+        const { data } = await ax.get(
+          `/api/user/${store.user.id}/notifications`
+        );
+        setState((prevState) => ({
+          ...prevState,
+          notifications: {
+            ...prevState.notifications,
+            anchorEl: e.currentTarget,
+            data: data.notifications,
+            loading: false,
+          },
+        }));
+      } catch (err) {
+        setState((prevState) => ({
+          ...prevState,
+          notifications: {
+            ...prevState.notifications,
+            anchorEl: null,
+            data: null,
+            loading: false,
+          },
+        }));
+      }
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          anchorEl: e.currentTarget,
+        },
+      }));
+    }
   };
 
   const handleNotificationsMenuClose = () => {
@@ -327,7 +363,7 @@ const Header = () => {
       {store.user.authenticated ? renderAuthMobileMenu : renderUnauthMobileMenu}
       {renderProfileMenu}
       <NotificationsMenu
-        anchorEl={state.notifications.anchorEl}
+        notifications={state.notifications}
         handleNotificationsMenuClose={handleNotificationsMenuClose}
       />
     </>

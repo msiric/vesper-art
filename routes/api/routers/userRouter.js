@@ -30,6 +30,10 @@ router
   .patch(isAuthenticated, userController.updateUserPreferences);
 
 router
+  .route('/user/:userId/notifications')
+  .get(isAuthenticated, userController.getUserNotifications);
+
+router
   .route('/user/:userId/update_email')
   .patch(isAuthenticated, userController.updateUserEmail);
 
