@@ -34,16 +34,14 @@ ax.interceptors.response.use(
       error.config.url === '/api/auth/refresh_token' ||
       error.response.message === 'Forbidden'
     ) {
-      // log out!!!!!
-      // TokenStorage.clear();
-      // router.push({ name: 'root' });
+      // log out
+      // redirect to login
 
       return new Promise((resolve, reject) => {
         reject(error);
       });
     }
 
-    // handle error
     const { data } = await axios.post(`/api/auth/refresh_token`, {
       headers: {
         credentials: 'include',

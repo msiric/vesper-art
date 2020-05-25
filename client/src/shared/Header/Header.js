@@ -27,6 +27,7 @@ import {
   FavoriteRounded as SavedIcon,
   SettingsRounded as SettingsIcon,
 } from '@material-ui/icons';
+import NotificationsMenu from './NotificationsMenu';
 import HeaderStyles from './Header.style';
 
 const Header = React.memo(
@@ -35,27 +36,69 @@ const Header = React.memo(
 
     const classes = HeaderStyles();
 
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+    const [state, setState] = useState({
+      profile: { anchorEl: null, mobileAnchorEl: null },
+      notifications: { anchorEl: null },
+    });
 
-    const isMenuOpen = Boolean(anchorEl);
-    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-    const handleProfileMenuOpen = (event) => {
-      setAnchorEl(event.currentTarget);
+    const handleProfileMenuOpen = (e) => {
+      setState((prevState) => ({
+        ...prevState,
+        profile: {
+          ...prevState.profile,
+          anchorEl: e.currentTarget,
+        },
+      }));
     };
 
     const handleMobileMenuClose = () => {
-      setMobileMoreAnchorEl(null);
+      setState((prevState) => ({
+        ...prevState,
+        profile: {
+          ...prevState.profile,
+          mobileAnchorEl: null,
+        },
+      }));
     };
 
     const handleMenuClose = () => {
-      setAnchorEl(null);
-      handleMobileMenuClose();
+      setState((prevState) => ({
+        ...prevState,
+        profile: {
+          ...prevState.profile,
+          anchorEl: null,
+        },
+      }));
     };
 
-    const handleMobileMenuOpen = (event) => {
-      setMobileMoreAnchorEl(event.currentTarget);
+    const handleMobileMenuOpen = (e) => {
+      setState((prevState) => ({
+        ...prevState,
+        profile: {
+          ...prevState.profile,
+          mobileAnchorEl: e.currentTarget,
+        },
+      }));
+    };
+
+    const handleNotificationsMenuOpen = (e) => {
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          anchorEl: e.currentTarget,
+        },
+      }));
+    };
+
+    const handleNotificationsMenuClose = () => {
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          anchorEl: null,
+        },
+      }));
     };
 
     const handleLogout = async () => {
@@ -73,14 +116,14 @@ const Header = React.memo(
     };
 
     const menuId = 'primary-search-account-menu';
-    const renderMenu = (
+    const renderProfileMenu = (
       <Menu
-        anchorEl={anchorEl}
+        anchorEl={state.profile.anchorEl}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         id={menuId}
         keepMounted
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        open={isMenuOpen}
+        open={!!state.profile.anchorEl}
         onClose={handleMenuClose}
       >
         {!store.user.stripeId && (
@@ -110,12 +153,12 @@ const Header = React.memo(
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderAuthMobileMenu = (
       <Menu
-        anchorEl={mobileMoreAnchorEl}
+        anchorEl={state.profile.mobileAnchorEl}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         id={mobileMenuId}
         keepMounted
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        open={isMobileMenuOpen}
+        open={!!state.profile.mobileAnchorEl}
         onClose={handleMobileMenuClose}
       >
         <MenuItem>
@@ -126,7 +169,7 @@ const Header = React.memo(
           </IconButton>
           <p>Messages</p>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={handleNotificationsMenuOpen}>
           <IconButton aria-label="Show notifications" color="inherit">
             <Badge badgeContent={store.user.notifications} color="secondary">
               <NotificationsIcon />
@@ -158,12 +201,12 @@ const Header = React.memo(
 
     const renderUnauthMobileMenu = (
       <Menu
-        anchorEl={mobileMoreAnchorEl}
+        anchorEl={state.profile.mobileAnchorEl}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         id={mobileMenuId}
         keepMounted
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        open={isMobileMenuOpen}
+        open={!!state.profile.mobileAnchorEl}
         onClose={handleMobileMenuClose}
       >
         <MenuItem component={Link} to="/login">
@@ -210,7 +253,11 @@ const Header = React.memo(
                       <MailIcon />
                     </Badge>
                   </IconButton>
-                  <IconButton aria-label="Show notifications" color="inherit">
+                  <IconButton
+                    onClick={handleNotificationsMenuOpen}
+                    aria-label="Show notifications"
+                    color="inherit"
+                  >
                     <Badge
                       badgeContent={store.user.notifications}
                       color="secondary"
@@ -279,7 +326,11 @@ const Header = React.memo(
         {store.user.authenticated
           ? renderAuthMobileMenu
           : renderUnauthMobileMenu}
-        {renderMenu}
+        {renderProfileMenu}
+        <NotificationsMenu
+          anchorEl={state.notifications.anchorEl}
+          handleNotificationsMenuClose={handleNotificationsMenuClose}
+        />
       </>
     );
   },

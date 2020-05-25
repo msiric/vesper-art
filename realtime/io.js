@@ -6,7 +6,6 @@ socketApi.io = io;
 socketApi.connections = {};
 
 io.on('connection', (socket) => {
-  console.log('A user connected');
   socket.on('authenticateUser', (authentication) => {
     try {
       const token = authentication.split(' ')[1];
@@ -28,7 +27,11 @@ io.on('connection', (socket) => {
 
 socketApi.sendNotification = (id, data) => {
   const userId = id.toString();
-  io.to(socketApi.connections[userId].id).emit('sendNotification', data);
+  if (Date.now() < socketApi.connections[userId].exp * 1000)
+    io.to(socketApi.connections[userId].id).emit('sendNotification', data);
+  else {
+    io.to(socketApi.connections[userId].id).emit('expiredToken');
+  }
 };
 
 module.exports = socketApi;

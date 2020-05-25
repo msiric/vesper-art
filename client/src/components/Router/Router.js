@@ -216,8 +216,28 @@ const Router = () => {
       console.log(data);
       dispatch({
         type: 'updateNotifications',
-        notifications: store.user.notifications + 1,
       });
+    });
+    socket.on('expiredToken', async () => {
+      try {
+        const { data } = await axios.post(`/api/auth/refresh_token`, {
+          headers: {
+            credentials: 'include',
+          },
+        });
+        window.accessToken = data.accessToken;
+        dispatch({
+          type: 'updateEvents',
+          messages: data.user.messages,
+          notifications: data.user.notifications,
+        });
+        socket.emit('authenticateUser', `Bearer ${window.accessToken}`);
+      } catch (err) {
+        window.accessToken = null;
+        dispatch({
+          type: 'resetUser',
+        });
+      }
     });
   }, [store.user.authenticated]);
   return (
