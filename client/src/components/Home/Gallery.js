@@ -11,6 +11,8 @@ import {
   Typography,
   CardActions,
   IconButton,
+  Grid,
+  CircularProgress,
 } from '@material-ui/core';
 import {
   FavoriteBorderRounded as SaveIcon,
@@ -33,9 +35,10 @@ import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { ax } from '../../shared/Interceptor/Interceptor';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import GalleryStyles from './Gallery.style';
 
-const Gallery = ({ elements, location, enqueueSnackbar }) => {
+const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     modal: {
@@ -43,6 +46,7 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
       body: ``,
     },
   });
+
   const classes = GalleryStyles();
 
   const artwork = elements.map((element, index) => {
@@ -110,6 +114,73 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
       </Card>
     );
   });
+
+  const artworkTest = Array.from({ length: 80 })
+    .fill(
+      <Card key={elements[0]._id} className={classes.root}>
+        <CardHeader
+          title={elements[0].current.title}
+          subheader={
+            elements[0].current.availability === 'available'
+              ? elements[0].current.personal
+                ? `$${elements[0].current.personal}`
+                : 'Free'
+              : 'Showcase'
+          }
+        />
+        <CardMedia
+          component={Link}
+          to={`/artwork/${elements[0]._id}`}
+          className={classes.media}
+          image={elements[0].current.cover}
+          title={elements[0].current.title}
+        />
+        <CardContent>
+          <Typography
+            component={Link}
+            to={`/user/${elements[0].owner.name}`}
+            variant="body1"
+            color="textSecondary"
+            className={classes.link}
+          >
+            {elements[0].owner.name}
+          </Typography>
+        </CardContent>
+        <CardActions disableSpacing>
+          {store.user.authenticated &&
+          elements[0].owner._id === store.user.id ? (
+            <IconButton
+              component={Link}
+              to={`/edit_artwork/${elements[0]._id}`}
+              aria-label="Unsave artwork"
+            >
+              <EditIcon />
+            </IconButton>
+          ) : store.user.saved[elements[0]._id] ? (
+            <IconButton
+              onClick={() => handleUnsaveArtwork(elements[0]._id)}
+              aria-label="Unsave artwork"
+            >
+              <SavedIcon />
+            </IconButton>
+          ) : (
+            <IconButton
+              onClick={() => handleSaveArtwork(elements[0]._id)}
+              aria-label="Save artwork"
+            >
+              <SaveIcon />
+            </IconButton>
+          )}
+          <IconButton
+            onClick={() => handleModalOpen(elements[0]._id)}
+            aria-label="Share artwork"
+          >
+            <ShareIcon />
+          </IconButton>
+        </CardActions>
+      </Card>
+    )
+    .flat();
 
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;
@@ -239,7 +310,19 @@ const Gallery = ({ elements, location, enqueueSnackbar }) => {
 
   return (
     <Paper className={classes.paper}>
-      <Masonry>{artwork}</Masonry>
+      <InfiniteScroll
+        className={classes.scroller}
+        dataLength={artwork.length}
+        next={loadMore}
+        hasMore={hasMore}
+        loader={
+          <Grid item xs={12} className={classes.loader}>
+            <CircularProgress />
+          </Grid>
+        }
+      >
+        <Masonry>{artwork}</Masonry>
+      </InfiniteScroll>
       <Modal {...state.modal} handleClose={handleModalClose} />
     </Paper>
   );

@@ -4,6 +4,10 @@ const EditArtworkStyles = makeStyles((muiTheme) => ({
   fixed: {
     height: '100%',
   },
+  container: {
+    flex: 1,
+    height: '100%',
+  },
   loader: {
     display: 'flex',
     justifyContent: 'center',

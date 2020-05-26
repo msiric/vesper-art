@@ -9,7 +9,11 @@ const GalleryStyles = makeStyles((muiTheme) => ({
     textAlign: 'center',
     color: muiTheme.palette.text.secondary,
   },
+  scroller: {
+    overflow: 'initial !important',
+  },
   root: {
+    flexGrow: 1,
     maxWidth: 345,
   },
   media: {

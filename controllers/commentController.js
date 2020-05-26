@@ -47,11 +47,12 @@ const postComment = async (req, res, next) => {
       newNotification.receiver = updatedArtwork.owner;
       newNotification.read = false;
       await newNotification.save({ session });
-      socketApi.sendNotification(updatedArtwork.owner);
-      socketApi.postComment({
+      if (!foundUser._id.equals(updatedArtwork.owner))
+        socketApi.sendNotification(updatedArtwork.owner);
+      /*       socketApi.postComment({
         user: foundUser,
         comment: savedComment,
-      });
+      }); */
       // new end
       await session.commitTransaction();
       res.status(200).json({
@@ -89,9 +90,9 @@ const patchComment = async (req, res, next) => {
           foundComment.modified = true;
           await foundComment.save({ session });
           // new start
-          socketApi.patchComment({
+          /*           socketApi.patchComment({
             comment: foundComment,
-          });
+          }); */
           // new end
           await session.commitTransaction();
           res.json({
@@ -138,9 +139,9 @@ const deleteComment = async (req, res, next) => {
             _id: commentId,
           }).session(session);
           // new start
-          socketApi.deleteComment({
+          /*           socketApi.deleteComment({
             comment: foundComment,
-          });
+          }); */
           // new end
           await session.commitTransaction();
           res.json({

@@ -344,6 +344,9 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const [state, setState] = useState({
     loading: true,
     user: {},
+    hasMore: true,
+    page: 0,
+    limit: 50,
     modal: { open: false },
     tabs: { value: 0 },
   });

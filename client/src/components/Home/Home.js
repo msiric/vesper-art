@@ -12,7 +12,9 @@ const Home = ({ location, enqueueSnackbar }) => {
     loading: true,
     alerts: [],
     artwork: [],
+    hasMore: true,
     page: 0,
+    limit: 50,
   });
 
   const classes = HomeStyles();
@@ -22,9 +24,10 @@ const Home = ({ location, enqueueSnackbar }) => {
       const { data } = await ax.get(`/api/artwork?page=${state.page}`);
       setState({
         ...state,
+        hasMore: data.artwork.length < state.limit ? false : true,
         loading: false,
         artwork: data.artwork,
-        page: state.page + 50,
+        page: state.page + state.limit,
       });
     } catch (err) {
       setState({ ...state, loading: false });
@@ -45,13 +48,32 @@ const Home = ({ location, enqueueSnackbar }) => {
     }
   }, []);
 
+  const loadMore = async () => {
+    try {
+      const { data } = await ax.get(`/api/artwork?page=${state.page}`);
+      setState((prevState) => ({
+        ...prevState,
+        hasMore: data.artwork.length >= prevState.limit,
+        artwork: [...prevState.artwork].concat(data.artwork),
+        page: prevState.page + prevState.limit,
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <Grid container className={classes.container}>
       <Grid item xs={12} className={classes.grid}>
         {state.loading ? (
           <CircularProgress />
         ) : state.artwork.length ? (
-          <Gallery elements={state.artwork} />
+          <Gallery
+            elements={state.artwork}
+            hasMore={state.hasMore}
+            isNextPageLoading={state.isNextPageLoading}
+            loadMore={loadMore}
+          />
         ) : (
           'No artwork'
         )}
