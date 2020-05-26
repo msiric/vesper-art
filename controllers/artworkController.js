@@ -16,7 +16,12 @@ const putArtworkValidator = require('../utils/validation/putArtworkValidator');
 
 const getArtwork = async (req, res, next) => {
   try {
-    const foundArtwork = await Artwork.find({ active: true })
+    const { page } = req.query;
+    const skip = page && /^\d+$/.test(page) ? Number(page) : 0;
+    const foundArtwork = await Artwork.find({ active: true }, undefined, {
+      skip,
+      limit: 50,
+    })
       .populate('owner')
       .populate(
         'current',

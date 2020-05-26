@@ -12,14 +12,20 @@ const Home = ({ location, enqueueSnackbar }) => {
     loading: true,
     alerts: [],
     artwork: [],
+    page: 0,
   });
 
   const classes = HomeStyles();
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await ax.get('/api/artwork');
-      setState({ ...state, loading: false, artwork: data.artwork });
+      const { data } = await ax.get(`/api/artwork?page=${state.page}`);
+      setState({
+        ...state,
+        loading: false,
+        artwork: data.artwork,
+        page: state.page + 50,
+      });
     } catch (err) {
       setState({ ...state, loading: false });
     }
