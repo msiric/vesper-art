@@ -32,7 +32,7 @@ import {
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import GalleryStyles from './Gallery.style';
 
 const Gallery = ({ elements, location, enqueueSnackbar }) => {

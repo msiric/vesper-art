@@ -24,7 +24,7 @@ import {
   CardCvcElement,
 } from '@stripe/react-stripe-js';
 import { useHistory } from 'react-router-dom';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import * as Yup from 'yup';
 import StepConnector from './StepConnector';
 

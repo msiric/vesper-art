@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Artwork = require('../models/artwork');
 const Order = require('../models/order');
 const Version = require('../models/version');
+const Notification = require('../models/notification');
 const aws = require('aws-sdk');
 const User = require('../models/user');
 const randomString = require('randomstring');
@@ -131,7 +132,6 @@ const updateUserProfile = async (req, res, next) => {
 };
 
 const getUserSettings = async (req, res, next) => {
-  console.log(res.locals.user);
   try {
     const { userId } = req.params;
     const foundUser = await User.findOne({
@@ -142,6 +142,20 @@ const getUserSettings = async (req, res, next) => {
     } else {
       throw createError(400, 'User not found');
     }
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+const getUserNotifications = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const foundNotifications = await Notification.find({
+      receiver: userId,
+    })
+      .populate('user')
+      .sort({ created: -1 });
+    return res.json({ notifications: foundNotifications });
   } catch (err) {
     next(err, res);
   }
@@ -691,6 +705,7 @@ module.exports = {
   getUserPurchases,
   updateUserProfile,
   getUserSettings,
+  getUserNotifications,
   updateUserEmail,
   updateUserPassword,
   updateUserPreferences,

@@ -3,14 +3,16 @@ const Schema = mongoose.Schema;
 
 const NotificationSchema = new Schema({
   link: String,
-  message: String,
-  receivers: [
-    {
-      user: { type: Schema.Types.ObjectId, ref: 'User' },
-      read: Boolean
-    }
-  ],
-  created: { type: Date, default: Date.now }
+  type: String,
+  // receivers: [
+  //   {
+  //     user: { type: Schema.Types.ObjectId, ref: 'User' },
+  //     read: Boolean
+  //   }
+  // ],
+  receiver: { type: Schema.Types.ObjectId, ref: 'User' },
+  read: Boolean,
+  created: { type: Date, default: Date.now },
 });
 
 const Notification = mongoose.model('Notification', NotificationSchema);

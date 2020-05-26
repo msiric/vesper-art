@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
-import ax from '../../axios.config';
-import { useHistory } from 'react-router-dom';
 import { Context } from '../../components/Store/Store';
+import { ax } from '../../shared/Interceptor/Interceptor';
+import { useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import {
   Button,
@@ -28,35 +28,115 @@ import {
   FavoriteRounded as SavedIcon,
   SettingsRounded as SettingsIcon,
 } from '@material-ui/icons';
+import NotificationsMenu from './NotificationsMenu';
 import HeaderStyles from './Header.style';
 
 const Header = () => {
   const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({
+    profile: { anchorEl: null, mobileAnchorEl: null },
+    notifications: { anchorEl: null, data: null, loading: false },
+  });
+
   const history = useHistory();
 
   const classes = HeaderStyles();
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleProfileMenuOpen = (e) => {
+    setState((prevState) => ({
+      ...prevState,
+      profile: {
+        ...prevState.profile,
+        anchorEl: e.currentTarget,
+      },
+    }));
   };
 
   const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
+    setState((prevState) => ({
+      ...prevState,
+      profile: {
+        ...prevState.profile,
+        mobileAnchorEl: null,
+      },
+    }));
   };
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
+    setState((prevState) => ({
+      ...prevState,
+      profile: {
+        ...prevState.profile,
+        anchorEl: null,
+      },
+    }));
   };
 
-  const handleMobileMenuOpen = (event) => {
-    setMobileMoreAnchorEl(event.currentTarget);
+  const handleMobileMenuOpen = (e) => {
+    setState((prevState) => ({
+      ...prevState,
+      profile: {
+        ...prevState.profile,
+        mobileAnchorEl: e.currentTarget,
+      },
+    }));
+  };
+
+  const handleNotificationsMenuOpen = async (e) => {
+    if (
+      !state.notifications.data ||
+      state.notifications.data.length !== store.user.notifications
+    ) {
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          loading: true,
+        },
+      }));
+      try {
+        const { data } = await ax.get(
+          `/api/user/${store.user.id}/notifications`
+        );
+        setState((prevState) => ({
+          ...prevState,
+          notifications: {
+            ...prevState.notifications,
+            anchorEl: e.currentTarget,
+            data: data.notifications,
+            loading: false,
+          },
+        }));
+      } catch (err) {
+        setState((prevState) => ({
+          ...prevState,
+          notifications: {
+            ...prevState.notifications,
+            anchorEl: null,
+            data: null,
+            loading: false,
+          },
+        }));
+      }
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          anchorEl: e.currentTarget,
+        },
+      }));
+    }
+  };
+
+  const handleNotificationsMenuClose = () => {
+    setState((prevState) => ({
+      ...prevState,
+      notifications: {
+        ...prevState.notifications,
+        anchorEl: null,
+      },
+    }));
   };
 
   const handleLogout = async () => {
@@ -68,20 +148,65 @@ const Header = () => {
     dispatch({
       type: 'resetUser',
     });
-    window.accessToken = data.accessToken;
     handleMenuClose();
     history.push('/login');
   };
 
+  const handleReadClick = async (id) => {
+    try {
+      await ax.patch(`/api/read_notification/${id}`);
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          data: prevState.notifications.data.map((notification) =>
+            notification._id === id
+              ? { ...notification, read: true }
+              : notification
+          ),
+        },
+      }));
+      dispatch({
+        type: 'updateNotifications',
+        notifications: -1,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleUnreadClick = async (id) => {
+    try {
+      await ax.patch(`/api/unread_notification/${id}`);
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          data: prevState.notifications.data.map((notification) =>
+            notification._id === id
+              ? { ...notification, read: false }
+              : notification
+          ),
+        },
+      }));
+      dispatch({
+        type: 'updateNotifications',
+        notifications: 1,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const menuId = 'primary-search-account-menu';
-  const renderMenu = (
+  const renderProfileMenu = (
     <Menu
-      anchorEl={anchorEl}
+      anchorEl={state.profile.anchorEl}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       id={menuId}
       keepMounted
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMenuOpen}
+      open={!!state.profile.anchorEl}
       onClose={handleMenuClose}
     >
       {!store.user.stripeId && (
@@ -111,23 +236,23 @@ const Header = () => {
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderAuthMobileMenu = (
     <Menu
-      anchorEl={mobileMoreAnchorEl}
+      anchorEl={state.profile.mobileAnchorEl}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       id={mobileMenuId}
       keepMounted
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMobileMenuOpen}
+      open={!!state.profile.mobileAnchorEl}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      {/*       <MenuItem>
         <IconButton aria-label="Show messages" color="inherit">
           <Badge badgeContent={store.user.messages} color="secondary">
             <MailIcon />
           </Badge>
         </IconButton>
         <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
+      </MenuItem> */}
+      <MenuItem onClick={handleNotificationsMenuOpen}>
         <IconButton aria-label="Show notifications" color="inherit">
           <Badge badgeContent={store.user.notifications} color="secondary">
             <NotificationsIcon />
@@ -159,12 +284,12 @@ const Header = () => {
 
   const renderUnauthMobileMenu = (
     <Menu
-      anchorEl={mobileMoreAnchorEl}
+      anchorEl={state.profile.mobileAnchorEl}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       id={mobileMenuId}
       keepMounted
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMobileMenuOpen}
+      open={!!state.profile.mobileAnchorEl}
       onClose={handleMobileMenuClose}
     >
       <MenuItem component={Link} to="/login">
@@ -206,12 +331,16 @@ const Header = () => {
           {store.user.authenticated ? (
             <>
               <div className={classes.sectionDesktop}>
-                <IconButton aria-label="Show messages" color="inherit">
+                {/*                 <IconButton aria-label="Show messages" color="inherit">
                   <Badge badgeContent={store.user.messages} color="secondary">
                     <MailIcon />
                   </Badge>
-                </IconButton>
-                <IconButton aria-label="Show notifications" color="inherit">
+                </IconButton> */}
+                <IconButton
+                  onClick={handleNotificationsMenuOpen}
+                  aria-label="Show notifications"
+                  color="inherit"
+                >
                   <Badge
                     badgeContent={store.user.notifications}
                     color="secondary"
@@ -278,7 +407,13 @@ const Header = () => {
         </Toolbar>
       </AppBar>
       {store.user.authenticated ? renderAuthMobileMenu : renderUnauthMobileMenu}
-      {renderMenu}
+      {renderProfileMenu}
+      <NotificationsMenu
+        notifications={state.notifications}
+        handleNotificationsMenuClose={handleNotificationsMenuClose}
+        handleReadClick={handleReadClick}
+        handleUnreadClick={handleUnreadClick}
+      />
     </>
   );
 };

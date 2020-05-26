@@ -12,7 +12,7 @@ import {
   TextField,
   Button,
 } from '@material-ui/core';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import LoginStyles from './Login.style';
 
 const validationSchema = Yup.object().shape({
@@ -45,11 +45,12 @@ const Login = () => {
     validationSchema,
     async onSubmit(values) {
       const { data } = await ax.post('/api/auth/login', values);
-      window.accessToken = data.accessToken;
+
       if (data.user) {
         dispatch({
           type: 'setUser',
           authenticated: true,
+          token: data.accessToken,
           id: data.user.id,
           name: data.user.name,
           email: data.user.email,
@@ -60,10 +61,10 @@ const Login = () => {
             object[item] = true;
             return object;
           }, {}),
-          cart: data.user.cart.reduce(function (object, item) {
-            object[item] = true;
-            return object;
-          }, {}),
+          // cart: data.user.cart.reduce(function (object, item) {
+          //   object[item] = true;
+          //   return object;
+          // }, {}),
           stripeId: data.user.stripeId,
           country: data.user.country,
           cartSize: Object.keys(data.user.cart).length,

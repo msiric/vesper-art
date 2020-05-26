@@ -25,7 +25,7 @@ import {
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import CheckoutStyles from './Checkout.style';
 
 const validationSchema = Yup.object().shape({

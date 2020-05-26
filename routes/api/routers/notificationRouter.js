@@ -6,4 +6,12 @@ router
   .route('/notifications')
   .get(isAuthenticated, notificationController.getNotifications);
 
+router
+  .route('/read_notification/:notificationId')
+  .patch(isAuthenticated, notificationController.readNotification);
+
+router
+  .route('/unread_notification/:notificationId')
+  .patch(isAuthenticated, notificationController.unreadNotification);
+
 module.exports = router;

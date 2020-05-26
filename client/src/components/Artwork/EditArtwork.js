@@ -18,7 +18,7 @@ import {
 import UploadInput from '../../shared/UploadInput/UploadInput';
 import SelectInput from '../../shared/SelectInput/SelectInput';
 import PriceInput from '../../shared/PriceInput/PriceInput';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import deleteEmptyValues from '../../utils/deleteEmptyValues';
 import EditArtworkStyles from './AddArtwork.style';
 

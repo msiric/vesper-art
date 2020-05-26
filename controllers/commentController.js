@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const Artwork = require('../models/artwork');
+const Notification = require('../models/notification');
 const User = require('../models/user');
 const Comment = require('../models/comment');
 const auth = require('../utils/auth');
 const createError = require('http-errors');
+const socketApi = require('../realtime/io');
 
 // needs transaction (not tested)
 const postComment = async (req, res, next) => {
@@ -12,24 +14,45 @@ const postComment = async (req, res, next) => {
   session.startTransaction();
   try {
     const { commentContent } = req.body;
-    const foundArtwork = await Artwork.find({
-      $and: [{ owner: artworkId }, { active: true }],
+    const foundUser = await User.findOne({
+      $and: [{ _id: res.locals.user.id }, { active: true }],
+    }).session(session);
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: artworkId }, { active: true }],
     }).session(session);
     if (!foundArtwork) {
       throw createError(400, 'Artwork not found');
     } else {
       const comment = new Comment();
-      comment.artwork = artworkId;
+      comment.artwork = foundArtwork._id;
       comment.owner = res.locals.user.id;
       comment.content = commentContent;
       comment.modified = false;
       const savedComment = await comment.save({ session });
-      await Artwork.updateOne(
+      const updatedArtwork = await Artwork.findOneAndUpdate(
         {
           _id: artworkId,
         },
-        { $push: { comments: savedComment._id } }
+        { $push: { comments: savedComment._id } },
+        { new: true }
       ).session(session);
+      await User.updateOne(
+        { _id: updatedArtwork.owner },
+        { $inc: { notifications: 1 } }
+      ).session(session);
+      // new start
+      const newNotification = new Notification();
+      newNotification.link = foundArtwork._id;
+      newNotification.type = 'Comment';
+      newNotification.receiver = updatedArtwork.owner;
+      newNotification.read = false;
+      await newNotification.save({ session });
+      socketApi.sendNotification(updatedArtwork.owner);
+      socketApi.postComment({
+        user: foundUser,
+        comment: savedComment,
+      });
+      // new end
       await session.commitTransaction();
       res.status(200).json({
         message: 'Comment posted successfully',
@@ -37,6 +60,7 @@ const postComment = async (req, res, next) => {
       });
     }
   } catch (err) {
+    console.log(err);
     await session.abortTransaction();
     next(err, res);
   } finally {
@@ -64,6 +88,11 @@ const patchComment = async (req, res, next) => {
           foundComment.content = commentContent;
           foundComment.modified = true;
           await foundComment.save({ session });
+          // new start
+          socketApi.patchComment({
+            comment: foundComment,
+          });
+          // new end
           await session.commitTransaction();
           res.json({
             message: 'Comment updated successfully',
@@ -108,6 +137,11 @@ const deleteComment = async (req, res, next) => {
           await Comment.deleteOne({
             _id: commentId,
           }).session(session);
+          // new start
+          socketApi.deleteComment({
+            comment: foundComment,
+          });
+          // new end
           await session.commitTransaction();
           res.json({
             message: 'Comment deleted successfully',

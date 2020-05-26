@@ -10,6 +10,7 @@ const store = {
   },
   user: {
     authenticated: false,
+    token: null,
     id: null,
     name: null,
     email: null,
@@ -38,6 +39,7 @@ const reducer = (state, action) => {
         },
         user: {
           authenticated: action.authenticated,
+          token: action.token,
           id: action.id,
           name: action.name,
           email: action.email,
@@ -67,8 +69,26 @@ const reducer = (state, action) => {
         ...state,
         user: {
           authenticated: action.authenticated,
+          token: action.token,
           id: action.id,
           name: action.name,
+          email: action.email,
+          photo: action.photo,
+          messages: action.messages,
+          notifications: action.notifications,
+          saved: action.saved,
+          cart: action.cart,
+          stripeId: action.stripeId,
+          country: action.country,
+          cartSize: action.cartSize,
+        },
+      };
+    case 'updateUser':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          token: action.token,
           email: action.email,
           photo: action.photo,
           messages: action.messages,
@@ -85,6 +105,7 @@ const reducer = (state, action) => {
         ...state,
         user: {
           authenticated: false,
+          token: null,
           id: null,
           name: null,
           email: null,
@@ -96,6 +117,14 @@ const reducer = (state, action) => {
           stripeId: null,
           country: null,
           cartSize: null,
+        },
+      };
+    case 'updateToken':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          token: action.token,
         },
       };
     case 'updateCart':
@@ -113,6 +142,31 @@ const reducer = (state, action) => {
         user: {
           ...state.user,
           saved: action.saved,
+        },
+      };
+    case 'updateMessages':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          messages: state.user.messages + action.messages,
+        },
+      };
+    case 'updateNotifications':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          notifications: state.user.notifications + action.notifications,
+        },
+      };
+    case 'updateEvents':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          messages: action.messages,
+          notifications: action.notifications,
         },
       };
     default:

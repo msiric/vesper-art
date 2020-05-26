@@ -1,6 +1,6 @@
 import { fade, makeStyles } from '@material-ui/core/styles';
 
-const HeaderStyle = makeStyles((muiTheme) => ({
+const HeaderStyles = makeStyles((muiTheme) => ({
   grow: {
     flex: 1,
   },
@@ -66,4 +66,4 @@ const HeaderStyle = makeStyles((muiTheme) => ({
   },
 }));
 
-export default HeaderStyle;
+export default HeaderStyles;

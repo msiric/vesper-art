@@ -1,7 +1,18 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect, useContext } from 'react';
+import { Context } from '../../components/Store/Store';
+import Interceptor from '../../shared/Interceptor/Interceptor';
 import MainLayout from '../../layouts/MainLayout';
 import AuthLayout from '../../layouts/AuthLayout';
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Route,
+  Redirect,
+  Switch,
+  useHistory,
+} from 'react-router-dom';
+import openSocket from 'socket.io-client';
+import axios from 'axios';
+const ENDPOINT = 'http://localhost:5000';
 
 const routes = [
   // Artwork router
@@ -147,6 +158,8 @@ const routes = [
   },
 ];
 
+const socket = openSocket(ENDPOINT);
+
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   <Route
     {...rest}
@@ -189,7 +202,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
       return (
         <MainLayout>
           <Suspense fallback={null}>
-            <Component {...props} />
+            <Component {...props} socket={rest.socket} />
           </Suspense>
         </MainLayout>
       );
@@ -198,8 +211,50 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
 );
 
 const Router = () => {
+  const [store, dispatch] = useContext(Context);
+
+  const history = useHistory();
+
+  useEffect(() => {
+    socket.emit('authenticateUser', `Bearer ${store.user.token}`);
+    socket.on('sendNotification', (data) => {
+      dispatch({
+        type: 'updateNotifications',
+        notifications: 1,
+      });
+    });
+    socket.on('expiredToken', async () => {
+      try {
+        const { data } = await axios.post(`/api/auth/refresh_token`, {
+          headers: {
+            credentials: 'include',
+          },
+        });
+        dispatch({
+          type: 'updateUser',
+          token: data.accessToken,
+          email: data.user.email,
+          photo: data.user.photo,
+          messages: data.user.messages,
+          notifications: data.user.notifications,
+          saved: data.user.saved,
+          cart: data.user.cart,
+          stripeId: data.user.stripeId,
+          country: data.user.country,
+          cartSize: data.user.cartSize,
+        });
+        socket.emit('authenticateUser', `Bearer ${data.accessToken}`);
+      } catch (err) {
+        dispatch({
+          type: 'resetUser',
+        });
+      }
+    });
+  }, [store.user.authenticated]);
+
   return (
     <BrowserRouter>
+      <Interceptor />
       <Route
         render={(route) => {
           const { location } = route;
@@ -207,7 +262,8 @@ const Router = () => {
             <Switch location={location}>
               {routes.map(({ path, Component, exact, type }) => (
                 <AppRoute
-                  token={window.accessToken}
+                  socket={socket}
+                  token={store.user.token}
                   type={type}
                   path={path}
                   key={path}
@@ -224,5 +280,4 @@ const Router = () => {
     </BrowserRouter>
   );
 };
-
 export default Router;

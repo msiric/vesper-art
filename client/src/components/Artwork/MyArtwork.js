@@ -14,7 +14,7 @@ import {
 import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import ProductsTableHead from './Head';
 
 function ProductsTable() {

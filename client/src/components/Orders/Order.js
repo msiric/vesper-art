@@ -28,7 +28,7 @@ import { Rating } from '@material-ui/lab';
 import { useFormik, Formik, Form, Field } from 'formik';
 import { Link } from 'react-router-dom';
 import { withRouter, useHistory } from 'react-router-dom';
-import ax from '../../axios.config';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import { format } from 'date-fns';
 import Modal from '../../shared/Modal/Modal';
 import OrderStyles from './Order.style';
