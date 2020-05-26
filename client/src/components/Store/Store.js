@@ -149,7 +149,7 @@ const reducer = (state, action) => {
         ...state,
         user: {
           ...state.user,
-          messages: state.user.messages + 1,
+          messages: state.user.messages + action.messages,
         },
       };
     case 'updateNotifications':
@@ -157,7 +157,7 @@ const reducer = (state, action) => {
         ...state,
         user: {
           ...state.user,
-          notifications: state.user.notifications + 1,
+          notifications: state.user.notifications + action.notifications,
         },
       };
     case 'updateEvents':

@@ -152,6 +152,52 @@ const Header = () => {
     history.push('/login');
   };
 
+  const handleReadClick = async (id) => {
+    try {
+      await ax.patch(`/api/read_notification/${id}`);
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          data: prevState.notifications.data.map((notification) =>
+            notification._id === id
+              ? { ...notification, read: true }
+              : notification
+          ),
+        },
+      }));
+      dispatch({
+        type: 'updateNotifications',
+        notifications: -1,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleUnreadClick = async (id) => {
+    try {
+      await ax.patch(`/api/unread_notification/${id}`);
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          data: prevState.notifications.data.map((notification) =>
+            notification._id === id
+              ? { ...notification, read: false }
+              : notification
+          ),
+        },
+      }));
+      dispatch({
+        type: 'updateNotifications',
+        notifications: 1,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const menuId = 'primary-search-account-menu';
   const renderProfileMenu = (
     <Menu
@@ -198,14 +244,14 @@ const Header = () => {
       open={!!state.profile.mobileAnchorEl}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      {/*       <MenuItem>
         <IconButton aria-label="Show messages" color="inherit">
           <Badge badgeContent={store.user.messages} color="secondary">
             <MailIcon />
           </Badge>
         </IconButton>
         <p>Messages</p>
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem onClick={handleNotificationsMenuOpen}>
         <IconButton aria-label="Show notifications" color="inherit">
           <Badge badgeContent={store.user.notifications} color="secondary">
@@ -285,11 +331,11 @@ const Header = () => {
           {store.user.authenticated ? (
             <>
               <div className={classes.sectionDesktop}>
-                <IconButton aria-label="Show messages" color="inherit">
+                {/*                 <IconButton aria-label="Show messages" color="inherit">
                   <Badge badgeContent={store.user.messages} color="secondary">
                     <MailIcon />
                   </Badge>
-                </IconButton>
+                </IconButton> */}
                 <IconButton
                   onClick={handleNotificationsMenuOpen}
                   aria-label="Show notifications"
@@ -365,6 +411,8 @@ const Header = () => {
       <NotificationsMenu
         notifications={state.notifications}
         handleNotificationsMenuClose={handleNotificationsMenuClose}
+        handleReadClick={handleReadClick}
+        handleUnreadClick={handleUnreadClick}
       />
     </>
   );

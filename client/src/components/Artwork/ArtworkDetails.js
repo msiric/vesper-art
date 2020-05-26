@@ -50,7 +50,7 @@ const licenseValidation = Yup.object().shape({
     .required('License type is required'),
 });
 
-const ArtworkDetails = ({ match }) => {
+const ArtworkDetails = ({ match, socket }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
@@ -210,6 +210,49 @@ const ArtworkDetails = ({ match }) => {
   };
 
   useEffect(() => {
+    socket.on('postComment', (data) => {
+      if (data.comment.owner === store.user.id) return null;
+      setState((prevState) => ({
+        ...prevState,
+        artwork: {
+          ...prevState.artwork,
+          comments: [
+            ...prevState.artwork.comments,
+            { ...data.comment, owner: data.user },
+          ],
+        },
+      }));
+    });
+    socket.on('patchComment', (data) => {
+      if (data.comment.owner === store.user.id) return null;
+      setState((prevState) => ({
+        ...prevState,
+        artwork: {
+          ...prevState.artwork,
+          comments: prevState.artwork.comments.map((item) =>
+            item._id === data.comment._id
+              ? {
+                  ...item,
+                  content: data.comment.content,
+                  modified: true,
+                }
+              : item
+          ),
+        },
+      }));
+    });
+    socket.on('deleteComment', (data) => {
+      if (data.comment.owner === store.user.id) return null;
+      setState((prevState) => ({
+        ...prevState,
+        artwork: {
+          ...prevState.artwork,
+          comments: prevState.artwork.comments.filter(
+            (comment) => comment._id !== data.comment._id
+          ),
+        },
+      }));
+    });
     fetchArtwork();
   }, []);
 
@@ -262,13 +305,18 @@ const ArtworkDetails = ({ match }) => {
                                 <ListItemText
                                   primary={
                                     state.edits[comment._id] ? null : (
-                                      <Typography
-                                        component={Link}
-                                        to={`/user/${comment.owner.name}`}
-                                        className={`${classes.fonts} ${classes.noLink}`}
-                                      >
-                                        {comment.owner.name}
-                                      </Typography>
+                                      <>
+                                        <Typography
+                                          component={Link}
+                                          to={`/user/${comment.owner.name}`}
+                                          className={`${classes.fonts} ${classes.noLink}`}
+                                        >
+                                          {comment.owner.name}{' '}
+                                        </Typography>
+                                        <span className={classes.modified}>
+                                          {comment.modified ? 'edited' : null}
+                                        </span>
+                                      </>
                                     )
                                   }
                                   secondary={
@@ -283,41 +331,31 @@ const ArtworkDetails = ({ match }) => {
                                           values,
                                           { resetForm }
                                         ) => {
-                                          const { data } = await ax.patch(
+                                          await ax.patch(
                                             `/api/artwork/${state.artwork._id}/comment/${comment._id}`,
                                             values
                                           );
-                                          const index = state.artwork.comments.findIndex(
-                                            (item) => item._id === comment._id
-                                          );
-                                          if (index !== -1) {
-                                            setState((prevState) => ({
-                                              ...prevState,
-                                              artwork: {
-                                                ...prevState.artwork,
-                                                comments: [
-                                                  ...prevState.artwork.comments.slice(
-                                                    0,
-                                                    index
-                                                  ),
-                                                  {
-                                                    ...prevState.artwork
-                                                      .comments[index],
-                                                    content:
-                                                      values.commentContent,
-                                                    modified: true,
-                                                  },
-                                                  ...prevState.artwork.comments.slice(
-                                                    index + 1
-                                                  ),
-                                                ],
-                                              },
-                                              edits: {
-                                                ...prevState.edits,
-                                                [comment._id]: false,
-                                              },
-                                            }));
-                                          }
+                                          setState((prevState) => ({
+                                            ...prevState,
+                                            artwork: {
+                                              ...prevState.artwork,
+                                              comments: prevState.artwork.comments.map(
+                                                (item) =>
+                                                  item._id === comment._id
+                                                    ? {
+                                                        ...item,
+                                                        content:
+                                                          values.commentContent,
+                                                        modified: true,
+                                                      }
+                                                    : item
+                                              ),
+                                            },
+                                            edits: {
+                                              ...prevState.edits,
+                                              [comment._id]: false,
+                                            },
+                                          }));
                                           resetForm();
                                         }}
                                       >

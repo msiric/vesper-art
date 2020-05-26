@@ -1,6 +1,6 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Menu, List } from '@material-ui/core';
+import { Menu, List, Divider } from '@material-ui/core';
 import NotificationItem from './NotificationItem';
 import NotificationsMenuStyles from './NotificationsMenu.style';
 
@@ -24,29 +24,39 @@ const StyledMenu = withStyles({
   />
 ));
 
-const NotificationsMenu = ({ notifications, handleNotificationsMenuClose }) => {
+const NotificationsMenu = ({
+  notifications,
+  handleNotificationsMenuClose,
+  handleReadClick,
+  handleUnreadClick,
+}) => {
   const classes = NotificationsMenuStyles();
 
-  return notifications.loading ? (
-    'Loading'
-  ) : (
+  return (
     <StyledMenu
-      id="customized-menu"
       anchorEl={notifications.anchorEl}
       keepMounted
       open={Boolean(notifications.anchorEl)}
       onClose={handleNotificationsMenuClose}
     >
-      <List className={classes.root}>
-        {notifications.data && notifications.data.length
-          ? notifications.data.map((notification) => (
-              <NotificationItem
-                type={notification.type}
-                id={notification.link}
-              />
-            ))
-          : 'No notifications'}
-      </List>
+      {notifications.loading ? (
+        'Loading'
+      ) : (
+        <List className={classes.root}>
+          {notifications.data && notifications.data.length
+            ? notifications.data.map((notification, index) => (
+                <>
+                  {index === 0 ? <Divider /> : null}
+                  <NotificationItem
+                    notification={notification}
+                    handleReadClick={handleReadClick}
+                    handleUnreadClick={handleUnreadClick}
+                  />
+                </>
+              ))
+            : 'No notifications'}
+        </List>
+      )}
     </StyledMenu>
   );
 };

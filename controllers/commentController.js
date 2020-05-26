@@ -14,14 +14,17 @@ const postComment = async (req, res, next) => {
   session.startTransaction();
   try {
     const { commentContent } = req.body;
-    const foundArtwork = await Artwork.find({
+    const foundUser = await User.findOne({
+      $and: [{ _id: res.locals.user.id }, { active: true }],
+    }).session(session);
+    const foundArtwork = await Artwork.findOne({
       $and: [{ _id: artworkId }, { active: true }],
     }).session(session);
     if (!foundArtwork) {
       throw createError(400, 'Artwork not found');
     } else {
       const comment = new Comment();
-      comment.artwork = artworkId;
+      comment.artwork = foundArtwork._id;
       comment.owner = res.locals.user.id;
       comment.content = commentContent;
       comment.modified = false;
@@ -44,7 +47,11 @@ const postComment = async (req, res, next) => {
       newNotification.receiver = updatedArtwork.owner;
       newNotification.read = false;
       await newNotification.save({ session });
-      socketApi.sendNotification(updatedArtwork.owner, foundArtwork._id);
+      socketApi.sendNotification(updatedArtwork.owner);
+      socketApi.postComment({
+        user: foundUser,
+        comment: savedComment,
+      });
       // new end
       await session.commitTransaction();
       res.status(200).json({
@@ -81,6 +88,11 @@ const patchComment = async (req, res, next) => {
           foundComment.content = commentContent;
           foundComment.modified = true;
           await foundComment.save({ session });
+          // new start
+          socketApi.patchComment({
+            comment: foundComment,
+          });
+          // new end
           await session.commitTransaction();
           res.json({
             message: 'Comment updated successfully',
@@ -125,6 +137,11 @@ const deleteComment = async (req, res, next) => {
           await Comment.deleteOne({
             _id: commentId,
           }).session(session);
+          // new start
+          socketApi.deleteComment({
+            comment: foundComment,
+          });
+          // new end
           await session.commitTransaction();
           res.json({
             message: 'Comment deleted successfully',

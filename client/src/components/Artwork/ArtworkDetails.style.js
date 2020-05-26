@@ -86,6 +86,10 @@ const ArtworkDetailsStyles = makeStyles((muiTheme) => ({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  modified: {
+    fontSize: 14,
+    fontWeight: 'normal',
+  },
   noLink: {
     textDecoration: 'none',
     color: 'inherit',

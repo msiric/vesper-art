@@ -3,50 +3,78 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  ListItemSecondaryAction,
+  IconButton,
   Avatar,
   Typography,
+  Divider,
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import { NotificationsRounded as NotificationsIcon } from '@material-ui/icons';
+import {
+  NotificationsRounded as NotificationsIcon,
+  DraftsRounded as ReadIcon,
+  MarkunreadRounded as UnreadIcon,
+} from '@material-ui/icons';
+import { ax } from '../../shared/Interceptor/Interceptor';
 import NotificationItemStyles from './NotificationItem.style';
 
-const NotificationItem = ({ type, id }) => {
+const NotificationItem = ({
+  notification,
+  handleReadClick,
+  handleUnreadClick,
+}) => {
   const classes = NotificationItemStyles();
 
-  const notification = {
+  const data = {
     label: 'A user left a comment on your artwork',
-    link: `/artwork/${id}`,
+    link: `/artwork/${notification.link}`,
   };
 
-  if (type === 'Comment') {
-    notification.label = 'A user left a comment on your artwork';
-    notification.link = `/artwork/${id}`;
-  } else if (type === 'Order') {
-    notification.label = 'A user ordered your artwork';
-    notification.link = `/orders/${id}`;
-  } else if (type === 'Review') {
-    notification.label = 'A user left a review on your artwork';
-    notification.link = `/orders/${id}`;
+  if (notification.type === 'Comment') {
+    data.label = 'A user left a comment on your artwork';
+    data.link = `/artwork/${notification.link}`;
+  } else if (notification.type === 'Order') {
+    data.label = 'A user ordered your artwork';
+    data.link = `/orders/${notification.link}`;
+  } else if (notification.type === 'Review') {
+    data.label = 'A user left a review on your artwork';
+    data.link = `/orders/${notification.link}`;
   } else {
-    notification.label = null;
-    notification.link = null;
+    data.label = null;
+    data.link = null;
   }
 
-  return notification.label && notification.link ? (
-    <ListItem>
-      <ListItemAvatar>
-        <Avatar>
-          <NotificationsIcon />
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText
-        primary={
-          <Typography component={Link} to={notification.link}>
-            {notification.label}
-          </Typography>
-        }
-      />
-    </ListItem>
+  return data.label && data.link ? (
+    <>
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <NotificationsIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          primary={
+            <Typography component={Link} to={data.link}>
+              {data.label}
+            </Typography>
+          }
+          secondary={<Typography>{notification.created}</Typography>}
+        />
+        <ListItemSecondaryAction>
+          <IconButton
+            edge="end"
+            aria-label={notification.read ? 'Mark unread' : 'Mark read'}
+          >
+            {notification.read ? (
+              <ReadIcon onClick={() => handleUnreadClick(notification._id)} />
+            ) : (
+              <UnreadIcon onClick={() => handleReadClick(notification._id)} />
+            )}
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
+      <Divider />
+    </>
   ) : null;
 };
 

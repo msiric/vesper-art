@@ -158,6 +158,8 @@ const routes = [
   },
 ];
 
+const socket = openSocket(ENDPOINT);
+
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   <Route
     {...rest}
@@ -200,24 +202,25 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
       return (
         <MainLayout>
           <Suspense fallback={null}>
-            <Component {...props} />
+            <Component {...props} socket={rest.socket} />
           </Suspense>
         </MainLayout>
       );
     }}
   />
 );
+
 const Router = () => {
   const [store, dispatch] = useContext(Context);
 
   const history = useHistory();
 
   useEffect(() => {
-    const socket = openSocket(ENDPOINT);
     socket.emit('authenticateUser', `Bearer ${store.user.token}`);
     socket.on('sendNotification', (data) => {
       dispatch({
         type: 'updateNotifications',
+        notifications: 1,
       });
     });
     socket.on('expiredToken', async () => {
@@ -248,6 +251,7 @@ const Router = () => {
       }
     });
   }, [store.user.authenticated]);
+
   return (
     <BrowserRouter>
       <Interceptor />
@@ -258,6 +262,7 @@ const Router = () => {
             <Switch location={location}>
               {routes.map(({ path, Component, exact, type }) => (
                 <AppRoute
+                  socket={socket}
                   token={store.user.token}
                   type={type}
                   path={path}
