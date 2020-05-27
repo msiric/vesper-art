@@ -150,9 +150,17 @@ const getUserSettings = async (req, res, next) => {
 const getUserNotifications = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const foundNotifications = await Notification.find({
-      receiver: userId,
-    })
+    const { cursor, ceiling } = req.query;
+    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+    const foundNotifications = await Notification.find(
+      { receiver: userId },
+      undefined,
+      {
+        skip,
+        limit,
+      }
+    )
       .populate('user')
       .sort({ created: -1 });
     return res.json({ notifications: foundNotifications });

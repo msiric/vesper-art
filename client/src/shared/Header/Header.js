@@ -35,7 +35,10 @@ const Header = () => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     profile: { anchorEl: null, mobileAnchorEl: null },
-    notifications: { anchorEl: null, data: null, loading: false },
+    notifications: { anchorEl: null, data: [], loading: false },
+    hasMore: true,
+    cursor: 0,
+    ceiling: 10,
   });
 
   const history = useHistory();
@@ -96,7 +99,7 @@ const Header = () => {
       }));
       try {
         const { data } = await ax.get(
-          `/api/user/${store.user.id}/notifications`
+          `/api/user/${store.user.id}/notifications?cursor=${state.cursor}&ceiling=${state.ceiling}`
         );
         setState((prevState) => ({
           ...prevState,
@@ -106,6 +109,8 @@ const Header = () => {
             data: data.notifications,
             loading: false,
           },
+          hasMore: data.notifications.length < prevState.ceiling ? false : true,
+          cursor: prevState.cursor + prevState.ceiling,
         }));
       } catch (err) {
         setState((prevState) => ({
@@ -193,6 +198,26 @@ const Header = () => {
         type: 'updateNotifications',
         notifications: 1,
       });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const loadMore = async () => {
+    try {
+      const { data } = await ax.get(
+        `/api/user/${store.user.id}/notifications?cursor=${state.cursor}&ceiling=${state.ceiling}`
+      );
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          data: [...prevState.notifications.data].concat(data.notifications),
+          loading: false,
+        },
+        hasMore: data.notifications.length < prevState.ceiling ? false : true,
+        cursor: prevState.cursor + prevState.ceiling,
+      }));
     } catch (err) {
       console.log(err);
     }
@@ -413,6 +438,8 @@ const Header = () => {
         handleNotificationsMenuClose={handleNotificationsMenuClose}
         handleReadClick={handleReadClick}
         handleUnreadClick={handleUnreadClick}
+        hasMore={state.hasMore}
+        loadMore={loadMore}
       />
     </>
   );

@@ -13,21 +13,23 @@ const Home = ({ location, enqueueSnackbar }) => {
     alerts: [],
     artwork: [],
     hasMore: true,
-    page: 0,
-    limit: 50,
+    cursor: 0,
+    ceiling: 50,
   });
 
   const classes = HomeStyles();
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await ax.get(`/api/artwork?page=${state.page}`);
+      const { data } = await ax.get(
+        `/api/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
+      );
       setState({
         ...state,
-        hasMore: data.artwork.length < state.limit ? false : true,
         loading: false,
         artwork: data.artwork,
-        page: state.page + state.limit,
+        hasMore: data.artwork.length < state.ceiling ? false : true,
+        cursor: state.cursor + state.ceiling,
       });
     } catch (err) {
       setState({ ...state, loading: false });
@@ -50,12 +52,14 @@ const Home = ({ location, enqueueSnackbar }) => {
 
   const loadMore = async () => {
     try {
-      const { data } = await ax.get(`/api/artwork?page=${state.page}`);
+      const { data } = await ax.get(
+        `/api/artwork?page=${state.cursor}&ceiling=${state.ceiling}`
+      );
       setState((prevState) => ({
         ...prevState,
-        hasMore: data.artwork.length >= prevState.limit,
         artwork: [...prevState.artwork].concat(data.artwork),
-        page: prevState.page + prevState.limit,
+        hasMore: data.artwork.length >= prevState.ceiling,
+        cursor: prevState.cursor + prevState.ceiling,
       }));
     } catch (err) {
       console.log(err);
@@ -71,7 +75,6 @@ const Home = ({ location, enqueueSnackbar }) => {
           <Gallery
             elements={state.artwork}
             hasMore={state.hasMore}
-            isNextPageLoading={state.isNextPageLoading}
             loadMore={loadMore}
           />
         ) : (
