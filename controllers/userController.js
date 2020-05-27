@@ -16,26 +16,88 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const getUserProfile = async (req, res, next) => {
   try {
     const { userName } = req.params;
+    const { cursor, ceiling } = req.query;
+    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
     const foundUser = await User.findOne({
       $and: [{ name: userName }, { active: true }],
-    }).deepPopulate('savedArtwork.current');
-    // }).deepPopulate(
-    //   'artwork.current',
-    //   '_id cover created title personal type license availability description use commercial'
-    // );
+    }).populate(
+      skip && limit
+        ? {
+            path: 'artwork',
+            options: {
+              limit,
+              skip,
+            },
+            populate: {
+              path: 'current',
+            },
+          }
+        : {
+            path: 'artwork',
+            populate: {
+              path: 'current',
+            },
+          }
+    );
     if (foundUser) {
-      const foundArtwork = await Artwork.find({
-        $and: [{ owner: foundUser._id }, { active: true }],
-      })
-        .populate('owner')
-        .populate(
-          'current',
-          '_id cover created title personal type license availability description use commercial'
-        );
-      return res.json({ user: foundUser, artwork: foundArtwork });
+      return res.json({ user: foundUser, artwork: foundUser.artwork });
     } else {
       throw createError(400, 'User not found');
     }
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+const getUserArtwork = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { cursor, ceiling } = req.query;
+    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+    const foundArtwork = await Artwork.find(
+      {
+        $and: [{ owner: userId }, { active: true }],
+      },
+      undefined,
+      {
+        skip,
+        limit,
+      }
+    );
+    return res.json({ artwork: foundArtwork });
+  } catch (err) {
+    next(err, res);
+  }
+};
+
+const getUserSaves = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { cursor, ceiling } = req.query;
+    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+    const foundUser = await User.findOne(
+      {
+        $and: [{ _id: userId }, { active: true }],
+      },
+      undefined,
+      {
+        skip,
+        limit,
+      }
+    ).populate({
+      path: 'savedArtwork',
+      options: {
+        limit,
+        skip,
+      },
+      populate: {
+        path: 'current',
+      },
+    });
+    return res.json({ saves: foundUser.savedArtwork });
   } catch (err) {
     next(err, res);
   }
@@ -708,6 +770,8 @@ const deactivateUser = async (req, res, next) => {
 
 module.exports = {
   getUserProfile,
+  getUserArtwork,
+  getUserSaves,
   getUserStatistics,
   getUserSales,
   getUserPurchases,

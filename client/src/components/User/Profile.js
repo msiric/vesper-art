@@ -61,6 +61,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { withSnackbar } from 'notistack';
 import { Link, useHistory } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { format } from 'date-fns';
 import { ax } from '../../shared/Interceptor/Interceptor';
 import ProfileStyles from './Profile.style';
@@ -344,11 +345,20 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const [state, setState] = useState({
     loading: true,
     user: {},
-    hasMore: true,
-    page: 0,
-    limit: 50,
     modal: { open: false },
-    tabs: { value: 0 },
+    tabs: { value: 0, revealed: false },
+    scroll: {
+      artwork: {
+        hasMore: true,
+        cursor: 0,
+        ceiling: 20,
+      },
+      saves: {
+        hasMore: true,
+        cursor: 0,
+        ceiling: 20,
+      },
+    },
   });
   const url = window.location;
   const title = store.main.brand;
@@ -393,18 +403,49 @@ const Profile = ({ match, enqueueSnackbar }) => {
 
   const fetchUser = async () => {
     try {
-      const { data } = await ax.get(`/api/user/${match.params.id}`);
+      const { data } = await ax.get(
+        `/api/user/${match.params.id}?cursor=${state.scroll.artwork.cursor}&ceiling=${state.scroll.artwork.ceiling}`
+      );
+      // const {
+      //   data: { artwork },
+      // } = await ax.get(
+      //   `/api/user/${user._id}/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
+      // );
       if (store.user.id === data.user._id) {
         setState({
           ...state,
           loading: false,
           user: { ...data.user, editable: true, artwork: data.artwork },
+          scroll: {
+            ...state.scroll,
+            artwork: {
+              ...state.scroll.artwork,
+              hasMore:
+                data.artwork.length < state.scroll.artwork.ceiling
+                  ? false
+                  : true,
+              cursor:
+                state.scroll.artwork.cursor + state.scroll.artwork.ceiling,
+            },
+          },
         });
       } else {
         setState({
           ...state,
           loading: false,
           user: { ...data.user, editable: false, artwork: data.artwork },
+          scroll: {
+            ...state.scroll,
+            artwork: {
+              ...state.scroll.artwork,
+              hasMore:
+                data.artwork.length < state.scroll.artwork.ceiling
+                  ? false
+                  : true,
+              cursor:
+                state.scroll.artwork.cursor + state.scroll.artwork.ceiling,
+            },
+          },
         });
       }
     } catch (err) {
@@ -419,14 +460,20 @@ const Profile = ({ match, enqueueSnackbar }) => {
     };
   };
 
-  const handleTabsChange = (event, newValue) => {
-    setState((prevState) =>
-      setState({ ...prevState, tabs: { value: newValue } })
-    );
+  const handleTabsChange = (e, newValue) => {
+    if (!state.tabs.revealed) loadMoreSaves(newValue);
+    else
+      setState((prevState) => ({
+        ...prevState,
+        tabs: { ...prevState.tabs, value: newValue },
+      }));
   };
 
   const handleChangeIndex = (index) => {
-    setState((prevState) => setState({ ...prevState, tabs: { value: index } }));
+    setState((prevState) => ({
+      ...prevState,
+      tabs: { ...prevState.tabs, value: index },
+    }));
   };
 
   const handleModalOpen = () => {
@@ -448,6 +495,61 @@ const Profile = ({ match, enqueueSnackbar }) => {
         open: false,
       },
     }));
+  };
+
+  const loadMoreArtwork = async () => {
+    try {
+      const { data } = await ax.get(
+        `/api/user/${state.CardMediauser._id}/artwork?cursor=${state.scroll.artwork.cursor}&ceiling=${state.scroll.artwork.ceiling}`
+      );
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        user: {
+          ...prevState.user,
+          artwork: [...prevState.user.artwork].concat(data.artwork),
+        },
+        scroll: {
+          ...state.scroll,
+          artwork: {
+            ...state.scroll.artwork,
+            hasMore:
+              data.artwork.length < state.scroll.artwork.ceiling ? false : true,
+            cursor: state.scroll.artwork.cursor + state.scroll.artwork.ceiling,
+          },
+        },
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const loadMoreSaves = async (newValue) => {
+    try {
+      const { data } = await ax.get(
+        `/api/user/${state.user._id}/saves?cursor=${state.scroll.saves.cursor}&ceiling=${state.scroll.saves.ceiling}`
+      );
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        user: {
+          ...prevState.user,
+          savedArtwork: [...prevState.user.savedArtwork].concat(data.saves),
+        },
+        tabs: { ...prevState.tabs, value: newValue, revealed: true },
+        scroll: {
+          ...state.scroll,
+          saves: {
+            ...state.scroll.saves,
+            hasMore:
+              data.saves.length < state.scroll.saves.ceiling ? false : true,
+            cursor: state.scroll.saves.cursor + state.scroll.saves.ceiling,
+          },
+        },
+      }));
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -622,7 +724,11 @@ const Profile = ({ match, enqueueSnackbar }) => {
                     >
                       <Box hidden={state.tabs.value !== 0}>
                         {state.user.artwork.length ? (
-                          <Gallery elements={state.user.artwork} />
+                          <Gallery
+                            elements={state.user.artwork}
+                            hasMore={state.scroll.artwork.hasMore}
+                            loadMore={loadMoreArtwork}
+                          />
                         ) : (
                           <Typography variant="h6" align="center">
                             You have no artwork to display
@@ -631,7 +737,11 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       </Box>
                       <Box hidden={state.tabs.value !== 1}>
                         {state.user.savedArtwork.length ? (
-                          <Gallery elements={state.user.savedArtwork} />
+                          <Gallery
+                            elements={state.user.savedArtwork}
+                            hasMore={state.scroll.saves.hasMore}
+                            loadMore={loadMoreSaves}
+                          />
                         ) : (
                           <Typography variant="h6" align="center">
                             You have no saved artwork
@@ -666,7 +776,11 @@ const Profile = ({ match, enqueueSnackbar }) => {
                     >
                       <Box hidden={state.tabs.value !== 0}>
                         {state.user.artwork.length ? (
-                          <Gallery elements={state.user.artwork} />
+                          <Gallery
+                            elements={state.user.artwork}
+                            hasMore={state.scroll.artwork.hasMore}
+                            loadMore={loadMoreArtwork}
+                          />
                         ) : (
                           <Typography variant="h6" align="center">
                             This user has no artwork to display
@@ -676,7 +790,11 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       {state.user.displaySaves ? (
                         <Box hidden={state.tabs.value !== 1}>
                           {state.user.savedArtwork.length ? (
-                            <Gallery elements={state.user.savedArtwork} />
+                            <Gallery
+                              elements={state.user.savedArtwork}
+                              hasMore={state.scroll.saves.hasMore}
+                              loadMore={loadMoreSaves}
+                            />
                           ) : (
                             <Typography variant="h6" align="center">
                               This user has no saved artwork

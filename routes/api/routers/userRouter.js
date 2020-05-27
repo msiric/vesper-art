@@ -4,6 +4,10 @@ const userController = require('../../../controllers/userController');
 
 router.route('/user/:userName').get(userController.getUserProfile);
 
+router.route('/user/:userId/artwork').get(userController.getUserArtwork);
+
+router.route('/user/:userId/saves').get(userController.getUserSaves);
+
 router
   .route('/user/:userId')
   .patch(isAuthenticated, userController.updateUserProfile)

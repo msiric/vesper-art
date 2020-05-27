@@ -38,10 +38,105 @@ const getArtwork = async (req, res, next) => {
 const getArtworkDetails = async (req, res, next) => {
   try {
     const { artworkId } = req.params;
+    const { cursor, ceiling } = req.query;
+    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
     const foundArtwork = await Artwork.findOne({
       $and: [{ _id: artworkId }, { active: true }],
     })
-      .deepPopulate('comments.owner')
+      .populate(
+        skip && limit
+          ? {
+              path: 'comments',
+              options: {
+                limit,
+                skip,
+              },
+              populate: {
+                path: 'owner',
+              },
+            }
+          : {
+              path: 'comments',
+              populate: {
+                path: 'owner',
+              },
+            }
+      )
+      .populate('owner')
+      .populate(
+        'current',
+        '_id cover created title personal type license availability description use commercial'
+      );
+    if (foundArtwork) {
+      return res.json({
+        artwork: foundArtwork,
+      });
+    } else {
+      throw createError(400, 'Artwork not found');
+    }
+  } catch (err) {
+    console.log(err);
+    next(err, res);
+  }
+};
+
+const getArtworkComments = async (req, res, next) => {
+  try {
+    const { artworkId } = req.params;
+    const { cursor, ceiling } = req.query;
+    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: artworkId }, { active: true }],
+    })
+      .populate({
+        path: 'comments',
+        options: {
+          limit,
+          skip,
+        },
+        populate: {
+          path: 'owner',
+        },
+      })
+      .populate('owner')
+      .populate(
+        'current',
+        '_id cover created title personal type license availability description use commercial'
+      );
+    if (foundArtwork) {
+      return res.json({
+        artwork: foundArtwork,
+      });
+    } else {
+      throw createError(400, 'Artwork not found');
+    }
+  } catch (err) {
+    console.log(err);
+    next(err, res);
+  }
+};
+
+const getArtworkReviews = async (req, res, next) => {
+  try {
+    const { artworkId } = req.params;
+    const { cursor, ceiling } = req.query;
+    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+    const foundArtwork = await Artwork.findOne({
+      $and: [{ _id: artworkId }, { active: true }],
+    })
+      .populate({
+        path: 'reviews',
+        options: {
+          limit,
+          skip,
+        },
+        populate: {
+          path: 'owner',
+        },
+      })
       .populate('owner')
       .populate(
         'current',
@@ -62,9 +157,19 @@ const getArtworkDetails = async (req, res, next) => {
 
 const getUserArtwork = async (req, res, next) => {
   try {
-    const foundArtwork = await Artwork.find({
-      $and: [{ owner: res.locals.user.id }, { active: true }],
-    }).populate(
+    const { cursor, ceiling } = req.query;
+    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+    const foundArtwork = await Artwork.find(
+      {
+        $and: [{ owner: res.locals.user.id }, { active: true }],
+      },
+      undefined,
+      {
+        skip,
+        limit,
+      }
+    ).populate(
       'current',
       '_id cover created title personal type license availability description use commercial'
     );
@@ -713,9 +818,11 @@ const saveLicenses = async (req, res, next) => {
 
 module.exports = {
   getArtwork,
+  getArtworkDetails,
+  getArtworkComments,
+  getArtworkReviews,
   getUserArtwork,
   postNewArtwork,
-  getArtworkDetails,
   editArtwork,
   updateArtwork,
   deleteArtwork,

@@ -37,6 +37,7 @@ import {
   EditRounded as EditIcon,
 } from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { ax } from '../../shared/Interceptor/Interceptor';
 import ArtworkDetailsStyles from './ArtworkDetails.style';
 
@@ -65,6 +66,13 @@ const ArtworkDetails = ({ match, socket }) => {
       open: false,
     },
     edits: {},
+    scroll: {
+      comments: {
+        hasMore: true,
+        cursor: 0,
+        ceiling: 20,
+      },
+    },
   });
   const history = useHistory();
 
@@ -108,8 +116,26 @@ const ArtworkDetails = ({ match, socket }) => {
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await ax.get(`/api/artwork/${match.params.id}`);
-      setState({ ...state, loading: false, artwork: data.artwork });
+      const { data } = await ax.get(
+        `/api/artwork/${match.params.id}?cursor=${state.scroll.comments.cursor}&ceiling=${state.scroll.comments.ceiling}`
+      );
+      setState({
+        ...state,
+        loading: false,
+        artwork: data.artwork,
+        scroll: {
+          ...state.scroll,
+          comments: {
+            ...state.scroll.comments,
+            hasMore:
+              data.artwork.comments.length < state.scroll.comments.ceiling
+                ? false
+                : true,
+            cursor:
+              state.scroll.comments.cursor + state.scroll.comments.ceiling,
+          },
+        },
+      });
     } catch (err) {
       setState({ ...state, loading: false });
     }
@@ -209,6 +235,36 @@ const ArtworkDetails = ({ match, socket }) => {
     }));
   };
 
+  const loadMoreComments = async () => {
+    try {
+      const { data } = await ax.get(
+        `/api/artwork/${state.artwork._id}/comments?cursor=${state.scroll.comments.cursor}&ceiling=${state.scroll.comments.ceiling}`
+      );
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        artwork: {
+          ...prevState.artwork,
+          comments: [...prevState.artwork.comments].concat(data.comments),
+        },
+        scroll: {
+          ...state.scroll,
+          comments: {
+            ...state.scroll.comments,
+            hasMore:
+              data.comments.length < state.scroll.comments.ceiling
+                ? false
+                : true,
+            cursor:
+              state.scroll.comments.cursor + state.scroll.comments.ceiling,
+          },
+        },
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     socket.on('postComment', (data) => {
       if (data.comment.owner === store.user.id) return null;
@@ -289,161 +345,178 @@ const ArtworkDetails = ({ match, socket }) => {
                       component="p"
                     >
                       {state.artwork.comments.length ? (
-                        <List className={classes.root}>
-                          {state.artwork.comments.map((comment) => (
-                            <React.Fragment key={comment._id}>
-                              <ListItem alignItems="flex-start">
-                                <ListItemAvatar>
-                                  <Avatar
-                                    alt={comment.owner.name}
-                                    src={comment.owner.photo}
-                                    component={Link}
-                                    to={`/user/${comment.owner.name}`}
-                                    className={classes.noLink}
-                                  />
-                                </ListItemAvatar>
-                                <ListItemText
-                                  primary={
-                                    state.edits[comment._id] ? null : (
-                                      <>
-                                        <Typography
-                                          component={Link}
-                                          to={`/user/${comment.owner.name}`}
-                                          className={`${classes.fonts} ${classes.noLink}`}
+                        <InfiniteScroll
+                          className={classes.scroller}
+                          dataLength={state.artwork.comments.length}
+                          next={loadMoreComments}
+                          hasMore={state.scroll.comments.hasMore}
+                          loader={
+                            <Grid item xs={12} className={classes.loader}>
+                              <CircularProgress />
+                            </Grid>
+                          }
+                        >
+                          <List className={classes.root}>
+                            {state.artwork.comments.map((comment) => (
+                              <React.Fragment key={comment._id}>
+                                <ListItem alignItems="flex-start">
+                                  <ListItemAvatar>
+                                    <Avatar
+                                      alt={comment.owner.name}
+                                      src={comment.owner.photo}
+                                      component={Link}
+                                      to={`/user/${comment.owner.name}`}
+                                      className={classes.noLink}
+                                    />
+                                  </ListItemAvatar>
+                                  <ListItemText
+                                    primary={
+                                      state.edits[comment._id] ? null : (
+                                        <>
+                                          <Typography
+                                            component={Link}
+                                            to={`/user/${comment.owner.name}`}
+                                            className={`${classes.fonts} ${classes.noLink}`}
+                                          >
+                                            {comment.owner.name}{' '}
+                                          </Typography>
+                                          <span className={classes.modified}>
+                                            {comment.modified ? 'edited' : null}
+                                          </span>
+                                        </>
+                                      )
+                                    }
+                                    secondary={
+                                      state.edits[comment._id] ? (
+                                        <Formik
+                                          initialValues={{
+                                            commentContent: comment.content,
+                                          }}
+                                          enableReinitialize
+                                          validationSchema={commentValidation}
+                                          onSubmit={async (
+                                            values,
+                                            { resetForm }
+                                          ) => {
+                                            await ax.patch(
+                                              `/api/artwork/${state.artwork._id}/comment/${comment._id}`,
+                                              values
+                                            );
+                                            setState((prevState) => ({
+                                              ...prevState,
+                                              artwork: {
+                                                ...prevState.artwork,
+                                                comments: prevState.artwork.comments.map(
+                                                  (item) =>
+                                                    item._id === comment._id
+                                                      ? {
+                                                          ...item,
+                                                          content:
+                                                            values.commentContent,
+                                                          modified: true,
+                                                        }
+                                                      : item
+                                                ),
+                                              },
+                                              edits: {
+                                                ...prevState.edits,
+                                                [comment._id]: false,
+                                              },
+                                            }));
+                                            resetForm();
+                                          }}
                                         >
-                                          {comment.owner.name}{' '}
-                                        </Typography>
-                                        <span className={classes.modified}>
-                                          {comment.modified ? 'edited' : null}
-                                        </span>
-                                      </>
-                                    )
-                                  }
-                                  secondary={
-                                    state.edits[comment._id] ? (
-                                      <Formik
-                                        initialValues={{
-                                          commentContent: comment.content,
-                                        }}
-                                        enableReinitialize
-                                        validationSchema={commentValidation}
-                                        onSubmit={async (
-                                          values,
-                                          { resetForm }
-                                        ) => {
-                                          await ax.patch(
-                                            `/api/artwork/${state.artwork._id}/comment/${comment._id}`,
-                                            values
-                                          );
-                                          setState((prevState) => ({
-                                            ...prevState,
-                                            artwork: {
-                                              ...prevState.artwork,
-                                              comments: prevState.artwork.comments.map(
-                                                (item) =>
-                                                  item._id === comment._id
-                                                    ? {
-                                                        ...item,
-                                                        content:
-                                                          values.commentContent,
-                                                        modified: true,
-                                                      }
-                                                    : item
-                                              ),
-                                            },
-                                            edits: {
-                                              ...prevState.edits,
-                                              [comment._id]: false,
-                                            },
-                                          }));
-                                          resetForm();
-                                        }}
-                                      >
-                                        {({ values, errors, touched }) => (
-                                          <Form className={classes.editComment}>
-                                            <div
-                                              className={
-                                                classes.editCommentForm
-                                              }
+                                          {({ values, errors, touched }) => (
+                                            <Form
+                                              className={classes.editComment}
                                             >
-                                              <Field name="commentContent">
-                                                {({
-                                                  field,
-                                                  form: { touched, errors },
-                                                  meta,
-                                                }) => (
-                                                  <TextField
-                                                    {...field}
-                                                    onBlur={() => null}
-                                                    label="Edit comment"
-                                                    type="text"
-                                                    helperText={
-                                                      meta.touched && meta.error
-                                                    }
-                                                    error={
-                                                      meta.touched &&
-                                                      Boolean(meta.error)
-                                                    }
-                                                    margin="dense"
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    multiline
-                                                  />
-                                                )}
-                                              </Field>
-                                            </div>
-                                            <div
-                                              className={
-                                                classes.editCommentActions
-                                              }
-                                            >
-                                              <Button
-                                                type="button"
-                                                color="primary"
-                                                onClick={() =>
-                                                  handleCommentClose(
-                                                    comment._id
-                                                  )
+                                              <div
+                                                className={
+                                                  classes.editCommentForm
                                                 }
-                                                fullWidth
                                               >
-                                                Cancel
-                                              </Button>
-                                              <Button
-                                                type="submit"
-                                                color="primary"
-                                                fullWidth
+                                                <Field name="commentContent">
+                                                  {({
+                                                    field,
+                                                    form: { touched, errors },
+                                                    meta,
+                                                  }) => (
+                                                    <TextField
+                                                      {...field}
+                                                      onBlur={() => null}
+                                                      label="Edit comment"
+                                                      type="text"
+                                                      helperText={
+                                                        meta.touched &&
+                                                        meta.error
+                                                      }
+                                                      error={
+                                                        meta.touched &&
+                                                        Boolean(meta.error)
+                                                      }
+                                                      margin="dense"
+                                                      variant="outlined"
+                                                      fullWidth
+                                                      multiline
+                                                    />
+                                                  )}
+                                                </Field>
+                                              </div>
+                                              <div
+                                                className={
+                                                  classes.editCommentActions
+                                                }
                                               >
-                                                Save
-                                              </Button>
-                                            </div>
-                                          </Form>
-                                        )}
-                                      </Formik>
-                                    ) : (
-                                      <Typography>{comment.content}</Typography>
-                                    )
-                                  }
-                                />
-                                {state.edits[comment._id] ||
-                                comment.owner._id !== store.user.id ? null : (
-                                  <ListItemSecondaryAction>
-                                    <IconButton
-                                      onClick={(e) =>
-                                        handlePopoverOpen(e, comment._id)
-                                      }
-                                      edge="end"
-                                      aria-label="More"
-                                    >
-                                      <MoreIcon />
-                                    </IconButton>
-                                  </ListItemSecondaryAction>
-                                )}
-                              </ListItem>
-                              <Divider />
-                            </React.Fragment>
-                          ))}
-                        </List>
+                                                <Button
+                                                  type="button"
+                                                  color="primary"
+                                                  onClick={() =>
+                                                    handleCommentClose(
+                                                      comment._id
+                                                    )
+                                                  }
+                                                  fullWidth
+                                                >
+                                                  Cancel
+                                                </Button>
+                                                <Button
+                                                  type="submit"
+                                                  color="primary"
+                                                  fullWidth
+                                                >
+                                                  Save
+                                                </Button>
+                                              </div>
+                                            </Form>
+                                          )}
+                                        </Formik>
+                                      ) : (
+                                        <Typography>
+                                          {comment.content}
+                                        </Typography>
+                                      )
+                                    }
+                                  />
+                                  {state.edits[comment._id] ||
+                                  comment.owner._id !== store.user.id ? null : (
+                                    <ListItemSecondaryAction>
+                                      <IconButton
+                                        onClick={(e) =>
+                                          handlePopoverOpen(e, comment._id)
+                                        }
+                                        edge="end"
+                                        aria-label="More"
+                                      >
+                                        <MoreIcon />
+                                      </IconButton>
+                                    </ListItemSecondaryAction>
+                                  )}
+                                </ListItem>
+                                <Divider />
+                              </React.Fragment>
+                            ))}
+                          </List>
+                        </InfiniteScroll>
                       ) : (
                         <p>No comments</p>
                       )}

@@ -7,6 +7,14 @@ router.route('/artwork').get(artworkController.getArtwork);
 router.route('/artwork/:artworkId').get(artworkController.getArtworkDetails);
 
 router
+  .route('/artwork/:artworkId/comments')
+  .get(artworkController.getArtworkComments);
+
+router
+  .route('/artwork/:artworkId/reviews')
+  .get(artworkController.getArtworkReviews);
+
+router
   .route('/artwork/:artworkId/licenses')
   .get(isAuthenticated, artworkController.getLicenses)
   .post(isAuthenticated, artworkController.saveLicenses);
