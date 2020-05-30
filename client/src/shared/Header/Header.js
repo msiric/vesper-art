@@ -35,10 +35,6 @@ const Header = () => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     profile: { anchorEl: null, mobileAnchorEl: null },
-    notifications: { anchorEl: null, data: [], loading: false },
-    hasMore: true,
-    cursor: 0,
-    ceiling: 10,
   });
 
   const history = useHistory();
@@ -87,93 +83,112 @@ const Header = () => {
 
   const handleNotificationsMenuOpen = async (e) => {
     if (
-      !state.notifications.data ||
-      state.notifications.data.length !== store.user.notifications
+      !store.user.notifications.items ||
+      store.user.notifications.items.length === 0
     ) {
-      setState((prevState) => ({
-        ...prevState,
+      dispatch({
+        type: 'updateNotifications',
         notifications: {
-          ...prevState.notifications,
+          ...store.user.notifications,
+          count: 0,
           loading: true,
         },
-      }));
+      });
       try {
         const { data } = await ax.get(
-          `/api/user/${store.user.id}/notifications?cursor=${state.cursor}&ceiling=${state.ceiling}`
+          `/api/user/${store.user.id}/notifications?cursor=${store.user.notifications.cursor}&ceiling=${store.user.notifications.ceiling}`
         );
-        setState((prevState) => ({
-          ...prevState,
+        dispatch({
+          type: 'updateNotifications',
           notifications: {
-            ...prevState.notifications,
-            anchorEl: e.currentTarget,
-            data: data.notifications,
+            ...store.user.notifications,
+            items: data.notifications,
+            count: 0,
+            hasMore:
+              data.notifications.length < store.user.notifications.ceiling
+                ? false
+                : true,
+            cursor:
+              store.user.notifications.cursor +
+              store.user.notifications.ceiling,
+            anchor: e.currentTarget,
             loading: false,
           },
-          hasMore: data.notifications.length < prevState.ceiling ? false : true,
-          cursor: prevState.cursor + prevState.ceiling,
-        }));
+        });
       } catch (err) {
-        setState((prevState) => ({
-          ...prevState,
+        dispatch({
+          type: 'updateNotifications',
           notifications: {
-            ...prevState.notifications,
-            anchorEl: null,
-            data: null,
+            ...store.user.notifications,
+            count: 0,
+            anchor: null,
             loading: false,
           },
-        }));
+        });
       }
     } else {
-      setState((prevState) => ({
-        ...prevState,
+      dispatch({
+        type: 'updateNotifications',
         notifications: {
-          ...prevState.notifications,
-          anchorEl: e.currentTarget,
+          ...store.user.notifications,
+          count: 0,
+          anchor: e.currentTarget,
         },
-      }));
+      });
     }
   };
 
   const handleNotificationsMenuClose = () => {
-    setState((prevState) => ({
-      ...prevState,
+    dispatch({
+      type: 'updateNotifications',
       notifications: {
-        ...prevState.notifications,
-        anchorEl: null,
+        ...store.user.notifications,
+        count: 0,
+        anchor: null,
       },
-    }));
+    });
   };
 
   const handleLogout = async () => {
-    const { data } = await ax.post('/api/auth/logout', {
-      headers: {
-        credentials: 'include',
-      },
-    });
-    dispatch({
-      type: 'resetUser',
-    });
-    handleMenuClose();
-    history.push('/login');
+    try {
+      console.log('header1', store.user.token);
+
+      await ax.post('/api/auth/logout', {
+        headers: {
+          credentials: 'include',
+        },
+      });
+      console.log('header2', store.user.token);
+
+      dispatch({
+        type: 'resetUser',
+      });
+      console.log('header4', store.user.token);
+
+      handleMenuClose();
+      console.log('header5', store.user.token);
+
+      history.push('/login');
+      console.log('header6', store.user.token);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleReadClick = async (id) => {
     try {
       await ax.patch(`/api/read_notification/${id}`);
-      setState((prevState) => ({
-        ...prevState,
+      dispatch({
+        type: 'updateNotifications',
         notifications: {
-          ...prevState.notifications,
-          data: prevState.notifications.data.map((notification) =>
+          ...store.user.notifications,
+          items: store.user.notifications.items.map((notification) =>
             notification._id === id
               ? { ...notification, read: true }
               : notification
           ),
+          count: -1,
         },
-      }));
-      dispatch({
-        type: 'updateNotifications',
-        notifications: -1,
       });
     } catch (err) {
       console.log(err);
@@ -183,20 +198,17 @@ const Header = () => {
   const handleUnreadClick = async (id) => {
     try {
       await ax.patch(`/api/unread_notification/${id}`);
-      setState((prevState) => ({
-        ...prevState,
+      dispatch({
+        type: 'updateNotifications',
         notifications: {
-          ...prevState.notifications,
-          data: prevState.notifications.data.map((notification) =>
+          ...store.user.notifications,
+          items: store.user.notifications.items.map((notification) =>
             notification._id === id
               ? { ...notification, read: false }
               : notification
           ),
+          count: 1,
         },
-      }));
-      dispatch({
-        type: 'updateNotifications',
-        notifications: 1,
       });
     } catch (err) {
       console.log(err);
@@ -205,19 +217,32 @@ const Header = () => {
 
   const loadMore = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/user/${store.user.id}/notifications?cursor=${state.cursor}&ceiling=${state.ceiling}`
-      );
-      setState((prevState) => ({
-        ...prevState,
+      dispatch({
+        type: 'updateNotifications',
         notifications: {
-          ...prevState.notifications,
-          data: [...prevState.notifications.data].concat(data.notifications),
+          ...store.user.notifications,
+          count: 0,
+          loading: true,
+        },
+      });
+      const { data } = await ax.get(
+        `/api/user/${store.user.id}/notifications?cursor=${store.user.notifications.cursor}&ceiling=${store.user.notifications.ceiling}`
+      );
+      dispatch({
+        type: 'updateNotifications',
+        notifications: {
+          ...store.user.notifications,
+          items: [...store.user.notifications.items].concat(data.notifications),
+          count: 0,
+          hasMore:
+            data.notifications.length < store.user.notifications.ceiling
+              ? false
+              : true,
+          cursor:
+            store.user.notifications.cursor + store.user.notifications.ceiling,
           loading: false,
         },
-        hasMore: data.notifications.length < prevState.ceiling ? false : true,
-        cursor: prevState.cursor + prevState.ceiling,
-      }));
+      });
     } catch (err) {
       console.log(err);
     }
@@ -279,7 +304,10 @@ const Header = () => {
       </MenuItem> */}
       <MenuItem onClick={handleNotificationsMenuOpen}>
         <IconButton aria-label="Show notifications" color="inherit">
-          <Badge badgeContent={store.user.notifications} color="secondary">
+          <Badge
+            badgeContent={store.user.notifications.count}
+            color="secondary"
+          >
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -367,7 +395,7 @@ const Header = () => {
                   color="inherit"
                 >
                   <Badge
-                    badgeContent={store.user.notifications}
+                    badgeContent={store.user.notifications.count}
                     color="secondary"
                   >
                     <NotificationsIcon />
@@ -434,11 +462,10 @@ const Header = () => {
       {store.user.authenticated ? renderAuthMobileMenu : renderUnauthMobileMenu}
       {renderProfileMenu}
       <NotificationsMenu
-        notifications={state.notifications}
+        notifications={store.user.notifications}
         handleNotificationsMenuClose={handleNotificationsMenuClose}
         handleReadClick={handleReadClick}
         handleUnreadClick={handleUnreadClick}
-        hasMore={state.hasMore}
         loadMore={loadMore}
       />
     </>

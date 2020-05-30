@@ -100,8 +100,7 @@ const ArtworkDetails = ({ match, socket }) => {
         // handleModalClose();
         // dispatch({
         //   type: 'updateCart',
-        //   cart: { ...store.user.cart, [state.artwork._id]: true },
-        //   cartSize: store.user.cartSize + 1,
+        //   cart: { ...store.user.cart, items: {...store.user.cart.items, [state.artwork._id]: true}, count: store.user.cart.count + 1 },
         // });
 
         history.push({

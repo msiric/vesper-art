@@ -44,9 +44,13 @@ const Login = () => {
     },
     validationSchema,
     async onSubmit(values) {
+      console.log('login1');
       const { data } = await ax.post('/api/auth/login', values);
+      console.log('login2');
 
       if (data.user) {
+        console.log('login3');
+
         dispatch({
           type: 'setUser',
           authenticated: true,
@@ -55,22 +59,31 @@ const Login = () => {
           name: data.user.name,
           email: data.user.email,
           photo: data.user.photo,
-          messages: data.user.messages,
-          notifications: data.user.notifications,
+          stripeId: data.user.stripeId,
+          country: data.user.country,
+          messages: { items: [], count: data.user.messages },
+          notifications: {
+            ...store.user.notifications,
+            items: [],
+            count: data.user.notifications,
+          },
           saved: data.user.saved.reduce(function (object, item) {
             object[item] = true;
             return object;
           }, {}),
-          // cart: data.user.cart.reduce(function (object, item) {
-          //   object[item] = true;
-          //   return object;
-          // }, {}),
-          stripeId: data.user.stripeId,
-          country: data.user.country,
-          cartSize: Object.keys(data.user.cart).length,
+          cart: {
+            items: data.user.cart.reduce(function (object, item) {
+              object[item] = true;
+              return object;
+            }, {}),
+            count: Object.keys(data.user.cart).length,
+          },
         });
       }
+      console.log('login4');
+
       history.push('/');
+      console.log('login5');
     },
   });
   return (

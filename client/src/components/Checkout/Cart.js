@@ -140,8 +140,11 @@ const Cart = () => {
       }));
       dispatch({
         type: 'updateCart',
-        cart: { ...store.user.cart, [id]: false },
-        cartSize: store.user.cartSize - 1,
+        cart: {
+          ...store.user.cart,
+          items: { ...store.user.cart.items, [id]: false },
+          count: store.user.cart.count - 1,
+        },
       });
     }
   };

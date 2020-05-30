@@ -15,13 +15,26 @@ const store = {
     name: null,
     email: null,
     photo: null,
-    messages: null,
-    notifications: null,
-    saved: {},
-    cart: {},
     stripeId: null,
     country: null,
-    cartSize: null,
+    messages: {
+      items: [],
+      count: 0,
+    },
+    notifications: {
+      items: [],
+      count: 0,
+      hasMore: true,
+      cursor: 0,
+      ceiling: 10,
+      anchor: null,
+      loading: false,
+    },
+    saved: {},
+    cart: {
+      items: {},
+      count: 0,
+    },
   },
 };
 
@@ -50,7 +63,6 @@ const reducer = (state, action) => {
           cart: action.cart,
           stripeId: action.stripeId,
           country: action.country,
-          cartSize: action.cartSize,
         },
       };
     case 'setMain':
@@ -74,13 +86,12 @@ const reducer = (state, action) => {
           name: action.name,
           email: action.email,
           photo: action.photo,
+          stripeId: action.stripeId,
+          country: action.country,
           messages: action.messages,
           notifications: action.notifications,
           saved: action.saved,
           cart: action.cart,
-          stripeId: action.stripeId,
-          country: action.country,
-          cartSize: action.cartSize,
         },
       };
     case 'updateUser':
@@ -91,13 +102,12 @@ const reducer = (state, action) => {
           token: action.token,
           email: action.email,
           photo: action.photo,
+          stripeId: action.stripeId,
+          country: action.country,
           messages: action.messages,
           notifications: action.notifications,
           saved: action.saved,
           cart: action.cart,
-          stripeId: action.stripeId,
-          country: action.country,
-          cartSize: action.cartSize,
         },
       };
     case 'resetUser':
@@ -110,13 +120,26 @@ const reducer = (state, action) => {
           name: null,
           email: null,
           photo: null,
-          messages: null,
-          notifications: null,
-          saved: {},
-          cart: {},
           stripeId: null,
           country: null,
-          cartSize: null,
+          messages: {
+            items: [],
+            count: 0,
+          },
+          notifications: {
+            items: [],
+            count: 0,
+            hasMore: true,
+            cursor: 0,
+            ceiling: 10,
+            anchor: null,
+            loading: false,
+          },
+          saved: {},
+          cart: {
+            items: {},
+            count: 0,
+          },
         },
       };
     case 'updateToken':
@@ -133,7 +156,6 @@ const reducer = (state, action) => {
         user: {
           ...state.user,
           cart: action.cart,
-          cartSize: action.cartSize,
         },
       };
     case 'updateSaves':
@@ -149,7 +171,10 @@ const reducer = (state, action) => {
         ...state,
         user: {
           ...state.user,
-          messages: state.user.messages + action.messages,
+          messages: {
+            ...state.messages,
+            count: state.user.messages.count + action.messages,
+          },
         },
       };
     case 'updateNotifications':
@@ -157,7 +182,16 @@ const reducer = (state, action) => {
         ...state,
         user: {
           ...state.user,
-          notifications: state.user.notifications + action.notifications,
+          notifications: {
+            ...state.notifications,
+            items: action.notifications.items,
+            count: state.user.notifications.count + action.notifications.count,
+            hasMore: action.notifications.hasMore,
+            cursor: action.notifications.cursor,
+            ceiling: action.notifications.ceiling,
+            anchor: action.notifications.anchor,
+            loading: action.notifications.loading,
+          },
         },
       };
     case 'updateEvents':
@@ -169,6 +203,8 @@ const reducer = (state, action) => {
           notifications: action.notifications,
         },
       };
+    case 'getState':
+      return { ...state };
     default:
       return state;
   }
@@ -179,6 +215,7 @@ const Store = ({ children, definedState }) => {
     reducer,
     definedState ? definedState : store
   );
+
   return (
     <Context.Provider value={[state, dispatch]}>{children}</Context.Provider>
   );
@@ -188,5 +225,4 @@ export const Context = createContext({
   store: store,
   dispatch: reducer,
 });
-
 export default Store;

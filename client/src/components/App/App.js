@@ -15,7 +15,7 @@ import { artepunktTheme } from '../../constants/theme';
 import axios from 'axios';
 import AppStyles from './App.style';
 
-const App = () => {
+const App = ({ socket }) => {
   const [store, dispatch] = useContext(Context);
   const notistackRef = createRef();
 
@@ -24,70 +24,6 @@ const App = () => {
   const handleAlertClose = (key) => () => {
     notistackRef.current.closeSnackbar(key);
   };
-
-  const getRefreshToken = async () => {
-    try {
-      if (!store.user.token) {
-        const { data } = await axios.post('/api/auth/refresh_token', {
-          headers: {
-            credentials: 'include',
-          },
-        });
-
-        if (data.user) {
-          dispatch({
-            type: 'setStore',
-            loading: false,
-            error: false,
-            auth: store.main.auth,
-            brand: store.main.brand,
-            theme: store.main.theme,
-            authenticated: true,
-            token: data.accessToken,
-            id: data.user.id,
-            name: data.user.name,
-            email: data.user.email,
-            photo: data.user.photo,
-            messages: data.user.messages,
-            notifications: data.user.notifications,
-            saved: data.user.saved.reduce(function (object, item) {
-              object[item] = true;
-              return object;
-            }, {}),
-            cart: data.user.cart.reduce(function (object, item) {
-              object[item.artwork] = true;
-              return object;
-            }, {}),
-            stripeId: data.user.stripeId,
-            country: data.user.country,
-            cartSize: Object.keys(data.user.cart).length,
-          });
-        } else {
-          dispatch({
-            type: 'setMain',
-            loading: false,
-            error: false,
-            auth: store.main.auth,
-            brand: store.main.brand,
-            theme: store.main.theme,
-          });
-        }
-      }
-    } catch (err) {
-      dispatch({
-        type: 'setMain',
-        loading: false,
-        error: true,
-        auth: store.main.auth,
-        brand: store.main.brand,
-        theme: store.main.theme,
-      });
-    }
-  };
-
-  useEffect(() => {
-    getRefreshToken();
-  }, []);
 
   return !store.main.loading ? (
     <ThemeProvider
@@ -116,7 +52,7 @@ const App = () => {
         )}
       >
         <CssBaseline />
-        <Router />
+        <Router socket={socket} />
       </SnackbarProvider>
     </ThemeProvider>
   ) : (

@@ -30,6 +30,7 @@ const getArtwork = async (req, res, next) => {
       );
     return res.json({ artwork: foundArtwork });
   } catch (err) {
+    console.log(err);
     next(err, res);
   }
 };

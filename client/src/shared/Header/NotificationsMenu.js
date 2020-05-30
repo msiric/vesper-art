@@ -30,49 +30,44 @@ const NotificationsMenu = ({
   handleNotificationsMenuClose,
   handleReadClick,
   handleUnreadClick,
-  hasMore,
   loadMore,
 }) => {
   const classes = NotificationsMenuStyles();
 
   return (
     <StyledMenu
-      anchorEl={notifications.anchorEl}
+      anchorEl={notifications.anchor}
       keepMounted
-      open={Boolean(notifications.anchorEl)}
+      open={Boolean(notifications.anchor)}
       onClose={handleNotificationsMenuClose}
     >
-      {notifications.loading ? (
-        'Loading'
-      ) : (
-        <InfiniteScroll
-          height={400}
-          className={classes.scroller}
-          dataLength={notifications.data.length}
-          next={loadMore}
-          hasMore={hasMore}
-          loader={
-            <Grid item xs={12} className={classes.loader}>
-              <CircularProgress />
-            </Grid>
-          }
-        >
-          <List className={classes.root}>
-            {notifications.data && notifications.data.length
-              ? notifications.data.map((notification, index) => (
-                  <>
-                    {index === 0 ? <Divider /> : null}
-                    <NotificationItem
-                      notification={notification}
-                      handleReadClick={handleReadClick}
-                      handleUnreadClick={handleUnreadClick}
-                    />
-                  </>
-                ))
-              : 'No notifications'}
-          </List>
-        </InfiniteScroll>
-      )}
+      <InfiniteScroll
+        height={400}
+        className={classes.scroller}
+        dataLength={notifications.items.length}
+        next={loadMore}
+        hasMore={notifications.hasMore}
+        loader={
+          <Grid item xs={12} className={classes.loader}>
+            <CircularProgress />
+          </Grid>
+        }
+      >
+        <List className={classes.root}>
+          {notifications.items && notifications.items.length
+            ? notifications.items.map((notification, index) => (
+                <>
+                  {index === 0 ? <Divider /> : null}
+                  <NotificationItem
+                    notification={notification}
+                    handleReadClick={handleReadClick}
+                    handleUnreadClick={handleUnreadClick}
+                  />
+                </>
+              ))
+            : 'No notifications'}
+        </List>
+      </InfiniteScroll>
     </StyledMenu>
   );
 };

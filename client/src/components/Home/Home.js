@@ -53,7 +53,7 @@ const Home = ({ location, enqueueSnackbar }) => {
   const loadMore = async () => {
     try {
       const { data } = await ax.get(
-        `/api/artwork?page=${state.cursor}&ceiling=${state.ceiling}`
+        `/api/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
       );
       setState((prevState) => ({
         ...prevState,
