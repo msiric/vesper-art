@@ -728,6 +728,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                             elements={state.user.artwork}
                             hasMore={state.scroll.artwork.hasMore}
                             loadMore={loadMoreArtwork}
+                            type="artwork"
                           />
                         ) : (
                           <Typography variant="h6" align="center">
@@ -741,6 +742,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                             elements={state.user.savedArtwork}
                             hasMore={state.scroll.saves.hasMore}
                             loadMore={loadMoreSaves}
+                            type="artwork"
                           />
                         ) : (
                           <Typography variant="h6" align="center">
@@ -780,6 +782,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                             elements={state.user.artwork}
                             hasMore={state.scroll.artwork.hasMore}
                             loadMore={loadMoreArtwork}
+                            type="artwork"
                           />
                         ) : (
                           <Typography variant="h6" align="center">
@@ -794,6 +797,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                               elements={state.user.savedArtwork}
                               hasMore={state.scroll.saves.hasMore}
                               loadMore={loadMoreSaves}
+                              type="artwork"
                             />
                           ) : (
                             <Typography variant="h6" align="center">

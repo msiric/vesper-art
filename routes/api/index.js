@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const createError = require('http-errors');
 
-users = {};
-
 const userRoutes = require('./routers/userRouter');
 const orderRoutes = require('./routers/orderRouter');
 const uploadRoutes = require('./routers/uploadRouter');
@@ -18,6 +16,7 @@ const verifierRouter = require('./routers/verifierRouter');
 const notificationRouter = require('./routers/notificationRouter');
 const checkoutRouter = require('./routers/checkoutRouter');
 const commentRouter = require('./routers/commentRouter');
+const searchRouter = require('./routers/searchRouter');
 const authRouter = require('./routers/authRouter');
 
 router.use('/', userRoutes);
@@ -34,6 +33,7 @@ router.use('/', verifierRouter);
 router.use('/', notificationRouter);
 router.use('/', checkoutRouter);
 router.use('/', commentRouter);
+router.use('/', searchRouter);
 router.use('/auth', authRouter);
 
 router.use((req, res, next) => {

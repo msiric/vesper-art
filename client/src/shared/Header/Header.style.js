@@ -31,13 +31,15 @@ const HeaderStyles = makeStyles((muiTheme) => ({
     },
   },
   searchIcon: {
-    padding: muiTheme.spacing(0, 2),
     height: '100%',
     position: 'absolute',
-    pointerEvents: 'none',
+    zIndex: 10000,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: 4,
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.08)',
+    },
   },
   inputRoot: {
     color: 'inherit',
@@ -45,7 +47,7 @@ const HeaderStyles = makeStyles((muiTheme) => ({
   inputInput: {
     padding: muiTheme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${muiTheme.spacing(4)}px)`,
+    paddingLeft: `calc(1em + ${muiTheme.spacing(5)}px)`,
     transition: muiTheme.transitions.create('width'),
     width: '100%',
     [muiTheme.breakpoints.up('md')]: {

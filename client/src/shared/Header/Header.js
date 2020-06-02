@@ -3,6 +3,8 @@ import { Context } from '../../components/Store/Store';
 import { ax } from '../../shared/Interceptor/Interceptor';
 import { useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import {
   Button,
   AppBar,
@@ -31,6 +33,10 @@ import {
 import NotificationsMenu from './NotificationsMenu';
 import HeaderStyles from './Header.style';
 
+const searchValidation = Yup.object().shape({
+  searchInput: Yup.string().trim().required('Search input is required'),
+});
+
 const Header = () => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
@@ -40,6 +46,29 @@ const Header = () => {
   const history = useHistory();
 
   const classes = HeaderStyles();
+
+  const {
+    setFieldValue,
+    isSubmitting,
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    touched,
+    values,
+    errors,
+  } = useFormik({
+    initialValues: {
+      searchInput: '',
+    },
+    searchValidation,
+    async onSubmit(values) {
+      try {
+        history.push(`/search?query=${values.searchInput}&type=artwork`);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
 
   const handleProfileMenuOpen = (e) => {
     setState((prevState) => ({
@@ -363,17 +392,29 @@ const Header = () => {
             Material-UI
           </Typography>
           <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
+            <form className={classes.form} onSubmit={handleSubmit}>
+              <IconButton
+                onClick={handleSubmit}
+                className={classes.searchIcon}
+                disableFocusRipple
+                disableRipple
+              >
+                <SearchIcon />
+              </IconButton>
+              <InputBase
+                name="searchInput"
+                type="text"
+                value={values.searchInput}
+                placeholder="Search…"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{ 'aria-label': 'search' }}
+              />
+            </form>
           </div>
           <div className={classes.grow} />
           {store.user.authenticated ? (

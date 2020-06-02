@@ -231,7 +231,9 @@ const postNewArtwork = async (req, res, next) => {
     newArtwork.comments = [];
     newArtwork.current = savedVersion._id;
     newArtwork.saves = 0;
-    await newArtwork.save({ session });
+    const savedArtwork = await newArtwork.save({ session });
+    savedVersion.artwork = savedArtwork._id;
+    await savedVersion.save({ session });
     await User.updateOne(
       { _id: res.locals.user.id },
       { $push: { artwork: newArtwork._id } }

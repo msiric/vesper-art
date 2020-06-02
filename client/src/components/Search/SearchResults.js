@@ -1,0 +1,102 @@
+import React, { useState, useEffect, useContext } from 'react';
+import { Context } from '../Store/Store';
+import {
+  Grid,
+  CircularProgress,
+  Paper,
+  Button,
+  Icon,
+  Typography,
+  Input,
+  Table,
+  TableBody,
+  TableCell,
+  TablePagination,
+  TableRow,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Tabs,
+  Tab,
+  Avatar,
+  TextField,
+} from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import { withRouter, useHistory } from 'react-router-dom';
+import { ax } from '../../shared/Interceptor/Interceptor';
+import Gallery from '../Home/Gallery';
+import SearchResultsStyles from './SearchResults.style';
+
+const SearchResults = ({ match, location }) => {
+  const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({
+    loading: true,
+    results: [],
+    type: null,
+    hasMore: true,
+    cursor: 0,
+    ceiling: 50,
+  });
+
+  const classes = SearchResultsStyles();
+
+  const fetchResults = async () => {
+    try {
+      const { data } = await ax.get(
+        `/api/search${location.search}&cursor=${state.cursor}&ceiling=${state.ceiling}`
+      );
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        results: data.searchResults,
+        type: data.searchType,
+        hasMore: data.searchResults.length < state.ceiling ? false : true,
+        cursor: state.cursor + state.ceiling,
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const loadMore = async () => {
+    try {
+      const { data } = await ax.get(
+        `/api/search${location.search}&cursor=${state.cursor}&ceiling=${state.ceiling}`
+      );
+      setState((prevState) => ({
+        ...prevState,
+        results: [...prevState.results].concat(data.searchResults),
+        hasMore: data.searchResults.length >= prevState.ceiling,
+        cursor: prevState.cursor + prevState.ceiling,
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchResults();
+  }, []);
+
+  return (
+    <Grid container className={classes.container}>
+      <Grid item xs={12} className={classes.grid}>
+        {state.loading ? (
+          <CircularProgress />
+        ) : state.results.length ? (
+          <Gallery
+            elements={state.results}
+            hasMore={state.hasMore}
+            loadMore={loadMore}
+            type="version"
+          />
+        ) : (
+          'No results'
+        )}
+      </Grid>
+    </Grid>
+  );
+};
+
+export default SearchResults;

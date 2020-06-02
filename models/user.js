@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt-nodejs');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const deepPopulate = require('mongoose-deep-populate')(mongoose);
+const fuzzySearch = require('mongoose-fuzzy-searching');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -68,6 +69,13 @@ UserSchema.pre('save', function (next) {
 });
 
 UserSchema.plugin(deepPopulate);
+
+UserSchema.plugin(fuzzySearch, {
+  fields: [
+    { name: 'name', weight: 3 },
+    { name: 'email', weight: 2 },
+  ],
+});
 
 UserSchema.methods.comparePassword = function (password) {
   return bcrypt.compareSync(password, this.password);

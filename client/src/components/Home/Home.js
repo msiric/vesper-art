@@ -76,6 +76,7 @@ const Home = ({ location, enqueueSnackbar }) => {
             elements={state.artwork}
             hasMore={state.hasMore}
             loadMore={loadMore}
+            type="artwork"
           />
         ) : (
           'No artwork'

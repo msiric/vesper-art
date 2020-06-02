@@ -38,7 +38,7 @@ import { ax } from '../../shared/Interceptor/Interceptor';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import GalleryStyles from './Gallery.style';
 
-const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
+const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     modal: {
@@ -50,137 +50,139 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
   const classes = GalleryStyles();
 
   const artwork = elements.map((element, index) => {
-    return (
-      <Card key={index} className={classes.root}>
-        <CardHeader
-          title={element.current.title}
-          subheader={
-            element.current.availability === 'available'
-              ? element.current.personal
-                ? `$${element.current.personal}`
-                : 'Free'
-              : 'Showcase'
-          }
-        />
-        <CardMedia
-          component={Link}
-          to={`/artwork/${element._id}`}
-          className={classes.media}
-          image={element.current.cover}
-          title={element.current.title}
-        />
-        <CardContent>
-          <Typography
+    let card = null;
+    if (type === 'version') {
+      card = (
+        <Card key={index} className={classes.root}>
+          <CardHeader
+            title={element.title}
+            subheader={
+              element.availability === 'available'
+                ? element.personal
+                  ? `$${element.personal}`
+                  : 'Free'
+                : 'Showcase'
+            }
+          />
+          <CardMedia
             component={Link}
-            to={`/user/${element.owner.name}`}
-            variant="body1"
-            color="textSecondary"
-            className={classes.link}
-          >
-            {element.owner.name}
-          </Typography>
-        </CardContent>
-        <CardActions disableSpacing>
-          {store.user.authenticated && element.owner._id === store.user.id ? (
-            <IconButton
+            to={`/artwork/${element.artwork._id}`}
+            className={classes.media}
+            image={element.cover}
+            title={element.title}
+          />
+          <CardContent>
+            <Typography
               component={Link}
-              to={`/edit_artwork/${element._id}`}
-              aria-label="Unsave artwork"
+              to={`/user/${element.artwork.owner.name}`}
+              variant="body1"
+              color="textSecondary"
+              className={classes.link}
             >
-              <EditIcon />
-            </IconButton>
-          ) : store.user.saved[element._id] ? (
+              {element.artwork.owner.name}
+            </Typography>
+          </CardContent>
+          <CardActions disableSpacing>
+            {store.user.authenticated &&
+            element.artwork.owner._id === store.user.id ? (
+              <IconButton
+                component={Link}
+                to={`/edit_artwork/${element.artwork._id}`}
+                aria-label="Unsave artwork"
+              >
+                <EditIcon />
+              </IconButton>
+            ) : store.user.saved[element.artwork._id] ? (
+              <IconButton
+                onClick={() => handleUnsaveArtwork(element.artwork._id)}
+                aria-label="Unsave artwork"
+              >
+                <SavedIcon />
+              </IconButton>
+            ) : (
+              <IconButton
+                onClick={() => handleSaveArtwork(element.artwork._id)}
+                aria-label="Save artwork"
+              >
+                <SaveIcon />
+              </IconButton>
+            )}
             <IconButton
-              onClick={() => handleUnsaveArtwork(element._id)}
-              aria-label="Unsave artwork"
+              onClick={() => handleModalOpen(element.artwork._id)}
+              aria-label="Share artwork"
             >
-              <SavedIcon />
+              <ShareIcon />
             </IconButton>
-          ) : (
+          </CardActions>
+        </Card>
+      );
+    } else {
+      card = (
+        <Card key={index} className={classes.root}>
+          <CardHeader
+            title={element.current.title}
+            subheader={
+              element.current.availability === 'available'
+                ? element.current.personal
+                  ? `$${element.current.personal}`
+                  : 'Free'
+                : 'Showcase'
+            }
+          />
+          <CardMedia
+            component={Link}
+            to={`/artwork/${element._id}`}
+            className={classes.media}
+            image={element.current.cover}
+            title={element.current.title}
+          />
+          <CardContent>
+            <Typography
+              component={Link}
+              to={`/user/${element.owner.name}`}
+              variant="body1"
+              color="textSecondary"
+              className={classes.link}
+            >
+              {element.owner.name}
+            </Typography>
+          </CardContent>
+          <CardActions disableSpacing>
+            {store.user.authenticated && element.owner._id === store.user.id ? (
+              <IconButton
+                component={Link}
+                to={`/edit_artwork/${element._id}`}
+                aria-label="Unsave artwork"
+              >
+                <EditIcon />
+              </IconButton>
+            ) : store.user.saved[element._id] ? (
+              <IconButton
+                onClick={() => handleUnsaveArtwork(element._id)}
+                aria-label="Unsave artwork"
+              >
+                <SavedIcon />
+              </IconButton>
+            ) : (
+              <IconButton
+                onClick={() => handleSaveArtwork(element._id)}
+                aria-label="Save artwork"
+              >
+                <SaveIcon />
+              </IconButton>
+            )}
             <IconButton
-              onClick={() => handleSaveArtwork(element._id)}
-              aria-label="Save artwork"
+              onClick={() => handleModalOpen(element._id)}
+              aria-label="Share artwork"
             >
-              <SaveIcon />
+              <ShareIcon />
             </IconButton>
-          )}
-          <IconButton
-            onClick={() => handleModalOpen(element._id)}
-            aria-label="Share artwork"
-          >
-            <ShareIcon />
-          </IconButton>
-        </CardActions>
-      </Card>
-    );
+          </CardActions>
+        </Card>
+      );
+    }
+    return card;
   });
-
-  const artworkTest = Array.from({ length: 80 })
-    .fill(
-      <Card key={elements[0]._id} className={classes.root}>
-        <CardHeader
-          title={elements[0].current.title}
-          subheader={
-            elements[0].current.availability === 'available'
-              ? elements[0].current.personal
-                ? `$${elements[0].current.personal}`
-                : 'Free'
-              : 'Showcase'
-          }
-        />
-        <CardMedia
-          component={Link}
-          to={`/artwork/${elements[0]._id}`}
-          className={classes.media}
-          image={elements[0].current.cover}
-          title={elements[0].current.title}
-        />
-        <CardContent>
-          <Typography
-            component={Link}
-            to={`/user/${elements[0].owner.name}`}
-            variant="body1"
-            color="textSecondary"
-            className={classes.link}
-          >
-            {elements[0].owner.name}
-          </Typography>
-        </CardContent>
-        <CardActions disableSpacing>
-          {store.user.authenticated &&
-          elements[0].owner._id === store.user.id ? (
-            <IconButton
-              component={Link}
-              to={`/edit_artwork/${elements[0]._id}`}
-              aria-label="Unsave artwork"
-            >
-              <EditIcon />
-            </IconButton>
-          ) : store.user.saved[elements[0]._id] ? (
-            <IconButton
-              onClick={() => handleUnsaveArtwork(elements[0]._id)}
-              aria-label="Unsave artwork"
-            >
-              <SavedIcon />
-            </IconButton>
-          ) : (
-            <IconButton
-              onClick={() => handleSaveArtwork(elements[0]._id)}
-              aria-label="Save artwork"
-            >
-              <SaveIcon />
-            </IconButton>
-          )}
-          <IconButton
-            onClick={() => handleModalOpen(elements[0]._id)}
-            aria-label="Share artwork"
-          >
-            <ShareIcon />
-          </IconButton>
-        </CardActions>
-      </Card>
-    )
-    .flat();
 
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;

@@ -152,6 +152,13 @@ const routes = [
     exact: true,
     type: 'protected',
   },
+  // Search router
+  {
+    path: '/search',
+    Component: lazy(() => import('../Search/SearchResults')),
+    exact: true,
+    type: 'public',
+  },
 ];
 
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (

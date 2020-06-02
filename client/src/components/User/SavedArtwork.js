@@ -88,7 +88,7 @@ const SavedArtwork = () => {
                   Saved artwork
                 </Typography>
                 {state.artwork.length ? (
-                  <Gallery elements={state.artwork} />
+                  <Gallery elements={state.artwork} type="artwork" />
                 ) : (
                   <Typography variant="h6" align="center">
                     You have no saved artwork
