@@ -4,10 +4,13 @@ import { Context } from '../../components/Store/Store';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import InterceptorStyles from './Interceptor.style';
+import openSocket from 'socket.io-client';
+const ENDPOINT = 'http://localhost:5000';
 
 const ax = axios.create();
+let socket = openSocket(ENDPOINT);
 
-const Interceptor = ({ socket, children }) => {
+const Interceptor = ({ children }) => {
   const [store, dispatch] = useContext(Context);
 
   const classes = InterceptorStyles();
@@ -177,6 +180,9 @@ const Interceptor = ({ socket, children }) => {
   };
 
   const handleSocket = (token) => {
+    console.log('emit');
+    socket = openSocket(ENDPOINT);
+
     socket.emit('authenticateUser', token ? `Bearer ${token}` : null);
     socket.on('sendNotification', () => {
       dispatch({
@@ -221,7 +227,7 @@ const Interceptor = ({ socket, children }) => {
   }, [store.user.token]);
 
   return !store.main.loading ? (
-    children
+    children(socket)
   ) : (
     <Container fixed className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>

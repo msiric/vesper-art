@@ -6,6 +6,7 @@ socketApi.io = io;
 socketApi.connections = {};
 
 io.on('connection', (socket) => {
+  console.log('connect');
   socket.on('authenticateUser', (authentication) => {
     try {
       const token = authentication ? authentication.split(' ')[1] : null;
@@ -19,9 +20,14 @@ io.on('connection', (socket) => {
         id: socket.id,
         exp: data.exp,
       };
+      console.log('auth');
     } catch (err) {
       console.log(err);
     }
+  });
+
+  socket.on('disconnect', (socket) => {
+    console.log('disconnect');
   });
 });
 

@@ -12,7 +12,6 @@ import {
 import { CloseRounded as CloseIcon } from '@material-ui/icons';
 import { SnackbarProvider } from 'notistack';
 import { artepunktTheme } from '../../constants/theme';
-import axios from 'axios';
 import AppStyles from './App.style';
 
 const App = ({ socket }) => {
