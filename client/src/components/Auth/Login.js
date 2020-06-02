@@ -44,13 +44,9 @@ const Login = () => {
     },
     validationSchema,
     async onSubmit(values) {
-      console.log('login1');
       const { data } = await ax.post('/api/auth/login', values);
-      console.log('login2');
 
       if (data.user) {
-        console.log('login3');
-
         dispatch({
           type: 'setUser',
           authenticated: true,
@@ -80,10 +76,8 @@ const Login = () => {
           },
         });
       }
-      console.log('login4');
 
       history.push('/');
-      console.log('login5');
     },
   });
   return (

@@ -25,7 +25,7 @@ const App = ({ socket }) => {
     notistackRef.current.closeSnackbar(key);
   };
 
-  return !store.main.loading ? (
+  return (
     <ThemeProvider
       theme={{
         ...artepunktTheme,
@@ -55,14 +55,6 @@ const App = ({ socket }) => {
         <Router socket={socket} />
       </SnackbarProvider>
     </ThemeProvider>
-  ) : (
-    <Container fixed className={classes.fixed}>
-      <Grid container className={classes.container} spacing={2}>
-        <Grid item xs={12} className={classes.loader}>
-          <CircularProgress />
-        </Grid>
-      </Grid>
-    </Container>
   );
 };
 

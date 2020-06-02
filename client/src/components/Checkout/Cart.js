@@ -322,7 +322,6 @@ const Cart = () => {
                     })}
                     <Divider />
                     <ListItem className={classes.listItem}>
-                      {console.log(licenses.current)}
                       <ListItemText
                         primary={<Typography>Items</Typography>}
                         secondary={

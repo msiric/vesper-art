@@ -163,7 +163,6 @@ const Summary = ({
 
           <Divider />
           <ListItem className={classes.listItem}>
-            {console.log(state.summary)}
             <ListItemText
               primary={<Typography>Items</Typography>}
               secondary={

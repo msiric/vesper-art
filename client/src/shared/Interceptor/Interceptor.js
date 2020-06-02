@@ -1,70 +1,21 @@
 import React, { useEffect, useContext } from 'react';
+import { Container, Grid, CircularProgress } from '@material-ui/core';
 import { Context } from '../../components/Store/Store';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import InterceptorStyles from './Interceptor.style';
 
 const ax = axios.create();
 
 const Interceptor = ({ socket, children }) => {
   const [store, dispatch] = useContext(Context);
 
+  const classes = InterceptorStyles();
+
   const history = useHistory();
 
-  // ax.defaults.headers.common['Authorization'] = store.user.token
-  //   ? `Bearer ${store.user.token}`
-  //   : '';
-
-  // useEffect(() => {
-  //   socket.emit('authenticateUser', `Bearer ${store.user.token}`);
-  //   socket.on('sendNotification', (data) => {
-  //     dispatch({
-  //       type: 'updateNotifications',
-  //       count: 1,
-  //     });
-  //   });
-  //   socket.on('expiredToken', async () => {
-  //     try {
-  //       const { data } = await axios.post(`/api/auth/refresh_token`, {
-  //         headers: {
-  //           credentials: 'include',
-  //         },
-  //       });
-  //       dispatch({
-  //         type: 'updateUser',
-  //         token: data.accessToken,
-  //         email: data.user.email,
-  //         photo: data.user.photo,
-  //         stripeId: data.user.stripeId,
-  //         country: data.user.country,
-  //         messages: { items: [], count: data.user.messages },
-  //         notifications:
-  //           store.user.notifications.items.length !== data.user.notifications
-  //             ? {
-  //                 ...store.user.notifications,
-  //                 items: [],
-  //                 count: data.user.notifications,
-  //                 hasMore: true,
-  //                 cursor: 0,
-  //                 ceiling: 10,
-  //               }
-  //             : { ...store.user.notifications, count: data.user.notifications },
-  //         saved: data.user.saved,
-  //         cart: { items: {}, count: data.user.cart },
-  //       });
-  //       socket.emit('authenticateUser', `Bearer ${data.accessToken}`);
-  //     } catch (err) {
-  //       dispatch({
-  //         type: 'resetUser',
-  //       });
-  //     }
-  //   });
-  // }, [store.user.authenticated]);
-
   const getRefreshToken = async () => {
-    console.log('refresh token');
     try {
-      console.log(1);
-
       if (!store.user.token) {
         dispatch({
           type: 'setMain',
@@ -74,7 +25,6 @@ const Interceptor = ({ socket, children }) => {
           brand: store.main.brand,
           theme: store.main.theme,
         });
-        console.log(2);
 
         const { data } = await axios.post('/api/auth/refresh_token', {
           headers: {
@@ -83,9 +33,6 @@ const Interceptor = ({ socket, children }) => {
         });
 
         if (data.user) {
-          console.log(3);
-          console.log(data.accessToken);
-
           dispatch({
             type: 'setStore',
             loading: false,
@@ -105,20 +52,14 @@ const Interceptor = ({ socket, children }) => {
               items: [],
               count: data.user.messages,
             },
-            notifications:
-              store.user.notifications.items.length !== data.user.notifications
-                ? {
-                    ...store.user.notifications,
-                    items: [],
-                    count: data.user.notifications,
-                    hasMore: true,
-                    cursor: 0,
-                    ceiling: 10,
-                  }
-                : {
-                    ...store.user.notifications,
-                    count: data.user.notifications,
-                  },
+            notifications: {
+              ...store.user.notifications,
+              items: [],
+              count: data.user.notifications,
+              hasMore: true,
+              cursor: 0,
+              ceiling: 10,
+            },
             saved: data.user.saved.reduce(function (object, item) {
               object[item] = true;
               return object;
@@ -132,8 +73,6 @@ const Interceptor = ({ socket, children }) => {
             },
           });
         } else {
-          console.log(4);
-
           dispatch({
             type: 'setMain',
             loading: false,
@@ -145,8 +84,6 @@ const Interceptor = ({ socket, children }) => {
         }
       }
     } catch (err) {
-      console.log(5);
-
       dispatch({
         type: 'setMain',
         loading: false,
@@ -158,21 +95,12 @@ const Interceptor = ({ socket, children }) => {
     }
   };
 
-  const interceptTraffic = () => {
-    ax.interceptors.request.use(
-      (request) => {
-        console.log('tokenIn', store.user.token, request);
-        if (store.user.token) {
-          request.headers.Authorization = `Bearer ${store.user.token}`;
-        } else {
-          request.headers.Authorization = ``;
-        }
-        return request;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    );
+  const interceptTraffic = (token) => {
+    if (token) {
+      ax.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete ax.defaults.headers.common['Authorization'];
+    }
 
     ax.interceptors.response.use(
       (response) => {
@@ -190,7 +118,7 @@ const Interceptor = ({ socket, children }) => {
           error.config.url === '/api/auth/refresh_token' ||
           error.response.message === 'Forbidden'
         ) {
-          const { data } = await ax.post('/api/auth/logout', {
+          await ax.post('/api/auth/logout', {
             headers: {
               credentials: 'include',
             },
@@ -205,11 +133,16 @@ const Interceptor = ({ socket, children }) => {
           });
         }
 
-        const { data } = await axios.post(`/api/auth/refresh_token`, {
+        const { data } = await axios.post('/api/auth/refresh_token', {
           headers: {
             credentials: 'include',
           },
         });
+
+        console.log(
+          store.user.notifications.items.length,
+          data.user.notifications
+        );
 
         dispatch({
           type: 'updateUser',
@@ -219,20 +152,7 @@ const Interceptor = ({ socket, children }) => {
           stripeId: data.user.stripeId,
           country: data.user.country,
           messages: { items: [], count: data.user.messages },
-          notifications:
-            store.user.notifications.items.length !== data.user.notifications
-              ? {
-                  ...store.user.notifications,
-                  items: [],
-                  count: data.user.notifications,
-                  hasMore: true,
-                  cursor: 0,
-                  ceiling: 10,
-                }
-              : {
-                  ...store.user.notifications,
-                  count: data.user.notifications,
-                },
+          notifications: { count: data.user.notifications },
           saved: data.user.saved,
           cart: { items: {}, count: data.user.cart },
         });
@@ -252,16 +172,65 @@ const Interceptor = ({ socket, children }) => {
         });
       }
     );
+
+    handleSocket(token);
+  };
+
+  const handleSocket = (token) => {
+    socket.emit('authenticateUser', token ? `Bearer ${token}` : null);
+    socket.on('sendNotification', () => {
+      dispatch({
+        type: 'updateNotifications',
+        count: 1,
+      });
+    });
+    socket.on('expiredToken', async () => {
+      try {
+        const { data } = await axios.post(`/api/auth/refresh_token`, {
+          headers: {
+            credentials: 'include',
+          },
+        });
+        dispatch({
+          type: 'updateUser',
+          token: data.accessToken,
+          email: data.user.email,
+          photo: data.user.photo,
+          stripeId: data.user.stripeId,
+          country: data.user.country,
+          messages: { items: [], count: data.user.messages },
+          notifications: { count: data.user.notifications },
+          saved: data.user.saved,
+          cart: { items: {}, count: data.user.cart },
+        });
+        socket.emit('authenticateUser', `Bearer ${data.accessToken}`);
+      } catch (err) {
+        dispatch({
+          type: 'resetUser',
+        });
+      }
+    });
   };
 
   useEffect(() => {
     getRefreshToken();
-    interceptTraffic();
+  }, []);
+
+  useEffect(() => {
+    if (!store.main.loading) interceptTraffic(store.user.token);
   }, [store.user.token]);
 
-  console.log('interceptor');
-
-  return store.main.loading ? 'loading' : children;
+  return !store.main.loading ? (
+    children
+  ) : (
+    <Container fixed className={classes.fixed}>
+      <Grid container className={classes.container} spacing={2}>
+        <Grid item xs={12} className={classes.loader}>
+          <CircularProgress />
+        </Grid>
+      </Grid>
+    </Container>
+  );
 };
 
 export { ax };

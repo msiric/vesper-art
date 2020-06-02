@@ -105,7 +105,10 @@ const reducer = (state, action) => {
           stripeId: action.stripeId,
           country: action.country,
           messages: action.messages,
-          notifications: action.notifications,
+          notifications: {
+            ...state.user.notifications,
+            count: action.notifications.count,
+          },
           saved: action.saved,
           cart: action.cart,
         },

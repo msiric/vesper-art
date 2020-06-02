@@ -84,7 +84,8 @@ const Header = () => {
   const handleNotificationsMenuOpen = async (e) => {
     if (
       !store.user.notifications.items ||
-      store.user.notifications.items.length === 0
+      store.user.notifications.items.length === 0 ||
+      store.user.notifications.count !== store.user.notifications.items.length
     ) {
       dispatch({
         type: 'updateNotifications',
@@ -151,25 +152,19 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      console.log('header1', store.user.token);
-
       await ax.post('/api/auth/logout', {
         headers: {
           credentials: 'include',
         },
       });
-      console.log('header2', store.user.token);
 
       dispatch({
         type: 'resetUser',
       });
-      console.log('header4', store.user.token);
 
       handleMenuClose();
-      console.log('header5', store.user.token);
 
       history.push('/login');
-      console.log('header6', store.user.token);
     } catch (err) {
       console.log(err);
     }
