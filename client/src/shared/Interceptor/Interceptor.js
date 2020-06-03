@@ -186,6 +186,7 @@ const Interceptor = ({ children }) => {
     socket.emit('authenticateUser', token ? `Bearer ${token}` : null);
     socket.on('sendNotification', () => {
       dispatch({
+        ...store.user.notifications,
         type: 'updateNotifications',
         count: 1,
       });

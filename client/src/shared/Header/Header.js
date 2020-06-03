@@ -114,7 +114,9 @@ const Header = ({ history }) => {
     if (
       !store.user.notifications.items ||
       store.user.notifications.items.length === 0 ||
-      store.user.notifications.count !== store.user.notifications.items.length
+      (!store.user.notifications.hasMore &&
+        store.user.notifications.count !==
+          store.user.notifications.items.length)
     ) {
       dispatch({
         type: 'updateNotifications',
