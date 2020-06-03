@@ -2,13 +2,7 @@ import React, { lazy, Suspense, useEffect, useContext } from 'react';
 import { Context } from '../../components/Store/Store';
 import MainLayout from '../../layouts/MainLayout';
 import AuthLayout from '../../layouts/AuthLayout';
-import {
-  BrowserRouter,
-  Route,
-  Redirect,
-  Switch,
-  useHistory,
-} from 'react-router-dom';
+import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 
 const routes = [
   // Artwork router
@@ -213,8 +207,6 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
 
 const Router = ({ socket }) => {
   const [store, dispatch] = useContext(Context);
-
-  const history = useHistory();
 
   return (
     <BrowserRouter>

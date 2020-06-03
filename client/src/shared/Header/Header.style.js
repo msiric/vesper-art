@@ -30,7 +30,20 @@ const HeaderStyles = makeStyles((muiTheme) => ({
       width: 'auto',
     },
   },
+  typeIcon: {
+    height: '100%',
+    position: 'absolute',
+    zIndex: 10000,
+    display: 'flex',
+    alignItems: 'center',
+    borderRadius: 4,
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.08)',
+    },
+  },
   searchIcon: {
+    top: 0,
+    right: 0,
     height: '100%',
     position: 'absolute',
     zIndex: 10000,
@@ -48,6 +61,7 @@ const HeaderStyles = makeStyles((muiTheme) => ({
     padding: muiTheme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${muiTheme.spacing(5)}px)`,
+    paddingRight: `calc(1em + ${muiTheme.spacing(5)}px)`,
     transition: muiTheme.transitions.create('width'),
     width: '100%',
     [muiTheme.breakpoints.up('md')]: {

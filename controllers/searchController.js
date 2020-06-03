@@ -17,12 +17,12 @@ const getResults = async (req, res, next) => {
         limit,
       }).deepPopulate('artwork.owner');
       foundType = 'artwork';
-    } else if (type === 'user') {
+    } else if (type === 'users') {
       foundResults = await User.fuzzySearch(query, undefined, {
         skip,
         limit,
       });
-      foundType = 'user';
+      foundType = 'users';
     }
     return res.json({
       searchResults: foundResults,

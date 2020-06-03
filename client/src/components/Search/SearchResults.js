@@ -22,13 +22,13 @@ import {
   Avatar,
   TextField,
 } from '@material-ui/core';
-import { Link } from 'react-router-dom';
-import { withRouter, useHistory } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { ax } from '../../shared/Interceptor/Interceptor';
 import Gallery from '../Home/Gallery';
+import Group from './Group';
 import SearchResultsStyles from './SearchResults.style';
 
-const SearchResults = ({ match, location }) => {
+const SearchResults = ({ match, location, history }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
@@ -43,6 +43,13 @@ const SearchResults = ({ match, location }) => {
 
   const fetchResults = async () => {
     try {
+      if (!state.loading)
+        setState((prevState) => ({
+          ...prevState,
+          loading: true,
+          hasMore: true,
+          cursor: 0,
+        }));
       const { data } = await ax.get(
         `/api/search${location.search}&cursor=${state.cursor}&ceiling=${state.ceiling}`
       );
@@ -77,7 +84,7 @@ const SearchResults = ({ match, location }) => {
 
   useEffect(() => {
     fetchResults();
-  }, []);
+  }, [history.location]);
 
   return (
     <Grid container className={classes.container}>
@@ -85,12 +92,20 @@ const SearchResults = ({ match, location }) => {
         {state.loading ? (
           <CircularProgress />
         ) : state.results.length ? (
-          <Gallery
-            elements={state.results}
-            hasMore={state.hasMore}
-            loadMore={loadMore}
-            type="version"
-          />
+          state.type === 'artwork' ? (
+            <Gallery
+              elements={state.results}
+              hasMore={state.hasMore}
+              loadMore={loadMore}
+              type="version"
+            />
+          ) : (
+            <Group
+              elements={state.results}
+              hasMore={state.hasMore}
+              loadMore={loadMore}
+            />
+          )
         ) : (
           'No results'
         )}
@@ -99,4 +114,4 @@ const SearchResults = ({ match, location }) => {
   );
 };
 
-export default SearchResults;
+export default withRouter(SearchResults);

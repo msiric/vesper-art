@@ -1,8 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Context } from '../../components/Store/Store';
 import { ax } from '../../shared/Interceptor/Interceptor';
-import { useHistory } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -29,6 +28,8 @@ import {
   AssignmentRounded as OrdersIcon,
   FavoriteRounded as SavedIcon,
   SettingsRounded as SettingsIcon,
+  ImageRounded as ArtworkIcon,
+  AccountBoxRounded as UserIcon,
 } from '@material-ui/icons';
 import NotificationsMenu from './NotificationsMenu';
 import HeaderStyles from './Header.style';
@@ -37,13 +38,12 @@ const searchValidation = Yup.object().shape({
   searchInput: Yup.string().trim().required('Search input is required'),
 });
 
-const Header = () => {
+const Header = ({ history }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     profile: { anchorEl: null, mobileAnchorEl: null },
+    type: 'artwork',
   });
-
-  const history = useHistory();
 
   const classes = HeaderStyles();
 
@@ -63,7 +63,7 @@ const Header = () => {
     searchValidation,
     async onSubmit(values) {
       try {
-        history.push(`/search?query=${values.searchInput}&type=artwork`);
+        history.push(`/search?query=${values.searchInput}&type=${state.type}`);
       } catch (err) {
         console.log(err);
       }
@@ -272,6 +272,13 @@ const Header = () => {
     }
   };
 
+  const handleToggle = (value) => {
+    setState((prevState) => ({
+      ...prevState,
+      type: prevState.type === 'artwork' ? 'users' : 'artwork',
+    }));
+  };
+
   const menuId = 'primary-search-account-menu';
   const renderProfileMenu = (
     <Menu
@@ -394,12 +401,12 @@ const Header = () => {
           <div className={classes.search}>
             <form className={classes.form} onSubmit={handleSubmit}>
               <IconButton
-                onClick={handleSubmit}
-                className={classes.searchIcon}
+                onClick={handleToggle}
+                className={classes.typeIcon}
                 disableFocusRipple
                 disableRipple
               >
-                <SearchIcon />
+                {state.type === 'artwork' ? <ArtworkIcon /> : <UserIcon />}
               </IconButton>
               <InputBase
                 name="searchInput"
@@ -414,6 +421,14 @@ const Header = () => {
                 }}
                 inputProps={{ 'aria-label': 'search' }}
               />
+              <IconButton
+                onClick={handleSubmit}
+                className={classes.searchIcon}
+                disableFocusRipple
+                disableRipple
+              >
+                <SearchIcon />
+              </IconButton>
             </form>
           </div>
           <div className={classes.grow} />
@@ -508,4 +523,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default withRouter(Header);
