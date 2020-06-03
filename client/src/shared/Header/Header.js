@@ -401,6 +401,9 @@ const Header = ({ history }) => {
           <div className={classes.search}>
             <form className={classes.form} onSubmit={handleSubmit}>
               <IconButton
+                title={
+                  state.type === 'artwork' ? 'Search artwork' : 'Search users'
+                }
                 onClick={handleToggle}
                 className={classes.typeIcon}
                 disableFocusRipple
