@@ -2,6 +2,8 @@
   "name": "client3",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@material-ui/core": "^4.9.9",
     "@material-ui/icons": "^4.9.1",
@@ -52,8 +54,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "http-proxy-middleware": "^1.0.3"
   }
 }

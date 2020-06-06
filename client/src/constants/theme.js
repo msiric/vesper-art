@@ -1,6 +1,6 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
-const artepunktTheme = createMuiTheme({
+export const artepunktTheme = createMuiTheme({
   typography: {
     fontFamily: [
       'Poppins',
@@ -57,5 +57,3 @@ artepunktTheme.overrides.MuiCardActions = {
     justifyContent: 'center',
   },
 };
-
-export default artepunktTheme;

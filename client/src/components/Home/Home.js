@@ -21,25 +21,25 @@ const Home = ({ location, enqueueSnackbar }) => {
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await axget(
-        `/api/artwork?cursor=${statecursor}&ceiling=${stateceiling}`
+      const { data } = await ax.get(
+        `/api/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
       );
       setState({
-        state,
+        ...state,
         loading: false,
-        artwork: dataartwork,
-        hasMore: dataartworklength < stateceiling ? false : true,
-        cursor: statecursor + stateceiling,
+        artwork: data.artwork,
+        hasMore: data.artwork.length < state.ceiling ? false : true,
+        cursor: state.cursor + state.ceiling,
       });
     } catch (err) {
-      setState({ state, loading: false });
+      setState({ ...state, loading: false });
     }
   };
 
   useEffect(() => {
     fetchArtwork();
-    if (locationstate && locationstatemessage) {
-      enqueueSnackbar(locationstatemessage, {
+    if (location.state && location.state.message) {
+      enqueueSnackbar(location.state.message, {
         variant: 'success',
         autoHideDuration: 1000,
         anchorOrigin: {
@@ -52,29 +52,29 @@ const Home = ({ location, enqueueSnackbar }) => {
 
   const loadMore = async () => {
     try {
-      const { data } = await axget(
-        `/api/artwork?cursor=${statecursor}&ceiling=${stateceiling}`
+      const { data } = await ax.get(
+        `/api/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
       );
       setState((prevState) => ({
-        prevState,
-        artwork: [prevStateartwork]concat(dataartwork),
-        hasMore: dataartworklength >= prevStateceiling,
-        cursor: prevStatecursor + prevStateceiling,
+        ...prevState,
+        artwork: [prevState.artwork].concat(data.artwork),
+        hasMore: data.artwork.length >= prevState.ceiling,
+        cursor: prevState.cursor + prevState.ceiling,
       }));
     } catch (err) {
-      consolelog(err);
+      console.log(err);
     }
   };
 
   return (
-    <Grid container className={classescontainer}>
-      <Grid item xs={12} className={classesgrid}>
-        {stateloading ? (
+    <Grid container className={classes.container}>
+      <Grid item xs={12} className={classes.grid}>
+        {state.loading ? (
           <CircularProgress />
-        ) : stateartworklength ? (
+        ) : state.artwork.length ? (
           <Gallery
-            elements={stateartwork}
-            hasMore={statehasMore}
+            elements={state.artwork}
+            hasMore={state.hasMore}
             loadMore={loadMore}
             type="artwork"
           />

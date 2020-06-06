@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, createRef } from 'react.js';
+import React, { useEffect, useContext, createRef } from 'react';
 import Router from '../Router/Router.js';
 import { Context } from '../Store/Store.js';
 import { ThemeProvider } from '@material-ui/core/styles';
