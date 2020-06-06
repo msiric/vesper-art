@@ -1,6 +1,6 @@
-import React, { useEffect, useContext, createRef } from 'react';
-import Router from '../Router/Router';
-import { Context } from '../Store/Store';
+import React, { useEffect, useContext, createRef } from 'react.js';
+import Router from '../Router/Router.js';
+import { Context } from '../Store/Store.js';
 import { ThemeProvider } from '@material-ui/core/styles';
 import {
   CssBaseline,
@@ -11,8 +11,8 @@ import {
 } from '@material-ui/core';
 import { CloseRounded as CloseIcon } from '@material-ui/icons';
 import { SnackbarProvider } from 'notistack';
-import { artepunktTheme } from '../../constants/theme';
-import AppStyles from './App.style';
+import { artepunktTheme } from '../../constants/theme.js';
+import AppStyles from './App.style.js';
 
 const App = ({ socket }) => {
   const [store, dispatch] = useContext(Context);

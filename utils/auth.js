@@ -1,5 +1,5 @@
-const User = require('../models/user');
-const jwt = require('jsonwebtoken');
+import User from '../models/user.js';
+import jwt from 'jsonwebtoken';
 
 const createAccessToken = (user) => {
   return jwt.sign(
@@ -90,7 +90,7 @@ const sendRefreshToken = (res, token) => {
   });
 };
 
-module.exports = {
+export default {
   createAccessToken,
   updateAccessToken,
   createRefreshToken,

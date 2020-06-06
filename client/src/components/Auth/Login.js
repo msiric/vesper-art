@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Context } from '../Store/Store';
+import { Context } from '../Store/Store.js';
 import { useHistory } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -12,8 +12,8 @@ import {
   TextField,
   Button,
 } from '@material-ui/core';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import LoginStyles from './Login.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import LoginStyles from './Login.style.js';
 
 const validationSchema = Yup.object().shape({
   username: Yup.string().required('Username or email is required'),

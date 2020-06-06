@@ -1,11 +1,10 @@
-import './wdyr';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Interceptor from './shared/Interceptor/Interceptor';
-import App from './components/App/App';
-import Store from './components/Store/Store';
-import * as serviceWorker from './serviceWorker';
+import Interceptor from './shared/Interceptor/Interceptor.js';
+import App from './components/App/App.js';
+import Store from './components/Store/Store.js';
+import * as serviceWorker from './serviceWorker.js';
 
 ReactDOM.render(
   <React.StrictMode>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Context } from '../Store/Store';
+import { Context } from '../Store/Store.js';
 import {
   Grid,
   CircularProgress,
@@ -23,10 +23,10 @@ import {
   TextField,
 } from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import Gallery from '../Home/Gallery';
-import Group from './Group';
-import SearchResultsStyles from './SearchResults.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import Gallery from '../Home/Gallery.js';
+import Group from './Group.js';
+import SearchResultsStyles from './SearchResults.style.js';
 
 const SearchResults = ({ match, location, history }) => {
   const [store, dispatch] = useContext(Context);

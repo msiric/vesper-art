@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
-const deepPopulate = require('mongoose-deep-populate')(mongoose);
+import mongoose from 'mongoose';
+import mongooseDeepPopulate from 'mongoose-deep-populate';
+
+const deepPopulate = mongooseDeepPopulate(mongoose);
 const Schema = mongoose.Schema;
 
 const RequestSchema = new Schema({
@@ -10,7 +12,7 @@ const RequestSchema = new Schema({
   description: String,
   offers: [{ type: Schema.Types.ObjectId, ref: 'Offer' }],
   active: Boolean,
-  created: { type: Date, default: Date.now }
+  created: { type: Date, default: Date.now },
 });
 
 RequestSchema.plugin(deepPopulate);
@@ -19,4 +21,4 @@ const Request = mongoose.model('Request', RequestSchema);
 
 Request.createCollection();
 
-module.exports = Request;
+export default Request;

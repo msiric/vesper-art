@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../Store/Store';
+import { Context } from '../Store/Store.js';
 import { useHistory } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -12,12 +12,12 @@ import {
   TextField,
   Button,
 } from '@material-ui/core';
-import UploadInput from '../../shared/UploadInput/UploadInput';
-import SelectInput from '../../shared/SelectInput/SelectInput';
-import PriceInput from '../../shared/PriceInput/PriceInput';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import deleteEmptyValues from '../../utils/deleteEmptyValues';
-import AddArtworkStyles from './AddArtwork.style';
+import UploadInput from '../../shared/UploadInput/UploadInput.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
+import PriceInput from '../../shared/PriceInput/PriceInput.js';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import deleteEmptyValues from '../../utils/deleteEmptyValues.js';
+import AddArtworkStyles from './AddArtwork.style.js';
 
 const artworkMediaConfig = {
   size: 1000 * 1024,

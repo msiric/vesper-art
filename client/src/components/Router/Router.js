@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useEffect, useContext } from 'react';
-import { Context } from '../../components/Store/Store';
-import MainLayout from '../../layouts/MainLayout';
-import AuthLayout from '../../layouts/AuthLayout';
+import { Context } from '../../components/Store/Store.js';
+import MainLayout from '../../layouts/MainLayout.js';
+import AuthLayout from '../../layouts/AuthLayout.js';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 
 const routes = [

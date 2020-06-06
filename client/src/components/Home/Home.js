@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../Store/Store';
+import { Context } from '../Store/Store.js';
 import { Grid, CircularProgress } from '@material-ui/core';
-import { ax } from '../../shared/Interceptor/Interceptor';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { withSnackbar } from 'notistack';
-import Gallery from './Gallery';
-import HomeStyles from './Home.style';
+import Gallery from './Gallery.js';
+import HomeStyles from './Home.style.js';
 
 const Home = ({ location, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -21,25 +21,25 @@ const Home = ({ location, enqueueSnackbar }) => {
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
+      const { data } = await axget(
+        `/api/artwork?cursor=${statecursor}&ceiling=${stateceiling}`
       );
       setState({
-        ...state,
+        state,
         loading: false,
-        artwork: data.artwork,
-        hasMore: data.artwork.length < state.ceiling ? false : true,
-        cursor: state.cursor + state.ceiling,
+        artwork: dataartwork,
+        hasMore: dataartworklength < stateceiling ? false : true,
+        cursor: statecursor + stateceiling,
       });
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState({ state, loading: false });
     }
   };
 
   useEffect(() => {
     fetchArtwork();
-    if (location.state && location.state.message) {
-      enqueueSnackbar(location.state.message, {
+    if (locationstate && locationstatemessage) {
+      enqueueSnackbar(locationstatemessage, {
         variant: 'success',
         autoHideDuration: 1000,
         anchorOrigin: {
@@ -52,29 +52,29 @@ const Home = ({ location, enqueueSnackbar }) => {
 
   const loadMore = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
+      const { data } = await axget(
+        `/api/artwork?cursor=${statecursor}&ceiling=${stateceiling}`
       );
       setState((prevState) => ({
-        ...prevState,
-        artwork: [...prevState.artwork].concat(data.artwork),
-        hasMore: data.artwork.length >= prevState.ceiling,
-        cursor: prevState.cursor + prevState.ceiling,
+        prevState,
+        artwork: [prevStateartwork]concat(dataartwork),
+        hasMore: dataartworklength >= prevStateceiling,
+        cursor: prevStatecursor + prevStateceiling,
       }));
     } catch (err) {
-      console.log(err);
+      consolelog(err);
     }
   };
 
   return (
-    <Grid container className={classes.container}>
-      <Grid item xs={12} className={classes.grid}>
-        {state.loading ? (
+    <Grid container className={classescontainer}>
+      <Grid item xs={12} className={classesgrid}>
+        {stateloading ? (
           <CircularProgress />
-        ) : state.artwork.length ? (
+        ) : stateartworklength ? (
           <Gallery
-            elements={state.artwork}
-            hasMore={state.hasMore}
+            elements={stateartwork}
+            hasMore={statehasMore}
             loadMore={loadMore}
             type="artwork"
           />

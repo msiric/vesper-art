@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
-import { Context } from '../Store/Store';
+import { Context } from '../Store/Store.js';
 import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import SelectInput from '../../shared/SelectInput/SelectInput';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import { Grow, Card, CardContent, Typography, Button } from '@material-ui/core';
 import { MonetizationOnRounded as MonetizationIcon } from '@material-ui/icons';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import OnboardingStyles from './Onboarding.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import OnboardingStyles from './Onboarding.style.js';
 
 const supportedCountries = [
   { value: '' },

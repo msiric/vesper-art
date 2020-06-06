@@ -1,40 +1,41 @@
-const express = require('express');
+import express from 'express';
+import createError from 'http-errors';
+
 const router = express.Router();
-const createError = require('http-errors');
 
-const userRoutes = require('./routers/userRouter');
-const orderRoutes = require('./routers/orderRouter');
-const uploadRoutes = require('./routers/uploadRouter');
-const artworkRoutes = require('./routers/artworkRouter');
-const requestRoutes = require('./routers/requestRouter');
-const conversationRoutes = require('./routers/conversationRouter');
-const workRouter = require('./routers/workRouter');
-const reviewRouter = require('./routers/reviewRouter');
-const discountRouter = require('./routers/discountRouter');
-const ticketRouter = require('./routers/ticketRouter');
-const verifierRouter = require('./routers/verifierRouter');
-const notificationRouter = require('./routers/notificationRouter');
-const checkoutRouter = require('./routers/checkoutRouter');
-const commentRouter = require('./routers/commentRouter');
-const searchRouter = require('./routers/searchRouter');
-const authRouter = require('./routers/authRouter');
+import user from './routers/user.js';
+import order from './routers/order.js';
+import upload from './routers/upload.js';
+import artwork from './routers/artwork.js';
+import request from './routers/request.js';
+import conversation from './routers/conversation.js';
+import work from './routers/work.js';
+import review from './routers/review.js';
+import discount from './routers/discount.js';
+import ticket from './routers/ticket.js';
+import verifier from './routers/verifier.js';
+import notification from './routers/notification.js';
+import checkout from './routers/checkout.js';
+import comment from './routers/comment.js';
+import search from './routers/search.js';
+import auth from './routers/auth.js';
 
-router.use('/', userRoutes);
-router.use('/', orderRoutes);
-router.use('/', uploadRoutes);
-router.use('/', artworkRoutes);
-router.use('/', requestRoutes);
-router.use('/', conversationRoutes);
-router.use('/', workRouter);
-router.use('/', reviewRouter);
-router.use('/', discountRouter);
-router.use('/', ticketRouter);
-router.use('/', verifierRouter);
-router.use('/', notificationRouter);
-router.use('/', checkoutRouter);
-router.use('/', commentRouter);
-router.use('/', searchRouter);
-router.use('/auth', authRouter);
+router.use('/', user);
+router.use('/', order);
+router.use('/', upload);
+router.use('/', artwork);
+router.use('/', request);
+router.use('/', conversation);
+router.use('/', work);
+router.use('/', review);
+router.use('/', discount);
+router.use('/', ticket);
+router.use('/', verifier);
+router.use('/', notification);
+router.use('/', checkout);
+router.use('/', comment);
+router.use('/', search);
+router.use('/auth', auth);
 
 router.use((req, res, next) => {
   createError(404);
@@ -45,4 +46,4 @@ router.use((err, req, res, next) => {
   res.json({ status_code: err.status || 500, error: err.message });
 });
 
-module.exports = router;
+export default router;

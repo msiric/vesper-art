@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
-import { Context } from '../Store/Store';
-import Modal from '../../shared/Modal/Modal';
+import { Context } from '../Store/Store.js';
+import Modal from '../../shared/Modal/Modal.js';
 import Masonry from 'react-mason';
 import {
   Paper,
@@ -34,9 +34,9 @@ import {
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { ax } from '../../shared/Interceptor/Interceptor';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import GalleryStyles from './Gallery.style';
+import GalleryStyles from './Gallery.style.js';
 
 const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
   const [store, dispatch] = useContext(Context);

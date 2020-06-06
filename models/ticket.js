@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const TicketSchema = new Schema({
@@ -7,11 +7,11 @@ const TicketSchema = new Schema({
   body: String,
   attachment: String,
   resolved: Boolean,
-  created: { type: Date, default: Date.now }
+  created: { type: Date, default: Date.now },
 });
 
 const Ticket = mongoose.model('Ticket', TicketSchema);
 
 Ticket.createCollection();
 
-module.exports = Ticket;
+export default Ticket;

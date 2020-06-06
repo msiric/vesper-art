@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const DiscountSchema = new Schema({
@@ -12,4 +12,4 @@ const Discount = mongoose.model('Discount', DiscountSchema);
 
 Discount.createCollection();
 
-module.exports = Discount;
+export default Discount;

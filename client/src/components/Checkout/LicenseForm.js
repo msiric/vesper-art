@@ -9,10 +9,10 @@ import {
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { Formik, Form, Field, FieldArray } from 'formik';
-import SelectField from '../../shared/SelectInput/SelectInput';
+import SelectField from '../../shared/SelectInput/SelectInput.js';
 import * as Yup from 'yup';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import LicenseFormStyles from './LicenseForm.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import LicenseFormStyles from './LicenseForm.style.js';
 
 const validationSchema = Yup.object().shape({
   licenses: Yup.array().of(

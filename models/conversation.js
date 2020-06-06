@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
-const deepPopulate = require('mongoose-deep-populate')(mongoose);
+import mongoose from 'mongoose';
+import mongooseDeepPopulate from 'mongoose-deep-populate';
+
+const deepPopulate = mongooseDeepPopulate(mongoose);
 const Schema = mongoose.Schema;
 
 const ConversationSchema = new Schema({
@@ -9,7 +11,7 @@ const ConversationSchema = new Schema({
   offer: { type: Schema.Types.ObjectId, ref: 'Offer' },
   messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
   read: Boolean,
-  created: { type: Date, default: Date.now }
+  created: { type: Date, default: Date.now },
 });
 
 ConversationSchema.plugin(deepPopulate);
@@ -18,4 +20,4 @@ const Conversation = mongoose.model('Conversation', ConversationSchema);
 
 Conversation.createCollection();
 
-module.exports = Conversation;
+export default Conversation;

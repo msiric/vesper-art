@@ -1,9 +1,9 @@
-const aws = require('aws-sdk');
-const multer = require('multer');
-const multerS3 = require('multer-s3-transform');
-const path = require('path');
-const sharp = require('sharp');
-const jwt = require('jsonwebtoken');
+import aws from 'aws-sdk';
+import multer from 'multer';
+import multerS3 from 'multer-s3-transform';
+import path from 'path';
+import sharp from 'sharp';
+import jwt from 'jsonwebtoken';
 
 aws.config.update({
   secretAccessKey: 'TZhmTLVh6KSBJRfYK2aq2eqoiYbIEncgzUptgGON',
@@ -145,7 +145,7 @@ const artworkMediaEdit = multer({
   }),
 });
 
-module.exports = {
+export default {
   profilePhotoUpload: profilePhotoUpload,
   artworkMediaUpload: artworkMediaUpload,
   artworkMediaEdit: artworkMediaEdit,

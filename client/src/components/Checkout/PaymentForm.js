@@ -9,9 +9,9 @@ import {
   useElements,
 } from '@stripe/react-stripe-js';
 import { withSnackbar } from 'notistack';
-import StripeInput from './StripeInput';
+import StripeInput from './StripeInput.js';
 import { useHistory } from 'react-router-dom';
-import PaymentFormStyles from './PaymentForm.style';
+import PaymentFormStyles from './PaymentForm.style.js';
 
 const PaymentForm = ({
   secret,

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../Store/Store';
-import SelectInput from '../../shared/SelectInput/SelectInput';
+import { Context } from '../Store/Store.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import { useFormik, Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -38,8 +38,8 @@ import {
 } from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import ArtworkDetailsStyles from './ArtworkDetails.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import ArtworkDetailsStyles from './ArtworkDetails.style.js';
 
 const commentValidation = Yup.object().shape({
   commentContent: Yup.string().trim().required('Comment cannot be empty'),

@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
-const mongooseAlgolia = require('mongoose-algolia');
-const deepPopulate = require('mongoose-deep-populate')(mongoose);
+import mongoose from 'mongoose';
+import mongooseDeepPopulate from 'mongoose-deep-populate';
+
+const deepPopulate = mongooseDeepPopulate(mongoose);
 const Schema = mongoose.Schema;
 
 const ArtworkSchema = new Schema({
@@ -20,4 +21,4 @@ const Artwork = mongoose.model('Artwork', ArtworkSchema);
 
 Artwork.createCollection();
 
-module.exports = Artwork;
+export default Artwork;

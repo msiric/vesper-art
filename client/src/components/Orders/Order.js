@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Context } from '../Store/Store';
+import { Context } from '../Store/Store.js';
 import _ from 'lodash';
 import {
   Grid,
@@ -28,10 +28,10 @@ import { Rating } from '@material-ui/lab';
 import { useFormik, Formik, Form, Field } from 'formik';
 import { Link } from 'react-router-dom';
 import { withRouter, useHistory } from 'react-router-dom';
-import { ax } from '../../shared/Interceptor/Interceptor';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { format } from 'date-fns';
-import Modal from '../../shared/Modal/Modal';
-import OrderStyles from './Order.style';
+import Modal from '../../shared/Modal/Modal.js';
+import OrderStyles from './Order.style.js';
 
 const reviewValidation = Yup.object().shape({
   rating: Yup.number().min(1).max(5).required('Rating cannot be empty'),

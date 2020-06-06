@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
-const deepPopulate = require('mongoose-deep-populate')(mongoose);
+import mongoose from 'mongoose';
+import mongooseDeepPopulate from 'mongoose-deep-populate';
+
+const deepPopulate = mongooseDeepPopulate(mongoose);
 const Schema = mongoose.Schema;
 
 const WorkSchema = new Schema({
@@ -10,7 +12,7 @@ const WorkSchema = new Schema({
   amount: Number,
   delivery: Date,
   status: Number,
-  created: { type: Date, default: Date.now }
+  created: { type: Date, default: Date.now },
 });
 
 WorkSchema.plugin(deepPopulate);
@@ -19,4 +21,4 @@ const Work = mongoose.model('Work', WorkSchema);
 
 Work.createCollection();
 
-module.exports = Work;
+export default Work;

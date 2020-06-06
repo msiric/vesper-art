@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-const { formatPrice } = require('../utils/helpers');
+import { formatPrice } from '../utils/helpers.js';
 
 const LicenseSchema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
@@ -19,4 +19,4 @@ const License = mongoose.model('License', LicenseSchema);
 
 License.createCollection();
 
-module.exports = License;
+export default License;

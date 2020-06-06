@@ -1,9 +1,11 @@
-const Joi = require('joi');
-Joi.objectId = require('joi-objectid')(Joi);
+import Joi from 'joi';
+import joiObjectId from 'joi-objectid';
+
+Joi.objectId = joiObjectId(Joi);
 
 const schema = Joi.object().keys({
   title: Joi.string().required(),
-  body: Joi.string().required()
+  body: Joi.string().required(),
 });
 
-module.exports = data => Joi.validate(data, schema);
+export default (data) => Joi.validate(data, schema);

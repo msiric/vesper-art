@@ -1,11 +1,22 @@
-const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
-const createError = require('http-errors');
-const escapeHTML = require('escape-html');
-const jwt = require('jsonwebtoken');
-const currency = require('currency.js');
+import mongoose from 'mongoose';
+import createError from 'http-errors';
+import escapeHTML from 'escape-html';
+import jwt from 'jsonwebtoken';
+import currency from 'currency.js';
 
-const isAuthenticated = async (req, res, next) => {
+const ObjectId = mongoose.Types.ObjectId;
+
+export const requestHandler = (promise, params) => async (req, res, next) => {
+  const boundParams = params ? params(req, res, next) : [];
+  try {
+    const result = await promise(...boundParams);
+    return res.json(result || { message: 'OK' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const isAuthenticated = async (req, res, next) => {
   const authentication = req.headers['authorization'];
   if (!authentication) {
     throw createError(403, 'Forbidden');
@@ -28,7 +39,7 @@ const isAuthenticated = async (req, res, next) => {
   return next();
 };
 
-const isNotAuthenticated = async (req, res, next) => {
+export const isNotAuthenticated = async (req, res, next) => {
   const authentication = req.headers['authorization'];
   if (authentication) {
     return console.log('REDIRECT');
@@ -37,7 +48,7 @@ const isNotAuthenticated = async (req, res, next) => {
   return next();
 };
 
-const checkParams = (req, res, next) => {
+export const checkParams = (req, res, next) => {
   const isId = (id) => (ObjectId(id) ? true : false);
   let isValid = true;
   Object.keys(req.params).forEach((param) => {
@@ -50,11 +61,11 @@ const checkParams = (req, res, next) => {
   throw createError(400, 'Invalid route parameter');
 };
 
-const formatPrice = (value) => {
+export const formatPrice = (value) => {
   return currency(value).divide(100);
 };
 
-const sanitize = (body) =>
+export const sanitize = (body) =>
   Object.keys(body).reduce((obj, key) => {
     if (Array.isArray(body[key])) {
       obj[key] = body[key].map((elem) => {
@@ -68,11 +79,3 @@ const sanitize = (body) =>
     }
     return obj;
   }, {});
-
-module.exports = {
-  isAuthenticated,
-  isNotAuthenticated,
-  checkParams,
-  formatPrice,
-  sanitize,
-};

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../Store/Store';
+import { Context } from '../Store/Store.js';
 import * as Yup from 'yup';
 import { useFormik, Formik, Form, Field } from 'formik';
 import {
@@ -9,10 +9,10 @@ import {
   Button,
   Typography,
 } from '@material-ui/core';
-import { ax } from '../../shared/Interceptor/Interceptor';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { format } from 'date-fns';
 import { withSnackbar } from 'notistack';
-import VerifierStyles from './Verifier.style';
+import VerifierStyles from './Verifier.style.js';
 
 const fingerprintValidation = Yup.object().shape({
   fingerprint: Yup.string().trim().required('Fingerprint cannot be empty'),
