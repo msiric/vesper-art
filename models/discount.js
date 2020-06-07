@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
+// delete if nesting applied
+
 const DiscountSchema = new Schema({
   name: String,
   discount: Number,

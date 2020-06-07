@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
+// delete if nesting applied
+
 const CommentSchema = new Schema({
   artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
   owner: { type: Schema.Types.ObjectId, ref: 'User' },

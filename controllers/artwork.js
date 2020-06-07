@@ -11,7 +11,15 @@ import createError from 'http-errors';
 import { sanitize } from '../utils/helpers.js';
 import currency from 'currency.js';
 import Stripe from 'stripe';
-import { getActiveArtwork } from '../services/artwork.js';
+import {
+  fetchActiveArtworks,
+  fetchArtworkDetails,
+  fetchArtworkComments,
+  fetchArtworkReviews,
+  fetchUserArtworks,
+  fetchUserArtwork,
+  fetchArtworkLicenses,
+} from '../services/artwork.js';
 import postArtworkValidator from '../utils/validation/postArtworkValidator.js';
 import putArtworkValidator from '../utils/validation/putArtworkValidator.js';
 
@@ -22,15 +30,7 @@ const getArtwork = async (req, res, next) => {
     const { cursor, ceiling } = req.query;
     const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
     const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundArtwork = await Artwork.find({ active: true }, undefined, {
-      skip,
-      limit,
-    })
-      .populate('owner')
-      .populate(
-        'current',
-        '_id cover created title personal type license availability description use commercial'
-      );
+    const foundArtwork = await fetchActiveArtworks({ skip, limit });
     return res.json({ artwork: foundArtwork });
   } catch (err) {
     console.log(err);
@@ -38,47 +38,18 @@ const getArtwork = async (req, res, next) => {
   }
 };
 
-// treba sredit
 const getArtworkDetails = async (req, res, next) => {
   try {
     const { artworkId } = req.params;
     const { cursor, ceiling } = req.query;
     const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
     const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: artworkId }, { active: true }],
-    })
-      .populate(
-        skip && limit
-          ? {
-              path: 'comments',
-              options: {
-                limit,
-                skip,
-              },
-              populate: {
-                path: 'owner',
-              },
-            }
-          : {
-              path: 'comments',
-              populate: {
-                path: 'owner',
-              },
-            }
-      )
-      .populate('owner')
-      .populate(
-        'current',
-        '_id cover created title personal type license availability description use commercial'
-      );
-    if (foundArtwork) {
+    const foundArtwork = await fetchArtworkDetails({ artworkId, skip, limit });
+    if (foundArtwork)
       return res.json({
         artwork: foundArtwork,
       });
-    } else {
-      throw createError(400, 'Artwork not found');
-    }
+    else throw createError(400, 'Artwork not found');
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -91,31 +62,12 @@ const getArtworkComments = async (req, res, next) => {
     const { cursor, ceiling } = req.query;
     const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
     const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: artworkId }, { active: true }],
-    })
-      .populate({
-        path: 'comments',
-        options: {
-          limit,
-          skip,
-        },
-        populate: {
-          path: 'owner',
-        },
-      })
-      .populate('owner')
-      .populate(
-        'current',
-        '_id cover created title personal type license availability description use commercial'
-      );
-    if (foundArtwork) {
+    const foundArtwork = await fetchArtworkComments({ artworkId, skip, limit });
+    if (foundArtwork)
       return res.json({
         artwork: foundArtwork,
       });
-    } else {
-      throw createError(400, 'Artwork not found');
-    }
+    else throw createError(400, 'Artwork not found');
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -128,31 +80,12 @@ const getArtworkReviews = async (req, res, next) => {
     const { cursor, ceiling } = req.query;
     const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
     const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: artworkId }, { active: true }],
-    })
-      .populate({
-        path: 'reviews',
-        options: {
-          limit,
-          skip,
-        },
-        populate: {
-          path: 'owner',
-        },
-      })
-      .populate('owner')
-      .populate(
-        'current',
-        '_id cover created title personal type license availability description use commercial'
-      );
-    if (foundArtwork) {
+    const foundArtwork = await fetchArtworkReviews({ artworkId, skip, limit });
+    if (foundArtwork)
       return res.json({
         artwork: foundArtwork,
       });
-    } else {
-      throw createError(400, 'Artwork not found');
-    }
+    else throw createError(400, 'Artwork not found');
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -164,19 +97,11 @@ const getUserArtwork = async (req, res, next) => {
     const { cursor, ceiling } = req.query;
     const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
     const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundArtwork = await Artwork.find(
-      {
-        $and: [{ owner: res.locals.user.id }, { active: true }],
-      },
-      undefined,
-      {
-        skip,
-        limit,
-      }
-    ).populate(
-      'current',
-      '_id cover created title personal type license availability description use commercial'
-    );
+    const foundArtwork = await fetchUserArtworks({
+      userId: res.locals.user.id,
+      skip,
+      limit,
+    });
     return res.json({ artwork: foundArtwork });
   } catch (err) {
     console.log(err);
@@ -184,7 +109,6 @@ const getUserArtwork = async (req, res, next) => {
   }
 };
 
-// needs transaction (done)
 const postNewArtwork = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -255,18 +179,26 @@ const postNewArtwork = async (req, res, next) => {
 const editArtwork = async (req, res, next) => {
   try {
     const { artworkId } = req.params;
-    const foundArtwork = await Artwork.findOne({
-      $and: [
-        { _id: artworkId },
-        { owner: res.locals.user.id },
-        { active: true },
-      ],
-    }).populate('current');
-    if (foundArtwork) {
-      return res.json({ artwork: foundArtwork.current });
-    } else {
-      throw createError(400, 'Artwork not found');
-    }
+    const foundArtwork = await fetchUserArtwork({
+      artworkId,
+      userId: res.locals.user.id,
+    });
+    if (foundArtwork) return res.json({ artwork: foundArtwork.current });
+    else throw createError(400, 'Artwork not found');
+  } catch (err) {
+    console.log(err);
+    next(err, res);
+  }
+};
+
+const getLicenses = async (req, res, next) => {
+  try {
+    const { artworkId } = req.params;
+    const foundLicenses = await fetchArtworkLicenses({
+      artworkId,
+      userId: res.locals.user.id,
+    });
+    return res.status(200).json(foundLicenses);
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -606,31 +538,28 @@ const saveArtwork = async (req, res, next) => {
   session.startTransaction();
   try {
     const { artworkId } = req.params;
-    const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: artworkId }, { active: true }],
-    }).session(session);
-    if (foundArtwork) {
-      const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
-        session
-      );
-      if (foundUser) {
-        if (!foundUser.savedArtwork.includes(foundArtwork._id)) {
-          await User.updateOne(
-            { _id: foundUser._id },
-            { $push: { savedArtwork: foundArtwork._id } }
-          ).session(session);
-          foundArtwork.saves++;
-          await foundArtwork.save({ session });
-          await session.commitTransaction();
-          res.status(200).json({ message: 'Artwork saved' });
-        } else {
-          throw createError(400, 'Artwork could not be saved');
-        }
+    const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
+      session
+    );
+    if (foundUser) {
+      if (!foundUser.savedArtwork.includes(artworkId)) {
+        await User.updateOne(
+          { _id: foundUser._id },
+          { $push: { savedArtwork: artworkId } }
+        ).session(session);
+        await Artwork.updateOne(
+          {
+            $and: [{ _id: artworkId }, { active: true }],
+          },
+          { $inc: { saves: 1 } }
+        ).session(session);
+        await session.commitTransaction();
+        res.status(200).json({ message: 'Artwork saved' });
       } else {
-        throw createError(400, 'User not found');
+        throw createError(400, 'Artwork could not be saved');
       }
     } else {
-      throw createError(400, 'Artwork not found');
+      throw createError(400, 'User not found');
     }
   } catch (err) {
     await session.abortTransaction();
@@ -646,31 +575,28 @@ const unsaveArtwork = async (req, res, next) => {
   session.startTransaction();
   try {
     const { artworkId } = req.params;
-    const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: artworkId }, { active: true }],
-    }).session(session);
-    if (foundArtwork) {
-      const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
-        session
-      );
-      if (foundUser) {
-        if (foundUser.savedArtwork.includes(foundArtwork._id)) {
-          await User.updateOne(
-            { _id: foundUser._id },
-            { $pull: { savedArtwork: foundArtwork._id } }
-          ).session(session);
-          foundArtwork.saves--;
-          await foundArtwork.save({ session });
-          await session.commitTransaction();
-          res.status(200).json({ message: 'Artwork unsaved' });
-        } else {
-          throw createError(400, 'Artwork could not be unsaved');
-        }
+    const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
+      session
+    );
+    if (foundUser) {
+      if (foundUser.savedArtwork.includes(artworkId)) {
+        await User.updateOne(
+          { _id: foundUser._id },
+          { $pull: { savedArtwork: artworkId } }
+        ).session(session);
+        await Artwork.updateOne(
+          {
+            $and: [{ _id: artworkId }, { active: true }],
+          },
+          { $inc: { saves: -1 } }
+        ).session(session);
+        await session.commitTransaction();
+        res.status(200).json({ message: 'Artwork unsaved' });
       } else {
-        throw createError(400, 'User not found');
+        throw createError(400, 'Artwork could not be unsaved');
       }
     } else {
-      throw createError(400, 'Artwork not found');
+      throw createError(400, 'User not found');
     }
   } catch (err) {
     await session.abortTransaction();
@@ -678,23 +604,6 @@ const unsaveArtwork = async (req, res, next) => {
     next(err, res);
   } finally {
     session.endSession();
-  }
-};
-
-const getLicenses = async (req, res, next) => {
-  try {
-    const { artworkId } = req.params;
-    const foundLicenses = await License.find({
-      $and: [
-        { artwork: artworkId },
-        { owner: res.locals.user.id },
-        { active: false },
-      ],
-    }).sort({ created: -1 });
-    return res.status(200).json(foundLicenses);
-  } catch (err) {
-    console.log(err);
-    next(err, res);
   }
 };
 

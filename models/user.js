@@ -46,10 +46,10 @@ const UserSchema = new Schema({
   notifications: Number,
   rating: Number,
   reviews: Number,
-  artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
-  savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
-  purchases: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
-  sales: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
+  artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }], // nesting
+  savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }], // nesting
+  purchases: [{ type: Schema.Types.ObjectId, ref: 'Order' }], // nesting
+  sales: [{ type: Schema.Types.ObjectId, ref: 'Order' }], // nesting
   stripeId: String,
   active: Boolean,
   created: { type: Date, default: Date.now },

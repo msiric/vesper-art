@@ -7,7 +7,7 @@ import fuzzySearch from 'mongoose-fuzzy-searching';
 import { formatPrice } from '../utils/helpers.js';
 
 const VersionSchema = new Schema({
-  artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
+  artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' }, // nesting
   type: String,
   title: String,
   category: String,

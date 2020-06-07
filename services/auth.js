@@ -5,138 +5,73 @@ import randomString from 'randomstring';
 import bcrypt from 'bcrypt-nodejs';
 import crypto from 'crypto';
 import mailer from '../utils/email.js';
-import { server } from '../config/secret.js'
+import { server } from '../config/secret.js';
 import config from '../config/mailer.js';
 import createError from 'http-errors';
 
-export const postSignUp = ({email, username, password, confirm}) => {
-    const foundUser = await User.findOne({
-      $and: [{ $or: [{ email: email }, { name: username }] }, { active: true }],
-    }).session(session);
-    if (foundUser) {
-      throw createError(400, 'Account with that email/username already exists');
-    } else {
-      const token = randomString.generate();
-      const link = `${server.clientDomain}/verify_token/${token}`;
-
-      const user = new User();
-      user.name = username;
-      user.email = email;
-      user.photo = user.gravatar();
-      user.password = password;
-      user.customWork = true;
-      user.displaySaves = true;
-      user.verificationToken = token;
-      user.verified = false;
-      user.cart = [];
-      user.discount = null;
-      user.inbox = 0;
-      user.notifications = 0;
-      user.rating = 0;
-      user.reviews = 0;
-      user.artwork = [];
-      user.savedArtwork = [];
-      user.purchases = [];
-      user.sales = [];
-      user.country = null;
-      user.stripeId = null;
-      user.active = true;
-      return await user.save({ session });
-    }
-
+export const postSignUp = async ({ email, username, password, token }) => {
+  const user = new User();
+  user.name = username;
+  user.email = email;
+  user.photo = user.gravatar();
+  user.password = password;
+  user.customWork = true;
+  user.displaySaves = true;
+  user.verificationToken = token;
+  user.verified = false;
+  user.cart = [];
+  user.discount = null;
+  user.inbox = 0;
+  user.notifications = 0;
+  user.rating = 0;
+  user.reviews = 0;
+  user.artwork = [];
+  user.savedArtwork = [];
+  user.purchases = [];
+  user.sales = [];
+  user.country = null;
+  user.stripeId = null;
+  user.active = true;
+  return await user.save({ session });
 };
 
-export const postLogIn =  ({username, password}) => {
-    const foundUser = await User.findOne({
-      $and: [
-        { $or: [{ email: username }, { name: username }] },
-        { active: true },
-      ],
-    }).session(session);
-    if (!foundUser) {
-      throw createError(
-        400,
-        'Account with provided credentials does not exist'
-      );
-    } else if (!foundUser.active) {
-      throw createError(400, 'This account is no longer active');
-    } else if (!foundUser.verified) {
-      throw createError(400, 'Please verify your account');
-    } else {
-      const valid = bcrypt.compareSync(password, foundUser.password);
-
-      if (!valid) 
-        throw createError(
-          400,
-          'Account with provided credentials does not exist'
-        );
-      
-
-      const tokenPayload = {
-        id: foundUser._id,
-        name: foundUser.name,
-        jwtVersion: foundUser.jwtVersion,
-        onboarded: !!foundUser.stripeId,
-        active: foundUser.active,
-      };
-
-      const userInfo = {
-        id: foundUser._id,
-        name: foundUser.name,
-        email: foundUser.email,
-        photo: foundUser.photo,
-        messages: foundUser.inbox,
-        notifications: foundUser.notifications,
-        cart: foundUser.cart,
-        saved: foundUser.savedArtwork,
-        active: foundUser.active,
-        stripeId: foundUser.stripeId,
-        country: foundUser.country,
-        jwtVersion: foundUser.jwtVersion,
-      };
-
-      auth.sendRefreshToken(res, auth.createRefreshToken(tokenPayload));
-
-      res.json({
-        accessToken: auth.createAccessToken(tokenPayload),
-        user: userInfo,
-      });
-
-      return accessToken, userInfo
-    }
-
+export const postLogIn = async ({ username }) => {
+  return await User.findOne({
+    $and: [
+      { $or: [{ email: username }, { name: username }] },
+      { active: true },
+    ],
+  }).session(session);
 };
 
 export const postLogOut = (res) => {
-    auth.sendRefreshToken(res, '');
-    res.json({
-      accessToken: '',
-      user: '',
-    });
+  auth.sendRefreshToken(res, '');
+  res.json({
+    accessToken: '',
+    user: '',
+  });
 };
 
-export const postRefreshToken = (req, res, next) => {
+export const postRefreshToken = async (req, res, next) => {
   const data = await auth.updateAccessToken(req, res, next);
-  return data
+  return data;
 };
 
-const postRevokeToken = async ({userId}) => {
-    return await User.findOneAndUpdate({ _id: userId }, { $inc: { jwtVersion: 1 } });
-
+const postRevokeToken = async ({ userId }) => {
+  return await User.findOneAndUpdate(
+    { _id: userId },
+    { $inc: { jwtVersion: 1 } }
+  );
 };
 
 // needs transaction (not tested)
-const verifyRegisterToken = async ({tokenId}) => {
-    const foundUser = await User.findOne({
+export const verifyRegisterToken = async ({ tokenId }) => {
+  return await User.updateOne(
+    {
       verificationToken: tokenId,
-    }).session(session);
-    if (foundUser) {
-      foundUser.verificationToken = null;
-      foundUser.verified = true;
-      return await foundUser.save({ session });
-    } else {
-      throw createError(400, 'Verification token could not be found');
-    }
+    },
+    { verificationToken: null, verified: true }
+  ).session(session);
 };
 
 const forgotPassword = async (req, res, next) => {
