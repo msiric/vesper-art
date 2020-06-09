@@ -5,12 +5,18 @@ import User from '../models/user.js';
 import Comment from '../models/comment.js';
 import auth from '../utils/auth.js';
 import createError from 'http-errors';
-import { fetchArtworkById, addArtworkComment } from '../services/artwork.js';
+import {
+  fetchArtworkById,
+  addArtworkComment,
+  deleteArtworkComment,
+} from '../services/artwork.js';
 import { fetchUserById, addUserNotification } from '../services/user.js';
 import {
   createNewComment,
   updateExistingComment,
+  deleteExistingComment,
 } from '../services/comment.js';
+import { createNewNotification } from '../services/notification.js';
 import socketApi from '../realtime/io.js';
 
 const postComment = async (req, res, next) => {
@@ -20,7 +26,7 @@ const postComment = async (req, res, next) => {
   try {
     const userId = res.locals.user.id;
     const { commentContent } = req.body;
-    const foundArtwork = await fetchArtworkById({ artworkId });
+    const foundArtwork = await fetchArtworkById({ artworkId, session });
     if (!foundArtwork) {
       throw createError(400, 'Artwork not found');
     } else {
@@ -28,17 +34,20 @@ const postComment = async (req, res, next) => {
         artworkId,
         userId,
         commentContent,
+        session,
       });
       const updatedArtwork = await addArtworkComment({
         artworkId,
         commentId: savedComment._id,
+        session,
       });
-      await addUserNotification({ userId: updatedArtwork.owner });
-      if (!userId.equals(updatedArtwork.owner)) {
+      await addUserNotification({ userId: updatedArtwork.owner, session });
+      if (!savedComment.owner.equals(updatedArtwork.owner)) {
         await createNewNotification({
           notificationLink: foundArtwork._id,
           notificationType: 'Comment',
           notificationReceiver: updatedArtwork.owner,
+          session,
         });
         socketApi.sendNotification(updatedArtwork.owner);
       }
@@ -64,27 +73,21 @@ const postComment = async (req, res, next) => {
 };
 
 const patchComment = async (req, res, next) => {
-  const { artworkId, commentId } = req.params;
-  const { commentContent } = req.body;
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
+    const { artworkId, commentId } = req.params;
+    const { commentContent } = req.body;
     await updateExistingComment({
       commentId,
       artworkId,
       userId: res.locals.user.id,
       commentContent,
     });
-    await session.commitTransaction();
     res.json({
       message: 'Comment updated successfully',
     });
   } catch (err) {
     console.log(err);
-    await session.abortTransaction();
     next(err, res);
-  } finally {
-    session.endSession();
   }
 };
 
@@ -93,11 +96,12 @@ const deleteComment = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    await deleteArtworkComment({ artworkId, commentId });
+    await deleteArtworkComment({ artworkId, commentId, session });
     await deleteExistingComment({
       commentId,
       artworkId,
       userId: res.locals.user.id,
+      session,
     });
     await session.commitTransaction();
     res.json({

@@ -58,7 +58,7 @@ const postLogIn = async (req, res, next) => {
   session.startTransaction();
   try {
     const { username, password } = req.body;
-    const foundUser = await fetchUserByCreds({ username });
+    const foundUser = await fetchUserByCreds({ username, session });
     if (!foundUser) {
       throw createError(
         400,
@@ -142,19 +142,13 @@ const postRevokeToken = async (req, res, next) => {
 
 // needs transaction (not tested)
 const verifyRegisterToken = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
     const { tokenId } = req.params;
     await updateUserVerification({ tokenId });
-    await session.commitTransaction();
     res.status(200).json({ message: 'Token successfully verified' });
   } catch (err) {
     console.log(err);
-    await session.abortTransaction();
     next(err, res);
-  } finally {
-    session.endSession();
   }
 };
 
@@ -165,7 +159,7 @@ const forgotPassword = async (req, res, next) => {
     const { email } = req.body;
     crypto.randomBytes(20, async function (err, buf) {
       const token = buf.toString('hex');
-      const foundUser = await fetchUserByEmail({ email });
+      const foundUser = await fetchUserByEmail({ email, session });
       if (!foundUser) {
         throw createError(400, 'No account with that email address exists');
       } else {
@@ -200,7 +194,7 @@ const resetPassword = async (req, res) => {
   try {
     const { tokenId } = req.params;
     const { password, confirm } = req.body;
-    const foundUser = await fetchUserByToken({ tokenId });
+    const foundUser = await fetchUserByToken({ tokenId, session });
     if (!foundUser) {
       throw createError(400, 'Token is invalid or has expired');
     } else if (password !== confirm) {
@@ -211,11 +205,7 @@ const resetPassword = async (req, res) => {
       foundUser.password = password;
       foundUser.resetToken = null;
       foundUser.resetExpiry = null;
-      await foundUser.save(function (err) {
-        req.logIn(foundUser, function (err) {
-          callback(err, foundUser);
-        });
-      });
+      await foundUser.save({ session });
     }
     await mailer.sendEmail(
       config.app,

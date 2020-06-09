@@ -6,6 +6,7 @@ export const createNewNotification = async ({
   notificationLink,
   notificationType,
   notificationReceiver,
+  session = null,
 }) => {
   const newNotification = new Notification();
   newNotification.link = notificationLink;
@@ -15,13 +16,20 @@ export const createNewNotification = async ({
   return await newNotification.save({ session });
 };
 
-export const fetchExistingNotifications = async ({ userId }) => {
+export const fetchExistingNotifications = async ({
+  userId,
+  session = null,
+}) => {
   return await Notification.find({
     receiver: userId,
   }).sort({ created: -1 });
 };
 
-export const updateReadNotification = async ({ userId, notificationId }) => {
+export const updateReadNotification = async ({
+  userId,
+  notificationId,
+  session = null,
+}) => {
   return await Notification.updateOne(
     {
       $and: [
@@ -35,7 +43,11 @@ export const updateReadNotification = async ({ userId, notificationId }) => {
   ).session(session);
 };
 
-export const updateUnreadNotification = async ({ userId, notificationId }) => {
+export const updateUnreadNotification = async ({
+  userId,
+  notificationId,
+  session = null,
+}) => {
   return await Notification.updateOne(
     {
       $and: [

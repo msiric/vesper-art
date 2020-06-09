@@ -3,13 +3,13 @@ import Discount from '../models/discount.js';
 import User from '../models/user.js';
 import createError from 'http-errors';
 
-export const fetchDiscountByCode = async ({ discountCode }) => {
+export const fetchDiscountByCode = async ({ discountCode, session = null }) => {
   await Discount.findOne({
     name: discountCode,
   }).session(session);
 };
 
-export const fetchDiscountById = async ({ discountId }) => {
+export const fetchDiscountById = async ({ discountId, session = null }) => {
   await Discount.findOne({
     _id: discountId,
   }).session(session);

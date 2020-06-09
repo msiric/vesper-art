@@ -19,42 +19,30 @@ const getNotifications = async (req, res, next) => {
 };
 
 const readNotification = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
     const { notificationId } = req.params;
     await updateReadNotification({
       userId: res.locals.user.id,
       notificationId,
     });
-    await session.commitTransaction();
     res.json({ message: 'Notification read' });
   } catch (err) {
-    await session.abortTransaction();
     console.log(err);
     next(err, res);
-  } finally {
-    session.endSession();
   }
 };
 
 const unreadNotification = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
     const { notificationId } = req.params;
     await updateUnreadNotification({
       userId: res.locals.user.id,
       notificationId,
     });
-    await session.commitTransaction();
     res.json({ message: 'Notification read' });
   } catch (err) {
-    await session.abortTransaction();
     console.log(err);
     next(err, res);
-  } finally {
-    session.endSession();
   }
 };
 

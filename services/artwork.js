@@ -13,13 +13,13 @@ import Stripe from 'stripe';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
-export const fetchArtworkById = async ({ artworkId }) => {
+export const fetchArtworkById = async ({ artworkId, session = null }) => {
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { active: true }],
   }).session(session);
 };
 
-export const fetchActiveArtworks = async ({ skip, limit }) => {
+export const fetchActiveArtworks = async ({ skip, limit, session = null }) => {
   return await Artwork.find({ active: true }, undefined, {
     skip,
     limit,
@@ -31,7 +31,12 @@ export const fetchActiveArtworks = async ({ skip, limit }) => {
     );
 };
 
-export const fetchArtworkDetails = async ({ artworkId, skip, limit }) => {
+export const fetchArtworkDetails = async ({
+  artworkId,
+  skip,
+  limit,
+  session = null,
+}) => {
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { active: true }],
   })
@@ -61,7 +66,12 @@ export const fetchArtworkDetails = async ({ artworkId, skip, limit }) => {
     );
 };
 
-export const fetchArtworkComments = async ({ artworkId, skip, limit }) => {
+export const fetchArtworkComments = async ({
+  artworkId,
+  skip,
+  limit,
+  session = null,
+}) => {
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { active: true }],
   })
@@ -82,7 +92,12 @@ export const fetchArtworkComments = async ({ artworkId, skip, limit }) => {
     );
 };
 
-export const fetchArtworkReviews = async ({ artworkId, skip, limit }) => {
+export const fetchArtworkReviews = async ({
+  artworkId,
+  skip,
+  limit,
+  session = null,
+}) => {
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { active: true }],
   })
@@ -103,7 +118,12 @@ export const fetchArtworkReviews = async ({ artworkId, skip, limit }) => {
     );
 };
 
-export const fetchUserArtworks = async ({ userId, skip, limit }) => {
+export const fetchUserArtworks = async ({
+  userId,
+  skip,
+  limit,
+  session = null,
+}) => {
   return await Artwork.find(
     {
       $and: [{ owner: userId }, { active: true }],
@@ -119,7 +139,11 @@ export const fetchUserArtworks = async ({ userId, skip, limit }) => {
   );
 };
 
-export const fetchUserArtwork = async ({ artworkId, userId }) => {
+export const fetchUserArtwork = async ({
+  artworkId,
+  userId,
+  session = null,
+}) => {
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { owner: userId }, { active: true }],
   })
@@ -127,14 +151,22 @@ export const fetchUserArtwork = async ({ artworkId, userId }) => {
     .populate('versions');
 };
 
-export const fetchArtworkLicenses = async ({ artworkId, userId }) => {
+export const fetchArtworkLicenses = async ({
+  artworkId,
+  userId,
+  session = null,
+}) => {
   return await License.find({
     $and: [{ artwork: artworkId }, { owner: userId }, { active: false }],
   }).sort({ created: -1 });
 };
 
 // needs transaction (done)
-export const createNewArtwork = async ({ artworkData, userId }) => {
+export const createNewArtwork = async ({
+  artworkData,
+  userId,
+  session = null,
+}) => {
   const newVersion = new Version();
   newVersion.cover = artworkData.artworkCover || '';
   newVersion.media = artworkData.artworkMedia || '';
@@ -163,7 +195,10 @@ export const createNewArtwork = async ({ artworkData, userId }) => {
 
 // needs transaction (done)
 // needs testing
-export const updateExistingArtwork = async ({ artworkData }) => {
+export const updateExistingArtwork = async ({
+  artworkData,
+  session = null,
+}) => {
   const newVersion = new Version();
   newVersion.cover = artworkData.artworkCover || '';
   newVersion.media = artworkData.artworkMedia || '';
@@ -336,7 +371,7 @@ const deleteArtwork = async (req, res, next) => {
 };
 
 // needs transaction (done)
-export const addArtworkSave = async ({ artworkId }) => {
+export const addArtworkSave = async ({ artworkId, session = null }) => {
   return await Artwork.updateOne(
     {
       $and: [{ _id: artworkId }, { active: true }],
@@ -345,7 +380,7 @@ export const addArtworkSave = async ({ artworkId }) => {
   ).session(session);
 };
 
-export const removeArtworkSave = async ({ artworkId }) => {
+export const removeArtworkSave = async ({ artworkId, session = null }) => {
   return await Artwork.updateOne(
     {
       $and: [{ _id: artworkId }, { active: true }],
@@ -354,7 +389,11 @@ export const removeArtworkSave = async ({ artworkId }) => {
   ).session(session);
 };
 
-export const addArtworkComment = async ({ artworkId, commentId }) => {
+export const addArtworkComment = async ({
+  artworkId,
+  commentId,
+  session = null,
+}) => {
   return await Artwork.findOneAndUpdate(
     {
       _id: artworkId,
@@ -364,7 +403,11 @@ export const addArtworkComment = async ({ artworkId, commentId }) => {
   ).session(session);
 };
 
-export const deleteArtworkComment = async ({ artworkId, commentId }) => {
+export const deleteArtworkComment = async ({
+  artworkId,
+  commentId,
+  session = null,
+}) => {
   return await Artwork.findOneAndUpdate(
     {
       _id: artworkId,
@@ -375,7 +418,12 @@ export const deleteArtworkComment = async ({ artworkId, commentId }) => {
 };
 
 // needs transaction (done)
-export const saveLicenseSet = async ({ userId, artworkData, licensesData }) => {
+export const saveLicenseSet = async ({
+  userId,
+  artworkData,
+  licensesData,
+  session = null,
+}) => {
   const licenseSet = licensesData.map((license) => {
     const newLicense = new License();
     newLicense.owner = userId;
@@ -392,13 +440,20 @@ export const saveLicenseSet = async ({ userId, artworkData, licensesData }) => {
   return await License.insertMany(licenseSet, { session });
 };
 
-export const deactivateExistingArtwork = async ({ artworkId }) => {
+export const deactivateExistingArtwork = async ({
+  artworkId,
+  session = null,
+}) => {
   return await Artwork.updateOne({ _id: artworkId }, { active: false }).session(
     session
   );
 };
 
-export const createArtworkReview = async ({ artworkId, reviewId }) => {
+export const createArtworkReview = async ({
+  artworkId,
+  reviewId,
+  session = null,
+}) => {
   return await Artwork.updateOne(
     {
       $and: [{ _id: artworkId }, { active: true }],

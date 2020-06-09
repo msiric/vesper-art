@@ -9,7 +9,10 @@ const postProfileImage = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const foundUser = await fetchUserById({ userId: res.locals.user.id });
+    const foundUser = await fetchUserById({
+      userId: res.locals.user.id,
+      session,
+    });
     if (foundUser) {
       const folderName = 'profilePhotos/';
       const fileName = foundUser.photo.split('/').slice(-1)[0];

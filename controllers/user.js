@@ -176,7 +176,7 @@ const updateUserProfile = async (req, res, next) => {
     const { userPhoto, userDescription, userCountry } = req.body;
     const foundUser = await User.findOne({
       $and: [{ _id: userId }, { active: true }],
-    });
+    }).session(session);
     if (foundUser) {
       if (userPhoto) foundUser.photo = userPhoto;
       if (userDescription) foundUser.description = userDescription;

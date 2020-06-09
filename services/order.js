@@ -6,7 +6,11 @@ import Notification from '../models/notification.js';
 import createError from 'http-errors';
 import crypto from 'crypto';
 
-export const fetchOrderDetails = async ({ userId, orderId }) => {
+export const fetchOrderDetails = async ({
+  userId,
+  orderId,
+  session = null,
+}) => {
   return await Order.findOne({
     $and: [
       {
@@ -25,7 +29,7 @@ export const fetchOrderDetails = async ({ userId, orderId }) => {
     .session(session);
 };
 
-export const fetchUserOrder = async ({ orderId, userId }) => {
+export const fetchUserOrder = async ({ orderId, userId, session = null }) => {
   return await Order.findOne({
     $and: [{ _id: orderId }, { buyer: userId }],
   })
@@ -34,19 +38,24 @@ export const fetchUserOrder = async ({ orderId, userId }) => {
     .session(session);
 };
 
-export const fetchSoldOrders = async ({ userId }) => {
+export const fetchSoldOrders = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
   }).deepPopulate('sales.buyer sales.version sales.review');
 };
 
-export const fetchBoughtOrders = async ({ userId }) => {
+export const fetchBoughtOrders = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
   }).deepPopulate('purchases.seller purchases.version purchases.review');
 };
 
-export const createOrderReview = async ({ orderId, userId, reviewId }) => {
+export const createOrderReview = async ({
+  orderId,
+  userId,
+  reviewId,
+  session = null,
+}) => {
   return await Order.updateOne(
     {
       $and: [{ _id: orderId }, { buyer: userId }],

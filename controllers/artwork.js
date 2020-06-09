@@ -20,10 +20,15 @@ import {
   fetchArtworkLicenses,
   createNewArtwork,
   addArtworkSave,
+  removeArtworkSave,
   saveLicenseSet,
   updateExistingArtwork,
 } from '../services/artwork.js';
-import { fetchUserById } from '../services/user.js';
+import {
+  fetchUserById,
+  addUserSave,
+  removeUserSave,
+} from '../services/user.js';
 import postArtworkValidator from '../utils/validation/postArtworkValidator.js';
 import putArtworkValidator from '../utils/validation/putArtworkValidator.js';
 
@@ -149,7 +154,10 @@ const postNewArtwork = async (req, res, next) => {
     const { error, value } = postArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
     if (value.artworkPersonal || value.artworkCommercial) {
-      const foundUser = await fetchUserById({ userId: res.locals.user.id });
+      const foundUser = await fetchUserById({
+        userId: res.locals.user.id,
+        session,
+      });
       if (!foundUser) throw createError(400, 'User not found');
       if (!foundUser.stripeId)
         throw createError(
@@ -171,6 +179,7 @@ const postNewArtwork = async (req, res, next) => {
     const savedVersion = await createNewArtwork({
       artworkData: value,
       userId: res.locals.user.id,
+      session,
     });
     await User.updateOne(
       { _id: res.locals.user.id },
@@ -198,12 +207,16 @@ const updateArtwork = async (req, res, next) => {
     const foundArtwork = await fetchUserArtwork({
       artworkId,
       userId: res.locals.user.id,
+      session,
     });
     const { error, value } = putArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
     if (foundArtwork) {
       if (value.artworkPersonal || value.artworkCommercial) {
-        const foundUser = await fetchUserById({ userId: res.locals.user.id });
+        const foundUser = await fetchUserById({
+          userId: res.locals.user.id,
+          session,
+        });
         if (!foundUser) throw createError(400, 'User not found');
         if (!foundUser.stripeId)
           throw createError(
@@ -222,7 +235,10 @@ const updateArtwork = async (req, res, next) => {
           );
         }
       }
-      const savedVersion = await updateExistingArtwork({ artworkData: value });
+      const savedVersion = await updateExistingArtwork({
+        artworkData: value,
+        session,
+      });
       const foundOrder = await Order.find({
         artwork: foundArtwork._id,
         version: foundArtwork.current._id,
@@ -422,11 +438,14 @@ const saveArtwork = async (req, res, next) => {
   session.startTransaction();
   try {
     const { artworkId } = req.params;
-    const foundUser = await fetchUserById({ userId: res.locals.user.id });
+    const foundUser = await fetchUserById({
+      userId: res.locals.user.id,
+      session,
+    });
     if (foundUser) {
       if (!foundUser.savedArtwork.includes(artworkId)) {
-        await addUserSave({ userId: foundUser._id, artworkId });
-        await addArtworkSave({ artworkId });
+        await addUserSave({ userId: foundUser._id, artworkId, session });
+        await addArtworkSave({ artworkId, session });
         await session.commitTransaction();
         res.status(200).json({ message: 'Artwork saved' });
       } else {
@@ -449,11 +468,14 @@ const unsaveArtwork = async (req, res, next) => {
   session.startTransaction();
   try {
     const { artworkId } = req.params;
-    const foundUser = await fetchUserById({ userId: res.locals.user.id });
+    const foundUser = await fetchUserById({
+      userId: res.locals.user.id,
+      session,
+    });
     if (foundUser) {
       if (foundUser.savedArtwork.includes(artworkId)) {
-        await deleteUserSave({ userId: foundUser._id, artworkId });
-        await deleteArtworkSave({ artworkId });
+        await removeUserSave({ userId: foundUser._id, artworkId, session });
+        await removeArtworkSave({ artworkId, session });
         await session.commitTransaction();
         res.status(200).json({ message: 'Artwork unsaved' });
       } else {
@@ -479,12 +501,13 @@ const saveLicenses = async (req, res, next) => {
     const { artworkId } = req.params;
     const { licenses } = req.body;
     if (licenses.length) {
-      const foundArtwork = await fetchArtworkDetails({ artworkId });
+      const foundArtwork = await fetchArtworkDetails({ artworkId, session });
       if (foundArtwork) {
         await saveLicenseSet({
           userId: res.locals.user.id,
           artworkData: foundArtwork,
           licenseData: licenses,
+          session,
         });
         await session.commitTransaction();
         res

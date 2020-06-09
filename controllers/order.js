@@ -9,8 +9,6 @@ import createError from 'http-errors';
 import crypto from 'crypto';
 
 const getOrderDetails = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
     const { orderId } = req.params;
     const foundOrder = await fetchOrderDetails({
@@ -47,7 +45,6 @@ const getOrderDetails = async (req, res, next) => {
       //     }
       //   }
       // }
-      await session.commitTransaction();
       res.json({
         order: foundOrder,
       });
@@ -55,11 +52,8 @@ const getOrderDetails = async (req, res, next) => {
       throw createError(400, 'Order not found');
     }
   } catch (err) {
-    await session.abortTransaction();
     console.log(err);
     next(err, res);
-  } finally {
-    session.endSession();
   }
 };
 

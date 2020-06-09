@@ -11,7 +11,7 @@ import Stripe from 'stripe';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
-const getCheckout = async ({ artworkId }) => {
+const getCheckout = async ({ artworkId, session = null }) => {
   const foundArtwork = await Artwork.findOne({
     $and: [{ _id: artworkId }, { active: true }],
   }).populate(

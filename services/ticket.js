@@ -3,7 +3,12 @@ import Ticket from '../models/ticket.js';
 import mailer from '../utils/email.js';
 import createError from 'http-errors';
 
-export const createNewTicket = async ({ userId, ticketTitle, ticketBody }) => {
+export const createNewTicket = async ({
+  userId,
+  ticketTitle,
+  ticketBody,
+  session = null,
+}) => {
   const newTicket = new Ticket();
   newTicket.owner = userId;
   newTicket.title = ticketTitle;

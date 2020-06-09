@@ -2,7 +2,11 @@ import mongoose from 'mongoose';
 import Discount from '../models/discount.js';
 import User from '../models/user.js';
 import createError from 'http-errors';
-import { fetchUserById, addUserDiscount } from '../services/user.js';
+import {
+  fetchUserById,
+  addUserDiscount,
+  removeUserDiscount,
+} from '../services/user.js';
 import {
   fetchDiscountByCode,
   fetchDiscountById,
@@ -15,16 +19,21 @@ const postDiscount = async (req, res, next) => {
   session.startTransaction();
   try {
     const { discountCode } = req.body;
-    const foundUser = await fetchUserById({ userId: res.locals.user.id });
+    const foundUser = await fetchUserById({
+      userId: res.locals.user.id,
+      session,
+    });
     if (!foundUser.discount) {
       const foundDiscount = await fetchDiscountByCode({
         discountCode,
+        session,
       });
       if (foundDiscount) {
         if (foundDiscount.active) {
           await addUserDiscount({
             userId: res.locals.user.id,
             discountId: foundDiscount._id,
+            session,
           });
           await session.commitTransaction();
           return res
@@ -54,9 +63,9 @@ const deleteDiscount = async (req, res, next) => {
   session.startTransaction();
   try {
     const { discountId } = req.params;
-    const foundDiscount = await fetchDiscountById({ discountId });
+    const foundDiscount = await fetchDiscountById({ discountId, session });
     if (foundDiscount) {
-      await deleteUserDiscount({ userId: res.locals.user.id });
+      await removeUserDiscount({ userId: res.locals.user.id, session });
       await session.commitTransaction();
       return res.status(200).json('Discount removed');
     } else {

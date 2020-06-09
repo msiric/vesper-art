@@ -9,7 +9,13 @@ import { server } from '../config/secret.js';
 import config from '../config/mailer.js';
 import createError from 'http-errors';
 
-export const createNewUser = async ({ email, username, password, token }) => {
+export const createNewUser = async ({
+  email,
+  username,
+  password,
+  token,
+  session = null,
+}) => {
   const newUser = new User();
   user.name = username;
   user.email = email;
@@ -47,14 +53,14 @@ export const refreshAccessToken = async (req, res, next) => {
   return await auth.updateAccessToken(req, res, next);
 };
 
-export const revokeAccessToken = async ({ userId }) => {
+export const revokeAccessToken = async ({ userId, session = null }) => {
   return await User.findOneAndUpdate(
     { _id: userId },
     { $inc: { jwtVersion: 1 } }
   );
 };
 
-export const updateUserVerification = async ({ tokenId }) => {
+export const updateUserVerification = async ({ tokenId, session = null }) => {
   return await User.updateOne(
     {
       verificationToken: tokenId,
@@ -64,7 +70,7 @@ export const updateUserVerification = async ({ tokenId }) => {
 };
 
 // needs transaction (not tested)
-export const verifyRegisterToken = async ({ tokenId }) => {
+export const verifyRegisterToken = async ({ tokenId, session = null }) => {
   return await User.updateOne(
     {
       verificationToken: tokenId,

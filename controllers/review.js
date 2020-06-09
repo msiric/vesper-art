@@ -22,6 +22,7 @@ const postReview = async (req, res, next) => {
       const foundOrder = await fetchUserOrder({
         orderId,
         userId: res.locals.user.id,
+        session,
       });
       if (foundOrder) {
         if (!foundOrder.artwork.review) {
@@ -30,6 +31,7 @@ const postReview = async (req, res, next) => {
             userId: res.locals.user.id,
             reviewRating,
             reviewContent,
+            session,
           });
           const newRating =
             foundOrder.buyer.rating +
@@ -40,21 +42,25 @@ const postReview = async (req, res, next) => {
           await updateUserRating({
             userId: foundOrder.seller._id,
             userRating: newRating,
+            session,
           });
           await createOrderReview({
             orderId,
             userId: res.locals.user.id,
             reviewId: savedReview._id,
+            session,
           });
           await createArtworkReview({
             artworkId: foundOrder.artwork._id,
             reviewId: savedReview._id,
+            session,
           });
           // new start
           await createNewNotification({
             notificationLink: foundOrder._id,
             notificationType: 'Review',
             notificationReceiver: foundOrder.seller,
+            session,
           });
           socketApi.sendNotification(foundOrder.seller, foundOrder._id);
           // new end

@@ -11,6 +11,7 @@ export const createNewComment = async ({
   artworkId,
   userId,
   commentContent,
+  session = null,
 }) => {
   const comment = new Comment();
   comment.artwork = artworkId;
@@ -25,6 +26,7 @@ export const updateExistingComment = async ({
   artworkId,
   userId,
   commentContent,
+  session = null,
 }) => {
   return await Comment.updateOne(
     {
@@ -38,6 +40,7 @@ export const deleteExistingComment = async ({
   commentId,
   artworkId,
   userId,
+  session = null,
 }) => {
   return await Comment.deleteOne({
     $and: [{ _id: commentId }, { artwork: artworkId }, { owner: userId }],

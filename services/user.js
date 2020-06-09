@@ -15,26 +15,26 @@ import Stripe from 'stripe';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
-export const fetchUserById = async ({ userId }) => {
+export const fetchUserById = async ({ userId, session = null }) => {
   return await User.findOne({
     $and: [{ _id: userId }, { active: true }],
   });
 };
 
-export const fetchUserByEmail = async ({ email }) => {
+export const fetchUserByEmail = async ({ email, session = null }) => {
   return await User.findOne({
     $and: [{ email: email }, { active: true }],
   }).session(session);
 };
 
-export const fetchUserByToken = async ({ tokenId }) => {
+export const fetchUserByToken = async ({ tokenId, session = null }) => {
   return await User.findOne({
     resetToken: tokenId,
     resetExpiry: { $gt: Date.now() },
   }).session(session);
 };
 
-export const fetchUserByCreds = async ({ username }) => {
+export const fetchUserByCreds = async ({ username, session = null }) => {
   return await User.findOne({
     $and: [
       { $or: [{ email: username }, { name: username }] },
@@ -43,25 +43,30 @@ export const fetchUserByCreds = async ({ username }) => {
   }).session(session);
 };
 
-export const fetchUserDiscount = async ({ userId }) => {
+export const fetchUserDiscount = async ({ userId, session = null }) => {
   return await User.findOne({
     $and: [{ _id: userId }, { active: true }],
   }).populate('discount');
 };
 
-export const fetchUserSales = async ({ userId }) => {
+export const fetchUserSales = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
   }).deepPopulate('sales.buyer sales.version sales.review');
 };
 
-export const fetchUserPurchases = async ({ userId }) => {
+export const fetchUserPurchases = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
   }).deepPopulate('purchases.seller purchases.version purchases.review');
 };
 
-export const getUserProfile = async ({ username, cursor, ceiling }) => {
+export const getUserProfile = async ({
+  username,
+  cursor,
+  ceiling,
+  session = null,
+}) => {
   const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
   const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
   return await User.findOne({
@@ -87,7 +92,12 @@ export const getUserProfile = async ({ username, cursor, ceiling }) => {
   );
 };
 
-export const getUserArtwork = async ({ userId, cursor, ceiling }) => {
+export const getUserArtwork = async ({
+  userId,
+  cursor,
+  ceiling,
+  session = null,
+}) => {
   const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
   const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
   return await Artwork.find(
@@ -102,7 +112,12 @@ export const getUserArtwork = async ({ userId, cursor, ceiling }) => {
   );
 };
 
-export const getUserSaves = async ({ userId, cursor, ceiling }) => {
+export const getUserSaves = async ({
+  userId,
+  cursor,
+  ceiling,
+  session = null,
+}) => {
   const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
   const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
   return await User.findOne(
@@ -126,7 +141,7 @@ export const getUserSaves = async ({ userId, cursor, ceiling }) => {
   });
 };
 
-export const getUserStatistics = async ({ userId }) => {
+export const getUserStatistics = async ({ userId, session = null }) => {
   return await User.findOne({
     $and: [{ _id: userId }, { active: true }],
   }).deepPopulate(
@@ -134,7 +149,7 @@ export const getUserStatistics = async ({ userId }) => {
   );
 };
 
-export const getUserSales = async ({ userId, from, to }) => {
+export const getUserSales = async ({ userId, from, to, session = null }) => {
   return from && to
     ? await Order.find({
         $and: [
@@ -147,7 +162,12 @@ export const getUserSales = async ({ userId, from, to }) => {
       }).populate('review version licenses sales.review');
 };
 
-export const getUserPurchases = async ({ userId, from, to }) => {
+export const getUserPurchases = async ({
+  userId,
+  from,
+  to,
+  session = null,
+}) => {
   return from && to
     ? await Order.find({
         $and: [
@@ -165,6 +185,7 @@ export const updateUserProfile = async ({
   userPhoto,
   userDescription,
   userCountry,
+  session = null,
 }) => {
   return await User.updateOne(
     {
@@ -174,7 +195,12 @@ export const updateUserProfile = async ({
   );
 };
 
-export const getUserNotifications = async ({ userId, cursor, ceiling }) => {
+export const getUserNotifications = async ({
+  userId,
+  cursor,
+  ceiling,
+  session = null,
+}) => {
   const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
   const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
   return await Notification.find({ receiver: userId }, undefined, {
@@ -185,7 +211,12 @@ export const getUserNotifications = async ({ userId, cursor, ceiling }) => {
     .sort({ created: -1 });
 };
 
-export const updateUserEmail = async ({ userId, email, token }) => {
+export const updateUserEmail = async ({
+  userId,
+  email,
+  token,
+  session = null,
+}) => {
   return await User.updateOne(
     {
       $and: [{ _id: userId }, { active: true }],
@@ -194,41 +225,53 @@ export const updateUserEmail = async ({ userId, email, token }) => {
   ).session(session);
 };
 
-export const updateUserPassword = async ({ userId, password }) => {
+export const updateUserPassword = async ({
+  userId,
+  password,
+  session = null,
+}) => {
   return await User.updateOne({ _id: userId }, { password: password }).session(
     session
   );
 };
 
-export const updateUserPreferences = async ({ userId, displaySaves }) => {
+export const updateUserPreferences = async ({
+  userId,
+  displaySaves,
+  session = null,
+}) => {
   return await User.updateOne(
     { _id: userId },
     { displaySaves: displaySaves }
   ).session(session);
 };
 
-export const addUserSave = async ({ userId, artworkId }) => {
+export const addUserSave = async ({ userId, artworkId, session = null }) => {
   return await User.updateOne(
     { _id: userId },
     { $push: { savedArtwork: artworkId } }
   ).session(session);
 };
 
-export const deleteUserSave = async ({ userId, artworkId }) => {
+export const removeUserSave = async ({ userId, artworkId, session = null }) => {
   return await User.updateOne(
     { _id: userId },
     { $pull: { savedArtwork: artworkId } }
   ).session(session);
 };
 
-export const addUserNotification = async ({ userId }) => {
+export const addUserNotification = async ({ userId, session = null }) => {
   return await User.updateOne(
     { _id: userId },
     { $inc: { notifications: 1 } }
   ).session(session);
 };
 
-export const updateUserRating = async ({ userId, userRating }) => {
+export const updateUserRating = async ({
+  userId,
+  userRating,
+  session = null,
+}) => {
   return await User.updateOne(
     {
       $and: [{ _id: userId }, { active: true }],
@@ -588,7 +631,11 @@ const deactivateUser = async (req, res, next) => {
   }
 };
 
-export const addUserDiscount = async ({ userId, discountId }) => {
+export const addUserDiscount = async ({
+  userId,
+  discountId,
+  session = null,
+}) => {
   return await User.updateOne(
     {
       $and: [{ _id: userId }, { active: true }],
@@ -597,7 +644,7 @@ export const addUserDiscount = async ({ userId, discountId }) => {
   ).session(session);
 };
 
-export const deleteUserDiscount = async ({ userId }) => {
+export const removeUserDiscount = async ({ userId, session = null }) => {
   return await User.updateOne(
     {
       $and: [{ _id: userId }, { active: true }],

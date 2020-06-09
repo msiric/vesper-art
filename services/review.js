@@ -12,6 +12,7 @@ export const postNewReview = async ({
   reviewRating,
   reviewContent,
   userId,
+  session = null,
 }) => {
   const newReview = new Review();
   newReview.order = orderData._id;
