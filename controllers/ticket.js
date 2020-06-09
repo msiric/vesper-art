@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import Ticket from '../models/ticket.js';
 import mailer from '../utils/email.js';
+import { createNewTicket } from '../services/ticket.js';
 import createError from 'http-errors';
 
 // how to handle transactions?
@@ -11,12 +12,11 @@ const postTicket = async (req, res, next) => {
     const { ticketTitle, ticketBody } = req.body;
 
     if ((userEmail, ticketTitle, ticketBody)) {
-      const newTicket = new Ticket();
-      newTicket.owner = req.user._id;
-      newTicket.title = ticketTitle;
-      newTicket.body = ticketBody;
-      newTicket.resolved = false;
-      const savedTicket = await newTicket.save();
+      await createNewTicket({
+        userId: res.locals.user.id,
+        ticketTitle,
+        ticketBody,
+      });
       const ticketId = savedTicket._id;
       await mailer.sendEmail(
         userEmail,

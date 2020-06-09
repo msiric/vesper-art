@@ -3,8 +3,22 @@ import createError from 'http-errors';
 import escapeHTML from 'escape-html';
 import jwt from 'jsonwebtoken';
 import currency from 'currency.js';
+import aws from 'aws-sdk';
 
 const ObjectId = mongoose.Types.ObjectId;
+
+export const deleteS3Object = async ({ link, folder }) => {
+  const fileLink = link;
+  const folderName = folder;
+  const fileName = fileLink.split('/').slice(-1)[0];
+  const filePath = folderName + fileName;
+  const awsObject = new aws.S3();
+  const awsParams = {
+    Bucket: 'vesper-testing',
+    Key: filePath,
+  };
+  await awsObject.deleteObject(awsParams).promise();
+};
 
 export const requestHandler = (promise, params) => async (req, res, next) => {
   const boundParams = params ? params(req, res, next) : [];

@@ -1,14 +1,17 @@
 import mongoose from 'mongoose';
 import Notification from '../models/notification.js';
+import {
+  fetchExistingNotifications,
+  updateReadNotification,
+  updateUnreadNotification,
+} from '../services/notification.js';
 import createError from 'http-errors';
 
 const getNotifications = async (req, res, next) => {
   try {
-    const foundNotifications = await Notification.find({
-      receivers: { $elemMatch: { user: res.locals.user.id } },
-    })
-      .populate('user')
-      .sort({ created: -1 });
+    const foundNotifications = await fetchExistingNotifications({
+      userId: res.locals.user.id,
+    });
     res.json({ notification: foundNotifications });
   } catch (err) {
     next(err, res);
@@ -20,22 +23,12 @@ const readNotification = async (req, res, next) => {
   session.startTransaction();
   try {
     const { notificationId } = req.params;
-    const foundNotification = await Notification.findOne({
-      $and: [
-        {
-          _id: notificationId,
-        },
-        { receiver: res.locals.user.id },
-      ],
-    }).session(session);
-    if (foundNotification) {
-      foundNotification.read = true;
-      await foundNotification.save({ session });
-      await session.commitTransaction();
-      res.json({ message: 'Notification read' });
-    } else {
-      throw createError(400, 'Notification not found');
-    }
+    await updateReadNotification({
+      userId: res.locals.user.id,
+      notificationId,
+    });
+    await session.commitTransaction();
+    res.json({ message: 'Notification read' });
   } catch (err) {
     await session.abortTransaction();
     console.log(err);
@@ -50,22 +43,12 @@ const unreadNotification = async (req, res, next) => {
   session.startTransaction();
   try {
     const { notificationId } = req.params;
-    const foundNotification = await Notification.findOne({
-      $and: [
-        {
-          _id: notificationId,
-        },
-        { receiver: res.locals.user.id },
-      ],
-    }).session(session);
-    if (foundNotification) {
-      foundNotification.read = false;
-      await foundNotification.save({ session });
-      await session.commitTransaction();
-      res.json({ message: 'Notification read' });
-    } else {
-      throw createError(400, 'Notification not found');
-    }
+    await updateUnreadNotification({
+      userId: res.locals.user.id,
+      notificationId,
+    });
+    await session.commitTransaction();
+    res.json({ message: 'Notification read' });
   } catch (err) {
     await session.abortTransaction();
     console.log(err);

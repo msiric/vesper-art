@@ -15,10 +15,50 @@ import Stripe from 'stripe';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
-export const fetchUser = async ({ userId }) => {
-  await User.findOne({
+export const fetchUserById = async ({ userId }) => {
+  return await User.findOne({
     $and: [{ _id: userId }, { active: true }],
   });
+};
+
+export const fetchUserByEmail = async ({ email }) => {
+  return await User.findOne({
+    $and: [{ email: email }, { active: true }],
+  }).session(session);
+};
+
+export const fetchUserByToken = async ({ tokenId }) => {
+  return await User.findOne({
+    resetToken: tokenId,
+    resetExpiry: { $gt: Date.now() },
+  }).session(session);
+};
+
+export const fetchUserByCreds = async ({ username }) => {
+  return await User.findOne({
+    $and: [
+      { $or: [{ email: username }, { name: username }] },
+      { active: true },
+    ],
+  }).session(session);
+};
+
+export const fetchUserDiscount = async ({ userId }) => {
+  return await User.findOne({
+    $and: [{ _id: userId }, { active: true }],
+  }).populate('discount');
+};
+
+export const fetchUserSales = async ({ userId }) => {
+  return await User.findOne({
+    _id: userId,
+  }).deepPopulate('sales.buyer sales.version sales.review');
+};
+
+export const fetchUserPurchases = async ({ userId }) => {
+  return await User.findOne({
+    _id: userId,
+  }).deepPopulate('purchases.seller purchases.version purchases.review');
 };
 
 export const getUserProfile = async ({ username, cursor, ceiling }) => {
@@ -164,6 +204,39 @@ export const updateUserPreferences = async ({ userId, displaySaves }) => {
   return await User.updateOne(
     { _id: userId },
     { displaySaves: displaySaves }
+  ).session(session);
+};
+
+export const addUserSave = async ({ userId, artworkId }) => {
+  return await User.updateOne(
+    { _id: userId },
+    { $push: { savedArtwork: artworkId } }
+  ).session(session);
+};
+
+export const deleteUserSave = async ({ userId, artworkId }) => {
+  return await User.updateOne(
+    { _id: userId },
+    { $pull: { savedArtwork: artworkId } }
+  ).session(session);
+};
+
+export const addUserNotification = async ({ userId }) => {
+  return await User.updateOne(
+    { _id: userId },
+    { $inc: { notifications: 1 } }
+  ).session(session);
+};
+
+export const updateUserRating = async ({ userId, userRating }) => {
+  return await User.updateOne(
+    {
+      $and: [{ _id: userId }, { active: true }],
+    },
+    {
+      rating: userRating,
+      $inc: { reviews: 1, notifications: 1 },
+    }
   ).session(session);
 };
 
@@ -513,4 +586,22 @@ const deactivateUser = async (req, res, next) => {
   } finally {
     session.endSession();
   }
+};
+
+export const addUserDiscount = async ({ userId, discountId }) => {
+  return await User.updateOne(
+    {
+      $and: [{ _id: userId }, { active: true }],
+    },
+    { discount: discountId }
+  ).session(session);
+};
+
+export const deleteUserDiscount = async ({ userId }) => {
+  return await User.updateOne(
+    {
+      $and: [{ _id: userId }, { active: true }],
+    },
+    { discount: null }
+  ).session(session);
 };

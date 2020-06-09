@@ -3,20 +3,14 @@ import Discount from '../models/discount.js';
 import User from '../models/user.js';
 import createError from 'http-errors';
 
-export const postDiscount = async ({ userId, discountId }) => {
-  return await User.updateOne(
-    {
-      $and: [{ _id: userId }, { active: true }],
-    },
-    { discount: discountId }
-  ).session(session);
+export const fetchDiscountByCode = async ({ discountCode }) => {
+  await Discount.findOne({
+    name: discountCode,
+  }).session(session);
 };
 
-export const deleteDiscount = async ({ userId, discountId }) => {
-  return await User.updateOne(
-    {
-      $and: [{ _id: userId }, { active: true }],
-    },
-    { discount: discountId }
-  ).session(session);
+export const fetchDiscountById = async ({ discountId }) => {
+  await Discount.findOne({
+    _id: discountId,
+  }).session(session);
 };

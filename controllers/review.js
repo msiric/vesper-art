@@ -6,6 +6,10 @@ import Artwork from '../models/artwork.js';
 import User from '../models/user.js';
 import createError from 'http-errors';
 import socketApi from '../realtime/io.js';
+import { fetchUserOrder, createOrderReview } from '../services/order.js';
+import { updateUserRating } from '../services/user.js';
+import { createArtworkReview } from '../services/artwork.js';
+import { createNewNotification } from '../services/notification.js';
 
 // needs transaction (done)
 const postReview = async (req, res, next) => {
@@ -15,69 +19,43 @@ const postReview = async (req, res, next) => {
     const { reviewRating, reviewContent } = req.body;
     const { orderId } = req.params;
     if (reviewRating) {
-      const foundOrder = await Order.findOne({
-        $and: [{ _id: orderId }, { buyer: res.locals.user.id }],
-      })
-        .populate('buyer')
-        .deepPopulate('artwork.review')
-        .session(session);
+      const foundOrder = await fetchUserOrder({
+        orderId,
+        userId: res.locals.user.id,
+      });
       if (foundOrder) {
         if (!foundOrder.artwork.review) {
-          const newReview = new Review();
-          newReview.order = foundOrder._id;
-          newReview.artwork = foundOrder.artwork._id;
-          newReview.owner = res.locals.user.id;
-          newReview.rating = reviewRating;
-          if (reviewContent) newReview.content = reviewContent;
-          const savedReview = await newReview.save({ session });
+          const savedReview = await postNewReview({
+            orderData: foundOrder,
+            userId: res.locals.user.id,
+            reviewRating,
+            reviewContent,
+          });
           const newRating =
             foundOrder.buyer.rating +
             (
               (newReview.rating - foundOrder.buyer.rating) /
               (foundOrder.buyer.reviews + 1)
             ).toFixed(2);
-          // notif
-          /*             const seller = foundOrder.details.find((item) =>
-            item.artwork.equals(artworkId)
-          ).artwork.owner;
-          const orderPath = '/orders/' + foundOrder._id;
-          let notification = new Notification();
-          notification.receivers.push({
-            user: seller._id,
-            read: false,
+          await updateUserRating({
+            userId: foundOrder.seller._id,
+            userRating: newRating,
           });
-          notification.link = orderPath;
-          notification.message = `${foundOrder.buyer.name} left a review on your artwork!`;
-          notification.read = [];
-          await notification.save({ session });  */
-          await User.updateOne(
-            {
-              $and: [{ _id: foundOrder.seller._id }, { active: true }],
-            },
-            {
-              rating: newRating,
-              $inc: { reviews: 1, notifications: 1 },
-            }
-          ).session(session);
-          await Order.updateOne(
-            {
-              $and: [{ _id: orderId }, { buyer: res.locals.user.id }],
-            },
-            { review: savedReview._id }
-          ).session(session);
-          await Artwork.updateOne(
-            {
-              $and: [{ _id: foundOrder.artwork._id }, { active: true }],
-            },
-            { $push: { reviews: savedReview._id } }
-          ).session(session);
+          await createOrderReview({
+            orderId,
+            userId: res.locals.user.id,
+            reviewId: savedReview._id,
+          });
+          await createArtworkReview({
+            artworkId: foundOrder.artwork._id,
+            reviewId: savedReview._id,
+          });
           // new start
-          const newNotification = new Notification();
-          newNotification.link = foundOrder._id;
-          newNotification.type = 'Review';
-          newNotification.receiver = foundOrder.seller;
-          newNotification.read = false;
-          await newNotification.save({ session });
+          await createNewNotification({
+            notificationLink: foundOrder._id,
+            notificationType: 'Review',
+            notificationReceiver: foundOrder.seller,
+          });
           socketApi.sendNotification(foundOrder.seller, foundOrder._id);
           // new end
           await session.commitTransaction();

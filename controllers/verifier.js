@@ -1,14 +1,12 @@
 import mongoose from 'mongoose';
 import License from '../models/license.js';
 import createError from 'http-errors';
+import { fetchLicenseByFingerprint } from '../services/license.js';
 
 const verifyLicense = async (req, res, next) => {
   try {
     const { fingerprint } = req.body;
-    const foundLicense = await License.findOne({
-      fingerprint: fingerprint,
-      active: true,
-    }).populate('artwork');
+    const foundLicense = await fetchLicenseByFingerprint({ fingerprint });
     if (foundLicense) {
       return res.status(200).json({ license: foundLicense });
     } else {

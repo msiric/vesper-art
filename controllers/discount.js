@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 import Discount from '../models/discount.js';
 import User from '../models/user.js';
 import createError from 'http-errors';
+import { fetchUserById, addUserDiscount } from '../services/user.js';
+import {
+  fetchDiscountByCode,
+  fetchDiscountById,
+} from '../services/discount.js';
 
 // needs transaction (done)
 // treba sredit
@@ -10,21 +15,17 @@ const postDiscount = async (req, res, next) => {
   session.startTransaction();
   try {
     const { discountCode } = req.body;
-    const foundUser = User.findOne({
-      $and: [{ _id: res.locals.user.id }, { active: true }],
-    }).session(session);
+    const foundUser = await fetchUserById({ userId: res.locals.user.id });
     if (!foundUser.discount) {
-      const foundDiscount = await Discount.findOne({
-        name: discountCode,
-      }).session(session);
+      const foundDiscount = await fetchDiscountByCode({
+        discountCode,
+      });
       if (foundDiscount) {
         if (foundDiscount.active) {
-          await User.updateOne(
-            {
-              $and: [{ _id: res.locals.user.id }, { active: true }],
-            },
-            { discount: foundDiscount._id }
-          ).session(session);
+          await addUserDiscount({
+            userId: res.locals.user.id,
+            discountId: foundDiscount._id,
+          });
           await session.commitTransaction();
           return res
             .status(200)
@@ -53,23 +54,9 @@ const deleteDiscount = async (req, res, next) => {
   session.startTransaction();
   try {
     const { discountId } = req.params;
-    const foundDiscount = Discount.findOne({
-      _id: discountId,
-    }).session(session);
-    const foundUser = User.findOne({
-      $and: [
-        { _id: res.locals.user.id },
-        { discount: discountId },
-        { active: true },
-      ],
-    }).session(session);
-    if (foundDiscount && foundUser) {
-      await User.updateOne(
-        {
-          $and: [{ _id: res.locals.user.id }, { active: true }],
-        },
-        { discount: foundDiscount._id }
-      ).session(session);
+    const foundDiscount = await fetchDiscountById({ discountId });
+    if (foundDiscount) {
+      await deleteUserDiscount({ userId: res.locals.user.id });
       await session.commitTransaction();
       return res.status(200).json('Discount removed');
     } else {

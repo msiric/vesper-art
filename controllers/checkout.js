@@ -6,6 +6,8 @@ import Order from '../models/order.js';
 import Discount from '../models/discount.js';
 import User from '../models/user.js';
 import Notification from '../models/notification.js';
+import { fetchArtworkDetails } from '../services/artwork.js';
+import { fetchUserDiscount } from '../services/user.js';
 import crypto from 'crypto';
 import createError from 'http-errors';
 
@@ -131,16 +133,9 @@ const getPaymentCart_Old = async (req, res, next) => {
 const getCheckout = async (req, res, next) => {
   try {
     const { artworkId } = req.params;
-    const foundArtwork = await Artwork.findOne({
-      $and: [{ _id: artworkId }, { active: true }],
-    }).populate(
-      'current',
-      '_id cover created title personal type license availability description use commercial'
-    );
+    const foundArtwork = await fetchArtworkDetails({ artworkId });
     if (foundArtwork) {
-      const foundUser = await User.findOne({
-        $and: [{ _id: res.locals.user.id }, { active: true }],
-      }).populate('discount');
+      const foundUser = await fetchUserDiscount({ userId: res.locals.user.id });
       res.json({
         artwork: foundArtwork,
         discount: foundUser.discount,

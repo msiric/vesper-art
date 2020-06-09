@@ -6,7 +6,7 @@ import Notification from '../models/notification.js';
 import createError from 'http-errors';
 import crypto from 'crypto';
 
-export const getOrderDetails = async ({ userId, orderId }) => {
+export const fetchOrderDetails = async ({ userId, orderId }) => {
   return await Order.findOne({
     $and: [
       {
@@ -25,14 +25,32 @@ export const getOrderDetails = async ({ userId, orderId }) => {
     .session(session);
 };
 
-export const getSoldOrders = async ({ userId }) => {
+export const fetchUserOrder = async ({ orderId, userId }) => {
+  return await Order.findOne({
+    $and: [{ _id: orderId }, { buyer: userId }],
+  })
+    .populate('buyer')
+    .deepPopulate('artwork.review')
+    .session(session);
+};
+
+export const fetchSoldOrders = async ({ userId }) => {
   return await User.findOne({
     _id: userId,
   }).deepPopulate('sales.buyer sales.version sales.review');
 };
 
-export const getBoughtOrders = async ({ userId }) => {
+export const fetchBoughtOrders = async ({ userId }) => {
   return await User.findOne({
     _id: userId,
   }).deepPopulate('purchases.seller purchases.version purchases.review');
+};
+
+export const createOrderReview = async ({ orderId, userId, reviewId }) => {
+  return await Order.updateOne(
+    {
+      $and: [{ _id: orderId }, { buyer: userId }],
+    },
+    { review: reviewId }
+  ).session(session);
 };

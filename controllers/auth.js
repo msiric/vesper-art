@@ -6,6 +6,14 @@ import bcrypt from 'bcrypt-nodejs';
 import crypto from 'crypto';
 import mailer from '../utils/email.js';
 import { server } from '../config/secret.js';
+import {
+  createNewUser,
+  logUserOut,
+  refreshAccessToken,
+  revokeAccessToken,
+  updateUserVerification,
+} from '../services/auth.js';
+import { fetchUserByCreds, fetchUserByToken } from '../services/user.js';
 import config from '../config/mailer.js';
 import createError from 'http-errors';
 
@@ -23,30 +31,7 @@ const postSignUp = async (req, res, next) => {
     } else {
       const token = randomString.generate();
       const link = `${server.clientDomain}/verify_token/${token}`;
-
-      const user = new User();
-      user.name = username;
-      user.email = email;
-      user.photo = user.gravatar();
-      user.password = password;
-      user.customWork = true;
-      user.displaySaves = true;
-      user.verificationToken = token;
-      user.verified = false;
-      user.cart = [];
-      user.discount = null;
-      user.inbox = 0;
-      user.notifications = 0;
-      user.rating = 0;
-      user.reviews = 0;
-      user.artwork = [];
-      user.savedArtwork = [];
-      user.purchases = [];
-      user.sales = [];
-      user.country = null;
-      user.stripeId = null;
-      user.active = true;
-      await user.save({ session });
+      await createNewUser({ email, username, password, token });
       await mailer.sendEmail(
         config.app,
         email,
@@ -73,12 +58,7 @@ const postLogIn = async (req, res, next) => {
   session.startTransaction();
   try {
     const { username, password } = req.body;
-    const foundUser = await User.findOne({
-      $and: [
-        { $or: [{ email: username }, { name: username }] },
-        { active: true },
-      ],
-    }).session(session);
+    const foundUser = await fetchUserByCreds({ username });
     if (!foundUser) {
       throw createError(
         400,
@@ -139,26 +119,21 @@ const postLogIn = async (req, res, next) => {
 
 const postLogOut = async (req, res) => {
   try {
-    auth.sendRefreshToken(res, '');
-    res.json({
-      accessToken: '',
-      user: '',
-    });
+    await logUserOut(res);
   } catch (err) {
     next(err, res);
   }
 };
 
 const postRefreshToken = async (req, res, next) => {
-  const data = await auth.updateAccessToken(req, res, next);
-
+  const data = await refreshAccessToken(req, res, next);
   return res.json(data);
 };
 
 const postRevokeToken = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    await User.findOneAndUpdate({ _id: userId }, { $inc: { jwtVersion: 1 } });
+    await revokeAccessToken({ userId });
     res.status(200);
   } catch (err) {
     next(err, res);
@@ -171,18 +146,9 @@ const verifyRegisterToken = async (req, res, next) => {
   session.startTransaction();
   try {
     const { tokenId } = req.params;
-    const foundUser = await User.findOne({
-      verificationToken: tokenId,
-    }).session(session);
-    if (foundUser) {
-      foundUser.verificationToken = null;
-      foundUser.verified = true;
-      await foundUser.save({ session });
-      await session.commitTransaction();
-      res.status(200).json({ message: 'Token successfully verified' });
-    } else {
-      throw createError(400, 'Verification token could not be found');
-    }
+    await updateUserVerification({ tokenId });
+    await session.commitTransaction();
+    res.status(200).json({ message: 'Token successfully verified' });
   } catch (err) {
     console.log(err);
     await session.abortTransaction();
@@ -199,7 +165,7 @@ const forgotPassword = async (req, res, next) => {
     const { email } = req.body;
     crypto.randomBytes(20, async function (err, buf) {
       const token = buf.toString('hex');
-      const foundUser = await User.findOne({ email: email }).session(session);
+      const foundUser = await fetchUserByEmail({ email });
       if (!foundUser) {
         throw createError(400, 'No account with that email address exists');
       } else {
@@ -234,10 +200,7 @@ const resetPassword = async (req, res) => {
   try {
     const { tokenId } = req.params;
     const { password, confirm } = req.body;
-    const foundUser = await User.findOne({
-      resetToken: tokenId,
-      resetExpiry: { $gt: Date.now() },
-    }).session(session);
+    const foundUser = await fetchUserByToken({ tokenId });
     if (!foundUser) {
       throw createError(400, 'Token is invalid or has expired');
     } else if (password !== confirm) {
@@ -248,7 +211,6 @@ const resetPassword = async (req, res) => {
       foundUser.password = password;
       foundUser.resetToken = null;
       foundUser.resetExpiry = null;
-
       await foundUser.save(function (err) {
         req.logIn(foundUser, function (err) {
           callback(err, foundUser);

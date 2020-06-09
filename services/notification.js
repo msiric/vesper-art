@@ -2,15 +2,26 @@ import mongoose from 'mongoose';
 import Notification from '../models/notification.js';
 import createError from 'http-errors';
 
-export const getNotifications = async ({ userId }) => {
-  return await Notification.find({
-    receivers: { $elemMatch: { user: userId } },
-  })
-    .populate('user')
-    .sort({ created: -1 });
+export const createNewNotification = async ({
+  notificationLink,
+  notificationType,
+  notificationReceiver,
+}) => {
+  const newNotification = new Notification();
+  newNotification.link = notificationLink;
+  newNotification.type = notificationType;
+  newNotification.receiver = notificationReceiver;
+  newNotification.read = false;
+  return await newNotification.save({ session });
 };
 
-export const readNotification = async ({ userId, notificationId }) => {
+export const fetchExistingNotifications = async ({ userId }) => {
+  return await Notification.find({
+    receiver: userId,
+  }).sort({ created: -1 });
+};
+
+export const updateReadNotification = async ({ userId, notificationId }) => {
   return await Notification.updateOne(
     {
       $and: [
@@ -24,7 +35,7 @@ export const readNotification = async ({ userId, notificationId }) => {
   ).session(session);
 };
 
-export const unreadNotification = async ({ userId, notificationId }) => {
+export const updateUnreadNotification = async ({ userId, notificationId }) => {
   return await Notification.updateOne(
     {
       $and: [

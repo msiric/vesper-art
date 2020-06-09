@@ -9,8 +9,8 @@ import { server } from '../config/secret.js';
 import config from '../config/mailer.js';
 import createError from 'http-errors';
 
-export const postSignUp = async ({ email, username, password, token }) => {
-  const user = new User();
+export const createNewUser = async ({ email, username, password, token }) => {
+  const newUser = new User();
   user.name = username;
   user.email = email;
   user.photo = user.gravatar();
@@ -32,19 +32,10 @@ export const postSignUp = async ({ email, username, password, token }) => {
   user.country = null;
   user.stripeId = null;
   user.active = true;
-  return await user.save({ session });
+  return await newUser.save({ session });
 };
 
-export const postLogIn = async ({ username }) => {
-  return await User.findOne({
-    $and: [
-      { $or: [{ email: username }, { name: username }] },
-      { active: true },
-    ],
-  }).session(session);
-};
-
-export const postLogOut = (res) => {
+export const logUserOut = (res) => {
   auth.sendRefreshToken(res, '');
   res.json({
     accessToken: '',
@@ -52,16 +43,24 @@ export const postLogOut = (res) => {
   });
 };
 
-export const postRefreshToken = async (req, res, next) => {
-  const data = await auth.updateAccessToken(req, res, next);
-  return data;
+export const refreshAccessToken = async (req, res, next) => {
+  return await auth.updateAccessToken(req, res, next);
 };
 
-const postRevokeToken = async ({ userId }) => {
+export const revokeAccessToken = async ({ userId }) => {
   return await User.findOneAndUpdate(
     { _id: userId },
     { $inc: { jwtVersion: 1 } }
   );
+};
+
+export const updateUserVerification = async ({ tokenId }) => {
+  return await User.updateOne(
+    {
+      verificationToken: tokenId,
+    },
+    { verificationToken: null, verified: true }
+  ).session(session);
 };
 
 // needs transaction (not tested)
@@ -153,15 +152,4 @@ const resetPassword = async (req, res) => {
   } finally {
     session.endSession();
   }
-};
-
-export default {
-  postSignUp,
-  postLogIn,
-  postLogOut,
-  postRefreshToken,
-  postRevokeToken,
-  verifyRegisterToken,
-  forgotPassword,
-  resetPassword,
 };

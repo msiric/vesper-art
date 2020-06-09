@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import User from '../models/user.js';
 import Version from '../models/version.js';
 import createError from 'http-errors';
+import { getArtworkResults, getUserResults } from '../services/search.js';
 
 const getResults = async (req, res, next) => {
   try {
@@ -12,16 +13,10 @@ const getResults = async (req, res, next) => {
     let foundResults = [];
     let foundType = null;
     if (type === 'artwork') {
-      foundResults = await Version.fuzzySearch(query, undefined, {
-        skip,
-        limit,
-      }).deepPopulate('artwork.owner');
+      foundResults = await getArtworkResults({ query, skip, limit });
       foundType = 'artwork';
     } else if (type === 'users') {
-      foundResults = await User.fuzzySearch(query, undefined, {
-        skip,
-        limit,
-      });
+      foundResults = await getUserResults({ query, skip, limit });
       foundType = 'users';
     }
     return res.json({

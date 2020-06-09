@@ -7,24 +7,39 @@ import auth from '../utils/auth.js';
 import createError from 'http-errors';
 import socketApi from '../realtime/io.js';
 
-export const postComment = async ({ artworkId, commentContent }) => {
+export const createNewComment = async ({
+  artworkId,
+  userId,
+  commentContent,
+}) => {
   const comment = new Comment();
-  comment.artwork = foundArtwork._id;
-  comment.owner = res.locals.user.id;
+  comment.artwork = artworkId;
+  comment.owner = userId;
   comment.content = commentContent;
   comment.modified = false;
   return await comment.save({ session });
 };
 
-export const patchComment = async ({ commentId, commentContent }) => {
+export const updateExistingComment = async ({
+  commentId,
+  artworkId,
+  userId,
+  commentContent,
+}) => {
   return await Comment.updateOne(
-    { $and: [{ _id: commentId }, { owner: res.locals.user.id }] },
+    {
+      $and: [{ _id: commentId }, { artwork: artworkId }, { owner: userId }],
+    },
     { content: commentContent, modified: true }
   );
 };
 
-export const deleteComment = async ({ commentId }) => {
+export const deleteExistingComment = async ({
+  commentId,
+  artworkId,
+  userId,
+}) => {
   return await Comment.deleteOne({
-    _id: commentId,
+    $and: [{ _id: commentId }, { artwork: artworkId }, { owner: userId }],
   }).session(session);
 };

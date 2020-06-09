@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import aws from 'aws-sdk';
 import User from '../models/user.js';
+import { fetchUserById } from '../services/user.js';
 import createError from 'http-errors';
 
 // needs transaction (done)
@@ -8,9 +9,7 @@ const postProfileImage = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const foundUser = await User.findOne({ _id: res.locals.user.id }).session(
-      session
-    );
+    const foundUser = await fetchUserById({ userId: res.locals.user.id });
     if (foundUser) {
       const folderName = 'profilePhotos/';
       const fileName = foundUser.photo.split('/').slice(-1)[0];
