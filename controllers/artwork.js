@@ -19,7 +19,9 @@ import {
   fetchUserArtworks,
   fetchUserArtwork,
   fetchArtworkLicenses,
+  postNewArtwork,
 } from '../services/artwork.js';
+import { fetchUser } from '../services/user.js';
 import postArtworkValidator from '../utils/validation/postArtworkValidator.js';
 import putArtworkValidator from '../utils/validation/putArtworkValidator.js';
 
@@ -109,73 +111,6 @@ const getUserArtwork = async (req, res, next) => {
   }
 };
 
-const postNewArtwork = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { error, value } = postArtworkValidator(sanitize(req.body));
-    if (error) throw createError(400, error);
-    if (value.artworkPersonal || value.artworkCommercial) {
-      const foundUser = await User.findOne({
-        $and: [{ _id: res.locals.user.id }, { active: true }],
-      });
-      if (!foundUser) throw createError(400, 'User not found');
-      if (!foundUser.stripeId)
-        throw createError(
-          400,
-          'Please complete the Stripe onboarding process before making your artwork commercially available'
-        );
-      const foundAccount = await stripe.accounts.retrieve(foundUser.stripeId);
-      if (
-        (value.artworkPersonal || value.artworkCommercial) &&
-        (foundAccount.capabilities.card_payments !== 'active' ||
-          foundAccount.capabilities.platform_payments !== 'active')
-      ) {
-        throw createError(
-          400,
-          'Please complete your Stripe account before making your artwork commercially available'
-        );
-      }
-    }
-    const newVersion = new Version();
-    newVersion.cover = value.artworkCover || '';
-    newVersion.media = value.artworkMedia || '';
-    newVersion.title = value.artworkTitle || '';
-    newVersion.type = value.artworkType || '';
-    newVersion.availability = value.artworkAvailability || '';
-    newVersion.license = value.artworkLicense || '';
-    newVersion.use = value.artworkUse || '';
-    newVersion.personal = currency(value.artworkPersonal).intValue || 0;
-    newVersion.commercial =
-      currency(value.artworkCommercial).add(value.artworkPersonal).intValue ||
-      currency(value.artworkPersonal).intValue;
-    newVersion.category = value.artworkCategory || '';
-    newVersion.description = value.artworkDescription || '';
-    const savedVersion = await newVersion.save({ session });
-    const newArtwork = new Artwork();
-    newArtwork.owner = res.locals.user.id;
-    newArtwork.active = true;
-    newArtwork.comments = [];
-    newArtwork.current = savedVersion._id;
-    newArtwork.saves = 0;
-    const savedArtwork = await newArtwork.save({ session });
-    savedVersion.artwork = savedArtwork._id;
-    await savedVersion.save({ session });
-    await User.updateOne(
-      { _id: res.locals.user.id },
-      { $push: { artwork: newArtwork._id } }
-    ).session(session);
-    await session.commitTransaction();
-    return res.status(200).json('/my_artwork');
-  } catch (err) {
-    console.log(err);
-    await session.abortTransaction();
-    next(err, res);
-  } finally {
-    session.endSession();
-  }
-};
-
 const editArtwork = async (req, res, next) => {
   try {
     const { artworkId } = req.params;
@@ -205,6 +140,51 @@ const getLicenses = async (req, res, next) => {
   }
 };
 
+const postNewArtwork = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const { error, value } = postArtworkValidator(sanitize(req.body));
+    if (error) throw createError(400, error);
+    if (value.artworkPersonal || value.artworkCommercial) {
+      const foundUser = await fetchUser({ userId: res.locals.user.id });
+      if (!foundUser) throw createError(400, 'User not found');
+      if (!foundUser.stripeId)
+        throw createError(
+          400,
+          'Please complete the Stripe onboarding process before making your artwork commercially available'
+        );
+      const foundAccount = await stripe.accounts.retrieve(foundUser.stripeId);
+      if (
+        (value.artworkPersonal || value.artworkCommercial) &&
+        (foundAccount.capabilities.card_payments !== 'active' ||
+          foundAccount.capabilities.platform_payments !== 'active')
+      ) {
+        throw createError(
+          400,
+          'Please complete your Stripe account before making your artwork commercially available'
+        );
+      }
+    }
+    const savedVersion = await postNewArtwork({
+      artworkData: value,
+      userId: res.locals.user.id,
+    });
+    await User.updateOne(
+      { _id: res.locals.user.id },
+      { $push: { artwork: savedVersion.artwork } }
+    ).session(session);
+    await session.commitTransaction();
+    return res.status(200).json('/my_artwork');
+  } catch (err) {
+    console.log(err);
+    await session.abortTransaction();
+    next(err, res);
+  } finally {
+    session.endSession();
+  }
+};
+
 // needs transaction (done)
 // does it work in all cases?
 // needs testing
@@ -213,23 +193,15 @@ const updateArtwork = async (req, res, next) => {
   session.startTransaction();
   try {
     const { artworkId } = req.params;
-    const foundArtwork = await Artwork.findOne({
-      $and: [
-        { _id: artworkId },
-        { owner: res.locals.user.id },
-        { active: true },
-      ],
-    })
-      .populate('current')
-      .populate('versions')
-      .session(session);
+    const foundArtwork = await fetchUserArtwork({
+      artworkId,
+      userId: res.locals.user.id,
+    });
     const { error, value } = putArtworkValidator(sanitize(req.body));
     if (error) throw createError(400, error);
     if (foundArtwork) {
       if (value.artworkPersonal || value.artworkCommercial) {
-        const foundUser = await User.findOne({
-          $and: [{ _id: res.locals.user.id }, { active: true }],
-        });
+        const foundUser = await fetchUser({ userId: res.locals.user.id });
         if (!foundUser) throw createError(400, 'User not found');
         if (!foundUser.stripeId)
           throw createError(
@@ -248,21 +220,7 @@ const updateArtwork = async (req, res, next) => {
           );
         }
       }
-      const newVersion = new Version();
-      newVersion.cover = value.artworkCover || '';
-      newVersion.media = value.artworkMedia || '';
-      newVersion.title = value.artworkTitle || '';
-      newVersion.type = value.artworkType || '';
-      newVersion.availability = value.artworkAvailability || '';
-      newVersion.license = value.artworkLicense || '';
-      newVersion.use = value.artworkUse || '';
-      newVersion.personal = currency(value.artworkPersonal).intValue || 0;
-      newVersion.commercial =
-        currency(value.artworkCommercial).add(value.artworkPersonal).intValue ||
-        currency(value.artworkPersonal).intValue;
-      newVersion.category = value.artworkCategory || '';
-      newVersion.description = value.artworkDescription || '';
-      const savedVersion = await newVersion.save({ session });
+      const savedVersion = await patchExistingArtwork({ artworkData: value });
       const foundOrder = await Order.find({
         details: { $elemMatch: { artwork: foundArtwork._id } },
         details: { $elemMatch: { version: foundArtwork.current._id } },

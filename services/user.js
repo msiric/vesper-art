@@ -15,6 +15,12 @@ import Stripe from 'stripe';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
+export const fetchUser = async ({ userId }) => {
+  await User.findOne({
+    $and: [{ _id: userId }, { active: true }],
+  });
+};
+
 export const getUserProfile = async ({ username, cursor, ceiling }) => {
   const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
   const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
@@ -126,12 +132,6 @@ export const updateUserProfile = async ({
     },
     { photo: userPhoto, description: userDescription, country: userCountry }
   );
-};
-
-export const getUserSettings = async ({ userId }) => {
-  await await User.findOne({
-    $and: [{ _id: userId }, { active: true }],
-  });
 };
 
 export const getUserNotifications = async ({ userId, cursor, ceiling }) => {

@@ -8,10 +8,7 @@ import Comment from '../models/comment.js';
 import Order from '../models/order.js';
 import crypto from 'crypto';
 import createError from 'http-errors';
-import { sanitize } from '../utils/helpers.js';
 import currency from 'currency.js';
-import postArtworkValidator from '../utils/validation/postArtworkValidator.js';
-import putArtworkValidator from '../utils/validation/putArtworkValidator.js';
 import Stripe from 'stripe';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
@@ -119,7 +116,9 @@ export const fetchUserArtworks = async ({ userId, skip, limit }) => {
 export const fetchUserArtwork = async ({ artworkId, userId }) => {
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { owner: userId }, { active: true }],
-  }).populate('current');
+  })
+    .populate('current')
+    .populate('versions');
 };
 
 export const fetchArtworkLicenses = async ({ artworkId, userId }) => {
@@ -129,216 +128,51 @@ export const fetchArtworkLicenses = async ({ artworkId, userId }) => {
 };
 
 // needs transaction (done)
-const postNewArtwork = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { error, value } = postArtworkValidator(sanitize(req.body));
-    if (error) throw createError(400, error);
-    if (value.artworkPersonal || value.artworkCommercial) {
-      const foundUser = await User.findOne({
-        $and: [{ _id: res.locals.user.id }, { active: true }],
-      });
-      if (!foundUser) throw createError(400, 'User not found');
-      if (!foundUser.stripeId)
-        throw createError(
-          400,
-          'Please complete the Stripe onboarding process before making your artwork commercially available'
-        );
-      const foundAccount = await stripe.accounts.retrieve(foundUser.stripeId);
-      if (
-        (value.artworkPersonal || value.artworkCommercial) &&
-        (foundAccount.capabilities.card_payments !== 'active' ||
-          foundAccount.capabilities.platform_payments !== 'active')
-      ) {
-        throw createError(
-          400,
-          'Please complete your Stripe account before making your artwork commercially available'
-        );
-      }
-    }
-    const newVersion = new Version();
-    newVersion.cover = value.artworkCover || '';
-    newVersion.media = value.artworkMedia || '';
-    newVersion.title = value.artworkTitle || '';
-    newVersion.type = value.artworkType || '';
-    newVersion.availability = value.artworkAvailability || '';
-    newVersion.license = value.artworkLicense || '';
-    newVersion.use = value.artworkUse || '';
-    newVersion.personal = currency(value.artworkPersonal).intValue || 0;
-    newVersion.commercial =
-      currency(value.artworkCommercial).add(value.artworkPersonal).intValue ||
-      currency(value.artworkPersonal).intValue;
-    newVersion.category = value.artworkCategory || '';
-    newVersion.description = value.artworkDescription || '';
-    const savedVersion = await newVersion.save({ session });
-    const newArtwork = new Artwork();
-    newArtwork.owner = res.locals.user.id;
-    newArtwork.active = true;
-    newArtwork.comments = [];
-    newArtwork.current = savedVersion._id;
-    newArtwork.saves = 0;
-    const savedArtwork = await newArtwork.save({ session });
-    savedVersion.artwork = savedArtwork._id;
-    await savedVersion.save({ session });
-    await User.updateOne(
-      { _id: res.locals.user.id },
-      { $push: { artwork: newArtwork._id } }
-    ).session(session);
-    await session.commitTransaction();
-    return res.status(200).json('/my_artwork');
-  } catch (err) {
-    console.log(err);
-    await session.abortTransaction();
-    next(err, res);
-  } finally {
-    session.endSession();
-  }
+export const postNewArtwork = async ({ artworkData, userId }) => {
+  const newVersion = new Version();
+  newVersion.cover = artworkData.artworkCover || '';
+  newVersion.media = artworkData.artworkMedia || '';
+  newVersion.title = artworkData.artworkTitle || '';
+  newVersion.type = artworkData.artworkType || '';
+  newVersion.availability = artworkData.artworkAvailability || '';
+  newVersion.license = artworkData.artworkLicense || '';
+  newVersion.use = artworkData.artworkUse || '';
+  newVersion.personal = currency(artworkData.artworkPersonal).intValue || 0;
+  newVersion.commercial =
+    currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
+      .intValue || currency(artworkData.artworkPersonal).intValue;
+  newVersion.category = artworkData.artworkCategory || '';
+  newVersion.description = artworkData.artworkDescription || '';
+  const savedVersion = await newVersion.save({ session });
+  const newArtwork = new Artwork();
+  newArtwork.owner = userId;
+  newArtwork.active = true;
+  newArtwork.comments = [];
+  newArtwork.current = savedVersion._id;
+  newArtwork.saves = 0;
+  const savedArtwork = await newArtwork.save({ session });
+  savedVersion.artwork = savedArtwork._id;
+  return await savedVersion.save({ session });
 };
 
 // needs transaction (done)
 // needs testing
-const updateArtwork = async ({ artworkId }) => {
-  if (value.artworkPersonal || value.artworkCommercial) {
-    const foundUser = await User.findOne({
-      $and: [{ _id: res.locals.user.id }, { active: true }],
-    });
-    if (!foundUser) throw createError(400, 'User not found');
-    if (!foundUser.stripeId)
-      throw createError(
-        400,
-        'Please complete the Stripe onboarding process before making your artwork commercially available'
-      );
-    const foundAccount = await stripe.accounts.retrieve(foundUser.stripeId);
-    if (
-      (value.artworkPersonal || value.artworkCommercial) &&
-      (foundAccount.capabilities.card_payments !== 'active' ||
-        foundAccount.capabilities.platform_payments !== 'active')
-    ) {
-      throw createError(
-        400,
-        'Please complete your Stripe account before making your artwork commercially available'
-      );
-    }
-  }
+export const patchExistingArtwork = async ({ artworkData }) => {
   const newVersion = new Version();
-  newVersion.cover = value.artworkCover || '';
-  newVersion.media = value.artworkMedia || '';
-  newVersion.title = value.artworkTitle || '';
-  newVersion.type = value.artworkType || '';
-  newVersion.availability = value.artworkAvailability || '';
-  newVersion.license = value.artworkLicense || '';
-  newVersion.use = value.artworkUse || '';
-  newVersion.personal = currency(value.artworkPersonal).intValue || 0;
+  newVersion.cover = artworkData.artworkCover || '';
+  newVersion.media = artworkData.artworkMedia || '';
+  newVersion.title = artworkData.artworkTitle || '';
+  newVersion.type = artworkData.artworkType || '';
+  newVersion.availability = artworkData.artworkAvailability || '';
+  newVersion.license = artworkData.artworkLicense || '';
+  newVersion.use = artworkData.artworkUse || '';
+  newVersion.personal = currency(artworkData.artworkPersonal).intValue || 0;
   newVersion.commercial =
-    currency(value.artworkCommercial).add(value.artworkPersonal).intValue ||
-    currency(value.artworkPersonal).intValue;
-  newVersion.category = value.artworkCategory || '';
-  newVersion.description = value.artworkDescription || '';
-  const savedVersion = await newVersion.save({ session });
-  const foundOrder = await Order.find({
-    details: { $elemMatch: { artwork: foundArtwork._id } },
-    details: { $elemMatch: { version: foundArtwork.current._id } },
-  })
-    .deepPopulate('details.artwork details.version')
-    .session(session);
-  if (!(foundOrder && foundOrder.length)) {
-    if (!foundArtwork.versions.length) {
-      if (foundArtwork.current.media != savedVersion.media) {
-        const coverLink = foundArtwork.current.cover;
-        const coverFolderName = 'artworkCovers/';
-        const coverFileName = coverLink.split('/').slice(-1)[0];
-        const coverFilePath = coverFolderName + coverFileName;
-        const coverS3 = new aws.S3();
-        const coverParams = {
-          Bucket: 'vesper-testing',
-          Key: coverFilePath,
-        };
-
-        await coverS3.deleteObject(coverParams).promise();
-
-        const mediaLink = foundArtwork.current.media;
-        const mediaFolderName = 'artworkMedia/';
-        const mediaFileName = mediaLink.split('/').slice(-1)[0];
-        const mediaFilePath = mediaFolderName + mediaFileName;
-        const mediaS3 = new aws.S3();
-        const mediaParams = {
-          Bucket: 'vesper-testing',
-          Key: mediaFilePath,
-        };
-
-        await mediaS3.deleteObject(mediaParams).promise();
-
-        await Version.remove({
-          _id: foundArtwork.current._id,
-        }).session(session);
-        foundArtwork.current = savedVersion._id;
-      } else {
-        await Version.remove({
-          _id: foundArtwork.current._id,
-        }).session(session);
-        foundArtwork.current = savedVersion._id;
-      }
-    } else {
-      let usedContent = false;
-      foundArtwork.versions.map(function (version) {
-        if (
-          version.media == foundArtwork.current.media &&
-          version.cover == foundArtwork.current.cover
-        ) {
-          usedContent = true;
-        }
-      });
-      if (usedContent) {
-        await Version.remove({
-          _id: foundArtwork.current._id,
-        }).session(session);
-        foundArtwork.current = savedVersion._id;
-      } else {
-        if (foundArtwork.current.media != savedVersion.media) {
-          const coverLink = foundArtwork.current.cover;
-          const coverFolderName = 'artworkCovers/';
-          const coverFileName = coverLink.split('/').slice(-1)[0];
-          const coverFilePath = coverFolderName + coverFileName;
-          const coverS3 = new aws.S3();
-          const coverParams = {
-            Bucket: 'vesper-testing',
-            Key: coverFilePath,
-          };
-
-          await coverS3.deleteObject(coverParams).promise();
-
-          const mediaLink = foundArtwork.current.media;
-          const mediaFolderName = 'artworkMedia/';
-          const mediaFileName = mediaLink.split('/').slice(-1)[0];
-          const mediaFilePath = mediaFolderName + mediaFileName;
-          const mediaS3 = new aws.S3();
-          const mediaParams = {
-            Bucket: 'vesper-testing',
-            Key: mediaFilePath,
-          };
-
-          await mediaS3.deleteObject(mediaParams).promise();
-
-          await Version.remove({
-            _id: foundArtwork.current._id,
-          }).session(session);
-          foundArtwork.current = savedVersion._id;
-        } else {
-          await Version.remove({
-            _id: foundArtwork.current._id,
-          }).session(session);
-          foundArtwork.current = savedVersion._id;
-        }
-      }
-    }
-  } else {
-    foundArtwork.versions.push(foundArtwork.current._id);
-    foundArtwork.current = savedVersion._id;
-  }
-  await foundArtwork.save({ session });
-  await session.commitTransaction();
-  return res.status(200).json('/my_artwork');
+    currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
+      .intValue || currency(artworkData.artworkPersonal).intValue;
+  newVersion.category = artworkData.artworkCategory || '';
+  newVersion.description = artworkData.artworkDescription || '';
+  return await newVersion.save({ session });
 };
 
 // needs transaction (done)
@@ -496,7 +330,7 @@ const deleteArtwork = async (req, res, next) => {
 };
 
 // needs transaction (done)
-export const saveArtwork = async ({ artworkId }) => {
+export const postArtworkSave = async ({ artworkId }) => {
   return await Artwork.updateOne(
     {
       $and: [{ _id: artworkId }, { active: true }],
@@ -505,7 +339,7 @@ export const saveArtwork = async ({ artworkId }) => {
   ).session(session);
 };
 
-export const unsaveArtwork = async ({ artworkId }) => {
+export const postArtworkUnsave = async ({ artworkId }) => {
   return await Artwork.updateOne(
     {
       $and: [{ _id: artworkId }, { active: true }],
@@ -515,7 +349,7 @@ export const unsaveArtwork = async ({ artworkId }) => {
 };
 
 // needs transaction (done)
-export const saveLicenses = async ({ artworkData, licensesData }) => {
+export const postLicensesSave = async ({ artworkData, licensesData }) => {
   const licenseSet = licensesData.map((license) => {
     const newLicense = new License();
     newLicense.owner = res.locals.user.id;
@@ -529,7 +363,7 @@ export const saveLicenses = async ({ artworkData, licensesData }) => {
         : artworkData.current.personal;
     return newLicense;
   });
-  await License.insertMany(licenseSet, { session });
+  return await License.insertMany(licenseSet, { session });
 };
 
 // needs transaction (done)
