@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import {
   fetchExistingNotifications,
-  updateReadNotification,
-  updateUnreadNotification,
+  editReadNotification,
+  editUnreadNotification,
 } from '../services/notification.js';
 
 const getNotifications = async (req, res, next) => {
@@ -19,7 +19,7 @@ const getNotifications = async (req, res, next) => {
 const readNotification = async (req, res, next) => {
   try {
     const { notificationId } = req.params;
-    await updateReadNotification({
+    await editReadNotification({
       userId: res.locals.user.id,
       notificationId,
     });
@@ -33,7 +33,7 @@ const readNotification = async (req, res, next) => {
 const unreadNotification = async (req, res, next) => {
   try {
     const { notificationId } = req.params;
-    await updateUnreadNotification({
+    await editUnreadNotification({
       userId: res.locals.user.id,
       notificationId,
     });

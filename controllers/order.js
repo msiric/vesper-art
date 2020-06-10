@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import { fetchOrderDetails } from '../services/order.js';
 import { fetchUserSales, fetchUserPurchases } from '../services/user.js';
 import createError from 'http-errors';
-import crypto from 'crypto';
 
 const getOrderDetails = async (req, res, next) => {
   try {

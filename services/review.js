@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Review from '../models/review.js';
 
-export const postNewReview = async ({
+export const addNewReview = async ({
   orderData,
   reviewRating,
   reviewContent,

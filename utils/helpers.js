@@ -31,12 +31,9 @@ export const requestHandler = (promise, params) => async (req, res, next) => {
 };
 
 export const isAuthenticated = async (req, res, next) => {
-  const authentication = req.headers['authorization'];
-  if (!authentication) {
-    throw createError(403, 'Forbidden');
-  }
-
   try {
+    const authentication = req.headers['authorization'];
+    if (!authentication) throw createError(403, 'Forbidden');
     const token = authentication.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
       ignoreExpiration: true,
@@ -55,9 +52,7 @@ export const isAuthenticated = async (req, res, next) => {
 
 export const isNotAuthenticated = async (req, res, next) => {
   const authentication = req.headers['authorization'];
-  if (authentication) {
-    return console.log('REDIRECT');
-  }
+  if (authentication) return console.log('REDIRECT');
 
   return next();
 };

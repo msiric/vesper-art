@@ -3,15 +3,15 @@ import createError from 'http-errors';
 import {
   fetchArtworkById,
   addArtworkComment,
-  deleteArtworkComment,
+  removeArtworkComment,
 } from '../services/artwork.js';
-import { fetchUserById, addUserNotification } from '../services/user.js';
 import {
-  createNewComment,
-  updateExistingComment,
-  deleteExistingComment,
+  addNewComment,
+  editExistingComment,
+  removeExistingComment,
 } from '../services/comment.js';
-import { createNewNotification } from '../services/notification.js';
+import { addUserNotification } from '../services/user.js';
+import { addNewNotification } from '../services/notification.js';
 import socketApi from '../realtime/io.js';
 
 const postComment = async (req, res, next) => {
@@ -25,7 +25,7 @@ const postComment = async (req, res, next) => {
     if (!foundArtwork) {
       throw createError(400, 'Artwork not found');
     } else {
-      const savedComment = await createNewComment({
+      const savedComment = await addNewComment({
         artworkId,
         userId,
         commentContent,
@@ -38,7 +38,7 @@ const postComment = async (req, res, next) => {
       });
       await addUserNotification({ userId: updatedArtwork.owner, session });
       if (!savedComment.owner.equals(updatedArtwork.owner)) {
-        await createNewNotification({
+        await addNewNotification({
           notificationLink: foundArtwork._id,
           notificationType: 'Comment',
           notificationReceiver: updatedArtwork.owner,
@@ -71,7 +71,7 @@ const patchComment = async (req, res, next) => {
   try {
     const { artworkId, commentId } = req.params;
     const { commentContent } = req.body;
-    await updateExistingComment({
+    await editExistingComment({
       commentId,
       artworkId,
       userId: res.locals.user.id,
@@ -91,8 +91,8 @@ const deleteComment = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    await deleteArtworkComment({ artworkId, commentId, session });
-    await deleteExistingComment({
+    await removeArtworkComment({ artworkId, commentId, session });
+    await removeExistingComment({
       commentId,
       artworkId,
       userId: res.locals.user.id,

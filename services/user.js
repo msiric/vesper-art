@@ -86,7 +86,7 @@ export const fetchUserProfile = async ({
   );
 };
 
-export const getUserArtwork = async ({
+export const fetchUserArtwork = async ({
   userId,
   cursor,
   ceiling,
@@ -141,7 +141,7 @@ export const fetchUserStatistics = async ({ userId, session = null }) => {
   );
 };
 
-export const updateUserProfile = async ({
+export const editUserProfile = async ({
   userId,
   userPhoto,
   userDescription,
@@ -170,7 +170,7 @@ export const fetchUserNotifications = async ({
     .sort({ created: -1 });
 };
 
-export const updateUserEmail = async ({
+export const editUserEmail = async ({
   userId,
   email,
   token,
@@ -184,7 +184,7 @@ export const updateUserEmail = async ({
   ).session(session);
 };
 
-export const updateUserPassword = async ({
+export const editUserPassword = async ({
   userId,
   password,
   session = null,
@@ -194,7 +194,7 @@ export const updateUserPassword = async ({
   );
 };
 
-export const updateUserPreferences = async ({
+export const editUserPreferences = async ({
   userId,
   displaySaves,
   session = null,
@@ -226,7 +226,7 @@ export const addUserNotification = async ({ userId, session = null }) => {
   ).session(session);
 };
 
-export const updateUserRating = async ({
+export const editUserRating = async ({
   userId,
   userRating,
   session = null,

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Comment from '../models/comment.js';
 
-export const createNewComment = async ({
+export const addNewComment = async ({
   artworkId,
   userId,
   commentContent,
@@ -15,7 +15,7 @@ export const createNewComment = async ({
   return await comment.save({ session });
 };
 
-export const updateExistingComment = async ({
+export const editExistingComment = async ({
   commentId,
   artworkId,
   userId,
@@ -30,7 +30,7 @@ export const updateExistingComment = async ({
   );
 };
 
-export const deleteExistingComment = async ({
+export const removeExistingComment = async ({
   commentId,
   artworkId,
   userId,

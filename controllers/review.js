@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 import createError from 'http-errors';
 import socketApi from '../realtime/io.js';
-import { fetchUserOrder, createOrderReview } from '../services/order.js';
-import { updateUserRating } from '../services/user.js';
-import { createArtworkReview } from '../services/artwork.js';
-import { createNewNotification } from '../services/notification.js';
+import { fetchUserOrder, addOrderReview } from '../services/order.js';
+import { addArtworkReview } from '../services/artwork.js';
+import { addNewNotification } from '../services/notification.js';
+import { editUserRating } from '../services/user.js';
 
 // needs transaction (done)
 const postReview = async (req, res, next) => {
@@ -34,24 +34,24 @@ const postReview = async (req, res, next) => {
               (newReview.rating - foundOrder.buyer.rating) /
               (foundOrder.buyer.reviews + 1)
             ).toFixed(2);
-          await updateUserRating({
+          await editUserRating({
             userId: foundOrder.seller._id,
             userRating: newRating,
             session,
           });
-          await createOrderReview({
+          await addOrderReview({
             orderId,
             userId: res.locals.user.id,
             reviewId: savedReview._id,
             session,
           });
-          await createArtworkReview({
+          await addArtworkReview({
             artworkId: foundOrder.artwork._id,
             reviewId: savedReview._id,
             session,
           });
           // new start
-          await createNewNotification({
+          await addNewNotification({
             notificationLink: foundOrder._id,
             notificationType: 'Review',
             notificationReceiver: foundOrder.seller,

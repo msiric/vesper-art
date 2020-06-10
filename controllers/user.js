@@ -2,15 +2,25 @@ import mongoose from 'mongoose';
 import Artwork from '../models/artwork.js';
 import Order from '../models/order.js';
 import Version from '../models/version.js';
-import Notification from '../models/notification.js';
 import aws from 'aws-sdk';
 import User from '../models/user.js';
 import randomString from 'randomstring';
 import mailer from '../utils/email.js';
 import config from '../config/mailer.js';
 import { server } from '../config/secret.js';
-import { fetchUserProfile, fetchUserById } from '../services/user.js';
 import { fetchUserArtworks } from '../services/artwork.js';
+import { fetchOrdersBySeller, fetchOrdersByBuyer } from '../services/order.js';
+import {
+  fetchUserById,
+  fetchUserByEmail,
+  fetchUserProfile,
+  fetchUserSaves,
+  fetchUserStatistics,
+  fetchUserNotifications,
+  editUserEmail,
+  editUserPassword,
+  editUserPreferences,
+} from '../services/user.js';
 import auth from '../utils/auth.js';
 import createError from 'http-errors';
 import Stripe from 'stripe';
@@ -131,7 +141,7 @@ const updateUserProfile = async (req, res, next) => {
 const getUserSettings = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const foundUser = fetchUserById({ userId });
+    const foundUser = await fetchUserById({ userId });
     if (foundUser) {
       return res.json({ user: foundUser });
     } else {
@@ -159,7 +169,6 @@ const getUserNotifications = async (req, res, next) => {
   }
 };
 
-// needs transaction (done)
 const updateUserEmail = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -172,7 +181,7 @@ const updateUserEmail = async (req, res, next) => {
     } else {
       const token = randomString.generate();
       const link = `${server.clientDomain}/verify_token/${token}`;
-      await updateUserEmail({ userId, email, token, session });
+      await editUserEmail({ userId, email, token, session });
       await mailer.sendEmail(
         config.app,
         email,
@@ -186,6 +195,7 @@ const updateUserEmail = async (req, res, next) => {
       return res.status(200).json({ message: 'Email successfully updated' });
     }
   } catch (err) {
+    console.log(err);
     await session.abortTransaction();
     next(err, res);
   } finally {
@@ -198,7 +208,7 @@ const updateUserPassword = async (req, res, next) => {
   try {
     const { current, password, confirmPassword } = req.body;
     const { userId } = req.params;
-    await updateUserPassword({ userId, password });
+    await editUserPassword({ userId, password });
     return res.status(200).json({ message: 'Password updated successfully' });
   } catch (err) {
     next(err, res);
@@ -210,7 +220,7 @@ const updateUserPreferences = async (req, res, next) => {
   try {
     const { displaySaves } = req.body;
     const { userId } = req.params;
-    await updateUserPreferences({ userId, displaySaves });
+    await editUserPreferences({ userId, displaySaves });
     return res
       .status(200)
       .json({ message: 'Preferences updated successfully' });

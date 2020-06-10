@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { getArtworkResults, getUserResults } from '../services/search.js';
+import { fetchArtworkResults, fetchUserResults } from '../services/search.js';
 
 const getResults = async (req, res, next) => {
   try {
@@ -10,10 +10,10 @@ const getResults = async (req, res, next) => {
     let foundResults = [];
     let foundType = null;
     if (type === 'artwork') {
-      foundResults = await getArtworkResults({ query, skip, limit });
+      foundResults = await fetchArtworkResults({ query, skip, limit });
       foundType = 'artwork';
     } else if (type === 'users') {
-      foundResults = await getUserResults({ query, skip, limit });
+      foundResults = await fetchUserResults({ query, skip, limit });
       foundType = 'users';
     }
     return res.json({

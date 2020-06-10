@@ -6,7 +6,7 @@ import Stripe from 'stripe';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
-const getCheckout = async ({ artworkId, session = null }) => {
+export const fetchCheckoutArtwork = async ({ artworkId, session = null }) => {
   const foundArtwork = await Artwork.findOne({
     $and: [{ _id: artworkId }, { active: true }],
   }).populate(
@@ -24,8 +24,4 @@ const getCheckout = async ({ artworkId, session = null }) => {
   } else {
     throw createError(400, 'Artwork not found');
   }
-};
-
-export default {
-  getCheckout,
 };

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Notification from '../models/notification.js';
 
-export const createNewNotification = async ({
+export const addNewNotification = async ({
   notificationLink,
   notificationType,
   notificationReceiver,
@@ -24,7 +24,7 @@ export const fetchExistingNotifications = async ({
   }).sort({ created: -1 });
 };
 
-export const updateReadNotification = async ({
+export const editReadNotification = async ({
   userId,
   notificationId,
   session = null,
@@ -42,7 +42,7 @@ export const updateReadNotification = async ({
   ).session(session);
 };
 
-export const updateUnreadNotification = async ({
+export const editUnreadNotification = async ({
   userId,
   notificationId,
   session = null,

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import User from '../models/user.js';
 import Version from '../models/version.js';
 
-export const getArtworkResults = async ({
+export const fetchArtworkResults = async ({
   query,
   skip,
   limit,
@@ -14,7 +14,7 @@ export const getArtworkResults = async ({
   }).deepPopulate('artwork.owner');
 };
 
-export const getUserResults = async ({
+export const fetchUserResults = async ({
   query,
   skip,
   limit,

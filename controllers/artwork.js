@@ -12,13 +12,13 @@ import {
   fetchArtworkComments,
   fetchArtworkReviews,
   fetchUserArtworks,
-  fetchUserArtwork,
+  fetchArtworkByOwner,
   fetchArtworkLicenses,
-  createNewArtwork,
+  addNewArtwork,
+  editExistingArtwork,
   addArtworkSave,
   removeArtworkSave,
   saveLicenseSet,
-  updateExistingArtwork,
 } from '../services/artwork.js';
 import {
   fetchUserById,
@@ -117,7 +117,7 @@ const getUserArtwork = async (req, res, next) => {
 const editArtwork = async (req, res, next) => {
   try {
     const { artworkId } = req.params;
-    const foundArtwork = await fetchUserArtwork({
+    const foundArtwork = await fetchArtworkByOwner({
       artworkId,
       userId: res.locals.user.id,
     });
@@ -172,7 +172,7 @@ const postNewArtwork = async (req, res, next) => {
         );
       }
     }
-    const savedVersion = await createNewArtwork({
+    const savedVersion = await addNewArtwork({
       artworkData: value,
       userId: res.locals.user.id,
       session,
@@ -200,7 +200,7 @@ const updateArtwork = async (req, res, next) => {
   session.startTransaction();
   try {
     const { artworkId } = req.params;
-    const foundArtwork = await fetchUserArtwork({
+    const foundArtwork = await fetchArtworkByOwner({
       artworkId,
       userId: res.locals.user.id,
       session,
@@ -231,7 +231,7 @@ const updateArtwork = async (req, res, next) => {
           );
         }
       }
-      const savedVersion = await updateExistingArtwork({
+      const savedVersion = await editExistingArtwork({
         artworkData: value,
         session,
       });

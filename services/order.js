@@ -46,7 +46,7 @@ export const fetchBoughtOrders = async ({ userId, session = null }) => {
   }).deepPopulate('purchases.seller purchases.version purchases.review');
 };
 
-export const createOrderReview = async ({
+export const addOrderReview = async ({
   orderId,
   userId,
   reviewId,

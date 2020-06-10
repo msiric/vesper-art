@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
 import createError from 'http-errors';
 import {
+  fetchDiscountByCode,
+  fetchDiscountById,
+} from '../services/discount.js';
+import {
   fetchUserById,
   addUserDiscount,
   removeUserDiscount,
 } from '../services/user.js';
-import {
-  fetchDiscountByCode,
-  fetchDiscountById,
-} from '../services/discount.js';
 
 // needs transaction (done)
 // treba sredit

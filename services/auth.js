@@ -7,7 +7,7 @@ import { server } from '../config/secret.js';
 import config from '../config/mailer.js';
 import createError from 'http-errors';
 
-export const createNewUser = async ({
+export const addNewUser = async ({
   email,
   username,
   password,
@@ -58,7 +58,7 @@ export const revokeAccessToken = async ({ userId, session = null }) => {
   );
 };
 
-export const updateUserVerification = async ({ tokenId, session = null }) => {
+export const editUserVerification = async ({ tokenId, session = null }) => {
   return await User.updateOne(
     {
       verificationToken: tokenId,
@@ -67,11 +67,7 @@ export const updateUserVerification = async ({ tokenId, session = null }) => {
   ).session(session);
 };
 
-export const updateUserResetToken = async ({
-  email,
-  token,
-  session = null,
-}) => {
+export const editUserResetToken = async ({ email, token, session = null }) => {
   return await User.updateOne(
     {
       email: email,
@@ -80,7 +76,7 @@ export const updateUserResetToken = async ({
   ).session(session);
 };
 
-export const updateUserPassword = async ({ tokenId, password }) => {
+export const resetUserPassword = async ({ tokenId, password }) => {
   return await User.updateOne(
     {
       resetToken: tokenId,
@@ -95,7 +91,7 @@ export const updateUserPassword = async ({ tokenId, password }) => {
 };
 
 // needs transaction (not tested)
-export const verifyRegisterToken = async ({ tokenId, session = null }) => {
+export const resetRegisterToken = async ({ tokenId, session = null }) => {
   return await User.updateOne(
     {
       verificationToken: tokenId,

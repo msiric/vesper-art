@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Ticket from '../models/ticket.js';
 
-export const createNewTicket = async ({
+export const addNewTicket = async ({
   userId,
   ticketTitle,
   ticketBody,

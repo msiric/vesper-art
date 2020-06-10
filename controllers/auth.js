@@ -6,15 +6,14 @@ import crypto from 'crypto';
 import mailer from '../utils/email.js';
 import { server } from '../config/secret.js';
 import {
-  createNewUser,
   logUserOut,
   refreshAccessToken,
   revokeAccessToken,
-  updateUserVerification,
-  updateUserResetToken,
-  updateUserPassword,
+  editUserResetToken,
+  editUserVerification,
+  addNewUser,
 } from '../services/auth.js';
-import { fetchUserByCreds, fetchUserByToken } from '../services/user.js';
+import { fetchUserByCreds, editUserPassword } from '../services/user.js';
 import config from '../config/mailer.js';
 import createError from 'http-errors';
 
@@ -30,7 +29,7 @@ const postSignUp = async (req, res, next) => {
     } else {
       const token = randomString.generate();
       const link = `${server.clientDomain}/verify_token/${token}`;
-      await createNewUser({ email, username, password, token });
+      await addNewUser({ email, username, password, token });
       await mailer.sendEmail(
         config.app,
         email,
@@ -143,7 +142,7 @@ const postRevokeToken = async (req, res, next) => {
 const verifyRegisterToken = async (req, res, next) => {
   try {
     const { tokenId } = req.params;
-    await updateUserVerification({ tokenId });
+    await editUserVerification({ tokenId });
     res.status(200).json({ message: 'Token successfully verified' });
   } catch (err) {
     console.log(err);
@@ -158,7 +157,7 @@ const forgotPassword = async (req, res, next) => {
     const { email } = req.body;
     crypto.randomBytes(20, async function (err, buf) {
       const token = buf.toString('hex');
-      await updateUserResetToken({ email, token });
+      await editUserResetToken({ email, token });
       await mailer.sendEmail(
         config.app,
         foundUser.email,
@@ -186,7 +185,7 @@ const resetPassword = async (req, res) => {
   try {
     const { tokenId } = req.params;
     const { password, confirm } = req.body;
-    const updatedUser = await updateUserPassword({ tokenId, password });
+    const updatedUser = await editUserPassword({ tokenId, password });
     await mailer.sendEmail(
       config.app,
       updatedUser.email,

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import mailer from '../utils/email.js';
-import { createNewTicket } from '../services/ticket.js';
+import { addNewTicket } from '../services/ticket.js';
 import createError from 'http-errors';
 
 // how to handle transactions?
@@ -11,7 +11,7 @@ const postTicket = async (req, res, next) => {
     const { ticketTitle, ticketBody } = req.body;
 
     if ((userEmail, ticketTitle, ticketBody)) {
-      await createNewTicket({
+      await addNewTicket({
         userId: res.locals.user.id,
         ticketTitle,
         ticketBody,
