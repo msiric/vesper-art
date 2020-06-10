@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
 import User from '../models/user.js';
 import auth from '../utils/auth.js';
-import randomString from 'randomstring';
-import bcrypt from 'bcrypt-nodejs';
 import crypto from 'crypto';
 import mailer from '../utils/email.js';
 import { server } from '../config/secret.js';
@@ -66,6 +64,33 @@ export const updateUserVerification = async ({ tokenId, session = null }) => {
       verificationToken: tokenId,
     },
     { verificationToken: null, verified: true }
+  ).session(session);
+};
+
+export const updateUserResetToken = async ({
+  email,
+  token,
+  session = null,
+}) => {
+  return await User.updateOne(
+    {
+      email: email,
+    },
+    { resetToken: token, resetExpiry: Date.now() + 3600000 }
+  ).session(session);
+};
+
+export const updateUserPassword = async ({ tokenId, password }) => {
+  return await User.updateOne(
+    {
+      resetToken: tokenId,
+      resetExpiry: { $gt: Date.now() },
+    },
+    {
+      password: password,
+      resetToken: null,
+      resetExpiry: null,
+    }
   ).session(session);
 };
 

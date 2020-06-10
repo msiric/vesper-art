@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import aws from 'aws-sdk';
-import User from '../models/user.js';
 import { fetchUserById } from '../services/user.js';
 import createError from 'http-errors';
 

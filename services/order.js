@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 import Order from '../models/order.js';
 import User from '../models/user.js';
-import License from '../models/license.js';
-import Notification from '../models/notification.js';
-import createError from 'http-errors';
-import crypto from 'crypto';
 
 export const fetchOrderDetails = async ({
   userId,
@@ -62,4 +58,40 @@ export const createOrderReview = async ({
     },
     { review: reviewId }
   ).session(session);
+};
+
+export const fetchOrdersBySeller = async ({
+  userId,
+  from,
+  to,
+  session = null,
+}) => {
+  return from && to
+    ? await Order.find({
+        $and: [
+          { seller: userId },
+          { created: { $gte: new Date(from), $lt: new Date(to) } },
+        ],
+      }).populate('review version licenses sales.review')
+    : await Order.find({
+        $and: [{ seller: userId }],
+      }).populate('review version licenses sales.review');
+};
+
+export const fetchOrdersByBuyer = async ({
+  userId,
+  from,
+  to,
+  session = null,
+}) => {
+  return from && to
+    ? await Order.find({
+        $and: [
+          { buyer: userId },
+          { created: { $gte: new Date(from), $lt: new Date(to) } },
+        ],
+      }).populate('review version licenses sales.review')
+    : await Order.find({
+        $and: [{ buyer: userId }],
+      }).populate('review version licenses sales.review');
 };

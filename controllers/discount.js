@@ -1,6 +1,4 @@
 import mongoose from 'mongoose';
-import Discount from '../models/discount.js';
-import User from '../models/user.js';
 import createError from 'http-errors';
 import {
   fetchUserById,

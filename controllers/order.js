@@ -1,8 +1,4 @@
 import mongoose from 'mongoose';
-import Order from '../models/order.js';
-import User from '../models/user.js';
-import License from '../models/license.js';
-import Notification from '../models/notification.js';
 import { fetchOrderDetails } from '../services/order.js';
 import { fetchUserSales, fetchUserPurchases } from '../services/user.js';
 import createError from 'http-errors';

@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import Notification from '../models/notification.js';
-import createError from 'http-errors';
 
 export const createNewNotification = async ({
   notificationLink,

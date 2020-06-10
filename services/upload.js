@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 import aws from 'aws-sdk';
-import User from '../models/user.js';
-import createError from 'http-errors';
 
 // needs transaction (done)
 export const postProfileImage = async () => {

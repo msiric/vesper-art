@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 import Ticket from '../models/ticket.js';
-import mailer from '../utils/email.js';
-import createError from 'http-errors';
 
 export const createNewTicket = async ({
   userId,

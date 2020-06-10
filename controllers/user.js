@@ -9,6 +9,8 @@ import randomString from 'randomstring';
 import mailer from '../utils/email.js';
 import config from '../config/mailer.js';
 import { server } from '../config/secret.js';
+import { fetchUserProfile, fetchUserById } from '../services/user.js';
+import { fetchUserArtworks } from '../services/artwork.js';
 import auth from '../utils/auth.js';
 import createError from 'http-errors';
 import Stripe from 'stripe';
@@ -17,31 +19,11 @@ const stripe = Stripe(process.env.STRIPE_SECRET);
 
 const getUserProfile = async (req, res, next) => {
   try {
-    const { userName } = req.params;
+    const { username } = req.params;
     const { cursor, ceiling } = req.query;
     const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
     const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundUser = await User.findOne({
-      $and: [{ name: userName }, { active: true }],
-    }).populate(
-      skip && limit
-        ? {
-            path: 'artwork',
-            options: {
-              limit,
-              skip,
-            },
-            populate: {
-              path: 'current',
-            },
-          }
-        : {
-            path: 'artwork',
-            populate: {
-              path: 'current',
-            },
-          }
-    );
+    const foundUser = await fetchUserProfile({ username, skip, limit });
     if (foundUser) {
       return res.json({ user: foundUser, artwork: foundUser.artwork });
     } else {
@@ -58,16 +40,11 @@ const getUserArtwork = async (req, res, next) => {
     const { cursor, ceiling } = req.query;
     const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
     const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundArtwork = await Artwork.find(
-      {
-        $and: [{ owner: userId }, { active: true }],
-      },
-      undefined,
-      {
-        skip,
-        limit,
-      }
-    );
+    const foundArtwork = fetchUserArtworks({
+      userId,
+      skip,
+      limit,
+    });
     return res.json({ artwork: foundArtwork });
   } catch (err) {
     next(err, res);
@@ -80,25 +57,7 @@ const getUserSaves = async (req, res, next) => {
     const { cursor, ceiling } = req.query;
     const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
     const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundUser = await User.findOne(
-      {
-        $and: [{ _id: userId }, { active: true }],
-      },
-      undefined,
-      {
-        skip,
-        limit,
-      }
-    ).populate({
-      path: 'savedArtwork',
-      options: {
-        limit,
-        skip,
-      },
-      populate: {
-        path: 'current',
-      },
-    });
+    const foundUser = await fetchUserSaves({ userId, skip, limit });
     return res.json({ saves: foundUser.savedArtwork });
   } catch (err) {
     next(err, res);
@@ -111,11 +70,7 @@ const getUserStatistics = async (req, res, next) => {
     /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
     }); */
     const { userId } = req.params;
-    const foundUser = await User.findOne({
-      $and: [{ _id: userId }, { active: true }],
-    }).deepPopulate(
-      'purchases.version purchases.licenses sales.version sales.licenses'
-    );
+    const foundUser = await fetchUserStatistics({ userId });
     const balance = await stripe.balance.retrieve({
       stripe_account: foundUser.stripeId,
     });
@@ -130,17 +85,7 @@ const getUserSales = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const { from, to } = req.query;
-    const foundOrders =
-      from && to
-        ? await Order.find({
-            $and: [
-              { seller: userId },
-              { created: { $gte: new Date(from), $lt: new Date(to) } },
-            ],
-          }).populate('review version licenses sales.review')
-        : await Order.find({
-            $and: [{ seller: userId }],
-          }).populate('review version licenses sales.review');
+    const foundOrders = await fetchOrdersBySeller({ userId, from, to });
     return res.json({ statistics: foundOrders });
   } catch (err) {
     next(err, res);
@@ -151,17 +96,7 @@ const getUserPurchases = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const { from, to } = req.query;
-    const foundOrders =
-      from && to
-        ? await Order.find({
-            $and: [
-              { buyer: userId },
-              { created: { $gte: new Date(from), $lt: new Date(to) } },
-            ],
-          }).populate('review version licenses sales.review')
-        : await Order.find({
-            $and: [{ buyer: userId }],
-          }).populate('review version licenses sales.review');
+    const foundOrders = await fetchOrdersByBuyer({ userId, from, to });
     return res.json({ statistics: foundOrders });
   } catch (err) {
     next(err, res);
@@ -174,9 +109,7 @@ const updateUserProfile = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const { userPhoto, userDescription, userCountry } = req.body;
-    const foundUser = await User.findOne({
-      $and: [{ _id: userId }, { active: true }],
-    }).session(session);
+    const foundUser = await fetchUserById({ userId, session });
     if (foundUser) {
       if (userPhoto) foundUser.photo = userPhoto;
       if (userDescription) foundUser.description = userDescription;
@@ -198,9 +131,7 @@ const updateUserProfile = async (req, res, next) => {
 const getUserSettings = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const foundUser = await User.findOne({
-      $and: [{ _id: userId }, { active: true }],
-    });
+    const foundUser = fetchUserById({ userId });
     if (foundUser) {
       return res.json({ user: foundUser });
     } else {
@@ -217,16 +148,11 @@ const getUserNotifications = async (req, res, next) => {
     const { cursor, ceiling } = req.query;
     const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
     const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundNotifications = await Notification.find(
-      { receiver: userId },
-      undefined,
-      {
-        skip,
-        limit,
-      }
-    )
-      .populate('user')
-      .sort({ created: -1 });
+    const foundNotifications = await fetchUserNotifications({
+      userId,
+      skip,
+      limit,
+    });
     return res.json({ notifications: foundNotifications });
   } catch (err) {
     next(err, res);
@@ -240,20 +166,13 @@ const updateUserEmail = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const { email } = req.body;
-    const foundUser = await User.findOne({
-      $and: [{ email: email }, { active: true }],
-    }).session(session);
+    const foundUser = await fetchUserByEmail({ email, session });
     if (foundUser) {
       throw createError(400, 'User with entered email already exists');
     } else {
       const token = randomString.generate();
       const link = `${server.clientDomain}/verify_token/${token}`;
-      await User.updateOne(
-        {
-          $and: [{ _id: userId }, { active: true }],
-        },
-        { email: email, verificationToken: token, verified: false }
-      ).session(session);
+      await updateUserEmail({ userId, email, token, session });
       await mailer.sendEmail(
         config.app,
         email,
@@ -276,83 +195,25 @@ const updateUserEmail = async (req, res, next) => {
 
 // needs transaction (done)
 const updateUserPassword = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
+    const { current, password, confirmPassword } = req.body;
     const { userId } = req.params;
-    const foundUser = await User.findOne({ _id: userId }).session(session);
-    if (foundUser) {
-      const { current, password, confirmPassword } = req.body;
-      if (current && password && confirmPassword) {
-        if (foundUser.comparePassword(current)) {
-          if (password === confirmPassword) {
-            foundUser.password = password;
-            await foundUser.save({ session });
-            await session.commitTransaction();
-            return res
-              .status(200)
-              .json({ message: 'Password updated successfully' });
-          } else {
-            throw createError(400, 'New passwords do not match');
-          }
-        } else {
-          throw createError(400, 'Current password incorrect');
-        }
-      } else {
-        throw createError(400, 'All fields need to be filled out');
-      }
-    } else {
-      throw createError(400, 'User not found');
-    }
+    await updateUserPassword({ userId, password });
+    return res.status(200).json({ message: 'Password updated successfully' });
   } catch (err) {
-    await session.abortTransaction();
     next(err, res);
-  } finally {
-    session.endSession();
   }
 };
 
 // needs transaction (done)
 const updateUserPreferences = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
   try {
+    const { displaySaves } = req.body;
     const { userId } = req.params;
-    const foundUser = await User.findOne({ _id: userId }).session(session);
-    if (foundUser) {
-      const { displaySaves } = req.body;
-      foundUser.displaySaves = displaySaves;
-      await foundUser.save({ session });
-      await session.commitTransaction();
-      return res
-        .status(200)
-        .json({ message: 'Preferences updated successfully' });
-    } else {
-      throw createError(400, 'User not found');
-    }
-  } catch (err) {
-    await session.abortTransaction();
-    next(err, res);
-  } finally {
-    session.endSession();
-  }
-};
-
-const getUserDashboard = async (req, res, next) => {
-  try {
-    const user = res.locals.user;
-    const balance = await stripe.balance.retrieve({
-      stripe_account: user.onboarded,
-    });
-
-    res.render('dashboard', {
-      pilot: pilot,
-      balanceAvailable: balance.available[0].amount,
-      balancePending: balance.pending[0].amount,
-      ridesTotalAmount: ridesTotalAmount,
-      rides: rides,
-      showBanner: !!showBanner || req.query.showBanner,
-    });
+    await updateUserPreferences({ userId, displaySaves });
+    return res
+      .status(200)
+      .json({ message: 'Preferences updated successfully' });
   } catch (err) {
     next(err, res);
   }

@@ -1,11 +1,9 @@
 import mongoose from 'mongoose';
-import Notification from '../models/notification.js';
 import {
   fetchExistingNotifications,
   updateReadNotification,
   updateUnreadNotification,
 } from '../services/notification.js';
-import createError from 'http-errors';
 
 const getNotifications = async (req, res, next) => {
   try {

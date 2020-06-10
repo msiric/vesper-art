@@ -11,11 +11,10 @@ const router = express.Router();
 //   .post(isAuthenticated, checkout .addToCart)
 //   .delete(isAuthenticated, checkout .deleteFromCart);
 
-router
-  .route('/checkout')
-  // $CART
-  /*   .get(isAuthenticated, checkout .getPaymentCart) */
-  .post(isAuthenticated, checkout.postPaymentCart);
+router.route('/checkout');
+// $CART
+/*   .get(isAuthenticated, checkout .getPaymentCart) */
+/*   .post(isAuthenticated, checkout.postPaymentCart); */
 
 router.route('/checkout/:artworkId').get(isAuthenticated, checkout.getCheckout);
 

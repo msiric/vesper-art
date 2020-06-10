@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import License from '../models/license.js';
 import createError from 'http-errors';
 import { fetchLicenseByFingerprint } from '../services/license.js';
 

@@ -1,9 +1,4 @@
 import mongoose from 'mongoose';
-import Artwork from '../models/artwork.js';
-import Notification from '../models/notification.js';
-import User from '../models/user.js';
-import Comment from '../models/comment.js';
-import auth from '../utils/auth.js';
 import createError from 'http-errors';
 import {
   fetchArtworkById,

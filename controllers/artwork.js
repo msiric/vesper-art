@@ -2,13 +2,9 @@ import mongoose from 'mongoose';
 import User from '../models/user.js';
 import Artwork from '../models/artwork.js';
 import Version from '../models/version.js';
-import License from '../models/license.js';
-import Comment from '../models/comment.js';
 import Order from '../models/order.js';
-import crypto from 'crypto';
 import createError from 'http-errors';
 import { sanitize, deleteS3Object } from '../utils/helpers.js';
-import currency from 'currency.js';
 import Stripe from 'stripe';
 import {
   fetchActiveArtworks,

@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import User from '../models/user.js';
 import auth from '../utils/auth.js';
 import randomString from 'randomstring';
 import bcrypt from 'bcrypt-nodejs';
@@ -12,6 +11,8 @@ import {
   refreshAccessToken,
   revokeAccessToken,
   updateUserVerification,
+  updateUserResetToken,
+  updateUserPassword,
 } from '../services/auth.js';
 import { fetchUserByCreds, fetchUserByToken } from '../services/user.js';
 import config from '../config/mailer.js';
@@ -23,9 +24,7 @@ const postSignUp = async (req, res, next) => {
   session.startTransaction();
   try {
     const { email, username, password, confirm } = req.body;
-    const foundUser = await User.findOne({
-      $and: [{ $or: [{ email: email }, { name: username }] }, { active: true }],
-    }).session(session);
+    const foundUser = await fetchUserByCreds({ username });
     if (foundUser) {
       throw createError(400, 'Account with that email/username already exists');
     } else {
@@ -117,9 +116,9 @@ const postLogIn = async (req, res, next) => {
   }
 };
 
-const postLogOut = async (req, res) => {
+const postLogOut = (req, res) => {
   try {
-    await logUserOut(res);
+    logUserOut(res);
   } catch (err) {
     next(err, res);
   }
@@ -159,25 +158,18 @@ const forgotPassword = async (req, res, next) => {
     const { email } = req.body;
     crypto.randomBytes(20, async function (err, buf) {
       const token = buf.toString('hex');
-      const foundUser = await fetchUserByEmail({ email, session });
-      if (!foundUser) {
-        throw createError(400, 'No account with that email address exists');
-      } else {
-        foundUser.resetToken = token;
-        foundUser.resetExpiry = Date.now() + 3600000; // 1 hour
-        await foundUser.save({ session });
-        await mailer.sendEmail(
-          config.app,
-          foundUser.email,
-          'Reset your password',
-          `You are receiving this because you have requested to reset the password for your account.
+      await updateUserResetToken({ email, token });
+      await mailer.sendEmail(
+        config.app,
+        foundUser.email,
+        'Reset your password',
+        `You are receiving this because you have requested to reset the password for your account.
         Please click on the following link, or paste this into your browser to complete the process:
         
         <a href="${server.clientDomain}/reset_password/${token}"</a>`
-        );
-        await session.commitTransaction();
-        res.status(200).json({ message: 'Password reset' });
-      }
+      );
+      await session.commitTransaction();
+      res.status(200).json({ message: 'Password reset' });
     });
   } catch (err) {
     await session.abortTransaction();
@@ -194,22 +186,10 @@ const resetPassword = async (req, res) => {
   try {
     const { tokenId } = req.params;
     const { password, confirm } = req.body;
-    const foundUser = await fetchUserByToken({ tokenId, session });
-    if (!foundUser) {
-      throw createError(400, 'Token is invalid or has expired');
-    } else if (password !== confirm) {
-      throw createError(400, 'Passwords do not match');
-    } else if (user.password === password) {
-      throw createError(400, 'New password is identical to the old one');
-    } else {
-      foundUser.password = password;
-      foundUser.resetToken = null;
-      foundUser.resetExpiry = null;
-      await foundUser.save({ session });
-    }
+    const updatedUser = await updateUserPassword({ tokenId, password });
     await mailer.sendEmail(
       config.app,
-      foundUser.email,
+      updatedUser.email,
       'Password change',
       `You are receiving this because you just changed your password.
         

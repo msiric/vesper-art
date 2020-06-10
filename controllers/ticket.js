@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import Ticket from '../models/ticket.js';
 import mailer from '../utils/email.js';
 import { createNewTicket } from '../services/ticket.js';
 import createError from 'http-errors';

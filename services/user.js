@@ -5,10 +5,6 @@ import Version from '../models/version.js';
 import Notification from '../models/notification.js';
 import aws from 'aws-sdk';
 import User from '../models/user.js';
-import randomString from 'randomstring';
-import mailer from '../utils/email.js';
-import config from '../config/mailer.js';
-import { server } from '../config/secret.js';
 import auth from '../utils/auth.js';
 import createError from 'http-errors';
 import Stripe from 'stripe';
@@ -61,14 +57,12 @@ export const fetchUserPurchases = async ({ userId, session = null }) => {
   }).deepPopulate('purchases.seller purchases.version purchases.review');
 };
 
-export const getUserProfile = async ({
+export const fetchUserProfile = async ({
   username,
-  cursor,
-  ceiling,
+  skip,
+  limit,
   session = null,
 }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
   return await User.findOne({
     $and: [{ name: username }, { active: true }],
   }).populate(
@@ -112,14 +106,12 @@ export const getUserArtwork = async ({
   );
 };
 
-export const getUserSaves = async ({
+export const fetchUserSaves = async ({
   userId,
-  cursor,
-  ceiling,
+  skip,
+  limit,
   session = null,
 }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
   return await User.findOne(
     {
       $and: [{ _id: userId }, { active: true }],
@@ -141,43 +133,12 @@ export const getUserSaves = async ({
   });
 };
 
-export const getUserStatistics = async ({ userId, session = null }) => {
+export const fetchUserStatistics = async ({ userId, session = null }) => {
   return await User.findOne({
     $and: [{ _id: userId }, { active: true }],
   }).deepPopulate(
     'purchases.version purchases.licenses sales.version sales.licenses'
   );
-};
-
-export const getUserSales = async ({ userId, from, to, session = null }) => {
-  return from && to
-    ? await Order.find({
-        $and: [
-          { seller: userId },
-          { created: { $gte: new Date(from), $lt: new Date(to) } },
-        ],
-      }).populate('review version licenses sales.review')
-    : await Order.find({
-        $and: [{ seller: userId }],
-      }).populate('review version licenses sales.review');
-};
-
-export const getUserPurchases = async ({
-  userId,
-  from,
-  to,
-  session = null,
-}) => {
-  return from && to
-    ? await Order.find({
-        $and: [
-          { buyer: userId },
-          { created: { $gte: new Date(from), $lt: new Date(to) } },
-        ],
-      }).populate('review version licenses sales.review')
-    : await Order.find({
-        $and: [{ buyer: userId }],
-      }).populate('review version licenses sales.review');
 };
 
 export const updateUserProfile = async ({
@@ -195,14 +156,12 @@ export const updateUserProfile = async ({
   );
 };
 
-export const getUserNotifications = async ({
+export const fetchUserNotifications = async ({
   userId,
-  cursor,
-  ceiling,
+  skip,
+  limit,
   session = null,
 }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
   return await Notification.find({ receiver: userId }, undefined, {
     skip,
     limit,

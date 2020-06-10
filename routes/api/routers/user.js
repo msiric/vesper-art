@@ -4,7 +4,7 @@ import user from '../../../controllers/user.js';
 
 const router = express.Router();
 
-router.route('/user/:userName').get(user.getUserProfile);
+router.route('/user/:username').get(user.getUserProfile);
 
 router.route('/user/:userId/artwork').get(user.getUserArtwork);
 

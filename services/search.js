@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import User from '../models/user.js';
 import Version from '../models/version.js';
-import createError from 'http-errors';
 
 export const getArtworkResults = async ({
   query,

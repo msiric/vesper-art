@@ -1,7 +1,4 @@
 import mongoose from 'mongoose';
-import User from '../models/user.js';
-import Version from '../models/version.js';
-import createError from 'http-errors';
 import { getArtworkResults, getUserResults } from '../services/search.js';
 
 const getResults = async (req, res, next) => {

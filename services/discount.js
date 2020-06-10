@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 import Discount from '../models/discount.js';
-import User from '../models/user.js';
-import createError from 'http-errors';
 
 export const fetchDiscountByCode = async ({ discountCode, session = null }) => {
   await Discount.findOne({
