@@ -112,8 +112,9 @@ const Header = ({ history }) => {
 
   const handleNotificationsMenuOpen = async (e) => {
     if (
-      !store.user.notifications.items ||
-      store.user.notifications.items.length === 0 ||
+      (store.user.notifications.hasMore && !store.user.notifications.items) ||
+      (store.user.notifications.hasMore &&
+        store.user.notifications.items.length === 0) ||
       (!store.user.notifications.hasMore &&
         store.user.notifications.count !==
           store.user.notifications.items.length)

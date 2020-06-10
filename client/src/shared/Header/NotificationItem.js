@@ -62,14 +62,15 @@ const NotificationItem = ({
         />
         <ListItemSecondaryAction>
           <IconButton
+            onClick={
+              notification.read
+                ? () => handleUnreadClick(notification._id)
+                : () => handleReadClick(notification._id)
+            }
             edge="end"
             aria-label={notification.read ? 'Mark unread' : 'Mark read'}
           >
-            {notification.read ? (
-              <ReadIcon onClick={() => handleUnreadClick(notification._id)} />
-            ) : (
-              <UnreadIcon onClick={() => handleReadClick(notification._id)} />
-            )}
+            {notification.read ? <ReadIcon /> : <UnreadIcon />}
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>
