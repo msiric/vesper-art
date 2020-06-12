@@ -51,6 +51,24 @@ export const fetchUserSales = async ({ userId, session = null }) => {
   }).deepPopulate('sales.buyer sales.version sales.review');
 };
 
+export const editUserStripe = async ({ userId, stripeId, session = null }) => {
+  return await User.updateOne({ _id: userId }, { stripeId }).session(session);
+};
+
+export const editUserPurchase = async ({ userId, orderId, session = null }) => {
+  return await User.updateOne(
+    { _id: userId },
+    { $push: { purchases: orderId } }
+  ).session(session);
+};
+
+export const editUserSale = async ({ userId, orderId, session = null }) => {
+  return await User.updateOne(
+    { _id: userId },
+    { $push: { sales: orderId }, $inc: { notifications: 1 } }
+  ).session(session);
+};
+
 export const fetchUserPurchases = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
@@ -323,7 +341,7 @@ const deactivateUser = async (req, res, next) => {
             await session.commitTransaction();
             req.logout();
             req.session.destroy(function (err) {
-              res.status(200).json('/');
+              res.json('/');
             });
           } else {
             if (artwork.versions.length) {
@@ -395,7 +413,7 @@ const deactivateUser = async (req, res, next) => {
                 await session.commitTransaction();
                 req.logout();
                 req.session.destroy(function (err) {
-                  res.status(200).json('/');
+                  res.json('/');
                 });
               } else {
                 const coverFolderName = 'artworkCovers/';
@@ -485,7 +503,7 @@ const deactivateUser = async (req, res, next) => {
                 await session.commitTransaction();
                 req.logout();
                 req.session.destroy(function (err) {
-                  res.status(200).json('/');
+                  res.json('/');
                 });
               }
             } else {

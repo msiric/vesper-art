@@ -133,7 +133,7 @@ const newConversation = async (req, res, next) => {
     await message.save({ session });
 
     await session.commitTransaction();
-    return res.status(200).json({
+    return res.json({
       conversationId: savedConversation._id,
     });
   } catch (err) {
@@ -153,7 +153,7 @@ const sendReply = async (req, res, next) => {
     message.body = reply;
     message.author = res.locals.user.id;
     await message.save();
-    return res.status(200).json({ message: 'Reply successfully sent!' });
+    return res.json({ message: 'Reply successfully sent!' });
   } catch (err) {
     next(err, res);
   }

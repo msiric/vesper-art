@@ -10,3 +10,7 @@ export const fetchLicenseByFingerprint = async ({
     active: true,
   }).populate('artwork');
 };
+
+export const addNewLicenses = async ({ licenses, session = null }) => {
+  return await License.insertMany(licenses, { session });
+};

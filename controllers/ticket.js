@@ -24,7 +24,7 @@ const postTicket = async (req, res, next) => {
         ticketBody
       );
       await session.commitTransaction();
-      res.status(200).json({ message: 'Ticket successfully sent' });
+      res.json({ message: 'Ticket successfully sent' });
     } else {
       throw createError(400, 'All fields are required');
     }

@@ -124,7 +124,7 @@ const forgotPassword = async (req, res, next) => {
         <a href="${server.clientDomain}/reset_password/${token}"</a>`
         );
         await session.commitTransaction();
-        res.status(200).json({ message: 'Password reset' });
+        res.json({ message: 'Password reset' });
       }
     });
   } catch (err) {
@@ -172,7 +172,7 @@ const resetPassword = async (req, res) => {
       If you did not request this, please contact us immediately.`
     );
     await session.commitTransaction();
-    res.status(200).json({ message: 'Password reset' });
+    res.json({ message: 'Password reset' });
   } catch (err) {
     await session.abortTransaction();
     next(err, res);

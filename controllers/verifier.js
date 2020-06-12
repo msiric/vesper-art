@@ -7,7 +7,7 @@ const verifyLicense = async (req, res, next) => {
     const { fingerprint } = req.body;
     const foundLicense = await fetchLicenseByFingerprint({ fingerprint });
     if (foundLicense) {
-      return res.status(200).json({ license: foundLicense });
+      return res.json({ license: foundLicense });
     } else {
       throw createError(400, 'License not found');
     }

@@ -136,7 +136,7 @@ const getLicenses = async (req, res, next) => {
       artworkId,
       userId: res.locals.user.id,
     });
-    return res.status(200).json(foundLicenses);
+    return res.json(foundLicenses);
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -182,7 +182,7 @@ const postNewArtwork = async (req, res, next) => {
       { $push: { artwork: savedVersion.artwork } }
     ).session(session);
     await session.commitTransaction();
-    return res.status(200).json('/my_artwork');
+    return res.json('/my_artwork');
   } catch (err) {
     console.log(err);
     await session.abortTransaction();
@@ -296,7 +296,7 @@ const updateArtwork = async (req, res, next) => {
       }
       await foundArtwork.save({ session });
       await session.commitTransaction();
-      return res.status(200).json('/my_artwork');
+      return res.json('/my_artwork');
     } else {
       throw createError(400, 'Artwork not found');
     }
@@ -343,7 +343,7 @@ const deleteArtwork = async (req, res, next) => {
           }
         ).session(session);
         await session.commitTransaction();
-        return res.status(200).json('/my_artwork');
+        return res.json('/my_artwork');
       } else {
         if (foundArtwork.versions.length) {
           let usedContent = false;
@@ -369,7 +369,7 @@ const deleteArtwork = async (req, res, next) => {
               }
             ).session(session);
             await session.commitTransaction();
-            return res.status(200).json('/my_artwork');
+            return res.json('/my_artwork');
           } else {
             await deleteS3Object({
               link: foundArtwork.current.cover.split('/').slice(-1)[0],
@@ -394,7 +394,7 @@ const deleteArtwork = async (req, res, next) => {
               }
             ).session(session);
             await session.commitTransaction();
-            return res.status(200).json('/my_artwork');
+            return res.json('/my_artwork');
           }
         } else {
           await deleteS3Object({
@@ -414,7 +414,7 @@ const deleteArtwork = async (req, res, next) => {
             _id: artworkId,
           }).session(session);
           await session.commitTransaction();
-          return res.status(200).json('/my_artwork');
+          return res.json('/my_artwork');
         }
       }
     } else {
@@ -443,7 +443,7 @@ const saveArtwork = async (req, res, next) => {
         await addUserSave({ userId: foundUser._id, artworkId, session });
         await addArtworkSave({ artworkId, session });
         await session.commitTransaction();
-        res.status(200).json({ message: 'Artwork saved' });
+        res.json({ message: 'Artwork saved' });
       } else {
         throw createError(400, 'Artwork could not be saved');
       }
@@ -473,7 +473,7 @@ const unsaveArtwork = async (req, res, next) => {
         await removeUserSave({ userId: foundUser._id, artworkId, session });
         await removeArtworkSave({ artworkId, session });
         await session.commitTransaction();
-        res.status(200).json({ message: 'Artwork unsaved' });
+        res.json({ message: 'Artwork unsaved' });
       } else {
         throw createError(400, 'Artwork could not be unsaved');
       }

@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
-import User from '../models/user.js';
-import Artwork from '../models/artwork.js';
 import { server, stripe as processor } from '../config/secret.js';
-import Order from '../models/order.js';
 import License from '../models/license.js';
-import Notification from '../models/notification.js';
 import crypto from 'crypto';
 import createError from 'http-errors';
 import axios from 'axios';
@@ -12,6 +8,22 @@ import Stripe from 'stripe';
 import FormData from 'form-data';
 import querystring from 'querystring';
 import currency from 'currency.js';
+import {
+  constructStripeEvent,
+  constructStripeLink,
+  constructStripePayout,
+  fetchStripeAccount,
+  fetchStripeBalance,
+} from '../services/stripe.js';
+import {
+  fetchUserDiscount,
+  editUserStripe,
+  editUserPurchase,
+} from '../services/user.js';
+import { fetchArtworkDetails } from '../services/artwork.js';
+import { addNewLicenses } from '../services/license.js';
+import { addNewOrder } from '../services/order.js';
+import { addNewNotification } from '../services/notification.js';
 import socketApi from '../realtime/io.js';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
@@ -21,11 +33,11 @@ const receiveWebhookEvent = async (req, res, next) => {
     const signature = req.headers['stripe-signature'];
     const endpointSecret = process.env.STRIPE_WEBHOOK;
 
-    const event = stripe.webhooks.constructEvent(
-      req.rawBody,
+    const event = await constructStripeEvent({
+      body: req.rawBody,
       signature,
-      endpointSecret
-    );
+      secret: endpointSecret,
+    });
 
     switch (event.type) {
       case 'payment_intent.succeeded':
@@ -36,7 +48,7 @@ const receiveWebhookEvent = async (req, res, next) => {
         return res.status(400).end();
     }
 
-    res.status(200).json({ received: true });
+    res.json({ received: true });
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -47,9 +59,9 @@ const getStripeUser = async (req, res, next) => {
   try {
     const { accountId } = req.params;
 
-    const foundAccount = await stripe.accounts.retrieve(accountId);
+    const foundAccount = await fetchStripeAccount({ accountId });
 
-    res.status(200).json({
+    res.json({
       capabilities: {
         cardPayments: foundAccount.capabilities.card_payments,
         platformPayments: foundAccount.capabilities.platform_payments,
@@ -65,18 +77,9 @@ const managePaymentIntent = async (req, res, next) => {
   try {
     const { artworkId } = req.params;
     const { licenses, intentId } = req.body;
-    const foundUser = await User.findOne({
-      $and: [{ _id: res.locals.user.id }, { active: true }],
-    }).populate('discount');
+    const foundUser = await fetchUserDiscount({ userId: res.locals.user.id });
     if (foundUser) {
-      const foundArtwork = await Artwork.findOne({
-        $and: [{ _id: artworkId }, { active: true }],
-      })
-        .populate('owner')
-        .populate(
-          'current',
-          '_id cover created title personal type license availability description use commercial'
-        );
+      const foundArtwork = await fetchArtworkDetails({ artworkId });
       if (foundArtwork) {
         let personalLicenses = 0;
         let commercialLicenses = 0;
@@ -163,22 +166,20 @@ const managePaymentIntent = async (req, res, next) => {
 
 const redirectToStripe = async (req, res, next) => {
   try {
-    const user = res.locals.user;
-    if (!user.onboarded) {
+    const onboarded = res.locals.user.onboarded;
+    if (!onboarded) {
       throw createError(
         400,
         'You need to complete the onboarding process before accessing your Stripe dashboard'
       );
     }
-    const loginLink = await stripe.accounts.createLoginLink(user.onboarded, {
-      redirect_url: `${server.serverDomain}/stripe/dashboard`,
+    const loginLink = await constructStripeLink({
+      onboarded,
+      domain: server.serverDomain,
     });
-    if (req.query.account) {
-      loginLink.url = `${loginLink.url}#/account`;
-    }
-    return res.status(200).json({
-      url: loginLink.url,
-    });
+    if (req.query.account) loginLink.url = `${loginLink.url}#/account`;
+
+    return res.json({ url: loginLink.url });
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -192,12 +193,9 @@ const onboardUser = async (req, res, next) => {
     req.session.id = res.locals.user.id;
     req.session.name = res.locals.user.name;
 
-    let parameters = {
+    const parameters = {
       client_id: processor.clientId,
       state: req.session.state,
-    };
-
-    parameters = Object.assign(parameters, {
       redirect_uri: `${server.serverDomain}/stripe/token`,
       'stripe_user[business_type]': 'individual',
       'stripe_user[business_name]': undefined,
@@ -205,21 +203,21 @@ const onboardUser = async (req, res, next) => {
       'stripe_user[last_name]': undefined,
       'stripe_user[email]': email || undefined,
       'stripe_user[country]': country || undefined,
+    };
 
-      // If we're suggesting this account have the `card_payments` capability,
-      // we can pass some additional fields to prefill:
-      // 'suggested_capabilities[]': 'card_payments',
-      // 'stripe_user[street_address]': req.user.address || undefined,
-      // 'stripe_user[city]': req.user.city || undefined,
-      // 'stripe_user[zip]': req.user.postalCode || undefined,
-      // 'stripe_user[state]': req.user.city || undefined,
-    });
+    // If we're suggesting this account have the `card_payments` capability,
+    // we can pass some additional fields to prefill:
+    // 'suggested_capabilities[]': 'card_payments',
+    // 'stripe_user[street_address]': req.user.address || undefined,
+    // 'stripe_user[city]': req.user.city || undefined,
+    // 'stripe_user[zip]': req.user.postalCode || undefined,
+    // 'stripe_user[state]': req.user.city || undefined,
 
-    /* return res.status(200).json({
+    /* return res.json({
       url: `${processor.authorizeUri}?${querystring.stringify(parameters)}`,
     }); */
 
-    return res.status(200).json({
+    return res.json({
       url: `${processor.authorizeUri}?${querystring.stringify(parameters)}`,
     });
   } catch (err) {
@@ -251,10 +249,11 @@ const assignStripeId = async (req, res, next) => {
       throw createError(500, expressAuthorized.error);
     }
 
-    await User.updateOne(
-      { _id: req.session.id },
-      { stripeId: expressAuthorized.data.stripe_user_id }
-    ).session(session);
+    await editUserStripe({
+      userId: req.session.id,
+      stripeId: expressAuthorized.data.stripe_user_id,
+      session,
+    });
 
     const username = req.session.name;
 
@@ -275,25 +274,19 @@ const assignStripeId = async (req, res, next) => {
 
 const createPayout = async (req, res, next) => {
   try {
-    const foundUser = await User.findOne({
-      $and: [{ _id: res.locals.user.id }, { active: true }],
-    });
+    const foundUser = await fetchUserById({ userId: res.locals.user.id });
     if (foundUser.stripeId) {
-      const balance = await stripe.balance.retrieve({
-        stripe_account: foundUser.stripeId,
+      const balance = await fetchStripeBalance({
+        stripeId: foundUser.stripeId,
       });
       const { amount, currency } = balance.available[0];
-      await stripe.payouts.create(
-        {
-          amount: amount,
-          currency: currency,
-          statement_descriptor: server.appName,
-        },
-        {
-          stripe_account: foundUser.stripeId,
-        }
-      );
-      res.status(200).json({
+      await constructStripePayout({
+        amount,
+        currency,
+        descriptor: server.appName,
+        stripeId: foundUser.stripeId,
+      });
+      res.json({
         message: 'Payout successfully created',
       });
     } else {
@@ -310,16 +303,15 @@ const createOrder = async (intent) => {
   session.startTransaction();
   try {
     const orderData = JSON.parse(intent.metadata.orderData);
-    const intentId = intent.id;
-    // $TODO notification
     const buyerId = mongoose.Types.ObjectId(orderData.buyerId);
     const sellerId = mongoose.Types.ObjectId(orderData.sellerId);
     const artworkId = mongoose.Types.ObjectId(orderData.artworkId);
     const versionId = mongoose.Types.ObjectId(orderData.versionId);
     const discountId = mongoose.Types.ObjectId(orderData.discountId);
+    const intentId = intent.id;
     const licenseSet = [];
     const licenseIds = [];
-    orderData.licenses.forEach(async (license) => {
+    for (let license of orderData) {
       const newLicense = new License();
       newLicense.owner = buyerId;
       newLicense.artwork = artworkId;
@@ -328,40 +320,42 @@ const createOrder = async (intent) => {
       newLicense.active = true;
       newLicense.price = license.licensePrice;
       licenseSet.push(newLicense);
+    }
+    const savedLicenses = await addNewLicenses({
+      licenses: licenseSet,
+      session,
     });
-    const savedLicenses = await License.insertMany(licenseSet, { session });
     savedLicenses.forEach((license) => {
       licenseIds.push(license._id);
     });
-    const newOrder = new Order();
-    newOrder.buyer = buyerId;
-    newOrder.seller = sellerId;
-    newOrder.artwork = artworkId;
-    newOrder.version = versionId;
-    newOrder.discount = discountId;
-    newOrder.licenses = licenseIds;
-    newOrder.review = null;
-    newOrder.spent = orderData.spent;
-    newOrder.earned = orderData.earned;
-    newOrder.fee = orderData.fee;
-    newOrder.status = 'completed';
-    newOrder.intent = intentId;
-    const savedOrder = await newOrder.save({ session });
-    await User.updateOne(
-      { _id: buyerId },
-      { $push: { purchases: savedOrder._id } }
-    ).session(session);
-    await User.updateOne(
-      { _id: sellerId },
-      { $push: { sales: savedOrder._id }, $inc: { notifications: 1 } }
-    ).session(session);
+    const orderObject = {
+      buyer: buyerId,
+      seller: sellerId,
+      artwork: artworkId,
+      version: versionId,
+      discount: discountId,
+      licenses: licenseIds,
+      review: null,
+      spent: orderData.spent,
+      earned: orderData.earned,
+      fee: orderData.fee,
+      status: 'completed',
+      intent: intentId,
+    };
+    const savedOrder = await addNewOrder({ orderData: orderObject, session });
+    await editUserPurchase({
+      userId: buyerId,
+      orderId: savedOrder._id,
+      session,
+    });
+    await editUserSale({ userId: sellerId, orderId: savedOrder._id, session });
     // new start
-    const newNotification = new Notification();
-    newNotification.link = savedOrder._id;
-    newNotification.type = 'Order';
-    newNotification.receiver = sellerId;
-    newNotification.read = false;
-    await newNotification.save({ session });
+    await addNewNotification({
+      notificationLink: savedOrder._id,
+      notificationType: 'Order',
+      notificationReceiver: sellerId,
+      session,
+    });
     socketApi.sendNotification(sellerId, savedOrder._id);
     // new end
     await session.commitTransaction();

@@ -40,7 +40,7 @@ const postSignUp = async (req, res, next) => {
         <a href=${link}>Click here to verify</a>`
       );
       await session.commitTransaction();
-      res.status(200).json({ message: 'Verify your email address' });
+      res.json({ message: 'Verify your email address' });
       await session.commitTransaction();
     }
   } catch (err) {
@@ -143,7 +143,7 @@ const verifyRegisterToken = async (req, res, next) => {
   try {
     const { tokenId } = req.params;
     await editUserVerification({ tokenId });
-    res.status(200).json({ message: 'Token successfully verified' });
+    res.json({ message: 'Token successfully verified' });
   } catch (err) {
     console.log(err);
     next(err, res);
@@ -168,7 +168,7 @@ const forgotPassword = async (req, res, next) => {
         <a href="${server.clientDomain}/reset_password/${token}"</a>`
       );
       await session.commitTransaction();
-      res.status(200).json({ message: 'Password reset' });
+      res.json({ message: 'Password reset' });
     });
   } catch (err) {
     await session.abortTransaction();
@@ -195,7 +195,7 @@ const resetPassword = async (req, res) => {
       If you did not request this, please contact us immediately.`
     );
     await session.commitTransaction();
-    res.status(200).json({ message: 'Password reset' });
+    res.json({ message: 'Password reset' });
   } catch (err) {
     await session.abortTransaction();
     next(err, res);

@@ -126,7 +126,7 @@ const updateUserProfile = async (req, res, next) => {
       if (userCountry) foundUser.country = userCountry;
       await foundUser.save({ session });
       await session.commitTransaction();
-      return res.status(200).json({ message: 'User details updated' });
+      return res.json({ message: 'User details updated' });
     } else {
       throw createError(400, 'User not found');
     }
@@ -192,7 +192,7 @@ const updateUserEmail = async (req, res, next) => {
         <a href=${link}>Click here to verify</a>`
       );
       await session.commitTransaction();
-      return res.status(200).json({ message: 'Email successfully updated' });
+      return res.json({ message: 'Email successfully updated' });
     }
   } catch (err) {
     console.log(err);
@@ -209,7 +209,7 @@ const updateUserPassword = async (req, res, next) => {
     const { current, password, confirmPassword } = req.body;
     const { userId } = req.params;
     await editUserPassword({ userId, password });
-    return res.status(200).json({ message: 'Password updated successfully' });
+    return res.json({ message: 'Password updated successfully' });
   } catch (err) {
     next(err, res);
   }
@@ -279,7 +279,7 @@ const updateUserPreferences = async (req, res, next) => {
       if (updatedUser) {
         req.logout();
         req.session.destroy(function(err) {
-          res.status(200).json('/');
+          res.json('/');
         });
       } else {
         return res.status(400).json({ message: 'User could not be deleted' });
@@ -374,7 +374,7 @@ const deactivateUser = async (req, res, next) => {
             await session.commitTransaction();
             req.logout();
             req.session.destroy(function (err) {
-              res.status(200).json('/');
+              res.json('/');
             });
           } else {
             if (artwork.versions.length) {
@@ -446,7 +446,7 @@ const deactivateUser = async (req, res, next) => {
                 await session.commitTransaction();
                 req.logout();
                 req.session.destroy(function (err) {
-                  res.status(200).json('/');
+                  res.json('/');
                 });
               } else {
                 const coverFolderName = 'artworkCovers/';
@@ -536,7 +536,7 @@ const deactivateUser = async (req, res, next) => {
                 await session.commitTransaction();
                 req.logout();
                 req.session.destroy(function (err) {
-                  res.status(200).json('/');
+                  res.json('/');
                 });
               }
             } else {

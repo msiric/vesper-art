@@ -60,7 +60,7 @@ const postReview = async (req, res, next) => {
           socketApi.sendNotification(foundOrder.seller, foundOrder._id);
           // new end
           await session.commitTransaction();
-          return res.status(200).json('Review successfully published');
+          return res.json('Review successfully published');
         } else {
           throw createError(400, 'Review already exists for this artwork');
         }

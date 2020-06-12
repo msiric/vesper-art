@@ -17,7 +17,7 @@ export const postProfileImage = async () => {
 // $TODO Wat
 export const postArtworkMedia = async (req, res, next) => {
   try {
-    return res.status(200).json({
+    return res.json({
       artworkCover: req.file.transforms[0].location,
       artworkMedia: req.file.transforms[1].location,
     });
@@ -30,7 +30,7 @@ export const postArtworkMedia = async (req, res, next) => {
 // $TODO Wat
 export const putArtworkMedia = async (req, res, next) => {
   try {
-    return res.status(200).json({
+    return res.json({
       artworkCover: req.file.transforms[0].location,
       artworkMedia: req.file.transforms[1].location,
     });

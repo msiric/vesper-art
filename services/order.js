@@ -2,6 +2,23 @@ import mongoose from 'mongoose';
 import Order from '../models/order.js';
 import User from '../models/user.js';
 
+export const addNewOrder = async ({ orderData, session = null }) => {
+  const newOrder = new Order();
+  newOrder.buyer = orderData.buyerId;
+  newOrder.seller = orderData.sellerId;
+  newOrder.artwork = orderData.artworkId;
+  newOrder.version = orderData.versionId;
+  newOrder.discount = orderData.discountId;
+  newOrder.licenses = orderData.licenseIds;
+  newOrder.review = orderData.review;
+  newOrder.spent = orderData.spent;
+  newOrder.earned = orderData.earned;
+  newOrder.fee = orderData.fee;
+  newOrder.status = orderData.status;
+  newOrder.intent = orderData.intentId;
+  return await newOrder.save({ session });
+};
+
 export const fetchOrderDetails = async ({
   userId,
   orderId,

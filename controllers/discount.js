@@ -65,7 +65,7 @@ const deleteDiscount = async (req, res, next) => {
     if (foundDiscount) {
       await removeUserDiscount({ userId: res.locals.user.id, session });
       await session.commitTransaction();
-      return res.status(200).json('Discount removed');
+      return res.json('Discount removed');
     } else {
       throw createError(400, 'Discount not found');
     }

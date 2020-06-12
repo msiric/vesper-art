@@ -25,7 +25,7 @@ const postProfileImage = async (req, res, next) => {
       foundUser.photo = req.file.location;
       await foundUser.save({ session });
       await session.commitTransaction();
-      return res.status(200).json({ imageUrl: req.file.location });
+      return res.json({ imageUrl: req.file.location });
     } else {
       throw createError(400, 'User not found');
     }
@@ -39,7 +39,7 @@ const postProfileImage = async (req, res, next) => {
 
 const postArtworkMedia = async (req, res, next) => {
   try {
-    return res.status(200).json({
+    return res.json({
       artworkCover: req.file.transforms[0].location,
       artworkMedia: req.file.transforms[1].location,
     });
@@ -51,7 +51,7 @@ const postArtworkMedia = async (req, res, next) => {
 
 const putArtworkMedia = async (req, res, next) => {
   try {
-    return res.status(200).json({
+    return res.json({
       artworkCover: req.file.transforms[0].location,
       artworkMedia: req.file.transforms[1].location,
     });
@@ -81,7 +81,7 @@ const putArtworkMedia = async (req, res, next) => {
         foundArtwork.cover = req.file.location;
         const savedArtwork = await foundArtwork.save();
         if (savedArtwork) {
-          return res.status(200).json({ imageUrl: req.file.location });
+          return res.json({ imageUrl: req.file.location });
         } else {
           return res
             .status(400)
@@ -103,7 +103,7 @@ const putArtworkMedia = async (req, res, next) => {
 /* const postArtworkMedia = async (req, res, next) => {
   try {
     console.log(req.file);
-    return res.status(200).json({ imageUrl: req.file.location });
+    return res.json({ imageUrl: req.file.location });
   } catch (err) {
     next(err, res);
   }
@@ -129,7 +129,7 @@ const updateArtworkMedia = async (req, res, next) => {
         foundArtwork.media = req.file.location;
         const savedArtwork = await foundArtwork.save();
         if (savedArtwork) {
-          return res.status(200).json({ imageUrl: req.file.location });
+          return res.json({ imageUrl: req.file.location });
         } else {
           return res
             .status(400)

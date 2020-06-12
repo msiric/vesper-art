@@ -341,7 +341,7 @@ export const addArtworkReview = async ({
 //             ],
 //           }).session(session);
 //           await session.commitTransaction();
-//           res.status(200).json({ message: 'License deleted' });
+//           res.json({ message: 'License deleted' });
 //         } else {
 //           throw createError(400, 'License not found');
 //         }
