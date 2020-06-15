@@ -8,7 +8,10 @@ import randomString from 'randomstring';
 import mailer from '../utils/email.js';
 import config from '../config/mailer.js';
 import { server } from '../config/secret.js';
-import { fetchUserArtworks } from '../services/artwork.js';
+import {
+  fetchUserArtworks,
+  fetchArtworksByOwner,
+} from '../services/artwork.js';
 import { fetchOrdersBySeller, fetchOrdersByBuyer } from '../services/order.js';
 import {
   fetchUserById,
@@ -20,6 +23,7 @@ import {
   editUserEmail,
   editUserPassword,
   editUserPreferences,
+  deactivateExistingUser,
 } from '../services/user.js';
 import auth from '../utils/auth.js';
 import createError from 'http-errors';
@@ -301,334 +305,46 @@ const deactivateUser = async (req, res, next) => {
   session.startTransaction();
   try {
     const { userId } = req.params;
-    const foundUser = await User.findOne({
-      $and: [{ _id: userId }, { active: true }],
-    }).session(session);
+    const foundUser = await fetchUserById({ userId, session });
     if (foundUser) {
-      const foundArtwork = await Artwork.find({
-        $and: [{ owner: res.locals.user.id }, { active: true }],
-      })
-        .populate('current')
-        .populate('versions')
-        .session(session);
-      if (foundArtwork) {
-        for (let artwork of foundArtwork) {
-          const foundOrder = await Order.find({
-            details: { $elemMatch: { artwork: artwork._id } },
-            details: { $elemMatch: { version: artwork.current._id } },
-          })
-            .deepPopulate('details.artwork details.version')
-            .session(session);
-          if (foundOrder.length) {
-            await Artwork.updateOne(
-              {
-                _id: artwork._id,
-              },
-              {
-                active: false,
-              }
-            ).session(session);
-            if (foundUser.photo.includes(foundUser._id)) {
-              const folderName = 'profilePhotos/';
-              const fileName = foundUser.photo.split('/').slice(-1)[0];
-              const filePath = folderName + fileName;
-              const s3 = new aws.S3();
-              const params = {
-                Bucket: 'vesper-testing',
-                Key: filePath,
-              };
-              await s3.deleteObject(params).promise();
-            }
-            await User.updateOne(
-              { _id: foundUser._id },
-              {
-                $set: {
-                  name: null,
-                  email: null,
-                  password: null,
-                  photo: foundUser.gravatar(),
-                  description: null,
-                  facebookId: null,
-                  googleId: null,
-                  customWork: false,
-                  displaySaves: false,
-                  verificationToken: null,
-                  verified: false,
-                  resetToken: null,
-                  resetExpiry: null,
-                  cart: null,
-                  discount: null,
-                  inbox: null,
-                  notifications: null,
-                  rating: null,
-                  reviews: null,
-                  artwork: null,
-                  savedArtwork: null,
-                  purchases: null,
-                  sales: null,
-                  stripeId: null,
-                  active: false,
-                },
-              }
-            ).session(session);
-            await session.commitTransaction();
-            req.logout();
-            req.session.destroy(function (err) {
-              res.json('/');
-            });
-          } else {
-            if (artwork.versions.length) {
-              let usedContent = false;
-              artwork.versions.map(function (version) {
-                if (
-                  version.media == artwork.current.media &&
-                  version.cover == artwork.current.cover
-                ) {
-                  usedContent = true;
-                }
-              });
-              if (usedContent) {
-                await Version.remove({
-                  _id: artwork.current._id,
-                }).session(session);
-                await Artwork.updateOne(
-                  {
-                    _id: artwork._id,
-                  },
-                  {
-                    current: null,
-                    active: false,
-                  }
-                ).session(session);
-                if (foundUser.photo.includes(foundUser._id)) {
-                  const folderName = 'profilePhotos/';
-                  const fileName = foundUser.photo.split('/').slice(-1)[0];
-                  const filePath = folderName + fileName;
-                  const s3 = new aws.S3();
-                  const params = {
-                    Bucket: 'vesper-testing',
-                    Key: filePath,
-                  };
-                  await s3.deleteObject(params).promise();
-                }
-                await User.updateOne(
-                  { _id: foundUser._id },
-                  {
-                    $set: {
-                      name: null,
-                      email: null,
-                      password: null,
-                      photo: foundUser.gravatar(),
-                      description: null,
-                      facebookId: null,
-                      googleId: null,
-                      customWork: false,
-                      displaySaves: false,
-                      verificationToken: null,
-                      verified: false,
-                      resetToken: null,
-                      resetExpiry: null,
-                      cart: null,
-                      discount: null,
-                      inbox: null,
-                      notifications: null,
-                      rating: null,
-                      reviews: null,
-                      artwork: null,
-                      savedArtwork: null,
-                      sales: null,
-                      purchases: null,
-                      stripeId: null,
-                      active: false,
-                    },
-                  }
-                ).session(session);
-                await session.commitTransaction();
-                req.logout();
-                req.session.destroy(function (err) {
-                  res.json('/');
-                });
-              } else {
-                const coverFolderName = 'artworkCovers/';
-                const coverFileName = artwork.current.cover
-                  .split('/')
-                  .slice(-1)[0];
-                const coverFilePath = coverFolderName + coverFileName;
-                const coverS3 = new aws.S3();
-                const coverParams = {
-                  Bucket: 'vesper-testing',
-                  Key: coverFilePath,
-                };
+      const foundArtwork = await fetchArtworksByOwner({
+        userId: res.locals.user.id,
+        session,
+      });
+      for (let artwork of foundArtwork) {
+        const foundOrder = await fetchOrderByVersion({
+          artworkId: artwork._id,
+          versionId: artwork.current._id,
+          session,
+        });
+        if (!foundOrder.length) {
+          await deleteS3Object({
+            link: artwork.current.cover,
+            folder: 'artworkCovers/',
+          });
 
-                await coverS3.deleteObject(coverParams).promise();
+          await deleteS3Object({
+            link: artwork.current.media,
+            folder: 'artworkMedia/',
+          });
 
-                const mediaFolderName = 'artworkMedia/';
-                const mediaFileName = artwork.current.media
-                  .split('/')
-                  .slice(-1)[0];
-                const mediaFilePath = mediaFolderName + mediaFileName;
-                const mediaS3 = new aws.S3();
-                const mediaParams = {
-                  Bucket: 'vesper-testing',
-                  Key: mediaFilePath,
-                };
-
-                await mediaS3.deleteObject(mediaParams).promise();
-
-                await Version.remove({
-                  _id: artwork.current._id,
-                }).session(session);
-
-                await Artwork.updateOne(
-                  {
-                    _id: artwork._id,
-                  },
-                  {
-                    current: null,
-                    active: false,
-                  }
-                ).session(session);
-
-                if (foundUser.photo.includes(foundUser._id)) {
-                  const folderName = 'profilePhotos/';
-                  const fileName = foundUser.photo.split('/').slice(-1)[0];
-                  const filePath = folderName + fileName;
-                  const s3 = new aws.S3();
-                  const params = {
-                    Bucket: 'vesper-testing',
-                    Key: filePath,
-                  };
-                  await s3.deleteObject(params).promise();
-                }
-                await User.updateOne(
-                  { _id: foundUser._id },
-                  {
-                    $set: {
-                      name: null,
-                      email: null,
-                      password: null,
-                      photo: foundUser.gravatar(),
-                      description: null,
-                      facebookId: null,
-                      googleId: null,
-                      customWork: false,
-                      displaySaves: false,
-                      verificationToken: null,
-                      verified: false,
-                      resetToken: null,
-                      resetExpiry: null,
-                      cart: null,
-                      discount: null,
-                      inbox: null,
-                      notifications: null,
-                      rating: null,
-                      reviews: null,
-                      artwork: null,
-                      savedArtwork: null,
-                      sales: null,
-                      purchases: null,
-                      stripeId: null,
-                      active: false,
-                    },
-                  }
-                ).session(session);
-
-                await session.commitTransaction();
-                req.logout();
-                req.session.destroy(function (err) {
-                  res.json('/');
-                });
-              }
-            } else {
-              const coverFolderName = 'artworkCovers/';
-              const coverFileName = artwork.current.cover
-                .split('/')
-                .slice(-1)[0];
-              const coverFilePath = coverFolderName + coverFileName;
-              const coverS3 = new aws.S3();
-              const coverParams = {
-                Bucket: 'vesper-testing',
-                Key: coverFilePath,
-              };
-
-              await coverS3.deleteObject(coverParams).promise();
-
-              const mediaFolderName = 'artworkMedia/';
-              const mediaFileName = artwork.current.media
-                .split('/')
-                .slice(-1)[0];
-              const mediaFilePath = mediaFolderName + mediaFileName;
-              const mediaS3 = new aws.S3();
-              const mediaParams = {
-                Bucket: 'vesper-testing',
-                Key: mediaFilePath,
-              };
-
-              await mediaS3.deleteObject(mediaParams).promise();
-
-              await Version.remove({
-                _id: artwork.current._id,
-              }).session(session);
-
-              await Artwork.remove({
-                _id: artwork._id,
-              }).session(session);
-
-              if (foundUser.photo.includes(foundUser._id)) {
-                const folderName = 'profilePhotos/';
-                const fileName = foundUser.photo.split('/').slice(-1)[0];
-                const filePath = folderName + fileName;
-                const s3 = new aws.S3();
-                const params = {
-                  Bucket: 'vesper-testing',
-                  Key: filePath,
-                };
-                await s3.deleteObject(params).promise();
-              }
-              await User.updateOne(
-                { _id: foundUser._id },
-                {
-                  $set: {
-                    name: null,
-                    email: null,
-                    password: null,
-                    photo: foundUser.gravatar(),
-                    description: null,
-                    facebookId: null,
-                    googleId: null,
-                    customWork: false,
-                    displaySaves: false,
-                    verificationToken: null,
-                    verified: false,
-                    resetToken: null,
-                    resetExpiry: null,
-                    cart: null,
-                    discount: null,
-                    inbox: null,
-                    notifications: null,
-                    rating: null,
-                    reviews: null,
-                    artwork: null,
-                    savedArtwork: null,
-                    sales: null,
-                    purchases: null,
-                    stripeId: null,
-                    active: false,
-                  },
-                }
-              ).session(session);
-              auth.sendRefreshToken(res, '');
-              res.json({
-                accessToken: '',
-                user: '',
-              });
-              await session.commitTransaction();
-            }
-          }
+          await removeArtworkVersion({
+            versionId: artwork.current._id,
+            session,
+          });
         }
-      } else {
-        throw createError(400, 'Artwork not found');
+        await deactivateExistingArtwork({ artworkId: artwork._id, session });
       }
+      await deleteS3Object({
+        link: foundUser.photo,
+        folder: 'profilePhotos/',
+      });
+      await deactivateExistingUser({ userId: foundUser._id, session });
+      await session.commitTransaction();
+      req.logout();
+      req.session.destroy(function (err) {
+        res.json('/');
+      });
     } else {
       throw createError(400, 'User not found');
     }

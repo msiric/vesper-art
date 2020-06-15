@@ -137,6 +137,14 @@ export const fetchUserArtworks = async ({
   );
 };
 
+export const fetchArtworksByOwner = async ({ userId, session = null }) => {
+  return await Artwork.find({
+    $and: [{ owner: userId }, { active: true }],
+  })
+    .populate('current')
+    .populate('versions');
+};
+
 export const fetchArtworkByOwner = async ({
   artworkId,
   userId,
