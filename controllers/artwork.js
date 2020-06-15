@@ -15,10 +15,12 @@ import {
   fetchArtworkByOwner,
   fetchArtworkLicenses,
   addNewArtwork,
-  editExistingArtwork,
+  addNewVersion,
   addArtworkSave,
   removeArtworkSave,
   saveLicenseSet,
+  removeArtworkVersion,
+  deactivateExistingArtwork,
 } from '../services/artwork.js';
 import {
   fetchUserById,
@@ -27,6 +29,7 @@ import {
 } from '../services/user.js';
 import postArtworkValidator from '../utils/validation/postArtworkValidator.js';
 import putArtworkValidator from '../utils/validation/putArtworkValidator.js';
+import { fetchOrderByVersion } from '../services/order.js';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
@@ -192,7 +195,7 @@ const postNewArtwork = async (req, res, next) => {
   }
 };
 
-// needs transaction (done)
+// $TODO
 // does it work in all cases?
 // needs testing
 const updateArtwork = async (req, res, next) => {
@@ -231,69 +234,35 @@ const updateArtwork = async (req, res, next) => {
           );
         }
       }
-      const savedVersion = await editExistingArtwork({
+      const savedVersion = await addNewVersion({
         artworkData: value,
         session,
       });
-      const foundOrder = await Order.find({
-        artwork: foundArtwork._id,
-        version: foundArtwork.current._id,
-      })
-        .deepPopulate('details.artwork details.version')
-        .session(session);
-      if (!(foundOrder && foundOrder.length)) {
-        if (!foundArtwork.versions.length) {
-          if (foundArtwork.current.media != savedVersion.media) {
-            await deleteS3Object({
-              link: foundArtwork.current.cover,
-              folder: 'artworkCovers/',
-            });
-
-            await deleteS3Object({
-              link: foundArtwork.current.media,
-              folder: 'artworkMedia/',
-            });
-          }
-          await Version.remove({
-            _id: foundArtwork.current._id,
-          }).session(session);
-          foundArtwork.current = savedVersion._id;
-        } else {
-          let usedContent = false;
-          foundArtwork.versions.map(function (version) {
-            if (
-              version.media == foundArtwork.current.media &&
-              version.cover == foundArtwork.current.cover
-            )
-              return (usedContent = true);
+      const foundOrder = await fetchOrderByVersion({
+        artworkId: foundArtwork._id,
+        versionId: foundArtwork.current._id,
+        session,
+      });
+      if (!foundOrder) {
+        if (value.artworkCover && value.artworkMedia) {
+          await deleteS3Object({
+            link: foundArtwork.current.cover,
+            folder: 'artworkCovers/',
           });
-          if (usedContent) {
-            await Version.remove({
-              _id: foundArtwork.current._id,
-            }).session(session);
-            foundArtwork.current = savedVersion._id;
-          } else {
-            if (foundArtwork.current.media != savedVersion.media) {
-              await deleteS3Object({
-                link: foundArtwork.current.cover,
-                folder: 'artworkCovers/',
-              });
 
-              await deleteS3Object({
-                link: foundArtwork.current.media,
-                folder: 'artworkMedia/',
-              });
-            }
-            await Version.remove({
-              _id: foundArtwork.current._id,
-            }).session(session);
-            foundArtwork.current = savedVersion._id;
-          }
+          await deleteS3Object({
+            link: foundArtwork.current.media,
+            folder: 'artworkMedia/',
+          });
         }
+        await removeArtworkVersion({
+          versionId: foundArtwork.current._id,
+          session,
+        });
       } else {
         foundArtwork.versions.push(foundArtwork.current._id);
-        foundArtwork.current = savedVersion._id;
       }
+      foundArtwork.current = savedVersion._id;
       await foundArtwork.save({ session });
       await session.commitTransaction();
       return res.json('/my_artwork');
@@ -309,114 +278,44 @@ const updateArtwork = async (req, res, next) => {
   }
 };
 
-// needs transaction (done)
-// delete all comments (not done)
+// $TODO
+// does it work in all cases?
+// needs testing
 const deleteArtwork = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const { artworkId } = req.params;
-    const foundArtwork = await Artwork.findOne({
-      $and: [
-        { _id: artworkId },
-        { owner: res.locals.user.id },
-        { active: true },
-      ],
-    })
-      .populate('current')
-      .populate('versions')
-      .session(session);
+    const foundArtwork = await fetchArtworkByOwner({
+      artworkId,
+      userId: res.locals.user.id,
+      session,
+    });
     if (foundArtwork) {
-      const foundOrder = await Order.find({
-        artwork: foundArtwork._id,
-        version: foundArtwork.current._id,
-      })
-        .deepPopulate('details.artwork details.version')
-        .session(session);
-      if (foundOrder.length) {
-        await Artwork.updateOne(
-          {
-            _id: artworkId,
-          },
-          {
-            active: false,
-          }
-        ).session(session);
-        await session.commitTransaction();
-        return res.json('/my_artwork');
-      } else {
-        if (foundArtwork.versions.length) {
-          let usedContent = false;
-          foundArtwork.versions.map(function (version) {
-            if (
-              version.media == foundArtwork.current.media &&
-              version.cover == foundArtwork.current.cover
-            ) {
-              usedContent = true;
-            }
-          });
-          if (usedContent) {
-            await Version.remove({
-              _id: foundArtwork.current._id,
-            }).session(session);
-            await Artwork.updateOne(
-              {
-                _id: artworkId,
-              },
-              {
-                current: null,
-                active: false,
-              }
-            ).session(session);
-            await session.commitTransaction();
-            return res.json('/my_artwork');
-          } else {
-            await deleteS3Object({
-              link: foundArtwork.current.cover.split('/').slice(-1)[0],
-              folder: 'artworkCovers/',
-            });
+      const foundOrder = await fetchOrderByVersion({
+        artworkId: foundArtwork._id,
+        versionId: foundArtwork.current._id,
+        session,
+      });
+      if (!foundOrder.length) {
+        await deleteS3Object({
+          link: foundArtwork.current.cover,
+          folder: 'artworkCovers/',
+        });
 
-            await deleteS3Object({
-              link: foundArtwork.current.media.split('/').slice(-1)[0],
-              folder: 'artworkMedia/',
-            });
+        await deleteS3Object({
+          link: foundArtwork.current.media,
+          folder: 'artworkMedia/',
+        });
 
-            await Version.remove({
-              _id: foundArtwork.current._id,
-            }).session(session);
-            await Artwork.updateOne(
-              {
-                _id: artworkId,
-              },
-              {
-                current: null,
-                active: false,
-              }
-            ).session(session);
-            await session.commitTransaction();
-            return res.json('/my_artwork');
-          }
-        } else {
-          await deleteS3Object({
-            link: foundArtwork.current.cover.split('/').slice(-1)[0],
-            folder: 'artworkCovers/',
-          });
-
-          await deleteS3Object({
-            link: foundArtwork.current.media.split('/').slice(-1)[0],
-            folder: 'artworkMedia/',
-          });
-
-          await Version.remove({
-            _id: foundArtwork.current._id,
-          }).session(session);
-          await Artwork.remove({
-            _id: artworkId,
-          }).session(session);
-          await session.commitTransaction();
-          return res.json('/my_artwork');
-        }
+        await removeArtworkVersion({
+          versionId: foundArtwork.current._id,
+          session,
+        });
       }
+      await deactivateExistingArtwork({ artworkId, session });
+      await session.commitTransaction();
+      return res.json('/my_artwork');
     } else {
       throw createError(400, 'Artwork not found');
     }

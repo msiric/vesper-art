@@ -193,21 +193,30 @@ export const addNewArtwork = async ({
 
 // needs transaction (done)
 // needs testing
-export const editExistingArtwork = async ({ artworkData, session = null }) => {
+export const addNewVersion = async ({ artworkData, session = null }) => {
   const newVersion = new Version();
-  newVersion.cover = artworkData.artworkCover || '';
-  newVersion.media = artworkData.artworkMedia || '';
-  newVersion.title = artworkData.artworkTitle || '';
-  newVersion.type = artworkData.artworkType || '';
-  newVersion.availability = artworkData.artworkAvailability || '';
-  newVersion.license = artworkData.artworkLicense || '';
-  newVersion.use = artworkData.artworkUse || '';
-  newVersion.personal = currency(artworkData.artworkPersonal).intValue || 0;
-  newVersion.commercial =
-    currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
-      .intValue || currency(artworkData.artworkPersonal).intValue;
-  newVersion.category = artworkData.artworkCategory || '';
-  newVersion.description = artworkData.artworkDescription || '';
+  if (artworkData.artworkCover)
+    newVersion.cover = artworkData.artworkCover || '';
+  if (artworkData.artworkMedia)
+    newVersion.media = artworkData.artworkMedia || '';
+  if (artworkData.artworkTitle)
+    newVersion.title = artworkData.artworkTitle || '';
+  if (artworkData.artworkType) newVersion.type = artworkData.artworkType || '';
+  if (artworkData.artworkAvailability)
+    newVersion.availability = artworkData.artworkAvailability || '';
+  if (artworkData.artworkLicense)
+    newVersion.license = artworkData.artworkLicense || '';
+  if (artworkData.artworkUse) newVersion.use = artworkData.artworkUse || '';
+  if (artworkData.artworkPersonal)
+    newVersion.personal = currency(artworkData.artworkPersonal).intValue || 0;
+  if (artworkData.artworkCommercial)
+    newVersion.commercial =
+      currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
+        .intValue || currency(artworkData.artworkPersonal).intValue;
+  if (artworkData.artworkCategory)
+    newVersion.category = artworkData.artworkCategory || '';
+  if (artworkData.artworkDescription)
+    newVersion.description = artworkData.artworkDescription || '';
   return await newVersion.save({ session });
 };
 
@@ -228,6 +237,12 @@ export const removeArtworkSave = async ({ artworkId, session = null }) => {
     },
     { $inc: { saves: -1 } }
   ).session(session);
+};
+
+export const removeArtworkVersion = async ({ versionId, session = null }) => {
+  return await Version.remove({
+    _id: versionId,
+  }).session(session);
 };
 
 export const addArtworkComment = async ({

@@ -19,6 +19,17 @@ export const addNewOrder = async ({ orderData, session = null }) => {
   return await newOrder.save({ session });
 };
 
+export const fetchOrderByVersion = async ({
+  artworkId,
+  versionId,
+  session = null,
+}) => {
+  return await Order.findOne({
+    artwork: artworkId,
+    version: versionId,
+  }).session(session);
+};
+
 export const fetchOrderDetails = async ({
   userId,
   orderId,
