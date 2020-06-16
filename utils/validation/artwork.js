@@ -45,10 +45,10 @@ const schema = Joi.object().keys({
       }),
     }),
   }),
-  // artworkCategory: Joi.string().required(),
   artworkDescription: Joi.string().required(),
   artworkMedia: Joi.string().required(),
   artworkCover: Joi.string().required(),
+  // artworkCategory: Joi.string().required(),
 });
 
 export default (data) => Joi.validate(data, schema);
