@@ -68,7 +68,9 @@ router.route('/my_artwork').get(
 
 router.route('/add_artwork').post(
   isAuthenticated,
-  handler(artwork.postNewArtwork, true, (req, res, next) => {})
+  handler(artwork.postNewArtwork, true, (req, res, next) => ({
+    artworkData: req.body,
+  }))
 );
 
 router

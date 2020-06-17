@@ -86,8 +86,8 @@ const getLicenses = async ({ userId, artworkId }) => {
   return { licenses: foundLicenses };
 };
 
-const postNewArtwork = async ({ userId, session }) => {
-  const { error, value } = artworkValidator(sanitize(req.body));
+const postNewArtwork = async ({ userId, artworkData, session }) => {
+  const { error, value } = artworkValidator(sanitize(artworkData));
   if (error) throw createError(400, error);
   if (value.artworkPersonal || value.artworkCommercial) {
     const foundUser = await fetchUserById({
