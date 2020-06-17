@@ -1,9 +1,4 @@
 import mongoose from 'mongoose';
-import Artwork from '../models/artwork.js';
-import Order from '../models/order.js';
-import Version from '../models/version.js';
-import aws from 'aws-sdk';
-import User from '../models/user.js';
 import randomString from 'randomstring';
 import mailer from '../utils/email.js';
 import config from '../config/mailer.js';
@@ -25,212 +20,130 @@ import {
   editUserPreferences,
   deactivateExistingUser,
 } from '../services/user.js';
-import auth from '../utils/auth.js';
 import createError from 'http-errors';
-import Stripe from 'stripe';
+import { fetchStripeBalance } from '../services/stripe.js';
 
-const stripe = Stripe(process.env.STRIPE_SECRET);
-
-const getUserProfile = async (req, res, next) => {
-  try {
-    const { username } = req.params;
-    const { cursor, ceiling } = req.query;
-    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundUser = await fetchUserProfile({ username, skip, limit });
-    if (foundUser) {
-      return res.json({ user: foundUser, artwork: foundUser.artwork });
-    } else {
-      throw createError(400, 'User not found');
-    }
-  } catch (err) {
-    next(err, res);
+const getUserProfile = async ({ username, cursor, ceiling }) => {
+  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const foundUser = await fetchUserProfile({ username, skip, limit });
+  if (foundUser) {
+    return { user: foundUser, artwork: foundUser.artwork };
   }
+  throw createError(400, 'User not found');
 };
 
-const getUserArtwork = async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const { cursor, ceiling } = req.query;
-    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundArtwork = fetchUserArtworks({
-      userId,
-      skip,
-      limit,
-    });
-    return res.json({ artwork: foundArtwork });
-  } catch (err) {
-    next(err, res);
-  }
+const getUserArtwork = async ({ userId, cursor, ceiling }) => {
+  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const foundArtwork = fetchUserArtworks({
+    userId,
+    skip,
+    limit,
+  });
+  return { artwork: foundArtwork };
 };
 
-const getUserSaves = async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const { cursor, ceiling } = req.query;
-    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundUser = await fetchUserSaves({ userId, skip, limit });
-    return res.json({ saves: foundUser.savedArtwork });
-  } catch (err) {
-    next(err, res);
-  }
+const getUserSaves = async ({ userId, cursor, ceiling }) => {
+  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const foundUser = await fetchUserSaves({ userId, skip, limit });
+  return { saves: foundUser.savedArtwork };
 };
 
-const getUserStatistics = async (req, res, next) => {
-  try {
-    // brisanje accounta
-    /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
+const getUserStatistics = async ({ userId }) => {
+  // brisanje accounta
+  /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
     }); */
-    const { userId } = req.params;
-    const foundUser = await fetchUserStatistics({ userId });
-    const balance = await stripe.balance.retrieve({
-      stripe_account: foundUser.stripeId,
-    });
-    const { amount, currency } = balance.available[0];
-    return res.json({ statistics: foundUser, amount: amount });
-  } catch (err) {
-    next(err, res);
-  }
+  const foundUser = await fetchUserStatistics({ userId });
+  const balance = await fetchStripeBalance({ stripeId: foundUser.stripeId });
+  const { amount, currency } = balance.available[0];
+  return { statistics: foundUser, amount: amount };
 };
 
-const getUserSales = async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const { from, to } = req.query;
-    const foundOrders = await fetchOrdersBySeller({ userId, from, to });
-    return res.json({ statistics: foundOrders });
-  } catch (err) {
-    next(err, res);
-  }
+const getUserSales = async ({ userId, from, to }) => {
+  const foundOrders = await fetchOrdersBySeller({ userId, from, to });
+  return { statistics: foundOrders };
 };
 
-const getUserPurchases = async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const { from, to } = req.query;
-    const foundOrders = await fetchOrdersByBuyer({ userId, from, to });
-    return res.json({ statistics: foundOrders });
-  } catch (err) {
-    next(err, res);
-  }
+const getUserPurchases = async ({ userId, from, to }) => {
+  const foundOrders = await fetchOrdersByBuyer({ userId, from, to });
+  return { statistics: foundOrders };
 };
 
-const updateUserProfile = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { userId } = req.params;
-    const { userPhoto, userDescription, userCountry } = req.body;
-    const foundUser = await fetchUserById({ userId, session });
-    if (foundUser) {
-      if (userPhoto) foundUser.photo = userPhoto;
-      if (userDescription) foundUser.description = userDescription;
-      if (userCountry) foundUser.country = userCountry;
-      await foundUser.save({ session });
-      await session.commitTransaction();
-      return res.json({ message: 'User details updated' });
-    } else {
-      throw createError(400, 'User not found');
-    }
-  } catch (err) {
-    await session.abortTransaction();
-    next(err, res);
-  } finally {
-    session.endSession();
+const updateUserProfile = async ({
+  userId,
+  userPhoto,
+  userDescription,
+  userCountry,
+  session,
+}) => {
+  const foundUser = await fetchUserById({ userId, session });
+  if (foundUser) {
+    if (userPhoto) foundUser.photo = userPhoto;
+    if (userDescription) foundUser.description = userDescription;
+    if (userCountry) foundUser.country = userCountry;
+    await foundUser.save({ session });
+    return { message: 'User details updated' };
   }
+  throw createError(400, 'User not found');
 };
 
-const getUserSettings = async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const foundUser = await fetchUserById({ userId });
-    if (foundUser) {
-      return res.json({ user: foundUser });
-    } else {
-      throw createError(400, 'User not found');
-    }
-  } catch (err) {
-    next(err, res);
+const getUserSettings = async ({ userId }) => {
+  const foundUser = await fetchUserById({ userId });
+  if (foundUser) {
+    return { user: foundUser };
   }
+  throw createError(400, 'User not found');
 };
 
-const getUserNotifications = async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const { cursor, ceiling } = req.query;
-    const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-    const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-    const foundNotifications = await fetchUserNotifications({
-      userId,
-      skip,
-      limit,
-    });
-    return res.json({ notifications: foundNotifications });
-  } catch (err) {
-    next(err, res);
-  }
+const getUserNotifications = async ({ userId, cursor, ceiling }) => {
+  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const foundNotifications = await fetchUserNotifications({
+    userId,
+    skip,
+    limit,
+  });
+  return { notifications: foundNotifications };
 };
 
-const updateUserEmail = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { userId } = req.params;
-    const { email } = req.body;
-    const foundUser = await fetchUserByEmail({ email, session });
-    if (foundUser) {
-      throw createError(400, 'User with entered email already exists');
-    } else {
-      const token = randomString.generate();
-      const link = `${server.clientDomain}/verify_token/${token}`;
-      await editUserEmail({ userId, email, token, session });
-      await mailer.sendEmail(
-        config.app,
-        email,
-        'Please confirm your email',
-        `Hello,
+const updateUserEmail = async ({ userId, email, session }) => {
+  const foundUser = await fetchUserByEmail({ email, session });
+  if (foundUser) {
+    throw createError(400, 'User with entered email already exists');
+  } else {
+    const token = randomString.generate();
+    const link = `${server.clientDomain}/verify_token/${token}`;
+    await editUserEmail({ userId, email, token, session });
+    await mailer.sendEmail(
+      config.app,
+      email,
+      'Please confirm your email',
+      `Hello,
         Please click on the link to verify your email:
 
         <a href=${link}>Click here to verify</a>`
-      );
-      await session.commitTransaction();
-      return res.json({ message: 'Email successfully updated' });
-    }
-  } catch (err) {
-    console.log(err);
-    await session.abortTransaction();
-    next(err, res);
-  } finally {
-    session.endSession();
+    );
+    return { message: 'Email successfully updated' };
   }
 };
 
 // needs transaction (done)
-const updateUserPassword = async (req, res, next) => {
-  try {
-    const { current, password, confirmPassword } = req.body;
-    const { userId } = req.params;
-    await editUserPassword({ userId, password });
-    return res.json({ message: 'Password updated successfully' });
-  } catch (err) {
-    next(err, res);
-  }
+const updateUserPassword = async ({
+  userId,
+  current,
+  password,
+  confirmPassword,
+}) => {
+  await editUserPassword({ userId, password });
+  return { message: 'Password updated successfully' };
 };
 
 // needs transaction (done)
-const updateUserPreferences = async (req, res, next) => {
-  try {
-    const { displaySaves } = req.body;
-    const { userId } = req.params;
-    await editUserPreferences({ userId, displaySaves });
-    return res
-      .status(200)
-      .json({ message: 'Preferences updated successfully' });
-  } catch (err) {
-    next(err, res);
-  }
+const updateUserPreferences = async ({ userId, displaySaves }) => {
+  await editUserPreferences({ userId, displaySaves });
+  return { message: 'Preferences updated successfully' };
 };
 
 /* const deleteUser = async (req, res, next) => {
@@ -300,61 +213,49 @@ const updateUserPreferences = async (req, res, next) => {
 // needs testing (better way to update already found user)
 // not tested
 // needs transaction (not tested)
-const deactivateUser = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { userId } = req.params;
-    const foundUser = await fetchUserById({ userId, session });
-    if (foundUser) {
-      const foundArtwork = await fetchArtworksByOwner({
-        userId: res.locals.user.id,
+const deactivateUser = async ({ userId, session }) => {
+  const foundUser = await fetchUserById({ userId, session });
+  if (foundUser) {
+    const foundArtwork = await fetchArtworksByOwner({
+      userId: res.locals.user.id,
+      session,
+    });
+    for (let artwork of foundArtwork) {
+      const foundOrder = await fetchOrderByVersion({
+        artworkId: artwork._id,
+        versionId: artwork.current._id,
         session,
       });
-      for (let artwork of foundArtwork) {
-        const foundOrder = await fetchOrderByVersion({
-          artworkId: artwork._id,
+      if (!foundOrder.length) {
+        await deleteS3Object({
+          link: artwork.current.cover,
+          folder: 'artworkCovers/',
+        });
+
+        await deleteS3Object({
+          link: artwork.current.media,
+          folder: 'artworkMedia/',
+        });
+
+        await removeArtworkVersion({
           versionId: artwork.current._id,
           session,
         });
-        if (!foundOrder.length) {
-          await deleteS3Object({
-            link: artwork.current.cover,
-            folder: 'artworkCovers/',
-          });
-
-          await deleteS3Object({
-            link: artwork.current.media,
-            folder: 'artworkMedia/',
-          });
-
-          await removeArtworkVersion({
-            versionId: artwork.current._id,
-            session,
-          });
-        }
-        await deactivateExistingArtwork({ artworkId: artwork._id, session });
       }
-      await deleteS3Object({
-        link: foundUser.photo,
-        folder: 'profilePhotos/',
-      });
-      await deactivateExistingUser({ userId: foundUser._id, session });
-      await session.commitTransaction();
-      req.logout();
-      req.session.destroy(function (err) {
-        res.json('/');
-      });
-    } else {
-      throw createError(400, 'User not found');
+      await deactivateExistingArtwork({ artworkId: artwork._id, session });
     }
-  } catch (err) {
-    await session.abortTransaction();
-    console.log(err);
-    next(err, res);
-  } finally {
-    session.endSession();
+    await deleteS3Object({
+      link: foundUser.photo,
+      folder: 'profilePhotos/',
+    });
+    await deactivateExistingUser({ userId: foundUser._id, session });
+    req.logout();
+    req.session.destroy(function (err) {
+      res.json('/');
+    });
+    return { message: 'User deactivated' };
   }
+  throw createError(400, 'User not found');
 };
 
 export default {

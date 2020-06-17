@@ -1,9 +1,19 @@
 import express from 'express';
-import { isAuthenticated } from '../../../utils/helpers.js';
+import {
+  isAuthenticated,
+  requestHandler as handler,
+} from '../../../utils/helpers.js';
 import review from '../../../controllers/review.js';
 
 const router = express.Router();
 
-router.route('/rate_artwork/:orderId').post(isAuthenticated, review.postReview);
+router.route('/rate_artwork/:orderId').post(
+  isAuthenticated,
+  handler(review.postReview, true, (req, res, next) => ({
+    reviewRating: req.body.reviewRating,
+    reviewContent: req.body.reviewContent,
+    orderId: req.params.orderId,
+  }))
+);
 
 export default router;

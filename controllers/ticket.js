@@ -5,33 +5,23 @@ import createError from 'http-errors';
 
 // how to handle transactions?
 // treba sredit
-const postTicket = async (req, res, next) => {
-  try {
-    const userEmail = req.user.email;
-    const { ticketTitle, ticketBody } = req.body;
-
-    if ((userEmail, ticketTitle, ticketBody)) {
-      await addNewTicket({
-        userId: res.locals.user.id,
-        ticketTitle,
-        ticketBody,
-      });
-      const ticketId = savedTicket._id;
-      await mailer.sendEmail(
-        userEmail,
-        config.email,
-        `Support ticket (#${ticketId}): ${ticketTitle}`,
-        ticketBody
-      );
-      await session.commitTransaction();
-      res.json({ message: 'Ticket successfully sent' });
-    } else {
-      throw createError(400, 'All fields are required');
-    }
-  } catch (err) {
-    console.log(err);
-    next(err, res);
+const postTicket = async ({ userEmail, ticketTitle, ticketBody }) => {
+  if ((userEmail, ticketTitle, ticketBody)) {
+    await addNewTicket({
+      userId: res.locals.user.id,
+      ticketTitle,
+      ticketBody,
+    });
+    const ticketId = savedTicket._id;
+    await mailer.sendEmail(
+      userEmail,
+      config.email,
+      `Support ticket (#${ticketId}): ${ticketTitle}`,
+      ticketBody
+    );
+    return { message: 'Ticket successfully sent' };
   }
+  throw createError(400, 'All fields are required');
 };
 
 export default {

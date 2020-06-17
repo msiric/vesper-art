@@ -12,70 +12,41 @@ import {
 
 // needs transaction (done)
 // treba sredit
-const postDiscount = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { discountCode } = req.body;
-    const foundUser = await fetchUserById({
-      userId: res.locals.user.id,
+const postDiscount = async ({ userId, discountCode, session }) => {
+  const foundUser = await fetchUserById({
+    userId,
+    session,
+  });
+  if (!foundUser.discount) {
+    const foundDiscount = await fetchDiscountByCode({
+      discountCode,
       session,
     });
-    if (!foundUser.discount) {
-      const foundDiscount = await fetchDiscountByCode({
-        discountCode,
-        session,
-      });
-      if (foundDiscount) {
-        if (foundDiscount.active) {
-          await addUserDiscount({
-            userId: res.locals.user.id,
-            discountId: foundDiscount._id,
-            session,
-          });
-          await session.commitTransaction();
-          return res
-            .status(200)
-            .json({ message: 'Discount applied', payload: foundDiscount });
-        } else {
-          throw createError(400, 'Discount expired');
-        }
-      } else {
-        throw createError(400, 'Discount not found');
+    if (foundDiscount) {
+      if (foundDiscount.active) {
+        await addUserDiscount({
+          discountId: foundDiscount._id,
+          userId,
+          session,
+        });
+        return { message: 'Discount applied', payload: foundDiscount };
       }
-    } else {
-      throw createError(400, 'User already has an applied discount');
+      throw createError(400, 'Discount expired');
     }
-  } catch (err) {
-    console.log(err);
-    await session.abortTransaction();
-    next(err, res);
-  } finally {
-    session.endSession();
+    throw createError(400, 'Discount not found');
   }
+  throw createError(400, 'User already has an applied discount');
 };
 
 // needs transaction (done)
-const deleteDiscount = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { discountId } = req.params;
-    const foundDiscount = await fetchDiscountById({ discountId, session });
-    if (foundDiscount) {
-      await removeUserDiscount({ userId: res.locals.user.id, session });
-      await session.commitTransaction();
-      return res.json('Discount removed');
-    } else {
-      throw createError(400, 'Discount not found');
-    }
-  } catch (err) {
-    console.log(err);
-    await session.abortTransaction();
-    next(err, res);
-  } finally {
-    session.endSession();
+const deleteDiscount = async ({ userId, discountId, session }) => {
+  const foundDiscount = await fetchDiscountById({ discountId, session });
+  if (foundDiscount) {
+    await removeUserDiscount({ userId: res.locals.user.id, session });
+    await session.commitTransaction();
+    return { message: 'Discount removed' };
   }
+  throw createError(400, 'Discount not found');
 };
 
 export default {

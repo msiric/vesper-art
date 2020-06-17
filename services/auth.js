@@ -41,10 +41,7 @@ export const addNewUser = async ({
 
 export const logUserOut = (res) => {
   auth.sendRefreshToken(res, '');
-  res.json({
-    accessToken: '',
-    user: '',
-  });
+  return { accessToken: '', user: '' };
 };
 
 export const refreshAccessToken = async (req, res, next) => {

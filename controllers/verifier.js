@@ -2,19 +2,12 @@ import mongoose from 'mongoose';
 import createError from 'http-errors';
 import { fetchLicenseByFingerprint } from '../services/license.js';
 
-const verifyLicense = async (req, res, next) => {
-  try {
-    const { fingerprint } = req.body;
-    const foundLicense = await fetchLicenseByFingerprint({ fingerprint });
-    if (foundLicense) {
-      return res.json({ license: foundLicense });
-    } else {
-      throw createError(400, 'License not found');
-    }
-  } catch (err) {
-    console.log(err);
-    next(err, res);
+const verifyLicense = async ({ fingerprint }) => {
+  const foundLicense = await fetchLicenseByFingerprint({ fingerprint });
+  if (foundLicense) {
+    return { license: foundLicense };
   }
+  throw createError(400, 'License not found');
 };
 
 const displayLicense = async (req, res, next) => {

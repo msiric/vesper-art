@@ -223,6 +223,13 @@ export const editUserPreferences = async ({
   ).session(session);
 };
 
+export const addUserArtwork = async ({ userId, artworkId, session = null }) => {
+  return await User.updateOne(
+    { _id: userId },
+    { $push: { artwork: artworkId } }
+  ).session(session);
+};
+
 export const addUserSave = async ({ userId, artworkId, session = null }) => {
   return await User.updateOne(
     { _id: userId },

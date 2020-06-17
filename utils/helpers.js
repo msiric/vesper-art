@@ -20,13 +20,35 @@ export const deleteS3Object = async ({ link, folder }) => {
   await awsObject.deleteObject(awsParams).promise();
 };
 
-export const requestHandler = (promise, params) => async (req, res, next) => {
-  const boundParams = params ? params(req, res, next) : [];
-  try {
-    const result = await promise(...boundParams);
-    return res.json(result || { message: 'OK' });
-  } catch (error) {
-    next(error);
+export const requestHandler = (promise, transaction, params) => async (
+  req,
+  res,
+  next
+) => {
+  const boundParams = params ? params(req, res, next) : {};
+  const userId = res.locals.user ? res.locals.user.id : null;
+  if (transaction) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      const result = await promise({ userId, session, ...boundParams });
+      await session.commitTransaction();
+      return res.json(result || { message: 'OK' });
+    } catch (error) {
+      await session.abortTransaction();
+      console.log(error);
+      next(error);
+    } finally {
+      session.endSession();
+    }
+  } else {
+    try {
+      const result = await promise({ userId, ...boundParams });
+      return res.json(result || { message: 'OK' });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
   }
 };
 

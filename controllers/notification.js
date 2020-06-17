@@ -5,43 +5,27 @@ import {
   editUnreadNotification,
 } from '../services/notification.js';
 
-const getNotifications = async (req, res, next) => {
-  try {
-    const foundNotifications = await fetchExistingNotifications({
-      userId: res.locals.user.id,
-    });
-    res.json({ notification: foundNotifications });
-  } catch (err) {
-    next(err, res);
-  }
+const getNotifications = async ({ userId }) => {
+  const foundNotifications = await fetchExistingNotifications({
+    userId,
+  });
+  return { notification: foundNotifications };
 };
 
-const readNotification = async (req, res, next) => {
-  try {
-    const { notificationId } = req.params;
-    await editReadNotification({
-      userId: res.locals.user.id,
-      notificationId,
-    });
-    res.json({ message: 'Notification read' });
-  } catch (err) {
-    console.log(err);
-    next(err, res);
-  }
+const readNotification = async ({ userId, notificationId }) => {
+  await editReadNotification({
+    userId,
+    notificationId,
+  });
+  return { message: 'Notification read' };
 };
 
-const unreadNotification = async (req, res, next) => {
-  try {
-    const { notificationId } = req.params;
-    await editUnreadNotification({
-      userId: res.locals.user.id,
-      notificationId,
-    });
-    res.json({ message: 'Notification read' });
-  } catch (err) {
-    console.log(err);
-    next(err, res);
-  }
+const unreadNotification = async ({ userId, notificationId }) => {
+  await editUnreadNotification({
+    userId,
+    notificationId,
+  });
+  return { message: 'Notification read' };
 };
 
 export default {

@@ -19,9 +19,7 @@ const createAccessToken = (user) => {
 
 const updateAccessToken = async (req, res, next) => {
   const token = req.cookies.jid;
-  if (!token) {
-    return { ok: false, accessToken: '' };
-  }
+  if (!token) return { ok: false, accessToken: '' };
 
   let payload = null;
   try {
