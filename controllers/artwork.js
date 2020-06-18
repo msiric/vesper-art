@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import createError from 'http-errors';
-import { sanitize, deleteS3Object } from '../utils/helpers.js';
+import { sanitize, deleteS3Object, formatParams } from '../utils/helpers.js';
 import artworkValidator from '../utils/validation/artwork.js';
 import {
   fetchActiveArtworks,
@@ -28,39 +28,34 @@ import { fetchOrderByVersion } from '../services/order.js';
 import { fetchStripeAccount } from '../services/stripe.js';
 
 const getArtwork = async ({ cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = await fetchActiveArtworks({ skip, limit });
   return { artwork: foundArtwork };
 };
 
 const getArtworkDetails = async ({ artworkId, cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = await fetchArtworkDetails({ artworkId, skip, limit });
   if (foundArtwork) return { artwork: foundArtwork };
   throw createError(400, 'Artwork not found');
 };
 
 const getArtworkComments = async ({ artworkId, cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = await fetchArtworkComments({ artworkId, skip, limit });
   if (foundArtwork) return { artwork: foundArtwork };
   throw createError(400, 'Artwork not found');
 };
 
 const getArtworkReviews = async ({ artworkId, cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = await fetchArtworkReviews({ artworkId, skip, limit });
   if (foundArtwork) return { artwork: foundArtwork };
   throw createError(400, 'Artwork not found');
 };
 
 const getUserArtwork = async ({ userId, cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = await fetchUserArtworks({
     userId,
     skip,

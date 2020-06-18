@@ -110,8 +110,7 @@ export const fetchUserArtwork = async ({
   ceiling,
   session = null,
 }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const { skip, limit } = formatParams({ cursor, ceiling });
   return await Artwork.find(
     {
       $and: [{ owner: userId }, { active: true }],

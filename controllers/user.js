@@ -3,6 +3,7 @@ import randomString from 'randomstring';
 import mailer from '../utils/email.js';
 import config from '../config/mailer.js';
 import { server } from '../config/secret.js';
+import { formatParams } from '../utils/helpers.js';
 import {
   fetchUserArtworks,
   fetchArtworksByOwner,
@@ -24,8 +25,7 @@ import createError from 'http-errors';
 import { fetchStripeBalance } from '../services/stripe.js';
 
 const getUserProfile = async ({ username, cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const { skip, limit } = formatParams({ cursor, ceiling });
   const foundUser = await fetchUserProfile({ username, skip, limit });
   if (foundUser) {
     return { user: foundUser, artwork: foundUser.artwork };
@@ -34,8 +34,7 @@ const getUserProfile = async ({ username, cursor, ceiling }) => {
 };
 
 const getUserArtwork = async ({ userId, cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = fetchUserArtworks({
     userId,
     skip,
@@ -45,8 +44,7 @@ const getUserArtwork = async ({ userId, cursor, ceiling }) => {
 };
 
 const getUserSaves = async ({ userId, cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const { skip, limit } = formatParams({ cursor, ceiling });
   const foundUser = await fetchUserSaves({ userId, skip, limit });
   return { saves: foundUser.savedArtwork };
 };
@@ -98,8 +96,7 @@ const getUserSettings = async ({ userId }) => {
 };
 
 const getUserNotifications = async ({ userId, cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const { skip, limit } = formatParams({ cursor, ceiling });
   const foundNotifications = await fetchUserNotifications({
     userId,
     skip,

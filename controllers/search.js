@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
+import { formatParams } from '../utils/helpers.js';
 import { fetchArtworkResults, fetchUserResults } from '../services/search.js';
 
 const getResults = async ({ query, type, cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  const { skip, limit } = formatParams({ cursor, ceiling });
   let foundResults = [];
   let foundType = null;
   if (type === 'artwork') {

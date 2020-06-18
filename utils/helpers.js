@@ -20,6 +20,12 @@ export const deleteS3Object = async ({ link, folder }) => {
   await awsObject.deleteObject(awsParams).promise();
 };
 
+export const formatParams = ({ cursor, ceiling }) => {
+  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  return { skip, limit };
+};
+
 export const requestHandler = (promise, transaction, params) => async (
   req,
   res,
