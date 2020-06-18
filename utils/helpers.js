@@ -85,15 +85,25 @@ export const isNotAuthenticated = async (req, res, next) => {
   return next();
 };
 
-export const checkParams = (req, res, next) => {
+export const checkParamsUsername = (req, res, next) => {
+  let isValid = true;
+  for (let param in req.params) {
+    const value = req.params[param];
+    if (!value) isValid = false;
+    else if (typeof value !== 'string') isValid = false;
+  }
+  if (isValid) return next();
+  throw createError(400, 'Invalid route parameter');
+};
+
+export const checkParamsId = (req, res, next) => {
   const isId = (id) => (ObjectId(id) ? true : false);
   let isValid = true;
-  Object.keys(req.params).forEach((param) => {
+  for (let param in req.params) {
     const value = req.params[param];
     if (!value) isValid = false;
     else if (!isId(value)) isValid = false;
-  });
-
+  }
   if (isValid) return next();
   throw createError(400, 'Invalid route parameter');
 };

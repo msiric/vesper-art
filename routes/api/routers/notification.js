@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   isAuthenticated,
+  checkParamsId,
   requestHandler as handler,
 } from '../../../utils/helpers.js';
 import notification from '../../../controllers/notification.js';
@@ -13,14 +14,14 @@ router.route('/notifications').get(
 );
 
 router.route('/read_notification/:notificationId').patch(
-  isAuthenticated,
+  [isAuthenticated, checkParamsId],
   handler(notification.readNotification, false, (req, res, next) => ({
     notificationId: req.params.notificationId,
   }))
 );
 
 router.route('/unread_notification/:notificationId').patch(
-  isAuthenticated,
+  [isAuthenticated, checkParamsId],
   handler(notification.unreadNotification, false, (req, res, next) => ({
     notificationId: req.params.notificationId,
   }))

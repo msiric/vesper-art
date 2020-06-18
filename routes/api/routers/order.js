@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   isAuthenticated,
+  checkParamsId,
   requestHandler as handler,
 } from '../../../utils/helpers.js';
 import order from '../../../controllers/order.js';
@@ -18,7 +19,7 @@ router.route('/orders/purchases').get(
 );
 
 router.route('/orders/:orderId').get(
-  isAuthenticated,
+  [isAuthenticated, checkParamsId],
   handler(order.getOrderDetails, false, (req, res, next) => ({
     orderId: req.params.orderId,
   }))

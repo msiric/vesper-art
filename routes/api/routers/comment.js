@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   isAuthenticated,
+  checkParamsId,
   requestHandler as handler,
 } from '../../../utils/helpers.js';
 import comment from '../../../controllers/comment.js';
@@ -8,14 +9,14 @@ import comment from '../../../controllers/comment.js';
 const router = express.Router();
 
 router.route('/artwork/:artworkId/comment').post(
-  isAuthenticated,
+  [isAuthenticated, checkParamsId],
   handler(comment.postComment, true, (req, res, next) => ({
     artworkId: req.params.artworkId,
   }))
 );
 
 router.route('/artwork/:artworkId/comment/:commentId').patch(
-  isAuthenticated,
+  [isAuthenticated, checkParamsId],
   handler(comment.patchComment, false, (req, res, next) => ({
     artworkId: req.params.artworkId,
     commentId: req.params.commentId,
@@ -24,7 +25,7 @@ router.route('/artwork/:artworkId/comment/:commentId').patch(
 );
 
 router.route('/artwork/:artworkId/comment/:commentId').delete(
-  isAuthenticated,
+  [isAuthenticated, checkParamsId],
   handler(comment.deleteComment, true, (req, res, next) => ({
     artworkId: req.params.artworkId,
     commentId: req.params.commentId,

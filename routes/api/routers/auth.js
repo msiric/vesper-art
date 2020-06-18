@@ -2,6 +2,7 @@ import express from 'express';
 import {
   isAuthenticated,
   isNotAuthenticated,
+  checkParamsId,
   requestHandler as handler,
 } from '../../../utils/helpers.js';
 import auth from '../../../controllers/auth.js';
@@ -44,9 +45,10 @@ router.route('/refresh_token').post(
   }))
 );
 
-router
-  .route('/revoke_token/:userId')
-  .post(handler(auth.postRevokeToken, false, (req, res, next) => ({})));
+router.route('/revoke_token/:userId').post(
+  checkParamsId,
+  handler(auth.postRevokeToken, false, (req, res, next) => ({}))
+);
 
 router.route('/verify_token/:tokenId').get(
   isNotAuthenticated,
@@ -63,7 +65,7 @@ router.route('/forgot_password').post(
 );
 
 router.route('/reset_password/:tokenId').post(
-  isNotAuthenticated,
+  [isNotAuthenticated, checkParamsId],
   handler(auth.resetPassword, true, (req, res, next) => ({
     tokenId: req.params.tokenId,
     password: req.body.password,

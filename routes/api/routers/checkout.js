@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   isAuthenticated,
+  checkParamsId,
   requestHandler as handler,
 } from '../../../utils/helpers.js';
 import checkout from '../../../controllers/checkout.js';
@@ -20,7 +21,7 @@ router.route('/checkout');
 /*   .post(isAuthenticated, checkout.postPaymentCart); */
 
 router.route('/checkout/:artworkId').get(
-  isAuthenticated,
+  [isAuthenticated, checkParamsId],
   handler(checkout.getCheckout, false, (req, res, next) => ({
     artworkId: req.params.artworkId,
   }))
