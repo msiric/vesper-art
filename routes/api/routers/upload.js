@@ -1,5 +1,9 @@
 import express from 'express';
-import { isAuthenticated } from '../../../utils/helpers.js';
+import {
+  isAuthenticated,
+  checkParamsId,
+  requestHandler as handler,
+} from '../../../utils/helpers.js';
 import upload from '../../../controllers/upload.js';
 import multer from '../../../services/multer.js';
 
@@ -13,16 +17,31 @@ const artworkMediaSingleEdit = artworkMediaEdit.single('artworkMedia');
 
 const router = express.Router();
 
-router
-  .route('/profile_image_upload')
-  .post([isAuthenticated, profilePhotoSingleUpload], upload.postProfileImage);
+router.route('/profile_image_upload').post(
+  [isAuthenticated, profilePhotoSingleUpload],
+  handler(upload.postProfileImage, false, (req, res, next) => ({
+    req,
+    res,
+    next,
+  }))
+);
 
-router
-  .route('/artwork_media_upload')
-  .post([isAuthenticated, artworkMediaSingleUpload], upload.postArtworkMedia);
+router.route('/artwork_media_upload').post(
+  [isAuthenticated, artworkMediaSingleUpload],
+  handler(upload.postArtworkMedia, false, (req, res, next) => ({
+    req,
+    res,
+    next,
+  }))
+);
 
-router
-  .route('/artwork_media_upload/:id')
-  .put([isAuthenticated, artworkMediaSingleEdit], upload.putArtworkMedia);
+router.route('/artwork_media_upload/:id').put(
+  [isAuthenticated, checkParamsId, artworkMediaSingleEdit],
+  handler(upload.putArtworkMedia, false, (req, res, next) => ({
+    req,
+    res,
+    next,
+  }))
+);
 
 export default router;
