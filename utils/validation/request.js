@@ -4,7 +4,7 @@ import joiObjectId from 'joi-objectid';
 Joi.objectId = joiObjectId(Joi);
 
 const schema = Joi.object().keys({
-  requestCategory: 'ne znam',
+  requestCategory: Joi.string().trim(),
   requestBudget: Joi.number().integer(),
   requestDeadline: Joi.date(),
   requestDescription: Joi.string().required(),
