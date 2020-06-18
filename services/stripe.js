@@ -41,6 +41,42 @@ export const constructStripePayout = async ({
   );
 };
 
+export const constructStripeIntent = async ({
+  method,
+  amount,
+  currency,
+  fee,
+  seller,
+  order,
+  session = null,
+}) => {
+  return await stripe.paymentIntents.create({
+    payment_method_types: [method],
+    amount: amount,
+    currency: currency,
+    application_fee_amount: fee,
+    on_behalf_of: seller,
+    transfer_data: {
+      destination: seller,
+    },
+    metadata: {
+      orderData: JSON.stringify(order),
+    },
+  });
+};
+
+export const updateStripeIntent = async ({
+  intentId,
+  amount,
+  fee,
+  session = null,
+}) => {
+  return await stripe.paymentIntents.update(intentId, {
+    amount: amount,
+    application_fee_amount: fee,
+  });
+};
+
 export const fetchStripeBalance = async ({ stripeId, session = null }) => {
   return await stripe.balance.retrieve({ stripe_account: stripeId });
 };

@@ -4,7 +4,6 @@ import License from '../models/license.js';
 import crypto from 'crypto';
 import createError from 'http-errors';
 import axios from 'axios';
-import Stripe from 'stripe';
 import FormData from 'form-data';
 import querystring from 'querystring';
 import currency from 'currency.js';
@@ -12,6 +11,8 @@ import {
   constructStripeEvent,
   constructStripeLink,
   constructStripePayout,
+  constructStripeIntent,
+  updateStripeIntent,
   fetchStripeAccount,
   fetchStripeBalance,
 } from '../services/stripe.js';
@@ -28,8 +29,6 @@ import socketApi from '../realtime/io.js';
 import orderValidator from '../utils/validation/order.js';
 import licenseValidator from '../utils/validation/license.js';
 import { sanitizeData } from '../utils/helpers.js';
-
-const stripe = Stripe(process.env.STRIPE_SECRET);
 
 const receiveWebhookEvent = async (req, res, next) => {
   const signature = req.headers['stripe-signature'];
@@ -122,22 +121,18 @@ const managePaymentIntent = async ({
         licenses: licenses,
       };
       const paymentIntent = intentId
-        ? await stripe.paymentIntents.update(intentId, {
+        ? await updateStripeIntent({
+            intentId,
             amount: buyerTotal.intValue,
             application_fee_amount: platformTotal.intValue,
           })
-        : await stripe.paymentIntents.create({
-            payment_method_types: ['card'],
+        : await constructStripeIntent({
+            method: 'card',
             amount: buyerTotal.intValue,
             currency: 'usd',
-            application_fee_amount: platformTotal.intValue,
-            on_behalf_of: foundArtwork.owner.stripeId,
-            transfer_data: {
-              destination: foundArtwork.owner.stripeId,
-            },
-            metadata: {
-              orderData: JSON.stringify(orderData),
-            },
+            fee: platformTotal.intValue,
+            seller: foundArtwork.owner.stripeId,
+            order: orderData,
           });
       return {
         intent: {
