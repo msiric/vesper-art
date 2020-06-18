@@ -4,7 +4,7 @@ import joiObjectId from 'joi-objectid';
 Joi.objectId = joiObjectId(Joi);
 
 const schema = Joi.object().keys({
-  name: Joi.string().required(),
+  discountCode: Joi.string().trim().required(),
 });
 
 export default (data) => Joi.validate(data, schema);

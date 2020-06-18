@@ -5,9 +5,15 @@ import { fetchUserOrder, addOrderReview } from '../services/order.js';
 import { addArtworkReview } from '../services/artwork.js';
 import { addNewNotification } from '../services/notification.js';
 import { editUserRating } from '../services/user.js';
+import reviewValidator from '../utils/validation/review.js';
+import { sanitizeData } from '../utils/helpers.js';
 
 // needs transaction (done)
 const postReview = async ({ userId, reviewRating, reviewContent, orderId }) => {
+  const { error } = reviewValidator(
+    sanitizeData({ reviewRating, reviewContent })
+  );
+  if (error) throw createError(400, error);
   if (reviewRating) {
     const foundOrder = await fetchUserOrder({
       orderId,

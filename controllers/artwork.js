@@ -129,13 +129,13 @@ const postNewArtwork = async ({ userId, artworkData, session }) => {
 // $TODO
 // does it work in all cases?
 // needs testing
-const updateArtwork = async ({ userId, artworkId, session }) => {
+const updateArtwork = async ({ userId, artworkId, artworkData, session }) => {
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,
     session,
   });
-  const { error, value } = artworkValidator(sanitizeData(req.body));
+  const { error, value } = artworkValidator(sanitizeData(artworkData));
   if (error) throw createError(400, error);
   if (foundArtwork) {
     if (value.artworkPersonal || value.artworkCommercial) {

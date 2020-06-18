@@ -89,6 +89,7 @@ router
     [isAuthenticated, checkParamsId],
     handler(artwork.updateArtwork, true, (req, res, next) => ({
       artworkId: req.params.artworkId,
+      artworkData: req.body,
     }))
   )
   .delete(

@@ -10,11 +10,15 @@ import {
   editExistingComment,
   removeExistingComment,
 } from '../services/comment.js';
+import commentValidator from '../utils/validation/comment.js';
+import { sanitizeData } from '../utils/helpers.js';
 import { addUserNotification } from '../services/user.js';
 import { addNewNotification } from '../services/notification.js';
 import socketApi from '../realtime/io.js';
 
 const postComment = async ({ userId, artworkId, commentContent, session }) => {
+  const { error, value } = commentValidator(sanitizeData({ commentContent }));
+  if (error) throw createError(400, error);
   const foundArtwork = await fetchArtworkById({ artworkId, session });
   if (!foundArtwork) {
     throw createError(400, 'Artwork not found');
@@ -46,7 +50,6 @@ const postComment = async ({ userId, artworkId, commentContent, session }) => {
         comment: savedComment,
       }); */
     // new end
-    await session.commitTransaction();
     return {
       message: 'Comment posted successfully',
       payload: savedComment,
@@ -60,6 +63,8 @@ const patchComment = async ({
   commentId,
   commentContent,
 }) => {
+  const { error, value } = commentValidator(sanitizeData({ commentContent }));
+  if (error) throw createError(400, error);
   await editExistingComment({
     commentId,
     artworkId,

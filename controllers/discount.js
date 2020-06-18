@@ -9,10 +9,14 @@ import {
   addUserDiscount,
   removeUserDiscount,
 } from '../services/user.js';
+import discountValidator from '../utils/validation/discount.js';
+import { sanitizeData } from '../utils/helpers.js';
 
 // needs transaction (done)
 // treba sredit
 const postDiscount = async ({ userId, discountCode, session }) => {
+  const { error, value } = discountValidator(sanitizeData({ discountCode }));
+  if (error) throw createError(400, error);
   const foundUser = await fetchUserById({
     userId,
     session,
@@ -42,8 +46,7 @@ const postDiscount = async ({ userId, discountCode, session }) => {
 const deleteDiscount = async ({ userId, discountId, session }) => {
   const foundDiscount = await fetchDiscountById({ discountId, session });
   if (foundDiscount) {
-    await removeUserDiscount({ userId: res.locals.user.id, session });
-    await session.commitTransaction();
+    await removeUserDiscount({ userId, session });
     return { message: 'Discount removed' };
   }
   throw createError(400, 'Discount not found');

@@ -3,7 +3,7 @@ import randomString from 'randomstring';
 import mailer from '../utils/email.js';
 import config from '../config/mailer.js';
 import { server } from '../config/secret.js';
-import { formatParams } from '../utils/helpers.js';
+import { formatParams, sanitizeData } from '../utils/helpers.js';
 import {
   fetchUserArtworks,
   fetchArtworksByOwner,
@@ -23,6 +23,10 @@ import {
 } from '../services/user.js';
 import createError from 'http-errors';
 import { fetchStripeBalance } from '../services/stripe.js';
+import profileValidator from '../utils/validation/profile.js';
+import emailValidator from '../utils/validation/email.js';
+import passwordValidator from '../utils/validation/password.js';
+import preferencesValidator from '../utils/validation/preferences.js';
 
 const getUserProfile = async ({ username, cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
@@ -76,6 +80,10 @@ const updateUserProfile = async ({
   userCountry,
   session,
 }) => {
+  const { error } = profileValidator(
+    sanitizeData({ userPhoto, userDescription, userCountry })
+  );
+  if (error) throw createError(400, error);
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
     if (userPhoto) foundUser.photo = userPhoto;
@@ -106,6 +114,8 @@ const getUserNotifications = async ({ userId, cursor, ceiling }) => {
 };
 
 const updateUserEmail = async ({ userId, email, session }) => {
+  const { error } = emailValidator(sanitizeData({ userEmail: email }));
+  if (error) throw createError(400, error);
   const foundUser = await fetchUserByEmail({ email, session });
   if (foundUser) {
     throw createError(400, 'User with entered email already exists');
@@ -133,12 +143,16 @@ const updateUserPassword = async ({
   password,
   confirmPassword,
 }) => {
+  const { error } = passwordValidator(sanitizeData({ userPassword: password }));
+  if (error) throw createError(400, error);
   await editUserPassword({ userId, password });
   return { message: 'Password updated successfully' };
 };
 
 // needs transaction (done)
 const updateUserPreferences = async ({ userId, displaySaves }) => {
+  const { error } = preferencesValidator(sanitizeData({ displaySaves }));
+  if (error) throw createError(400, error);
   await editUserPreferences({ userId, displaySaves });
   return { message: 'Preferences updated successfully' };
 };
@@ -214,7 +228,7 @@ const deactivateUser = async ({ userId, session }) => {
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
     const foundArtwork = await fetchArtworksByOwner({
-      userId: res.locals.user.id,
+      userId,
       session,
     });
     for (let artwork of foundArtwork) {

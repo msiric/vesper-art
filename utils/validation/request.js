@@ -4,10 +4,10 @@ import joiObjectId from 'joi-objectid';
 Joi.objectId = joiObjectId(Joi);
 
 const schema = Joi.object().keys({
-  category: 'ne znam',
-  budget: Joi.number().integer(),
-  delivery: Joi.date(),
-  description: Joi.string().required(),
+  requestCategory: 'ne znam',
+  requestBudget: Joi.number().integer(),
+  requestDeadline: Joi.date(),
+  requestDescription: Joi.string().required(),
 });
 
 export default (data) => Joi.validate(data, schema);

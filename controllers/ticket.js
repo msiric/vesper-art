@@ -1,27 +1,27 @@
 import mongoose from 'mongoose';
 import mailer from '../utils/email.js';
 import { addNewTicket } from '../services/ticket.js';
-import createError from 'http-errors';
+import ticketValidator from '../utils/validation/ticket.js';
+import { sanitizeData } from '../utils/helpers.js';
 
 // how to handle transactions?
 // treba sredit
-const postTicket = async ({ userEmail, ticketTitle, ticketBody }) => {
-  if ((userEmail, ticketTitle, ticketBody)) {
-    await addNewTicket({
-      userId: res.locals.user.id,
-      ticketTitle,
-      ticketBody,
-    });
-    const ticketId = savedTicket._id;
-    await mailer.sendEmail(
-      userEmail,
-      config.email,
-      `Support ticket (#${ticketId}): ${ticketTitle}`,
-      ticketBody
-    );
-    return { message: 'Ticket successfully sent' };
-  }
-  throw createError(400, 'All fields are required');
+const postTicket = async ({ userId, userEmail, ticketTitle, ticketBody }) => {
+  const { error } = ticketValidator(sanitizeData({ ticketTitle, ticketBody }));
+  if (error) throw createError(400, error);
+  await addNewTicket({
+    userId,
+    ticketTitle,
+    ticketBody,
+  });
+  const ticketId = savedTicket._id;
+  await mailer.sendEmail(
+    userEmail,
+    config.email,
+    `Support ticket (#${ticketId}): ${ticketTitle}`,
+    ticketBody
+  );
+  return { message: 'Ticket successfully sent' };
 };
 
 export default {

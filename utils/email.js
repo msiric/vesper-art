@@ -11,7 +11,7 @@ const sendEmail = async (sender, receiver, subject, html) => {
         pass: config.password,
       },
     });
-    mailOptions = {
+    const mailOptions = {
       from: sender,
       to: receiver,
       subject,

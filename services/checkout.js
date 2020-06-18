@@ -6,7 +6,11 @@ import Stripe from 'stripe';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
-export const fetchCheckoutArtwork = async ({ artworkId, session = null }) => {
+export const fetchCheckoutArtwork = async ({
+  userId,
+  artworkId,
+  session = null,
+}) => {
   const foundArtwork = await Artwork.findOne({
     $and: [{ _id: artworkId }, { active: true }],
   }).populate(
@@ -15,7 +19,7 @@ export const fetchCheckoutArtwork = async ({ artworkId, session = null }) => {
   );
   if (foundArtwork) {
     const foundUser = await User.findOne({
-      $and: [{ _id: res.locals.user.id }, { active: true }],
+      $and: [{ _id: userId }, { active: true }],
     }).populate('discount');
     res.json({
       artwork: foundArtwork,

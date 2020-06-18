@@ -13,19 +13,31 @@ import {
   editUserVerification,
   addNewUser,
 } from '../services/auth.js';
+import signupValidator from '../utils/validation/signup.js';
+import loginValidator from '../utils/validation/login.js';
+import { sanitizeData } from '../utils/helpers.js';
 import { fetchUserByCreds, editUserPassword } from '../services/user.js';
 import config from '../config/mailer.js';
 import createError from 'http-errors';
 
 // needs transaction (not tested)
 const postSignUp = async ({ email, username, password, confirm, session }) => {
-  const foundUser = await fetchUserByCreds({ username });
+  const { error } = signupValidator(
+    sanitizeData({
+      userEmail: email,
+      userUsername: username,
+      userPassword: password,
+      confirmedPassword: confirm,
+    })
+  );
+  if (error) throw createError(400, error);
+  const foundUser = await fetchUserByCreds({ username, session });
   if (foundUser) {
     throw createError(400, 'Account with that email/username already exists');
   } else {
     const token = randomString.generate();
     const link = `${server.clientDomain}/verify_token/${token}`;
-    await addNewUser({ email, username, password, token });
+    await addNewUser({ email, username, password, token, session });
     await mailer.sendEmail(
       config.app,
       email,
@@ -40,6 +52,10 @@ const postSignUp = async ({ email, username, password, confirm, session }) => {
 };
 
 const postLogIn = async ({ username, password, res, session }) => {
+  const { error } = loginValidator(
+    sanitizeData({ userUsername: username, userPassword: password })
+  );
+  if (error) throw createError(400, error);
   const foundUser = await fetchUserByCreds({ username, session });
   if (!foundUser) {
     throw createError(400, 'Account with provided credentials does not exist');
@@ -111,24 +127,23 @@ const verifyRegisterToken = async ({ tokenId }) => {
 const forgotPassword = async ({ email, session }) => {
   crypto.randomBytes(20, async function (err, buf) {
     const token = buf.toString('hex');
-    await editUserResetToken({ email, token });
+    await editUserResetToken({ email, token, session });
     await mailer.sendEmail(
       config.app,
-      foundUser.email,
+      email,
       'Reset your password',
       `You are receiving this because you have requested to reset the password for your account.
         Please click on the following link, or paste this into your browser to complete the process:
         
         <a href="${server.clientDomain}/reset_password/${token}"</a>`
     );
-    await session.commitTransaction();
     return { message: 'Password reset' };
   });
 };
 
 // needs transaction (not tested)
 const resetPassword = async ({ tokenId, password, confirm, session }) => {
-  const updatedUser = await editUserPassword({ tokenId, password });
+  const updatedUser = await editUserPassword({ tokenId, password, session });
   await mailer.sendEmail(
     config.app,
     updatedUser.email,
@@ -137,7 +152,6 @@ const resetPassword = async ({ tokenId, password, confirm, session }) => {
         
       If you did not request this, please contact us immediately.`
   );
-  await session.commitTransaction();
   return { message: 'Password reset' };
 };
 
