@@ -19,28 +19,24 @@ const router = express.Router();
 
 router.route('/profile_image_upload').post(
   [isAuthenticated, profilePhotoSingleUpload],
-  handler(upload.postProfileImage, false, (req, res, next) => ({
-    req,
-    res,
-    next,
+  handler(upload.postProfileImage, true, (req, res, next) => ({
+    location: req.file.location,
   }))
 );
 
 router.route('/artwork_media_upload').post(
   [isAuthenticated, artworkMediaSingleUpload],
   handler(upload.postArtworkMedia, false, (req, res, next) => ({
-    req,
-    res,
-    next,
+    cover: req.file.transforms[0].location,
+    media: req.file.transforms[1].location,
   }))
 );
 
 router.route('/artwork_media_upload/:id').put(
   [isAuthenticated, checkParamsId, artworkMediaSingleEdit],
   handler(upload.putArtworkMedia, false, (req, res, next) => ({
-    req,
-    res,
-    next,
+    cover: req.file.transforms[0].location,
+    media: req.file.transforms[1].location,
   }))
 );
 

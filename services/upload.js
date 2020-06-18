@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import aws from 'aws-sdk';
 
 // needs transaction (done)
-export const postProfileImage = async ({}) => {
+export const createProfileImage = async ({}) => {
   const folderName = 'profilePhotos/';
   const fileName = foundUser.photo.split('/').slice(-1)[0];
   const filePath = folderName + fileName;
@@ -15,7 +15,7 @@ export const postProfileImage = async ({}) => {
 };
 
 // $TODO Wat
-export const postArtworkMedia = async ({ req }) => {
+export const createArtworkMedia = async ({ req }) => {
   return {
     artworkCover: req.file.transforms[0].location,
     artworkMedia: req.file.transforms[1].location,
@@ -23,9 +23,9 @@ export const postArtworkMedia = async ({ req }) => {
 };
 
 // $TODO Wat
-export const putArtworkMedia = async ({ req }) => {
+export const updateArtworkMedia = async ({ artworkCover, artworkMedia }) => {
   return {
-    artworkCover: req.file.transforms[0].location,
-    artworkMedia: req.file.transforms[1].location,
+    artworkCover,
+    artworkMedia,
   };
 };

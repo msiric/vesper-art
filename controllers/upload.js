@@ -1,64 +1,35 @@
 import mongoose from 'mongoose';
-import aws from 'aws-sdk';
 import { fetchUserById } from '../services/user.js';
+import { deleteS3Object } from '../utils/helpers.js';
 import createError from 'http-errors';
 
 // needs transaction (done)
-const postProfileImage = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const foundUser = await fetchUserById({
-      userId: res.locals.user.id,
-      session,
-    });
-    if (foundUser) {
-      const folderName = 'profilePhotos/';
-      const fileName = foundUser.photo.split('/').slice(-1)[0];
-      const filePath = folderName + fileName;
-      const s3 = new aws.S3();
-      const params = {
-        Bucket: 'vesper-testing',
-        Key: filePath,
-      };
-      await s3.deleteObject(params).promise();
-      foundUser.photo = req.file.location;
-      await foundUser.save({ session });
-      await session.commitTransaction();
-      return res.json({ imageUrl: req.file.location });
-    } else {
-      throw createError(400, 'User not found');
-    }
-  } catch (err) {
-    await session.abortTransaction();
-    next(err, res);
-  } finally {
-    session.endSession();
+const postProfileImage = async ({ userId, session, location }) => {
+  const foundUser = await fetchUserById({
+    userId,
+    session,
+  });
+  if (foundUser) {
+    await deleteS3Object({ link: foundUser.photo, folder: 'profilePhotos/' });
+    foundUser.photo = location;
+    await foundUser.save({ session });
+    return { imageUrl: location };
   }
+  throw createError(400, 'User not found');
 };
 
-const postArtworkMedia = async (req, res, next) => {
-  try {
-    return res.json({
-      artworkCover: req.file.transforms[0].location,
-      artworkMedia: req.file.transforms[1].location,
-    });
-  } catch (err) {
-    console.log(err);
-    next(err, res);
-  }
+const postArtworkMedia = async ({ cover, media }) => {
+  return {
+    artworkCover: cover,
+    artworkMedia: media,
+  };
 };
 
-const putArtworkMedia = async (req, res, next) => {
-  try {
-    return res.json({
-      artworkCover: req.file.transforms[0].location,
-      artworkMedia: req.file.transforms[1].location,
-    });
-  } catch (err) {
-    console.log(err);
-    next(err, res);
-  }
+const putArtworkMedia = async ({ cover, media }) => {
+  return {
+    artworkCover: cover,
+    artworkMedia: media,
+  };
 };
 
 /* const updateArtworkCover = async (req, res, next) => {
