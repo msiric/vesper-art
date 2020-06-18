@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 import createError from 'http-errors';
-import { sanitize, deleteS3Object, formatParams } from '../utils/helpers.js';
+import {
+  sanitizeData,
+  deleteS3Object,
+  formatParams,
+} from '../utils/helpers.js';
 import artworkValidator from '../utils/validation/artwork.js';
 import {
   fetchActiveArtworks,
@@ -82,7 +86,7 @@ const getLicenses = async ({ userId, artworkId }) => {
 };
 
 const postNewArtwork = async ({ userId, artworkData, session }) => {
-  const { error, value } = artworkValidator(sanitize(artworkData));
+  const { error, value } = artworkValidator(sanitizeData(artworkData));
   if (error) throw createError(400, error);
   if (value.artworkPersonal || value.artworkCommercial) {
     const foundUser = await fetchUserById({
@@ -131,7 +135,7 @@ const updateArtwork = async ({ userId, artworkId, session }) => {
     userId,
     session,
   });
-  const { error, value } = artworkValidator(sanitize(req.body));
+  const { error, value } = artworkValidator(sanitizeData(req.body));
   if (error) throw createError(400, error);
   if (foundArtwork) {
     if (value.artworkPersonal || value.artworkCommercial) {

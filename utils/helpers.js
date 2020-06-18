@@ -112,15 +112,15 @@ export const formatPrice = (value) => {
   return currency(value).divide(100);
 };
 
-export const sanitize = (body) =>
+export const sanitizeData = (body) =>
   Object.keys(body).reduce((obj, key) => {
     if (Array.isArray(body[key])) {
       obj[key] = body[key].map((elem) => {
-        if (typeof elem === 'object') return sanitize(elem);
+        if (typeof elem === 'object') return sanitizeData(elem);
         return escapeHTML(elem);
       });
     } else if (typeof body[key] === 'object') {
-      obj[key] = sanitize(body[key]);
+      obj[key] = sanitizeData(body[key]);
     } else {
       obj[key] = escapeHTML(body[key]);
     }
