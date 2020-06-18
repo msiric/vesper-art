@@ -25,6 +25,9 @@ import { addNewLicenses } from '../services/license.js';
 import { addNewOrder } from '../services/order.js';
 import { addNewNotification } from '../services/notification.js';
 import socketApi from '../realtime/io.js';
+import orderValidator from '../utils/validation/order.js';
+import licenseValidator from '../utils/validation/license.js';
+import { sanitizeData } from '../utils/helpers.js';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
@@ -212,7 +215,6 @@ const assignStripeId = async ({ req, session }) => {
   });
 
   if (expressAuthorized.error) {
-    console.log(expressAuthorized.error);
     throw createError(500, expressAuthorized.error);
   }
 
@@ -262,6 +264,8 @@ const createOrder = async ({ intent, session }) => {
   const licenseSet = [];
   const licenseIds = [];
   for (let license of orderData) {
+    /*   const { error } = licenseValidator(sanitizeData({licenseType: license.licenseType, licensePrice: license.licensePrice}));
+  if (error) throw createError(400, error); */
     const newLicense = new License();
     newLicense.owner = buyerId;
     newLicense.artwork = artworkId;
@@ -278,6 +282,8 @@ const createOrder = async ({ intent, session }) => {
   savedLicenses.forEach((license) => {
     licenseIds.push(license._id);
   });
+  /*   const { error } = orderValidator(sanitizeData(orderData));
+  if (error) throw createError(400, error); */
   const orderObject = {
     buyer: buyerId,
     seller: sellerId,
