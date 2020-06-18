@@ -5,6 +5,7 @@ import Version from '../models/version.js';
 import Notification from '../models/notification.js';
 import aws from 'aws-sdk';
 import User from '../models/user.js';
+import Review from '../models/review.js';
 import auth from '../utils/auth.js';
 import createError from 'http-errors';
 import Stripe from 'stripe';

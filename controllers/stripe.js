@@ -304,7 +304,6 @@ const createOrder = async ({ intent, session }) => {
     version: versionId,
     discount: discountId,
     licenses: licenseIds,
-    review: null,
     spent: orderData.spent,
     earned: orderData.earned,
     fee: orderData.fee,

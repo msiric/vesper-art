@@ -66,7 +66,7 @@ const getUserStatistics = async ({ userId }) => {
 
 const getUserSales = async ({ userId, from, to }) => {
   const { error } = rangeValidator(
-    sanitizeData({ rangeFrom, from, rangeTo: to })
+    sanitizeData({ rangeFrom: from, rangeTo: to })
   );
   if (error) throw createError(400, error);
   const foundOrders = await fetchOrdersBySeller({ userId, from, to });
@@ -75,7 +75,7 @@ const getUserSales = async ({ userId, from, to }) => {
 
 const getUserPurchases = async ({ userId, from, to }) => {
   const { error } = rangeValidator(
-    sanitizeData({ rangeFrom, from, rangeTo: to })
+    sanitizeData({ rangeFrom: from, rangeTo: to })
   );
   if (error) throw createError(400, error);
   const foundOrders = await fetchOrdersByBuyer({ userId, from, to });
