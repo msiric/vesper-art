@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { formatParams, sanitizeData } from '../utils/helpers.js';
 import { fetchArtworkResults, fetchUserResults } from '../services/search.js';
 import searchValidator from '../utils/validation/search.js';
+import createError from 'http-errors';
 
 const getResults = async ({ query, type, cursor, ceiling }) => {
   const { error } = searchValidator(

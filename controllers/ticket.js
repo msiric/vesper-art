@@ -3,6 +3,7 @@ import mailer from '../utils/email.js';
 import { addNewTicket } from '../services/ticket.js';
 import ticketValidator from '../utils/validation/ticket.js';
 import { sanitizeData } from '../utils/helpers.js';
+import createError from 'http-errors';
 
 // how to handle transactions?
 // treba sredit

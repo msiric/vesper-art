@@ -4,7 +4,7 @@ import joiObjectId from 'joi-objectid';
 Joi.objectId = joiObjectId(Joi);
 
 const schema = Joi.object().keys({
-  searchQuery: Joi.string().trim().required(),
+  searchQuery: Joi.string().allow(''),
   searchType: Joi.string().valid('artwork', 'users').required(),
 });
 
