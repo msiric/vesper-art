@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
+
+// delete if nesting applied
 
 const DiscountSchema = new Schema({
   name: String,
@@ -12,4 +14,4 @@ const Discount = mongoose.model('Discount', DiscountSchema);
 
 Discount.createCollection();
 
-module.exports = Discount;
+export default Discount;

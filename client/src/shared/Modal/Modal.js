@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal as Popup } from '@material-ui/core';
-import ModalStyles from './Modal.style';
+import ModalStyles from './Modal.style.js';
 
 const Modal = ({ open, handleClose, body }) => {
   const classes = ModalStyles();

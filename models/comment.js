@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
+
+// delete if nesting applied
 
 const CommentSchema = new Schema({
   artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
@@ -13,4 +15,4 @@ const Comment = mongoose.model('Comment', CommentSchema);
 
 Comment.createCollection();
 
-module.exports = Comment;
+export default Comment;

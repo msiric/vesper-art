@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
-import { Context } from '../../components/Store/Store';
-import { ax } from '../../shared/Interceptor/Interceptor';
+import { Context } from '../../components/Store/Store.js';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { withRouter, Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -31,8 +31,8 @@ import {
   ImageRounded as ArtworkIcon,
   AccountBoxRounded as UserIcon,
 } from '@material-ui/icons';
-import NotificationsMenu from './NotificationsMenu';
-import HeaderStyles from './Header.style';
+import NotificationsMenu from './NotificationsMenu.js';
+import HeaderStyles from './Header.style.js';
 
 const searchValidation = Yup.object().shape({
   searchInput: Yup.string().trim().required('Search input is required'),
@@ -112,8 +112,9 @@ const Header = ({ history }) => {
 
   const handleNotificationsMenuOpen = async (e) => {
     if (
-      !store.user.notifications.items ||
-      store.user.notifications.items.length === 0 ||
+      (store.user.notifications.hasMore && !store.user.notifications.items) ||
+      (store.user.notifications.hasMore &&
+        store.user.notifications.items.length === 0) ||
       (!store.user.notifications.hasMore &&
         store.user.notifications.count !==
           store.user.notifications.items.length)

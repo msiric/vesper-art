@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Context } from '../Store/Store';
+import { Context } from '../Store/Store.js';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
@@ -13,8 +13,8 @@ import {
 } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
 import { useHistory } from 'react-router-dom';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import SignupStyles from './Signup.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import SignupStyles from './Signup.style.js';
 
 const validationSchema = Yup.object().shape({
   username: Yup.string().required('Username is required'),

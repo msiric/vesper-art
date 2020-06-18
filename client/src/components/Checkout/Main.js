@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Paper, Box, CircularProgress } from '@material-ui/core';
-import Steppers from './Steppers';
+import Steppers from './Steppers.js';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 

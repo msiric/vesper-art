@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import { Context } from '../components/Store/Store';
+import { Context } from '../components/Store/Store.js';
 import { Backdrop, CircularProgress } from '@material-ui/core';
-import AuthLayoutStyles from './AuthLayout.style';
+import AuthLayoutStyles from './AuthLayout.style.js';
 
 const AuthLayout = ({ children }) => {
   const [store, dispatch] = useContext(Context);

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Container, Grid, CircularProgress } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import VerifyTokenStyles from './VerifyToken.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import VerifyTokenStyles from './VerifyToken.style.js';
 
 const VerifyToken = ({ match }) => {
   const history = useHistory();

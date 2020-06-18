@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../Store/Store';
+import { Context } from '../Store/Store.js';
 import {
   Container,
   Grid,
@@ -16,15 +16,15 @@ import {
   Select,
   MenuItem,
 } from '@material-ui/core';
-import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker';
+import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker.js';
 import { LocalizationProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
 import { format, eachDayOfInterval, subDays } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import NumberFormat from 'react-number-format';
 import { useTheme } from '@material-ui/core/styles';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import DashboardStyles from './Dashboard.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import DashboardStyles from './Dashboard.style.js';
 
 function Dashboard() {
   const [store, dispatch] = useContext(Context);

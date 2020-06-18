@@ -1,5 +1,5 @@
-const User = require('../models/user');
-const jwt = require('jsonwebtoken');
+import User from '../models/user.js';
+import jwt from 'jsonwebtoken';
 
 const createAccessToken = (user) => {
   return jwt.sign(
@@ -19,9 +19,7 @@ const createAccessToken = (user) => {
 
 const updateAccessToken = async (req, res, next) => {
   const token = req.cookies.jid;
-  if (!token) {
-    return { ok: false, accessToken: '' };
-  }
+  if (!token) return { ok: false, accessToken: '' };
 
   let payload = null;
   try {
@@ -90,7 +88,7 @@ const sendRefreshToken = (res, token) => {
   });
 };
 
-module.exports = {
+export default {
   createAccessToken,
   updateAccessToken,
   createRefreshToken,

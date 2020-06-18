@@ -1,14 +1,15 @@
-const mongoose = require('mongoose');
-const mongooseAlgolia = require('mongoose-algolia');
-const deepPopulate = require('mongoose-deep-populate')(mongoose);
+import mongoose from 'mongoose';
+import mongooseDeepPopulate from 'mongoose-deep-populate';
+
+const deepPopulate = mongooseDeepPopulate(mongoose);
 const Schema = mongoose.Schema;
 
 const ArtworkSchema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
-  current: { type: Schema.Types.ObjectId, ref: 'Version' },
-  versions: [{ type: Schema.Types.ObjectId, ref: 'Version' }],
-  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
-  reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
+  current: { type: Schema.Types.ObjectId, ref: 'Version' }, // nesting
+  versions: [{ type: Schema.Types.ObjectId, ref: 'Version' }], // nesting
+  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }], // nesting
+  reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }], // nesting
   saves: Number,
   active: Boolean,
   created: { type: Date, default: Date.now },
@@ -20,4 +21,4 @@ const Artwork = mongoose.model('Artwork', ArtworkSchema);
 
 Artwork.createCollection();
 
-module.exports = Artwork;
+export default Artwork;

@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
+
+// delete if nesting applied
 
 const ReviewSchema = new Schema({
   order: { type: Schema.Types.ObjectId, ref: 'Order' },
@@ -7,11 +9,11 @@ const ReviewSchema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: 'User' },
   rating: Number,
   content: String,
-  created: { type: Date, default: Date.now }
+  created: { type: Date, default: Date.now },
 });
 
 const Review = mongoose.model('Review', ReviewSchema);
 
 Review.createCollection();
 
-module.exports = Review;
+export default Review;

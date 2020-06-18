@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../Store/Store';
+import { Context } from '../Store/Store.js';
 import { Grid, CircularProgress } from '@material-ui/core';
-import { ax } from '../../shared/Interceptor/Interceptor';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { withSnackbar } from 'notistack';
-import Gallery from './Gallery';
-import HomeStyles from './Home.style';
+import Gallery from './Gallery.js';
+import HomeStyles from './Home.style.js';
 
 const Home = ({ location, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -57,7 +57,7 @@ const Home = ({ location, enqueueSnackbar }) => {
       );
       setState((prevState) => ({
         ...prevState,
-        artwork: [...prevState.artwork].concat(data.artwork),
+        artwork: [prevState.artwork].concat(data.artwork),
         hasMore: data.artwork.length >= prevState.ceiling,
         cursor: prevState.cursor + prevState.ceiling,
       }));

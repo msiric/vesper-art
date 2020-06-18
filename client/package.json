@@ -2,6 +2,8 @@
   "name": "client3",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@material-ui/core": "^4.9.9",
     "@material-ui/icons": "^4.9.1",
@@ -54,7 +56,6 @@
     ]
   },
   "devDependencies": {
-    "@welldone-software/why-did-you-render": "^4.2.4",
-    "http-proxy-middleware": "^1.0.3"
+    "tailwindcss": "^1.4.6"
   }
 }

@@ -20,10 +20,10 @@ import {
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
-import { ax } from '../../shared/Interceptor/Interceptor';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { format } from 'date-fns';
-import ProductsTableHead from './Head';
-import OrdersStyles from './Orders.style';
+import ProductsTableHead from './Head.js';
+import OrdersStyles from './Orders.style.js';
 
 const Orders = () => {
   const [state, setState] = useState({

@@ -1,9 +1,9 @@
 import React, { useEffect, useContext } from 'react';
 import { Container, Grid, CircularProgress } from '@material-ui/core';
-import { Context } from '../../components/Store/Store';
+import { Context } from '../../components/Store/Store.js';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-import InterceptorStyles from './Interceptor.style';
+import InterceptorStyles from './Interceptor.style.js';
 import openSocket from 'socket.io-client';
 const ENDPOINT = 'http://localhost:5000';
 

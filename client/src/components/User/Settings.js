@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../Store/Store';
-import SelectInput from '../../shared/SelectInput/SelectInput';
+import { Context } from '../Store/Store.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import { useFormik, Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import Gallery from '../Home/Gallery';
+import Gallery from '../Home/Gallery.js';
 import {
   Modal,
   Container,
@@ -56,10 +56,10 @@ import {
   DoneRounded as CheckIcon,
   RemoveCircleRounded as DeactivateIcon,
 } from '@material-ui/icons';
-import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput';
+import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput.js';
 import { Link, useHistory } from 'react-router-dom';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import SettingsStyles from './Settings.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import SettingsStyles from './Settings.style.js';
 
 const emailValidation = Yup.object().shape({
   email: Yup.string()
@@ -73,7 +73,7 @@ const passwordValidation = Yup.object().shape({
   password: Yup.string()
     .min(8, 'Password must contain at least 8 characters')
     .required('Enter new password'),
-  confirmPassword: Yup.string()
+  confirm: Yup.string()
     .required('Confirm your password')
     .oneOf([Yup.ref('password')], 'Passwords do not match'),
 });
@@ -276,7 +276,7 @@ const Settings = () => {
                       initialValues={{
                         current: '',
                         password: '',
-                        confirmPassword: '',
+                        confirm: '',
                       }}
                       enableReinitialize
                       validationSchema={passwordValidation}
@@ -321,7 +321,7 @@ const Settings = () => {
                                 />
                               )}
                             </Field>
-                            <Field name="confirmPassword">
+                            <Field name="confirm">
                               {({ field, form: { touched, errors }, meta }) => (
                                 <TextField
                                   {...field}

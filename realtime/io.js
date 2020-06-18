@@ -1,5 +1,6 @@
-const io = require('socket.io')();
-const jwt = require('jsonwebtoken');
+import ioLib from 'socket.io';
+import jwt from 'jsonwebtoken';
+const io = ioLib();
 const socketApi = {};
 
 socketApi.io = io;
@@ -61,4 +62,4 @@ socketApi.postReview = (id, data) => {
   }
 };
 
-module.exports = socketApi;
+export default socketApi;

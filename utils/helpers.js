@@ -1,17 +1,67 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import createError from 'http-errors';
+import escapeHTML from 'escape-html';
+import jwt from 'jsonwebtoken';
+import currency from 'currency.js';
+import aws from 'aws-sdk';
+
 const ObjectId = mongoose.Types.ObjectId;
-const createError = require('http-errors');
-const escapeHTML = require('escape-html');
-const jwt = require('jsonwebtoken');
-const currency = require('currency.js');
 
-const isAuthenticated = async (req, res, next) => {
-  const authentication = req.headers['authorization'];
-  if (!authentication) {
-    throw createError(403, 'Forbidden');
+export const deleteS3Object = async ({ link, folder }) => {
+  const fileLink = link;
+  const folderName = folder;
+  const fileName = fileLink.split('/').slice(-1)[0];
+  const filePath = folderName + fileName;
+  const awsObject = new aws.S3();
+  const awsParams = {
+    Bucket: 'vesper-testing',
+    Key: filePath,
+  };
+  await awsObject.deleteObject(awsParams).promise();
+};
+
+export const formatParams = ({ cursor, ceiling }) => {
+  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
+  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
+  return { skip, limit };
+};
+
+export const requestHandler = (promise, transaction, params) => async (
+  req,
+  res,
+  next
+) => {
+  const boundParams = params ? params(req, res, next) : {};
+  const userId = res.locals.user ? res.locals.user.id : null;
+  if (transaction) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      const result = await promise({ userId, session, ...boundParams });
+      await session.commitTransaction();
+      return res.json(result || { message: 'OK' });
+    } catch (error) {
+      await session.abortTransaction();
+      console.log(error);
+      next(error);
+    } finally {
+      session.endSession();
+    }
+  } else {
+    try {
+      const result = await promise({ userId, ...boundParams });
+      return res.json(result || { message: 'OK' });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
   }
+};
 
+export const isAuthenticated = async (req, res, next) => {
   try {
+    const authentication = req.headers['authorization'];
+    if (!authentication) throw createError(403, 'Forbidden');
     const token = authentication.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
       ignoreExpiration: true,
@@ -28,51 +78,51 @@ const isAuthenticated = async (req, res, next) => {
   return next();
 };
 
-const isNotAuthenticated = async (req, res, next) => {
+export const isNotAuthenticated = async (req, res, next) => {
   const authentication = req.headers['authorization'];
-  if (authentication) {
-    return console.log('REDIRECT');
-  }
+  if (authentication) return console.log('REDIRECT');
 
   return next();
 };
 
-const checkParams = (req, res, next) => {
-  const isId = (id) => (ObjectId(id) ? true : false);
+export const checkParamsUsername = (req, res, next) => {
   let isValid = true;
-  Object.keys(req.params).forEach((param) => {
+  for (let param in req.params) {
     const value = req.params[param];
     if (!value) isValid = false;
-    else if (!isId(value)) isValid = false;
-  });
-
+    else if (typeof value !== 'string') isValid = false;
+  }
   if (isValid) return next();
   throw createError(400, 'Invalid route parameter');
 };
 
-const formatPrice = (value) => {
+export const checkParamsId = (req, res, next) => {
+  const isId = (id) => (ObjectId(id) ? true : false);
+  let isValid = true;
+  for (let param in req.params) {
+    const value = req.params[param];
+    if (!value) isValid = false;
+    else if (!isId(value)) isValid = false;
+  }
+  if (isValid) return next();
+  throw createError(400, 'Invalid route parameter');
+};
+
+export const formatPrice = (value) => {
   return currency(value).divide(100);
 };
 
-const sanitize = (body) =>
+export const sanitizeData = (body) =>
   Object.keys(body).reduce((obj, key) => {
     if (Array.isArray(body[key])) {
       obj[key] = body[key].map((elem) => {
-        if (typeof elem === 'object') return sanitize(elem);
+        if (typeof elem === 'object') return sanitizeData(elem);
         return escapeHTML(elem);
       });
     } else if (typeof body[key] === 'object') {
-      obj[key] = sanitize(body[key]);
+      obj[key] = sanitizeData(body[key]);
     } else {
       obj[key] = escapeHTML(body[key]);
     }
     return obj;
   }, {});
-
-module.exports = {
-  isAuthenticated,
-  isNotAuthenticated,
-  checkParams,
-  formatPrice,
-  sanitize,
-};

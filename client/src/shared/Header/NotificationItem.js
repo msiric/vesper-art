@@ -15,8 +15,8 @@ import {
   DraftsRounded as ReadIcon,
   MarkunreadRounded as UnreadIcon,
 } from '@material-ui/icons';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import NotificationItemStyles from './NotificationItem.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import NotificationItemStyles from './NotificationItem.style.js';
 
 const NotificationItem = ({
   notification,
@@ -30,13 +30,13 @@ const NotificationItem = ({
     link: `/artwork/${notification.link}`,
   };
 
-  if (notification.type === 'Comment') {
+  if (notification.type === 'comment') {
     data.label = 'A user left a comment on your artwork';
     data.link = `/artwork/${notification.link}`;
-  } else if (notification.type === 'Order') {
+  } else if (notification.type === 'order') {
     data.label = 'A user ordered your artwork';
     data.link = `/orders/${notification.link}`;
-  } else if (notification.type === 'Review') {
+  } else if (notification.type === 'review') {
     data.label = 'A user left a review on your artwork';
     data.link = `/orders/${notification.link}`;
   } else {
@@ -62,14 +62,15 @@ const NotificationItem = ({
         />
         <ListItemSecondaryAction>
           <IconButton
+            onClick={
+              notification.read
+                ? () => handleUnreadClick(notification._id)
+                : () => handleReadClick(notification._id)
+            }
             edge="end"
             aria-label={notification.read ? 'Mark unread' : 'Mark read'}
           >
-            {notification.read ? (
-              <ReadIcon onClick={() => handleUnreadClick(notification._id)} />
-            ) : (
-              <UnreadIcon onClick={() => handleReadClick(notification._id)} />
-            )}
+            {notification.read ? <ReadIcon /> : <UnreadIcon />}
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>

@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../Store/Store';
-import SelectInput from '../../shared/SelectInput/SelectInput';
+import { Context } from '../Store/Store.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import { useFormik, Formik, Form, Field } from 'formik';
-import UploadInput from '../../shared/UploadInput/UploadInput';
+import UploadInput from '../../shared/UploadInput/UploadInput.js';
 import * as Yup from 'yup';
-import Gallery from '../Home/Gallery';
+import Gallery from '../Home/Gallery.js';
 import {
   AppBar,
   Tab,
@@ -63,8 +63,8 @@ import { Link, useHistory } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { format } from 'date-fns';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import ProfileStyles from './Profile.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import ProfileStyles from './Profile.style.js';
 
 const userPhotoConfig = {
   size: 500 * 1024,
@@ -500,7 +500,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const loadMoreArtwork = async () => {
     try {
       const { data } = await ax.get(
-        `/api/user/${state.CardMediauser._id}/artwork?cursor=${state.scroll.artwork.cursor}&ceiling=${state.scroll.artwork.ceiling}`
+        `/api/user/${state.user._id}/artwork?cursor=${state.scroll.artwork.cursor}&ceiling=${state.scroll.artwork.ceiling}`
       );
       setState((prevState) => ({
         ...prevState,

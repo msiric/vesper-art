@@ -1,8 +1,10 @@
-const bcrypt = require('bcrypt-nodejs');
-const mongoose = require('mongoose');
-const crypto = require('crypto');
-const deepPopulate = require('mongoose-deep-populate')(mongoose);
-const fuzzySearch = require('mongoose-fuzzy-searching');
+import bcrypt from 'bcrypt-nodejs';
+import mongoose from 'mongoose';
+import crypto from 'crypto';
+import mongooseDeepPopulate from 'mongoose-deep-populate';
+
+const deepPopulate = mongooseDeepPopulate(mongoose);
+import fuzzySearch from 'mongoose-fuzzy-searching';
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -44,10 +46,10 @@ const UserSchema = new Schema({
   notifications: Number,
   rating: Number,
   reviews: Number,
-  artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
-  savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }],
-  purchases: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
-  sales: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
+  artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }], // nesting
+  savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }], // nesting
+  purchases: [{ type: Schema.Types.ObjectId, ref: 'Order' }], // nesting
+  sales: [{ type: Schema.Types.ObjectId, ref: 'Order' }], // nesting
   stripeId: String,
   active: Boolean,
   created: { type: Date, default: Date.now },
@@ -92,4 +94,4 @@ const User = mongoose.model('User', UserSchema);
 
 User.createCollection();
 
-module.exports = User;
+export default User;

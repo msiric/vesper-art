@@ -1,6 +1,6 @@
-const nodemailer = require('nodemailer');
-const config = require('../config/mailer');
-const createError = require('http-errors');
+import nodemailer from 'nodemailer';
+import config from '../config/mailer.js';
+import createError from 'http-errors';
 
 const sendEmail = async (sender, receiver, subject, html) => {
   try {
@@ -11,7 +11,7 @@ const sendEmail = async (sender, receiver, subject, html) => {
         pass: config.password,
       },
     });
-    mailOptions = {
+    const mailOptions = {
       from: sender,
       to: receiver,
       subject,
@@ -24,6 +24,6 @@ const sendEmail = async (sender, receiver, subject, html) => {
   }
 };
 
-module.exports = {
+export default {
   sendEmail,
 };

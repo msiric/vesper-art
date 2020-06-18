@@ -14,19 +14,19 @@ import {
   SentimentVerySatisfied,
   SentimentVeryDissatisfied,
 } from '@material-ui/icons';
-import StepperIcons from './StepperIcons';
-import LicenseForm from './LicenseForm';
-import BillingForm from './BillingForm';
-import PaymentForm from './PaymentForm';
+import StepperIcons from './StepperIcons.js';
+import LicenseForm from './LicenseForm.js';
+import BillingForm from './BillingForm.js';
+import PaymentForm from './PaymentForm.js';
 import {
   useStripe,
   useElements,
   CardCvcElement,
 } from '@stripe/react-stripe-js';
 import { useHistory } from 'react-router-dom';
-import { ax } from '../../shared/Interceptor/Interceptor';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
 import * as Yup from 'yup';
-import StepConnector from './StepConnector';
+import StepConnector from './StepConnector.js';
 
 // OVERALL STYLE
 const style = makeStyles((theme) => ({

@@ -1,9 +1,9 @@
 import React, { useContext, useRef, useState, useEffect } from 'react';
-import { Context } from '../Store/Store';
-import { StateProvider } from '../Store/Stripe';
-import SelectField from '../../shared/SelectInput/SelectInput';
+import { Context } from '../Store/Store.js';
+import { StateProvider } from '../Store/Stripe.js';
+import SelectField from '../../shared/SelectInput/SelectInput.js';
 import NumberFormat from 'react-number-format';
-import Main from './Main';
+import Main from './Main.js';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -25,8 +25,8 @@ import {
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import CheckoutStyles from './Checkout.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import CheckoutStyles from './Checkout.style.js';
 
 const validationSchema = Yup.object().shape({
   discountCode: Yup.string().trim().required('Discount cannot be empty'),

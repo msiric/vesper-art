@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../Store/Store';
-import SelectInput from '../../shared/SelectInput/SelectInput';
+import { Context } from '../Store/Store.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import { useFormik, Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import Gallery from '../Home/Gallery';
+import Gallery from '../Home/Gallery.js';
 import {
   Modal,
   Container,
@@ -43,8 +43,8 @@ import {
   LinkRounded as CopyIcon,
 } from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import SavedArtworkStyles from './SavedArtwork.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import SavedArtworkStyles from './SavedArtwork.style.js';
 
 const SavedArtwork = () => {
   const [store, dispatch] = useContext(Context);

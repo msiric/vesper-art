@@ -1,11 +1,13 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-const deepPopulate = require('mongoose-deep-populate')(mongoose);
-const fuzzySearch = require('mongoose-fuzzy-searching');
-const { formatPrice } = require('../utils/helpers');
+import mongooseDeepPopulate from 'mongoose-deep-populate';
+
+const deepPopulate = mongooseDeepPopulate(mongoose);
+import fuzzySearch from 'mongoose-fuzzy-searching';
+import { formatPrice } from '../utils/helpers.js';
 
 const VersionSchema = new Schema({
-  artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
+  artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' }, // nesting
   type: String,
   title: String,
   category: String,
@@ -36,4 +38,4 @@ const Version = mongoose.model('Version', VersionSchema);
 
 Version.createCollection();
 
-module.exports = Version;
+export default Version;

@@ -1,7 +1,9 @@
-const mongoose = require('mongoose');
-const deepPopulate = require('mongoose-deep-populate')(mongoose);
+import mongoose from 'mongoose';
+import mongooseDeepPopulate from 'mongoose-deep-populate';
+
+const deepPopulate = mongooseDeepPopulate(mongoose);
 const Schema = mongoose.Schema;
-const { formatPrice } = require('../utils/helpers');
+import { formatPrice } from '../utils/helpers.js';
 
 const OrderSchema = new Schema({
   buyer: { type: Schema.Types.ObjectId, ref: 'User' },
@@ -28,4 +30,4 @@ const Order = mongoose.model('Order', OrderSchema);
 
 Order.createCollection();
 
-module.exports = Order;
+export default Order;

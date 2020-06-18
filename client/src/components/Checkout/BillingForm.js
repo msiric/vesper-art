@@ -1,9 +1,9 @@
 import React from 'react';
 import { TextField, Grid, Typography, Button } from '@material-ui/core';
-import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput';
+import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput.js';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
-import BillingFormStyles from './BillingForm.style';
+import BillingFormStyles from './BillingForm.style.js';
 
 const validationSchema = Yup.object().shape({
   firstname: Yup.string().trim().required('First name is required'),

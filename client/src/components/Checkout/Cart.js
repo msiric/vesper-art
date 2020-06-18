@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState, useEffect } from 'react';
-import { Context } from '../Store/Store';
-import SelectField from '../../shared/SelectInput/SelectInput';
+import { Context } from '../Store/Store.js';
+import SelectField from '../../shared/SelectInput/SelectInput.js';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import { Link } from 'react-router-dom';
 import NumberFormat from 'react-number-format';
@@ -23,8 +23,8 @@ import {
   Divider,
 } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { ax } from '../../shared/Interceptor/Interceptor';
-import CartStyles from './Cart.style';
+import { ax } from '../../shared/Interceptor/Interceptor.js';
+import CartStyles from './Cart.style.js';
 
 const validationSchema = Yup.object().shape({
   licenses: Yup.array().of(
