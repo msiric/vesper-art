@@ -73,7 +73,7 @@ const passwordValidation = Yup.object().shape({
   password: Yup.string()
     .min(8, 'Password must contain at least 8 characters')
     .required('Enter new password'),
-  confirmPassword: Yup.string()
+  confirm: Yup.string()
     .required('Confirm your password')
     .oneOf([Yup.ref('password')], 'Passwords do not match'),
 });
@@ -276,7 +276,7 @@ const Settings = () => {
                       initialValues={{
                         current: '',
                         password: '',
-                        confirmPassword: '',
+                        confirm: '',
                       }}
                       enableReinitialize
                       validationSchema={passwordValidation}
@@ -321,7 +321,7 @@ const Settings = () => {
                                 />
                               )}
                             </Field>
-                            <Field name="confirmPassword">
+                            <Field name="confirm">
                               {({ field, form: { touched, errors }, meta }) => (
                                 <TextField
                                   {...field}

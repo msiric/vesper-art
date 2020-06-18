@@ -88,7 +88,7 @@ const getLicenses = async ({ userId, artworkId }) => {
 const postNewArtwork = async ({ userId, artworkData, session }) => {
   const { error, value } = artworkValidator(sanitizeData(artworkData));
   if (error) throw createError(400, error);
-  if (value.artworkPersonal || value.artworkCommercial) {
+  if (artworkData.artworkPersonal || artworkData.artworkCommercial) {
     const foundUser = await fetchUserById({
       userId,
       session,
@@ -103,7 +103,7 @@ const postNewArtwork = async ({ userId, artworkData, session }) => {
       accountId: foundUser.stripeId,
     });
     if (
-      (value.artworkPersonal || value.artworkCommercial) &&
+      (artworkData.artworkPersonal || artworkData.artworkCommercial) &&
       (foundAccount.capabilities.card_payments !== 'active' ||
         foundAccount.capabilities.platform_payments !== 'active')
     ) {
@@ -114,7 +114,7 @@ const postNewArtwork = async ({ userId, artworkData, session }) => {
     }
   }
   const savedVersion = await addNewArtwork({
-    artworkData: value,
+    artworkData,
     userId,
     session,
   });
@@ -135,10 +135,10 @@ const updateArtwork = async ({ userId, artworkId, artworkData, session }) => {
     userId,
     session,
   });
-  const { error, value } = artworkValidator(sanitizeData(artworkData));
+  const { error } = artworkValidator(sanitizeData(artworkData));
   if (error) throw createError(400, error);
   if (foundArtwork) {
-    if (value.artworkPersonal || value.artworkCommercial) {
+    if (artworkData.artworkPersonal || artworkData.artworkCommercial) {
       const foundUser = await fetchUserById({
         userId,
         session,
@@ -153,7 +153,7 @@ const updateArtwork = async ({ userId, artworkId, artworkData, session }) => {
         accountId: foundUser.stripeId,
       });
       if (
-        (value.artworkPersonal || value.artworkCommercial) &&
+        (artworkData.artworkPersonal || artworkData.artworkCommercial) &&
         (foundAccount.capabilities.card_payments !== 'active' ||
           foundAccount.capabilities.platform_payments !== 'active')
       ) {
@@ -164,7 +164,7 @@ const updateArtwork = async ({ userId, artworkId, artworkData, session }) => {
       }
     }
     const savedVersion = await addNewVersion({
-      artworkData: value,
+      artworkData,
       session,
     });
     const foundOrder = await fetchOrderByVersion({
@@ -173,7 +173,7 @@ const updateArtwork = async ({ userId, artworkId, artworkData, session }) => {
       session,
     });
     if (!foundOrder) {
-      if (value.artworkCover && value.artworkMedia) {
+      if (artworkData.artworkCover && artworkData.artworkMedia) {
         await deleteS3Object({
           link: foundArtwork.current.cover,
           folder: 'artworkCovers/',
@@ -270,6 +270,7 @@ const unsaveArtwork = async ({ userId, artworkId, session }) => {
 };
 
 // needs transaction (done)
+// $TODO validacija licenci?
 const saveLicenses = async ({ userId, artworkId, licenses, session }) => {
   if (licenses.length) {
     const foundArtwork = await fetchArtworkDetails({ artworkId, session });

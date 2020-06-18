@@ -17,7 +17,7 @@ import { addNewNotification } from '../services/notification.js';
 import socketApi from '../realtime/io.js';
 
 const postComment = async ({ userId, artworkId, commentContent, session }) => {
-  const { error, value } = commentValidator(sanitizeData({ commentContent }));
+  const { error } = commentValidator(sanitizeData({ commentContent }));
   if (error) throw createError(400, error);
   const foundArtwork = await fetchArtworkById({ artworkId, session });
   if (!foundArtwork) {
@@ -38,7 +38,7 @@ const postComment = async ({ userId, artworkId, commentContent, session }) => {
     if (!savedComment.owner.equals(updatedArtwork.owner)) {
       await addNewNotification({
         notificationLink: foundArtwork._id,
-        notificationType: 'Comment',
+        notificationType: 'comment',
         notificationReceiver: updatedArtwork.owner,
         session,
       });
@@ -63,7 +63,7 @@ const patchComment = async ({
   commentId,
   commentContent,
 }) => {
-  const { error, value } = commentValidator(sanitizeData({ commentContent }));
+  const { error } = commentValidator(sanitizeData({ commentContent }));
   if (error) throw createError(400, error);
   await editExistingComment({
     commentId,

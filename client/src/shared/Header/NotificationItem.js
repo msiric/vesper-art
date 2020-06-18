@@ -30,13 +30,13 @@ const NotificationItem = ({
     link: `/artwork/${notification.link}`,
   };
 
-  if (notification.type === 'Comment') {
+  if (notification.type === 'comment') {
     data.label = 'A user left a comment on your artwork';
     data.link = `/artwork/${notification.link}`;
-  } else if (notification.type === 'Order') {
+  } else if (notification.type === 'order') {
     data.label = 'A user ordered your artwork';
     data.link = `/orders/${notification.link}`;
-  } else if (notification.type === 'Review') {
+  } else if (notification.type === 'review') {
     data.label = 'A user left a review on your artwork';
     data.link = `/orders/${notification.link}`;
   } else {

@@ -15,6 +15,8 @@ import {
 } from '../services/auth.js';
 import signupValidator from '../utils/validation/signup.js';
 import loginValidator from '../utils/validation/login.js';
+import emailValidator from '../utils/validation/email.js';
+import resetValidator from '../utils/validation/reset.js';
 import { sanitizeData } from '../utils/helpers.js';
 import { fetchUserByCreds, editUserPassword } from '../services/user.js';
 import config from '../config/mailer.js';
@@ -125,6 +127,8 @@ const verifyRegisterToken = async ({ tokenId }) => {
 };
 
 const forgotPassword = async ({ email, session }) => {
+  const { error } = emailValidator(sanitizeData({ userEmail: email }));
+  if (error) throw createError(400, error);
   crypto.randomBytes(20, async function (err, buf) {
     const token = buf.toString('hex');
     await editUserResetToken({ email, token, session });
@@ -143,6 +147,10 @@ const forgotPassword = async ({ email, session }) => {
 
 // needs transaction (not tested)
 const resetPassword = async ({ tokenId, password, confirm, session }) => {
+  const { error } = resetValidator(
+    sanitizeData({ newPassword: password, confirmedPassword: confirm })
+  );
+  if (error) throw createError(400, error);
   const updatedUser = await editUserPassword({ tokenId, password, session });
   await mailer.sendEmail(
     config.app,

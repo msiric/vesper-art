@@ -117,7 +117,7 @@ router.route('/user/:userId/update_password').patch(
     userId: req.params.userId,
     current: req.body.current,
     password: req.body.password,
-    confirmPassword: req.body.confirmPassword,
+    confirm: req.body.confirm,
   }))
 );
 

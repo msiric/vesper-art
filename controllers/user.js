@@ -27,6 +27,7 @@ import profileValidator from '../utils/validation/profile.js';
 import emailValidator from '../utils/validation/email.js';
 import passwordValidator from '../utils/validation/password.js';
 import preferencesValidator from '../utils/validation/preferences.js';
+import rangeValidator from '../utils/validation/range.js';
 
 const getUserProfile = async ({ username, cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
@@ -64,11 +65,19 @@ const getUserStatistics = async ({ userId }) => {
 };
 
 const getUserSales = async ({ userId, from, to }) => {
+  const { error } = rangeValidator(
+    sanitizeData({ rangeFrom, from, rangeTo: to })
+  );
+  if (error) throw createError(400, error);
   const foundOrders = await fetchOrdersBySeller({ userId, from, to });
   return { statistics: foundOrders };
 };
 
 const getUserPurchases = async ({ userId, from, to }) => {
+  const { error } = rangeValidator(
+    sanitizeData({ rangeFrom, from, rangeTo: to })
+  );
+  if (error) throw createError(400, error);
   const foundOrders = await fetchOrdersByBuyer({ userId, from, to });
   return { statistics: foundOrders };
 };
@@ -137,13 +146,14 @@ const updateUserEmail = async ({ userId, email, session }) => {
 };
 
 // needs transaction (done)
-const updateUserPassword = async ({
-  userId,
-  current,
-  password,
-  confirmPassword,
-}) => {
-  const { error } = passwordValidator(sanitizeData({ userPassword: password }));
+const updateUserPassword = async ({ userId, current, password, confirm }) => {
+  const { error } = passwordValidator(
+    sanitizeData({
+      currentPassword: current,
+      newPassword: password,
+      confirmedPassword: confirm,
+    })
+  );
   if (error) throw createError(400, error);
   await editUserPassword({ userId, password });
   return { message: 'Password updated successfully' };

@@ -37,8 +37,8 @@ const receiveWebhookEvent = async (req, res, next) => {
 
   const event = await constructStripeEvent({
     body: req.rawBody,
-    signature,
     secret: endpointSecret,
+    signature,
   });
 
   switch (event.type) {
@@ -63,11 +63,12 @@ const getStripeUser = async ({ accountId }) => {
   };
 };
 
+// $TODO validacija licenci
 const managePaymentIntent = async ({
   userId,
   artworkId,
-  licenses,
   intentId,
+  licenses,
 }) => {
   const foundUser = await fetchUserDiscount({ userId });
   if (foundUser) {
@@ -151,12 +152,11 @@ const managePaymentIntent = async ({
 };
 
 const redirectToStripe = async ({ req, userOnboarded }) => {
-  if (!userOnboarded) {
+  if (!userOnboarded)
     throw createError(
       400,
       'You need to complete the onboarding process before accessing your Stripe dashboard'
     );
-  }
   const loginLink = await constructStripeLink({
     userOnboarded,
     domain: server.serverDomain,
@@ -201,9 +201,9 @@ const onboardUser = async ({ req, res, country, email }) => {
 };
 
 const assignStripeId = async ({ req, session }) => {
-  if (req.session.state != req.query.state) {
-    throw createError(500, 'There was an error onboarding you');
-  }
+  if (req.session.state != req.query.state)
+    throw createError(500, 'There was an error in the onboarding process');
+
   const formData = new FormData();
   formData.append('grant_type', 'authorization_code');
   formData.append('client_id', processor.clientId);
@@ -214,9 +214,7 @@ const assignStripeId = async ({ req, session }) => {
     headers: formData.getHeaders(),
   });
 
-  if (expressAuthorized.error) {
-    throw createError(500, expressAuthorized.error);
-  }
+  if (expressAuthorized.error) throw createError(500, expressAuthorized.error);
 
   await editUserStripe({
     userId: req.session.id,
@@ -264,8 +262,15 @@ const createOrder = async ({ intent, session }) => {
   const licenseSet = [];
   const licenseIds = [];
   for (let license of orderData) {
-    /*   const { error } = licenseValidator(sanitizeData({licenseType: license.licenseType, licensePrice: license.licensePrice}));
-  if (error) throw createError(400, error); */
+    const { error } = licenseValidator(
+      sanitizeData({
+        licenseOwner: buyerId,
+        licenseArtwork: artworkId,
+        licenseType: license.licenseType,
+        licensePrice: license.licensePrice,
+      })
+    );
+    if (error) throw createError(400, error);
     const newLicense = new License();
     newLicense.owner = buyerId;
     newLicense.artwork = artworkId;
@@ -282,8 +287,21 @@ const createOrder = async ({ intent, session }) => {
   savedLicenses.forEach((license) => {
     licenseIds.push(license._id);
   });
-  /*   const { error } = orderValidator(sanitizeData(orderData));
-  if (error) throw createError(400, error); */
+  const { error } = orderValidator(
+    sanitizeData({
+      orderBuyer: buyerId,
+      orderSeller: sellerId,
+      orderArtwork: artworkId,
+      orderVersion: versionId,
+      orderDiscount: discountId,
+      orderLicenses: licenseIds,
+      orderSpent: orderData.spent,
+      orderEarned: orderData.earned,
+      orderFee: orderData.fee,
+      orderIntent: intentId,
+    })
+  );
+  if (error) throw createError(400, error);
   const orderObject = {
     buyer: buyerId,
     seller: sellerId,
@@ -308,7 +326,7 @@ const createOrder = async ({ intent, session }) => {
   // new start
   await addNewNotification({
     notificationLink: savedOrder._id,
-    notificationType: 'Order',
+    notificationType: 'order',
     notificationReceiver: sellerId,
     session,
   });

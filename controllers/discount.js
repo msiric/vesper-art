@@ -15,7 +15,7 @@ import { sanitizeData } from '../utils/helpers.js';
 // needs transaction (done)
 // treba sredit
 const postDiscount = async ({ userId, discountCode, session }) => {
-  const { error, value } = discountValidator(sanitizeData({ discountCode }));
+  const { error } = discountValidator(sanitizeData({ discountCode }));
   if (error) throw createError(400, error);
   const foundUser = await fetchUserById({
     userId,

@@ -1,8 +1,13 @@
 import mongoose from 'mongoose';
-import { formatParams } from '../utils/helpers.js';
+import { formatParams, sanitizeData } from '../utils/helpers.js';
 import { fetchArtworkResults, fetchUserResults } from '../services/search.js';
+import searchValidator from '../utils/validation/search.js';
 
 const getResults = async ({ query, type, cursor, ceiling }) => {
+  const { error } = searchValidator(
+    sanitizeData({ searchQuery: query, searchType: type })
+  );
+  if (error) throw createError(400, error);
   const { skip, limit } = formatParams({ cursor, ceiling });
   let foundResults = [];
   let foundType = null;

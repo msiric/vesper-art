@@ -54,7 +54,7 @@ const postReview = async ({ userId, reviewRating, reviewContent, orderId }) => {
         // new start
         await addNewNotification({
           notificationLink: foundOrder._id,
-          notificationType: 'Review',
+          notificationType: 'review',
           notificationReceiver: foundOrder.seller,
           session,
         });
