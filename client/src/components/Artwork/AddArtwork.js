@@ -16,7 +16,7 @@ import UploadInput from '../../shared/UploadInput/UploadInput.js';
 import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import PriceInput from '../../shared/PriceInput/PriceInput.js';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
-import deleteEmptyValues from '../../utils/deleteEmptyValues.js';
+import { deleteEmptyValues } from '../../utils/helpers.js';
 import AddArtworkStyles from './AddArtwork.style.js';
 
 const artworkMediaConfig = {
