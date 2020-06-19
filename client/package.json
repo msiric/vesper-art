@@ -2,7 +2,6 @@
   "name": "client3",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "proxy": "http://localhost:5000",
   "dependencies": {
     "@material-ui/core": "^4.9.9",
@@ -35,10 +34,11 @@
     "yup": "^0.28.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "yarn run tailwind && react-scripts start",
+    "build": "yarn run tailwind && yarn run purge-tailwind && cross-env GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "tailwind": "tailwind build ./src/styles/tailwind-config.css -c ./tailwind.config.js -o ./src/styles/tailwind.css"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -56,6 +56,8 @@
     ]
   },
   "devDependencies": {
-    "tailwindcss": "^1.4.6"
+    "purgecss": "^2.3.0",
+    "tailwindcss": "^1.4.6",
+    "tailwindcss-dir": "^4.0.0"
   }
 }
