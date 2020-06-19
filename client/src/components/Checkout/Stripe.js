@@ -35,7 +35,7 @@ const PaymentForm = () => {
           {cardsLogo.map((e) => (
             <img
               key={e}
-              src={`./cards/${e}.png`}
+              src={`../../assets/images/cards/${e}.png`}
               alt={e}
               width="50px"
               align="bottom"
