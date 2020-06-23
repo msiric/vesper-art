@@ -26,8 +26,8 @@ const NotificationItem = ({
   const classes = NotificationItemStyles();
 
   const data = {
-    label: 'A user left a comment on your artwork',
-    link: `/artwork/${notification.link}`,
+    label: null,
+    link: null,
   };
 
   if (notification.type === 'comment') {
@@ -39,9 +39,9 @@ const NotificationItem = ({
   } else if (notification.type === 'review') {
     data.label = 'A user left a review on your artwork';
     data.link = `/orders/${notification.link}`;
-  } else {
-    data.label = null;
-    data.link = null;
+  } else if (notification.type === 'user') {
+    data.label = 'A user left a comment on your artwork';
+    data.link = `/artwork/${notification.link}`;
   }
 
   return data.label && data.link ? (
