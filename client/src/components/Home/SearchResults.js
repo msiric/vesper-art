@@ -1,30 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../Store/Store.js';
-import {
-  Grid,
-  CircularProgress,
-  Paper,
-  Button,
-  Icon,
-  Typography,
-  Input,
-  Table,
-  TableBody,
-  TableCell,
-  TablePagination,
-  TableRow,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Tabs,
-  Tab,
-  Avatar,
-  TextField,
-} from '@material-ui/core';
+import { Grid, CircularProgress } from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
-import Gallery from '../Home/Gallery.js';
+import Gallery from './Gallery.js';
 import Group from './Group.js';
 import SearchResultsStyles from './SearchResults.style.js';
 

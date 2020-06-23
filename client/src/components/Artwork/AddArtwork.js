@@ -17,6 +17,8 @@ import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import PriceInput from '../../shared/PriceInput/PriceInput.js';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { deleteEmptyValues } from '../../utils/helpers.js';
+import { postMedia, postArtwork } from '../../services/artwork.js';
+import { getUser } from '../../services/stripe.js';
 import AddArtworkStyles from './AddArtwork.style.js';
 
 const artworkMediaConfig = {
@@ -110,7 +112,7 @@ const AddArtwork = () => {
 
   const fetchAccount = async () => {
     try {
-      const { data } = await ax.get(`/stripe/account/${store.user.stripeId}`);
+      const { data } = await getUser({ stripeId: store.user.stripeId });
       setState({ ...state, loading: false, capabilities: data.capabilities });
     } catch (err) {
       setState({ ...state, loading: false });
@@ -150,11 +152,11 @@ const AddArtwork = () => {
       try {
         const {
           data: { artworkCover, artworkMedia },
-        } = await ax.post('/api/artwork_media_upload', formData);
+        } = await postMedia({ data: formData });
         values.artworkCover = artworkCover;
         values.artworkMedia = artworkMedia;
         const data = deleteEmptyValues(values);
-        await ax.post('/api/add_artwork', data);
+        await postArtwork({ data });
         history.push({
           pathname: '/',
           state: { message: 'Artwork published' },

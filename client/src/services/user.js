@@ -1,4 +1,4 @@
-import { ax } from '../../shared/Interceptor/Interceptor.js';
+import { ax } from '../shared/Interceptor/Interceptor.js';
 
 export const getStatistics = async ({ userId }) =>
   await ax.get(`/api/user/${userId}/statistics`);
