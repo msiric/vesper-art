@@ -248,7 +248,6 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
       dispatch({
         type: 'updateSaves',
         saved: {
-          ...store.user.saved,
           [id]: true,
         },
       });
@@ -271,7 +270,6 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
       dispatch({
         type: 'updateSaves',
         saved: {
-          ...store.user.saved,
           [id]: false,
         },
       });

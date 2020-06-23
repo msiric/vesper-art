@@ -177,7 +177,7 @@ const reducer = (state, action) => {
         ...state,
         user: {
           ...state.user,
-          saved: action.saved,
+          saved: { ...state.user.saved, ...action.saved },
         },
       };
     case 'updateMessages':
