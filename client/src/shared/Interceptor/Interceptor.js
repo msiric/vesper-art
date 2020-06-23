@@ -27,6 +27,7 @@ const Interceptor = ({ children }) => {
           auth: store.main.auth,
           brand: store.main.brand,
           theme: store.main.theme,
+          search: store.main.search,
         });
 
         const { data } = await axios.post('/api/auth/refresh_token', {
@@ -43,6 +44,7 @@ const Interceptor = ({ children }) => {
             auth: store.main.auth,
             brand: store.main.brand,
             theme: store.main.theme,
+            search: store.main.search,
             authenticated: true,
             token: data.accessToken,
             id: data.user.id,
@@ -83,6 +85,7 @@ const Interceptor = ({ children }) => {
             auth: store.main.auth,
             brand: store.main.brand,
             theme: store.main.theme,
+            search: store.main.search,
           });
         }
       }
@@ -94,6 +97,7 @@ const Interceptor = ({ children }) => {
         auth: store.main.auth,
         brand: store.main.brand,
         theme: store.main.theme,
+        search: store.main.search,
       });
     }
   };

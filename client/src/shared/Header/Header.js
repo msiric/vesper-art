@@ -63,7 +63,9 @@ const Header = ({ history }) => {
     searchValidation,
     async onSubmit(values) {
       try {
-        history.push(`/search?query=${values.searchInput}&type=${state.type}`);
+        history.push(
+          `/search?query=${values.searchInput}&type=${store.main.search}`
+        );
       } catch (err) {
         console.log(err);
       }
@@ -275,11 +277,11 @@ const Header = ({ history }) => {
     }
   };
 
-  const handleToggle = (value) => {
-    setState((prevState) => ({
-      ...prevState,
-      type: prevState.type === 'artwork' ? 'users' : 'artwork',
-    }));
+  const handleToggle = () => {
+    dispatch({
+      type: 'setSearch',
+      search: store.main.search === 'artwork' ? 'users' : 'artwork',
+    });
   };
 
   const menuId = 'primary-search-account-menu';
@@ -405,14 +407,20 @@ const Header = ({ history }) => {
             <form className={classes.form} onSubmit={handleSubmit}>
               <IconButton
                 title={
-                  state.type === 'artwork' ? 'Search artwork' : 'Search users'
+                  store.main.search === 'artwork'
+                    ? 'Search artwork'
+                    : 'Search users'
                 }
                 onClick={handleToggle}
                 className={classes.typeIcon}
                 disableFocusRipple
                 disableRipple
               >
-                {state.type === 'artwork' ? <ArtworkIcon /> : <UserIcon />}
+                {store.main.search === 'artwork' ? (
+                  <ArtworkIcon />
+                ) : (
+                  <UserIcon />
+                )}
               </IconButton>
               <InputBase
                 name="searchInput"

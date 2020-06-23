@@ -7,6 +7,7 @@ const store = {
     auth: 'jwt',
     brand: 'test',
     theme: 'light',
+    search: 'artwork',
   },
   user: {
     authenticated: false,
@@ -49,6 +50,7 @@ const reducer = (state, action) => {
           auth: action.auth,
           brand: action.brand,
           theme: action.theme,
+          search: action.search,
         },
         user: {
           authenticated: action.authenticated,
@@ -74,6 +76,7 @@ const reducer = (state, action) => {
           auth: action.auth,
           brand: action.brand,
           theme: action.theme,
+          search: action.search,
         },
       };
     case 'setUser':
@@ -111,6 +114,14 @@ const reducer = (state, action) => {
           },
           saved: action.saved,
           cart: action.cart,
+        },
+      };
+    case 'setSearch':
+      return {
+        ...state,
+        main: {
+          ...state.main,
+          search: action.search,
         },
       };
     case 'resetUser':
