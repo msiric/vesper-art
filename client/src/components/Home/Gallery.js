@@ -37,6 +37,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import GalleryStyles from './Gallery.style.js';
+import { postSave, deleteSave } from '../../services/artwork.js';
 
 const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
   const [store, dispatch] = useContext(Context);
@@ -244,7 +245,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
 
   const handleSaveArtwork = async (id) => {
     try {
-      await ax.post(`/api/save_artwork/${id}`);
+      await postSave({ artworkId: id });
       dispatch({
         type: 'updateSaves',
         saved: {
@@ -266,7 +267,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
 
   const handleUnsaveArtwork = async (id) => {
     try {
-      await ax.delete(`/api/save_artwork/${id}`);
+      await deleteSave({ artworkId: id });
       dispatch({
         type: 'updateSaves',
         saved: {

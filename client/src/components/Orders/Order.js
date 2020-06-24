@@ -32,6 +32,7 @@ import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { format } from 'date-fns';
 import Modal from '../../shared/Modal/Modal.js';
 import OrderStyles from './Order.style.js';
+import { postReview, getOrder } from '../../services/orders.js';
 
 const reviewValidation = Yup.object().shape({
   rating: Yup.number().min(1).max(5).required('Rating cannot be empty'),
@@ -63,7 +64,8 @@ const Order = ({ match }) => {
           enableReinitialize
           validationSchema={reviewValidation}
           onSubmit={async (values, { resetForm }) => {
-            await ax.post(`/api/rate_artwork/${state.order._id}`, {
+            await postReview({
+              artworkId: state.order._id,
               reviewRating: values.rating,
               reviewContent: values.content,
             });
@@ -125,7 +127,7 @@ const Order = ({ match }) => {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await ax.get(`/api/orders/${match.params.id}`);
+      const { data } = await getOrder({ orderId: match.params.id });
       setState({
         ...state,
         loading: false,

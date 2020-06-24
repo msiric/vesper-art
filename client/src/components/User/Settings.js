@@ -60,6 +60,14 @@ import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput.
 import { Link, useHistory } from 'react-router-dom';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import SettingsStyles from './Settings.style.js';
+import {
+  getSettings,
+  deleteUser,
+  patchEmail,
+  patchPassword,
+  patchPreferences,
+  patchBilling,
+} from '../../services/user.js';
 
 const emailValidation = Yup.object().shape({
   email: Yup.string()
@@ -113,7 +121,7 @@ const Settings = () => {
 
   const fetchSettings = async () => {
     try {
-      const { data } = await ax.get(`/api/user/${store.user.id}/settings`);
+      const { data } = await getSettings({ userId: store.user.id });
       setState({
         ...state,
         loading: false,
@@ -136,7 +144,7 @@ const Settings = () => {
   };
 
   const handleDeactivateUser = async () => {
-    await ax.delete(`/api/user/${store.user.id}`);
+    await deleteUser({ userId: store.user.id });
   };
 
   useEffect(() => {
@@ -203,10 +211,10 @@ const Settings = () => {
                       enableReinitialize
                       validationSchema={emailValidation}
                       onSubmit={async (values, { resetForm }) => {
-                        const { data } = await ax.patch(
-                          `/api/user/${store.user.id}/update_email`,
-                          values
-                        );
+                        await patchEmail({
+                          userId: store.user.id,
+                          data: values,
+                        });
 
                         setState((prevState) => ({
                           ...prevState,
@@ -281,10 +289,10 @@ const Settings = () => {
                       enableReinitialize
                       validationSchema={passwordValidation}
                       onSubmit={async (values, { resetForm }) => {
-                        const { data } = await ax.patch(
-                          `/api/user/${store.user.id}/update_password`,
-                          values
-                        );
+                        await patchPassword({
+                          userId: store.user.id,
+                          data: values,
+                        });
                         resetForm();
                       }}
                     >
@@ -384,10 +392,10 @@ const Settings = () => {
                         enableReinitialize
                         validationSchema={preferencesValidation}
                         onSubmit={async (values, { resetForm }) => {
-                          await ax.patch(
-                            `/api/user/${store.user.id}/preferences`,
-                            values
-                          );
+                          await patchPreferences({
+                            userId: store.user.id,
+                            data: values,
+                          });
                           setState((prevState) => ({
                             ...prevState,
                             user: {
@@ -491,196 +499,15 @@ const Settings = () => {
                       enableReinitialize
                       validationSchema={billingValidation}
                       onSubmit={async (values, { resetForm }) => {
-                        await ax.patch(
-                          `/api/user/${store.user.id}/billing`,
-                          values
-                        );
+                        await patchBilling({
+                          userId: store.user.id,
+                          data: values,
+                        });
                         setState((prevState) => ({
                           ...prevState,
                           user: {
                             ...prevState.user,
                             billingInformation: values,
-                          },
-                        }));
-                        resetForm();
-                      }}
-                    >
-                      {({ values, errors, touched, enableReinitialize }) => (
-                        <Form>
-                          <Grid item xs={12}>
-                            <Field name="firstname">
-                              {({ field, form: { touched, errors }, meta }) => (
-                                <TextField
-                                  {...field}
-                                  label="First name"
-                                  type="text"
-                                  helperText={meta.touched && meta.error}
-                                  error={meta.touched && Boolean(meta.error)}
-                                  margin="dense"
-                                  variant="outlined"
-                                  fullWidth
-                                  multiline
-                                />
-                              )}
-                            </Field>
-                            <Field name="lastname">
-                              {({ field, form: { touched, errors }, meta }) => (
-                                <TextField
-                                  {...field}
-                                  label="Last name"
-                                  type="text"
-                                  helperText={meta.touched && meta.error}
-                                  error={meta.touched && Boolean(meta.error)}
-                                  margin="dense"
-                                  variant="outlined"
-                                  fullWidth
-                                  multiline
-                                />
-                              )}
-                            </Field>
-                            <Field name="email">
-                              {({ field, form: { touched, errors }, meta }) => (
-                                <TextField
-                                  {...field}
-                                  label="Email"
-                                  type="text"
-                                  helperText={meta.touched && meta.error}
-                                  error={meta.touched && Boolean(meta.error)}
-                                  margin="dense"
-                                  variant="outlined"
-                                  fullWidth
-                                  multiline
-                                />
-                              )}
-                            </Field>
-                            <Field name="address">
-                              {({ field, form: { touched, errors }, meta }) => (
-                                <TextField
-                                  {...field}
-                                  label="Street address"
-                                  type="text"
-                                  helperText={meta.touched && meta.error}
-                                  error={meta.touched && Boolean(meta.error)}
-                                  margin="dense"
-                                  variant="outlined"
-                                  fullWidth
-                                  multiline
-                                />
-                              )}
-                            </Field>
-                            <Field name="zip">
-                              {({ field, form: { touched, errors }, meta }) => (
-                                <TextField
-                                  {...field}
-                                  label="Postal code"
-                                  type="text"
-                                  helperText={meta.touched && meta.error}
-                                  error={meta.touched && Boolean(meta.error)}
-                                  margin="dense"
-                                  variant="outlined"
-                                  fullWidth
-                                  multiline
-                                />
-                              )}
-                            </Field>
-                            <Field name="city">
-                              {({ field, form: { touched, errors }, meta }) => (
-                                <TextField
-                                  {...field}
-                                  label="City"
-                                  type="text"
-                                  helperText={meta.touched && meta.error}
-                                  error={meta.touched && Boolean(meta.error)}
-                                  margin="dense"
-                                  variant="outlined"
-                                  fullWidth
-                                  multiline
-                                />
-                              )}
-                            </Field>
-                            <Field name="country">
-                              {({
-                                field,
-                                form: {
-                                  touched,
-                                  errors,
-                                  setFieldValue,
-                                  setFieldTouched,
-                                },
-                                meta,
-                              }) => (
-                                <AutocompleteInput
-                                  {...field}
-                                  options={countries}
-                                  handleChange={(e, value) =>
-                                    setFieldValue('country', value || '')
-                                  }
-                                  handleBlur={() =>
-                                    setFieldTouched('country', true)
-                                  }
-                                  getOptionLabel={(option) => option.name}
-                                  helperText={meta.touched && meta.error}
-                                  error={meta.touched && Boolean(meta.error)}
-                                  label="Country"
-                                />
-                              )}
-                            </Field>
-                          </Grid>
-                          <Grid container item justify="flex-end">
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              className={classes.button}
-                              type="submit"
-                            >
-                              Save
-                            </Button>
-                          </Grid>
-                        </Form>
-                      )}
-                    </Formik>
-                  </ExpansionPanelDetails>
-                </ExpansionPanel>
-                <br />
-                <ExpansionPanel
-                  expanded={state.panel.expanded === 'panel5'}
-                  onChange={handlePanelChange('panel5')}
-                >
-                  <ExpansionPanelSummary
-                    expandIcon={
-                      state.panel.expanded === 'panel5' ? (
-                        <UpIcon />
-                      ) : (
-                        <DownIcon />
-                      )
-                    }
-                    aria-controls="panel5bh-content"
-                    id="panel5bh-header"
-                  >
-                    <Typography className={classes.heading}>
-                      License templates
-                    </Typography>
-                    <Typography className={classes.secondaryHeading}>
-                      Change license templates
-                    </Typography>
-                  </ExpansionPanelSummary>
-                  <ExpansionPanelDetails>
-                    <Formik
-                      initialValues={{
-                        licenseType: 'personal',
-                      }}
-                      enableReinitialize
-                      validationSchema={licenseValidation}
-                      onSubmit={async (values, { resetForm }) => {
-                        await ax.patch(
-                          `/api/user/${store.user.id}/templates`,
-                          values
-                        );
-                        setState((prevState) => ({
-                          ...prevState,
-                          user: {
-                            ...prevState.user,
-                            licenseTemplates: values,
                           },
                         }));
                         resetForm();

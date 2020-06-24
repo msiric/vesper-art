@@ -24,6 +24,7 @@ import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { format } from 'date-fns';
 import ProductsTableHead from './Head.js';
 import OrdersStyles from './Orders.style.js';
+import { getOrders } from '../../services/orders.js';
 
 const Orders = () => {
   const [state, setState] = useState({
@@ -44,8 +45,7 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await ax.get(`/api/orders/${state.display}`);
-      console.log(data);
+      const { data } = await getOrders({ display: state.display });
       setState({
         ...state,
         loading: false,

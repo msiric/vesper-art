@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store.js';
 import { Grid, CircularProgress } from '@material-ui/core';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
+import { getArtwork } from '../../services/artwork.js';
 import { withSnackbar } from 'notistack';
 import Gallery from './Gallery.js';
 import HomeStyles from './Home.style.js';
@@ -21,9 +22,10 @@ const Home = ({ location, enqueueSnackbar }) => {
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
-      );
+      const { data } = await getArtwork({
+        cursor: state.cursor,
+        ceiling: state.ceiling,
+      });
       setState({
         ...state,
         loading: false,
@@ -52,9 +54,10 @@ const Home = ({ location, enqueueSnackbar }) => {
 
   const loadMore = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
-      );
+      const { data } = await getArtwork({
+        cursor: state.cursor,
+        ceiling: state.ceiling,
+      });
       setState((prevState) => ({
         ...prevState,
         artwork: [prevState.artwork].concat(data.artwork),

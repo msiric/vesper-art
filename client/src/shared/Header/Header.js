@@ -33,6 +33,12 @@ import {
 } from '@material-ui/icons';
 import NotificationsMenu from './NotificationsMenu.js';
 import HeaderStyles from './Header.style.js';
+import {
+  getNotifications,
+  postLogout,
+  patchRead,
+  patchUnread,
+} from '../../services/user.js';
 
 const searchValidation = Yup.object().shape({
   searchInput: Yup.string().trim().required('Search input is required'),
@@ -130,9 +136,11 @@ const Header = ({ history }) => {
         },
       });
       try {
-        const { data } = await ax.get(
-          `/api/user/${store.user.id}/notifications?cursor=${store.user.notifications.cursor}&ceiling=${store.user.notifications.ceiling}`
-        );
+        const { data } = await getNotifications({
+          userId: store.user.id,
+          cursor: store.user.notifications.cursor,
+          ceiling: store.user.notifications.ceiling,
+        });
         dispatch({
           type: 'updateNotifications',
           notifications: {
@@ -186,11 +194,7 @@ const Header = ({ history }) => {
 
   const handleLogout = async () => {
     try {
-      await ax.post('/api/auth/logout', {
-        headers: {
-          credentials: 'include',
-        },
-      });
+      await postLogout();
 
       dispatch({
         type: 'resetUser',
@@ -206,7 +210,7 @@ const Header = ({ history }) => {
 
   const handleReadClick = async (id) => {
     try {
-      await ax.patch(`/api/read_notification/${id}`);
+      await patchRead({ notificationId: id });
       dispatch({
         type: 'updateNotifications',
         notifications: {
@@ -226,7 +230,7 @@ const Header = ({ history }) => {
 
   const handleUnreadClick = async (id) => {
     try {
-      await ax.patch(`/api/unread_notification/${id}`);
+      await patchUnread({ notificationId: id });
       dispatch({
         type: 'updateNotifications',
         notifications: {
@@ -254,9 +258,11 @@ const Header = ({ history }) => {
           loading: true,
         },
       });
-      const { data } = await ax.get(
-        `/api/user/${store.user.id}/notifications?cursor=${store.user.notifications.cursor}&ceiling=${store.user.notifications.ceiling}`
-      );
+      const { data } = await getNotifications({
+        userId: store.user.id,
+        cursor: store.user.notifications.cursor,
+        ceiling: store.user.notifications.ceiling,
+      });
       dispatch({
         type: 'updateNotifications',
         notifications: {

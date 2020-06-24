@@ -13,6 +13,7 @@ import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { format } from 'date-fns';
 import { withSnackbar } from 'notistack';
 import VerifierStyles from './Verifier.style.js';
+import { postVerifier } from '../../services/home.js';
 
 const fingerprintValidation = Yup.object().shape({
   fingerprint: Yup.string().trim().required('Fingerprint cannot be empty'),
@@ -45,7 +46,7 @@ const Verifier = () => {
               ...prevState,
               loading: true,
             }));
-            const { data } = await ax.post('/api/verifier', values);
+            const { data } = await postVerifier({ data: values });
             setState((prevState) => ({
               ...prevState,
               loading: false,

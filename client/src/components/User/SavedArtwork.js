@@ -45,6 +45,7 @@ import {
 import { Link, useHistory } from 'react-router-dom';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import SavedArtworkStyles from './SavedArtwork.style.js';
+import { getSaves } from '../../services/artwork.js';
 
 const SavedArtwork = () => {
   const [store, dispatch] = useContext(Context);
@@ -58,7 +59,7 @@ const SavedArtwork = () => {
 
   const fetchUser = async () => {
     try {
-      const { data } = await ax.get(`/api/user/${store.user.id}/saved_artwork`);
+      const { data } = await getSaves({ userId: store.user.id });
       setState({
         ...state,
         loading: false,

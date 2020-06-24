@@ -3,6 +3,7 @@ import { Context } from '../Store/Store.js';
 import { Grid, CircularProgress } from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
+import { getSearch } from '../../services/home.js';
 import Gallery from './Gallery.js';
 import Group from './Group.js';
 import SearchResultsStyles from './SearchResults.style.js';
@@ -29,9 +30,11 @@ const SearchResults = ({ match, location, history }) => {
           hasMore: true,
           cursor: 0,
         }));
-      const { data } = await ax.get(
-        `/api/search${location.search}&cursor=${state.cursor}&ceiling=${state.ceiling}`
-      );
+      const { data } = await getSearch({
+        query: location.search,
+        cursor: state.cursor,
+        ceiling: state.ceiling,
+      });
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -47,9 +50,11 @@ const SearchResults = ({ match, location, history }) => {
 
   const loadMore = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/search${location.search}&cursor=${state.cursor}&ceiling=${state.ceiling}`
-      );
+      const { data } = await getSearch({
+        query: location.search,
+        cursor: state.cursor,
+        ceiling: state.ceiling,
+      });
       setState((prevState) => ({
         ...prevState,
         results: [...prevState.results].concat(data.searchResults),

@@ -14,6 +14,7 @@ import {
 } from '@material-ui/core';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import LoginStyles from './Login.style.js';
+import { postLogin } from '../../services/auth.js';
 
 const validationSchema = Yup.object().shape({
   username: Yup.string().required('Username or email is required'),
@@ -44,7 +45,7 @@ const Login = () => {
     },
     validationSchema,
     async onSubmit(values) {
-      const { data } = await ax.post('/api/auth/login', values);
+      const { data } = await postLogin({ data: values });
 
       if (data.user) {
         dispatch({

@@ -3,6 +3,7 @@ import { Container, Grid, CircularProgress } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import VerifyTokenStyles from './VerifyToken.style.js';
+import { getToken } from '../../services/auth.js';
 
 const VerifyToken = ({ match }) => {
   const history = useHistory();
@@ -10,7 +11,7 @@ const VerifyToken = ({ match }) => {
 
   const verifyToken = async () => {
     try {
-      await ax.get(`/api/auth/verify_token/${match.params.id}`);
+      await getToken({ tokenId: match.params.id });
       history.push({
         pathname: '/login',
         state: { message: 'Email successfully verified' },
