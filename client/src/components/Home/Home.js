@@ -6,6 +6,7 @@ import { getArtwork } from '../../services/artwork.js';
 import { withSnackbar } from 'notistack';
 import Gallery from './Gallery.js';
 import HomeStyles from './Home.style.js';
+import mockArtwork from '../../constants/mockArtwork.json';
 
 const Home = ({ location, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -22,7 +23,8 @@ const Home = ({ location, enqueueSnackbar }) => {
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await getArtwork({
+      // DATABASE DATA
+      /*       const { data } = await getArtwork({
         cursor: state.cursor,
         ceiling: state.ceiling,
       });
@@ -31,6 +33,40 @@ const Home = ({ location, enqueueSnackbar }) => {
         loading: false,
         artwork: data.artwork,
         hasMore: data.artwork.length < state.ceiling ? false : true,
+        cursor: state.cursor + state.ceiling,
+      }); */
+
+      // MOCK DATA
+      const formattedArtwork = mockArtwork.data.map((artwork) => {
+        return {
+          comments: [],
+          reviews: [],
+          _id: artwork.id,
+          created: artwork.created_utc,
+          owner: { _id: artwork.id, name: artwork.author },
+          active: true,
+          current: {
+            cover: artwork.url,
+            _id: artwork.id,
+            created: artwork.created_utc,
+            title: artwork.title,
+            type: 'commercial',
+            availability: 'available',
+            license: 'commercial',
+            use: 'separate',
+            personal: 20,
+            commercial: 45,
+            description: artwork.title,
+            id: artwork.id,
+          },
+          saves: 0,
+        };
+      });
+      setState({
+        ...state,
+        loading: false,
+        artwork: formattedArtwork,
+        hasMore: formattedArtwork.length < state.ceiling ? false : true,
         cursor: state.cursor + state.ceiling,
       });
     } catch (err) {
