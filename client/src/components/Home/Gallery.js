@@ -38,6 +38,7 @@ import { ax } from '../../shared/Interceptor/Interceptor.js';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {
   CSSGrid,
+  SpringGrid,
   layout,
   measureItems,
   makeResponsive,
@@ -315,9 +316,8 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
     }));
   };
 
-  const Grid = makeResponsive(measureItems(CSSGrid), {
+  const TestGrid = makeResponsive(measureItems(CSSGrid), {
     maxWidth: 1920,
-    minPadding: 100,
   });
 
   return (
@@ -333,18 +333,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
           </Grid>
         }
       >
-        <CSSGrid
-          component="ul"
-          layout={layout.pinterest}
-          duration={800}
-          easing="ease-out"
-        >
-          {artwork.map((item, index) => (
-            <li key={index} itemHeight={120}>
-              {item}
-            </li>
-          ))}
-        </CSSGrid>
+        <Masonry>{artwork}</Masonry>
       </InfiniteScroll>
       <Modal {...state.modal} handleClose={handleModalClose} />
     </Paper>
