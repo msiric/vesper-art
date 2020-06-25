@@ -28,6 +28,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "react-share": "^4.1.0",
+    "react-stonecutter": "^0.3.10",
     "react-swipeable-views": "^0.13.9",
     "recharts": "^1.8.5",
     "socket.io-client": "^2.3.0",

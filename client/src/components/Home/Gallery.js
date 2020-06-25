@@ -36,6 +36,12 @@ import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import {
+  CSSGrid,
+  layout,
+  measureItems,
+  makeResponsive,
+} from 'react-stonecutter';
 import GalleryStyles from './Gallery.style.js';
 import { postSave, deleteSave } from '../../services/artwork.js';
 
@@ -309,6 +315,11 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
     }));
   };
 
+  const Grid = makeResponsive(measureItems(CSSGrid), {
+    maxWidth: 1920,
+    minPadding: 100,
+  });
+
   return (
     <Paper className={classes.paper}>
       <InfiniteScroll
@@ -322,7 +333,18 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
           </Grid>
         }
       >
-        <Masonry>{artwork}</Masonry>
+        <CSSGrid
+          component="ul"
+          layout={layout.pinterest}
+          duration={800}
+          easing="ease-out"
+        >
+          {artwork.map((item, index) => (
+            <li key={index} itemHeight={120}>
+              {item}
+            </li>
+          ))}
+        </CSSGrid>
       </InfiniteScroll>
       <Modal {...state.modal} handleClose={handleModalClose} />
     </Paper>
