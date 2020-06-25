@@ -100,53 +100,7 @@ const artworkMediaUpload = multer({
   }),
 });
 
-const artworkMediaEdit = multer({
-  fileFilter: fileFilter,
-  storage: multerS3({
-    s3: s3,
-    bucket: 'vesper-testing',
-    limits: { fileSize: 10 * 1024 * 1024 },
-    acl: 'public-read',
-    shouldTransform: function (req, file, cb) {
-      cb(null, true);
-    },
-    transforms: [
-      {
-        id: 'image',
-        key: function (req, file, cb) {
-          const token = req.headers['authorization'].split(' ')[1];
-          const data = jwt.decode(token);
-          const fileName =
-            data.id + Date.now().toString() + path.extname(file.originalname);
-          const folderName = 'artworkMedia/';
-          const filePath = folderName + fileName;
-          cb(null, filePath);
-        },
-        transform: function (req, file, cb) {
-          cb(null, sharp());
-        },
-      },
-      {
-        id: 'cover',
-        key: function (req, file, cb) {
-          const token = req.headers['authorization'].split(' ')[1];
-          const data = jwt.decode(token);
-          const fileName =
-            data.id + Date.now().toString() + path.extname(file.originalname);
-          const folderName = 'artworkCovers/';
-          const filePath = folderName + fileName;
-          cb(null, filePath);
-        },
-        transform: function (req, file, cb) {
-          cb(null, sharp().resize({ width: 500 }));
-        },
-      },
-    ],
-  }),
-});
-
 export default {
   profilePhotoUpload: profilePhotoUpload,
   artworkMediaUpload: artworkMediaUpload,
-  artworkMediaEdit: artworkMediaEdit,
 };

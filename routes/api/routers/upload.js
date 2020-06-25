@@ -9,11 +9,9 @@ import multer from '../../../services/multer.js';
 
 const profilePhotoUpload = multer.profilePhotoUpload;
 const artworkMediaUpload = multer.artworkMediaUpload;
-const artworkMediaEdit = multer.artworkMediaEdit;
 
 const profilePhotoSingleUpload = profilePhotoUpload.single('userPhoto');
 const artworkMediaSingleUpload = artworkMediaUpload.single('artworkMedia');
-const artworkMediaSingleEdit = artworkMediaEdit.single('artworkMedia');
 
 const router = express.Router();
 
@@ -33,7 +31,7 @@ router.route('/artwork_media_upload').post(
 );
 
 router.route('/artwork_media_upload/:id').put(
-  [isAuthenticated, checkParamsId, artworkMediaSingleEdit],
+  [isAuthenticated, checkParamsId, artworkMediaSingleUpload],
   handler(upload.putArtworkMedia, false, (req, res, next) => ({
     cover: req.file.transforms[0].location,
     media: req.file.transforms[1].location,
