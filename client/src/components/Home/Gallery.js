@@ -43,6 +43,7 @@ import {
   measureItems,
   makeResponsive,
 } from 'react-stonecutter';
+import GalleryGrid from 'react-grid-gallery';
 import GalleryStyles from './Gallery.style.js';
 import { postSave, deleteSave } from '../../services/artwork.js';
 
@@ -333,7 +334,16 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
           </Grid>
         }
       >
-        <Masonry>{artwork}</Masonry>
+        <GalleryGrid
+          images={elements.map((element) => {
+            return {
+              src: element.current.cover,
+              thumbnail: element.current.cover,
+              thumbnailWidth: 'auto',
+              thumbnailHeight: 'auto',
+            };
+          })}
+        ></GalleryGrid>
       </InfiniteScroll>
       <Modal {...state.modal} handleClose={handleModalClose} />
     </Paper>
