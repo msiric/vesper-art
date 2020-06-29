@@ -46,8 +46,10 @@ const Home = ({ location, enqueueSnackbar }) => {
           owner: { _id: artwork.id, name: artwork.author },
           active: true,
           current: {
-            cover: artwork.url,
             _id: artwork.id,
+            cover: artwork.url,
+            height: artwork.preview.images[0].resolutions[0].height,
+            width: artwork.preview.images[0].resolutions[0].width,
             created: artwork.created_utc,
             title: artwork.title,
             type: 'commercial',

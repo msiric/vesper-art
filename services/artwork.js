@@ -170,12 +170,15 @@ export const fetchArtworkLicenses = async ({
 // needs transaction (done)
 export const addNewArtwork = async ({
   artworkData,
+  artworkDimensions,
   userId,
   session = null,
 }) => {
   const newVersion = new Version();
   newVersion.cover = artworkData.artworkCover || '';
   newVersion.media = artworkData.artworkMedia || '';
+  newVersion.height = artworkDimensions.height;
+  newVersion.width = artworkDimensions.width;
   newVersion.title = artworkData.artworkTitle || '';
   newVersion.type = artworkData.artworkType || '';
   newVersion.availability = artworkData.artworkAvailability || '';
@@ -201,12 +204,20 @@ export const addNewArtwork = async ({
 
 // needs transaction (done)
 // needs testing
-export const addNewVersion = async ({ artworkData, session = null }) => {
+export const addNewVersion = async ({
+  artworkData,
+  artworkDimensions,
+  session = null,
+}) => {
   const newVersion = new Version();
   if (artworkData.artworkCover)
     newVersion.cover = artworkData.artworkCover || '';
   if (artworkData.artworkMedia)
     newVersion.media = artworkData.artworkMedia || '';
+  if (artworkDimensions.height && artworkDimensions.width) {
+    newVersion.height = artworkDimensions.height;
+    newVersion.width = artworkDimensions.width;
+  }
   if (artworkData.artworkTitle)
     newVersion.title = artworkData.artworkTitle || '';
   if (artworkData.artworkType) newVersion.type = artworkData.artworkType || '';

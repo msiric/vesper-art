@@ -43,7 +43,7 @@ const profilePhotoUpload = multer({
     bucket: 'vesper-testing',
     limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
-    key: function (req, file, cb) {
+    key: async (req, file, cb) => {
       const token = req.headers['authorization'].split(' ')[1];
       const data = jwt.decode(token);
       const fileName =
@@ -62,13 +62,13 @@ const artworkMediaUpload = multer({
     bucket: 'vesper-testing',
     limits: { fileSize: 10 * 1024 * 1024 },
     acl: 'public-read',
-    shouldTransform: function (req, file, cb) {
+    shouldTransform: async (req, file, cb) => {
       cb(null, true);
     },
     transforms: [
       {
         id: 'image',
-        key: function (req, file, cb) {
+        key: async (req, file, cb) => {
           const token = req.headers['authorization'].split(' ')[1];
           const data = jwt.decode(token);
           const fileName =
@@ -77,13 +77,13 @@ const artworkMediaUpload = multer({
           const filePath = folderName + fileName;
           cb(null, filePath);
         },
-        transform: function (req, file, cb) {
+        transform: async (req, file, cb) => {
           cb(null, sharp());
         },
       },
       {
         id: 'cover',
-        key: function (req, file, cb) {
+        key: async (req, file, cb) => {
           const token = req.headers['authorization'].split(' ')[1];
           const data = jwt.decode(token);
           const fileName =
@@ -92,7 +92,7 @@ const artworkMediaUpload = multer({
           const filePath = folderName + fileName;
           cb(null, filePath);
         },
-        transform: function (req, file, cb) {
+        transform: async (req, file, cb) => {
           cb(null, sharp().resize({ width: 500 }));
         },
       },
@@ -101,6 +101,6 @@ const artworkMediaUpload = multer({
 });
 
 export default {
-  profilePhotoUpload: profilePhotoUpload,
-  artworkMediaUpload: artworkMediaUpload,
+  profilePhotoUpload,
+  artworkMediaUpload,
 };
