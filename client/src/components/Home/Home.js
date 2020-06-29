@@ -47,9 +47,9 @@ const Home = ({ location, enqueueSnackbar }) => {
           active: true,
           current: {
             _id: artwork.id,
-            cover: artwork.url,
-            height: artwork.preview.images[0].resolutions[0].height,
-            width: artwork.preview.images[0].resolutions[0].width,
+            cover: artwork.thumbnail,
+            height: artwork.thumbnail_height,
+            width: artwork.thumbnail_width,
             created: artwork.created_utc,
             title: artwork.title,
             type: 'commercial',
