@@ -322,6 +322,10 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
     maxWidth: 1920,
   });
 
+  const handleImageHover = (e, item) => {
+    console.log(item);
+  };
+
   return (
     <Paper className={classes.paper}>
       <InfiniteScroll
@@ -338,11 +342,14 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
         <GalleryGridTest
           photos={elements.map((element) => {
             return {
+              data: element.current,
+              owner: element.owner,
               src: element.current.cover,
               height: element.current.height,
               width: element.current.width,
             };
           })}
+          onClick={(e, item) => handleImageHover(e, item)}
         ></GalleryGridTest>
       </InfiniteScroll>
       <Modal {...state.modal} handleClose={handleModalClose} />

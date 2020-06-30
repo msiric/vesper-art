@@ -6,9 +6,10 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --delay 2 ./bin/www",
+    "start": "nodemon ./bin/www",
     "client": "cd client && npm start",
-    "dev": "concurrently \"npm start\" \"npm run client\""
+    "webhook": "stripe listen --forward-to localhost:5000/hooks",
+    "dev": "concurrently \"npm start\" \"npm run client\" \"npm run webhook\""
   },
   "author": "",
   "license": "ISC",
