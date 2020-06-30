@@ -34,17 +34,8 @@ import {
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { ax } from '../../shared/Interceptor/Interceptor.js';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import {
-  CSSGrid,
-  SpringGrid,
-  layout,
-  measureItems,
-  makeResponsive,
-} from 'react-stonecutter';
-import GalleryGrid from 'react-grid-gallery';
-import GalleryGridTest from 'react-photo-gallery';
+import ImageGallery from 'react-photo-gallery';
 import GalleryStyles from './Gallery.style.js';
 import { postSave, deleteSave } from '../../services/artwork.js';
 
@@ -59,140 +50,23 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
 
   const classes = GalleryStyles();
 
-  const artwork = elements.map((element, index) => {
-    let card = null;
-    if (type === 'version') {
-      card = (
-        <Card key={index} className={classes.root}>
-          <CardHeader
-            title={element.title}
-            subheader={
-              element.availability === 'available'
-                ? element.personal
-                  ? `$${element.personal}`
-                  : 'Free'
-                : 'Showcase'
-            }
-          />
-          <CardMedia
-            component={Link}
-            to={`/artwork/${element.artwork._id}`}
-            className={classes.media}
-            image={element.cover}
-            title={element.title}
-          />
-          <CardContent>
-            <Typography
-              component={Link}
-              to={`/user/${element.artwork.owner.name}`}
-              variant="body1"
-              color="textSecondary"
-              className={classes.link}
-            >
-              {element.artwork.owner.name}
-            </Typography>
-          </CardContent>
-          <CardActions disableSpacing>
-            {store.user.authenticated &&
-            element.artwork.owner._id === store.user.id ? (
-              <IconButton
-                component={Link}
-                to={`/edit_artwork/${element.artwork._id}`}
-                aria-label="Unsave artwork"
-              >
-                <EditIcon />
-              </IconButton>
-            ) : store.user.saved[element.artwork._id] ? (
-              <IconButton
-                onClick={() => handleUnsaveArtwork(element.artwork._id)}
-                aria-label="Unsave artwork"
-              >
-                <SavedIcon />
-              </IconButton>
-            ) : (
-              <IconButton
-                onClick={() => handleSaveArtwork(element.artwork._id)}
-                aria-label="Save artwork"
-              >
-                <SaveIcon />
-              </IconButton>
-            )}
-            <IconButton
-              onClick={() => handleModalOpen(element.artwork._id)}
-              aria-label="Share artwork"
-            >
-              <ShareIcon />
-            </IconButton>
-          </CardActions>
-        </Card>
-      );
-    } else {
-      card = (
-        <Card key={index} className={classes.root}>
-          <CardHeader
-            title={element.current.title}
-            subheader={
-              element.current.availability === 'available'
-                ? element.current.personal
-                  ? `$${element.current.personal}`
-                  : 'Free'
-                : 'Showcase'
-            }
-          />
-          <CardMedia
-            component={Link}
-            to={`/artwork/${element._id}`}
-            className={classes.media}
-            image={element.current.cover}
-            title={element.current.title}
-          />
-          <CardContent>
-            <Typography
-              component={Link}
-              to={`/user/${element.owner.name}`}
-              variant="body1"
-              color="textSecondary"
-              className={classes.link}
-            >
-              {element.owner.name}
-            </Typography>
-          </CardContent>
-          <CardActions disableSpacing>
-            {store.user.authenticated && element.owner._id === store.user.id ? (
-              <IconButton
-                component={Link}
-                to={`/edit_artwork/${element._id}`}
-                aria-label="Unsave artwork"
-              >
-                <EditIcon />
-              </IconButton>
-            ) : store.user.saved[element._id] ? (
-              <IconButton
-                onClick={() => handleUnsaveArtwork(element._id)}
-                aria-label="Unsave artwork"
-              >
-                <SavedIcon />
-              </IconButton>
-            ) : (
-              <IconButton
-                onClick={() => handleSaveArtwork(element._id)}
-                aria-label="Save artwork"
-              >
-                <SaveIcon />
-              </IconButton>
-            )}
-            <IconButton
-              onClick={() => handleModalOpen(element._id)}
-              aria-label="Share artwork"
-            >
-              <ShareIcon />
-            </IconButton>
-          </CardActions>
-        </Card>
-      );
-    }
-    return card;
-  });
+  const artwork = elements.map((element) =>
+    type !== 'version'
+      ? {
+          data: element.current,
+          owner: element.owner,
+          src: element.current.cover,
+          height: element.current.height,
+          width: element.current.width,
+        }
+      : {
+          data: element,
+          owner: element.artwork.owner,
+          src: element.cover,
+          height: element.height,
+          width: element.width,
+        }
+  );
 
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;
@@ -318,11 +192,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
     }));
   };
 
-  const TestGrid = makeResponsive(measureItems(CSSGrid), {
-    maxWidth: 1920,
-  });
-
-  const handleImageHover = (e, item) => {
+  const handleImageClick = (e, item) => {
     console.log(item);
   };
 
@@ -339,18 +209,10 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
           </Grid>
         }
       >
-        <GalleryGridTest
-          photos={elements.map((element) => {
-            return {
-              data: element.current,
-              owner: element.owner,
-              src: element.current.cover,
-              height: element.current.height,
-              width: element.current.width,
-            };
-          })}
-          onClick={(e, item) => handleImageHover(e, item)}
-        ></GalleryGridTest>
+        <ImageGallery
+          photos={artwork}
+          onClick={(e, item) => handleImageClick(e, item)}
+        ></ImageGallery>
       </InfiniteScroll>
       <Modal {...state.modal} handleClose={handleModalClose} />
     </Paper>
