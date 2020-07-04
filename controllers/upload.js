@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 import { fetchUserById } from '../services/user.js';
 import { deleteS3Object } from '../utils/helpers.js';
+import {
+  verifyDimensions,
+  deleteFileLocally,
+  artworkS3Upload,
+} from '../services/upload.js';
 import createError from 'http-errors';
 
 // needs transaction (done)
@@ -18,11 +23,19 @@ const postProfileImage = async ({ userId, session, location }) => {
   throw createError(400, 'User not found');
 };
 
-const postArtworkMedia = async ({ cover, media }) => {
-  return {
-    artworkCover: cover,
-    artworkMedia: media,
-  };
+const postArtworkMedia = async ({ path, filename }) => {
+  const verifiedInput = await verifyDimensions({ path });
+  if (verifiedInput.valid) {
+    const { cover, media } = await artworkS3Upload({ path, filename });
+    deleteFileLocally({ path });
+    return {
+      artworkCover: cover,
+      artworkMedia: media,
+      artworkDimensions: verifiedInput.dimensions,
+    };
+  }
+  deleteFileLocally({ path });
+  throw createError(400, 'Artwork dimensions are not valid');
 };
 
 const putArtworkMedia = async ({ cover, media }) => {

@@ -24,7 +24,7 @@ const Home = ({ location, enqueueSnackbar }) => {
   const fetchArtwork = async () => {
     try {
       // DATABASE DATA
-      /*       const { data } = await getArtwork({
+      /* const { data } = await getArtwork({
         cursor: state.cursor,
         ceiling: state.ceiling,
       });

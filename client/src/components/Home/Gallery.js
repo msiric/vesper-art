@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { Context } from '../Store/Store.js';
-import Modal from '../../shared/Modal/Modal.js';
 import Masonry from 'react-mason';
+import StackGrid from 'react-stack-grid';
+import Modal from '../../shared/Modal/Modal.js';
 import {
   Paper,
   Card,
@@ -38,6 +39,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import ImageGallery from 'react-photo-gallery';
 import GalleryStyles from './Gallery.style.js';
 import { postSave, deleteSave } from '../../services/artwork.js';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
   const [store, dispatch] = useContext(Context);
@@ -49,12 +51,13 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
   });
 
   const classes = GalleryStyles();
+  const theme = useTheme();
 
   const artwork = elements.map((element) =>
     type !== 'version'
       ? {
-          data: element.current,
-          owner: element.owner,
+          /*           data: element.current,
+          owner: element.owner, */
           src: element.current.cover,
           height: element.current.height,
           width: element.current.width,
@@ -196,6 +199,15 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
     console.log(item);
   };
 
+  const breakpointCols = {
+    default: 4,
+    [theme.breakpoints.values.xl]: 4,
+    [theme.breakpoints.values.lg]: 3,
+    [theme.breakpoints.values.md]: 2,
+    [theme.breakpoints.values.sm]: 1,
+    [theme.breakpoints.values.xs]: 1,
+  };
+
   return (
     <Paper className={classes.paper}>
       <InfiniteScroll
@@ -209,10 +221,53 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
           </Grid>
         }
       >
-        <ImageGallery
+        {/*         <ImageGallery
           photos={artwork}
           onClick={(e, item) => handleImageClick(e, item)}
-        ></ImageGallery>
+        ></ImageGallery> */}
+        {/*         <div className={classes.artworkContainer}>
+          {elements.map((artwork) => (
+            <div className={classes.artworkItem}>
+              <img
+                className={classes.artworkMedia}
+                src={artwork.current.cover}
+              />
+            </div>
+          ))}
+        </div> */}
+
+        {/*         {
+          <Masonry>
+            {elements.map((artwork) => (
+              <div>
+                <img className={classes.artwork} src={artwork.current.cover} />
+              </div>
+            ))}
+          </Masonry>
+        } */}
+
+        {/* specify cover width */}
+        <StackGrid columnWidth={150} gutterWidth={0} gutterHeight={0}>
+          {elements.map((artwork) => (
+            <div
+              key={artwork._id}
+              component={Link}
+              to={`/artwork/${artwork._id}`}
+              className={classes.artworkContainer}
+            >
+              <div className={classes.artworkHeader}>
+                <p className={classes.artworkTitle}>{artwork.current.title}</p>
+              </div>
+              <img
+                className={classes.artworkMedia}
+                src={artwork.current.cover}
+              />
+              <div className={classes.artworkFooter}>
+                <p className={classes.artworkOwner}>{artwork.owner.name}</p>
+              </div>
+            </div>
+          ))}
+        </StackGrid>
       </InfiniteScroll>
       <Modal {...state.modal} handleClose={handleModalClose} />
     </Paper>

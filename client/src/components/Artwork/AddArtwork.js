@@ -151,10 +151,11 @@ const AddArtwork = () => {
       formData.append('artworkMedia', values.artworkMedia[0]);
       try {
         const {
-          data: { artworkCover, artworkMedia },
+          data: { artworkCover, artworkMedia, artworkDimensions },
         } = await postMedia({ data: formData });
         values.artworkCover = artworkCover;
         values.artworkMedia = artworkMedia;
+        values.artworkDimensions = artworkDimensions;
         const data = deleteEmptyValues(values);
         await postArtwork({ data });
         history.push({

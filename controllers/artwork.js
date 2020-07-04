@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import createError from 'http-errors';
-import probe from 'probe-image-size';
 import {
   sanitizeData,
   deleteS3Object,
@@ -114,10 +113,8 @@ const postNewArtwork = async ({ userId, artworkData, session }) => {
       );
     }
   }
-  const artworkDimensions = await probe(artworkData.artworkCover);
   const savedVersion = await addNewArtwork({
     artworkData,
-    artworkDimensions,
     userId,
     session,
   });
@@ -166,10 +163,8 @@ const updateArtwork = async ({ userId, artworkId, artworkData, session }) => {
         );
       }
     }
-    const artworkDimensions = await probe(artworkData.artworkCover);
     const savedVersion = await addNewVersion({
       artworkData,
-      artworkDimensions,
       session,
     });
     const foundOrder = await fetchOrderByVersion({

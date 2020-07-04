@@ -28,6 +28,21 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+const artworkLocalUpload = multer({
+  fileFilter: fileFilter,
+  storage: multer.diskStorage({
+    destination: './uploads/',
+    limits: { fileSize: 10 * 1024 * 1024 },
+    filename: function (req, file, cb) {
+      const token = req.headers['authorization'].split(' ')[1];
+      const data = jwt.decode(token);
+      const fileName =
+        data.id + Date.now().toString() + path.extname(file.originalname);
+      cb(null, fileName);
+    },
+  }),
+});
+
 /* const watermark = new Buffer.from(
   `<svg width="100%" height="200%">
       <text style="font-size: 35; font-family: arial; font-weight: bold;" fill="black" fill-opacity="0.5" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">
@@ -102,5 +117,5 @@ const artworkMediaUpload = multer({
 
 export default {
   profilePhotoUpload,
-  artworkMediaUpload,
+  artworkLocalUpload,
 };

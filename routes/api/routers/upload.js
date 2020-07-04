@@ -4,14 +4,16 @@ import {
   checkParamsId,
   requestHandler as handler,
 } from '../../../utils/helpers.js';
+import fs from 'fs';
+import imageSize from 'image-size';
 import upload from '../../../controllers/upload.js';
 import multer from '../../../services/multer.js';
 
 const profilePhotoUpload = multer.profilePhotoUpload;
-const artworkMediaUpload = multer.artworkMediaUpload;
+const artworkLocalUpload = multer.artworkLocalUpload;
 
 const profilePhotoSingleUpload = profilePhotoUpload.single('userPhoto');
-const artworkMediaSingleUpload = artworkMediaUpload.single('artworkMedia');
+const artworkMediaSingleUpload = artworkLocalUpload.single('artworkMedia');
 
 const router = express.Router();
 
@@ -25,8 +27,8 @@ router.route('/profile_image_upload').post(
 router.route('/artwork_media_upload').post(
   [isAuthenticated, artworkMediaSingleUpload],
   handler(upload.postArtworkMedia, false, (req, res, next) => ({
-    cover: req.file.transforms[0].location,
-    media: req.file.transforms[1].location,
+    path: req.file.path,
+    filename: req.file.filename,
   }))
 );
 
