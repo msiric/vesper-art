@@ -8,6 +8,8 @@ import { Grow, Card, CardContent, Typography, Button } from '@material-ui/core';
 import { MonetizationOnRounded as MonetizationIcon } from '@material-ui/icons';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import OnboardingStyles from './Onboarding.style.js';
+import { patchUser } from '../../services/user.js';
+import { postAuthorize } from '../../services/stripe.js';
 
 const supportedCountries = [
   { value: '' },
@@ -67,8 +69,8 @@ function Onboarding() {
     async onSubmit(values) {
       try {
         if (!store.user.stripeId) {
-          await ax.patch(`/api/user/${store.user.id}`, values);
-          const { data } = await ax.post('/stripe/authorize', {
+          await patchUser({ userId: store.user.id, data: values });
+          const { data } = await postAuthorize({
             country: values.userCountry,
             email: store.user.email,
           });

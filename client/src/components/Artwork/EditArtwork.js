@@ -21,6 +21,13 @@ import PriceInput from '../../shared/PriceInput/PriceInput.js';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { deleteEmptyValues } from '../../utils/helpers.js';
 import EditArtworkStyles from './EditArtwork.style.js';
+import {
+  editArtwork,
+  deleteArtwork,
+  postMedia,
+  patchArtwork,
+} from '../../services/artwork.js';
+import { getUser } from '../../services/stripe.js';
 
 const artworkMediaConfig = {
   size: 1000 * 1024,
@@ -117,11 +124,11 @@ const EditArtwork = ({ match }) => {
     try {
       const {
         data: { artwork },
-      } = await ax.get(`/api/edit_artwork/${match.params.id}`);
+      } = await editArtwork({ artworkId: match.params.id });
       const {
         data: { capabilities },
       } = store.user.stripeId
-        ? await ax.get(`/stripe/account/${store.user.stripeId}`)
+        ? await getUser({ stripeId: store.user.stripeId })
         : { data: { capabilities: {} } };
       setState({
         ...state,
@@ -137,7 +144,7 @@ const EditArtwork = ({ match }) => {
   const handleDeleteArtwork = async () => {
     try {
       setState({ ...state, isDeleting: true });
-      await ax.delete(`/api/edit_artwork/${match.params.id}`);
+      await deleteArtwork({ artworkId: match.params.id });
       history.push({
         pathname: '/',
         state: { message: 'Artwork deleted' },
@@ -181,11 +188,11 @@ const EditArtwork = ({ match }) => {
       try {
         const {
           data: { artworkCover, artworkMedia },
-        } = await ax.post('/api/artwork_media_upload', formData);
+        } = await postMedia({ data: formData });
         values.artworkCover = artworkCover;
         values.artworkMedia = artworkMedia;
         const data = deleteEmptyValues(values);
-        await ax.patch(`/api/edit_artwork/${match.params.id}`, data);
+        await patchArtwork({ artworkId: match.params.id, data });
         history.push({
           pathname: '/',
           state: { message: 'Artwork edited' },

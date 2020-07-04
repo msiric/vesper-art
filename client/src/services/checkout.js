@@ -1,4 +1,4 @@
-import { ax } from '../../shared/Interceptor/Interceptor.js';
+import { ax } from '../shared/Interceptor/Interceptor.js';
 
 export const getCheckout = async ({ artworkId }) =>
   await ax.get(`/api/checkout/${artworkId}`);

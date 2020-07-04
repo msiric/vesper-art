@@ -30,6 +30,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import CheckoutStyles from './Checkout.style.js';
+import { getCheckout } from '../../services/checkout.js';
 
 const validationSchema = Yup.object().shape({
   discountCode: Yup.string().trim().required('Discount cannot be empty'),
@@ -116,7 +117,7 @@ const Checkout = ({ match, location }) => {
         city: '',
         country: '',
       };
-      const { data } = await ax.get(`/api/checkout/${match.params.id}`);
+      const { data } = await getCheckout({ artworkId: match.params.id });
       const stripe = await loadStripe(
         'pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z'
       );

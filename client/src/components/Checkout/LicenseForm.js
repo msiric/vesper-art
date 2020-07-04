@@ -13,6 +13,7 @@ import SelectField from '../../shared/SelectInput/SelectInput.js';
 import * as Yup from 'yup';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import LicenseFormStyles from './LicenseForm.style.js';
+import { postIntent } from '../../services/stripe.js';
 
 const validationSchema = Yup.object().shape({
   licenses: Yup.array().of(
@@ -53,7 +54,8 @@ const LicenseForm = ({
     try {
       setState((prevState) => ({ ...prevState, loading: true }));
       const intentId = retrieveIntentId();
-      const { data } = await ax.post(`/stripe/intent/${artwork._id}`, {
+      const { data } = await postIntent({
+        artworkId: artwork._id,
         licenses,
         intentId,
       });

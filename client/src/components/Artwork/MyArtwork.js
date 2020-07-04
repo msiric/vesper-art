@@ -16,6 +16,7 @@ import React, { useEffect, useState } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import ProductsTableHead from './Head.js';
+import { getGallery } from '../../services/artwork.js';
 
 function ProductsTable() {
   const [state, setState] = useState({
@@ -34,7 +35,7 @@ function ProductsTable() {
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await ax.get(`/api/my_artwork`);
+      const { data } = await getGallery();
       setState({
         ...state,
         loading: false,

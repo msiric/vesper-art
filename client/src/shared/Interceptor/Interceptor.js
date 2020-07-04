@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import InterceptorStyles from './Interceptor.style.js';
 import openSocket from 'socket.io-client';
+import { postLogout } from '../../services/user.js';
 const ENDPOINT = 'http://localhost:5000';
 
 const ax = axios.create();
@@ -27,6 +28,7 @@ const Interceptor = ({ children }) => {
           auth: store.main.auth,
           brand: store.main.brand,
           theme: store.main.theme,
+          search: store.main.search,
         });
 
         const { data } = await axios.post('/api/auth/refresh_token', {
@@ -43,6 +45,7 @@ const Interceptor = ({ children }) => {
             auth: store.main.auth,
             brand: store.main.brand,
             theme: store.main.theme,
+            search: store.main.search,
             authenticated: true,
             token: data.accessToken,
             id: data.user.id,
@@ -83,6 +86,7 @@ const Interceptor = ({ children }) => {
             auth: store.main.auth,
             brand: store.main.brand,
             theme: store.main.theme,
+            search: store.main.search,
           });
         }
       }
@@ -94,6 +98,7 @@ const Interceptor = ({ children }) => {
         auth: store.main.auth,
         brand: store.main.brand,
         theme: store.main.theme,
+        search: store.main.search,
       });
     }
   };
@@ -121,11 +126,7 @@ const Interceptor = ({ children }) => {
           error.config.url === '/api/auth/refresh_token' ||
           error.response.message === 'Forbidden'
         ) {
-          await ax.post('/api/auth/logout', {
-            headers: {
-              credentials: 'include',
-            },
-          });
+          await postLogout();
           dispatch({
             type: 'resetUser',
           });

@@ -2,9 +2,11 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Context } from '../Store/Store.js';
 import { Grid, CircularProgress } from '@material-ui/core';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
+import { getArtwork } from '../../services/artwork.js';
 import { withSnackbar } from 'notistack';
 import Gallery from './Gallery.js';
 import HomeStyles from './Home.style.js';
+import mockArtwork from '../../constants/mockArtwork.json';
 
 const Home = ({ location, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -21,14 +23,52 @@ const Home = ({ location, enqueueSnackbar }) => {
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
-      );
+      // DATABASE DATA
+      /* const { data } = await getArtwork({
+        cursor: state.cursor,
+        ceiling: state.ceiling,
+      });
       setState({
         ...state,
         loading: false,
         artwork: data.artwork,
         hasMore: data.artwork.length < state.ceiling ? false : true,
+        cursor: state.cursor + state.ceiling,
+      }); */
+
+      // MOCK DATA
+      const formattedArtwork = mockArtwork.data.map((artwork) => {
+        return {
+          comments: [],
+          reviews: [],
+          _id: artwork.id,
+          created: artwork.created_utc,
+          owner: { _id: artwork.id, name: artwork.author },
+          active: true,
+          current: {
+            _id: artwork.id,
+            cover: artwork.thumbnail,
+            height: artwork.thumbnail_height,
+            width: artwork.thumbnail_width,
+            created: artwork.created_utc,
+            title: artwork.title,
+            type: 'commercial',
+            availability: 'available',
+            license: 'commercial',
+            use: 'separate',
+            personal: 20,
+            commercial: 45,
+            description: artwork.title,
+            id: artwork.id,
+          },
+          saves: 0,
+        };
+      });
+      setState({
+        ...state,
+        loading: false,
+        artwork: formattedArtwork,
+        hasMore: formattedArtwork.length < state.ceiling ? false : true,
         cursor: state.cursor + state.ceiling,
       });
     } catch (err) {
@@ -52,9 +92,10 @@ const Home = ({ location, enqueueSnackbar }) => {
 
   const loadMore = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
-      );
+      const { data } = await getArtwork({
+        cursor: state.cursor,
+        ceiling: state.ceiling,
+      });
       setState((prevState) => ({
         ...prevState,
         artwork: [prevState.artwork].concat(data.artwork),

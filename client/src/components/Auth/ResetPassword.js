@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import ResetPasswordStyles from './ResetPassword.style.js';
+import { postReset } from '../../services/auth.js';
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -43,7 +44,7 @@ const ResetPassword = ({ match }) => {
     validationSchema,
     async onSubmit(values) {
       try {
-        await ax.post(`/api/auth/reset_password/${match.params.id}`, values);
+        await postReset({ userId: match.params.id, data: values });
         history.push({
           pathname: '/login',
           state: { message: 'Password successfully changed' },

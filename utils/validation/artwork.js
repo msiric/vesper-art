@@ -4,6 +4,11 @@ import joiObjectId from 'joi-objectid';
 Joi.objectId = joiObjectId(Joi);
 
 const schema = Joi.object().keys({
+  artworkDimensions: Joi.object({
+    height: Joi.number(),
+    width: Joi.number(),
+    type: Joi.string(),
+  }),
   artworkTitle: Joi.string().required(),
   artworkAvailability: Joi.string()
     .valid('available', 'unavailable')

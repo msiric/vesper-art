@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import ForgotPasswordStyles from './ForgotPassword.style.js';
+import { postRecover } from '../../services/auth.js';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email().required('Email is required'),
@@ -38,7 +39,7 @@ const ForgotPassword = () => {
     validationSchema,
     async onSubmit(values) {
       try {
-        await ax.post('/api/auth/forgot_password', values);
+        await postRecover({ data: values });
         history.push({
           pathname: '/login',
           state: { message: 'Link sent to your email' },

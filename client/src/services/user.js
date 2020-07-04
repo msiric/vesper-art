@@ -1,9 +1,11 @@
-import { ax } from '../../shared/Interceptor/Interceptor.js';
+import { ax } from '../shared/Interceptor/Interceptor.js';
 
+export const getUser = async ({ username, cursor, ceiling }) =>
+  await ax.get(`/api/user/${username}?cursor=${cursor}&ceiling=${ceiling}`);
 export const getStatistics = async ({ userId }) =>
   await ax.get(`/api/user/${userId}/statistics`);
 export const getSelection = async ({ userId, display, from, to }) =>
-  await ax.get(`/api/user/${userId}/${[display]}?from=${from}&to=${to}`);
+  await ax.get(`/api/user/${userId}/${display}?from=${from}&to=${to}`);
 export const patchUser = async ({ userId, data }) =>
   await ax.patch(`/api/user/${userId}`, data);
 export const postMedia = async ({ data }) =>

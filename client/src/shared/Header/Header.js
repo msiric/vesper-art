@@ -33,6 +33,12 @@ import {
 } from '@material-ui/icons';
 import NotificationsMenu from './NotificationsMenu.js';
 import HeaderStyles from './Header.style.js';
+import {
+  getNotifications,
+  postLogout,
+  patchRead,
+  patchUnread,
+} from '../../services/user.js';
 
 const searchValidation = Yup.object().shape({
   searchInput: Yup.string().trim().required('Search input is required'),
@@ -63,7 +69,9 @@ const Header = ({ history }) => {
     searchValidation,
     async onSubmit(values) {
       try {
-        history.push(`/search?query=${values.searchInput}&type=${state.type}`);
+        history.push(
+          `/search?query=${values.searchInput}&type=${store.main.search}`
+        );
       } catch (err) {
         console.log(err);
       }
@@ -128,9 +136,11 @@ const Header = ({ history }) => {
         },
       });
       try {
-        const { data } = await ax.get(
-          `/api/user/${store.user.id}/notifications?cursor=${store.user.notifications.cursor}&ceiling=${store.user.notifications.ceiling}`
-        );
+        const { data } = await getNotifications({
+          userId: store.user.id,
+          cursor: store.user.notifications.cursor,
+          ceiling: store.user.notifications.ceiling,
+        });
         dispatch({
           type: 'updateNotifications',
           notifications: {
@@ -184,11 +194,7 @@ const Header = ({ history }) => {
 
   const handleLogout = async () => {
     try {
-      await ax.post('/api/auth/logout', {
-        headers: {
-          credentials: 'include',
-        },
-      });
+      await postLogout();
 
       dispatch({
         type: 'resetUser',
@@ -204,7 +210,7 @@ const Header = ({ history }) => {
 
   const handleReadClick = async (id) => {
     try {
-      await ax.patch(`/api/read_notification/${id}`);
+      await patchRead({ notificationId: id });
       dispatch({
         type: 'updateNotifications',
         notifications: {
@@ -224,7 +230,7 @@ const Header = ({ history }) => {
 
   const handleUnreadClick = async (id) => {
     try {
-      await ax.patch(`/api/unread_notification/${id}`);
+      await patchUnread({ notificationId: id });
       dispatch({
         type: 'updateNotifications',
         notifications: {
@@ -252,9 +258,11 @@ const Header = ({ history }) => {
           loading: true,
         },
       });
-      const { data } = await ax.get(
-        `/api/user/${store.user.id}/notifications?cursor=${store.user.notifications.cursor}&ceiling=${store.user.notifications.ceiling}`
-      );
+      const { data } = await getNotifications({
+        userId: store.user.id,
+        cursor: store.user.notifications.cursor,
+        ceiling: store.user.notifications.ceiling,
+      });
       dispatch({
         type: 'updateNotifications',
         notifications: {
@@ -275,11 +283,11 @@ const Header = ({ history }) => {
     }
   };
 
-  const handleToggle = (value) => {
-    setState((prevState) => ({
-      ...prevState,
-      type: prevState.type === 'artwork' ? 'users' : 'artwork',
-    }));
+  const handleToggle = () => {
+    dispatch({
+      type: 'setSearch',
+      search: store.main.search === 'artwork' ? 'users' : 'artwork',
+    });
   };
 
   const menuId = 'primary-search-account-menu';
@@ -405,14 +413,20 @@ const Header = ({ history }) => {
             <form className={classes.form} onSubmit={handleSubmit}>
               <IconButton
                 title={
-                  state.type === 'artwork' ? 'Search artwork' : 'Search users'
+                  store.main.search === 'artwork'
+                    ? 'Search artwork'
+                    : 'Search users'
                 }
                 onClick={handleToggle}
                 className={classes.typeIcon}
                 disableFocusRipple
                 disableRipple
               >
-                {state.type === 'artwork' ? <ArtworkIcon /> : <UserIcon />}
+                {store.main.search === 'artwork' ? (
+                  <ArtworkIcon />
+                ) : (
+                  <UserIcon />
+                )}
               </IconButton>
               <InputBase
                 name="searchInput"

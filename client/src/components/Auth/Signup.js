@@ -15,6 +15,7 @@ import { withSnackbar } from 'notistack';
 import { useHistory } from 'react-router-dom';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import SignupStyles from './Signup.style.js';
+import { postSignup } from '../../services/auth.js';
 
 const validationSchema = Yup.object().shape({
   username: Yup.string().required('Username is required'),
@@ -54,7 +55,7 @@ const Signup = ({ enqueueSnackbar }) => {
     validationSchema,
     async onSubmit(values) {
       try {
-        await ax.post('/api/auth/signup', values);
+        await postSignup({ data: values });
         enqueueSnackbar('Verification email sent', {
           variant: 'success',
           autoHideDuration: 1000,

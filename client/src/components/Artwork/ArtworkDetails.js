@@ -39,6 +39,13 @@ import {
 import { Link, useHistory } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
+import {
+  getDetails,
+  deleteComment,
+  getComments,
+  postComment,
+  patchComment,
+} from '../../services/artwork.js';
 import ArtworkDetailsStyles from './ArtworkDetails.style.js';
 
 const commentValidation = Yup.object().shape({
@@ -115,9 +122,11 @@ const ArtworkDetails = ({ match, socket }) => {
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/artwork/${match.params.id}?cursor=${state.scroll.comments.cursor}&ceiling=${state.scroll.comments.ceiling}`
-      );
+      const { data } = await getDetails({
+        artworkId: match.params.id,
+        cursor: state.scroll.comments.cursor,
+        ceiling: state.scroll.comments.ceiling,
+      });
       setState({
         ...state,
         loading: false,
@@ -142,7 +151,9 @@ const ArtworkDetails = ({ match, socket }) => {
 
   const handleDownload = async (id) => {
     try {
-      const { data } = await ax.get(`/api/artwork/${match.params.id}`);
+      const { data } = await getDetails({
+        artworkId: match.params.id,
+      });
       if (data.artwork._id)
         setState({ ...state, loading: false, artwork: data.artwork });
     } catch (err) {
@@ -217,7 +228,10 @@ const ArtworkDetails = ({ match, socket }) => {
   };
 
   const handleCommentDelete = async (id) => {
-    await ax.delete(`/api/artwork/${match.params.id}/comment/${id}`);
+    await deleteComment({
+      artworkId: match.params.id,
+      commentId: id,
+    });
     setState((prevState) => ({
       ...prevState,
       artwork: {
@@ -236,9 +250,11 @@ const ArtworkDetails = ({ match, socket }) => {
 
   const loadMoreComments = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/artwork/${state.artwork._id}/comments?cursor=${state.scroll.comments.cursor}&ceiling=${state.scroll.comments.ceiling}`
-      );
+      const { data } = await getComments({
+        artworkId: state.artwork._id,
+        cursor: state.scroll.comments.cursor,
+        ceiling: state.scroll.comments.ceiling,
+      });
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -397,10 +413,11 @@ const ArtworkDetails = ({ match, socket }) => {
                                             values,
                                             { resetForm }
                                           ) => {
-                                            await ax.patch(
-                                              `/api/artwork/${state.artwork._id}/comment/${comment._id}`,
-                                              values
-                                            );
+                                            await patchComment({
+                                              artworkId: state.artwork._id,
+                                              commentId: comment._id,
+                                              data: values,
+                                            });
                                             setState((prevState) => ({
                                               ...prevState,
                                               artwork: {
@@ -525,10 +542,10 @@ const ArtworkDetails = ({ match, socket }) => {
                         }}
                         validationSchema={commentValidation}
                         onSubmit={async (values, { resetForm }) => {
-                          const { data } = await ax.post(
-                            `/api/artwork/${state.artwork._id}/comment`,
-                            values
-                          );
+                          const { data } = await postComment({
+                            artworkId: state.artwork._id,
+                            data: values,
+                          });
                           setState({
                             ...state,
                             artwork: {

@@ -25,6 +25,7 @@ import { useHistory } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import SummaryStyles from './Summary.style.js';
+import { postDiscount } from '../../services/checkout.js';
 
 const validationSchema = Yup.object().shape({
   discountCode: Yup.string().trim().required('Discount cannot be empty'),
@@ -402,7 +403,7 @@ const Summary = ({
             }}
             validationSchema={validationSchema}
             onSubmit={async (values) => {
-              const { data } = await ax.post('/api/discount', values);
+              const { data } = await postDiscount({ data: values });
               handleDiscountEdit(data.payload);
             }}
           >

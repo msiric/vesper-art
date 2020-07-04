@@ -81,6 +81,12 @@ const routes = [
     exact: true,
     type: 'public',
   },
+  {
+    path: '/search',
+    Component: lazy(() => import('../Home/SearchResults')),
+    exact: true,
+    type: 'public',
+  },
   // Notifications router
   {
     path: '/notifications',
@@ -145,13 +151,6 @@ const routes = [
     Component: lazy(() => import('../User/Onboarding')),
     exact: true,
     type: 'protected',
-  },
-  // Search router
-  {
-    path: '/search',
-    Component: lazy(() => import('../Search/SearchResults')),
-    exact: true,
-    type: 'public',
   },
 ];
 

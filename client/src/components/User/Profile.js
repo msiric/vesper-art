@@ -65,6 +65,13 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { format } from 'date-fns';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import ProfileStyles from './Profile.style.js';
+import {
+  postMedia,
+  patchUser,
+  getSaves,
+  getUser,
+} from '../../services/user.js';
+import { getArtwork } from '../../services/artwork.js';
 
 const userPhotoConfig = {
   size: 500 * 1024,
@@ -389,10 +396,10 @@ const Profile = ({ match, enqueueSnackbar }) => {
           formData.append('userPhoto', values.userPhoto[0]);
           const {
             data: { userPhoto },
-          } = await ax.post('/api/profile_image_upload', formData);
+          } = await postMedia({ data: formData });
           values.userPhoto = userPhoto;
         }
-        await ax.patch(`/api/user/${store.user.id}`, values);
+        await patchUser({ userId: store.user.id, data: values });
       } catch (err) {
         console.log(err);
       }
@@ -403,9 +410,11 @@ const Profile = ({ match, enqueueSnackbar }) => {
 
   const fetchUser = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/user/${match.params.id}?cursor=${state.scroll.artwork.cursor}&ceiling=${state.scroll.artwork.ceiling}`
-      );
+      const { data } = await getUser({
+        username: match.params.id,
+        cursor: state.scroll.artwork.cursor,
+        ceiling: state.scroll.artwork.ceiling,
+      });
       // const {
       //   data: { artwork },
       // } = await ax.get(
@@ -499,9 +508,11 @@ const Profile = ({ match, enqueueSnackbar }) => {
 
   const loadMoreArtwork = async () => {
     try {
-      const { data } = await ax.get(
-        `/api/user/${state.user._id}/artwork?cursor=${state.scroll.artwork.cursor}&ceiling=${state.scroll.artwork.ceiling}`
-      );
+      const { data } = await getArtwork({
+        userId: state.user._id,
+        cursor: state.scroll.artwork.cursor,
+        ceiling: state.scroll.artwork.ceiling,
+      });
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -526,9 +537,11 @@ const Profile = ({ match, enqueueSnackbar }) => {
 
   const loadMoreSaves = async (newValue) => {
     try {
-      const { data } = await ax.get(
-        `/api/user/${state.user._id}/saves?cursor=${state.scroll.saves.cursor}&ceiling=${state.scroll.saves.ceiling}`
-      );
+      const { data } = await getSaves({
+        userId: state.user._id,
+        cursor: state.scroll.saves.cursor,
+        ceiling: state.scroll.saves.ceiling,
+      });
       setState((prevState) => ({
         ...prevState,
         loading: false,

@@ -25,6 +25,7 @@ import NumberFormat from 'react-number-format';
 import { useTheme } from '@material-ui/core/styles';
 import { ax } from '../../shared/Interceptor/Interceptor.js';
 import DashboardStyles from './Dashboard.style.js';
+import { getStatistics, getSelection } from '../../services/user.js';
 
 function Dashboard() {
   const [store, dispatch] = useContext(Context);
@@ -51,7 +52,7 @@ function Dashboard() {
 
   const fetchCurrentData = async () => {
     try {
-      const { data } = await ax.get(`/api/user/${store.user.id}/statistics`);
+      const { data } = await getStatistics({ userId: store.user.id });
       const currentStats = {
         review: data.statistics.rating,
         licenses: data.statistics.purchases
@@ -78,11 +79,12 @@ function Dashboard() {
   const fetchSelectedData = async (from, to) => {
     try {
       setState({ ...state, loading: true });
-      const { data } = await ax.get(
-        `/api/user/${store.user.id}/${[
-          state.display.type,
-        ]}?from=${from}&to=${to}`
-      );
+      const { data } = await getSelection({
+        userId: store.user.id,
+        display: state.display.type,
+        from,
+        to,
+      });
       const selectedStats = {
         [state.display.label]: data.statistics.length
           ? data.statistics.reduce((a, b) => a + b[state.display.label], 0)

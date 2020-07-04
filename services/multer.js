@@ -28,6 +28,21 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+const artworkLocalUpload = multer({
+  fileFilter: fileFilter,
+  storage: multer.diskStorage({
+    destination: './uploads/',
+    limits: { fileSize: 10 * 1024 * 1024 },
+    filename: function (req, file, cb) {
+      const token = req.headers['authorization'].split(' ')[1];
+      const data = jwt.decode(token);
+      const fileName =
+        data.id + Date.now().toString() + path.extname(file.originalname);
+      cb(null, fileName);
+    },
+  }),
+});
+
 /* const watermark = new Buffer.from(
   `<svg width="100%" height="200%">
       <text style="font-size: 35; font-family: arial; font-weight: bold;" fill="black" fill-opacity="0.5" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">
@@ -43,7 +58,7 @@ const profilePhotoUpload = multer({
     bucket: 'vesper-testing',
     limits: { fileSize: 5 * 1024 * 1024 },
     acl: 'public-read',
-    key: function (req, file, cb) {
+    key: async (req, file, cb) => {
       const token = req.headers['authorization'].split(' ')[1];
       const data = jwt.decode(token);
       const fileName =
@@ -62,13 +77,13 @@ const artworkMediaUpload = multer({
     bucket: 'vesper-testing',
     limits: { fileSize: 10 * 1024 * 1024 },
     acl: 'public-read',
-    shouldTransform: function (req, file, cb) {
+    shouldTransform: async (req, file, cb) => {
       cb(null, true);
     },
     transforms: [
       {
         id: 'image',
-        key: function (req, file, cb) {
+        key: async (req, file, cb) => {
           const token = req.headers['authorization'].split(' ')[1];
           const data = jwt.decode(token);
           const fileName =
@@ -77,13 +92,13 @@ const artworkMediaUpload = multer({
           const filePath = folderName + fileName;
           cb(null, filePath);
         },
-        transform: function (req, file, cb) {
+        transform: async (req, file, cb) => {
           cb(null, sharp());
         },
       },
       {
         id: 'cover',
-        key: function (req, file, cb) {
+        key: async (req, file, cb) => {
           const token = req.headers['authorization'].split(' ')[1];
           const data = jwt.decode(token);
           const fileName =
@@ -92,52 +107,7 @@ const artworkMediaUpload = multer({
           const filePath = folderName + fileName;
           cb(null, filePath);
         },
-        transform: function (req, file, cb) {
-          cb(null, sharp().resize({ width: 500 }));
-        },
-      },
-    ],
-  }),
-});
-
-const artworkMediaEdit = multer({
-  fileFilter: fileFilter,
-  storage: multerS3({
-    s3: s3,
-    bucket: 'vesper-testing',
-    limits: { fileSize: 10 * 1024 * 1024 },
-    acl: 'public-read',
-    shouldTransform: function (req, file, cb) {
-      cb(null, true);
-    },
-    transforms: [
-      {
-        id: 'image',
-        key: function (req, file, cb) {
-          const token = req.headers['authorization'].split(' ')[1];
-          const data = jwt.decode(token);
-          const fileName =
-            data.id + Date.now().toString() + path.extname(file.originalname);
-          const folderName = 'artworkMedia/';
-          const filePath = folderName + fileName;
-          cb(null, filePath);
-        },
-        transform: function (req, file, cb) {
-          cb(null, sharp());
-        },
-      },
-      {
-        id: 'cover',
-        key: function (req, file, cb) {
-          const token = req.headers['authorization'].split(' ')[1];
-          const data = jwt.decode(token);
-          const fileName =
-            data.id + Date.now().toString() + path.extname(file.originalname);
-          const folderName = 'artworkCovers/';
-          const filePath = folderName + fileName;
-          cb(null, filePath);
-        },
-        transform: function (req, file, cb) {
+        transform: async (req, file, cb) => {
           cb(null, sharp().resize({ width: 500 }));
         },
       },
@@ -146,7 +116,6 @@ const artworkMediaEdit = multer({
 });
 
 export default {
-  profilePhotoUpload: profilePhotoUpload,
-  artworkMediaUpload: artworkMediaUpload,
-  artworkMediaEdit: artworkMediaEdit,
+  profilePhotoUpload,
+  artworkLocalUpload,
 };
