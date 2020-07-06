@@ -26,6 +26,8 @@ const UserSchema = new Schema({
   },
   password: String,
   photo: String,
+  height: String,
+  width: String,
   description: String,
   country: String,
   customWork: Boolean,

@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import config from '../config/mailer.js';
+import { mailer } from '../config/secret.js';
 import createError from 'http-errors';
 
 const sendEmail = async (sender, receiver, subject, html) => {
@@ -7,8 +7,8 @@ const sendEmail = async (sender, receiver, subject, html) => {
     const smtpTransport = nodemailer.createTransport({
       service: 'Gmail',
       auth: {
-        user: config.email,
-        pass: config.password,
+        user: mailer.email,
+        pass: mailer.password,
       },
     });
     const mailOptions = {

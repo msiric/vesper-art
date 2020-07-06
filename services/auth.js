@@ -4,7 +4,6 @@ import auth from '../utils/auth.js';
 import crypto from 'crypto';
 import mailer from '../utils/email.js';
 import { server } from '../config/secret.js';
-import config from '../config/mailer.js';
 import createError from 'http-errors';
 
 export const addNewUser = async ({
@@ -112,7 +111,7 @@ const forgotPassword = async (req, res, next) => {
         foundUser.resetExpiry = Date.now() + 3600000; // 1 hour
         await foundUser.save({ session });
         await mailer.sendEmail(
-          config.app,
+          server.appName,
           foundUser.email,
           'Reset your password',
           `You are receiving this because you have requested to reset the password for your account.
@@ -161,7 +160,7 @@ const resetPassword = async (req, res) => {
       });
     }
     await mailer.sendEmail(
-      config.app,
+      server.appName,
       foundUser.email,
       'Password change',
       `You are receiving this because you just changed your password.

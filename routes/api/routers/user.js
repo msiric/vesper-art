@@ -42,9 +42,10 @@ router
     [isAuthenticated, checkParamsId],
     handler(user.updateUserProfile, true, (req, res, next) => ({
       userId: req.params.userId,
-      userPhoto: req.body.userPhoto,
+      userMedia: req.body.userMedia,
       userDescription: req.body.userDescription,
       userCountry: req.body.userCountry,
+      userDimensions: req.body.userDimensions,
     }))
   )
   .delete(

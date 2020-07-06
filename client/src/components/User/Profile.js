@@ -73,7 +73,7 @@ import {
 } from '../../services/user.js';
 import { getArtwork } from '../../services/artwork.js';
 
-const userPhotoConfig = {
+const userMediaConfig = {
   size: 500 * 1024,
   format: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
 };
@@ -332,16 +332,16 @@ const countries = [
 ];
 
 const userValidation = Yup.object().shape({
-  userPhoto: Yup.mixed()
+  userMedia: Yup.mixed()
     .test(
       'fileSize',
-      `File needs to be less than ${userPhotoConfig.size}MB`,
-      (value) => value[0] && value[0].size <= userPhotoConfig.size
+      `File needs to be less than ${userMediaConfig.size}MB`,
+      (value) => value[0] && value[0].size <= userMediaConfig.size
     )
     .test(
       'fileType',
-      `File needs to be in one of the following formats: ${userPhotoConfig.format}`,
-      (value) => value[0] && userPhotoConfig.format.includes(value[0].type)
+      `File needs to be in one of the following formats: ${userMediaConfig.format}`,
+      (value) => value[0] && userMediaConfig.format.includes(value[0].type)
     ),
   userDescription: Yup.string().trim(),
   userCountry: Yup.string().trim(),
@@ -384,20 +384,21 @@ const Profile = ({ match, enqueueSnackbar }) => {
   } = useFormik({
     enableReinitialize: true,
     initialValues: {
-      userPhoto: state.user.photo,
+      userMedia: state.user.photo,
       userDescription: state.user.description,
       userCountry: state.user.country,
     },
     validationSchema: userValidation,
     async onSubmit(values) {
       try {
-        if (values.userPhoto.length) {
+        if (values.userMedia.length) {
           const formData = new FormData();
-          formData.append('userPhoto', values.userPhoto[0]);
+          formData.append('userMedia', values.userMedia[0]);
           const {
-            data: { userPhoto },
+            data: { userMedia, userDimensions },
           } = await postMedia({ data: formData });
-          values.userPhoto = userPhoto;
+          values.userMedia = userMedia;
+          values.userDimensions = userDimensions;
         }
         await patchUser({ userId: store.user.id, data: values });
       } catch (err) {
@@ -843,7 +844,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                   </Typography>
                   <CardContent>
                     <UploadInput
-                      name="userPhoto"
+                      name="userMedia"
                       setFieldValue={setFieldValue}
                     />
                     <TextField

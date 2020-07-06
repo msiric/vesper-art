@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import randomString from 'randomstring';
 import mailer from '../utils/email.js';
-import config from '../config/mailer.js';
 import { server } from '../config/secret.js';
 import { formatParams, sanitizeData } from '../utils/helpers.js';
 import {
@@ -84,20 +83,25 @@ const getUserPurchases = async ({ userId, from, to }) => {
 
 const updateUserProfile = async ({
   userId,
-  userPhoto,
+  userMedia,
   userDescription,
   userCountry,
+  userDimensions,
   session,
 }) => {
   const { error } = profileValidator(
-    sanitizeData({ userPhoto, userDescription, userCountry })
+    sanitizeData({ userMedia, userDescription, userCountry })
   );
   if (error) throw createError(400, error);
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
-    if (userPhoto) foundUser.photo = userPhoto;
+    if (userMedia) foundUser.photo = userMedia;
     if (userDescription) foundUser.description = userDescription;
     if (userCountry) foundUser.country = userCountry;
+    if (userDimensions.height && userDimensions.width) {
+      foundUser.height = userDimensions.height;
+      foundUser.width = userDimensions.width;
+    }
     await foundUser.save({ session });
     return { message: 'User details updated' };
   }
@@ -133,7 +137,7 @@ const updateUserEmail = async ({ userId, email, session }) => {
     const link = `${server.clientDomain}/verify_token/${token}`;
     await editUserEmail({ userId, email, token, session });
     await mailer.sendEmail(
-      config.app,
+      server.appName,
       email,
       'Please confirm your email',
       `Hello,
@@ -179,7 +183,7 @@ const updateUserPreferences = async ({ userId, displaySaves }) => {
         const filePath = folderName + fileName;
         const s3 = new aws.S3();
         const params = {
-          Bucket: 'vesper-testing',
+          Bucket: process.env.S3_BUCKET,
           Key: filePath
         };
         await s3.deleteObject(params).promise();

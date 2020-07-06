@@ -19,7 +19,6 @@ import emailValidator from '../utils/validation/email.js';
 import resetValidator from '../utils/validation/reset.js';
 import { sanitizeData } from '../utils/helpers.js';
 import { fetchUserByCreds, editUserPassword } from '../services/user.js';
-import config from '../config/mailer.js';
 import createError from 'http-errors';
 
 // needs transaction (not tested)
@@ -41,7 +40,7 @@ const postSignUp = async ({ email, username, password, confirm, session }) => {
     const link = `${server.clientDomain}/verify_token/${token}`;
     await addNewUser({ email, username, password, token, session });
     await mailer.sendEmail(
-      config.app,
+      server.appName,
       email,
       'Please confirm your email',
       `Hello,
@@ -133,7 +132,7 @@ const forgotPassword = async ({ email, session }) => {
     const token = buf.toString('hex');
     await editUserResetToken({ email, token, session });
     await mailer.sendEmail(
-      config.app,
+      server.appName,
       email,
       'Reset your password',
       `You are receiving this because you have requested to reset the password for your account.
@@ -153,7 +152,7 @@ const resetPassword = async ({ tokenId, password, confirm, session }) => {
   if (error) throw createError(400, error);
   const updatedUser = await editUserPassword({ tokenId, password, session });
   await mailer.sendEmail(
-    config.app,
+    server.appName,
     updatedUser.email,
     'Password change',
     `You are receiving this because you just changed your password.

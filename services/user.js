@@ -161,7 +161,7 @@ export const fetchUserStatistics = async ({ userId, session = null }) => {
 
 export const editUserProfile = async ({
   userId,
-  userPhoto,
+  userMedia,
   userDescription,
   userCountry,
   session = null,
@@ -170,7 +170,7 @@ export const editUserProfile = async ({
     {
       $and: [{ _id: userId }, { active: true }],
     },
-    { photo: userPhoto, description: userDescription, country: userCountry }
+    { photo: userMedia, description: userDescription, country: userCountry }
   );
 };
 
@@ -279,6 +279,8 @@ export const deactivateExistingUser = async ({ userId, session = null }) => {
         email: null,
         password: null,
         photo: null,
+        height: null,
+        width: null,
         description: null,
         facebookId: null,
         googleId: null,

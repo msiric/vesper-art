@@ -4,7 +4,7 @@ import joiObjectId from 'joi-objectid';
 Joi.objectId = joiObjectId(Joi);
 
 const schema = Joi.object().keys({
-  userPhoto: Joi.string().trim(),
+  userMedia: Joi.string().trim(),
   userDescription: Joi.string().trim(),
   userCountry: Joi.string().trim(),
 });

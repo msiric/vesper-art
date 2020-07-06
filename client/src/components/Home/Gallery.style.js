@@ -85,46 +85,6 @@ const GalleryStyles = makeStyles((muiTheme) => ({
   artworkOwner: {
     color: 'white',
   },
-  /*   masonryGrid: {
-    display: 'flex',
-    marginLeft: muiTheme.spacing(-4),
-    width: 'inherit',
-  },
-  masonryColumn: {
-    paddingLeft: muiTheme.spacing(4),
-    backgroundClip: 'padding-box',
-  },
-  artwork: {
-    width: '100%',
-  }, */
-
-  /*   artworkContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    height: '100vw',
-    [muiTheme.breakpoints.down(860)]: {
-      height: '220vw',
-    },
-    [muiTheme.breakpoints.down(667)]: {
-      height: 'auto',
-    },
-  },
-  artworkItem: {
-    position: 'relative',
-    width: '33.33%',
-    [muiTheme.breakpoints.down(860)]: {
-      width: '50%',
-    },
-    [muiTheme.breakpoints.down(667)]: {
-      width: '100%',
-    },
-  },
-  artworkMedia: {
-    width: '100%',
-    display: 'block',
-    transition: 'all .8s',
-  }, */
 }));
 
 export default GalleryStyles;

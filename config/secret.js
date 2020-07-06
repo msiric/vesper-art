@@ -17,3 +17,8 @@ export const stripe = {
   authorizeUri: 'https://connect.stripe.com/express/oauth/authorize',
   tokenUri: 'https://connect.stripe.com/oauth/token',
 };
+
+export const mailer = {
+  email: process.env.MAILER_MAIL,
+  password: process.env.MAILER_PASS,
+};
