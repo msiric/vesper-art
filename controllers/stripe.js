@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { server, stripe as processor } from '../config/secret.js';
+import { payment } from '../config/constants.js';
 import License from '../models/license.js';
 import crypto from 'crypto';
 import createError from 'http-errors';
@@ -25,7 +26,7 @@ import { fetchArtworkDetails } from '../services/artwork.js';
 import { addNewLicenses } from '../services/license.js';
 import { addNewOrder } from '../services/order.js';
 import { addNewNotification } from '../services/notification.js';
-import socketApi from '../realtime/io.js';
+import socketApi from '../lib/socket.js';
 import orderValidator from '../utils/validation/order.js';
 import licenseValidator from '../utils/validation/license.js';
 import { sanitizeData } from '../utils/helpers.js';
@@ -90,9 +91,9 @@ const managePaymentIntent = async ({
       });
       const buyerFee = currency(personalLicenses)
         .add(commercialLicenses)
-        .multiply(0.05)
-        .add(2.35);
-      const sellerFee = currency(0.85);
+        .multiply(payment.buyerFee.multiplier)
+        .add(payment.buyerFee.addend);
+      const sellerFee = currency(1 - payment.appFee);
       const discount = foundUser.discount
         ? currency(personalLicenses)
             .add(commercialLicenses)

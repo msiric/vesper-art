@@ -14,7 +14,7 @@ import commentValidator from '../utils/validation/comment.js';
 import { sanitizeData } from '../utils/helpers.js';
 import { addUserNotification } from '../services/user.js';
 import { addNewNotification } from '../services/notification.js';
-import socketApi from '../realtime/io.js';
+import socketApi from '../lib/socket.js';
 
 const postComment = async ({ userId, artworkId, commentContent, session }) => {
   const { error } = commentValidator(sanitizeData({ commentContent }));

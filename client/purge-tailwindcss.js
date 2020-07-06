@@ -1,35 +1,28 @@
-/* eslint-disable import/no-extraneous-dependencies */
-const Purgecss = require('purgecss');
-const fs = require('fs');
-const path = require('path');
-
-// Custom PurgeCSS extractor for Tailwind that allows special characters in
-// class names.
-//
-// https://github.com/FullHuman/purgecss#extractor
-class TailwindExtractor {
-  static extract(content) {
-    // eslint-disable-next-line no-useless-escape
-    return content.match(/[A-Za-z0-9-_:\/]+/g) || [];
-  }
-}
-
-const purgecss = new Purgecss({
-  content: ['./src/**/*.js'],
-  css: ['./src/styles/tailwind.css'],
-  whitelist: ['pl-24', 'pl-40', 'pl-56', 'pl-72', 'pl-80'],
-  extractors: [
-    {
-      extractor: TailwindExtractor,
-      extensions: ['html', 'js'],
-    },
+const purgecss = require('@fullhuman/postcss-purgecss')({
+  // Specify the paths to all of the template files in your project
+  content: [
+    './src/**/*.html',
+    './src/**/*.vue',
+    './src/**/*.jsx',
+    // etc.
   ],
+
+  // This is the function used to extract class names from your templates
+  defaultExtractor: (content) => {
+    // Capture as liberally as possible, including things like `h-(screen-1.5)`
+    const broadMatches = content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
+
+    // Capture classes within other delimiters like .block(class="w-1/2") in Pug
+    const innerMatches = content.match(/[^<>"'`\s.()]*[^<>"'`\s.():]/g) || [];
+
+    return broadMatches.concat(innerMatches);
+  },
 });
 
-const result = purgecss.purge();
-
-result.forEach((out) => {
-  fs.writeFileSync(path.resolve(__dirname, out.file), out.css, 'utf-8');
-});
-
-console.log('src/styles/tailwind.css successfully purged.');
+module.exports = {
+  plugins: [
+    require('tailwindcss'),
+    require('autoprefixer'),
+    ...(process.env.NODE_ENV === 'production' ? [purgecss] : []),
+  ],
+};

@@ -22,17 +22,12 @@
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.13.1",
     "react-dropzone": "^10.2.2",
-    "react-grid-gallery": "^0.5.5",
     "react-infinite-scroll-component": "^5.0.4",
-    "react-mason": "^1.1.2",
-    "react-masonry-css": "^1.0.14",
     "react-number-format": "^4.4.1",
-    "react-photo-gallery": "^8.0.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "react-share": "^4.1.0",
     "react-stack-grid": "^0.7.1",
-    "react-stonecutter": "^0.3.10",
     "react-swipeable-views": "^0.13.9",
     "recharts": "^1.8.5",
     "socket.io-client": "^2.3.0",
@@ -43,7 +38,8 @@
     "build": "yarn run tailwind && yarn run purge-tailwind && cross-env GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "tailwind": "tailwind build ./src/styles/tailwind-config.css -c ./tailwind.config.js -o ./src/styles/tailwind.css"
+    "tailwind": "tailwind build ./src/styles/tailwind-config.css -c ./tailwind.config.js -o ./src/styles/tailwind.css",
+    "purge-tailwind": "node ./purge-tailwindcss.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -61,7 +57,7 @@
     ]
   },
   "devDependencies": {
-    "purgecss": "^2.3.0",
+    "@fullhuman/postcss-purgecss": "^2.3.0",
     "tailwindcss": "^1.4.6",
     "tailwindcss-dir": "^4.0.0"
   }

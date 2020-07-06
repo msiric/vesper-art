@@ -16,6 +16,8 @@ const store = {
     name: null,
     email: null,
     photo: null,
+    height: null,
+    width: null,
     stripeId: null,
     country: null,
     messages: {
@@ -134,6 +136,8 @@ const reducer = (state, action) => {
           name: null,
           email: null,
           photo: null,
+          height: null,
+          width: null,
           stripeId: null,
           country: null,
           messages: {

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import createError from 'http-errors';
-import socketApi from '../realtime/io.js';
+import socketApi from '../lib/socket.js';
 import { fetchUserOrder, addOrderReview } from '../services/order.js';
 import { addArtworkReview } from '../services/artwork.js';
 import { addNewNotification } from '../services/notification.js';

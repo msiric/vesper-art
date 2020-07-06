@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import { Context } from '../Store/Store.js';
-import Masonry from 'react-mason';
 import StackGrid from 'react-stack-grid';
 import Modal from '../../shared/Modal/Modal.js';
 import {
@@ -36,7 +35,6 @@ import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import ImageGallery from 'react-photo-gallery';
 import GalleryStyles from './Gallery.style.js';
 import { postSave, deleteSave } from '../../services/artwork.js';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -235,16 +233,6 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
             </div>
           ))}
         </div> */}
-
-        {/*         {
-          <Masonry>
-            {elements.map((artwork) => (
-              <div>
-                <img className={classes.artwork} src={artwork.current.cover} />
-              </div>
-            ))}
-          </Masonry>
-        } */}
 
         {/* specify cover width */}
         <StackGrid columnWidth={150} gutterWidth={0} gutterHeight={0}>

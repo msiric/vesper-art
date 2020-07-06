@@ -1,30 +1,32 @@
 import mongoose from 'mongoose';
 import { fetchUserById } from '../services/user.js';
-import { deleteS3Object } from '../utils/helpers.js';
 import {
   verifyDimensions,
   deleteFileLocally,
+  userS3Upload,
   artworkS3Upload,
 } from '../services/upload.js';
 import createError from 'http-errors';
 
 // needs transaction (done)
-const postProfileImage = async ({ userId, session, location }) => {
-  const foundUser = await fetchUserById({
-    userId,
-    session,
-  });
-  if (foundUser) {
-    await deleteS3Object({ link: foundUser.photo, folder: 'profilePhotos/' });
-    foundUser.photo = location;
-    await foundUser.save({ session });
-    return { imageUrl: location };
+const postProfileImage = async ({ path, filename }) => {
+  // $TODO Verify that the user uploading the photo is valid and check its id
+  const verifiedInput = await verifyDimensions({ path, type: 'user' });
+  if (verifiedInput.valid) {
+    const { media } = await userS3Upload({ path, filename });
+    deleteFileLocally({ path });
+    return {
+      userMedia: media,
+      userDimensions: verifiedInput.dimensions,
+    };
   }
-  throw createError(400, 'User not found');
+  deleteFileLocally({ path });
+  throw createError(400, 'Artwork dimensions are not valid');
 };
 
 const postArtworkMedia = async ({ path, filename }) => {
-  const verifiedInput = await verifyDimensions({ path });
+  // $TODO Verify that the user uploading the photo is valid and check its id
+  const verifiedInput = await verifyDimensions({ path, type: 'artwork' });
   if (verifiedInput.valid) {
     const { cover, media } = await artworkS3Upload({ path, filename });
     deleteFileLocally({ path });
@@ -38,11 +40,20 @@ const postArtworkMedia = async ({ path, filename }) => {
   throw createError(400, 'Artwork dimensions are not valid');
 };
 
-const putArtworkMedia = async ({ cover, media }) => {
-  return {
-    artworkCover: cover,
-    artworkMedia: media,
-  };
+const putArtworkMedia = async ({ path, filename }) => {
+  // $TODO Verify that the user uploading the photo is valid and check its id
+  const verifiedInput = await verifyDimensions({ path, type: 'artwork' });
+  if (verifiedInput.valid) {
+    const { cover, media } = await artworkS3Upload({ path, filename });
+    deleteFileLocally({ path });
+    return {
+      artworkCover: cover,
+      artworkMedia: media,
+      artworkDimensions: verifiedInput.dimensions,
+    };
+  }
+  deleteFileLocally({ path });
+  throw createError(400, 'Artwork dimensions are not valid');
 };
 
 /* const updateArtworkCover = async (req, res, next) => {
@@ -57,7 +68,7 @@ const putArtworkMedia = async ({ cover, media }) => {
       const filePath = folderName + fileName;
       const s3 = new aws.S3();
       const params = {
-        Bucket: 'vesper-testing',
+        Bucket: process.env.S3_BUCKET,
         Key: filePath
       };
       const deletedImage = await s3.deleteObject(params).promise();
@@ -105,7 +116,7 @@ const updateArtworkMedia = async (req, res, next) => {
       const filePath = folderName + fileName;
       const s3 = new aws.S3();
       const params = {
-        Bucket: 'vesper-testing',
+        Bucket: process.env.S3_BUCKET,
         Key: filePath
       };
       const deletedImage = await s3.deleteObject(params).promise();

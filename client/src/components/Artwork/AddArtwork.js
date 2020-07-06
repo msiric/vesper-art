@@ -19,26 +19,28 @@ import { ax } from '../../shared/Interceptor/Interceptor.js';
 import { deleteEmptyValues } from '../../utils/helpers.js';
 import { postMedia, postArtwork } from '../../services/artwork.js';
 import { getUser } from '../../services/stripe.js';
-import AddArtworkStyles from './AddArtwork.style.js';
-
+/* import { upload } from 'commonConstants';
+ */ import AddArtworkStyles from './AddArtwork.style.js';
+const upload = {};
 const artworkMediaConfig = {
   size: 1000 * 1024,
   format: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
 };
 
 const validationSchema = Yup.object().shape({
-  artworkMedia: Yup.mixed()
+  /*   artworkMedia: Yup.mixed()
     .test(
       'fileSize',
-      `File needs to be less than ${artworkMediaConfig.size}MB`,
-      (value) => value[0] && value[0].size <= artworkMediaConfig.size
+      // 1048576 = 1024 * 1024
+      `File needs to be less than ${upload.fileSize / 1048576}MB`,
+      (value) => value[0] && value[0].size <= upload.fileSize
     )
     .test(
       'fileType',
-      `File needs to be in one of the following formats: ${artworkMediaConfig.format}`,
-      (value) => value[0] && artworkMediaConfig.format.includes(value[0].type)
+      `File needs to be in one of the following formats: ${upload.mimeTypes}`,
+      (value) => value[0] && upload.mimeTypes.includes(value[0].type)
     )
-    .required('Artwork needs to have a file'),
+    .required('Artwork needs to have a file'), */
   artworkTitle: Yup.string().trim().required('Artwork title is required'),
   artworkAvailability: Yup.string()
     .matches(/(available|unavailable)/)

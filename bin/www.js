@@ -7,7 +7,7 @@
 import app from '../app.js';
 import debugLib from 'debug';
 import http from 'http';
-import socketApi from '../realtime/io.js';
+import socketApi from '../lib/socket.js';
 
 const debug = debugLib('tst:server');
 const io = socketApi.io;

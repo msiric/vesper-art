@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Context } from '../Store/Store.js';
 import Modal from '../../shared/Modal/Modal.js';
-import Masonry from 'react-mason';
 import {
   Paper,
   Card,
@@ -86,9 +85,7 @@ const Group = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
             <CircularProgress />
           </Grid>
         }
-      >
-        <Masonry>{users}</Masonry>
-      </InfiniteScroll>
+      ></InfiniteScroll>
     </Paper>
   );
 };
