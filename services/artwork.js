@@ -1,15 +1,9 @@
 import mongoose from 'mongoose';
-import aws from 'aws-sdk';
 import Artwork from '../models/artwork.js';
 import Version from '../models/version.js';
 import License from '../models/license.js';
-import Order from '../models/order.js';
 import crypto from 'crypto';
-import createError from 'http-errors';
 import currency from 'currency.js';
-import Stripe from 'stripe';
-
-const stripe = Stripe(process.env.STRIPE_SECRET);
 
 export const fetchArtworkById = async ({ artworkId, session = null }) => {
   return await Artwork.findOne({

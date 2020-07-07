@@ -1,15 +1,7 @@
-import mongoose from "mongoose";
-import Artwork from "../models/artwork.js";
-import Order from "../models/order.js";
-import Version from "../models/version.js";
-import Notification from "../models/notification.js";
-import aws from "aws-sdk";
-import User from "../models/user.js";
-import Review from "../models/review.js";
-import createError from "http-errors";
-import Stripe from "stripe";
-
-const stripe = Stripe(process.env.STRIPE_SECRET);
+import mongoose from 'mongoose';
+import Artwork from '../models/artwork.js';
+import Notification from '../models/notification.js';
+import User from '../models/user.js';
 
 export const fetchUserById = async ({ userId, session = null }) => {
   return await User.findOne({
@@ -42,13 +34,13 @@ export const fetchUserByCreds = async ({ username, session = null }) => {
 export const fetchUserDiscount = async ({ userId, session = null }) => {
   return await User.findOne({
     $and: [{ _id: userId }, { active: true }],
-  }).populate("discount");
+  }).populate('discount');
 };
 
 export const fetchUserSales = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
-  }).deepPopulate("sales.buyer sales.version sales.review");
+  }).deepPopulate('sales.buyer sales.version sales.review');
 };
 
 export const editUserStripe = async ({ userId, stripeId, session = null }) => {
@@ -72,7 +64,7 @@ export const editUserSale = async ({ userId, orderId, session = null }) => {
 export const fetchUserPurchases = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
-  }).deepPopulate("purchases.seller purchases.version purchases.review");
+  }).deepPopulate('purchases.seller purchases.version purchases.review');
 };
 
 export const fetchUserProfile = async ({
@@ -86,19 +78,19 @@ export const fetchUserProfile = async ({
   }).populate(
     skip && limit
       ? {
-          path: "artwork",
+          path: 'artwork',
           options: {
             limit,
             skip,
           },
           populate: {
-            path: "current",
+            path: 'current',
           },
         }
       : {
-          path: "artwork",
+          path: 'artwork',
           populate: {
-            path: "current",
+            path: 'current',
           },
         }
   );
@@ -139,13 +131,13 @@ export const fetchUserSaves = async ({
       limit,
     }
   ).populate({
-    path: "savedArtwork",
+    path: 'savedArtwork',
     options: {
       limit,
       skip,
     },
     populate: {
-      path: "current",
+      path: 'current',
     },
   });
 };
@@ -154,7 +146,7 @@ export const fetchUserStatistics = async ({ userId, session = null }) => {
   return await User.findOne({
     $and: [{ _id: userId }, { active: true }],
   }).deepPopulate(
-    "purchases.version purchases.licenses sales.version sales.licenses"
+    'purchases.version purchases.licenses sales.version sales.licenses'
   );
 };
 
@@ -183,7 +175,7 @@ export const fetchUserNotifications = async ({
     skip,
     limit,
   })
-    .populate("user")
+    .populate('user')
     .sort({ created: -1 });
 };
 
