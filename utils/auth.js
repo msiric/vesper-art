@@ -1,7 +1,7 @@
-import User from '../models/user.js';
-import jwt from 'jsonwebtoken';
+import User from "../models/user.js";
+import jwt from "jsonwebtoken";
 
-const createAccessToken = (user) => {
+export const createAccessToken = (user) => {
   return jwt.sign(
     {
       id: user.id,
@@ -12,31 +12,31 @@ const createAccessToken = (user) => {
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: '15m',
+      expiresIn: "15m",
     }
   );
 };
 
-const updateAccessToken = async (req, res, next) => {
+export const updateAccessToken = async (req, res, next) => {
   const token = req.cookies.jid;
-  if (!token) return { ok: false, accessToken: '' };
+  if (!token) return { ok: false, accessToken: "" };
 
   let payload = null;
   try {
     payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
   } catch (err) {
     console.log(err);
-    return { ok: false, accessToken: '' };
+    return { ok: false, accessToken: "" };
   }
 
   const foundUser = await User.findOne({ _id: payload.userId });
 
   if (!foundUser) {
-    return { ok: false, accessToken: '' };
+    return { ok: false, accessToken: "" };
   }
 
   if (foundUser.jwtVersion !== payload.jwtVersion) {
-    return { ok: false, accessToken: '' };
+    return { ok: false, accessToken: "" };
   }
 
   const tokenPayload = {
@@ -71,26 +71,19 @@ const updateAccessToken = async (req, res, next) => {
   };
 };
 
-const createRefreshToken = (user) => {
+export const createRefreshToken = (user) => {
   return jwt.sign(
     { userId: user.id, jwtVersion: user.jwtVersion },
     process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: '7d',
+      expiresIn: "7d",
     }
   );
 };
 
-const sendRefreshToken = (res, token) => {
-  res.cookie('jid', token, {
+export const sendRefreshToken = (res, token) => {
+  res.cookie("jid", token, {
     httpOnly: true,
-    path: 'api/auth/refresh_token',
+    path: "api/auth/refresh_token",
   });
-};
-
-export default {
-  createAccessToken,
-  updateAccessToken,
-  createRefreshToken,
-  sendRefreshToken,
 };

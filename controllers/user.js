@@ -1,13 +1,13 @@
-import mongoose from 'mongoose';
-import randomString from 'randomstring';
-import mailer from '../utils/email.js';
-import { server } from '../config/secret.js';
-import { formatParams, sanitizeData } from '../utils/helpers.js';
+import mongoose from "mongoose";
+import randomString from "randomstring";
+import { sendEmail } from "../utils/email.js";
+import { server } from "../config/secret.js";
+import { formatParams, sanitizeData } from "../utils/helpers.js";
 import {
   fetchUserArtworks,
   fetchArtworksByOwner,
-} from '../services/artwork.js';
-import { fetchOrdersBySeller, fetchOrdersByBuyer } from '../services/order.js';
+} from "../services/artwork.js";
+import { fetchOrdersBySeller, fetchOrdersByBuyer } from "../services/order.js";
 import {
   fetchUserById,
   fetchUserByEmail,
@@ -19,14 +19,14 @@ import {
   editUserPassword,
   editUserPreferences,
   deactivateExistingUser,
-} from '../services/user.js';
-import createError from 'http-errors';
-import { fetchStripeBalance } from '../services/stripe.js';
-import profileValidator from '../utils/validation/profile.js';
-import emailValidator from '../utils/validation/email.js';
-import passwordValidator from '../utils/validation/password.js';
-import preferencesValidator from '../utils/validation/preferences.js';
-import rangeValidator from '../utils/validation/range.js';
+} from "../services/user.js";
+import createError from "http-errors";
+import { fetchStripeBalance } from "../services/stripe.js";
+import profileValidator from "../utils/validation/profile.js";
+import emailValidator from "../utils/validation/email.js";
+import passwordValidator from "../utils/validation/password.js";
+import preferencesValidator from "../utils/validation/preferences.js";
+import rangeValidator from "../utils/validation/range.js";
 
 const getUserProfile = async ({ username, cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
@@ -34,7 +34,7 @@ const getUserProfile = async ({ username, cursor, ceiling }) => {
   if (foundUser) {
     return { user: foundUser, artwork: foundUser.artwork };
   }
-  throw createError(400, 'User not found');
+  throw createError(400, "User not found");
 };
 
 const getUserArtwork = async ({ userId, cursor, ceiling }) => {
@@ -103,9 +103,9 @@ const updateUserProfile = async ({
       foundUser.width = userDimensions.width;
     }
     await foundUser.save({ session });
-    return { message: 'User details updated' };
+    return { message: "User details updated" };
   }
-  throw createError(400, 'User not found');
+  throw createError(400, "User not found");
 };
 
 const getUserSettings = async ({ userId }) => {
@@ -113,7 +113,7 @@ const getUserSettings = async ({ userId }) => {
   if (foundUser) {
     return { user: foundUser };
   }
-  throw createError(400, 'User not found');
+  throw createError(400, "User not found");
 };
 
 const getUserNotifications = async ({ userId, cursor, ceiling }) => {
@@ -131,21 +131,21 @@ const updateUserEmail = async ({ userId, email, session }) => {
   if (error) throw createError(400, error);
   const foundUser = await fetchUserByEmail({ email, session });
   if (foundUser) {
-    throw createError(400, 'User with entered email already exists');
+    throw createError(400, "User with entered email already exists");
   } else {
     const token = randomString.generate();
     const link = `${server.clientDomain}/verify_token/${token}`;
     await editUserEmail({ userId, email, token, session });
-    await mailer.sendEmail(
+    await sendEmail(
       server.appName,
       email,
-      'Please confirm your email',
+      "Please confirm your email",
       `Hello,
         Please click on the link to verify your email:
 
         <a href=${link}>Click here to verify</a>`
     );
-    return { message: 'Email successfully updated' };
+    return { message: "Email successfully updated" };
   }
 };
 
@@ -160,7 +160,7 @@ const updateUserPassword = async ({ userId, current, password, confirm }) => {
   );
   if (error) throw createError(400, error);
   await editUserPassword({ userId, password });
-  return { message: 'Password updated successfully' };
+  return { message: "Password updated successfully" };
 };
 
 // needs transaction (done)
@@ -168,7 +168,7 @@ const updateUserPreferences = async ({ userId, displaySaves }) => {
   const { error } = preferencesValidator(sanitizeData({ displaySaves }));
   if (error) throw createError(400, error);
   await editUserPreferences({ userId, displaySaves });
-  return { message: 'Preferences updated successfully' };
+  return { message: "Preferences updated successfully" };
 };
 
 /* const deleteUser = async (req, res, next) => {
@@ -254,12 +254,12 @@ const deactivateUser = async ({ userId, session }) => {
       if (!foundOrder.length) {
         await deleteS3Object({
           link: artwork.current.cover,
-          folder: 'artworkCovers/',
+          folder: "artworkCovers/",
         });
 
         await deleteS3Object({
           link: artwork.current.media,
-          folder: 'artworkMedia/',
+          folder: "artworkMedia/",
         });
 
         await removeArtworkVersion({
@@ -271,16 +271,16 @@ const deactivateUser = async ({ userId, session }) => {
     }
     await deleteS3Object({
       link: foundUser.photo,
-      folder: 'profilePhotos/',
+      folder: "profilePhotos/",
     });
     await deactivateExistingUser({ userId: foundUser._id, session });
     req.logout();
     req.session.destroy(function (err) {
-      res.json('/');
+      res.json("/");
     });
-    return { message: 'User deactivated' };
+    return { message: "User deactivated" };
   }
-  throw createError(400, 'User not found');
+  throw createError(400, "User not found");
 };
 
 export default {

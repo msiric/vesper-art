@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
-import User from '../models/user.js';
-import auth from '../utils/auth.js';
-import crypto from 'crypto';
-import mailer from '../utils/email.js';
-import { server } from '../config/secret.js';
-import createError from 'http-errors';
+import mongoose from "mongoose";
+import User from "../models/user.js";
+import { updateAccessToken, sendRefreshToken } from "../utils/auth.js";
+import crypto from "crypto";
+import { sendEmail } from "../utils/email.js";
+import { server } from "../config/secret.js";
+import createError from "http-errors";
 
 export const addNewUser = async ({
   email,
@@ -39,12 +39,12 @@ export const addNewUser = async ({
 };
 
 export const logUserOut = (res) => {
-  auth.sendRefreshToken(res, '');
-  return { accessToken: '', user: '' };
+  sendRefreshToken(res, "");
+  return { accessToken: "", user: "" };
 };
 
 export const refreshAccessToken = async (req, res, next) => {
-  return await auth.updateAccessToken(req, res, next);
+  return await updateAccessToken(req, res, next);
 };
 
 export const revokeAccessToken = async ({ userId, session = null }) => {
@@ -102,25 +102,25 @@ const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
     crypto.randomBytes(20, async function (err, buf) {
-      const token = buf.toString('hex');
+      const token = buf.toString("hex");
       const foundUser = await User.findOne({ email: email }).session(session);
       if (!foundUser) {
-        throw createError(400, 'No account with that email address exists');
+        throw createError(400, "No account with that email address exists");
       } else {
         foundUser.resetToken = token;
         foundUser.resetExpiry = Date.now() + 3600000; // 1 hour
         await foundUser.save({ session });
-        await mailer.sendEmail(
+        await sendEmail(
           server.appName,
           foundUser.email,
-          'Reset your password',
+          "Reset your password",
           `You are receiving this because you have requested to reset the password for your account.
         Please click on the following link, or paste this into your browser to complete the process:
         
         <a href="${server.clientDomain}/reset_password/${token}"</a>`
         );
         await session.commitTransaction();
-        res.json({ message: 'Password reset' });
+        res.json({ message: "Password reset" });
       }
     });
   } catch (err) {
@@ -143,11 +143,11 @@ const resetPassword = async (req, res) => {
       resetExpiry: { $gt: Date.now() },
     }).session(session);
     if (!foundUser) {
-      throw createError(400, 'Token is invalid or has expired');
+      throw createError(400, "Token is invalid or has expired");
     } else if (password !== confirm) {
-      throw createError(400, 'Passwords do not match');
+      throw createError(400, "Passwords do not match");
     } else if (user.password === password) {
-      throw createError(400, 'New password is identical to the old one');
+      throw createError(400, "New password is identical to the old one");
     } else {
       foundUser.password = password;
       foundUser.resetToken = null;
@@ -159,16 +159,16 @@ const resetPassword = async (req, res) => {
         });
       });
     }
-    await mailer.sendEmail(
+    await sendEmail(
       server.appName,
       foundUser.email,
-      'Password change',
+      "Password change",
       `You are receiving this because you just changed your password.
         
       If you did not request this, please contact us immediately.`
     );
     await session.commitTransaction();
-    res.json({ message: 'Password reset' });
+    res.json({ message: "Password reset" });
   } catch (err) {
     await session.abortTransaction();
     next(err, res);
