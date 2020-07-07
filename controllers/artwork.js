@@ -1,11 +1,8 @@
-import mongoose from 'mongoose';
-import createError from 'http-errors';
-import {
-  sanitizeData,
-  deleteS3Object,
-  formatParams,
-} from '../utils/helpers.js';
-import artworkValidator from '../utils/validation/artwork.js';
+import mongoose from "mongoose";
+import createError from "http-errors";
+import { sanitizeData, formatParams } from "../utils/helpers.js";
+import { deleteS3Object } from "../utils/upload.js";
+import artworkValidator from "../validation/artwork.js";
 import {
   fetchActiveArtworks,
   fetchArtworkDetails,
@@ -21,44 +18,44 @@ import {
   saveLicenseSet,
   removeArtworkVersion,
   deactivateExistingArtwork,
-} from '../services/artwork.js';
+} from "../services/artwork.js";
 import {
   fetchUserById,
   addUserSave,
   removeUserSave,
   addUserArtwork,
-} from '../services/user.js';
-import { fetchOrderByVersion } from '../services/order.js';
-import { fetchStripeAccount } from '../services/stripe.js';
+} from "../services/user.js";
+import { fetchOrderByVersion } from "../services/order.js";
+import { fetchStripeAccount } from "../services/stripe.js";
 
-const getArtwork = async ({ cursor, ceiling }) => {
+export const getArtwork = async ({ cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = await fetchActiveArtworks({ skip, limit });
   return { artwork: foundArtwork };
 };
 
-const getArtworkDetails = async ({ artworkId, cursor, ceiling }) => {
+export const getArtworkDetails = async ({ artworkId, cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = await fetchArtworkDetails({ artworkId, skip, limit });
   if (foundArtwork) return { artwork: foundArtwork };
-  throw createError(400, 'Artwork not found');
+  throw createError(400, "Artwork not found");
 };
 
-const getArtworkComments = async ({ artworkId, cursor, ceiling }) => {
+export const getArtworkComments = async ({ artworkId, cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = await fetchArtworkComments({ artworkId, skip, limit });
   if (foundArtwork) return { artwork: foundArtwork };
-  throw createError(400, 'Artwork not found');
+  throw createError(400, "Artwork not found");
 };
 
-const getArtworkReviews = async ({ artworkId, cursor, ceiling }) => {
+export const getArtworkReviews = async ({ artworkId, cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = await fetchArtworkReviews({ artworkId, skip, limit });
   if (foundArtwork) return { artwork: foundArtwork };
-  throw createError(400, 'Artwork not found');
+  throw createError(400, "Artwork not found");
 };
 
-const getUserArtwork = async ({ userId, cursor, ceiling }) => {
+export const getUserArtwork = async ({ userId, cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = await fetchUserArtworks({
     userId,
@@ -68,16 +65,16 @@ const getUserArtwork = async ({ userId, cursor, ceiling }) => {
   return { artwork: foundArtwork };
 };
 
-const editArtwork = async ({ userId, artworkId }) => {
+export const editArtwork = async ({ userId, artworkId }) => {
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,
   });
   if (foundArtwork) return { artwork: foundArtwork.current };
-  throw createError(400, 'Artwork not found');
+  throw createError(400, "Artwork not found");
 };
 
-const getLicenses = async ({ userId, artworkId }) => {
+export const getLicenses = async ({ userId, artworkId }) => {
   const foundLicenses = await fetchArtworkLicenses({
     artworkId,
     userId,
@@ -85,7 +82,7 @@ const getLicenses = async ({ userId, artworkId }) => {
   return { licenses: foundLicenses };
 };
 
-const postNewArtwork = async ({ userId, artworkData, session }) => {
+export const postNewArtwork = async ({ userId, artworkData, session }) => {
   const { error } = artworkValidator(sanitizeData(artworkData));
   if (error) throw createError(400, error);
   if (artworkData.artworkPersonal || artworkData.artworkCommercial) {
@@ -93,23 +90,23 @@ const postNewArtwork = async ({ userId, artworkData, session }) => {
       userId,
       session,
     });
-    if (!foundUser) throw createError(400, 'User not found');
+    if (!foundUser) throw createError(400, "User not found");
     if (!foundUser.stripeId)
       throw createError(
         400,
-        'Please complete the Stripe onboarding process before making your artwork commercially available'
+        "Please complete the Stripe onboarding process before making your artwork commercially available"
       );
     const foundAccount = await fetchStripeAccount({
       accountId: foundUser.stripeId,
     });
     if (
       (artworkData.artworkPersonal || artworkData.artworkCommercial) &&
-      (foundAccount.capabilities.card_payments !== 'active' ||
-        foundAccount.capabilities.platform_payments !== 'active')
+      (foundAccount.capabilities.card_payments !== "active" ||
+        foundAccount.capabilities.platform_payments !== "active")
     ) {
       throw createError(
         400,
-        'Please complete your Stripe account before making your artwork commercially available'
+        "Please complete your Stripe account before making your artwork commercially available"
       );
     }
   }
@@ -123,13 +120,18 @@ const postNewArtwork = async ({ userId, artworkData, session }) => {
     userId,
     session,
   });
-  return { redirect: '/my_artwork' };
+  return { redirect: "/my_artwork" };
 };
 
 // $TODO
 // does it work in all cases?
 // needs testing
-const updateArtwork = async ({ userId, artworkId, artworkData, session }) => {
+export const updateArtwork = async ({
+  userId,
+  artworkId,
+  artworkData,
+  session,
+}) => {
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,
@@ -143,23 +145,23 @@ const updateArtwork = async ({ userId, artworkId, artworkData, session }) => {
         userId,
         session,
       });
-      if (!foundUser) throw createError(400, 'User not found');
+      if (!foundUser) throw createError(400, "User not found");
       if (!foundUser.stripeId)
         throw createError(
           400,
-          'Please complete the Stripe onboarding process before making your artwork commercially available'
+          "Please complete the Stripe onboarding process before making your artwork commercially available"
         );
       const foundAccount = await fetchStripeAccount({
         accountId: foundUser.stripeId,
       });
       if (
         (artworkData.artworkPersonal || artworkData.artworkCommercial) &&
-        (foundAccount.capabilities.card_payments !== 'active' ||
-          foundAccount.capabilities.platform_payments !== 'active')
+        (foundAccount.capabilities.card_payments !== "active" ||
+          foundAccount.capabilities.platform_payments !== "active")
       ) {
         throw createError(
           400,
-          'Please complete your Stripe account before making your artwork commercially available'
+          "Please complete your Stripe account before making your artwork commercially available"
         );
       }
     }
@@ -176,12 +178,12 @@ const updateArtwork = async ({ userId, artworkId, artworkData, session }) => {
       if (artworkData.artworkCover && artworkData.artworkMedia) {
         await deleteS3Object({
           link: foundArtwork.current.cover,
-          folder: 'artworkCovers/',
+          folder: "artworkCovers/",
         });
 
         await deleteS3Object({
           link: foundArtwork.current.media,
-          folder: 'artworkMedia/',
+          folder: "artworkMedia/",
         });
       }
       await removeArtworkVersion({
@@ -193,16 +195,16 @@ const updateArtwork = async ({ userId, artworkId, artworkData, session }) => {
     }
     foundArtwork.current = savedVersion._id;
     await foundArtwork.save({ session });
-    return { redirect: 'my_artwork' };
+    return { redirect: "my_artwork" };
   } else {
-    throw createError(400, 'Artwork not found');
+    throw createError(400, "Artwork not found");
   }
 };
 
 // $TODO
 // does it work in all cases?
 // needs testing
-const deleteArtwork = async ({ userId, artworkId, session }) => {
+export const deleteArtwork = async ({ userId, artworkId, session }) => {
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,
@@ -217,12 +219,12 @@ const deleteArtwork = async ({ userId, artworkId, session }) => {
     if (!foundOrder.length) {
       await deleteS3Object({
         link: foundArtwork.current.cover,
-        folder: 'artworkCovers/',
+        folder: "artworkCovers/",
       });
 
       await deleteS3Object({
         link: foundArtwork.current.media,
-        folder: 'artworkMedia/',
+        folder: "artworkMedia/",
       });
 
       await removeArtworkVersion({
@@ -231,13 +233,13 @@ const deleteArtwork = async ({ userId, artworkId, session }) => {
       });
     }
     await deactivateExistingArtwork({ artworkId, session });
-    return { redirect: 'my_artwork' };
+    return { redirect: "my_artwork" };
   }
-  throw createError(400, 'Artwork not found');
+  throw createError(400, "Artwork not found");
 };
 
 // needs transaction (done)
-const saveArtwork = async ({ userId, artworkId, session }) => {
+export const saveArtwork = async ({ userId, artworkId, session }) => {
   const foundUser = await fetchUserById({
     userId,
     session,
@@ -246,14 +248,14 @@ const saveArtwork = async ({ userId, artworkId, session }) => {
     if (!foundUser.savedArtwork.includes(artworkId)) {
       await addUserSave({ userId: foundUser._id, artworkId, session });
       await addArtworkSave({ artworkId, session });
-      return { message: 'Artwork saved' };
+      return { message: "Artwork saved" };
     }
-    throw createError(400, 'Artwork could not be saved');
+    throw createError(400, "Artwork could not be saved");
   }
-  throw createError(400, 'User not found');
+  throw createError(400, "User not found");
 };
 
-const unsaveArtwork = async ({ userId, artworkId, session }) => {
+export const unsaveArtwork = async ({ userId, artworkId, session }) => {
   const foundUser = await fetchUserById({
     userId,
     session,
@@ -262,16 +264,21 @@ const unsaveArtwork = async ({ userId, artworkId, session }) => {
     if (foundUser.savedArtwork.includes(artworkId)) {
       await removeUserSave({ userId: foundUser._id, artworkId, session });
       await removeArtworkSave({ artworkId, session });
-      return { message: 'Artwork unsaved' };
+      return { message: "Artwork unsaved" };
     }
-    throw createError(400, 'Artwork could not be unsaved');
+    throw createError(400, "Artwork could not be unsaved");
   }
-  throw createError(400, 'User not found');
+  throw createError(400, "User not found");
 };
 
 // needs transaction (done)
 // $TODO validacija licenci?
-const saveLicenses = async ({ userId, artworkId, licenses, session }) => {
+export const saveLicenses = async ({
+  userId,
+  artworkId,
+  licenses,
+  session,
+}) => {
   if (licenses.length) {
     const foundArtwork = await fetchArtworkDetails({ artworkId, session });
     if (foundArtwork) {
@@ -281,25 +288,9 @@ const saveLicenses = async ({ userId, artworkId, licenses, session }) => {
         userId,
         session,
       });
-      return { message: 'Licenses saved', licenses: savedLicenses };
+      return { message: "Licenses saved", licenses: savedLicenses };
     }
-    throw createError(400, 'Artwork not found');
+    throw createError(400, "Artwork not found");
   }
-  throw createError(400, 'Artwork needs to have at least one license');
-};
-
-export default {
-  getArtwork,
-  getArtworkDetails,
-  getArtworkComments,
-  getArtworkReviews,
-  getUserArtwork,
-  postNewArtwork,
-  editArtwork,
-  updateArtwork,
-  deleteArtwork,
-  saveArtwork,
-  unsaveArtwork,
-  getLicenses,
-  saveLicenses,
+  throw createError(400, "Artwork needs to have at least one license");
 };

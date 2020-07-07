@@ -1,9 +1,9 @@
-import mongoose from 'mongoose';
-import { fetchArtworkDetails } from '../services/artwork.js';
-import { fetchUserDiscount } from '../services/user.js';
-import createError from 'http-errors';
+import mongoose from "mongoose";
+import { fetchArtworkDetails } from "../services/artwork.js";
+import { fetchUserDiscount } from "../services/user.js";
+import createError from "http-errors";
 
-const getCheckout = async ({ userId, artworkId }) => {
+export const getCheckout = async ({ userId, artworkId }) => {
   const foundArtwork = await fetchArtworkDetails({ artworkId });
   if (foundArtwork) {
     const foundUser = await fetchUserDiscount({ userId });
@@ -12,9 +12,5 @@ const getCheckout = async ({ userId, artworkId }) => {
       discount: foundUser.discount,
     };
   }
-  throw createError(400, 'Artwork not found');
-};
-
-export default {
-  getCheckout,
+  throw createError(400, "Artwork not found");
 };

@@ -1,10 +1,10 @@
-import express from 'express';
+import express from "express";
 import {
   isAuthenticated,
   checkParamsId,
   requestHandler as handler,
-} from '../../../utils/helpers.js';
-import checkout from '../../../controllers/checkout.js';
+} from "../../../utils/helpers.js";
+import { getCheckout } from "../../../controllers/checkout.js";
 
 const router = express.Router();
 
@@ -15,14 +15,14 @@ const router = express.Router();
 //   .post(isAuthenticated, checkout .addToCart)
 //   .delete(isAuthenticated, checkout .deleteFromCart);
 
-router.route('/checkout');
+router.route("/checkout");
 // $CART
 /*   .get(isAuthenticated, checkout .getPaymentCart) */
 /*   .post(isAuthenticated, checkout.postPaymentCart); */
 
-router.route('/checkout/:artworkId').get(
+router.route("/checkout/:artworkId").get(
   [isAuthenticated, checkParamsId],
-  handler(checkout.getCheckout, false, (req, res, next) => ({
+  handler(getCheckout, false, (req, res, next) => ({
     artworkId: req.params.artworkId,
   }))
 );

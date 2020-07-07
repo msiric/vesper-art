@@ -1,35 +1,29 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 import {
   fetchExistingNotifications,
   editReadNotification,
   editUnreadNotification,
-} from '../services/notification.js';
+} from "../services/notification.js";
 
-const getNotifications = async ({ userId }) => {
+export const getNotifications = async ({ userId }) => {
   const foundNotifications = await fetchExistingNotifications({
     userId,
   });
   return { notification: foundNotifications };
 };
 
-const readNotification = async ({ userId, notificationId }) => {
+export const readNotification = async ({ userId, notificationId }) => {
   await editReadNotification({
     userId,
     notificationId,
   });
-  return { message: 'Notification read' };
+  return { message: "Notification read" };
 };
 
-const unreadNotification = async ({ userId, notificationId }) => {
+export const unreadNotification = async ({ userId, notificationId }) => {
   await editUnreadNotification({
     userId,
     notificationId,
   });
-  return { message: 'Notification read' };
-};
-
-export default {
-  getNotifications,
-  readNotification,
-  unreadNotification,
+  return { message: "Notification read" };
 };

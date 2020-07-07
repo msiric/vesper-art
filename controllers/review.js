@@ -1,15 +1,21 @@
-import mongoose from 'mongoose';
-import createError from 'http-errors';
-import socketApi from '../lib/socket.js';
-import { fetchUserOrder, addOrderReview } from '../services/order.js';
-import { addArtworkReview } from '../services/artwork.js';
-import { addNewNotification } from '../services/notification.js';
-import { editUserRating } from '../services/user.js';
-import reviewValidator from '../utils/validation/review.js';
-import { sanitizeData } from '../utils/helpers.js';
+import mongoose from "mongoose";
+import createError from "http-errors";
+import socketApi from "../lib/socket.js";
+import { fetchUserOrder, addOrderReview } from "../services/order.js";
+import { addArtworkReview } from "../services/artwork.js";
+import { addNewNotification } from "../services/notification.js";
+import { editUserRating } from "../services/user.js";
+import reviewValidator from "../validation/review.js";
+import { sanitizeData } from "../utils/helpers.js";
 
 // needs transaction (done)
-const postReview = async ({ userId, reviewRating, reviewContent, orderId }) => {
+export const postReview = async ({
+  userId,
+  reviewRating,
+  reviewContent,
+  orderId,
+  session,
+}) => {
   const { error } = reviewValidator(
     sanitizeData({ reviewRating, reviewContent })
   );
@@ -54,21 +60,17 @@ const postReview = async ({ userId, reviewRating, reviewContent, orderId }) => {
         // new start
         await addNewNotification({
           notificationLink: foundOrder._id,
-          notificationType: 'review',
+          notificationType: "review",
           notificationReceiver: foundOrder.seller,
           session,
         });
         socketApi.sendNotification(foundOrder.seller, foundOrder._id);
         // new end
-        return { message: 'Review successfully published' };
+        return { message: "Review successfully published" };
       }
-      throw createError(400, 'Review already exists for this artwork');
+      throw createError(400, "Review already exists for this artwork");
     }
-    throw createError(400, 'Review cannot be posted for unbought artwork');
+    throw createError(400, "Review cannot be posted for unbought artwork");
   }
-  throw createError(400, 'Rating is required');
-};
-
-export default {
-  postReview,
+  throw createError(400, "Rating is required");
 };

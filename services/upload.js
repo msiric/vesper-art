@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
-import aws from 'aws-sdk';
-import imageSize from 'image-size';
-import fs from 'fs';
-import sharp from 'sharp';
-import { upload } from '../config/constants.js';
-import { dimensionsFilter, uploadS3Object } from '../utils/helpers.js';
+import mongoose from "mongoose";
+import aws from "aws-sdk";
+import imageSize from "image-size";
+import fs from "fs";
+import sharp from "sharp";
+import { upload } from "../config/constants.js";
+import { dimensionsFilter, uploadS3Object } from "../utils/upload.js";
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,
@@ -16,7 +16,7 @@ export const userS3Upload = async ({ path, filename }) => {
   const sharpMedia = await sharp(path).toBuffer();
   const userMediaPath = await uploadS3Object({
     file: sharpMedia,
-    folder: 'userMedia',
+    folder: "userMedia",
     filename,
   });
   return { media: userMediaPath };
@@ -29,12 +29,12 @@ export const artworkS3Upload = async ({ path, filename }) => {
     .toBuffer();
   const artworkCoverPath = await uploadS3Object({
     file: sharpCover,
-    folder: 'artworkCovers',
+    folder: "artworkCovers",
     filename,
   });
   const artworkMediaPath = await uploadS3Object({
     file: sharpMedia,
-    folder: 'artworkMedia',
+    folder: "artworkMedia",
     filename,
   });
   return { cover: artworkCoverPath, media: artworkMediaPath };

@@ -20,15 +20,16 @@ import {
   editUserPreferences,
   deactivateExistingUser,
 } from "../services/user.js";
+import { deleteS3Object } from "../utils/upload.js";
 import createError from "http-errors";
 import { fetchStripeBalance } from "../services/stripe.js";
-import profileValidator from "../utils/validation/profile.js";
-import emailValidator from "../utils/validation/email.js";
-import passwordValidator from "../utils/validation/password.js";
-import preferencesValidator from "../utils/validation/preferences.js";
-import rangeValidator from "../utils/validation/range.js";
+import profileValidator from "../validation/profile.js";
+import emailValidator from "../validation/email.js";
+import passwordValidator from "../validation/password.js";
+import preferencesValidator from "../validation/preferences.js";
+import rangeValidator from "../validation/range.js";
 
-const getUserProfile = async ({ username, cursor, ceiling }) => {
+export const getUserProfile = async ({ username, cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
   const foundUser = await fetchUserProfile({ username, skip, limit });
   if (foundUser) {
@@ -37,7 +38,7 @@ const getUserProfile = async ({ username, cursor, ceiling }) => {
   throw createError(400, "User not found");
 };
 
-const getUserArtwork = async ({ userId, cursor, ceiling }) => {
+export const getUserArtwork = async ({ userId, cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
   const foundArtwork = fetchUserArtworks({
     userId,
@@ -47,13 +48,13 @@ const getUserArtwork = async ({ userId, cursor, ceiling }) => {
   return { artwork: foundArtwork };
 };
 
-const getUserSaves = async ({ userId, cursor, ceiling }) => {
+export const getUserSaves = async ({ userId, cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
   const foundUser = await fetchUserSaves({ userId, skip, limit });
   return { saves: foundUser.savedArtwork };
 };
 
-const getUserStatistics = async ({ userId }) => {
+export const getUserStatistics = async ({ userId }) => {
   // brisanje accounta
   /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
     }); */
@@ -63,7 +64,7 @@ const getUserStatistics = async ({ userId }) => {
   return { statistics: foundUser, amount: amount };
 };
 
-const getUserSales = async ({ userId, from, to }) => {
+export const getUserSales = async ({ userId, from, to }) => {
   const { error } = rangeValidator(
     sanitizeData({ rangeFrom: from, rangeTo: to })
   );
@@ -72,7 +73,7 @@ const getUserSales = async ({ userId, from, to }) => {
   return { statistics: foundOrders };
 };
 
-const getUserPurchases = async ({ userId, from, to }) => {
+export const getUserPurchases = async ({ userId, from, to }) => {
   const { error } = rangeValidator(
     sanitizeData({ rangeFrom: from, rangeTo: to })
   );
@@ -81,7 +82,7 @@ const getUserPurchases = async ({ userId, from, to }) => {
   return { statistics: foundOrders };
 };
 
-const updateUserProfile = async ({
+export const updateUserProfile = async ({
   userId,
   userMedia,
   userDescription,
@@ -108,7 +109,7 @@ const updateUserProfile = async ({
   throw createError(400, "User not found");
 };
 
-const getUserSettings = async ({ userId }) => {
+export const getUserSettings = async ({ userId }) => {
   const foundUser = await fetchUserById({ userId });
   if (foundUser) {
     return { user: foundUser };
@@ -116,7 +117,7 @@ const getUserSettings = async ({ userId }) => {
   throw createError(400, "User not found");
 };
 
-const getUserNotifications = async ({ userId, cursor, ceiling }) => {
+export const getUserNotifications = async ({ userId, cursor, ceiling }) => {
   const { skip, limit } = formatParams({ cursor, ceiling });
   const foundNotifications = await fetchUserNotifications({
     userId,
@@ -126,7 +127,7 @@ const getUserNotifications = async ({ userId, cursor, ceiling }) => {
   return { notifications: foundNotifications };
 };
 
-const updateUserEmail = async ({ userId, email, session }) => {
+export const updateUserEmail = async ({ userId, email, session }) => {
   const { error } = emailValidator(sanitizeData({ userEmail: email }));
   if (error) throw createError(400, error);
   const foundUser = await fetchUserByEmail({ email, session });
@@ -150,7 +151,12 @@ const updateUserEmail = async ({ userId, email, session }) => {
 };
 
 // needs transaction (done)
-const updateUserPassword = async ({ userId, current, password, confirm }) => {
+export const updateUserPassword = async ({
+  userId,
+  current,
+  password,
+  confirm,
+}) => {
   const { error } = passwordValidator(
     sanitizeData({
       currentPassword: current,
@@ -164,7 +170,7 @@ const updateUserPassword = async ({ userId, current, password, confirm }) => {
 };
 
 // needs transaction (done)
-const updateUserPreferences = async ({ userId, displaySaves }) => {
+export const updateUserPreferences = async ({ userId, displaySaves }) => {
   const { error } = preferencesValidator(sanitizeData({ displaySaves }));
   if (error) throw createError(400, error);
   await editUserPreferences({ userId, displaySaves });
@@ -238,7 +244,7 @@ const updateUserPreferences = async ({ userId, displaySaves }) => {
 // needs testing (better way to update already found user)
 // not tested
 // needs transaction (not tested)
-const deactivateUser = async ({ userId, session }) => {
+export const deactivateUser = async ({ userId, session }) => {
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
     const foundArtwork = await fetchArtworksByOwner({
@@ -281,20 +287,4 @@ const deactivateUser = async ({ userId, session }) => {
     return { message: "User deactivated" };
   }
   throw createError(400, "User not found");
-};
-
-export default {
-  getUserProfile,
-  getUserArtwork,
-  getUserSaves,
-  getUserStatistics,
-  getUserSales,
-  getUserPurchases,
-  updateUserProfile,
-  getUserSettings,
-  getUserNotifications,
-  updateUserEmail,
-  updateUserPassword,
-  updateUserPreferences,
-  deactivateUser,
 };

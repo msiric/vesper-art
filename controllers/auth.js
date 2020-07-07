@@ -17,16 +17,22 @@ import {
   editUserVerification,
   addNewUser,
 } from "../services/auth.js";
-import signupValidator from "../utils/validation/signup.js";
-import loginValidator from "../utils/validation/login.js";
-import emailValidator from "../utils/validation/email.js";
-import resetValidator from "../utils/validation/reset.js";
+import signupValidator from "../validation/signup.js";
+import loginValidator from "../validation/login.js";
+import emailValidator from "../validation/email.js";
+import resetValidator from "../validation/reset.js";
 import { sanitizeData } from "../utils/helpers.js";
 import { fetchUserByCreds, editUserPassword } from "../services/user.js";
 import createError from "http-errors";
 
 // needs transaction (not tested)
-const postSignUp = async ({ email, username, password, confirm, session }) => {
+export const postSignUp = async ({
+  email,
+  username,
+  password,
+  confirm,
+  session,
+}) => {
   const { error } = signupValidator(
     sanitizeData({
       userEmail: email,
@@ -56,7 +62,7 @@ const postSignUp = async ({ email, username, password, confirm, session }) => {
   }
 };
 
-const postLogIn = async ({ username, password, res, session }) => {
+export const postLogIn = async ({ username, password, res, session }) => {
   const { error } = loginValidator(
     sanitizeData({ userUsername: username, userPassword: password })
   );
@@ -110,26 +116,26 @@ const postLogIn = async ({ username, password, res, session }) => {
   }
 };
 
-const postLogOut = ({ res }) => {
+export const postLogOut = ({ res }) => {
   return logUserOut(res);
 };
 
-const postRefreshToken = async ({ req, res, next }) => {
+export const postRefreshToken = async ({ req, res, next }) => {
   return await refreshAccessToken(req, res, next);
 };
 
-const postRevokeToken = async ({ userId }) => {
+export const postRevokeToken = async ({ userId }) => {
   await revokeAccessToken({ userId });
   return { message: "Token successfully revoked" };
 };
 
 // needs transaction (not tested)
-const verifyRegisterToken = async ({ tokenId }) => {
+export const verifyRegisterToken = async ({ tokenId }) => {
   await editUserVerification({ tokenId });
   return { message: "Token successfully verified" };
 };
 
-const forgotPassword = async ({ email, session }) => {
+export const forgotPassword = async ({ email, session }) => {
   const { error } = emailValidator(sanitizeData({ userEmail: email }));
   if (error) throw createError(400, error);
   crypto.randomBytes(20, async function (err, buf) {
@@ -149,7 +155,12 @@ const forgotPassword = async ({ email, session }) => {
 };
 
 // needs transaction (not tested)
-const resetPassword = async ({ tokenId, password, confirm, session }) => {
+export const resetPassword = async ({
+  tokenId,
+  password,
+  confirm,
+  session,
+}) => {
   const { error } = resetValidator(
     sanitizeData({ newPassword: password, confirmedPassword: confirm })
   );
@@ -164,15 +175,4 @@ const resetPassword = async ({ tokenId, password, confirm, session }) => {
       If you did not request this, please contact us immediately.`
   );
   return { message: "Password reset" };
-};
-
-export default {
-  postSignUp,
-  postLogIn,
-  postLogOut,
-  postRefreshToken,
-  postRevokeToken,
-  verifyRegisterToken,
-  forgotPassword,
-  resetPassword,
 };

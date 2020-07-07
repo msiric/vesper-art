@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
-import Conversation from '../models/conversation.js';
-import Message from '../models/message.js';
-import User from '../models/user.js';
-import createError from 'http-errors';
+import mongoose from "mongoose";
+import Conversation from "../models/conversation.js";
+import Message from "../models/message.js";
+import User from "../models/user.js";
+import createError from "http-errors";
 
 const getConversations = async (req, res, next) => {
   try {
@@ -12,9 +12,9 @@ const getConversations = async (req, res, next) => {
         { participant: res.locals.user.id },
       ],
     })
-      .populate('initiator')
-      .populate('participant')
-      .deepPopulate('messages.owner');
+      .populate("initiator")
+      .populate("participant")
+      .deepPopulate("messages.owner");
     res.json({ conversations: conversations });
   } catch (err) {
     next(err, res);
@@ -46,16 +46,16 @@ const getConversation = async (req, res, next) => {
             { participant: res.locals.user.id },
           ],
         })
-          .populate('initiator')
-          .populate('participant')
-          .deepPopulate('messages.owner')
+          .populate("initiator")
+          .populate("participant")
+          .deepPopulate("messages.owner")
           .session(session);
         const conversation = await Conversation.findOne({
           tag: req.session.convoId,
         })
-          .populate('initiator')
-          .populate('participant')
-          .deepPopulate('messages.owner')
+          .populate("initiator")
+          .populate("participant")
+          .deepPopulate("messages.owner")
           .session(session);
         if (
           conversation &&
@@ -88,10 +88,10 @@ const getConversation = async (req, res, next) => {
           decreaseInbox: decreaseInbox,
         });
       } else {
-        throw createError(400, 'User not found');
+        throw createError(400, "User not found");
       }
     } else {
-      throw createError(400, 'Invalid parameter');
+      throw createError(400, "Invalid parameter");
     }
   } catch (err) {
     await session.abortTransaction();
@@ -110,11 +110,11 @@ const newConversation = async (req, res, next) => {
     const { userId } = req.params;
     const { reply } = req.body;
     if (!userId) {
-      throw createError(400, 'Invalid parameter');
+      throw createError(400, "Invalid parameter");
     }
 
     if (!reply) {
-      throw createError(400, 'Message cannot be empty');
+      throw createError(400, "Message cannot be empty");
     }
 
     const conversation = new Conversation();
@@ -153,7 +153,7 @@ const sendReply = async (req, res, next) => {
     message.body = reply;
     message.author = res.locals.user.id;
     await message.save();
-    return res.json({ message: 'Reply successfully sent!' });
+    return res.json({ message: "Reply successfully sent!" });
   } catch (err) {
     next(err, res);
   }
