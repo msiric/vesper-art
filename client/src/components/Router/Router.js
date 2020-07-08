@@ -1,156 +1,160 @@
-import React, { lazy, Suspense, useEffect, useContext } from 'react';
-import { Context } from '../../components/Store/Store.js';
-import MainLayout from '../../layouts/MainLayout.js';
-import AuthLayout from '../../layouts/AuthLayout.js';
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import React, { lazy, Suspense, useEffect, useContext } from "react";
+import { Context } from "../../components/Store/Store.js";
+import MainLayout from "../../layouts/MainLayout.js";
+import AuthLayout from "../../layouts/AuthLayout.js";
+import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 
 const routes = [
   // Artwork router
   {
-    path: '/my_artwork',
-    Component: lazy(() => import('../Artwork/MyArtwork')),
+    path: "/my_artwork",
+    Component: lazy(() => import("../../containers/Artwork/MyArtwork")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   {
-    path: '/add_artwork',
-    Component: lazy(() => import('../Artwork/AddArtwork')),
+    path: "/add_artwork",
+    Component: lazy(() => import("../../containers/Artwork/AddArtwork")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   {
-    path: '/artwork/:id',
-    Component: lazy(() => import('../Artwork/ArtworkDetails')),
+    path: "/artwork/:id",
+    Component: lazy(() => import("../../containers/Artwork/ArtworkDetails")),
     exact: true,
-    type: 'public',
+    type: "public",
   },
   {
-    path: '/edit_artwork/:id',
-    Component: lazy(() => import('../Artwork/EditArtwork')),
+    path: "/edit_artwork/:id",
+    Component: lazy(() => import("../../containers/Artwork/EditArtwork")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   // Auth router
   {
-    path: '/signup',
-    Component: lazy(() => import('../Auth/Signup')),
+    path: "/signup",
+    Component: lazy(() => import("../../containers/Auth/Signup")),
     exact: true,
-    type: 'auth',
+    type: "auth",
   },
   {
-    path: '/login',
-    Component: lazy(() => import('../Auth/Login')),
+    path: "/login",
+    Component: lazy(() => import("../../containers/Auth/Login")),
     exact: true,
-    type: 'auth',
+    type: "auth",
   },
   {
-    path: '/verify_token/:id',
-    Component: lazy(() => import('../Auth/VerifyToken')),
+    path: "/verify_token/:id",
+    Component: lazy(() => import("../../containers/Auth/VerifyToken")),
     exact: true,
-    type: 'auth',
+    type: "auth",
   },
   {
-    path: '/forgot_password',
-    Component: lazy(() => import('../Auth/ForgotPassword')),
+    path: "/forgot_password",
+    Component: lazy(() => import("../../containers/Auth/ForgotPassword")),
     exact: true,
-    type: 'auth',
+    type: "auth",
   },
   {
-    path: '/reset_password/:id',
-    Component: lazy(() => import('../Auth/ResetPassword')),
+    path: "/reset_password/:id",
+    Component: lazy(() => import("../../containers/Auth/ResetPassword")),
     exact: true,
-    type: 'auth',
+    type: "auth",
   },
   // Conversations router
-  {
-    path: '/conversations',
-    Component: lazy(() => import('../Conversations/Conversations')),
-    exact: true,
-    type: 'protected',
-  },
+  // {
+  //   path: "/conversations",
+  //   Component: lazy(() =>
+  //     import("../../containers/Conversations/Conversations")
+  //   ),
+  //   exact: true,
+  //   type: "protected",
+  // },
   // Home router
   {
-    path: '/',
-    Component: lazy(() => import('../Home/Home')),
+    path: "/",
+    Component: lazy(() => import("../../containers/Home/Home")),
     exact: true,
-    type: 'public',
+    type: "public",
   },
   {
-    path: '/verifier',
-    Component: lazy(() => import('../Home/Verifier')),
+    path: "/verifier",
+    Component: lazy(() => import("../../containers/Home/Verifier")),
     exact: true,
-    type: 'public',
+    type: "public",
   },
   {
-    path: '/search',
-    Component: lazy(() => import('../Home/SearchResults')),
+    path: "/search",
+    Component: lazy(() => import("../../containers/Home/SearchResults")),
     exact: true,
-    type: 'public',
+    type: "public",
   },
   // Notifications router
-  {
-    path: '/notifications',
-    Component: lazy(() => import('../Notifications/Notifications')),
-    exact: true,
-    type: 'protected',
-  },
+  // {
+  //   path: "/notifications",
+  //   Component: lazy(() =>
+  //     import("../../containers/Notifications/Notifications")
+  //   ),
+  //   exact: true,
+  //   type: "protected",
+  // },
   // $CART
   // Checkout router
   // {
   //   path: '/cart',
-  //   Component: lazy(() => import('../Checkout/Cart')),
+  //   Component: lazy(() => import('../../containers/Checkout/Cart')),
   //   exact: true,
   //   type: 'protected',
   // },
   // {
   //   path: '/checkout',
-  //   Component: lazy(() => import('../Checkout/Checkout')),
+  //   Component: lazy(() => import('../../containers/Checkout/Checkout')),
   //   exact: true,
   //   type: 'protected',
   // },
   {
-    path: '/checkout/:id',
-    Component: lazy(() => import('../Checkout/Checkout')),
+    path: "/checkout/:id",
+    Component: lazy(() => import("../../containers/Checkout/Checkout")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   // Orders router
   {
-    path: '/orders',
-    Component: lazy(() => import('../Orders/Orders')),
+    path: "/orders",
+    Component: lazy(() => import("../../containers/Orders/Orders")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   {
-    path: '/orders/:id',
-    Component: lazy(() => import('../Orders/Order')),
+    path: "/orders/:id",
+    Component: lazy(() => import("../../containers/Orders/Order")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   // User router
   {
-    path: '/user/:id',
-    Component: lazy(() => import('../User/Profile')),
+    path: "/user/:id",
+    Component: lazy(() => import("../../containers/User/Profile")),
     exact: true,
-    type: 'public',
+    type: "public",
   },
   {
-    path: '/dashboard',
-    Component: lazy(() => import('../User/Dashboard')),
+    path: "/dashboard",
+    Component: lazy(() => import("../../containers/User/Dashboard")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   {
-    path: '/settings',
-    Component: lazy(() => import('../User/Settings')),
+    path: "/settings",
+    Component: lazy(() => import("../../containers/User/Settings")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   {
-    path: '/onboarding',
-    Component: lazy(() => import('../User/Onboarding')),
+    path: "/onboarding",
+    Component: lazy(() => import("../../containers/User/Onboarding")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
 ];
 
@@ -158,7 +162,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   <Route
     {...rest}
     render={(props) => {
-      if (rest.type === 'auth') {
+      if (rest.type === "auth") {
         if (!rest.token) {
           return (
             <AuthLayout>
@@ -171,7 +175,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
           return (
             <Redirect
               to={{
-                pathname: '/',
+                pathname: "/",
                 state: {
                   from: props.location,
                 },
@@ -179,12 +183,12 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
             />
           );
         }
-      } else if (rest.type === 'protected') {
+      } else if (rest.type === "protected") {
         if (!rest.token) {
           return (
             <Redirect
               to={{
-                pathname: '/login',
+                pathname: "/login",
                 state: {
                   from: rest.location,
                 },

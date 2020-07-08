@@ -34,10 +34,10 @@
     "yup": "^0.28.3"
   },
   "scripts": {
-    "start": "yarn run tailwind && react-scripts start",
-    "build": "yarn run tailwind && yarn run purge-tailwind && cross-env GENERATE_SOURCEMAP=false react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "yarn run tailwind && react-app-rewired start",
+    "build": "yarn run tailwind && yarn run purge-tailwind && cross-env GENERATE_SOURCEMAP=false react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject",
     "tailwind": "tailwind build ./src/styles/tailwind-config.css -c ./tailwind.config.js -o ./src/styles/tailwind.css",
     "purge-tailwind": "node ./purge-tailwindcss.js"
   },
@@ -58,6 +58,8 @@
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^2.3.0",
+    "customize-cra": "^1.0.0",
+    "react-app-rewired": "^2.1.6",
     "tailwindcss": "^1.4.6",
     "tailwindcss-dir": "^4.0.0"
   }
