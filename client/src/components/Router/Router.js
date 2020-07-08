@@ -8,56 +8,56 @@ const routes = [
   // Artwork router
   {
     path: "/my_artwork",
-    Component: lazy(() => import("../../containers/Artwork/MyArtwork")),
+    Component: lazy(() => import("../../pages/Artwork/MyArtwork")),
     exact: true,
     type: "protected",
   },
   {
     path: "/add_artwork",
-    Component: lazy(() => import("../../containers/Artwork/AddArtwork")),
+    Component: lazy(() => import("../../pages/Artwork/AddArtwork")),
     exact: true,
     type: "protected",
   },
   {
     path: "/artwork/:id",
-    Component: lazy(() => import("../../containers/Artwork/ArtworkDetails")),
+    Component: lazy(() => import("../../pages/Artwork/ArtworkDetails")),
     exact: true,
     type: "public",
   },
   {
     path: "/edit_artwork/:id",
-    Component: lazy(() => import("../../containers/Artwork/EditArtwork")),
+    Component: lazy(() => import("../../pages/Artwork/EditArtwork")),
     exact: true,
     type: "protected",
   },
   // Auth router
   {
     path: "/signup",
-    Component: lazy(() => import("../../containers/Auth/Signup")),
+    Component: lazy(() => import("../../pages/Auth/Signup")),
     exact: true,
     type: "auth",
   },
   {
     path: "/login",
-    Component: lazy(() => import("../../containers/Auth/Login")),
+    Component: lazy(() => import("../../pages/Auth/Login")),
     exact: true,
     type: "auth",
   },
   {
     path: "/verify_token/:id",
-    Component: lazy(() => import("../../containers/Auth/VerifyToken")),
+    Component: lazy(() => import("../../pages/Auth/VerifyToken")),
     exact: true,
     type: "auth",
   },
   {
     path: "/forgot_password",
-    Component: lazy(() => import("../../containers/Auth/ForgotPassword")),
+    Component: lazy(() => import("../../pages/Auth/ForgotPassword")),
     exact: true,
     type: "auth",
   },
   {
     path: "/reset_password/:id",
-    Component: lazy(() => import("../../containers/Auth/ResetPassword")),
+    Component: lazy(() => import("../../pages/Auth/ResetPassword")),
     exact: true,
     type: "auth",
   },
@@ -65,7 +65,7 @@ const routes = [
   // {
   //   path: "/conversations",
   //   Component: lazy(() =>
-  //     import("../../containers/Conversations/Conversations")
+  //     import("../../pages/Conversations/Conversations")
   //   ),
   //   exact: true,
   //   type: "protected",
@@ -73,19 +73,19 @@ const routes = [
   // Home router
   {
     path: "/",
-    Component: lazy(() => import("../../containers/Home/Home")),
+    Component: lazy(() => import("../../pages/Home/Home")),
     exact: true,
     type: "public",
   },
   {
     path: "/verifier",
-    Component: lazy(() => import("../../containers/Home/Verifier")),
+    Component: lazy(() => import("../../pages/Home/Verifier")),
     exact: true,
     type: "public",
   },
   {
     path: "/search",
-    Component: lazy(() => import("../../containers/Home/SearchResults")),
+    Component: lazy(() => import("../../pages/Home/SearchResults")),
     exact: true,
     type: "public",
   },
@@ -93,7 +93,7 @@ const routes = [
   // {
   //   path: "/notifications",
   //   Component: lazy(() =>
-  //     import("../../containers/Notifications/Notifications")
+  //     import("../../pages/Notifications/Notifications")
   //   ),
   //   exact: true,
   //   type: "protected",
@@ -102,57 +102,57 @@ const routes = [
   // Checkout router
   // {
   //   path: '/cart',
-  //   Component: lazy(() => import('../../containers/Checkout/Cart')),
+  //   Component: lazy(() => import('../../pages/Checkout/Cart')),
   //   exact: true,
   //   type: 'protected',
   // },
   // {
   //   path: '/checkout',
-  //   Component: lazy(() => import('../../containers/Checkout/Checkout')),
+  //   Component: lazy(() => import('../../pages/Checkout/Checkout')),
   //   exact: true,
   //   type: 'protected',
   // },
   {
     path: "/checkout/:id",
-    Component: lazy(() => import("../../containers/Checkout/Checkout")),
+    Component: lazy(() => import("../../pages/Checkout/Checkout")),
     exact: true,
     type: "protected",
   },
   // Orders router
   {
     path: "/orders",
-    Component: lazy(() => import("../../containers/Orders/Orders")),
+    Component: lazy(() => import("../../pages/Orders/Orders")),
     exact: true,
     type: "protected",
   },
   {
     path: "/orders/:id",
-    Component: lazy(() => import("../../containers/Orders/Order")),
+    Component: lazy(() => import("../../pages/Orders/Order")),
     exact: true,
     type: "protected",
   },
   // User router
   {
     path: "/user/:id",
-    Component: lazy(() => import("../../containers/User/Profile")),
+    Component: lazy(() => import("../../pages/User/Profile")),
     exact: true,
     type: "public",
   },
   {
     path: "/dashboard",
-    Component: lazy(() => import("../../containers/User/Dashboard")),
+    Component: lazy(() => import("../../pages/User/Dashboard")),
     exact: true,
     type: "protected",
   },
   {
     path: "/settings",
-    Component: lazy(() => import("../../containers/User/Settings")),
+    Component: lazy(() => import("../../pages/User/Settings")),
     exact: true,
     type: "protected",
   },
   {
     path: "/onboarding",
-    Component: lazy(() => import("../../containers/User/Onboarding")),
+    Component: lazy(() => import("../../pages/User/Onboarding")),
     exact: true,
     type: "protected",
   },
