@@ -1,52 +1,18 @@
-import React, { useContext } from 'react';
-import { Context } from '../Store/Store.js';
-import { Link } from 'react-router-dom';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import { Grow, Card, CardContent, Typography, Button } from '@material-ui/core';
-import { MonetizationOnRounded as MonetizationIcon } from '@material-ui/icons';
-import { ax } from '../../shared/Interceptor/Interceptor.js';
-import OnboardingStyles from './Onboarding.style.js';
-import { patchUser } from '../../services/user.js';
-import { postAuthorize } from '../../services/stripe.js';
-
-const supportedCountries = [
-  { value: '' },
-  { value: 'AE', text: 'Australia' },
-  { value: 'AT', text: 'Austria' },
-  { value: 'BE', text: 'Belgium' },
-  { value: 'CA', text: 'Canada' },
-  { value: 'DE', text: 'Denmark' },
-  { value: 'EE', text: 'Estonia' },
-  { value: 'FI', text: 'Finland' },
-  { value: 'FR', text: 'France' },
-  { value: 'DE', text: 'Germany' },
-  { value: 'GR', text: 'Greece' },
-  { value: 'HK', text: 'Honk Kong SAR China' },
-  { value: 'IE', text: 'Ireland' },
-  { value: 'IT', text: 'Italy' },
-  { value: 'JP', text: 'Japan' },
-  { value: 'LV', text: 'Latvia' },
-  { value: 'LT', text: 'Lithuania' },
-  { value: 'LU', text: 'Luxembourg' },
-  { value: 'NL', text: 'Netherlands' },
-  { value: 'NZ', text: 'New Zealand' },
-  { value: 'NO', text: 'Norway' },
-  { value: 'PL', text: 'Poland' },
-  { value: 'PT', text: 'Portugal' },
-  { value: 'SG', text: 'Singapore' },
-  { value: 'SK', text: 'Slovakia' },
-  { value: 'SI', text: 'Slovenia' },
-  { value: 'ES', text: 'Spain' },
-  { value: 'SE', text: 'Sweden' },
-  { value: 'CH', text: 'Switzerland' },
-  { value: 'GB', text: 'United Kingdom' },
-  { value: 'US', text: 'United States' },
-];
+import React, { useContext } from "react";
+import { Context } from "../Store/Store.js";
+import { Link } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import SelectInput from "../../shared/SelectInput/SelectInput.js";
+import { Grow, Card, CardContent, Typography, Button } from "@material-ui/core";
+import { MonetizationOnRounded as MonetizationIcon } from "@material-ui/icons";
+import { ax } from "../../shared/Interceptor/Interceptor.js";
+import OnboardingStyles from "./Onboarding.style.js";
+import { patchUser } from "../../services/user.js";
+import { postAuthorize } from "../../services/stripe.js";
 
 const validationSchema = Yup.object().shape({
-  userCountry: Yup.string().required('Country cannot be empty'),
+  userCountry: Yup.string().required("Country cannot be empty"),
 });
 
 function Onboarding() {
@@ -63,7 +29,7 @@ function Onboarding() {
   } = useFormik({
     enableReinitialize: true,
     initialValues: {
-      userCountry: store.user.country || '',
+      userCountry: store.user.country || "",
     },
     validationSchema,
     async onSubmit(values) {
@@ -113,6 +79,7 @@ function Onboarding() {
                       Note: We do not save any information that you enter on the
                       next page except the ID that Stripe returns back
                     </Typography>
+                    {/* $TODO Refactor supportedCountries */}
                     {store.user.country ? (
                       supportedCountries[store.user.country] ? (
                         <Typography
@@ -149,7 +116,7 @@ function Onboarding() {
                   value={values.userCountry}
                   handleChange={handleChange}
                   handleBlur={handleBlur}
-                  helperText={touched.userCountry ? errors.userCountry : ''}
+                  helperText={touched.userCountry ? errors.userCountry : ""}
                   error={touched.userCountry && Boolean(errors.userCountry)}
                   options={supportedCountries}
                 />
