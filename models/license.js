@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
-import { formatPrice } from '../utils/helpers.js';
+import { formatPrice } from "../common/helpers.js";
 
 const LicenseSchema = new Schema({
-  owner: { type: Schema.Types.ObjectId, ref: 'User' },
-  artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
+  owner: { type: Schema.Types.ObjectId, ref: "User" },
+  artwork: { type: Schema.Types.ObjectId, ref: "Artwork" },
   fingerprint: String,
   type: String,
   active: Boolean,
@@ -12,10 +12,10 @@ const LicenseSchema = new Schema({
   created: { type: Date, default: Date.now },
 });
 
-LicenseSchema.set('toObject', { getters: true });
-LicenseSchema.set('toJSON', { getters: true });
+LicenseSchema.set("toObject", { getters: true });
+LicenseSchema.set("toJSON", { getters: true });
 
-const License = mongoose.model('License', LicenseSchema);
+const License = mongoose.model("License", LicenseSchema);
 
 License.createCollection();
 

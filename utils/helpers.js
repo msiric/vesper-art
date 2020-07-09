@@ -95,10 +95,6 @@ export const checkParamsId = (req, res, next) => {
   throw createError(400, "Invalid route parameter");
 };
 
-export const formatPrice = (value) => {
-  return currency(value).divide(100);
-};
-
 export const sanitizeData = (body) =>
   Object.keys(body).reduce((obj, key) => {
     if (Array.isArray(body[key])) {
