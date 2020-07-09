@@ -48,16 +48,6 @@ import {
 } from '../../services/artwork.js';
 import ArtworkDetailsStyles from './ArtworkDetails.style.js';
 
-const commentValidation = Yup.object().shape({
-  commentContent: Yup.string().trim().required('Comment cannot be empty'),
-});
-
-const licenseValidation = Yup.object().shape({
-  licenseType: Yup.string()
-    .matches(/(personal|commercial)/)
-    .required('License type is required'),
-});
-
 const ArtworkDetails = ({ match, socket }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
