@@ -1,18 +1,18 @@
-import React, { useEffect, useContext, createRef } from 'react';
-import Router from '../Router/Router.js';
-import { Context } from '../Store/Store.js';
-import { ThemeProvider } from '@material-ui/core/styles';
+import React, { useEffect, useContext, createRef } from "react";
+import Router from "../../containers/Router/Router.js";
+import { Context } from "../Store/Store.js";
+import { ThemeProvider } from "@material-ui/core/styles";
 import {
   CssBaseline,
   IconButton,
   Container,
   Grid,
   CircularProgress,
-} from '@material-ui/core';
-import { CloseRounded as CloseIcon } from '@material-ui/icons';
-import { SnackbarProvider } from 'notistack';
-import { artepunktTheme } from '../../constants/theme.js';
-import AppStyles from './App.style.js';
+} from "@material-ui/core";
+import { CloseRounded as CloseIcon } from "@material-ui/icons";
+import { SnackbarProvider } from "notistack";
+import { artepunktTheme } from "../../constants/theme.js";
+import AppStyles from "./App.style.js";
 
 const App = ({ socket }) => {
   const [store, dispatch] = useContext(Context);

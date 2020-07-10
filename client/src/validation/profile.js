@@ -1,6 +1,7 @@
 import * as Yup from "yup";
 
 export const profileValidation = Yup.object().shape({
+  // $TODO Validate file on client, validate string on server?
   userMedia: Yup.mixed()
     .test(
       "fileSize",

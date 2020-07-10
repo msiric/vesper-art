@@ -2,6 +2,8 @@ import * as Yup from "yup";
 import { upload } from "../../../common/constants.js";
 
 export const artworkValidation = Yup.object().shape({
+  // $TODO Needs artworkDimensions, artworkMedia, artworkCover for server validation
+
   //   artworkMedia: Yup.mixed()
   //     .test(
   //       "fileSize",

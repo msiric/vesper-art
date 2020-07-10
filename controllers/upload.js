@@ -8,6 +8,8 @@ import {
 } from "../services/upload.js";
 import createError from "http-errors";
 
+// $TODO Instead of two separate routes/controllers, add middleware for file upload
+
 // needs transaction (done)
 export const postProfileImage = async ({ path, filename }) => {
   // $TODO Verify that the user uploading the photo is valid and check its id
