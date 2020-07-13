@@ -1,27 +1,30 @@
-import express from "express";
+import express from 'express';
 import {
   isAuthenticated,
   checkParamsId,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
-import { getCheckout } from "../../../controllers/checkout.js";
+} from '../../../utils/helpers.js';
+import { getCheckout } from '../../../controllers/checkout.js';
 
 const router = express.Router();
 
-// router.route('/cart').get(isAuthenticated, checkout .getProcessCart);
+// router.route('/cart').get(handler(isAuthenticated, false, (req, res, next) => (req, res, next)), checkout .getProcessCart);
 
 // router
 //   .route('/cart/artwork/:artworkId')
-//   .post(isAuthenticated, checkout .addToCart)
-//   .delete(isAuthenticated, checkout .deleteFromCart);
+//   .post(handler(isAuthenticated, false, (req, res, next) => (req, res, next)), checkout .addToCart)
+//   .delete(handler(isAuthenticated, false, (req, res, next) => (req, res, next)), checkout .deleteFromCart);
 
-router.route("/checkout");
+router.route('/checkout');
 // $CART
-/*   .get(isAuthenticated, checkout .getPaymentCart) */
-/*   .post(isAuthenticated, checkout.postPaymentCart); */
+/*   .get(handler(isAuthenticated, false, (req, res, next) => (req, res, next)), checkout .getPaymentCart) */
+/*   .post(handler(isAuthenticated, false, (req, res, next) => (req, res, next)), checkout.postPaymentCart); */
 
-router.route("/checkout/:artworkId").get(
-  [isAuthenticated, checkParamsId],
+router.route('/checkout/:artworkId').get(
+  [
+    handler(isAuthenticated, false, (req, res, next) => (req, res, next)),
+    handler(checkParamsId, false, (req, res, next) => (req, res, next)),
+  ],
   handler(getCheckout, false, (req, res, next) => ({
     artworkId: req.params.artworkId,
   }))
