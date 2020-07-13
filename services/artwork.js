@@ -164,14 +164,15 @@ export const fetchArtworkLicenses = async ({
 // needs transaction (done)
 export const addNewArtwork = async ({
   artworkData,
+  artworkUpload,
   userId,
   session = null,
 }) => {
   const newVersion = new Version();
-  newVersion.cover = artworkData.artworkCover || '';
-  newVersion.media = artworkData.artworkMedia || '';
-  newVersion.height = artworkData.artworkDimensions.height;
-  newVersion.width = artworkData.artworkDimensions.width;
+  newVersion.cover = artworkUpload.artworkCover || '';
+  newVersion.media = artworkUpload.artworkMedia || '';
+  newVersion.height = artworkUpload.artworkHeight || '';
+  newVersion.width = artworkUpload.artworkWidth || '';
   newVersion.title = artworkData.artworkTitle || '';
   newVersion.type = artworkData.artworkType || '';
   newVersion.availability = artworkData.artworkAvailability || '';
@@ -197,18 +198,21 @@ export const addNewArtwork = async ({
 
 // needs transaction (done)
 // needs testing
-export const addNewVersion = async ({ artworkData, session = null }) => {
+// $TODO Assign prev version values or empty values?
+export const addNewVersion = async ({
+  prevArtwork,
+  artworkData,
+  artworkUpload,
+  session = null,
+}) => {
   const newVersion = new Version();
   if (artworkData.artworkCover)
-    newVersion.cover = artworkData.artworkCover || '';
+    newVersion.cover = artworkUpload.artworkCover || prevArtwork.cover;
   if (artworkData.artworkMedia)
-    newVersion.media = artworkData.artworkMedia || '';
-  if (
-    artworkData.artworkDimensions.height &&
-    artworkData.artworkDimensions.width
-  ) {
-    newVersion.height = artworkData.artworkDimensions.height;
-    newVersion.width = artworkData.artworkDimensions.width;
+    newVersion.media = artworkUpload.artworkMedia || prevArtwork.media;
+  if (artworkUpload.artworkHeight && artworkUpload.artworkWidth) {
+    newVersion.height = artworkUpload.artworkHeight || prevArtwork.height;
+    newVersion.width = artworkUpload.artworkWidth || prevArtwork.width;
   }
   if (artworkData.artworkTitle)
     newVersion.title = artworkData.artworkTitle || '';
@@ -219,7 +223,7 @@ export const addNewVersion = async ({ artworkData, session = null }) => {
     newVersion.license = artworkData.artworkLicense || '';
   if (artworkData.artworkUse) newVersion.use = artworkData.artworkUse || '';
   if (artworkData.artworkPersonal)
-    newVersion.personal = currency(artworkData.artworkPersonal).intValue || 0;
+    newVersion.personal = currency(artworkData.artworkPersonal).intValue || '';
   if (artworkData.artworkCommercial)
     newVersion.commercial =
       currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
