@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
-import { Context } from '../../components/Store/Store.js';
-import { ax } from '../../shared/Interceptor/Interceptor.js';
+import { Context } from '../../context/Store.js';
+import { ax } from '../../containers/Interceptor/Interceptor.js';
 import { withRouter, Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';

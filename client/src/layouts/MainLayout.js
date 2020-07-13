@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Context } from '../components/Store/Store.js';
+import { Context } from '../context/Store.js';
 import { Backdrop, CircularProgress } from '@material-ui/core';
 import Header from '../shared/Header/Header.js';
 import MainLayoutStyles from './MainLayout.style.js';

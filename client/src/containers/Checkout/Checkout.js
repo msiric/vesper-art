@@ -1,13 +1,13 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
-import { Context } from "../Store/Store.js";
-import SelectField from "../../shared/SelectInput/SelectInput.js";
-import NumberFormat from "react-number-format";
-import Summary from "./Summary.js";
-import Steppers from "./Steppers.js";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import { Formik, Form, Field, FieldArray } from "formik";
-import * as Yup from "yup";
+import React, { useContext, useRef, useState, useEffect } from 'react';
+import { Context } from '../Store/Store.js';
+import SelectField from '../../shared/SelectInput/SelectInput.js';
+import NumberFormat from 'react-number-format';
+import Summary from './Summary.js';
+import Steppers from './Steppers.js';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import { Formik, Form, Field, FieldArray } from 'formik';
+import * as Yup from 'yup';
 import {
   Box,
   Paper,
@@ -26,12 +26,12 @@ import {
   ListItemText,
   Button,
   Divider,
-} from "@material-ui/core";
-import { useHistory } from "react-router-dom";
-import { ax } from "../../shared/Interceptor/Interceptor.js";
-import CheckoutStyles from "./Checkout.style.js";
-import { getCheckout } from "../../services/checkout.js";
-import { discountValidation } from "../../validation/discount.js";
+} from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+import { ax } from '../../containers/Interceptor/Interceptor.js';
+import CheckoutStyles from './Checkout.style.js';
+import { getCheckout } from '../../services/checkout.js';
+import { discountValidation } from '../../validation/discount.js';
 
 const Checkout = ({ match, location }) => {
   const [store, dispatch] = useContext(Context);
@@ -98,7 +98,7 @@ const Checkout = ({ match, location }) => {
         return checkoutItem.licenseList;
       } else {
         window.sessionStorage.removeItem(artwork._id);
-        console.log("$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER");
+        console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
       }
     }
   };
@@ -106,17 +106,17 @@ const Checkout = ({ match, location }) => {
   const fetchData = async () => {
     try {
       const billing = {
-        firstname: "",
-        lastname: "",
-        email: "",
-        address: "",
-        zip: "",
-        city: "",
-        country: "",
+        firstname: '',
+        lastname: '',
+        email: '',
+        address: '',
+        zip: '',
+        city: '',
+        country: '',
       };
       const { data } = await getCheckout({ artworkId: match.params.id });
       const stripe = await loadStripe(
-        "pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z"
+        'pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z'
       );
       const licenses = retrieveLicenseInformation(data.artwork);
       setState({
@@ -183,7 +183,7 @@ const Checkout = ({ match, location }) => {
             </Grid>
           </>
         ) : (
-          history.push("/")
+          history.push('/')
         )}
       </Grid>
     </Container>

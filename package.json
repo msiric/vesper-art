@@ -27,6 +27,7 @@
     "cookie-session": "^1.4.0",
     "cors": "^2.8.5",
     "currency.js": "^1.2.2",
+    "date-fns": "^2.14.0",
     "escape-html": "^1.0.3",
     "express": "^4.17.1",
     "express-flash": "0.0.2",

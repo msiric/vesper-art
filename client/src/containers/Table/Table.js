@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from 'lodash';
 import {
   Paper,
   Button,
@@ -10,13 +10,13 @@ import {
   TableCell,
   TablePagination,
   TableRow,
-} from "@material-ui/core";
-import { Link } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-import { withRouter, useHistory } from "react-router-dom";
-import { ax } from "../../shared/Interceptor/Interceptor.js";
-import ProductsTableHead from "./Head.js";
-import { getGallery } from "../../services/artwork.js";
+} from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { withRouter, useHistory } from 'react-router-dom';
+import { ax } from '../../containers/Interceptor/Interceptor.js';
+import ProductsTableHead from './Head.js';
+import { getGallery } from '../../services/artwork.js';
 
 const ProductsTable = () => {
   return (
@@ -34,7 +34,7 @@ const ProductsTable = () => {
             [
               (o) => {
                 switch (state.sort.id) {
-                  case "categories": {
+                  case 'categories': {
                     return o.categories[0];
                   }
                   default: {
@@ -90,10 +90,10 @@ const ProductsTable = () => {
         rowsPerPage={state.rows}
         page={state.page}
         backIconButtonProps={{
-          "aria-label": "Previous Page",
+          'aria-label': 'Previous Page',
         }}
         nextIconButtonProps={{
-          "aria-label": "Next Page",
+          'aria-label': 'Next Page',
         }}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}

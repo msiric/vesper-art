@@ -1,24 +1,23 @@
-import React, { useEffect } from "react";
-import { Container, Grid, CircularProgress } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
-import VerifyTokenStyles from "./VerifyToken.style.js";
-import { getToken } from "../../services/auth.js";
+import React, { useEffect } from 'react';
+import { Container, Grid, CircularProgress } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+import { getToken } from '../../services/auth.js';
 
 const VerifyTokenLoader = ({ match }) => {
   const history = useHistory();
-  const classes = VerifyTokenStyles();
+  const classes = {};
 
   const verifyToken = async () => {
     try {
       await getToken({ tokenId: match.params.id });
       history.push({
-        pathname: "/login",
-        state: { message: "Email successfully verified" },
+        pathname: '/login',
+        state: { message: 'Email successfully verified' },
       });
     } catch (err) {
       history.push({
-        pathname: "/",
-        state: { message: "An error occurred" },
+        pathname: '/',
+        state: { message: 'An error occurred' },
       });
     }
   };

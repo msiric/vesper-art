@@ -1,16 +1,16 @@
-import React, { useContext } from "react";
-import { Context } from "../Store/Store.js";
-import { Link } from "react-router-dom";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import SelectInput from "../../shared/SelectInput/SelectInput.js";
-import { Grow, Card, CardContent, Typography, Button } from "@material-ui/core";
-import { MonetizationOnRounded as MonetizationIcon } from "@material-ui/icons";
-import { ax } from "../../shared/Interceptor/Interceptor.js";
-import OnboardingStyles from "./Onboarding.style.js";
-import { patchUser } from "../../services/user.js";
-import { postAuthorize } from "../../services/stripe.js";
-import { countryValidation } from "../../validation/country.js";
+import React, { useContext } from 'react';
+import { Context } from '../Store/Store.js';
+import { Link } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
+import { Grow, Card, CardContent, Typography, Button } from '@material-ui/core';
+import { MonetizationOnRounded as MonetizationIcon } from '@material-ui/icons';
+import { ax } from '../../containers/Interceptor/Interceptor.js';
+import OnboardingStyles from './Onboarding.style.js';
+import { patchUser } from '../../services/user.js';
+import { postAuthorize } from '../../services/stripe.js';
+import { countryValidation } from '../../validation/country.js';
 
 function Onboarding() {
   const [store, dispatch] = useContext(Context);
@@ -26,7 +26,7 @@ function Onboarding() {
   } = useFormik({
     enableReinitialize: true,
     initialValues: {
-      userCountry: store.user.country || "",
+      userCountry: store.user.country || '',
     },
     validationSchema: countryValidation,
     async onSubmit(values) {
@@ -113,7 +113,7 @@ function Onboarding() {
                   value={values.userCountry}
                   handleChange={handleChange}
                   handleBlur={handleBlur}
-                  helperText={touched.userCountry ? errors.userCountry : ""}
+                  helperText={touched.userCountry ? errors.userCountry : ''}
                   error={touched.userCountry && Boolean(errors.userCountry)}
                   options={supportedCountries}
                 />

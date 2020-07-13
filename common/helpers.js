@@ -1,5 +1,8 @@
+import currency from 'currency.js';
+import dateFns from 'date-fns';
+
 export const formatDate = (date, form) => {
-  return format(new Date(date), form);
+  return dateFns.format(new Date(date), form);
 };
 
 export const formatPrice = (value) => {

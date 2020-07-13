@@ -1,10 +1,10 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../Store/Store.js";
-import SelectInput from "../../shared/SelectInput/SelectInput.js";
-import { useFormik, Formik, Form, Field } from "formik";
-import UploadInput from "../../shared/UploadInput/UploadInput.js";
-import * as Yup from "yup";
-import Gallery from "../Home/Gallery.js";
+import React, { useContext, useState, useEffect } from 'react';
+import { Context } from '../Store/Store.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
+import { useFormik, Formik, Form, Field } from 'formik';
+import UploadInput from '../../shared/UploadInput/UploadInput.js';
+import * as Yup from 'yup';
+import Gallery from '../Home/Gallery.js';
 import {
   AppBar,
   Tab,
@@ -37,7 +37,7 @@ import {
   Select,
   Popover,
   Link as Anchor,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   MoreVertRounded as MoreIcon,
   DeleteRounded as DeleteIcon,
@@ -46,7 +46,7 @@ import {
   FavoriteRounded as SavedIcon,
   ShareRounded as ShareIcon,
   LinkRounded as CopyIcon,
-} from "@material-ui/icons";
+} from '@material-ui/icons';
 import {
   FacebookShareButton,
   WhatsappShareButton,
@@ -56,27 +56,27 @@ import {
   WhatsappIcon,
   RedditIcon,
   TwitterIcon,
-} from "react-share";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { withSnackbar } from "notistack";
-import { Link, useHistory } from "react-router-dom";
-import SwipeableViews from "react-swipeable-views";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { format } from "date-fns";
-import { ax } from "../../shared/Interceptor/Interceptor.js";
-import ProfileStyles from "./Profile.style.js";
+} from 'react-share';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { withSnackbar } from 'notistack';
+import { Link, useHistory } from 'react-router-dom';
+import SwipeableViews from 'react-swipeable-views';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { format } from 'date-fns';
+import { ax } from '../../containers/Interceptor/Interceptor.js';
+import ProfileStyles from './Profile.style.js';
 import {
   postMedia,
   patchUser,
   getSaves,
   getUser,
-} from "../../services/user.js";
-import { getArtwork } from "../../services/artwork.js";
-import { profileValidation } from "../../validation/profile.js";
+} from '../../services/user.js';
+import { getArtwork } from '../../services/artwork.js';
+import { profileValidation } from '../../validation/profile.js';
 
 const userMediaConfig = {
   size: 500 * 1024,
-  format: ["image/jpg", "image/jpeg", "image/gif", "image/png"],
+  format: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
 };
 
 const Profile = ({ match, enqueueSnackbar }) => {
@@ -125,7 +125,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
       try {
         if (values.userMedia.length) {
           const formData = new FormData();
-          formData.append("userMedia", values.userMedia[0]);
+          formData.append('userMedia', values.userMedia[0]);
           const {
             data: { userMedia, userDimensions },
           } = await postMedia({ data: formData });
@@ -198,7 +198,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const a11yProps = (index) => {
     return {
       id: `full-width-tab-${index}`,
-      "aria-controls": `full-width-tabpanel-${index}`,
+      'aria-controls': `full-width-tabpanel-${index}`,
     };
   };
 
@@ -351,7 +351,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                     >
                       {`Joined ${format(
                         new Date(state.user.created),
-                        "MMM yyyy"
+                        'MMM yyyy'
                       )}`}
                     </Typography>
                   </CardContent>
@@ -383,12 +383,12 @@ const Profile = ({ match, enqueueSnackbar }) => {
                           <CopyToClipboard
                             text={url}
                             onCopy={() =>
-                              enqueueSnackbar("Link copied", {
-                                variant: "success",
+                              enqueueSnackbar('Link copied', {
+                                variant: 'success',
                                 autoHideDuration: 1000,
                                 anchorOrigin: {
-                                  vertical: "top",
-                                  horizontal: "center",
+                                  vertical: 'top',
+                                  horizontal: 'center',
                                 },
                               })
                             }
@@ -559,7 +559,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
             </Grid>
           </>
         ) : (
-          history.push("/")
+          history.push('/')
         )}
         <div>
           <Modal
@@ -587,7 +587,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       helperText={
-                        touched.userDescription ? errors.userDescription : ""
+                        touched.userDescription ? errors.userDescription : ''
                       }
                       error={
                         touched.userDescription &&
@@ -603,7 +603,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       value={values.userCountry}
                       handleChange={handleChange}
                       handleBlur={handleBlur}
-                      helperText={touched.userCountry ? errors.userCountry : ""}
+                      helperText={touched.userCountry ? errors.userCountry : ''}
                       error={touched.userCountry && Boolean(errors.userCountry)}
                       options={countries}
                     />

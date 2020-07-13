@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+/* import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../../components/Store/Store.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
 import { postMedia, postArtwork } from "../../services/artwork.js";
@@ -37,3 +37,4 @@ const AddArtwork = () => {
 };
 
 export default AddArtwork;
+ */

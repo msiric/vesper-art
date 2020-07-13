@@ -38,7 +38,7 @@ import {
 } from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { ax } from '../../shared/Interceptor/Interceptor.js';
+import { ax } from '../../containers/Interceptor/Interceptor.js';
 import {
   getDetails,
   deleteComment,
@@ -242,6 +242,7 @@ const ArtworkDetails = ({ match, socket }) => {
 
   return (
     <Container fixed className={classes.fixed}>
+      {/* 
       <Grid container className={classes.container} spacing={2}>
         {state.loading ? (
           <Grid item xs={12} className={classes.loader}>
@@ -564,29 +565,6 @@ const ArtworkDetails = ({ match, socket }) => {
                         </Typography>
                       </>
                     ) : null}
-                    {/* $CART */}
-                    {/*                     {state.artwork.current.availability === 'available' &&
-                    !store.user.cart[state.artwork._id] ? (
-                      <FormControl className={classes.formControl}>
-                        <InputLabel htmlFor="artworkLicense">
-                          License
-                        </InputLabel>
-                        <Select
-                          label="License"
-                          value={state.license}
-                          onChange={(e) => handleLicenseChange(e.target.value)}
-                          inputProps={{
-                            id: 'artworkLicense',
-                            name: 'artworkLicense',
-                          }}
-                        >
-                          <MenuItem value="personal">Personal</MenuItem>
-                          {state.artwork.current.license === 'commercial' ? (
-                            <MenuItem value="commercial">Commercial</MenuItem>
-                          ) : null}
-                        </Select>
-                      </FormControl>
-                    ) : null} */}
                   </CardContent>
                   <CardActions>
                     {state.artwork.owner._id !== store.user.id &&
@@ -735,6 +713,7 @@ const ArtworkDetails = ({ match, socket }) => {
           </Button>
         </div>
       </Popover>
+     */}
     </Container>
   );
 };

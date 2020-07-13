@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Context } from "../Store/Store.js";
-import _ from "lodash";
+import React, { useState, useEffect, useContext } from 'react';
+import { Context } from '../Store/Store.js';
+import _ from 'lodash';
 import {
   Grid,
   CircularProgress,
@@ -22,18 +22,18 @@ import {
   Tab,
   Avatar,
   TextField,
-} from "@material-ui/core";
-import * as Yup from "yup";
-import { Rating } from "@material-ui/lab";
-import { useFormik, Formik, Form, Field } from "formik";
-import { Link } from "react-router-dom";
-import { withRouter, useHistory } from "react-router-dom";
-import { ax } from "../../shared/Interceptor/Interceptor.js";
-import { format } from "date-fns";
-import Modal from "../../shared/Modal/Modal.js";
-import OrderStyles from "./Order.style.js";
-import { postReview, getOrder } from "../../services/orders.js";
-import { reviewValidation } from "../../validation/review.js";
+} from '@material-ui/core';
+import * as Yup from 'yup';
+import { Rating } from '@material-ui/lab';
+import { useFormik, Formik, Form, Field } from 'formik';
+import { Link } from 'react-router-dom';
+import { withRouter, useHistory } from 'react-router-dom';
+import { ax } from '../../containers/Interceptor/Interceptor.js';
+import { format } from 'date-fns';
+import Modal from '../../shared/Modal/Modal.js';
+import OrderStyles from './Order.style.js';
+import { postReview, getOrder } from '../../services/orders.js';
+import { reviewValidation } from '../../validation/review.js';
 
 const Order = ({ match }) => {
   const [store, dispatch] = useContext(Context);
@@ -56,7 +56,7 @@ const Order = ({ match }) => {
         <Formik
           initialValues={{
             rating: 0,
-            content: "",
+            content: '',
           }}
           enableReinitialize
           validationSchema={reviewValidation}
@@ -188,7 +188,7 @@ const Order = ({ match }) => {
         textColor="primary"
         variant="scrollable"
         scrollButtons="auto"
-        classes={{ root: "w-full h-64" }}
+        classes={{ root: 'w-full h-64' }}
       >
         <Tab className="h-64 normal-case" label="Details" />
         <Tab className="h-64 normal-case" label="Invoice" />
@@ -286,7 +286,7 @@ const Order = ({ match }) => {
                       <td>{state.order.seller.name}</td>
                       <td>{state.order.licenses.length}</td>
                       <td>${state.order.spent}</td>
-                      <td>{formatDate(state.order.created, "dd/MM/yyyy")}</td>
+                      <td>{formatDate(state.order.created, 'dd/MM/yyyy')}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -334,7 +334,7 @@ const Order = ({ match }) => {
                         </td>
                         <td className="w-64 text-right">
                           <span className="truncate">
-                            {formatDate(license.created, "dd/MM/yyyy")}
+                            {formatDate(license.created, 'dd/MM/yyyy')}
                           </span>
                         </td>
                       </tr>

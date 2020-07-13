@@ -1,12 +1,11 @@
-import React, { useEffect, useContext } from "react";
-import { Container, Grid, CircularProgress } from "@material-ui/core";
-import { Context } from "../../components/Store/Store.js";
-import { useHistory } from "react-router-dom";
-import axios from "axios";
-import InterceptorStyles from "./Interceptor.style.js";
-import openSocket from "socket.io-client";
-import { postLogout } from "../../services/user.js";
-const ENDPOINT = "http://localhost:5000";
+import React, { useEffect, useContext } from 'react';
+import { Container, Grid, CircularProgress } from '@material-ui/core';
+import { Context } from '../../context/Store.js';
+import { useHistory } from 'react-router-dom';
+import axios from 'axios';
+import openSocket from 'socket.io-client';
+import { postLogout } from '../../services/user.js';
+const ENDPOINT = 'http://localhost:5000';
 
 const ax = axios.create();
 let socket = openSocket(ENDPOINT);
@@ -14,7 +13,7 @@ let socket = openSocket(ENDPOINT);
 const Interceptor = ({ children }) => {
   const [store, dispatch] = useContext(Context);
 
-  const classes = InterceptorStyles();
+  const classes = {};
 
   const history = useHistory();
 
@@ -22,7 +21,7 @@ const Interceptor = ({ children }) => {
     try {
       if (!store.user.token) {
         dispatch({
-          type: "setMain",
+          type: 'setMain',
           loading: true,
           error: false,
           auth: store.main.auth,
@@ -31,15 +30,15 @@ const Interceptor = ({ children }) => {
           search: store.main.search,
         });
 
-        const { data } = await axios.post("/api/auth/refresh_token", {
+        const { data } = await axios.post('/api/auth/refresh_token', {
           headers: {
-            credentials: "include",
+            credentials: 'include',
           },
         });
 
         if (data.user) {
           dispatch({
-            type: "setStore",
+            type: 'setStore',
             loading: false,
             error: false,
             auth: store.main.auth,
@@ -80,7 +79,7 @@ const Interceptor = ({ children }) => {
           });
         } else {
           dispatch({
-            type: "setMain",
+            type: 'setMain',
             loading: false,
             error: false,
             auth: store.main.auth,
@@ -92,7 +91,7 @@ const Interceptor = ({ children }) => {
       }
     } catch (err) {
       dispatch({
-        type: "setMain",
+        type: 'setMain',
         loading: false,
         error: true,
         auth: store.main.auth,
@@ -105,9 +104,9 @@ const Interceptor = ({ children }) => {
 
   const interceptTraffic = (token) => {
     if (token) {
-      ax.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      ax.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
-      delete ax.defaults.headers.common["Authorization"];
+      delete ax.defaults.headers.common['Authorization'];
     }
 
     ax.interceptors.response.use(
@@ -123,23 +122,23 @@ const Interceptor = ({ children }) => {
         }
 
         if (
-          error.config.url === "/api/auth/refresh_token" ||
-          error.response.message === "Forbidden"
+          error.config.url === '/api/auth/refresh_token' ||
+          error.response.message === 'Forbidden'
         ) {
           await postLogout();
           dispatch({
-            type: "resetUser",
+            type: 'resetUser',
           });
-          history.push("/login");
+          history.push('/login');
 
           return new Promise((resolve, reject) => {
             reject(error);
           });
         }
 
-        const { data } = await axios.post("/api/auth/refresh_token", {
+        const { data } = await axios.post('/api/auth/refresh_token', {
           headers: {
-            credentials: "include",
+            credentials: 'include',
           },
         });
 
@@ -149,7 +148,7 @@ const Interceptor = ({ children }) => {
         );
 
         dispatch({
-          type: "updateUser",
+          type: 'updateUser',
           token: data.accessToken,
           email: data.user.email,
           photo: data.user.photo,
@@ -162,7 +161,7 @@ const Interceptor = ({ children }) => {
         });
 
         const config = error.config;
-        config.headers["Authorization"] = `Bearer ${data.accessToken}`;
+        config.headers['Authorization'] = `Bearer ${data.accessToken}`;
 
         return new Promise((resolve, reject) => {
           axios
@@ -181,26 +180,26 @@ const Interceptor = ({ children }) => {
   };
 
   const handleSocket = (token) => {
-    console.log("emit");
+    console.log('emit');
     socket = openSocket(ENDPOINT);
 
-    socket.emit("authenticateUser", token ? `Bearer ${token}` : null);
-    socket.on("sendNotification", () => {
+    socket.emit('authenticateUser', token ? `Bearer ${token}` : null);
+    socket.on('sendNotification', () => {
       dispatch({
         ...store.user.notifications,
-        type: "updateNotifications",
+        type: 'updateNotifications',
         count: 1,
       });
     });
-    socket.on("expiredToken", async () => {
+    socket.on('expiredToken', async () => {
       try {
         const { data } = await axios.post(`/api/auth/refresh_token`, {
           headers: {
-            credentials: "include",
+            credentials: 'include',
           },
         });
         dispatch({
-          type: "updateUser",
+          type: 'updateUser',
           token: data.accessToken,
           email: data.user.email,
           photo: data.user.photo,
@@ -211,10 +210,10 @@ const Interceptor = ({ children }) => {
           saved: data.user.saved,
           cart: { items: {}, count: data.user.cart },
         });
-        socket.emit("authenticateUser", `Bearer ${data.accessToken}`);
+        socket.emit('authenticateUser', `Bearer ${data.accessToken}`);
       } catch (err) {
         dispatch({
-          type: "resetUser",
+          type: 'resetUser',
         });
       }
     });

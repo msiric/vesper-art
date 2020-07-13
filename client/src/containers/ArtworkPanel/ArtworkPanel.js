@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Context } from '../Store/Store.js';
+import { Context } from '../../context/Store.js';
 import StackGrid from 'react-stack-grid';
 import Modal from '../../shared/Modal/Modal.js';
 import {
@@ -35,12 +35,17 @@ import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import GalleryStyles from './Gallery.style.js';
 import { postSave, deleteSave } from '../../services/artwork.js';
 import { useTheme } from '@material-ui/core/styles';
 import ArtworkCard from '../../components/ArtworkCard/ArtworkCard.js';
 
-const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
+const ArtworkPanel = ({
+  elements,
+  hasMore,
+  loadMore,
+  enqueueSnackbar,
+  type,
+}) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     modal: {
@@ -49,7 +54,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
     },
   });
 
-  const classes = GalleryStyles();
+  const classes = {};
   const theme = useTheme();
 
   const artwork = elements.map((element) =>
@@ -194,6 +199,10 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
     }));
   };
 
+  const handleImageClick = (e, item) => {
+    console.log(item);
+  };
+
   const breakpointCols = {
     default: 4,
     [theme.breakpoints.values.xl]: 4,
@@ -260,4 +269,4 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
   );
 };
 
-export default withSnackbar(Gallery);
+export default withSnackbar(ArtworkPanel);

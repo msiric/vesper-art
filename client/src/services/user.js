@@ -1,4 +1,4 @@
-import { ax } from '../shared/Interceptor/Interceptor.js';
+import { ax } from '../containers/Interceptor/Interceptor.js';
 
 export const getUser = async ({ username, cursor, ceiling }) =>
   await ax.get(`/api/user/${username}?cursor=${cursor}&ceiling=${ceiling}`);

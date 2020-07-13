@@ -15,7 +15,7 @@ import {
   DraftsRounded as ReadIcon,
   MarkunreadRounded as UnreadIcon,
 } from '@material-ui/icons';
-import { ax } from '../../shared/Interceptor/Interceptor.js';
+import { ax } from '../../containers/Interceptor/Interceptor.js';
 import NotificationItemStyles from './NotificationItem.style.js';
 
 const NotificationItem = ({

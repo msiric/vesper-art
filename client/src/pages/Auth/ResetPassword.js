@@ -1,4 +1,4 @@
-import React from "react";
+/* import React from "react";
 import ResetPasswordForm from "../../containers/Auth/ResetPasswordForm.js";
 
 const ResetPassword = ({ match }) => {
@@ -10,3 +10,4 @@ const ResetPassword = ({ match }) => {
 };
 
 export default ResetPassword;
+ */

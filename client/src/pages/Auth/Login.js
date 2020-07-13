@@ -1,4 +1,4 @@
-import React from "react";
+/* import React from "react";
 import LoginForm from "../../containers/Auth/LoginForm.js";
 
 const Login = () => {
@@ -10,3 +10,4 @@ const Login = () => {
 };
 
 export default Login;
+ */

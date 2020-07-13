@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+/* import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Context } from "../Store/Store.js";
 import { useHistory } from "react-router-dom";
 import { useFormik } from "formik";
@@ -18,7 +18,7 @@ import {
 import UploadInput from "../../shared/UploadInput/UploadInput.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import PriceInput from "../../shared/PriceInput/PriceInput.js";
-import { ax } from "../../shared/Interceptor/Interceptor.js";
+import { ax } from "../../containers/Interceptor/Interceptor.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
 import EditArtworkStyles from "./EditArtwork.style.js";
 import {
@@ -312,3 +312,4 @@ const EditArtworkForm = ({ match }) => {
 };
 
 export default EditArtworkForm;
+ */

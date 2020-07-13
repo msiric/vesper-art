@@ -1,8 +1,8 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../Store/Store.js";
-import SelectInput from "../../shared/SelectInput/SelectInput.js";
-import { useFormik, Formik, Form, Field } from "formik";
-import * as Yup from "yup";
+import React, { useContext, useState, useEffect } from 'react';
+import { Context } from '../../context/Store.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
+import { useFormik, Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
 import {
   Modal,
   Container,
@@ -30,33 +30,32 @@ import {
   Select,
   Popover,
   Link as Anchor,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   MoreVertRounded as MoreIcon,
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
-} from "@material-ui/icons";
-import { Link, useHistory } from "react-router-dom";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { ax } from "../../shared/Interceptor/Interceptor.js";
+} from '@material-ui/icons';
+import { Link, useHistory } from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { ax } from '../../containers/Interceptor/Interceptor.js';
 import {
   getDetails,
   deleteComment,
   getComments,
   postComment,
   patchComment,
-} from "../../services/artwork.js";
-import AddCommentForm from "../../containers/Comment/AddCommentForm.js";
-import EditCommentForm from "../../containers/Comment/EditCommentForm.js";
-import AddLicenseForm from "../../containers/License/AddLicenseForm.js";
-import ArtworkDetailsStyles from "./ArtworkDetails.style.js";
+} from '../../services/artwork.js';
+import AddCommentForm from '../../containers/Comment/AddCommentForm.js';
+import EditCommentForm from '../../containers/Comment/EditCommentForm.js';
+import AddLicenseForm from '../../containers/License/AddLicenseForm.js';
 
 const ArtworkDetails = ({ match, socket }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
     artwork: {},
-    license: "personal",
+    license: 'personal',
     modal: {
       open: false,
     },
@@ -75,7 +74,7 @@ const ArtworkDetails = ({ match, socket }) => {
     },
   });
   const history = useHistory();
-  const classes = ArtworkDetailsStyles();
+  const classes = {};
 
   const fetchArtwork = async () => {
     try {
@@ -250,7 +249,7 @@ const ArtworkDetails = ({ match, socket }) => {
           </Grid>
         ) : state.artwork._id ? (
           <>
-            <Grid item sm={12} md={7} className={classes.grid}>
+            {/*             <Grid item sm={12} md={7} className={classes.grid}>
               <ArtworkPreview />
               <br />
 
@@ -260,10 +259,10 @@ const ArtworkDetails = ({ match, socket }) => {
               <ArtistSection />
               <br />
               <ArtworkDetails />
-            </Grid>
+            </Grid> */}
           </>
         ) : (
-          history.push("/")
+          history.push('/')
         )}
         <div>
           <Modal
@@ -282,12 +281,12 @@ const ArtworkDetails = ({ match, socket }) => {
         anchorEl={state.popover.anchorEl}
         onClose={handlePopoverClose}
         anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
+          vertical: 'bottom',
+          horizontal: 'center',
         }}
         transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
+          vertical: 'top',
+          horizontal: 'center',
         }}
         transition
       >
