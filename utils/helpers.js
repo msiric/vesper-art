@@ -65,10 +65,14 @@ export const isNotAuthenticated = async (req, res, next) => {
   return next();
 };
 
-export const formatParams = ({ cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-  return { skip, limit };
+export const formatParams = ({ dataCursor, dataCeiling }) => {
+  const dataSkip =
+    dataCursor && /^\d+$/.test(dataCursor) ? Number(dataCursor) : false;
+  const dataLimit =
+    dataCeiling && /^\d+$/.test(dataCeiling) ? Number(dataCeiling) : false;
+  if (dataSkip === false || dataLimit === false)
+    throw createError(400, 'Invalid query parameter');
+  return { dataSkip, dataLimit };
 };
 
 export const checkParamsUsername = (req, res, next) => {

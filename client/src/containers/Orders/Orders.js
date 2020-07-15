@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from 'lodash';
 import {
   Grid,
   CircularProgress,
@@ -14,24 +14,24 @@ import {
   InputLabel,
   Select,
   MenuItem,
-} from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import { withRouter, useHistory } from "react-router-dom";
-import { format } from "date-fns";
-import ProductsTableHead from "./Head.js";
-import OrdersStyles from "./Orders.style.js";
-import { getOrders } from "../../services/orders.js";
+} from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { withRouter, useHistory } from 'react-router-dom';
+import { format } from 'date-fns';
+import ProductsTableHead from './Head.js';
+import OrdersStyles from './Orders.style.js';
+import { getOrders } from '../../services/orders.js';
 
 const Orders = () => {
   const [state, setState] = useState({
     loading: true,
     orders: [],
-    search: "",
-    display: "purchases",
+    search: '',
+    display: 'purchases',
     page: 0,
     rows: 10,
     sort: {
-      direction: "asc",
+      direction: 'asc',
       id: null,
     },
   });
@@ -75,10 +75,10 @@ const Orders = () => {
 
   function handleRequestSort(e, property) {
     const id = property;
-    let direction = "desc";
+    let direction = 'desc';
 
-    if (state.sort.id === property && state.sort.direction === "desc") {
-      direction = "asc";
+    if (state.sort.id === property && state.sort.direction === 'desc') {
+      direction = 'asc';
     }
 
     setState((prevState) => ({
@@ -164,7 +164,7 @@ const Orders = () => {
                     fullWidth
                     value={state.search}
                     inputProps={{
-                      "aria-label": "Search",
+                      'aria-label': 'Search',
                     }}
                     onChange={(e) => handleSearchChange(e)}
                   />
@@ -185,7 +185,7 @@ const Orders = () => {
                     [
                       (o) => {
                         switch (state.sort.id) {
-                          case "categories": {
+                          case 'categories': {
                             return o.categories[0];
                           }
                           default: {
@@ -203,7 +203,7 @@ const Orders = () => {
                     .map((n) => {
                       return (
                         <TableRow
-                          className="h-64 cursor-pointer"
+                          className="h-64 dataCursor-pointer"
                           hover
                           role="checkbox"
                           tabIndex={-1}
@@ -223,23 +223,23 @@ const Orders = () => {
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
-                            {state.display === "purchases"
+                            {state.display === 'purchases'
                               ? n.seller.name
                               : n.buyer.name}
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
-                            {state.display === "purchases"
+                            {state.display === 'purchases'
                               ? `$${n.spent}`
                               : `$${n.earned}`}
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
-                            {format(new Date(n.created), "dd/MM/yyyy")}
+                            {format(new Date(n.created), 'dd/MM/yyyy')}
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
-                            {n.review ? n.review.rating : "Not rated"}
+                            {n.review ? n.review.rating : 'Not rated'}
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
@@ -257,10 +257,10 @@ const Orders = () => {
                 rowsPerPage={state.rows}
                 page={state.page}
                 backIconButtonProps={{
-                  "aria-label": "Previous Page",
+                  'aria-label': 'Previous Page',
                 }}
                 nextIconButtonProps={{
-                  "aria-label": "Next Page",
+                  'aria-label': 'Next Page',
                 }}
                 onChangePage={handleChangePage}
                 onChangeRowsPerPage={handleChangeRowsPerPage}

@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 import License from '../models/license.js';
 
 export const fetchLicenseByFingerprint = async ({
-  fingerprint,
+  licenseFingerprint,
   session = null,
 }) => {
   return await License.findOne({
-    fingerprint: fingerprint,
+    fingerprint: licenseFingerprint,
     active: true,
   }).populate('artwork');
 };

@@ -90,15 +90,15 @@ export const addOrderReview = async ({
 
 export const fetchOrdersBySeller = async ({
   userId,
-  from,
-  to,
+  rangeFrom,
+  rangeTo,
   session = null,
 }) => {
-  return from && to
+  return rangeFrom && rangeTo
     ? await Order.find({
         $and: [
           { seller: userId },
-          { created: { $gte: new Date(from), $lt: new Date(to) } },
+          { created: { $gte: new Date(rangeFrom), $lt: new Date(rangeTo) } },
         ],
       }).populate('review version licenses sales.review')
     : await Order.find({
@@ -108,15 +108,15 @@ export const fetchOrdersBySeller = async ({
 
 export const fetchOrdersByBuyer = async ({
   userId,
-  from,
-  to,
+  rangeFrom,
+  rangeTo,
   session = null,
 }) => {
-  return from && to
+  return rangeFrom && rangeTo
     ? await Order.find({
         $and: [
           { buyer: userId },
-          { created: { $gte: new Date(from), $lt: new Date(to) } },
+          { created: { $gte: new Date(rangeFrom), $lt: new Date(rangeTo) } },
         ],
       }).populate('review version licenses sales.review')
     : await Order.find({

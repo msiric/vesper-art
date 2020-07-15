@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
-import { Context } from "../Store/Store.js";
-import { useHistory } from "react-router-dom";
-import { useFormik } from "formik";
-import { Link } from "react-router-dom";
+import React, { useContext } from 'react';
+import { Context } from '../../context/Store.js';
+import { useHistory } from 'react-router-dom';
+import { useFormik } from 'formik';
+import { Link } from 'react-router-dom';
 import {
   Card,
   Typography,
@@ -10,16 +10,15 @@ import {
   CardActions,
   TextField,
   Button,
-} from "@material-ui/core";
-import LoginStyles from "./Login.style.js";
-import { postLogin } from "../../services/auth.js";
-import { loginValidation } from "../../validation/login.js";
+} from '@material-ui/core';
+import { postLogin } from '../../services/auth.js';
+import { loginValidation } from '../../validation/login.js';
 
 const LoginForm = () => {
   const [store, dispatch] = useContext(Context);
 
   const history = useHistory();
-  const classes = LoginStyles();
+  const classes = {};
 
   const {
     isSubmitting,
@@ -31,8 +30,8 @@ const LoginForm = () => {
     errors,
   } = useFormik({
     initialValues: {
-      username: "",
-      password: "",
+      userUsername: '',
+      userPassword: '',
     },
     validationSchema: loginValidation,
     async onSubmit(values) {
@@ -40,7 +39,7 @@ const LoginForm = () => {
 
       if (data.user) {
         dispatch({
-          type: "setUser",
+          type: 'setUser',
           authenticated: true,
           token: data.accessToken,
           id: data.user.id,
@@ -69,7 +68,7 @@ const LoginForm = () => {
         });
       }
 
-      history.push("/");
+      history.push('/');
     },
   });
   return (
@@ -80,27 +79,27 @@ const LoginForm = () => {
         </Typography>
         <CardContent>
           <TextField
-            name="username"
+            name="userUsername"
             label="Username or email"
             type="text"
-            value={values.username}
+            value={values.userUsername}
             onChange={handleChange}
             onBlur={handleBlur}
-            helperText={touched.username ? errors.username : ""}
-            error={touched.username && Boolean(errors.username)}
+            helperText={touched.userUsername ? errors.userUsername : ''}
+            error={touched.userUsername && Boolean(errors.userUsername)}
             margin="dense"
             variant="outlined"
             fullWidth
           />
           <TextField
-            name="password"
+            name="userPassword"
             label="Password"
             type="password"
-            value={values.password}
+            value={values.userPassword}
             onChange={handleChange}
             onBlur={handleBlur}
-            helperText={touched.password ? errors.password : ""}
-            error={touched.password && Boolean(errors.password)}
+            helperText={touched.userPassword ? errors.userPassword : ''}
+            error={touched.userPassword && Boolean(errors.userPassword)}
             margin="dense"
             variant="outlined"
             fullWidth

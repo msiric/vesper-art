@@ -52,7 +52,7 @@ const ProductsTable = () => {
             .map((n) => {
               return (
                 <TableRow
-                  className="h-64 cursor-pointer"
+                  className="h-64 dataCursor-pointer"
                   hover
                   role="checkbox"
                   tabIndex={-1}

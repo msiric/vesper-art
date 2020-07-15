@@ -28,39 +28,63 @@ import {
 import { fetchOrderByVersion } from '../services/order.js';
 import { fetchStripeAccount } from '../services/stripe.js';
 
-export const getArtwork = async ({ cursor, ceiling }) => {
-  const { skip, limit } = formatParams({ cursor, ceiling });
-  const foundArtwork = await fetchActiveArtworks({ skip, limit });
+export const getArtwork = async ({ dataCursor, dataCeiling }) => {
+  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
+  const foundArtwork = await fetchActiveArtworks({ dataSkip, dataLimit });
   return { artwork: foundArtwork };
 };
 
-export const getArtworkDetails = async ({ artworkId, cursor, ceiling }) => {
-  const { skip, limit } = formatParams({ cursor, ceiling });
-  const foundArtwork = await fetchArtworkDetails({ artworkId, skip, limit });
+export const getArtworkDetails = async ({
+  artworkId,
+  dataCursor,
+  dataCeiling,
+}) => {
+  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
+  const foundArtwork = await fetchArtworkDetails({
+    artworkId,
+    dataSkip,
+    dataLimit,
+  });
   if (foundArtwork) return { artwork: foundArtwork };
   throw createError(400, 'Artwork not found');
 };
 
-export const getArtworkComments = async ({ artworkId, cursor, ceiling }) => {
-  const { skip, limit } = formatParams({ cursor, ceiling });
-  const foundArtwork = await fetchArtworkComments({ artworkId, skip, limit });
+export const getArtworkComments = async ({
+  artworkId,
+  dataCursor,
+  dataCeiling,
+}) => {
+  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
+  const foundArtwork = await fetchArtworkComments({
+    artworkId,
+    dataSkip,
+    dataLimit,
+  });
   if (foundArtwork) return { artwork: foundArtwork };
   throw createError(400, 'Artwork not found');
 };
 
-export const getArtworkReviews = async ({ artworkId, cursor, ceiling }) => {
-  const { skip, limit } = formatParams({ cursor, ceiling });
-  const foundArtwork = await fetchArtworkReviews({ artworkId, skip, limit });
+export const getArtworkReviews = async ({
+  artworkId,
+  dataCursor,
+  dataCeiling,
+}) => {
+  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
+  const foundArtwork = await fetchArtworkReviews({
+    artworkId,
+    dataSkip,
+    dataLimit,
+  });
   if (foundArtwork) return { artwork: foundArtwork };
   throw createError(400, 'Artwork not found');
 };
 
-export const getUserArtwork = async ({ userId, cursor, ceiling }) => {
-  const { skip, limit } = formatParams({ cursor, ceiling });
+export const getUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
+  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundArtwork = await fetchUserArtworks({
     userId,
-    skip,
-    limit,
+    dataSkip,
+    dataLimit,
   });
   return { artwork: foundArtwork };
 };

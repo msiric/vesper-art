@@ -62,8 +62,8 @@ const Interceptor = ({ children }) => {
               items: [],
               count: data.user.notifications,
               hasMore: true,
-              cursor: 0,
-              ceiling: 10,
+              dataCursor: 0,
+              dataCeiling: 10,
             },
             saved: data.user.saved.reduce(function (object, item) {
               object[item] = true;

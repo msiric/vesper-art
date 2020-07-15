@@ -14,8 +14,8 @@ const Home = ({ location, enqueueSnackbar }) => {
     alerts: [],
     artwork: [],
     hasMore: true,
-    cursor: 0,
-    ceiling: 50,
+    dataCursor: 0,
+    dataCeiling: 50,
   });
 
   const classes = {};
@@ -24,15 +24,15 @@ const Home = ({ location, enqueueSnackbar }) => {
     try {
       // DATABASE DATA
       const { data } = await getArtwork({
-        cursor: state.cursor,
-        ceiling: state.ceiling,
+        dataCursor: state.dataCursor,
+        dataCeiling: state.dataCeiling,
       });
       setState({
         ...state,
         loading: false,
         artwork: data.artwork,
-        hasMore: data.artwork.length < state.ceiling ? false : true,
-        cursor: state.cursor + state.ceiling,
+        hasMore: data.artwork.length < state.dataCeiling ? false : true,
+        dataCursor: state.dataCursor + state.dataCeiling,
       });
 
       // MOCK DATA
@@ -67,8 +67,8 @@ const Home = ({ location, enqueueSnackbar }) => {
         ...state,
         loading: false,
         artwork: formattedArtwork,
-        hasMore: formattedArtwork.length < state.ceiling ? false : true,
-        cursor: state.cursor + state.ceiling,
+        hasMore: formattedArtwork.length < state.dataCeiling ? false : true,
+        dataCursor: state.dataCursor + state.dataCeiling,
       }); */
     } catch (err) {
       setState({ ...state, loading: false });
@@ -92,14 +92,14 @@ const Home = ({ location, enqueueSnackbar }) => {
   const loadMore = async () => {
     try {
       const { data } = await getArtwork({
-        cursor: state.cursor,
-        ceiling: state.ceiling,
+        dataCursor: state.dataCursor,
+        dataCeiling: state.dataCeiling,
       });
       setState((prevState) => ({
         ...prevState,
         artwork: [prevState.artwork].concat(data.artwork),
-        hasMore: data.artwork.length >= prevState.ceiling,
-        cursor: prevState.cursor + prevState.ceiling,
+        hasMore: data.artwork.length >= prevState.dataCeiling,
+        dataCursor: prevState.dataCursor + prevState.dataCeiling,
       }));
     } catch (err) {
       console.log(err);

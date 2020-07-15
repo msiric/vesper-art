@@ -1,8 +1,7 @@
-import React from "react";
-import { useHistory } from "react-router-dom";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { useFormik } from 'formik';
+import { Link } from 'react-router-dom';
 import {
   Card,
   Typography,
@@ -10,15 +9,14 @@ import {
   CardActions,
   TextField,
   Button,
-} from "@material-ui/core";
-import ForgotPasswordStyles from "./ForgotPassword.style.js";
-import { postRecover } from "../../services/auth.js";
-import { emailValidation } from "../../validation/email.js";
+} from '@material-ui/core';
+import { postRecover } from '../../services/auth.js';
+import { emailValidation } from '../../validation/email.js';
 
 const ForgotPasswordForm = () => {
   const history = useHistory();
 
-  const classes = ForgotPasswordStyles();
+  const classes = {};
 
   const {
     isSubmitting,
@@ -30,20 +28,20 @@ const ForgotPasswordForm = () => {
     errors,
   } = useFormik({
     initialValues: {
-      email: "",
+      userEmail: '',
     },
     validationSchema: emailValidation,
     async onSubmit(values) {
       try {
         await postRecover({ data: values });
         history.push({
-          pathname: "/login",
-          state: { message: "Link sent to your email" },
+          pathname: '/login',
+          state: { message: 'Link sent to your email' },
         });
       } catch (err) {
         history.push({
-          pathname: "/",
-          state: { message: "An error occurred" },
+          pathname: '/',
+          state: { message: 'An error occurred' },
         });
       }
     },
@@ -56,14 +54,14 @@ const ForgotPasswordForm = () => {
         </Typography>
         <CardContent>
           <TextField
-            name="email"
+            name="userEmail"
             label="Enter your email"
             type="text"
-            value={values.email}
+            value={values.userEmail}
             onChange={handleChange}
             onBlur={handleBlur}
-            helperText={touched.email ? errors.email : ""}
-            error={touched.email && Boolean(errors.email)}
+            helperText={touched.userEmail ? errors.userEmail : ''}
+            error={touched.userEmail && Boolean(errors.userEmail)}
             margin="dense"
             variant="outlined"
             fullWidth

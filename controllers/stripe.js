@@ -1,13 +1,13 @@
-import mongoose from "mongoose";
-import { server, stripe as processor } from "../config/secret.js";
-import { payment } from "../config/constants.js";
-import License from "../models/license.js";
-import crypto from "crypto";
-import createError from "http-errors";
-import axios from "axios";
-import FormData from "form-data";
-import querystring from "querystring";
-import currency from "currency.js";
+import mongoose from 'mongoose';
+import { server, stripe as processor } from '../config/secret.js';
+import { payment } from '../config/constants.js';
+import License from '../models/license.js';
+import crypto from 'crypto';
+import createError from 'http-errors';
+import axios from 'axios';
+import FormData from 'form-data';
+import querystring from 'querystring';
+import currency from 'currency.js';
 import {
   constructStripeEvent,
   constructStripeLink,
@@ -16,36 +16,40 @@ import {
   updateStripeIntent,
   fetchStripeAccount,
   fetchStripeBalance,
-} from "../services/stripe.js";
+} from '../services/stripe.js';
 import {
   fetchUserDiscount,
   editUserStripe,
   editUserPurchase,
-} from "../services/user.js";
-import { fetchArtworkDetails } from "../services/artwork.js";
-import { addNewLicenses } from "../services/license.js";
-import { addNewOrder } from "../services/order.js";
-import { addNewNotification } from "../services/notification.js";
-import socketApi from "../lib/socket.js";
-import orderValidator from "../validation/order.js";
-import licenseValidator from "../validation/license.js";
-import { sanitizeData } from "../utils/helpers.js";
+} from '../services/user.js';
+import { fetchArtworkDetails } from '../services/artwork.js';
+import { addNewLicenses } from '../services/license.js';
+import { addNewOrder } from '../services/order.js';
+import { addNewNotification } from '../services/notification.js';
+import socketApi from '../lib/socket.js';
+import orderValidator from '../validation/order.js';
+import licenseValidator from '../validation/license.js';
+import { sanitizeData } from '../utils/helpers.js';
 
-export const receiveWebhookEvent = async ({ signature, body, session }) => {
-  const endpointSecret = process.env.STRIPE_WEBHOOK;
+export const receiveWebhookEvent = async ({
+  stripeSignature,
+  stripeBody,
+  session,
+}) => {
+  const stripeSecret = process.env.STRIPE_WEBHOOK;
   const stripeEvent = await constructStripeEvent({
-    body,
-    secret: endpointSecret,
-    signature,
+    stripeBody,
+    stripeSecret,
+    stripeSignature,
   });
 
   switch (stripeEvent.type) {
-    case "payment_intent.succeeded":
+    case 'payment_intent.succeeded':
       const paymentIntent = stripeEvent.data.object;
       await processTransaction({ intent: paymentIntent, session });
       break;
     default:
-      throw createError(400, "Invalid Stripe event");
+      throw createError(400, 'Invalid Stripe event');
   }
 
   return { received: true };
@@ -76,12 +80,12 @@ export const managePaymentIntent = async ({
       let personalLicenses = 0;
       let commercialLicenses = 0;
       licenses.map((license) => {
-        if (license.licenseType === "personal") {
+        if (license.licenseType === 'personal') {
           personalLicenses += foundArtwork.current.personal;
           license.licensePrice = currency(
             foundArtwork.current.personal
           ).intValue;
-        } else if (license.licenseType === "commercial") {
+        } else if (license.licenseType === 'commercial') {
           commercialLicenses += foundArtwork.current.commercial;
           license.licensePrice = currency(
             foundArtwork.current.commercial
@@ -128,12 +132,12 @@ export const managePaymentIntent = async ({
             session,
           })
         : await constructStripeIntent({
-            method: "card",
-            amount: buyerTotal.intValue,
-            currency: "usd",
-            fee: platformTotal.intValue,
-            seller: foundArtwork.owner.stripeId,
-            order: orderData,
+            intentMethod: 'card',
+            intentAmount: buyerTotal.intValue,
+            intentCurrency: 'usd',
+            intentFee: platformTotal.intValue,
+            sellerId: foundArtwork.owner.stripeId,
+            orderData: orderData,
             session,
           });
       return {
@@ -143,27 +147,27 @@ export const managePaymentIntent = async ({
         },
       };
     }
-    throw createError(400, "Artwork not found");
+    throw createError(400, 'Artwork not found');
   }
-  throw createError(400, "User not found");
+  throw createError(400, 'User not found');
 };
 
 export const redirectToStripe = async ({ userAccount, userOnboarded }) => {
   if (!userOnboarded)
     throw createError(
       400,
-      "You need to complete the onboarding process before accessing your Stripe dashboard"
+      'You need to complete the onboarding process before accessing your Stripe dashboard'
     );
   const loginLink = await constructStripeLink({
     userOnboarded,
-    domain: server.serverDomain,
+    serverDomain: server.serverDomain,
   });
   if (userAccount) loginLink.url = `${loginLink.url}#/account`;
 
   return { url: loginLink.url };
 };
 
-export const onboardUser = async ({ req, res, country, email }) => {
+export const onboardUser = async ({ req, res, userCountry, userEmail }) => {
   req.session.state = Math.random().toString(36).slice(2);
   req.session.id = res.locals.user.id;
   req.session.name = res.locals.user.name;
@@ -172,12 +176,12 @@ export const onboardUser = async ({ req, res, country, email }) => {
     client_id: processor.clientId,
     state: req.session.state,
     redirect_uri: `${server.serverDomain}/stripe/token`,
-    "stripe_user[business_type]": "individual",
-    "stripe_user[business_name]": undefined,
-    "stripe_user[first_name]": undefined,
-    "stripe_user[last_name]": undefined,
-    "stripe_user[email]": email || undefined,
-    "stripe_user[country]": country || undefined,
+    'stripe_user[business_type]': 'individual',
+    'stripe_user[business_name]': undefined,
+    'stripe_user[first_name]': undefined,
+    'stripe_user[last_name]': undefined,
+    'stripe_user[email]': userEmail || undefined,
+    'stripe_user[country]': userCountry || undefined,
   };
 
   // If we're suggesting this account have the `card_payments` capability,
@@ -199,13 +203,13 @@ export const onboardUser = async ({ req, res, country, email }) => {
 
 export const assignStripeId = async ({ sessionState, queryState, session }) => {
   if (sessionState != queryState)
-    throw createError(500, "There was an error in the onboarding process");
+    throw createError(500, 'There was an error in the onboarding process');
 
   const formData = new FormData();
-  formData.append("grant_type", "authorization_code");
-  formData.append("client_id", processor.clientId);
-  formData.append("client_secret", processor.secretKey);
-  formData.append("code", req.query.code);
+  formData.append('grant_type', 'authorization_code');
+  formData.append('client_id', processor.clientId);
+  formData.append('client_secret', processor.secretKey);
+  formData.append('code', req.query.code);
 
   const expressAuthorized = await axios.post(processor.tokenUri, formData, {
     headers: formData.getHeaders(),
@@ -237,27 +241,27 @@ export const createPayout = async ({ userId, session }) => {
     });
     const { amount, currency } = balance.available[0];
     await constructStripePayout({
-      amount,
-      currency,
-      descriptor: server.appName,
+      payoutAmount: amount,
+      payoutCurrency: currency,
+      payoutDescriptor: server.appName,
       stripeId: foundUser.stripeId,
       session,
     });
     return {
-      message: "Payout successfully created",
+      message: 'Payout successfully created',
     };
   }
-  throw createError(400, "Cannot create payout for this user");
+  throw createError(400, 'Cannot create payout for this user');
 };
 
-const processTransaction = async ({ intent, session }) => {
-  const orderData = JSON.parse(intent.metadata.orderData);
+const processTransaction = async ({ stripeIntent, session }) => {
+  const orderData = JSON.parse(stripeIntent.metadata.orderData);
   const buyerId = mongoose.Types.ObjectId(orderData.buyerId);
   const sellerId = mongoose.Types.ObjectId(orderData.sellerId);
   const artworkId = mongoose.Types.ObjectId(orderData.artworkId);
   const versionId = mongoose.Types.ObjectId(orderData.versionId);
   const discountId = mongoose.Types.ObjectId(orderData.discountId);
-  const intentId = intent.id;
+  const intentId = stripeIntent.id;
   const licenseSet = [];
   const licenseIds = [];
   for (let license of orderData) {
@@ -273,7 +277,7 @@ const processTransaction = async ({ intent, session }) => {
     const newLicense = new License();
     newLicense.owner = buyerId;
     newLicense.artwork = artworkId;
-    newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
+    newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
     newLicense.type = license.licenseType;
     newLicense.active = true;
     newLicense.price = license.licensePrice;
@@ -311,7 +315,7 @@ const processTransaction = async ({ intent, session }) => {
     spent: orderData.spent,
     earned: orderData.earned,
     fee: orderData.fee,
-    status: "completed",
+    status: 'completed',
     intent: intentId,
   };
   const savedOrder = await addNewOrder({ orderData: orderObject, session });
@@ -324,7 +328,7 @@ const processTransaction = async ({ intent, session }) => {
   // new start
   await addNewNotification({
     notificationLink: savedOrder._id,
-    notificationType: "order",
+    notificationType: 'order',
     notificationReceiver: sellerId,
     session,
   });

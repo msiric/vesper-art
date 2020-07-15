@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 import {
   createAccessToken,
   createRefreshToken,
   sendRefreshToken,
-} from "../utils/auth.js";
-import randomString from "randomstring";
-import bcrypt from "bcrypt-nodejs";
-import crypto from "crypto";
-import { sendEmail } from "../utils/email.js";
-import { server } from "../config/secret.js";
+} from '../utils/auth.js';
+import randomString from 'randomstring';
+import bcrypt from 'bcrypt-nodejs';
+import crypto from 'crypto';
+import { sendEmail } from '../utils/email.js';
+import { server } from '../config/secret.js';
 import {
   logUserOut,
   refreshAccessToken,
@@ -16,71 +16,82 @@ import {
   editUserResetToken,
   editUserVerification,
   addNewUser,
-} from "../services/auth.js";
-import signupValidator from "../validation/signup.js";
-import loginValidator from "../validation/login.js";
-import emailValidator from "../validation/email.js";
-import resetValidator from "../validation/reset.js";
-import { sanitizeData } from "../utils/helpers.js";
-import { fetchUserByCreds, editUserPassword } from "../services/user.js";
-import createError from "http-errors";
+} from '../services/auth.js';
+import signupValidator from '../validation/signup.js';
+import loginValidator from '../validation/login.js';
+import emailValidator from '../validation/email.js';
+import resetValidator from '../validation/reset.js';
+import { sanitizeData } from '../utils/helpers.js';
+import { fetchUserByCreds, editUserPassword } from '../services/user.js';
+import createError from 'http-errors';
 
 // needs transaction (not tested)
 export const postSignUp = async ({
-  email,
-  username,
-  password,
-  confirm,
+  userEmail,
+  userUsername,
+  userPassword,
+  userConfirm,
   session,
 }) => {
   const { error } = signupValidator(
     sanitizeData({
-      userEmail: email,
-      userUsername: username,
-      userPassword: password,
-      confirmedPassword: confirm,
+      userEmail,
+      userUsername,
+      userPassword,
+      userConfirm,
     })
   );
   if (error) throw createError(400, error);
-  const foundUser = await fetchUserByCreds({ username, session });
+  const foundUser = await fetchUserByCreds({ userUsername, session });
   if (foundUser) {
-    throw createError(400, "Account with that email/username already exists");
+    throw createError(400, 'Account with that email/username already exists');
   } else {
-    const token = randomString.generate();
-    const link = `${server.clientDomain}/verify_token/${token}`;
-    await addNewUser({ email, username, password, token, session });
-    await sendEmail(
-      server.appName,
-      email,
-      "Please confirm your email",
-      `Hello,
+    const verificationToken = randomString.generate();
+    const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
+    await addNewUser({
+      userEmail,
+      userUsername,
+      userPassword,
+      verificationToken,
+      session,
+    });
+    await sendEmail({
+      emailSender: server.appName,
+      emailReceiver: userEmail,
+      emailSubject: 'Please confirm your email',
+      emailContent: `Hello,
         Please click on the link to verify your email:
 
-        <a href=${link}>Click here to verify</a>`
-    );
-    return { message: "Verify your email address" };
+        <a href=${verificationLink}>Click here to verify</a>`,
+    });
+    return { message: 'Verify your email address' };
   }
 };
 
-export const postLogIn = async ({ username, password, res, session }) => {
+export const postLogIn = async ({
+  userUsername,
+  userPassword,
+  res,
+  session,
+}) => {
   const { error } = loginValidator(
-    sanitizeData({ userUsername: username, userPassword: password })
+    sanitizeData({ userUsername, userPassword })
   );
   if (error) throw createError(400, error);
-  const foundUser = await fetchUserByCreds({ username, session });
+  const foundUser = await fetchUserByCreds({ userUsername, session });
   if (!foundUser) {
-    throw createError(400, "Account with provided credentials does not exist");
+    throw createError(400, 'Account with provided credentials does not exist');
   } else if (!foundUser.active) {
-    throw createError(400, "This account is no longer active");
+    throw createError(400, 'This account is no longer active');
   } else if (!foundUser.verified) {
-    throw createError(400, "Please verify your account");
+    throw createError(400, 'Please verify your account');
   } else {
-    const valid = bcrypt.compareSync(password, foundUser.password);
+    const valid = bcrypt.compareSync(userPassword, foundUser.password);
 
     if (!valid) {
       throw createError(
         400,
-        "Account with provided credentials does not exist"
+        'Account with provided credentials does not exist'
       );
     }
 
@@ -107,10 +118,10 @@ export const postLogIn = async ({ username, password, res, session }) => {
       jwtVersion: foundUser.jwtVersion,
     };
 
-    sendRefreshToken(res, createRefreshToken(tokenPayload));
+    sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
 
     return {
-      accessToken: createAccessToken(tokenPayload),
+      accessToken: createAccessToken({ userData: tokenPayload }),
       user: userInfo,
     };
   }
@@ -126,53 +137,55 @@ export const postRefreshToken = async ({ req, res, next }) => {
 
 export const postRevokeToken = async ({ userId }) => {
   await revokeAccessToken({ userId });
-  return { message: "Token successfully revoked" };
+  return { message: 'Token successfully revoked' };
 };
 
 // needs transaction (not tested)
 export const verifyRegisterToken = async ({ tokenId }) => {
   await editUserVerification({ tokenId });
-  return { message: "Token successfully verified" };
+  return { message: 'Token successfully verified' };
 };
 
-export const forgotPassword = async ({ email, session }) => {
-  const { error } = emailValidator(sanitizeData({ userEmail: email }));
+export const forgotPassword = async ({ userEmail, session }) => {
+  const { error } = emailValidator(sanitizeData({ userEmail }));
   if (error) throw createError(400, error);
   crypto.randomBytes(20, async function (err, buf) {
-    const token = buf.toString("hex");
-    await editUserResetToken({ email, token, session });
-    await sendEmail(
-      server.appName,
-      email,
-      "Reset your password",
-      `You are receiving this because you have requested to reset the password for your account.
-        Please click on the following link, or paste this into your browser to complete the process:
-        
-        <a href="${server.clientDomain}/reset_password/${token}"</a>`
-    );
-    return { message: "Password reset" };
+    const resetToken = buf.toString('hex');
+    await editUserResetToken({ userEmail, resetToken, session });
+    await sendEmail({
+      emailSender: server.appName,
+      emailReceiver: userEmail,
+      emailSubject: 'Reset your password',
+      emailContent: `You are receiving this because you have requested to reset the password for your account.
+          Please click on the following link, or paste this into your browser to complete the process:
+          
+          <a href="${server.clientDomain}/reset_password/${token}"</a>`,
+    });
+    return { message: 'Password reset' };
   });
 };
 
 // needs transaction (not tested)
 export const resetPassword = async ({
   tokenId,
-  password,
-  confirm,
+  userPassword,
+  userConfirm,
   session,
 }) => {
-  const { error } = resetValidator(
-    sanitizeData({ newPassword: password, confirmedPassword: confirm })
-  );
+  const { error } = resetValidator(sanitizeData({ userPassword, userConfirm }));
   if (error) throw createError(400, error);
-  const updatedUser = await editUserPassword({ tokenId, password, session });
-  await sendEmail(
-    server.appName,
-    updatedUser.email,
-    "Password change",
-    `You are receiving this because you just changed your password.
+  const updatedUser = await editUserPassword({
+    tokenId,
+    userPassword,
+    session,
+  });
+  await sendEmail({
+    emailSender: server.appName,
+    emailReceiver: updatedUser.email,
+    emailSubject: 'Password change',
+    emailContent: `You are receiving this because you just changed your password.
         
-      If you did not request this, please contact us immediately.`
-  );
-  return { message: "Password reset" };
+      If you did not request this, please contact us immediately.`,
+  });
+  return { message: 'Password reset' };
 };

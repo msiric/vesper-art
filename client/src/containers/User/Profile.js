@@ -89,13 +89,13 @@ const Profile = ({ match, enqueueSnackbar }) => {
     scroll: {
       artwork: {
         hasMore: true,
-        cursor: 0,
-        ceiling: 20,
+        dataCursor: 0,
+        dataCeiling: 20,
       },
       saves: {
         hasMore: true,
-        cursor: 0,
-        ceiling: 20,
+        dataCursor: 0,
+        dataCeiling: 20,
       },
     },
   });
@@ -145,13 +145,13 @@ const Profile = ({ match, enqueueSnackbar }) => {
     try {
       const { data } = await getUser({
         username: match.params.id,
-        cursor: state.scroll.artwork.cursor,
-        ceiling: state.scroll.artwork.ceiling,
+        dataCursor: state.scroll.artwork.dataCursor,
+        dataCeiling: state.scroll.artwork.dataCeiling,
       });
       // const {
       //   data: { artwork },
       // } = await ax.get(
-      //   `/api/user/${user._id}/artwork?cursor=${state.cursor}&ceiling=${state.ceiling}`
+      //   `/api/user/${user._id}/artwork?dataCursor=${state.dataCursor}&dataCeiling=${state.dataCeiling}`
       // );
       if (store.user.id === data.user._id) {
         setState({
@@ -163,11 +163,12 @@ const Profile = ({ match, enqueueSnackbar }) => {
             artwork: {
               ...state.scroll.artwork,
               hasMore:
-                data.artwork.length < state.scroll.artwork.ceiling
+                data.artwork.length < state.scroll.artwork.dataCeiling
                   ? false
                   : true,
-              cursor:
-                state.scroll.artwork.cursor + state.scroll.artwork.ceiling,
+              dataCursor:
+                state.scroll.artwork.dataCursor +
+                state.scroll.artwork.dataCeiling,
             },
           },
         });
@@ -181,11 +182,12 @@ const Profile = ({ match, enqueueSnackbar }) => {
             artwork: {
               ...state.scroll.artwork,
               hasMore:
-                data.artwork.length < state.scroll.artwork.ceiling
+                data.artwork.length < state.scroll.artwork.dataCeiling
                   ? false
                   : true,
-              cursor:
-                state.scroll.artwork.cursor + state.scroll.artwork.ceiling,
+              dataCursor:
+                state.scroll.artwork.dataCursor +
+                state.scroll.artwork.dataCeiling,
             },
           },
         });
@@ -243,8 +245,8 @@ const Profile = ({ match, enqueueSnackbar }) => {
     try {
       const { data } = await getArtwork({
         userId: state.user._id,
-        cursor: state.scroll.artwork.cursor,
-        ceiling: state.scroll.artwork.ceiling,
+        dataCursor: state.scroll.artwork.dataCursor,
+        dataCeiling: state.scroll.artwork.dataCeiling,
       });
       setState((prevState) => ({
         ...prevState,
@@ -258,8 +260,12 @@ const Profile = ({ match, enqueueSnackbar }) => {
           artwork: {
             ...state.scroll.artwork,
             hasMore:
-              data.artwork.length < state.scroll.artwork.ceiling ? false : true,
-            cursor: state.scroll.artwork.cursor + state.scroll.artwork.ceiling,
+              data.artwork.length < state.scroll.artwork.dataCeiling
+                ? false
+                : true,
+            dataCursor:
+              state.scroll.artwork.dataCursor +
+              state.scroll.artwork.dataCeiling,
           },
         },
       }));
@@ -272,8 +278,8 @@ const Profile = ({ match, enqueueSnackbar }) => {
     try {
       const { data } = await getSaves({
         userId: state.user._id,
-        cursor: state.scroll.saves.cursor,
-        ceiling: state.scroll.saves.ceiling,
+        dataCursor: state.scroll.saves.dataCursor,
+        dataCeiling: state.scroll.saves.dataCeiling,
       });
       setState((prevState) => ({
         ...prevState,
@@ -288,8 +294,9 @@ const Profile = ({ match, enqueueSnackbar }) => {
           saves: {
             ...state.scroll.saves,
             hasMore:
-              data.saves.length < state.scroll.saves.ceiling ? false : true,
-            cursor: state.scroll.saves.cursor + state.scroll.saves.ceiling,
+              data.saves.length < state.scroll.saves.dataCeiling ? false : true,
+            dataCursor:
+              state.scroll.saves.dataCursor + state.scroll.saves.dataCeiling,
           },
         },
       }));

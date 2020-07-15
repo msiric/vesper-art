@@ -1,21 +1,32 @@
 import { ax } from '../containers/Interceptor/Interceptor.js';
 
-export const getUser = async ({ username, cursor, ceiling }) =>
-  await ax.get(`/api/user/${username}?cursor=${cursor}&ceiling=${ceiling}`);
+export const getUser = async ({ username, dataCursor, dataCeiling }) =>
+  await ax.get(
+    `/api/user/${username}?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+  );
 export const getStatistics = async ({ userId }) =>
   await ax.get(`/api/user/${userId}/statistics`);
-export const getSelection = async ({ userId, display, from, to }) =>
-  await ax.get(`/api/user/${userId}/${display}?from=${from}&to=${to}`);
+export const getSelection = async ({
+  userId,
+  displayType,
+  rangeFrom,
+  rangeTo,
+}) =>
+  await ax.get(
+    `/api/user/${userId}/${displayType}?from=${rangeFrom}&to=${rangeTo}`
+  );
 export const patchUser = async ({ userId, data }) =>
   await ax.patch(`/api/user/${userId}`, data);
 export const postMedia = async ({ data }) =>
   await ax.post('/api/profile_image_upload', data);
-export const getArtwork = async ({ userId, cursor, ceiling }) =>
+export const getArtwork = async ({ userId, dataCursor, dataCeiling }) =>
   await ax.get(
-    `/api/user/${userId}/artwork?cursor=${cursor}&ceiling=${ceiling}`
+    `/api/user/${userId}/artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
   );
-export const getSaves = async ({ userId, cursor, ceiling }) =>
-  await ax.get(`/api/user/${userId}/saves?cursor=${cursor}&ceiling=${ceiling}`);
+export const getSaves = async ({ userId, dataCursor, dataCeiling }) =>
+  await ax.get(
+    `/api/user/${userId}/saves?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+  );
 export const getSettings = async ({ userId }) =>
   await ax.get(`/api/user/${userId}/settings`);
 export const deleteUser = async ({ userId }) =>
@@ -28,9 +39,9 @@ export const patchPreferences = async ({ userId, data }) =>
   await ax.patch(`/api/user/${userId}/preferences`, data);
 export const patchBilling = async ({ userId, data }) =>
   await ax.patch(`/api/user/${userId}/billing`, data);
-export const getNotifications = async ({ userId, cursor, ceiling }) =>
+export const getNotifications = async ({ userId, dataCursor, dataCeiling }) =>
   await ax.get(
-    `/api/user/${userId}/notifications?cursor=${cursor}&ceiling=${ceiling}`
+    `/api/user/${userId}/notifications?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
   );
 export const postLogout = async () =>
   await ax.post('/api/auth/logout', {

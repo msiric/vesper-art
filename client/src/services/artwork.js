@@ -4,21 +4,23 @@ export const postMedia = async ({ data }) =>
   await ax.post('/api/artwork_media_upload', data);
 export const postArtwork = async ({ data }) =>
   await ax.post('/api/add_artwork', data);
-export const getArtwork = async ({ cursor, ceiling }) =>
-  cursor && ceiling
-    ? await ax.get(`/api/artwork?cursor=${cursor}&ceiling=${ceiling}`)
-    : await ax.get(`/api/artwork`);
-export const getDetails = async ({ artworkId, cursor, ceiling }) =>
-  cursor && ceiling
+export const getArtwork = async ({ dataCursor, dataCeiling }) =>
+  dataCursor && dataCeiling
     ? await ax.get(
-        `/api/artwork/${artworkId}?cursor=${cursor}&ceiling=${ceiling}`
+        `/api/artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+      )
+    : await ax.get(`/api/artwork`);
+export const getDetails = async ({ artworkId, dataCursor, dataCeiling }) =>
+  dataCursor && dataCeiling
+    ? await ax.get(
+        `/api/artwork/${artworkId}?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
       )
     : await ax.get(`/api/artwork/${artworkId}`);
 export const deleteComment = async ({ artworkId, commentId }) =>
   await ax.delete(`/api/artwork/${artworkId}/comment/${commentId}`);
-export const getComments = async ({ artworkId, cursor, ceiling }) =>
+export const getComments = async ({ artworkId, dataCursor, dataCeiling }) =>
   await ax.get(
-    `/api/artwork/${artworkId}/comments?cursor=${cursor}&ceiling=${ceiling}`
+    `/api/artwork/${artworkId}/comments?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
   );
 export const patchComment = async ({ artworkId, commentId, data }) =>
   await ax.patch(`/api/artwork/${artworkId}/comment/${commentId}`, data);

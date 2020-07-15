@@ -11,52 +11,52 @@ aws.config.update({
   region: process.env.S3_REGION,
 });
 
-export const userS3Upload = async ({ path, filename }) => {
-  const sharpMedia = await sharp(path).toBuffer();
+export const userS3Upload = async ({ filePath, fileName }) => {
+  const sharpMedia = await sharp(filePath).toBuffer();
   const userMediaPath = await uploadS3Object({
     file: sharpMedia,
     folder: 'userMedia',
-    filename,
+    fileName,
   });
   return { media: userMediaPath };
 };
 
-export const artworkS3Upload = async ({ path, filename }) => {
-  const sharpMedia = await sharp(path).toBuffer();
-  const sharpCover = await sharp(path)
+export const artworkS3Upload = async ({ filePath, fileName }) => {
+  const sharpMedia = await sharp(filePath).toBuffer();
+  const sharpCover = await sharp(filePath)
     .resize(upload.artwork.fileTransform)
     .toBuffer();
   const artworkCoverPath = await uploadS3Object({
-    file: sharpCover,
-    folder: 'artworkCovers',
-    filename,
+    fileContent: sharpCover,
+    folderName: 'artworkCovers',
+    fileName,
   });
   const artworkMediaPath = await uploadS3Object({
-    file: sharpMedia,
-    folder: 'artworkMedia',
-    filename,
+    fileContent: sharpMedia,
+    folderName: 'artworkMedia',
+    fileName,
   });
   return { cover: artworkCoverPath, media: artworkMediaPath };
 };
 
-export const verifyDimensions = async ({ path, type }) => {
-  const readFile = await fs.promises.readFile(path);
+export const verifyDimensions = async ({ filePath, fileType }) => {
+  const readFile = await fs.promises.readFile(filePath);
   const dimensions = await imageSize(readFile);
   return {
     valid: dimensionsFilter({
-      height: dimensions.height,
-      width: dimensions.width,
-      type,
+      fileHeight: dimensions.height,
+      fileWidth: dimensions.width,
+      fileType,
     }),
     dimensions,
   };
 };
 
-export const deleteFileLocally = async ({ path }) => {
-  await fs.promises.unlink(path);
+export const deleteFileLocally = async ({ filePath }) => {
+  await fs.promises.unlink(filePath);
 };
 
-export const finalizeMediaUpload = async ({ path, filename, type }) => {
+export const finalizeMediaUpload = async ({ filePath, fileName, fileType }) => {
   const artworkUpload = {
     artworkCover: '',
     artworkMedia: '',
@@ -64,18 +64,18 @@ export const finalizeMediaUpload = async ({ path, filename, type }) => {
     artworkWidth: '',
   };
   // $TODO Verify that the user uploading the photo is valid and check its id
-  if (path && filename) {
-    const verifiedInput = await verifyDimensions({ path, type });
+  if (filePath && fileName) {
+    const verifiedInput = await verifyDimensions({ filePath, fileType });
     if (verifiedInput.valid) {
-      const { cover, media } = await artworkS3Upload({ path, filename });
-      deleteFileLocally({ path });
+      const { cover, media } = await artworkS3Upload({ filePath, fileName });
+      deleteFileLocally({ filePath });
       artworkUpload.artworkCover = cover;
       artworkUpload.artworkMedia = media;
       artworkUpload.artworkHeight = verifiedInput.dimensions.height;
       artworkUpload.artworkWidth = verifiedInput.dimensions.width;
       return artworkUpload;
     }
-    deleteFileLocally({ path });
+    deleteFileLocally({ filePath });
     throw createError(400, 'File dimensions are not valid');
   } else {
     return artworkUpload;
@@ -100,31 +100,29 @@ export const userFileFilter = (req, file, cb) => {
     );
 };
 
-export const dimensionsFilter = ({ height, width, type }) => {
+export const dimensionsFilter = ({ fileHeight, fileWidth, fileType }) => {
   if (
-    height < upload[type].fileDimensions.height ||
-    width < upload[type].fileDimensions.width
+    fileHeight < upload[fileType].fileDimensions.height ||
+    fileWidth < upload[fileType].fileDimensions.width
   )
     return false;
   return true;
 };
 
-export const uploadS3Object = async ({ file, folder, filename }) => {
-  const fullPath = `${folder}/${filename}`;
+export const uploadS3Object = async ({ fileContent, folderName, fileName }) => {
+  const fullPath = `${folderName}/${fileName}`;
   const s3 = new aws.S3();
   const params = {
     Bucket: process.env.S3_BUCKET,
     Key: fullPath,
-    Body: file,
+    Body: fileContent,
     ACL: 'public-read',
   };
   const uploadedFile = await s3.upload(params).promise();
   return uploadedFile.Location;
 };
 
-export const deleteS3Object = async ({ link, folder }) => {
-  const fileLink = link;
-  const folderName = folder;
+export const deleteS3Object = async ({ fileLink, folderName }) => {
   const fileName = fileLink.split('/').slice(-1)[0];
   const filePath = folderName + fileName;
   const s3 = new aws.S3();

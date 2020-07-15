@@ -68,8 +68,8 @@ const ArtworkDetails = ({ match, socket }) => {
     scroll: {
       comments: {
         hasMore: true,
-        cursor: 0,
-        ceiling: 20,
+        dataCursor: 0,
+        dataCeiling: 20,
       },
     },
   });
@@ -80,8 +80,8 @@ const ArtworkDetails = ({ match, socket }) => {
     try {
       const { data } = await getDetails({
         artworkId: match.params.id,
-        cursor: state.scroll.comments.cursor,
-        ceiling: state.scroll.comments.ceiling,
+        dataCursor: state.scroll.comments.dataCursor,
+        dataCeiling: state.scroll.comments.dataCeiling,
       });
       setState({
         ...state,
@@ -92,11 +92,12 @@ const ArtworkDetails = ({ match, socket }) => {
           comments: {
             ...state.scroll.comments,
             hasMore:
-              data.artwork.comments.length < state.scroll.comments.ceiling
+              data.artwork.comments.length < state.scroll.comments.dataCeiling
                 ? false
                 : true,
-            cursor:
-              state.scroll.comments.cursor + state.scroll.comments.ceiling,
+            dataCursor:
+              state.scroll.comments.dataCursor +
+              state.scroll.comments.dataCeiling,
           },
         },
       });
@@ -208,8 +209,8 @@ const ArtworkDetails = ({ match, socket }) => {
     try {
       const { data } = await getComments({
         artworkId: state.artwork._id,
-        cursor: state.scroll.comments.cursor,
-        ceiling: state.scroll.comments.ceiling,
+        dataCursor: state.scroll.comments.dataCursor,
+        dataCeiling: state.scroll.comments.dataCeiling,
       });
       setState((prevState) => ({
         ...prevState,
@@ -223,11 +224,12 @@ const ArtworkDetails = ({ match, socket }) => {
           comments: {
             ...state.scroll.comments,
             hasMore:
-              data.comments.length < state.scroll.comments.ceiling
+              data.comments.length < state.scroll.comments.dataCeiling
                 ? false
                 : true,
-            cursor:
-              state.scroll.comments.cursor + state.scroll.comments.ceiling,
+            dataCursor:
+              state.scroll.comments.dataCursor +
+              state.scroll.comments.dataCeiling,
           },
         },
       }));

@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../Store/Store.js";
+import React, { useContext, useState, useEffect } from 'react';
+import { Context } from '../Store/Store.js';
 import {
   Container,
   Grid,
@@ -15,15 +15,15 @@ import {
   InputLabel,
   Select,
   MenuItem,
-} from "@material-ui/core";
-import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
-import { LocalizationProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
-import { format, eachDayOfInterval, subDays } from "date-fns";
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
-import NumberFormat from "react-number-format";
-import DashboardStyles from "./Dashboard.style.js";
-import { getStatistics, getSelection } from "../../services/user.js";
+} from '@material-ui/core';
+import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker.js';
+import { LocalizationProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
+import { format, eachDayOfInterval, subDays } from 'date-fns';
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import NumberFormat from 'react-number-format';
+import DashboardStyles from './Dashboard.style.js';
+import { getStatistics, getSelection } from '../../services/user.js';
 
 function Dashboard() {
   const [store, dispatch] = useContext(Context);
@@ -39,8 +39,8 @@ function Dashboard() {
     currentStats: {},
     selectedStats: {},
     display: {
-      type: "purchases",
-      label: "spent",
+      type: 'purchases',
+      label: 'spent',
     },
     dates: [new Date(subDays(new Date(), 7)), new Date()],
     visualization: false,
@@ -79,9 +79,9 @@ function Dashboard() {
       setState({ ...state, loading: true });
       const { data } = await getSelection({
         userId: store.user.id,
-        display: state.display.type,
-        from,
-        to,
+        displayType: state.display.type,
+        rangeFrom: from,
+        rangeTo: to,
       });
       const selectedStats = {
         [state.display.label]: data.statistics.length
@@ -98,36 +98,36 @@ function Dashboard() {
       });
       const graphData = {};
       for (let date of datesArray) {
-        graphData[formatDate(date, "dd/MM/yyyy")] = {
+        graphData[formatDate(date, 'dd/MM/yyyy')] = {
           pl: 0,
           cl: 0,
         };
       }
       data.statistics.map((item) => {
         item.licenses.map((license) => {
-          if (license.type === "personal") {
+          if (license.type === 'personal') {
             selectedStats.licenses.personal++;
-            if (graphData[formatDate(item.created, "dd/MM/yyyy")]) {
-              graphData[formatDate(item.created, "dd/MM/yyyy")] = {
-                ...graphData[formatDate(item.created, "dd/MM/yyyy")],
-                pl: graphData[formatDate(item.created, "dd/MM/yyyy")].pl + 1,
+            if (graphData[formatDate(item.created, 'dd/MM/yyyy')]) {
+              graphData[formatDate(item.created, 'dd/MM/yyyy')] = {
+                ...graphData[formatDate(item.created, 'dd/MM/yyyy')],
+                pl: graphData[formatDate(item.created, 'dd/MM/yyyy')].pl + 1,
               };
             } else {
               graphData.push({
-                date: formatDate(item.created, "dd/MM/yyyy"),
+                date: formatDate(item.created, 'dd/MM/yyyy'),
                 pl: 1,
               });
             }
           } else {
             selectedStats.licenses.commercial++;
-            if (graphData[formatDate(item.created, "dd/MM/yyyy")]) {
-              graphData[formatDate(item.created, "dd/MM/yyyy")] = {
-                ...graphData[formatDate(item.created, "dd/MM/yyyy")],
-                cl: graphData[formatDate(item.created, "dd/MM/yyyy")].cl + 1,
+            if (graphData[formatDate(item.created, 'dd/MM/yyyy')]) {
+              graphData[formatDate(item.created, 'dd/MM/yyyy')] = {
+                ...graphData[formatDate(item.created, 'dd/MM/yyyy')],
+                cl: graphData[formatDate(item.created, 'dd/MM/yyyy')].cl + 1,
               };
             } else {
               graphData.push({
-                date: formatDate(item.created, "dd/MM/yyyy"),
+                date: formatDate(item.created, 'dd/MM/yyyy'),
                 cl: 1,
               });
             }
@@ -156,7 +156,7 @@ function Dashboard() {
       ...prevState,
       display: {
         type: e.target.value,
-        label: e.target.value === "purchases" ? "spent" : "earned",
+        label: e.target.value === 'purchases' ? 'spent' : 'earned',
       },
     }));
   };
@@ -175,8 +175,8 @@ function Dashboard() {
 
   useEffect(() => {
     if (state.dates[0] && state.dates[1]) {
-      const dateFrom = formatDate(new Date(state.dates[0]), "MM/dd/yyyy");
-      const dateTo = formatDate(new Date(state.dates[1]), "MM/dd/yyyy");
+      const dateFrom = formatDate(new Date(state.dates[0]), 'MM/dd/yyyy');
+      const dateTo = formatDate(new Date(state.dates[1]), 'MM/dd/yyyy');
       fetchSelectedData(dateFrom, dateTo);
     }
   }, [state.dates, state.display.type]);
@@ -222,7 +222,7 @@ function Dashboard() {
                   <Grid item xs={12} className={classes.loader}>
                     <CircularProgress />
                   </Grid>
-                ) : state.display.type === "purchases" ? (
+                ) : state.display.type === 'purchases' ? (
                   <div className={classes.boxData}>
                     <Typography className={classes.boxMain}>
                       {state.currentStats.licenses}
@@ -237,7 +237,7 @@ function Dashboard() {
                 ) : (
                   <div className={classes.boxData}>
                     <Typography className={classes.boxMain}>
-                      {state.currentStats.review || "No reviews"}
+                      {state.currentStats.review || 'No reviews'}
                     </Typography>
                     <Typography
                       className={classes.boxAlt}
@@ -293,10 +293,10 @@ function Dashboard() {
                     <Typography className={classes.boxMain}>
                       <NumberFormat
                         value={state.currentStats[state.display.label]}
-                        displayType={"text"}
+                        displayType={'text'}
                         thousandSeparator={true}
                         decimalScale={2}
-                        prefix={"$"}
+                        prefix={'$'}
                       />
                     </Typography>
                     <Typography
@@ -320,8 +320,8 @@ function Dashboard() {
                 <div className={classes.actionsContainer}>
                   <Typography className={classes.actionsHeading}>
                     {state.visualization
-                      ? "Visualization"
-                      : "Select date range"}
+                      ? 'Visualization'
+                      : 'Select date range'}
                   </Typography>
                   <DateRangePicker
                     fromLabel="From"
@@ -355,7 +355,7 @@ function Dashboard() {
                               <XAxis dataKey="date" />
                               <YAxis
                                 allowDecimals={false}
-                                domain={["dataMin", "dataMax"]}
+                                domain={['dataMin', 'dataMax']}
                               />
                               <Tooltip />
                               <Legend />
@@ -392,11 +392,11 @@ function Dashboard() {
                                   value={
                                     state.selectedStats[state.display.label]
                                   }
-                                  displayType={"text"}
+                                  displayType={'text'}
                                   thousandSeparator={true}
                                   decimalScale={2}
                                   decimalScale={2}
-                                  prefix={"$"}
+                                  prefix={'$'}
                                 />
                               </Typography>
                               <Typography

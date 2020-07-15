@@ -1,13 +1,13 @@
-import React, { createContext, useReducer } from "react";
+import React, { createContext, useReducer } from 'react';
 
 const store = {
   main: {
     loading: true,
     error: false,
-    auth: "jwt",
-    brand: "test",
-    theme: "light",
-    search: "artwork",
+    auth: 'jwt',
+    brand: 'test',
+    theme: 'light',
+    search: 'artwork',
   },
   user: {
     authenticated: false,
@@ -28,8 +28,8 @@ const store = {
       items: [],
       count: 0,
       hasMore: true,
-      cursor: 0,
-      ceiling: 10,
+      dataCursor: 0,
+      dataCeiling: 10,
       anchor: null,
       loading: false,
     },
@@ -43,7 +43,7 @@ const store = {
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "setStore":
+    case 'setStore':
       return {
         ...state,
         main: {
@@ -69,7 +69,7 @@ const reducer = (state, action) => {
           country: action.country,
         },
       };
-    case "setMain":
+    case 'setMain':
       return {
         ...state,
         main: {
@@ -81,7 +81,7 @@ const reducer = (state, action) => {
           search: action.search,
         },
       };
-    case "setUser":
+    case 'setUser':
       return {
         ...state,
         user: {
@@ -99,7 +99,7 @@ const reducer = (state, action) => {
           cart: action.cart,
         },
       };
-    case "updateUser":
+    case 'updateUser':
       return {
         ...state,
         user: {
@@ -118,7 +118,7 @@ const reducer = (state, action) => {
           cart: action.cart,
         },
       };
-    case "setSearch":
+    case 'setSearch':
       return {
         ...state,
         main: {
@@ -126,7 +126,7 @@ const reducer = (state, action) => {
           search: action.search,
         },
       };
-    case "resetUser":
+    case 'resetUser':
       return {
         ...state,
         user: {
@@ -148,8 +148,8 @@ const reducer = (state, action) => {
             items: [],
             count: 0,
             hasMore: true,
-            cursor: 0,
-            ceiling: 10,
+            dataCursor: 0,
+            dataCeiling: 10,
             anchor: null,
             loading: false,
           },
@@ -160,7 +160,7 @@ const reducer = (state, action) => {
           },
         },
       };
-    case "updateToken":
+    case 'updateToken':
       return {
         ...state,
         user: {
@@ -168,7 +168,7 @@ const reducer = (state, action) => {
           token: action.token,
         },
       };
-    case "updateCart":
+    case 'updateCart':
       return {
         ...state,
         user: {
@@ -176,7 +176,7 @@ const reducer = (state, action) => {
           cart: action.cart,
         },
       };
-    case "updateSaves":
+    case 'updateSaves':
       return {
         ...state,
         user: {
@@ -184,7 +184,7 @@ const reducer = (state, action) => {
           saved: { ...state.user.saved, ...action.saved },
         },
       };
-    case "updateMessages":
+    case 'updateMessages':
       return {
         ...state,
         user: {
@@ -195,7 +195,7 @@ const reducer = (state, action) => {
           },
         },
       };
-    case "updateNotifications":
+    case 'updateNotifications':
       return {
         ...state,
         user: {
@@ -205,14 +205,14 @@ const reducer = (state, action) => {
             items: action.notifications.items,
             count: state.user.notifications.count + action.notifications.count,
             hasMore: action.notifications.hasMore,
-            cursor: action.notifications.cursor,
-            ceiling: action.notifications.ceiling,
+            dataCursor: action.notifications.dataCursor,
+            dataCeiling: action.notifications.dataCeiling,
             anchor: action.notifications.anchor,
             loading: action.notifications.loading,
           },
         },
       };
-    case "updateEvents":
+    case 'updateEvents':
       return {
         ...state,
         user: {
@@ -221,7 +221,7 @@ const reducer = (state, action) => {
           notifications: action.notifications,
         },
       };
-    case "getState":
+    case 'getState':
       return { ...state };
     default:
       return state;

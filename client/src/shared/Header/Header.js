@@ -138,8 +138,8 @@ const Header = ({ history }) => {
       try {
         const { data } = await getNotifications({
           userId: store.user.id,
-          cursor: store.user.notifications.cursor,
-          ceiling: store.user.notifications.ceiling,
+          dataCursor: store.user.notifications.dataCursor,
+          dataCeiling: store.user.notifications.dataCeiling,
         });
         dispatch({
           type: 'updateNotifications',
@@ -148,12 +148,12 @@ const Header = ({ history }) => {
             items: data.notifications,
             count: 0,
             hasMore:
-              data.notifications.length < store.user.notifications.ceiling
+              data.notifications.length < store.user.notifications.dataCeiling
                 ? false
                 : true,
-            cursor:
-              store.user.notifications.cursor +
-              store.user.notifications.ceiling,
+            dataCursor:
+              store.user.notifications.dataCursor +
+              store.user.notifications.dataCeiling,
             anchor: e.currentTarget,
             loading: false,
           },
@@ -260,8 +260,8 @@ const Header = ({ history }) => {
       });
       const { data } = await getNotifications({
         userId: store.user.id,
-        cursor: store.user.notifications.cursor,
-        ceiling: store.user.notifications.ceiling,
+        dataCursor: store.user.notifications.dataCursor,
+        dataCeiling: store.user.notifications.dataCeiling,
       });
       dispatch({
         type: 'updateNotifications',
@@ -270,11 +270,12 @@ const Header = ({ history }) => {
           items: [...store.user.notifications.items].concat(data.notifications),
           count: 0,
           hasMore:
-            data.notifications.length < store.user.notifications.ceiling
+            data.notifications.length < store.user.notifications.dataCeiling
               ? false
               : true,
-          cursor:
-            store.user.notifications.cursor + store.user.notifications.ceiling,
+          dataCursor:
+            store.user.notifications.dataCursor +
+            store.user.notifications.dataCeiling,
           loading: false,
         },
       });

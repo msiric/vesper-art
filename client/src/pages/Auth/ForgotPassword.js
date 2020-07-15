@@ -1,7 +1,8 @@
-/* import React from "react";
-import ForgotPasswordForm from "../../containers/Auth/ForgotPasswordForm.js";
+import React from 'react';
+import ForgotPasswordForm from '../../containers/Auth/ForgotPasswordForm.js';
 
 const ForgotPassword = () => {
+  const classes = {};
   return (
     <div className={classes.container}>
       <ForgotPasswordForm />
@@ -10,4 +11,3 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
- */
