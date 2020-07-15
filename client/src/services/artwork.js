@@ -5,13 +5,13 @@ export const postMedia = async ({ data }) =>
 export const postArtwork = async ({ data }) =>
   await ax.post('/api/add_artwork', data);
 export const getArtwork = async ({ dataCursor, dataCeiling }) =>
-  dataCursor && dataCeiling
+  typeof dataCursor !== 'undefined' && typeof dataCeiling !== 'undefined'
     ? await ax.get(
         `/api/artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
       )
     : await ax.get(`/api/artwork`);
 export const getDetails = async ({ artworkId, dataCursor, dataCeiling }) =>
-  dataCursor && dataCeiling
+  typeof dataCursor !== 'undefined' && typeof dataCeiling !== 'undefined'
     ? await ax.get(
         `/api/artwork/${artworkId}?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
       )
