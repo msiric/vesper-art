@@ -1,4 +1,4 @@
-import { ax } from '../containers/Interceptor/Interceptor.js';
+import { ax } from "../containers/Interceptor/Interceptor.js";
 
 export const getUser = async ({ username, dataCursor, dataCeiling }) =>
   await ax.get(
@@ -13,12 +13,12 @@ export const getSelection = async ({
   rangeTo,
 }) =>
   await ax.get(
-    `/api/user/${userId}/${displayType}?from=${rangeFrom}&to=${rangeTo}`
+    `/api/user/${userId}/${displayType}?rangeFrom=${rangeFrom}&rangeTo=${rangeTo}`
   );
 export const patchUser = async ({ userId, data }) =>
   await ax.patch(`/api/user/${userId}`, data);
 export const postMedia = async ({ data }) =>
-  await ax.post('/api/profile_image_upload', data);
+  await ax.post("/api/profile_image_upload", data);
 export const getArtwork = async ({ userId, dataCursor, dataCeiling }) =>
   await ax.get(
     `/api/user/${userId}/artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
@@ -44,9 +44,9 @@ export const getNotifications = async ({ userId, dataCursor, dataCeiling }) =>
     `/api/user/${userId}/notifications?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
   );
 export const postLogout = async () =>
-  await ax.post('/api/auth/logout', {
+  await ax.post("/api/auth/logout", {
     headers: {
-      credentials: 'include',
+      credentials: "include",
     },
   });
 export const patchRead = async ({ notificationId }) =>
