@@ -1,8 +1,8 @@
 import { ax } from "../containers/Interceptor/Interceptor.js";
 
-export const getUser = async ({ username, dataCursor, dataCeiling }) =>
+export const getUser = async ({ userUsername, dataCursor, dataCeiling }) =>
   await ax.get(
-    `/api/user/${username}?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+    `/api/user/${userUsername}?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
   );
 export const getStatistics = async ({ userId }) =>
   await ax.get(`/api/user/${userId}/statistics`);

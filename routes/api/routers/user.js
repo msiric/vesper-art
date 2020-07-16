@@ -23,7 +23,7 @@ import {
 
 const router = express.Router();
 
-router.route("/user/:username").get(
+router.route("/user/:userUsername").get(
   checkParamsUsername,
   handler(getUserProfile, false, (req, res, next) => ({
     ...req.params,
