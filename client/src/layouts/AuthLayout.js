@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Context } from '../context/Store.js';
 import { Backdrop, CircularProgress } from '@material-ui/core';
+import Footer from '../components/Footer/Footer.js';
 import AuthLayoutStyles from './AuthLayout.style.js';
 
 const AuthLayout = ({ children }) => {
@@ -15,7 +16,10 @@ const AuthLayout = ({ children }) => {
           <CircularProgress color="inherit" />
         </Backdrop>
       ) : (
-        <div className={classes.root}>{children}</div>
+        <>
+          <div className={classes.root}>{children}</div>
+          <Footer />
+        </>
       )}
     </div>
   );

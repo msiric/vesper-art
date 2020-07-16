@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Context } from '../context/Store.js';
 import { Backdrop, CircularProgress } from '@material-ui/core';
 import Header from '../shared/Header/Header.js';
+import Footer from '../components/Footer/Footer.js';
 import MainLayoutStyles from './MainLayout.style.js';
 
 const MainLayout = ({ children }) => {
@@ -19,6 +20,7 @@ const MainLayout = ({ children }) => {
         <>
           <Header />
           {children}
+          <Footer />
         </>
       )}
     </div>
