@@ -34,11 +34,18 @@ import {
 } from 'react-share';
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { postSave, deleteSave } from '../../services/artwork.js';
 import { useTheme } from '@material-ui/core/styles';
 import ArtworkCard from '../../components/ArtworkCard/ArtworkCard.js';
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    minHeight: '86.5vh',
+  },
+}));
 
 const ArtworkPanel = ({
   elements,
@@ -55,7 +62,7 @@ const ArtworkPanel = ({
     },
   });
 
-  const classes = {};
+  const classes = useStyles();
   const theme = useTheme();
 
   const artwork = elements.map((element) =>
@@ -246,7 +253,6 @@ const ArtworkPanel = ({
           columnWidth={upload.artwork.fileTransform.width}
           gutterWidth={0}
           gutterHeight={0}
-          className={classes.test}
         >
           {elements.map((artwork) => (
             <ArtworkCard artwork={artwork} />
