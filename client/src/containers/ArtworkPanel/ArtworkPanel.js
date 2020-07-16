@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Context } from '../../context/Store.js';
 import StackGrid from 'react-stack-grid';
+import { upload } from '../../../../common/constants.js';
 import Modal from '../../shared/Modal/Modal.js';
 import {
   Paper,
@@ -241,7 +242,12 @@ const ArtworkPanel = ({
         </div> */}
 
         {/* specify cover width */}
-        <StackGrid columnWidth={150} gutterWidth={0} gutterHeight={0}>
+        <StackGrid
+          columnWidth={upload.artwork.fileTransform.width}
+          gutterWidth={0}
+          gutterHeight={0}
+          className={classes.test}
+        >
           {elements.map((artwork) => (
             <ArtworkCard artwork={artwork} />
             /*           <div

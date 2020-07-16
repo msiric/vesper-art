@@ -23,7 +23,7 @@ export const fetchActiveArtworks = async ({
     .populate('owner')
     .populate(
       'current',
-      '_id cover created title personal type license availability description use commercial'
+      '_id cover created title personal type license availability description use commercial height width'
     );
 };
 
@@ -58,7 +58,7 @@ export const fetchArtworkDetails = async ({
     .populate('owner')
     .populate(
       'current',
-      '_id cover created title personal type license availability description use commercial'
+      '_id cover created title personal type license availability description use commercial height width'
     );
 };
 
@@ -84,7 +84,7 @@ export const fetchArtworkComments = async ({
     .populate('owner')
     .populate(
       'current',
-      '_id cover created title personal type license availability description use commercial'
+      '_id cover created title personal type license availability description use commercial height width'
     );
 };
 
@@ -110,7 +110,7 @@ export const fetchArtworkReviews = async ({
     .populate('owner')
     .populate(
       'current',
-      '_id cover created title personal type license availability description use commercial'
+      '_id cover created title personal type license availability description use commercial height width'
     );
 };
 
@@ -131,7 +131,7 @@ export const fetchUserArtworks = async ({
     }
   ).populate(
     'current',
-    '_id cover created title personal type license availability description use commercial'
+    '_id cover created title personal type license availability description use commercial height width'
   );
 };
 

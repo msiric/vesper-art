@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import { upload } from '../../../../common/constants.js';
 import Card from '@material-ui/core/Card';
+import Box from '@material-ui/core/Box';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActions from '@material-ui/core/CardActions';
@@ -18,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
   },
   media: {
     height: 0,
-    paddingTop: '56.25%', // 16:9
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -33,42 +34,151 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     backgroundColor: red[500],
   },
+  artworkContainer: {
+    position: 'relative',
+    '&:hover': {
+      '& $artworkHeader': {
+        height: 60,
+      },
+      '& $artworkFooter': {
+        height: 60,
+      },
+    },
+  },
+  artworkHeader: {
+    '& div': {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      overflow: 'hidden',
+      padding: 12,
+    },
+    width: '100%',
+    height: 0,
+    padding: 0,
+    position: 'absolute',
+    top: 0,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    transition: 'height 0.5s',
+    display: 'flex',
+    justifyContent: 'left',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  artworkFooter: {
+    '& button': {
+      color: 'white',
+    },
+    width: '100%',
+    height: 0,
+    padding: 0,
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    transition: 'height 0.5s',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  artworkTitle: {
+    color: 'white',
+    textDecoration: 'none',
+    '&:hover': {
+      textDecoration: 'underline',
+    },
+  },
+  artworkSeller: {
+    color: 'white',
+    textDecoration: 'none',
+    '&:hover': {
+      textDecoration: 'underline',
+    },
+  },
 }));
 
 const ArtworkCard = ({ artwork }) => {
   const classes = useStyles();
 
   return (
-    <Card className={classes.root}>
+    <Card className={classes.artworkContainer}>
       <CardHeader
         title={
-          <Typography component={Link} to={`/artwork/${artwork._id}`}>
+          <Typography
+            noWrap
+            variant="h5"
+            component={Link}
+            to={`/artwork/${artwork._id}`}
+            className={classes.artworkTitle}
+          >
             {artwork.current.title}
           </Typography>
         }
         subheader={
-          <Typography component={Link} to={`/user/${artwork.owner.name}`}>
+          <Typography
+            noWrap
+            variant="body1"
+            component={Link}
+            to={`/user/${artwork.owner.name}`}
+            className={classes.artworkSeller}
+          >
             {artwork.owner.name}
           </Typography>
         }
+        className={classes.artworkHeader}
       />
       <CardMedia
         component={Link}
         to={`/artwork/${artwork._id}`}
         className={classes.media}
+        style={{
+          paddingTop:
+            artwork.current.height /
+            (artwork.current.width / upload.artwork.fileTransform.width),
+          maxWidth: upload.artwork.fileTransform.width,
+        }}
         image={artwork.current.cover}
         title={artwork.title}
       />
-      <CardActions disableSpacing>
-        <IconButton aria-label="Save artwork">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="Share artwork">
-          <ShareIcon />
-        </IconButton>
-        <IconButton aria-label="Artwork price">
-          <Typography>{artwork.current.price}</Typography>
-        </IconButton>
+      <CardActions disableSpacing className={classes.artworkFooter}>
+        <Box>
+          <IconButton
+            aria-label="Save artwork"
+            className={classes.artworkColor}
+          >
+            <FavoriteIcon />
+          </IconButton>
+          <IconButton
+            aria-label="Share artwork"
+            className={classes.artworkColor}
+          >
+            <ShareIcon />
+          </IconButton>
+        </Box>
+        <Box>
+          <IconButton
+            aria-label="Artwork price"
+            className={classes.artworkColor}
+          >
+            <Typography noWrap>
+              {artwork.current.availability === 'unavailable'
+                ? `${
+                    artwork.current.personal
+                      ? `$${artwork.current.personal}`
+                      : ' Free'
+                  }
+                  /
+                    ${
+                      artwork.current.commercial
+                        ? `$${artwork.current.commercial}`
+                        : artwork.current.personal
+                        ? artwork.current.personal
+                        : ' Free'
+                    }`
+                : 'Preview only'}
+            </Typography>
+          </IconButton>
+        </Box>
       </CardActions>
     </Card>
   );
