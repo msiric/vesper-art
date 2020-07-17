@@ -300,91 +300,87 @@ const Profile = ({ match, enqueueSnackbar }) => {
             <Grid item xs={12} md={8} className={classes.grid}>
               {state.user.editable ? (
                 <Paper className={classes.artwork} variant="outlined">
-                  <div className={classes.tabs}>
-                    <AppBar position="static" color="default">
-                      <Tabs
-                        value={state.tabs.value}
-                        onChange={handleTabsChange}
-                        indicatorColor="primary"
-                        textColor="primary"
-                        variant="fullWidth"
-                        aria-label="full width tabs example"
-                      >
-                        <Tab label="User artwork" {...a11yProps(0)} />
-                        <Tab label="Saved artwork" {...a11yProps(1)} />
-                      </Tabs>
-                    </AppBar>
-                    <SwipeableViews
-                      axis="x"
-                      index={state.tabs.value}
-                      onChangeIndex={handleChangeIndex}
+                  <AppBar position="static" color="default">
+                    <Tabs
+                      value={state.tabs.value}
+                      onChange={handleTabsChange}
+                      indicatorColor="primary"
+                      textColor="primary"
+                      variant="fullWidth"
+                      aria-label="full width tabs example"
                     >
-                      <Box hidden={state.tabs.value !== 0}>
-                        {state.user.artwork.length ? (
-                          "s"
-                        ) : (
-                          <Typography variant="h6" align="center">
-                            You have no artwork to display
-                          </Typography>
-                        )}
-                      </Box>
+                      <Tab label="User artwork" {...a11yProps(0)} />
+                      <Tab label="Saved artwork" {...a11yProps(1)} />
+                    </Tabs>
+                  </AppBar>
+                  <SwipeableViews
+                    axis="x"
+                    index={state.tabs.value}
+                    onChangeIndex={handleChangeIndex}
+                  >
+                    <Box hidden={state.tabs.value !== 0}>
+                      {state.user.artwork.length ? (
+                        "s"
+                      ) : (
+                        <Typography variant="h6" align="center">
+                          You have no artwork to display
+                        </Typography>
+                      )}
+                    </Box>
+                    <Box hidden={state.tabs.value !== 1}>
+                      {state.user.savedArtwork.length ? (
+                        "s"
+                      ) : (
+                        <Typography variant="h6" align="center">
+                          You have no saved artwork
+                        </Typography>
+                      )}
+                    </Box>
+                  </SwipeableViews>
+                </Paper>
+              ) : (
+                <Paper className={classes.artwork} variant="outlined">
+                  <AppBar position="static" color="default">
+                    <Tabs
+                      value={state.tabs.value}
+                      onChange={handleTabsChange}
+                      indicatorColor="primary"
+                      textColor="primary"
+                      variant="fullWidth"
+                      aria-label="full width tabs example"
+                    >
+                      <Tab label="User artwork" {...a11yProps(0)} />
+                      {state.user.displaySaves ? (
+                        <Tab label="Saved artwork" {...a11yProps(1)} />
+                      ) : null}
+                    </Tabs>
+                  </AppBar>
+                  <SwipeableViews
+                    axis="x"
+                    index={state.tabs.value}
+                    onChangeIndex={handleChangeIndex}
+                  >
+                    <Box hidden={state.tabs.value !== 0}>
+                      {state.user.artwork.length ? (
+                        "s"
+                      ) : (
+                        <Typography variant="h6" align="center">
+                          This user has no artwork to display
+                        </Typography>
+                      )}
+                    </Box>
+                    {state.user.displaySaves ? (
                       <Box hidden={state.tabs.value !== 1}>
                         {state.user.savedArtwork.length ? (
                           "s"
                         ) : (
                           <Typography variant="h6" align="center">
-                            You have no saved artwork
+                            This user has no saved artwork
                           </Typography>
                         )}
                       </Box>
-                    </SwipeableViews>
-                  </div>
-                </Paper>
-              ) : (
-                <Paper className={classes.artwork} variant="outlined">
-                  <div className={classes.tabs}>
-                    <AppBar position="static" color="default">
-                      <Tabs
-                        value={state.tabs.value}
-                        onChange={handleTabsChange}
-                        indicatorColor="primary"
-                        textColor="primary"
-                        variant="fullWidth"
-                        aria-label="full width tabs example"
-                      >
-                        <Tab label="User artwork" {...a11yProps(0)} />
-                        {state.user.displaySaves ? (
-                          <Tab label="Saved artwork" {...a11yProps(1)} />
-                        ) : null}
-                      </Tabs>
-                    </AppBar>
-                    <SwipeableViews
-                      axis="x"
-                      index={state.tabs.value}
-                      onChangeIndex={handleChangeIndex}
-                    >
-                      <Box hidden={state.tabs.value !== 0}>
-                        {state.user.artwork.length ? (
-                          "s"
-                        ) : (
-                          <Typography variant="h6" align="center">
-                            This user has no artwork to display
-                          </Typography>
-                        )}
-                      </Box>
-                      {state.user.displaySaves ? (
-                        <Box hidden={state.tabs.value !== 1}>
-                          {state.user.savedArtwork.length ? (
-                            "s"
-                          ) : (
-                            <Typography variant="h6" align="center">
-                              This user has no saved artwork
-                            </Typography>
-                          )}
-                        </Box>
-                      ) : null}
-                    </SwipeableViews>
-                  </div>
+                    ) : null}
+                  </SwipeableViews>
                 </Paper>
               )}
             </Grid>
@@ -392,19 +388,14 @@ const Profile = ({ match, enqueueSnackbar }) => {
         ) : (
           history.push("/")
         )}
-        <div>
-          <Modal
-            open={state.modal.open}
-            onClose={handleModalClose}
-            aria-labelledby="Edit info"
-            className={classes.modal}
-          >
-            <EditUserForm
-              user={state.user}
-              handleModalClose={handleModalClose}
-            />
-          </Modal>
-        </div>
+        <Modal
+          open={state.modal.open}
+          onClose={handleModalClose}
+          aria-labelledby="Edit info"
+          className={classes.modal}
+        >
+          <EditUserForm user={state.user} handleModalClose={handleModalClose} />
+        </Modal>
       </Grid>
     </Container>
   );
