@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../../context/Store.js";
+import { makeStyles } from "@material-ui/core/styles";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import { useFormik } from "formik";
 import UploadInput from "../../shared/UploadInput/UploadInput.js";
@@ -51,6 +52,9 @@ import {
 import { getArtwork } from "../../services/artwork.js";
 import { profileValidation } from "../../validation/profile.js";
 import { countries } from "../../../../common/constants.js";
+import UserProfilePanel from "../../containers/UserProfilePanel/UserProfilePanel.js";
+import EditUserForm from "../../containers/EditUserForm/EditUserForm.js";
+import UserProfileBanner from "../../containers/UserProfileBanner/UserProfileBanner.js";
 
 const Profile = ({ match, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -283,149 +287,16 @@ const Profile = ({ match, enqueueSnackbar }) => {
   }, []);
 
   return (
-    <Container fixed className={classes.fixed}>
-      <Grid container className={classes.container} spacing={2}>
+    <Container fixed className={classes.profile}>
+      <Grid container className={classes.profile__container} spacing={2}>
         {state.loading ? (
-          <Grid item xs={12} className={classes.loader}>
+          <Grid item xs={12} className={classes.profile__loader}>
             <CircularProgress />
           </Grid>
         ) : state.user._id ? (
           <>
-            <Grid item xs={12} md={4} className={classes.grid}>
-              <Paper className={classes.paper}>
-                <Card className={classes.user}>
-                  <CardMedia
-                    className={classes.avatar}
-                    image={state.user.photo}
-                    title={state.user.name}
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      <Anchor component={Link} to={`/user/${state.user.name}`}>
-                        {state.user.name}
-                      </Anchor>
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="p"
-                    >
-                      {state.user.description ||
-                        "This user doesn't have much to say about themself"}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="p"
-                    >
-                      {store.user.country
-                        ? countries.find(
-                            (country) => country.value === store.user.country
-                          ).text
-                        : "This user doesn't want to reveal their origin"}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="p"
-                    >
-                      {`Joined ${format(
-                        new Date(state.user.created),
-                        "MMM yyyy"
-                      )}`}
-                    </Typography>
-                  </CardContent>
-                </Card>
-                {state.user.editable ? (
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    startIcon={<EditIcon />}
-                    onClick={handleModalOpen}
-                    fullWidth
-                  >
-                    Edit info
-                  </Button>
-                ) : null}
-
-                <br />
-                <br />
-                <Card className={classes.user}>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Share this artist
-                    </Typography>
-                    <div className={classes.shareContainer}>
-                      <div className={classes.socialContainer}>
-                        <div className={classes.copyButton}>
-                          <CopyToClipboard
-                            text={url}
-                            onCopy={() =>
-                              enqueueSnackbar("Link copied", {
-                                variant: "success",
-                                autoHideDuration: 1000,
-                                anchorOrigin: {
-                                  vertical: "top",
-                                  horizontal: "center",
-                                },
-                              })
-                            }
-                          >
-                            <CopyIcon />
-                          </CopyToClipboard>
-                        </div>
-                        Copy link
-                      </div>
-                      <div className={classes.socialContainer}>
-                        <FacebookShareButton
-                          url={url}
-                          quote={title}
-                          className={classes.socialButton}
-                        >
-                          <FacebookIcon size={32} round />
-                        </FacebookShareButton>
-                        Facebook
-                      </div>
-                      <div className={classes.socialContainer}>
-                        <TwitterShareButton
-                          url={url}
-                          title={title}
-                          className={classes.socialButton}
-                        >
-                          <TwitterIcon size={32} round />
-                        </TwitterShareButton>
-                        Twitter
-                      </div>
-                      <div className={classes.socialContainer}>
-                        <RedditShareButton
-                          url={url}
-                          title={title}
-                          windowWidth={660}
-                          windowHeight={460}
-                          className={classes.socialButton}
-                        >
-                          <RedditIcon size={32} round />
-                        </RedditShareButton>
-                        Reddit
-                      </div>
-                      <div className={classes.socialContainer}>
-                        <WhatsappShareButton
-                          url={url}
-                          title={title}
-                          separator=":: "
-                          className={classes.socialButton}
-                        >
-                          <WhatsappIcon size={32} round />
-                        </WhatsappShareButton>
-                        WhatsApp
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Paper>
-            </Grid>
+            <UserProfileBanner />
+            <UserProfilePanel user={state.user} />
             <Grid item xs={12} md={8} className={classes.grid}>
               {state.user.editable ? (
                 <Paper className={classes.artwork} variant="outlined">
@@ -528,65 +399,10 @@ const Profile = ({ match, enqueueSnackbar }) => {
             aria-labelledby="Edit info"
             className={classes.modal}
           >
-            <form className={classes.userForm} onSubmit={handleSubmit}>
-              <div className={classes.userContainer}>
-                <Card className={classes.card}>
-                  <Typography variant="h6" align="center">
-                    Edit info
-                  </Typography>
-                  <CardContent>
-                    <UploadInput
-                      name="userMedia"
-                      setFieldValue={setFieldValue}
-                    />
-                    <TextField
-                      name="userDescription"
-                      label="Description"
-                      type="text"
-                      value={values.userDescription}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={
-                        touched.userDescription ? errors.userDescription : ""
-                      }
-                      error={
-                        touched.userDescription &&
-                        Boolean(errors.userDescription)
-                      }
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                    <SelectInput
-                      name="userCountry"
-                      label="Country"
-                      value={values.userCountry}
-                      handleChange={handleChange}
-                      handleBlur={handleBlur}
-                      helperText={touched.userCountry ? errors.userCountry : ""}
-                      error={touched.userCountry && Boolean(errors.userCountry)}
-                      options={countries}
-                    />
-                  </CardContent>
-                  <CardActions className={classes.actions}>
-                    <Button
-                      type="submit"
-                      color="primary"
-                      disabled={isSubmitting}
-                    >
-                      Update
-                    </Button>
-                    <Button
-                      type="button"
-                      color="error"
-                      onClick={handleModalClose}
-                    >
-                      Close
-                    </Button>
-                  </CardActions>
-                </Card>
-              </div>
-            </form>
+            <EditUserForm
+              user={state.user}
+              handleModalClose={handleModalClose}
+            />
           </Modal>
         </div>
       </Grid>
