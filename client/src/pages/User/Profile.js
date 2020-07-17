@@ -55,6 +55,7 @@ import { countries } from "../../../../common/constants.js";
 import UserProfilePanel from "../../containers/UserProfilePanel/UserProfilePanel.js";
 import EditUserForm from "../../containers/EditUserForm/EditUserForm.js";
 import UserProfileBanner from "../../containers/UserProfileBanner/UserProfileBanner.js";
+import UserArtworkPanel from "../../containers/UserArtworkPanel/UserArtworkPanel.js";
 
 const Profile = ({ match, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -297,93 +298,12 @@ const Profile = ({ match, enqueueSnackbar }) => {
           <>
             <UserProfileBanner />
             <UserProfilePanel user={state.user} />
-            <Grid item xs={12} md={8} className={classes.grid}>
-              {state.user.editable ? (
-                <Paper className={classes.artwork} variant="outlined">
-                  <AppBar position="static" color="default">
-                    <Tabs
-                      value={state.tabs.value}
-                      onChange={handleTabsChange}
-                      indicatorColor="primary"
-                      textColor="primary"
-                      variant="fullWidth"
-                      aria-label="full width tabs example"
-                    >
-                      <Tab label="User artwork" {...a11yProps(0)} />
-                      <Tab label="Saved artwork" {...a11yProps(1)} />
-                    </Tabs>
-                  </AppBar>
-                  <SwipeableViews
-                    axis="x"
-                    index={state.tabs.value}
-                    onChangeIndex={handleChangeIndex}
-                  >
-                    <Box hidden={state.tabs.value !== 0}>
-                      {state.user.artwork.length ? (
-                        "s"
-                      ) : (
-                        <Typography variant="h6" align="center">
-                          You have no artwork to display
-                        </Typography>
-                      )}
-                    </Box>
-                    <Box hidden={state.tabs.value !== 1}>
-                      {state.user.savedArtwork.length ? (
-                        "s"
-                      ) : (
-                        <Typography variant="h6" align="center">
-                          You have no saved artwork
-                        </Typography>
-                      )}
-                    </Box>
-                  </SwipeableViews>
-                </Paper>
-              ) : (
-                <Paper className={classes.artwork} variant="outlined">
-                  <AppBar position="static" color="default">
-                    <Tabs
-                      value={state.tabs.value}
-                      onChange={handleTabsChange}
-                      indicatorColor="primary"
-                      textColor="primary"
-                      variant="fullWidth"
-                      aria-label="full width tabs example"
-                    >
-                      <Tab label="User artwork" {...a11yProps(0)} />
-                      {state.user.displaySaves ? (
-                        <Tab label="Saved artwork" {...a11yProps(1)} />
-                      ) : null}
-                    </Tabs>
-                  </AppBar>
-                  <SwipeableViews
-                    axis="x"
-                    index={state.tabs.value}
-                    onChangeIndex={handleChangeIndex}
-                  >
-                    <Box hidden={state.tabs.value !== 0}>
-                      {state.user.artwork.length ? (
-                        "s"
-                      ) : (
-                        <Typography variant="h6" align="center">
-                          This user has no artwork to display
-                        </Typography>
-                      )}
-                    </Box>
-                    {state.user.displaySaves ? (
-                      <Box hidden={state.tabs.value !== 1}>
-                        {state.user.savedArtwork.length ? (
-                          "s"
-                        ) : (
-                          <Typography variant="h6" align="center">
-                            This user has no saved artwork
-                          </Typography>
-                        )}
-                      </Box>
-                    ) : null}
-                  </SwipeableViews>
-                </Paper>
-              )}
-            </Grid>
+            <UserArtworkPanel
+              tabs={state.tabs}
+              user={state.user}
+              handleChangeIndex={handleChangeIndex}
+              handleTabsChange={handleTabsChange}
+            />
           </>
         ) : (
           history.push("/")

@@ -1,17 +1,11 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Box,
-  AppBar,
-  Tabs,
-  Tab,
-  SwipeableViews,
-  Typography,
-} from "@material-ui/core";
+import SwipeableViews from "react-swipeable-views";
+import { Box, AppBar, Tabs, Tab, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles({ profileArtworkContainer: { height: "100%" } });
 
-const SwipeCard = ({ tabs }) => {
+const SwipeCard = ({ tabs, handleTabsChange, handleChangeIndex }) => {
   const classes = useStyles();
 
   return (
@@ -44,7 +38,7 @@ const SwipeCard = ({ tabs }) => {
                 "s"
               ) : (
                 <Typography variant="h6" align="center">
-                  {item.content.error}
+                  {item.error}
                 </Typography>
               )}
             </Box>
