@@ -1,9 +1,9 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../context/Store.js";
-import { makeStyles } from "@material-ui/core/styles";
-import SelectInput from "../../shared/SelectInput/SelectInput.js";
-import { useFormik } from "formik";
-import UploadInput from "../../shared/UploadInput/UploadInput.js";
+import React, { useContext, useState, useEffect } from 'react';
+import { Context } from '../../context/Store.js';
+import { makeStyles } from '@material-ui/core/styles';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
+import { useFormik } from 'formik';
+import UploadInput from '../../shared/UploadInput/UploadInput.js';
 import {
   AppBar,
   Tab,
@@ -22,11 +22,11 @@ import {
   Paper,
   Button,
   Link as Anchor,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   EditRounded as EditIcon,
   LinkRounded as CopyIcon,
-} from "@material-ui/icons";
+} from '@material-ui/icons';
 import {
   FacebookShareButton,
   WhatsappShareButton,
@@ -36,26 +36,26 @@ import {
   WhatsappIcon,
   RedditIcon,
   TwitterIcon,
-} from "react-share";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { withSnackbar } from "notistack";
-import { Link, useHistory } from "react-router-dom";
-import SwipeableViews from "react-swipeable-views";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { format } from "date-fns";
+} from 'react-share';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { withSnackbar } from 'notistack';
+import { Link, useHistory } from 'react-router-dom';
+import SwipeableViews from 'react-swipeable-views';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { format } from 'date-fns';
 import {
   postMedia,
   patchUser,
   getSaves,
   getUser,
-} from "../../services/user.js";
-import { getArtwork } from "../../services/artwork.js";
-import { profileValidation } from "../../validation/profile.js";
-import { countries } from "../../../../common/constants.js";
-import UserProfilePanel from "../../containers/UserProfilePanel/UserProfilePanel.js";
-import EditUserForm from "../../containers/EditUserForm/EditUserForm.js";
-import UserProfileBanner from "../../containers/UserProfileBanner/UserProfileBanner.js";
-import UserArtworkPanel from "../../containers/UserArtworkPanel/UserArtworkPanel.js";
+} from '../../services/user.js';
+import { getArtwork } from '../../services/artwork.js';
+import { profileValidation } from '../../validation/profile.js';
+import { countries } from '../../../../common/constants.js';
+import UserProfilePanel from '../../containers/UserProfilePanel/UserProfilePanel.js';
+import EditUserForm from '../../containers/EditUserForm/EditUserForm.js';
+import UserProfileBanner from '../../containers/UserProfileBanner/UserProfileBanner.js';
+import UserArtworkPanel from '../../containers/UserArtworkPanel/UserArtworkPanel.js';
 
 const Profile = ({ match, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -63,7 +63,6 @@ const Profile = ({ match, enqueueSnackbar }) => {
     loading: true,
     user: {},
     modal: { open: false },
-    tabs: { value: 0, revealed: false },
     scroll: {
       artwork: {
         hasMore: true,
@@ -103,7 +102,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
       try {
         if (values.userMedia.length) {
           const formData = new FormData();
-          formData.append("userMedia", values.userMedia[0]);
+          formData.append('userMedia', values.userMedia[0]);
           const {
             data: { userMedia, userDimensions },
           } = await postMedia({ data: formData });
@@ -178,24 +177,8 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const a11yProps = (index) => {
     return {
       id: `full-width-tab-${index}`,
-      "aria-controls": `full-width-tabpanel-${index}`,
+      'aria-controls': `full-width-tabpanel-${index}`,
     };
-  };
-
-  const handleTabsChange = (e, newValue) => {
-    if (!state.tabs.revealed) loadMoreSaves(newValue);
-    else
-      setState((prevState) => ({
-        ...prevState,
-        tabs: { ...prevState.tabs, value: newValue },
-      }));
-  };
-
-  const handleChangeIndex = (index) => {
-    setState((prevState) => ({
-      ...prevState,
-      tabs: { ...prevState.tabs, value: index },
-    }));
   };
 
   const handleModalOpen = () => {
@@ -219,70 +202,6 @@ const Profile = ({ match, enqueueSnackbar }) => {
     }));
   };
 
-  const loadMoreArtwork = async () => {
-    try {
-      const { data } = await getArtwork({
-        userId: state.user._id,
-        dataCursor: state.scroll.artwork.dataCursor,
-        dataCeiling: state.scroll.artwork.dataCeiling,
-      });
-      setState((prevState) => ({
-        ...prevState,
-        loading: false,
-        user: {
-          ...prevState.user,
-          artwork: [...prevState.user.artwork].concat(data.artwork),
-        },
-        scroll: {
-          ...state.scroll,
-          artwork: {
-            ...state.scroll.artwork,
-            hasMore:
-              data.artwork.length < state.scroll.artwork.dataCeiling
-                ? false
-                : true,
-            dataCursor:
-              state.scroll.artwork.dataCursor +
-              state.scroll.artwork.dataCeiling,
-          },
-        },
-      }));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const loadMoreSaves = async (newValue) => {
-    try {
-      const { data } = await getSaves({
-        userId: state.user._id,
-        dataCursor: state.scroll.saves.dataCursor,
-        dataCeiling: state.scroll.saves.dataCeiling,
-      });
-      setState((prevState) => ({
-        ...prevState,
-        loading: false,
-        user: {
-          ...prevState.user,
-          savedArtwork: [...prevState.user.savedArtwork].concat(data.saves),
-        },
-        tabs: { ...prevState.tabs, value: newValue, revealed: true },
-        scroll: {
-          ...state.scroll,
-          saves: {
-            ...state.scroll.saves,
-            hasMore:
-              data.saves.length < state.scroll.saves.dataCeiling ? false : true,
-            dataCursor:
-              state.scroll.saves.dataCursor + state.scroll.saves.dataCeiling,
-          },
-        },
-      }));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   useEffect(() => {
     fetchUser();
   }, []);
@@ -298,15 +217,10 @@ const Profile = ({ match, enqueueSnackbar }) => {
           <>
             <UserProfileBanner />
             <UserProfilePanel user={state.user} />
-            <UserArtworkPanel
-              tabs={state.tabs}
-              user={state.user}
-              handleChangeIndex={handleChangeIndex}
-              handleTabsChange={handleTabsChange}
-            />
+            <UserArtworkPanel user={state.user} scroll={state.scroll} />
           </>
         ) : (
-          history.push("/")
+          history.push('/')
         )}
         <Modal
           open={state.modal.open}

@@ -1,11 +1,27 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import SwipeableViews from "react-swipeable-views";
-import { Box, AppBar, Tabs, Tab, Typography } from "@material-ui/core";
+import React from 'react';
+import { Box, AppBar, Tabs, Tab, Typography } from '@material-ui/core';
+import SwipeableViews from 'react-swipeable-views';
+import { makeStyles } from '@material-ui/core/styles';
+import ArtworkPanel from '../../containers/ArtworkPanel/ArtworkPanel.js';
 
-const useStyles = makeStyles({ profileArtworkContainer: { height: "100%" } });
+const useStyles = makeStyles({
+  profileArtworkContainer: {
+    height: '100%',
+    '&> div': {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: 'calc(100% - 48px)',
+    },
+  },
+});
 
-const SwipeCard = ({ tabs, handleTabsChange, handleChangeIndex }) => {
+const SwipeCard = ({
+  tabs,
+  handleTabsChange,
+  handleChangeIndex,
+  handleLoadMore,
+}) => {
   const classes = useStyles();
 
   return (
@@ -35,7 +51,12 @@ const SwipeCard = ({ tabs, handleTabsChange, handleChangeIndex }) => {
           item.display ? (
             <Box hidden={tabs.value !== index}>
               {item.content.length ? (
-                "s"
+                <ArtworkPanel
+                  elements={item.content}
+                  hasMore={item.hasMore}
+                  loadMore={handleLoadMore}
+                  type={item.type}
+                />
               ) : (
                 <Typography variant="h6" align="center">
                   {item.error}

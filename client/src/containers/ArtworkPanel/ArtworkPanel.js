@@ -281,4 +281,4 @@ const ArtworkPanel = ({
   );
 };
 
-export default withSnackbar(ArtworkPanel);
+export default ArtworkPanel;
