@@ -2,7 +2,7 @@ export const upload = {
   artwork: {
     fileSize: 10 * 1024 * 1024,
     fileDimensions: { height: 1200, width: 1200 },
-    fileTransform: { width: 320 },
+    fileTransform: { width: 640 },
     mimeTypes: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
   },
   user: {

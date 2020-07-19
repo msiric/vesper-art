@@ -48,22 +48,22 @@ const useStyles = makeStyles((theme) => ({
   },
   masonryGrid: {
     display: 'flex',
-    justifyContent: 'center',
+    flexWrap: 'wrap',
   },
   masonryGridColumn: {
-    maxWidth: 320,
-    minWidth: 260,
+    maxWidth: upload.artwork.fileTransform.width,
+    minWidth: 320,
     width: '100%',
   },
 }));
 
 const artworkBreakpoints = {
   default: 6,
-  1560: 5,
-  1300: 4,
-  1040: 3,
-  780: 2,
-  520: 1,
+  [upload.artwork.fileTransform.width + 320 * 4]: 5,
+  [upload.artwork.fileTransform.width + 320 * 3]: 4,
+  [upload.artwork.fileTransform.width + 320 * 2]: 3,
+  [upload.artwork.fileTransform.width + 320]: 2,
+  [upload.artwork.fileTransform.width]: 1,
 };
 
 const ArtworkPanel = ({

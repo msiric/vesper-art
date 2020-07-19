@@ -1,5 +1,13 @@
 import React from 'react';
-import { Box, AppBar, Tabs, Tab, Typography } from '@material-ui/core';
+import {
+  Box,
+  AppBar,
+  Tabs,
+  Tab,
+  Typography,
+  Grid,
+  CircularProgress,
+} from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 import { makeStyles } from '@material-ui/core/styles';
 import ArtworkPanel from '../../containers/ArtworkPanel/ArtworkPanel.js';
@@ -54,7 +62,11 @@ const SwipeCard = ({
         {tabs.items.map((item, index) =>
           item.display ? (
             <Box hidden={tabs.value !== index}>
-              {item.content.length ? (
+              {item.loading ? (
+                <Grid item xs={12} className={classes.profile__loader}>
+                  <CircularProgress />
+                </Grid>
+              ) : item.content.length ? (
                 <ArtworkPanel
                   elements={item.content}
                   hasMore={item.hasMore}

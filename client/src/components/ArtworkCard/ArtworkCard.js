@@ -15,9 +15,6 @@ import ShareIcon from '@material-ui/icons/Share';
 import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    maxWidth: 345,
-  },
   media: {
     height: 0,
   },
@@ -136,6 +133,7 @@ const ArtworkCard = ({ artwork }) => {
           paddingTop:
             artwork.current.height /
             (artwork.current.width / upload.artwork.fileTransform.width),
+          maxWidth: upload.artwork.fileTransform.width,
         }}
         image={artwork.current.cover}
         title={artwork.title}

@@ -62,7 +62,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const [state, setState] = useState({
     loading: true,
     user: {},
-    tabs: { value: 0, revealed: false },
+    tabs: { value: 0, revealed: false, loading: true },
     modal: { open: false },
     scroll: {
       artwork: {
@@ -184,7 +184,6 @@ const Profile = ({ match, enqueueSnackbar }) => {
       });
       setState((prevState) => ({
         ...prevState,
-        loading: false,
         user: {
           ...prevState.user,
           artwork: [...prevState.user.artwork].concat(data.artwork),
@@ -210,6 +209,10 @@ const Profile = ({ match, enqueueSnackbar }) => {
 
   const loadMoreSaves = async (newValue) => {
     try {
+      setState((prevState) => ({
+        ...prevState,
+        tabs: { ...prevState.tabs, value: newValue, revealed: true },
+      }));
       const { data } = await getSaves({
         userId: state.user._id,
         dataCursor: state.scroll.saves.dataCursor,
@@ -217,12 +220,11 @@ const Profile = ({ match, enqueueSnackbar }) => {
       });
       setState((prevState) => ({
         ...prevState,
-        loading: false,
         user: {
           ...prevState.user,
           savedArtwork: [...prevState.user.savedArtwork].concat(data.saves),
         },
-        tabs: { ...prevState.tabs, value: newValue, revealed: true },
+        tabs: { ...prevState.tabs, loading: false },
         scroll: {
           ...state.scroll,
           saves: {

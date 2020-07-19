@@ -46,12 +46,14 @@ const UserArtworkPanel = ({
                   content: user.artwork,
                   type: 'artwork',
                   error: 'You have no artwork to display',
+                  loading: false,
                 },
                 {
                   display: true,
                   content: user.savedArtwork,
                   type: 'artwork',
                   error: 'You have no saved artwork',
+                  loading: tabs.loading,
                 },
               ],
             }}
@@ -80,12 +82,14 @@ const UserArtworkPanel = ({
                   content: user.artwork,
                   type: 'artwork',
                   error: 'This user has no artwork to display',
+                  loading: false,
                 },
                 {
                   display: user.displaySaves,
                   content: user.savedArtwork,
                   type: 'artwork',
                   error: 'This user has no saved artwork',
+                  loading: tabs.loading,
                 },
               ],
             }}
