@@ -56,6 +56,7 @@ import UserProfilePanel from '../../containers/UserProfilePanel/UserProfilePanel
 import EditUserForm from '../../containers/EditUserForm/EditUserForm.js';
 import UserProfileBanner from '../../containers/UserProfileBanner/UserProfileBanner.js';
 import UserArtworkPanel from '../../containers/UserArtworkPanel/UserArtworkPanel.js';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 
 const Profile = ({ match, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -80,42 +81,6 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const url = window.location;
   const title = store.main.brand;
   const history = useHistory();
-
-  const {
-    isSubmitting,
-    setFieldValue,
-    resetForm,
-    handleSubmit,
-    handleChange,
-    handleBlur,
-    touched,
-    values,
-    errors,
-  } = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      userMedia: state.user.photo,
-      userDescription: state.user.description,
-      userCountry: state.user.country,
-    },
-    validationSchema: profileValidation,
-    async onSubmit(values) {
-      try {
-        if (values.userMedia.length) {
-          const formData = new FormData();
-          formData.append('userMedia', values.userMedia[0]);
-          const {
-            data: { userMedia, userDimensions },
-          } = await postMedia({ data: formData });
-          values.userMedia = userMedia;
-          values.userDimensions = userDimensions;
-        }
-        await patchUser({ userId: store.user.id, data: values });
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  });
 
   const classes = {};
 
@@ -259,7 +224,6 @@ const Profile = ({ match, enqueueSnackbar }) => {
   };
 
   const handleModalClose = () => {
-    resetForm();
     setState((prevState) => ({
       ...prevState,
       modal: {
@@ -289,14 +253,12 @@ const Profile = ({ match, enqueueSnackbar }) => {
     fetchUser();
   }, []);
 
-  return (
+  return state.loading ? (
+    <LoadingSpinner />
+  ) : (
     <Container fixed className={classes.profile}>
       <Grid container className={classes.profile__container} spacing={2}>
-        {state.loading ? (
-          <Grid item xs={12} className={classes.profile__loader}>
-            <CircularProgress />
-          </Grid>
-        ) : state.user._id ? (
+        {state.user._id ? (
           <>
             <UserProfileBanner />
             <UserProfilePanel

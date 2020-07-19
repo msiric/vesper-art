@@ -9,7 +9,7 @@ const AuthLayoutStyles = makeStyles((muiTheme) => ({
   root: {
     display: 'flex',
     flexFlow: 'column',
-    height: '100vh',
+    minHeight: '100vh',
   },
   paper: {
     padding: muiTheme.spacing(2),

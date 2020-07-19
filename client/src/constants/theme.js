@@ -18,7 +18,6 @@ export const artepunktTheme = createMuiTheme({
     ].join(','),
     fontSize: 14,
   },
-
   palette: {
     primary: { main: '#028079', alt: '#9BCECB' },
     secondary: { main: '#04b9a7', alt: '#304de6' },
@@ -29,6 +28,12 @@ export const artepunktTheme = createMuiTheme({
     muted: { main: '#e9ebed', alt: '#c2c8cc' },
     light: { main: '#f8f9f9', alt: '#d8dcde' },
     dark: { main: '#2e3942', alt: '#87929e' },
+  },
+  padding: {
+    container: 20,
+  },
+  margin: {
+    container: 20,
   },
 });
 

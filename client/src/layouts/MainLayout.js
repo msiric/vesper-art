@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Context } from '../context/Store.js';
-import { Backdrop, CircularProgress } from '@material-ui/core';
+import { Backdrop, CircularProgress, Box } from '@material-ui/core';
 import Header from '../shared/Header/Header.js';
 import Footer from '../components/Footer/Footer.js';
 import MainLayoutStyles from './MainLayout.style.js';
@@ -19,7 +19,7 @@ const MainLayout = ({ children }) => {
       ) : (
         <>
           <Header />
-          {children}
+          <Box className={classes.appContainer}>{children}</Box>
           <Footer />
         </>
       )}

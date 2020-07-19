@@ -399,7 +399,7 @@ const Header = ({ history }) => {
 
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="static" className={classes.headerContainer}>
         <Toolbar>
           <Typography
             component={Link}

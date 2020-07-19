@@ -1,17 +1,17 @@
-import React, { useContext } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Context } from "../../context/Store.js";
-import { useHistory } from "react-router-dom";
+import React, { useContext } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Context } from '../../context/Store.js';
+import { useHistory } from 'react-router-dom';
 import {
   Card,
   CardContent,
   Typography,
   Link as Anchor,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   EditRounded as EditIcon,
   LinkRounded as CopyIcon,
-} from "@material-ui/icons";
+} from '@material-ui/icons';
 import {
   FacebookShareButton,
   WhatsappShareButton,
@@ -21,43 +21,45 @@ import {
   WhatsappIcon,
   RedditIcon,
   TwitterIcon,
-} from "react-share";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+} from 'react-share';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { artepunktTheme } from '../../constants/theme.js';
 
 const useStyles = makeStyles({
   profileShareContainer: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: artepunktTheme.padding.container,
   },
   profileIconContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   profileButtonWrapper: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    width: "100%",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width: '100%',
     marginBottom: 12,
   },
   profileCopyButton: {
-    display: "flex",
-    borderRadius: "50%",
-    backgroundColor: "white",
+    display: 'flex',
+    borderRadius: '50%',
+    backgroundColor: 'white',
     height: 31,
     width: 31,
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    border: "1px solid",
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    border: '1px solid',
     marginRight: 10,
   },
   profileSocialButton: {
-    display: "flex",
+    display: 'flex',
     marginRight: 10,
   },
 });

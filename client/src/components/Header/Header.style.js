@@ -1,4 +1,5 @@
 import { fade, makeStyles } from '@material-ui/core/styles';
+import { artepunktTheme } from '../../constants/theme.js';
 
 const HeaderStyles = makeStyles((muiTheme) => ({
   grow: {

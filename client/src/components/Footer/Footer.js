@@ -3,7 +3,7 @@ import { Container, Typography, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((muiTheme) => ({
-  footer: {
+  footerContainer: {
     padding: muiTheme.spacing(3, 2),
     marginTop: 'auto',
     backgroundColor:
@@ -18,7 +18,7 @@ const Footer = () => {
   const classes = useStyles();
 
   return (
-    <footer className={classes.footer}>
+    <footer className={classes.footerContainer}>
       <Container maxWidth="sm">
         <Typography variant="body2" color="textSecondary">
           {'Copyright © '}

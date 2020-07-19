@@ -11,6 +11,7 @@ import {
 import SwipeableViews from 'react-swipeable-views';
 import { makeStyles } from '@material-ui/core/styles';
 import ArtworkPanel from '../../containers/ArtworkPanel/ArtworkPanel.js';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner.js';
 
 const useStyles = makeStyles({
   profileArtworkContainer: {
@@ -25,6 +26,12 @@ const useStyles = makeStyles({
       height: '100%',
       width: '100%',
     },
+  },
+  swipeCardBox: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
   },
 });
 
@@ -61,11 +68,9 @@ const SwipeCard = ({
       >
         {tabs.items.map((item, index) =>
           item.display ? (
-            <Box hidden={tabs.value !== index}>
+            <Box className={classes.swipeCardBox} hidden={tabs.value !== index}>
               {item.loading ? (
-                <Grid item xs={12} className={classes.profile__loader}>
-                  <CircularProgress />
-                </Grid>
+                <LoadingSpinner />
               ) : item.content.length ? (
                 <ArtworkPanel
                   elements={item.content}

@@ -6,16 +6,18 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import { artepunktTheme } from '../../constants/theme.js';
 
 const useStyles = makeStyles({
-  root: {
+  profileCardContainer: {
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+    padding: artepunktTheme.padding.container,
   },
-  wutever: {
+  profileCardAvatar: {
     textAlign: 'center',
     width: '100px',
     height: '100px',
@@ -27,13 +29,13 @@ const ProfileCard = ({ user, handleModalOpen }) => {
   const classes = useStyles();
 
   return (
-    <Card className={classes.root}>
+    <Card className={classes.profileCardContainer}>
       <CardMedia
         component="img"
         alt={user.name}
         image={user.photo}
         title={user.name}
-        className={classes.wutever}
+        className={classes.profileCardAvatar}
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2" align="center">
