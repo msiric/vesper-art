@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: red[500],
   },
   artworkContainer: {
+    margin: 12,
     position: 'relative',
     '&:hover': {
       '& $artworkHeader': {
@@ -135,7 +136,6 @@ const ArtworkCard = ({ artwork }) => {
           paddingTop:
             artwork.current.height /
             (artwork.current.width / upload.artwork.fileTransform.width),
-          maxWidth: upload.artwork.fileTransform.width,
         }}
         image={artwork.current.cover}
         title={artwork.title}

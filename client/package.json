@@ -24,6 +24,7 @@
     "react-dom": "^16.13.1",
     "react-dropzone": "^10.2.2",
     "react-infinite-scroll-component": "^5.0.4",
+    "react-masonry-css": "^1.0.14",
     "react-number-format": "^4.4.1",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",

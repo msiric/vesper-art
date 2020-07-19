@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Context } from '../../context/Store.js';
 import StackGrid from 'react-stack-grid';
+import Masonry from 'react-masonry-css';
 import { upload } from '../../../../common/constants.js';
 import Modal from '../../shared/Modal/Modal.js';
 import {
@@ -45,7 +46,25 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     minHeight: '86.5vh',
   },
+  masonryGrid: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  masonryGridColumn: {
+    maxWidth: 320,
+    minWidth: 260,
+    width: '100%',
+  },
 }));
+
+const artworkBreakpoints = {
+  default: 6,
+  1560: 5,
+  1300: 4,
+  1040: 3,
+  780: 2,
+  520: 1,
+};
 
 const ArtworkPanel = ({
   elements,
@@ -207,19 +226,6 @@ const ArtworkPanel = ({
     }));
   };
 
-  const handleImageClick = (e, item) => {
-    console.log(item);
-  };
-
-  const breakpointCols = {
-    default: 4,
-    [theme.breakpoints.values.xl]: 4,
-    [theme.breakpoints.values.lg]: 3,
-    [theme.breakpoints.values.md]: 2,
-    [theme.breakpoints.values.sm]: 1,
-    [theme.breakpoints.values.xs]: 1,
-  };
-
   return (
     <Paper className={classes.paper}>
       <InfiniteScroll
@@ -249,10 +255,10 @@ const ArtworkPanel = ({
         </div> */}
 
         {/* specify cover width */}
-        <StackGrid
-          columnWidth={upload.artwork.fileTransform.width}
-          gutterWidth={0}
-          gutterHeight={0}
+        <Masonry
+          breakpointCols={artworkBreakpoints}
+          className={classes.masonryGrid}
+          columnClassName={classes.masonryGridColumn}
         >
           {elements.map((artwork) => (
             <ArtworkCard artwork={artwork} />
@@ -274,7 +280,33 @@ const ArtworkPanel = ({
               </div>
             </div> */
           ))}
-        </StackGrid>
+        </Masonry>
+        {/*         <StackGrid
+          columnWidth={upload.artwork.fileTransform.width}
+          gutterWidth={0}
+          gutterHeight={0}
+        >
+          {elements.map((artwork) => (
+            <ArtworkCard artwork={artwork} />
+                     <div
+              key={artwork._id}
+              component={Link}
+              to={`/artwork/${artwork._id}`}
+              className={classes.artworkContainer}
+            >
+              <div className={classes.artworkHeader}>
+                <p className={classes.artworkTitle}>{artwork.current.title}</p>
+              </div>
+              <img
+                className={classes.artworkMedia}
+                src={artwork.current.cover}
+              />
+              <div className={classes.artworkFooter}>
+                <p className={classes.artworkOwner}>{artwork.owner.name}</p>
+              </div>
+            </div> 
+          ))}
+        </StackGrid> */}
       </InfiniteScroll>
       <Modal {...state.modal} handleClose={handleModalClose} />
     </Paper>

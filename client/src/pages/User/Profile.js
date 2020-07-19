@@ -297,7 +297,10 @@ const Profile = ({ match, enqueueSnackbar }) => {
         ) : state.user._id ? (
           <>
             <UserProfileBanner />
-            <UserProfilePanel user={state.user} />
+            <UserProfilePanel
+              user={state.user}
+              handleModalOpen={handleModalOpen}
+            />
             <UserArtworkPanel
               tabs={state.tabs}
               user={state.user}
