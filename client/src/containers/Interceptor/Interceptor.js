@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import openSocket from 'socket.io-client';
 import { postLogout } from '../../services/user.js';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 const ENDPOINT = 'http://localhost:5000';
 
 const ax = axios.create();
@@ -227,17 +228,7 @@ const Interceptor = ({ children }) => {
     if (!store.main.loading) interceptTraffic(store.user.token);
   }, [store.user.token]);
 
-  return !store.main.loading ? (
-    children(socket)
-  ) : (
-    <Container fixed className={classes.fixed}>
-      <Grid container className={classes.container} spacing={2}>
-        <Grid item xs={12} className={classes.loader}>
-          <CircularProgress />
-        </Grid>
-      </Grid>
-    </Container>
-  );
+  return !store.main.loading ? children(socket) : <LoadingSpinner />;
 };
 
 export { ax };

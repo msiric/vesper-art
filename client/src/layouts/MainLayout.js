@@ -11,9 +11,9 @@ const MainLayout = ({ children }) => {
   const classes = MainLayoutStyles();
 
   return (
-    <div className={classes.root}>
+    <div className={classes.appRoot}>
       {store.main.loading ? (
-        <Backdrop className={classes.backdrop} open={store.main.loading}>
+        <Backdrop className={classes.appBackdrop} open={store.main.loading}>
           <CircularProgress color="primary" />
         </Backdrop>
       ) : (

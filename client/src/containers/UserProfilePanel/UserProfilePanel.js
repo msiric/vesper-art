@@ -6,11 +6,8 @@ import ProfileShare from '../../components/ProfileShare/ProfileShare.js';
 const UserProfilePanel = ({ user, handleModalOpen }) => {
   return (
     <Grid item xs={12} md={4}>
-      <Paper>
-        <ProfileCard user={user} handleModalOpen={handleModalOpen} />
-        <Divider />
-        <ProfileShare />
-      </Paper>
+      <ProfileCard user={user} handleModalOpen={handleModalOpen} />
+      <ProfileShare />
     </Grid>
   );
 };

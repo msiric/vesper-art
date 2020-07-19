@@ -33,6 +33,7 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     alignItems: 'center',
     padding: artepunktTheme.padding.container,
+    marginTop: artepunktTheme.margin.container,
   },
   profileIconContainer: {
     display: 'flex',
@@ -45,6 +46,9 @@ const useStyles = makeStyles({
     justifyContent: 'flex-start',
     width: '100%',
     marginBottom: 12,
+    '&:last-child': {
+      marginBottom: 0,
+    },
   },
   profileCopyButton: {
     display: 'flex',
