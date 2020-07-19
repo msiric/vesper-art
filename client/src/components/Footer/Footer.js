@@ -23,7 +23,7 @@ const Footer = () => {
         <Typography variant="body2" color="textSecondary">
           {'Copyright © '}
           <Link color="inherit" href="https://material-ui.com/">
-            Your Website
+            Material UI
           </Link>{' '}
           {new Date().getFullYear()}
           {'.'}
