@@ -13,6 +13,10 @@ const useStyles = makeStyles({
       justifyContent: 'center',
       height: 'calc(100% - 48px)',
     },
+    '&> div> div': {
+      height: '100%',
+      width: '100%',
+    },
   },
 });
 

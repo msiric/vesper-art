@@ -62,6 +62,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const [state, setState] = useState({
     loading: true,
     user: {},
+    tabs: { value: 0, revealed: false },
     modal: { open: false },
     scroll: {
       artwork: {
@@ -174,6 +175,70 @@ const Profile = ({ match, enqueueSnackbar }) => {
     }
   };
 
+  const loadMoreArtwork = async () => {
+    try {
+      const { data } = await getArtwork({
+        userId: state.user._id,
+        dataCursor: state.scroll.artwork.dataCursor,
+        dataCeiling: state.scroll.artwork.dataCeiling,
+      });
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        user: {
+          ...prevState.user,
+          artwork: [...prevState.user.artwork].concat(data.artwork),
+        },
+        scroll: {
+          ...state.scroll,
+          artwork: {
+            ...state.scroll.artwork,
+            hasMore:
+              data.artwork.length < state.scroll.artwork.dataCeiling
+                ? false
+                : true,
+            dataCursor:
+              state.scroll.artwork.dataCursor +
+              state.scroll.artwork.dataCeiling,
+          },
+        },
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const loadMoreSaves = async (newValue) => {
+    try {
+      const { data } = await getSaves({
+        userId: state.user._id,
+        dataCursor: state.scroll.saves.dataCursor,
+        dataCeiling: state.scroll.saves.dataCeiling,
+      });
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        user: {
+          ...prevState.user,
+          savedArtwork: [...prevState.user.savedArtwork].concat(data.saves),
+        },
+        tabs: { ...prevState.tabs, value: newValue, revealed: true },
+        scroll: {
+          ...state.scroll,
+          saves: {
+            ...state.scroll.saves,
+            hasMore:
+              data.saves.length < state.scroll.saves.dataCeiling ? false : true,
+            dataCursor:
+              state.scroll.saves.dataCursor + state.scroll.saves.dataCeiling,
+          },
+        },
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const a11yProps = (index) => {
     return {
       id: `full-width-tab-${index}`,
@@ -202,6 +267,22 @@ const Profile = ({ match, enqueueSnackbar }) => {
     }));
   };
 
+  const handleTabsChange = (e, newValue) => {
+    if (!state.tabs.revealed) loadMoreSaves(newValue);
+    else
+      setState((prevState) => ({
+        ...prevState,
+        tabs: { ...prevState.tabs, value: newValue },
+      }));
+  };
+
+  const handleChangeIndex = (index) => {
+    setState((prevState) => ({
+      ...prevState,
+      tabs: { ...prevState.tabs, value: index },
+    }));
+  };
+
   useEffect(() => {
     fetchUser();
   }, []);
@@ -217,7 +298,14 @@ const Profile = ({ match, enqueueSnackbar }) => {
           <>
             <UserProfileBanner />
             <UserProfilePanel user={state.user} />
-            <UserArtworkPanel user={state.user} scroll={state.scroll} />
+            <UserArtworkPanel
+              tabs={state.tabs}
+              user={state.user}
+              loadMoreArtwork={loadMoreArtwork}
+              loadMoreSaves={loadMoreSaves}
+              handleTabsChange={handleTabsChange}
+              handleChangeIndex={handleChangeIndex}
+            />
           </>
         ) : (
           history.push('/')

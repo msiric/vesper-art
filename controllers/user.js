@@ -1,13 +1,13 @@
-import mongoose from "mongoose";
-import randomString from "randomstring";
-import { sendEmail } from "../utils/email.js";
-import { server } from "../config/secret.js";
-import { formatParams, sanitizeData } from "../utils/helpers.js";
+import mongoose from 'mongoose';
+import randomString from 'randomstring';
+import { sendEmail } from '../utils/email.js';
+import { server } from '../config/secret.js';
+import { formatParams, sanitizeData } from '../utils/helpers.js';
 import {
   fetchUserArtworks,
   fetchArtworksByOwner,
-} from "../services/artwork.js";
-import { fetchOrdersBySeller, fetchOrdersByBuyer } from "../services/order.js";
+} from '../services/artwork.js';
+import { fetchOrdersBySeller, fetchOrdersByBuyer } from '../services/order.js';
 import {
   fetchUserById,
   fetchUserByEmail,
@@ -19,15 +19,15 @@ import {
   editUserPassword,
   editUserPreferences,
   deactivateExistingUser,
-} from "../services/user.js";
-import { deleteS3Object } from "../utils/upload.js";
-import createError from "http-errors";
-import { fetchStripeBalance } from "../services/stripe.js";
-import profileValidator from "../validation/profile.js";
-import emailValidator from "../validation/email.js";
-import passwordValidator from "../validation/password.js";
-import preferencesValidator from "../validation/preferences.js";
-import rangeValidator from "../validation/range.js";
+} from '../services/user.js';
+import { deleteS3Object } from '../utils/upload.js';
+import createError from 'http-errors';
+import { fetchStripeBalance } from '../services/stripe.js';
+import profileValidator from '../validation/profile.js';
+import emailValidator from '../validation/email.js';
+import passwordValidator from '../validation/password.js';
+import preferencesValidator from '../validation/preferences.js';
+import rangeValidator from '../validation/range.js';
 
 export const getUserProfile = async ({
   userUsername,
@@ -41,7 +41,7 @@ export const getUserProfile = async ({
     dataLimit,
   });
   if (foundUser) return { user: foundUser, artwork: foundUser.artwork };
-  throw createError(400, "User not found");
+  throw createError(400, 'User not found');
 };
 
 export const getUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
@@ -106,9 +106,9 @@ export const updateUserProfile = async ({
       foundUser.width = userDimensions.width;
     }
     await foundUser.save({ session });
-    return { message: "User details updated" };
+    return { message: 'User details updated' };
   }
-  throw createError(400, "User not found");
+  throw createError(400, 'User not found');
 };
 
 export const getUserSettings = async ({ userId }) => {
@@ -116,7 +116,7 @@ export const getUserSettings = async ({ userId }) => {
   if (foundUser) {
     return { user: foundUser };
   }
-  throw createError(400, "User not found");
+  throw createError(400, 'User not found');
 };
 
 export const getUserNotifications = async ({
@@ -138,7 +138,7 @@ export const updateUserEmail = async ({ userId, userEmail, session }) => {
   if (error) throw createError(400, error);
   const foundUser = await fetchUserByEmail({ userEmail, session });
   if (foundUser) {
-    throw createError(400, "User with entered email already exists");
+    throw createError(400, 'User with entered email already exists');
   } else {
     const verificationToken = randomString.generate();
     const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
@@ -146,13 +146,13 @@ export const updateUserEmail = async ({ userId, userEmail, session }) => {
     await sendEmail(
       server.appName,
       userEmail,
-      "Please confirm your email",
+      'Please confirm your email',
       `Hello,
         Please click on the link to verify your email:
 
         <a href=${verificationLink}>Click here to verify</a>`
     );
-    return { message: "Email successfully updated" };
+    return { message: 'Email successfully updated' };
   }
 };
 
@@ -172,7 +172,7 @@ export const updateUserPassword = async ({
   );
   if (error) throw createError(400, error);
   await editUserPassword({ userId, userPassword });
-  return { message: "Password updated successfully" };
+  return { message: 'Password updated successfully' };
 };
 
 // needs transaction (done)
@@ -180,7 +180,7 @@ export const updateUserPreferences = async ({ userId, displaySaves }) => {
   const { error } = preferencesValidator(sanitizeData({ displaySaves }));
   if (error) throw createError(400, error);
   await editUserPreferences({ userId, displaySaves });
-  return { message: "Preferences updated successfully" };
+  return { message: 'Preferences updated successfully' };
 };
 
 /* const deleteUser = async (req, res, next) => {
@@ -266,12 +266,12 @@ export const deactivateUser = async ({ userId, session }) => {
       if (!foundOrder.length) {
         await deleteS3Object({
           link: artwork.current.cover,
-          folder: "artworkCovers/",
+          folder: 'artworkCovers/',
         });
 
         await deleteS3Object({
           link: artwork.current.media,
-          folder: "artworkMedia/",
+          folder: 'artworkMedia/',
         });
 
         await removeArtworkVersion({
@@ -283,14 +283,14 @@ export const deactivateUser = async ({ userId, session }) => {
     }
     await deleteS3Object({
       link: foundUser.photo,
-      folder: "profilePhotos/",
+      folder: 'profilePhotos/',
     });
     await deactivateExistingUser({ userId: foundUser._id, session });
     req.logout();
     req.session.destroy(function (err) {
-      res.json("/");
+      res.json('/');
     });
-    return { message: "User deactivated" };
+    return { message: 'User deactivated' };
   }
-  throw createError(400, "User not found");
+  throw createError(400, 'User not found');
 };
