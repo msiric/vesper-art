@@ -5,8 +5,6 @@ const MainLayoutStyles = makeStyles((muiTheme) => ({
   appRoot: {
     display: 'flex',
     flexFlow: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
     minHeight: '100vh',
     height: '100%',
   },
