@@ -1,16 +1,17 @@
-import React from 'react';
-import { Container, Typography, Link } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import React from "react";
+import { Container, Typography, Link } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((muiTheme) => ({
   footerContainer: {
+    zIndex: 10000,
     padding: muiTheme.spacing(3, 2),
-    marginTop: 'auto',
+    marginTop: "auto",
     backgroundColor:
-      muiTheme.palette.type === 'light'
+      muiTheme.palette.type === "light"
         ? muiTheme.palette.grey[200]
         : muiTheme.palette.grey[800],
-    textAlign: 'center',
+    textAlign: "center",
   },
 }));
 
@@ -21,12 +22,12 @@ const Footer = () => {
     <footer className={classes.footerContainer}>
       <Container maxWidth="sm">
         <Typography variant="body2" color="textSecondary">
-          {'Copyright © '}
+          {"Copyright © "}
           <Link color="inherit" href="https://material-ui.com/">
             Material UI
-          </Link>{' '}
+          </Link>{" "}
           {new Date().getFullYear()}
-          {'.'}
+          {"."}
         </Typography>
       </Container>
     </footer>
