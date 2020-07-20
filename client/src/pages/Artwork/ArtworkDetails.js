@@ -255,22 +255,22 @@ const ArtworkDetails = ({ match, socket }) => {
           </Grid>
         ) : state.artwork._id ? (
           <>
-            <Grid item sm={12} md={7} className={classes.grid}>
-              <ArtworkPreview artwork={state.artwork} />
-              <br />
-              <CommentSection
-                artwork={state.artwork}
-                edits={state.edits}
-                loadMoreComments={loadMoreComments}
-                handleCommentClose={handleCommentClose}
-                handlePopoverOpen={handlePopoverOpen}
-              />
-            </Grid>
-            <Grid item sm={12} md={5} className={classes.grid}>
-              <ArtistSection />
-              <br />
-              <ArtworkInfo />
-            </Grid>
+            <ArtworkPreview artwork={state.artwork} />
+            <br />
+            <CommentSection
+              artwork={state.artwork}
+              edits={state.edits}
+              loadMoreComments={loadMoreComments}
+              handleCommentClose={handleCommentClose}
+              handlePopoverOpen={handlePopoverOpen}
+            />
+            <ArtistSection artwork={state.artwork} />
+            <br />
+            <ArtworkInfo
+              artwork={state.artwork}
+              license={state.license}
+              handleDownload={handleDownload}
+            />
           </>
         ) : (
           history.push('/')
