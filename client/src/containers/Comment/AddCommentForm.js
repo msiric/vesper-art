@@ -1,17 +1,13 @@
-/* import React from "react";
-import { useFormik } from "formik";
-import { TextField, Button } from "@material-ui/core";
-import { commentValidation } from "../../validation/comment.js";
-import AddArtworkStyles from "../../components/Artwork/AddArtwork.style.js";
+import React, { useContext } from 'react';
+import { Context } from '../../context/Store.js';
+import { useFormik } from 'formik';
+import { TextField, Button } from '@material-ui/core';
+import { commentValidation } from '../../validation/comment.js';
+import { postComment } from '../../services/artwork.js';
 
-const AddCommentForm = ({
-  capabilities,
-  user,
-  postArtwork,
-  postMedia,
-  deleteEmptyValues,
-}) => {
-  const classes = AddArtworkStyles();
+const AddCommentForm = ({ artwork }) => {
+  const [store, dispatch] = useContext(Context);
+  const classes = {};
 
   const {
     isSubmitting,
@@ -24,16 +20,16 @@ const AddCommentForm = ({
     errors,
   } = useFormik({
     initialValues: {
-      commentContent: "",
+      commentContent: '',
     },
     enableReinitialize: true,
     validationSchema: commentValidation,
     async onSubmit(values) {
       const { data } = await postComment({
-        artworkId: state.artwork._id,
+        artworkId: artwork._id,
         data: values,
       });
-      setState((prevState) => ({
+      /*       setState((prevState) => ({
         ...prevState,
         artwork: {
           ...prevState.artwork,
@@ -49,36 +45,37 @@ const AddCommentForm = ({
             },
           ],
         },
-      }));
+      })); */
       resetForm();
     },
   });
 
-  <form className={classes.postComment} onSubmit={handleSubmit}>
-    <div className={classes.editCommentForm}>
-      <TextField
-        name="commentContent"
-        value={values.commentContent}
-        onBlur={() => null}
-        label="Type a comment"
-        type="text"
-        onChange={handleChange}
-        onBlur={handleBlur}
-        helperText={touched.commentContent ? errors.commentContent : ""}
-        error={touched.commentContent && Boolean(errors.commentContent)}
-        margin="dense"
-        variant="outlined"
-        fullWidth
-        multiline
-      />
-    </div>
-    <div className={classes.editCommentActions}>
-      <Button type="submit" color="primary" fullWidth disabled={isSubmitting}>
-        Post
-      </Button>
-    </div>
-  </form>;
+  return (
+    <form className={classes.postComment} onSubmit={handleSubmit}>
+      <div className={classes.editCommentForm}>
+        <TextField
+          name="commentContent"
+          value={values.commentContent}
+          onBlur={() => null}
+          label="Type a comment"
+          type="text"
+          onChange={handleChange}
+          onBlur={handleBlur}
+          helperText={touched.commentContent ? errors.commentContent : ''}
+          error={touched.commentContent && Boolean(errors.commentContent)}
+          margin="dense"
+          variant="outlined"
+          fullWidth
+          multiline
+        />
+      </div>
+      <div className={classes.editCommentActions}>
+        <Button type="submit" color="primary" fullWidth disabled={isSubmitting}>
+          Post
+        </Button>
+      </div>
+    </form>
+  );
 };
 
 export default AddCommentForm;
- */
