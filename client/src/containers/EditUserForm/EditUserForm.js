@@ -14,6 +14,7 @@ import {
 import { postMedia, patchUser } from "../../services/user.js";
 import { profileValidation } from "../../validation/profile.js";
 import { countries } from "../../../../common/constants.js";
+import EditUserFormStyles from "./EditUserForm.style";
 
 const EditUserForm = ({ match, user, handleModalClose }) => {
   const {
@@ -52,51 +53,49 @@ const EditUserForm = ({ match, user, handleModalClose }) => {
     },
   });
 
-  const classes = {};
+  const classes = EditUserFormStyles();
 
   return (
-    <form className={classes.userForm} onSubmit={handleSubmit}>
-      <div className={classes.userContainer}>
-        <Card className={classes.card}>
-          <Typography variant="h6" align="center">
-            Edit info
-          </Typography>
-          <CardContent>
-            <UploadInput name="userMedia" setFieldValue={setFieldValue} />
-            <TextField
-              name="userDescription"
-              label="Description"
-              type="text"
-              value={values.userDescription}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              helperText={touched.userDescription ? errors.userDescription : ""}
-              error={touched.userDescription && Boolean(errors.userDescription)}
-              margin="dense"
-              variant="outlined"
-              fullWidth
-            />
-            <SelectInput
-              name="userCountry"
-              label="Country"
-              value={values.userCountry}
-              handleChange={handleChange}
-              handleBlur={handleBlur}
-              helperText={touched.userCountry ? errors.userCountry : ""}
-              error={touched.userCountry && Boolean(errors.userCountry)}
-              options={countries}
-            />
-          </CardContent>
-          <CardActions className={classes.actions}>
-            <Button type="submit" color="primary" disabled={isSubmitting}>
-              Update
-            </Button>
-            <Button type="button" color="error" onClick={handleModalClose}>
-              Close
-            </Button>
-          </CardActions>
-        </Card>
-      </div>
+    <form className={classes.editUserForm} onSubmit={handleSubmit}>
+      <Card className={classes.editUserContainer}>
+        <Typography variant="h6" align="center">
+          Edit info
+        </Typography>
+        <CardContent>
+          <UploadInput name="userMedia" setFieldValue={setFieldValue} />
+          <TextField
+            name="userDescription"
+            label="Description"
+            type="text"
+            value={values.userDescription}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            helperText={touched.userDescription ? errors.userDescription : ""}
+            error={touched.userDescription && Boolean(errors.userDescription)}
+            margin="dense"
+            variant="outlined"
+            fullWidth
+          />
+          <SelectInput
+            name="userCountry"
+            label="Country"
+            value={values.userCountry}
+            handleChange={handleChange}
+            handleBlur={handleBlur}
+            helperText={touched.userCountry ? errors.userCountry : ""}
+            error={touched.userCountry && Boolean(errors.userCountry)}
+            options={countries}
+          />
+        </CardContent>
+        <CardActions className={classes.actions}>
+          <Button type="submit" color="primary" disabled={isSubmitting}>
+            Update
+          </Button>
+          <Button type="button" color="error" onClick={handleModalClose}>
+            Close
+          </Button>
+        </CardActions>
+      </Card>
     </form>
   );
 };

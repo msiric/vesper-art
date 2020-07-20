@@ -1,15 +1,14 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../../context/Store.js';
-import { makeStyles } from '@material-ui/core/styles';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import { useFormik } from 'formik';
-import UploadInput from '../../shared/UploadInput/UploadInput.js';
+import React, { useContext, useState, useEffect } from "react";
+import { Context } from "../../context/Store.js";
+import { makeStyles } from "@material-ui/core/styles";
+import SelectInput from "../../shared/SelectInput/SelectInput.js";
+import { useFormik } from "formik";
+import UploadInput from "../../shared/UploadInput/UploadInput.js";
 import {
   AppBar,
   Tab,
   Box,
   Tabs,
-  Modal,
   Container,
   Grid,
   CircularProgress,
@@ -22,11 +21,11 @@ import {
   Paper,
   Button,
   Link as Anchor,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import {
   EditRounded as EditIcon,
   LinkRounded as CopyIcon,
-} from '@material-ui/icons';
+} from "@material-ui/icons";
 import {
   FacebookShareButton,
   WhatsappShareButton,
@@ -36,27 +35,28 @@ import {
   WhatsappIcon,
   RedditIcon,
   TwitterIcon,
-} from 'react-share';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { withSnackbar } from 'notistack';
-import { Link, useHistory } from 'react-router-dom';
-import SwipeableViews from 'react-swipeable-views';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { format } from 'date-fns';
+} from "react-share";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { withSnackbar } from "notistack";
+import { Link, useHistory } from "react-router-dom";
+import SwipeableViews from "react-swipeable-views";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { format } from "date-fns";
 import {
   postMedia,
   patchUser,
   getSaves,
   getUser,
-} from '../../services/user.js';
-import { getArtwork } from '../../services/artwork.js';
-import { profileValidation } from '../../validation/profile.js';
-import { countries } from '../../../../common/constants.js';
-import UserProfilePanel from '../../containers/UserProfilePanel/UserProfilePanel.js';
-import EditUserForm from '../../containers/EditUserForm/EditUserForm.js';
-import UserProfileBanner from '../../containers/UserProfileBanner/UserProfileBanner.js';
-import UserArtworkPanel from '../../containers/UserArtworkPanel/UserArtworkPanel.js';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+} from "../../services/user.js";
+import { getArtwork } from "../../services/artwork.js";
+import { profileValidation } from "../../validation/profile.js";
+import { countries } from "../../../../common/constants.js";
+import UserProfilePanel from "../../containers/UserProfilePanel/UserProfilePanel.js";
+import EditUserForm from "../../containers/EditUserForm/EditUserForm.js";
+import UserProfileBanner from "../../containers/UserProfileBanner/UserProfileBanner.js";
+import UserArtworkPanel from "../../containers/UserArtworkPanel/UserArtworkPanel.js";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import ModalWrapper from "../../components/ModalWrapper/ModalWrapper.js";
 
 const Profile = ({ match, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -209,7 +209,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const a11yProps = (index) => {
     return {
       id: `full-width-tab-${index}`,
-      'aria-controls': `full-width-tabpanel-${index}`,
+      "aria-controls": `full-width-tabpanel-${index}`,
     };
   };
 
@@ -275,16 +275,15 @@ const Profile = ({ match, enqueueSnackbar }) => {
             />
           </>
         ) : (
-          history.push('/')
+          history.push("/")
         )}
-        <Modal
+        <ModalWrapper
           open={state.modal.open}
-          onClose={handleModalClose}
-          aria-labelledby="Edit info"
-          className={classes.modal}
+          handleClose={handleModalClose}
+          ariaLabel="Edit profile info"
         >
           <EditUserForm user={state.user} handleModalClose={handleModalClose} />
-        </Modal>
+        </ModalWrapper>
       </Grid>
     </Container>
   );
