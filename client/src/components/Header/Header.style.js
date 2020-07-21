@@ -34,7 +34,7 @@ const HeaderStyles = makeStyles((muiTheme) => ({
   typeIcon: {
     height: '100%',
     position: 'absolute',
-    zIndex: 10000,
+    zIndex: 1000,
     display: 'flex',
     alignItems: 'center',
     borderRadius: 4,
@@ -47,7 +47,7 @@ const HeaderStyles = makeStyles((muiTheme) => ({
     right: 0,
     height: '100%',
     position: 'absolute',
-    zIndex: 10000,
+    zIndex: 1000,
     display: 'flex',
     alignItems: 'center',
     borderRadius: 4,
