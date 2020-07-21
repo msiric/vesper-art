@@ -7,6 +7,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { artepunktTheme } from '../../constants/theme.js';
+import { formatDate } from '../../../../common/helpers.js';
 
 const useStyles = makeStyles({
   profileCardContainer: {
@@ -56,6 +57,14 @@ const ProfileCard = ({ user, handleModalOpen }) => {
           align="center"
         >
           {user.country || 'No country specified'}
+        </Typography>
+        <Typography
+          variant="body2"
+          color="textSecondary"
+          component="p"
+          align="center"
+        >
+          {`Joined ${formatDate(new Date(user.created), 'MMM yyyy')}`}
         </Typography>
       </CardContent>
       {user.editable && (

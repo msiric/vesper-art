@@ -333,7 +333,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       component="p"
                     >
                       {`Joined ${format(
-                        new Date(state.user.created),
+                        new Date(store.user.created),
                         'MMM yyyy'
                       )}`}
                     </Typography>

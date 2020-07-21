@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   Paper,
   Grid,
@@ -10,32 +11,57 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
+import { formatDate } from '../../../../common/helpers.js';
 import { withRouter } from 'react-router-dom';
 
+const useStyles = makeStyles((muiTheme) => ({}));
+
 const ArtistSection = ({ artwork }) => {
-  const classes = {};
+  const classes = useStyles();
 
   return (
-    <Grid item sm={12} md={5} className={classes.grid}>
-      <Card className={classes.user}>
+    <Grid item sm={12} md={5} className={classes.artistSectionItem}>
+      <Card className={classes.artistSectionCard}>
         <CardMedia
-          className={classes.avatar}
+          component="img"
+          alt={artwork.owner.name}
           image={artwork.owner.photo}
           title={artwork.owner.name}
+          className={classes.artistSectionMedia}
         />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            <Link component={RouterLink} to={`/user/${artwork.owner.name}`}>
-              {artwork.owner.name}
-            </Link>
+          <Typography gutterBottom variant="h5" component="h2" align="center">
+            {artwork.owner.name}
           </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {artwork.owner.description ||
-              "This artist doesn't have much to say about themself"}
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            component="p"
+            align="center"
+          >
+            {artwork.owner.description || 'No description specified'}
+          </Typography>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            component="p"
+            align="center"
+          >
+            {artwork.owner.country || 'No country specified'}
+          </Typography>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            component="p"
+            align="center"
+          >
+            {`Joined ${formatDate(
+              new Date(artwork.owner.created),
+              'MMM yyyy'
+            )}`}
           </Typography>
         </CardContent>
       </Card>
-      <br />
     </Grid>
   );
 };

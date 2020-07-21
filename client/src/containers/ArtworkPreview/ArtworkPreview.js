@@ -46,7 +46,7 @@ const useStyles = makeStyles((muiTheme) => ({
     alignItems: 'center',
     flex: 1,
   },
-  grid: {
+  artworkPreviewItem: {
     display: 'flex',
     alignItems: 'center',
     flex: 1,
@@ -60,7 +60,7 @@ const useStyles = makeStyles((muiTheme) => ({
     textAlign: 'center',
     color: muiTheme.palette.text.secondary,
   },
-  cover: {
+  artworkPreviewMedia: {
     paddingTop: '100%',
   },
   avatar: {
@@ -71,7 +71,7 @@ const useStyles = makeStyles((muiTheme) => ({
     flexShrink: 0,
     backgroundColor: muiTheme.palette.background.default,
   },
-  root: {
+  artworkPreviewCard: {
     width: '100%',
     backgroundColor: muiTheme.palette.background.paper,
   },
@@ -139,10 +139,10 @@ const ArtworkPreview = ({ artwork }) => {
   const classes = useStyles();
 
   return (
-    <Grid item sm={12} md={7} className={classes.grid}>
-      <Card className={classes.root}>
+    <Grid item sm={12} md={7} className={classes.artworkPreviewItem}>
+      <Card className={classes.artworkPreviewCard}>
         <CardMedia
-          className={classes.cover}
+          className={classes.artworkPreviewMedia}
           image={artwork.current.cover}
           title={artwork.current.title}
         />
