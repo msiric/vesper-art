@@ -257,6 +257,7 @@ const ArtworkDetails = ({ match, socket }) => {
           <>
             <ArtworkPreview artwork={state.artwork} />
             <br />
+            <ArtistSection artwork={state.artwork} />
             <CommentSection
               artwork={state.artwork}
               edits={state.edits}
@@ -264,7 +265,6 @@ const ArtworkDetails = ({ match, socket }) => {
               handleCommentClose={handleCommentClose}
               handlePopoverOpen={handlePopoverOpen}
             />
-            <ArtistSection artwork={state.artwork} />
             <br />
             <ArtworkInfo
               artwork={state.artwork}
