@@ -11,10 +11,10 @@ const SelectInput = ({
   name,
   label,
   handleChange,
-  handleBlur,
-  helperText,
-  error,
   options,
+  handleBlur = null,
+  helperText = null,
+  error = null,
   ...other
 }) => {
   return (
@@ -45,7 +45,7 @@ const SelectInput = ({
           )
         )}
       </Select>
-      <FormHelperText error>{helperText}</FormHelperText>
+      {helperText && <FormHelperText error>{helperText}</FormHelperText>}
     </FormControl>
   );
 };

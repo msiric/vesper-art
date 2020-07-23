@@ -20,8 +20,17 @@ import { format, eachDayOfInterval, subDays } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import NumberFormat from 'react-number-format';
 import { getStatistics, getSelection } from '../../services/user.js';
+import SelectInput from '@material-ui/core/Select/SelectInput';
+import DashboardCard from '../../components/DashboardCard/DashboardCard.js';
+import DashboardStatistics from '../DashboardStatistics/DashboardStatistics.js';
 
-const DashboardVisualization = ({ display, handleSelectChange }) => {
+const DashboardVisualization = ({
+  display,
+  handleSelectChange,
+  graphData,
+  selectedStats,
+  loading,
+}) => {
   const [store, dispatch] = useContext(Context);
   const classes = {};
 
@@ -36,25 +45,21 @@ const DashboardVisualization = ({ display, handleSelectChange }) => {
         </Typography>
       </Grid>
       <Grid item xs={12} md={6} className={classes.grid}>
-        <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel id="data-display">Displayed data</InputLabel>
-          <Select
-            labelId="data-display"
-            value={display.type}
-            onChange={handleSelectChange}
-            label="Displayed data"
-            margin="dense"
-          >
-            <MenuItem value="purchases">Purchases</MenuItem>
-            <MenuItem value="sales">Sales</MenuItem>
-          </Select>
-        </FormControl>
+        <SelectInput
+          name="displayType"
+          label="Displayed data"
+          handleChange={handleSelectChange}
+          options={[
+            { value: 'purchases', text: 'Purchases' },
+            { value: 'sales', text: 'Sales' },
+          ]}
+        />
       </Grid>
       <Box className={classes.graphArea}>
         <Grid item xs={12} md={8} className={classes.grid}>
-          <div className={classes.graph}>
-            <div className={classes.graphContainer}>
-              {state.loading ? (
+          <Box className={classes.graph}>
+            <Box className={classes.graphContainer}>
+              {loading ? (
                 <Grid item xs={12} className={classes.loader}>
                   <CircularProgress />
                 </Grid>
@@ -62,7 +67,7 @@ const DashboardVisualization = ({ display, handleSelectChange }) => {
                 <LineChart
                   width={730}
                   height={400}
-                  data={state.graphData}
+                  data={graphData}
                   margin={{
                     top: 5,
                     right: 30,
@@ -93,70 +98,30 @@ const DashboardVisualization = ({ display, handleSelectChange }) => {
                   />
                 </LineChart>
               )}
-            </div>
-          </div>
+            </Box>
+          </Box>
         </Grid>
         <Grid item xs={12} md={4} className={classes.grid}>
-          <div className={classes.controls}>
-            <Paper className={classes.item}>
-              {state.loading ? (
-                <Grid item xs={12} className={classes.loader}>
-                  <CircularProgress />
-                </Grid>
-              ) : (
-                <div className={classes.itemData}>
-                  <Typography className={classes.itemMain}>
-                    <NumberFormat
-                      value={state.selectedStats[state.display.label]}
-                      displayType={'text'}
-                      thousandSeparator={true}
-                      decimalScale={2}
-                      decimalScale={2}
-                      prefix={'$'}
-                    />
-                  </Typography>
-                  <Typography className={classes.itemAlt} color="textSecondary">
-                    {state.display.label}
-                  </Typography>
-                </div>
-              )}
-              <Divider />
-            </Paper>
-            <Paper className={classes.item}>
-              {state.loading ? (
-                <Grid item xs={12} className={classes.loader}>
-                  <CircularProgress />
-                </Grid>
-              ) : (
-                <div className={classes.itemData}>
-                  <Typography className={classes.itemMain}>
-                    {state.selectedStats.licenses.personal}
-                  </Typography>
-                  <Typography className={classes.itemAlt} color="textSecondary">
-                    Personal licenses
-                  </Typography>
-                </div>
-              )}
-              <Divider />
-            </Paper>
-            <Paper className={classes.item}>
-              {state.loading ? (
-                <Grid item xs={12} className={classes.loader}>
-                  <CircularProgress />
-                </Grid>
-              ) : (
-                <div className={classes.itemData}>
-                  <Typography className={classes.itemMain}>
-                    {state.selectedStats.licenses.commercial}
-                  </Typography>
-                  <Typography className={classes.itemAlt} color="textSecondary">
-                    Commercial licenses
-                  </Typography>
-                </div>
-              )}
-              <Divider />
-            </Paper>
-          </div>
+          <DashboardStatistics
+            loading={loading}
+            cards={[
+              {
+                data: selectedStats[display.label],
+                label: display.label,
+                currency: true,
+              },
+              {
+                data: selectedStats.license.personal,
+                label: 'Personal licenses',
+                currency: false,
+              },
+              {
+                data: selectedStats.license.commercial,
+                label: 'Commercial licenses',
+                currency: false,
+              },
+            ]}
+          />
         </Grid>
       </Box>
     </Box>
