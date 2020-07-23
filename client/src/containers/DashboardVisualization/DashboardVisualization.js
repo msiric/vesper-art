@@ -50,6 +50,115 @@ const DashboardVisualization = ({ display, handleSelectChange }) => {
           </Select>
         </FormControl>
       </Grid>
+      <Box className={classes.graphArea}>
+        <Grid item xs={12} md={8} className={classes.grid}>
+          <div className={classes.graph}>
+            <div className={classes.graphContainer}>
+              {state.loading ? (
+                <Grid item xs={12} className={classes.loader}>
+                  <CircularProgress />
+                </Grid>
+              ) : (
+                <LineChart
+                  width={730}
+                  height={400}
+                  data={state.graphData}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <XAxis dataKey="date" />
+                  <YAxis
+                    allowDecimals={false}
+                    domain={['dataMin', 'dataMax']}
+                  />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    name="Personal licenses"
+                    type="monotone"
+                    dataKey="pl"
+                    stroke="#8884d8"
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    name="Commercial licenses"
+                    type="monotone"
+                    dataKey="cl"
+                    stroke="#82ca9d"
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              )}
+            </div>
+          </div>
+        </Grid>
+        <Grid item xs={12} md={4} className={classes.grid}>
+          <div className={classes.controls}>
+            <Paper className={classes.item}>
+              {state.loading ? (
+                <Grid item xs={12} className={classes.loader}>
+                  <CircularProgress />
+                </Grid>
+              ) : (
+                <div className={classes.itemData}>
+                  <Typography className={classes.itemMain}>
+                    <NumberFormat
+                      value={state.selectedStats[state.display.label]}
+                      displayType={'text'}
+                      thousandSeparator={true}
+                      decimalScale={2}
+                      decimalScale={2}
+                      prefix={'$'}
+                    />
+                  </Typography>
+                  <Typography className={classes.itemAlt} color="textSecondary">
+                    {state.display.label}
+                  </Typography>
+                </div>
+              )}
+              <Divider />
+            </Paper>
+            <Paper className={classes.item}>
+              {state.loading ? (
+                <Grid item xs={12} className={classes.loader}>
+                  <CircularProgress />
+                </Grid>
+              ) : (
+                <div className={classes.itemData}>
+                  <Typography className={classes.itemMain}>
+                    {state.selectedStats.licenses.personal}
+                  </Typography>
+                  <Typography className={classes.itemAlt} color="textSecondary">
+                    Personal licenses
+                  </Typography>
+                </div>
+              )}
+              <Divider />
+            </Paper>
+            <Paper className={classes.item}>
+              {state.loading ? (
+                <Grid item xs={12} className={classes.loader}>
+                  <CircularProgress />
+                </Grid>
+              ) : (
+                <div className={classes.itemData}>
+                  <Typography className={classes.itemMain}>
+                    {state.selectedStats.licenses.commercial}
+                  </Typography>
+                  <Typography className={classes.itemAlt} color="textSecondary">
+                    Commercial licenses
+                  </Typography>
+                </div>
+              )}
+              <Divider />
+            </Paper>
+          </div>
+        </Grid>
+      </Box>
     </Box>
   );
 };
