@@ -33,6 +33,7 @@ export const artepunktTheme = createMuiTheme({
     container: 20,
   },
   margin: {
+    spacing: 8,
     container: 20,
   },
 });

@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../../context/Store.js';
+import React, { useContext, useState, useEffect } from "react";
+import { Context } from "../../context/Store.js";
 import {
   Container,
   Grid,
@@ -12,30 +12,32 @@ import {
   Select,
   MenuItem,
   Box,
-} from '@material-ui/core';
-import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker.js';
-import { LocalizationProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
-import { format, eachDayOfInterval, subDays } from 'date-fns';
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
-import NumberFormat from 'react-number-format';
-import { getStatistics, getSelection } from '../../services/user.js';
+} from "@material-ui/core";
+import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
+import { LocalizationProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
+import { format, eachDayOfInterval, subDays } from "date-fns";
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import NumberFormat from "react-number-format";
+import { getStatistics, getSelection } from "../../services/user.js";
+import { styled } from "@material-ui/core/styles";
+import { compose, flexbox, typography } from "@material-ui/system";
+import { artepunktTheme } from "../../constants/theme.js";
+
+const GridItem = styled(Grid)(compose(typography));
 
 const DashboardToolbar = ({ display, handleSelectChange }) => {
   const [store, dispatch] = useContext(Context);
   const classes = {};
 
   return (
-    <Box>
-      <Grid item xs={12} md={6} className={classes.grid}>
-        <Typography
-          className="hidden sm:flex mx-0 sm:mx-12 capitalize"
-          variant="h6"
-        >
+    <Box display="flex" mb={artepunktTheme.margin.spacing} width="auto">
+      <GridItem item xs={12} md={6}>
+        <Typography style={{ textTransform: "capitalize" }} variant="h6">
           {display.type}
         </Typography>
-      </Grid>
-      <Grid item xs={12} md={6} className={classes.grid}>
+      </GridItem>
+      <GridItem item xs={12} md={6} textAlign="right">
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel id="data-display">Displayed data</InputLabel>
           <Select
@@ -49,7 +51,7 @@ const DashboardToolbar = ({ display, handleSelectChange }) => {
             <MenuItem value="sales">Sales</MenuItem>
           </Select>
         </FormControl>
-      </Grid>
+      </GridItem>
     </Box>
   );
 };

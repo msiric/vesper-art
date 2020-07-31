@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../../context/Store.js';
+import React, { useContext, useState, useEffect } from "react";
+import { Context } from "../../context/Store.js";
 import {
   Container,
   Grid,
@@ -12,21 +12,34 @@ import {
   Select,
   MenuItem,
   Box,
-} from '@material-ui/core';
-import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker.js';
-import { LocalizationProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
-import { format, eachDayOfInterval, subDays } from 'date-fns';
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
-import NumberFormat from 'react-number-format';
-import { getStatistics, getSelection } from '../../services/user.js';
-import SelectInput from '@material-ui/core/Select/SelectInput';
-import DashboardCard from '../../components/DashboardCard/DashboardCard.js';
-import DashboardStatistics from '../DashboardStatistics/DashboardStatistics.js';
+} from "@material-ui/core";
+import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
+import { LocalizationProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
+import { format, eachDayOfInterval, subDays } from "date-fns";
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  Text,
+} from "recharts";
+import NumberFormat from "react-number-format";
+import { getStatistics, getSelection } from "../../services/user.js";
+import SelectInput from "@material-ui/core/Select/SelectInput";
+import DashboardCard from "../../components/DashboardCard/DashboardCard.js";
+import DashboardStatistics from "../DashboardStatistics/DashboardStatistics.js";
+import { styled } from "@material-ui/core/styles";
+import { compose, flexbox, typography } from "@material-ui/system";
+import { artepunktTheme } from "../../constants/theme.js";
+
+const GridItem = styled(Grid)(compose(typography));
 
 const DashboardVisualization = ({
   display,
-  handleSelectChange,
   graphData,
   selectedStats,
   loading,
@@ -35,51 +48,27 @@ const DashboardVisualization = ({
   const classes = {};
 
   return (
-    <Box>
-      <Grid item xs={12} md={6} className={classes.grid}>
-        <Typography
-          className="hidden sm:flex mx-0 sm:mx-12 capitalize"
-          variant="h6"
-        >
-          {display.type}
-        </Typography>
-      </Grid>
-      <Grid item xs={12} md={6} className={classes.grid}>
-        <SelectInput
-          name="displayType"
-          label="Displayed data"
-          handleChange={handleSelectChange}
-          options={[
-            { value: 'purchases', text: 'Purchases' },
-            { value: 'sales', text: 'Sales' },
-          ]}
-        />
-      </Grid>
-      <Box className={classes.graphArea}>
-        <Grid item xs={12} md={8} className={classes.grid}>
-          <Box className={classes.graph}>
-            <Box className={classes.graphContainer}>
-              {loading ? (
-                <Grid item xs={12} className={classes.loader}>
-                  <CircularProgress />
-                </Grid>
-              ) : (
+    <Grid container className={classes.graphArea}>
+      <GridItem item xs={12} md={8} mb={artepunktTheme.margin.spacing}>
+        <Box className={classes.graph}>
+          <Box className={classes.graphContainer}>
+            {loading ? (
+              <Grid item xs={12} className={classes.loader}>
+                <CircularProgress />
+              </Grid>
+            ) : (
+              <ResponsiveContainer width="100%" height={400}>
                 <LineChart
-                  width={730}
-                  height={400}
                   data={graphData}
                   margin={{
                     top: 5,
-                    right: 30,
-                    left: 20,
+                    left: 5,
                     bottom: 5,
+                    right: 5,
                   }}
                 >
                   <XAxis dataKey="date" />
-                  <YAxis
-                    allowDecimals={false}
-                    domain={['dataMin', 'dataMax']}
-                  />
+                  <YAxis tick={false} width={1} />
                   <Tooltip />
                   <Legend />
                   <Line
@@ -97,34 +86,35 @@ const DashboardVisualization = ({
                     activeDot={{ r: 6 }}
                   />
                 </LineChart>
-              )}
-            </Box>
+              </ResponsiveContainer>
+            )}
           </Box>
-        </Grid>
-        <Grid item xs={12} md={4} className={classes.grid}>
-          <DashboardStatistics
-            loading={loading}
-            cards={[
-              {
-                data: selectedStats[display.label],
-                label: display.label,
-                currency: true,
-              },
-              {
-                data: selectedStats.license.personal,
-                label: 'Personal licenses',
-                currency: false,
-              },
-              {
-                data: selectedStats.license.commercial,
-                label: 'Commercial licenses',
-                currency: false,
-              },
-            ]}
-          />
-        </Grid>
-      </Box>
-    </Box>
+        </Box>
+      </GridItem>
+      <GridItem item xs={12} md={4} className={classes.grid}>
+        <DashboardStatistics
+          loading={loading}
+          cards={[
+            {
+              data: selectedStats[display.label],
+              label: display.label,
+              currency: true,
+            },
+            {
+              data: selectedStats.licenses.personal,
+              label: "Personal licenses",
+              currency: false,
+            },
+            {
+              data: selectedStats.licenses.commercial,
+              label: "Commercial licenses",
+              currency: false,
+            },
+          ]}
+          layout="column"
+        />
+      </GridItem>
+    </Grid>
   );
 };
 
