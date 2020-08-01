@@ -199,7 +199,7 @@ const Dashboard = () => {
                 data:
                   state.display.type === 'purchases'
                     ? state.currentStats.licenses
-                    : state.currentStats.review || 'No reviews',
+                    : state.currentStats.review || '/',
                 label:
                   state.display.type === 'purchases' ? 'Licenses' : 'Rating',
                 currency: false,

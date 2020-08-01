@@ -18,7 +18,17 @@ import { ax } from '../../containers/Interceptor/Interceptor.js';
 import ProductsTableHead from './Head.js';
 import { getGallery } from '../../services/artwork.js';
 
-const ProductsTable = () => {
+const ProductsTable = ({
+  data,
+  sort,
+  page,
+  rows,
+  cells,
+  handleRequestSort,
+  handleRowClick,
+  handleChangePage,
+  handleChangeRowsPerPage,
+}) => {
   return (
     <>
       <Table className="min-w-xl" aria-labelledby="tableTitle">

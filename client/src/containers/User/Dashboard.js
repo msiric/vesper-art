@@ -237,7 +237,7 @@ function Dashboard() {
                 ) : (
                   <div className={classes.boxData}>
                     <Typography className={classes.boxMain}>
-                      {state.currentStats.review || 'No reviews'}
+                      {state.currentStats.review || '/'}
                     </Typography>
                     <Typography
                       className={classes.boxAlt}
