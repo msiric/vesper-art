@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../context/Store.js";
+import React, { useContext, useState, useEffect } from 'react';
+import { Context } from '../../context/Store.js';
 import {
   Container,
   Grid,
@@ -12,17 +12,17 @@ import {
   Select,
   MenuItem,
   Box,
-} from "@material-ui/core";
-import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
-import { LocalizationProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
-import { format, eachDayOfInterval, subDays } from "date-fns";
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
-import NumberFormat from "react-number-format";
-import { getStatistics, getSelection } from "../../services/user.js";
-import DashboardToolbar from "../../containers/DashboardToolbar/DashboardToolbar.js";
-import DashboardStatistics from "../../containers/DashboardStatistics/DashboardStatistics.js";
-import DashboardVisualization from "../../containers/DashboardVisualization/DashboardVisualization.js";
+} from '@material-ui/core';
+import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker.js';
+import { LocalizationProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
+import { format, eachDayOfInterval, subDays } from 'date-fns';
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import NumberFormat from 'react-number-format';
+import { getStatistics, getSelection } from '../../services/user.js';
+import DashboardToolbar from '../../containers/DashboardToolbar/DashboardToolbar.js';
+import DashboardStatistics from '../../containers/DashboardStatistics/DashboardStatistics.js';
+import DashboardVisualization from '../../containers/DashboardVisualization/DashboardVisualization.js';
 
 const Dashboard = () => {
   const [store, dispatch] = useContext(Context);
@@ -38,8 +38,8 @@ const Dashboard = () => {
     currentStats: {},
     selectedStats: {},
     display: {
-      type: "purchases",
-      label: "spent",
+      type: 'purchases',
+      label: 'spent',
     },
     dates: [new Date(subDays(new Date(), 7)), new Date()],
     visualization: false,
@@ -97,36 +97,36 @@ const Dashboard = () => {
       });
       const graphData = {};
       for (let date of datesArray) {
-        graphData[formatDate(date, "dd/MM/yyyy")] = {
+        graphData[formatDate(date, 'dd/MM/yyyy')] = {
           pl: 0,
           cl: 0,
         };
       }
       data.statistics.map((item) => {
         item.licenses.map((license) => {
-          if (license.type === "personal") {
+          if (license.type === 'personal') {
             selectedStats.licenses.personal++;
-            if (graphData[formatDate(item.created, "dd/MM/yyyy")]) {
-              graphData[formatDate(item.created, "dd/MM/yyyy")] = {
-                ...graphData[formatDate(item.created, "dd/MM/yyyy")],
-                pl: graphData[formatDate(item.created, "dd/MM/yyyy")].pl + 1,
+            if (graphData[formatDate(item.created, 'dd/MM/yyyy')]) {
+              graphData[formatDate(item.created, 'dd/MM/yyyy')] = {
+                ...graphData[formatDate(item.created, 'dd/MM/yyyy')],
+                pl: graphData[formatDate(item.created, 'dd/MM/yyyy')].pl + 1,
               };
             } else {
               graphData.push({
-                date: formatDate(item.created, "dd/MM/yyyy"),
+                date: formatDate(item.created, 'dd/MM/yyyy'),
                 pl: 1,
               });
             }
           } else {
             selectedStats.licenses.commercial++;
-            if (graphData[formatDate(item.created, "dd/MM/yyyy")]) {
-              graphData[formatDate(item.created, "dd/MM/yyyy")] = {
-                ...graphData[formatDate(item.created, "dd/MM/yyyy")],
-                cl: graphData[formatDate(item.created, "dd/MM/yyyy")].cl + 1,
+            if (graphData[formatDate(item.created, 'dd/MM/yyyy')]) {
+              graphData[formatDate(item.created, 'dd/MM/yyyy')] = {
+                ...graphData[formatDate(item.created, 'dd/MM/yyyy')],
+                cl: graphData[formatDate(item.created, 'dd/MM/yyyy')].cl + 1,
               };
             } else {
               graphData.push({
-                date: formatDate(item.created, "dd/MM/yyyy"),
+                date: formatDate(item.created, 'dd/MM/yyyy'),
                 cl: 1,
               });
             }
@@ -155,7 +155,7 @@ const Dashboard = () => {
       ...prevState,
       display: {
         type: e.target.value,
-        label: e.target.value === "purchases" ? "spent" : "earned",
+        label: e.target.value === 'purchases' ? 'spent' : 'earned',
       },
     }));
   };
@@ -174,8 +174,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (state.dates[0] && state.dates[1]) {
-      const dateFrom = formatDate(new Date(state.dates[0]), "MM/dd/yyyy");
-      const dateTo = formatDate(new Date(state.dates[1]), "MM/dd/yyyy");
+      const dateFrom = formatDate(new Date(state.dates[0]), 'MM/dd/yyyy');
+      const dateTo = formatDate(new Date(state.dates[1]), 'MM/dd/yyyy');
       fetchSelectedData(dateFrom, dateTo);
     }
   }, [state.dates, state.display.type]);
@@ -186,7 +186,7 @@ const Dashboard = () => {
         <Grid
           container
           className={classes.container}
-          style={{ flexDirection: "column" }}
+          style={{ flexDirection: 'column' }}
         >
           <DashboardToolbar
             display={state.display}
@@ -197,16 +197,16 @@ const Dashboard = () => {
             cards={[
               {
                 data:
-                  state.display.type === "purchases"
+                  state.display.type === 'purchases'
                     ? state.currentStats.licenses
-                    : state.currentStats.review || "No reviews",
+                    : state.currentStats.review || 'No reviews',
                 label:
-                  state.display.type === "purchases" ? "Licenses" : "Rating",
+                  state.display.type === 'purchases' ? 'Licenses' : 'Rating',
                 currency: false,
               },
               {
                 data: state.currentStats.orders,
-                label: "Orders",
+                label: 'Orders',
                 currency: false,
               },
               {
@@ -218,9 +218,15 @@ const Dashboard = () => {
             layout="row"
           />
           <Grid item md={12} className={classes.grid}>
-            <Box className={classes.actionsContainer}>
-              <Typography className={classes.actionsHeading}>
-                {state.visualization ? "Visualization" : "Select date range"}
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography style={{ textTransform: 'capitalize' }} variant="h6">
+                {state.loading || state.visualization
+                  ? 'Visualization'
+                  : 'Select date range'}
               </Typography>
               <DateRangePicker
                 fromLabel="From"

@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../context/Store.js";
+import React, { useContext, useState, useEffect } from 'react';
+import { Context } from '../../context/Store.js';
 import {
   Container,
   Grid,
@@ -12,11 +12,11 @@ import {
   Select,
   MenuItem,
   Box,
-} from "@material-ui/core";
-import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
-import { LocalizationProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
-import { format, eachDayOfInterval, subDays } from "date-fns";
+} from '@material-ui/core';
+import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker.js';
+import { LocalizationProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
+import { format, eachDayOfInterval, subDays } from 'date-fns';
 import {
   ResponsiveContainer,
   LineChart,
@@ -26,15 +26,16 @@ import {
   Tooltip,
   Legend,
   Text,
-} from "recharts";
-import NumberFormat from "react-number-format";
-import { getStatistics, getSelection } from "../../services/user.js";
-import SelectInput from "@material-ui/core/Select/SelectInput";
-import DashboardCard from "../../components/DashboardCard/DashboardCard.js";
-import DashboardStatistics from "../DashboardStatistics/DashboardStatistics.js";
-import { styled } from "@material-ui/core/styles";
-import { compose, flexbox, typography } from "@material-ui/system";
-import { artepunktTheme } from "../../constants/theme.js";
+} from 'recharts';
+import NumberFormat from 'react-number-format';
+import { getStatistics, getSelection } from '../../services/user.js';
+import SelectInput from '@material-ui/core/Select/SelectInput';
+import DashboardCard from '../../components/DashboardCard/DashboardCard.js';
+import DashboardStatistics from '../DashboardStatistics/DashboardStatistics.js';
+import { styled } from '@material-ui/core/styles';
+import { compose, flexbox, typography } from '@material-ui/system';
+import { artepunktTheme } from '../../constants/theme.js';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 
 const GridItem = styled(Grid)(compose(typography));
 
@@ -48,16 +49,14 @@ const DashboardVisualization = ({
   const classes = {};
 
   return (
-    <Grid container className={classes.graphArea}>
+    <Grid container className={classes.graphArea} spacing={6}>
       <GridItem item xs={12} md={8} mb={artepunktTheme.margin.spacing}>
         <Box className={classes.graph}>
-          <Box className={classes.graphContainer}>
+          <Box height={540}>
             {loading ? (
-              <Grid item xs={12} className={classes.loader}>
-                <CircularProgress />
-              </Grid>
+              <LoadingSpinner />
             ) : (
-              <ResponsiveContainer width="100%" height={400}>
+              <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={graphData}
                   margin={{
@@ -102,12 +101,12 @@ const DashboardVisualization = ({
             },
             {
               data: selectedStats.licenses.personal,
-              label: "Personal licenses",
+              label: 'Personal licenses',
               currency: false,
             },
             {
               data: selectedStats.licenses.commercial,
-              label: "Commercial licenses",
+              label: 'Commercial licenses',
               currency: false,
             },
           ]}

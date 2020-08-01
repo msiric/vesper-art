@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../context/Store.js";
+import React, { useContext, useState, useEffect } from 'react';
+import { Context } from '../../context/Store.js';
 import {
   Container,
   Grid,
@@ -12,17 +12,17 @@ import {
   Select,
   MenuItem,
   Box,
-} from "@material-ui/core";
-import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
-import { LocalizationProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
-import { format, eachDayOfInterval, subDays } from "date-fns";
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
-import NumberFormat from "react-number-format";
-import { getStatistics, getSelection } from "../../services/user.js";
-import { styled } from "@material-ui/core/styles";
-import { compose, flexbox, typography } from "@material-ui/system";
-import { artepunktTheme } from "../../constants/theme.js";
+} from '@material-ui/core';
+import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker.js';
+import { LocalizationProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
+import { format, eachDayOfInterval, subDays } from 'date-fns';
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import NumberFormat from 'react-number-format';
+import { getStatistics, getSelection } from '../../services/user.js';
+import { styled } from '@material-ui/core/styles';
+import { compose, flexbox, typography } from '@material-ui/system';
+import { artepunktTheme } from '../../constants/theme.js';
 
 const GridItem = styled(Grid)(compose(typography));
 
@@ -33,8 +33,8 @@ const DashboardToolbar = ({ display, handleSelectChange }) => {
   return (
     <Box display="flex" mb={artepunktTheme.margin.spacing} width="auto">
       <GridItem item xs={12} md={6}>
-        <Typography style={{ textTransform: "capitalize" }} variant="h6">
-          {display.type}
+        <Typography style={{ textTransform: 'capitalize' }} variant="h6">
+          Dashboard
         </Typography>
       </GridItem>
       <GridItem item xs={12} md={6} textAlign="right">

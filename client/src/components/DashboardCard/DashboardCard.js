@@ -1,7 +1,9 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../context/Store.js";
+import React, { useContext, useState, useEffect } from 'react';
+import { Context } from '../../context/Store.js';
 import {
-  Container,
+  Card,
+  CardHeader,
+  CardContent,
   Grid,
   CircularProgress,
   Paper,
@@ -12,85 +14,91 @@ import {
   Select,
   MenuItem,
   Box,
-} from "@material-ui/core";
-import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
-import { LocalizationProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
-import { format, eachDayOfInterval, subDays } from "date-fns";
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
-import NumberFormat from "react-number-format";
-import { getStatistics, getSelection } from "../../services/user.js";
-import { styled } from "@material-ui/core/styles";
+} from '@material-ui/core';
+import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker.js';
+import { LocalizationProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
+import { format, eachDayOfInterval, subDays } from 'date-fns';
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import NumberFormat from 'react-number-format';
+import { getStatistics, getSelection } from '../../services/user.js';
+import { styled } from '@material-ui/core/styles';
 import {
   compose,
   flexbox,
   typography,
   border,
   sizing,
-} from "@material-ui/system";
+  spacing,
+} from '@material-ui/system';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner.js';
+
+const CardContainer = styled(Card)(compose(spacing, flexbox, sizing));
+const CardItem = styled(CardContent)(compose(spacing, flexbox, sizing));
 
 const DashboardCard = ({ currency, data, label, loading }) => {
   const [store, dispatch] = useContext(Context);
   const classes = {};
 
   return (
-    <Box
+    <CardContainer
       display="flex"
-      flexDirection="column"
       justifyContent="center"
       alignItems="center"
+      flexDirection="column"
       border={1}
-      height={150}
+      height={160}
+      m={1}
     >
-      {currency
-        ? [
-            ,
-            <Box className={classes.boxData}>
-              {loading ? (
-                <CircularProgress />
-              ) : (
-                <NumberFormat
-                  value={data}
-                  displayType={"text"}
-                  thousandSeparator={true}
-                  decimalScale={2}
-                  prefix={"$"}
-                  style={{ fontSize: "3.5rem" }}
-                />
-              )}
-            </Box>,
-            <Divider />,
-            <Box className={classes.boxFooter}>
-              <Typography
-                className={classes.boxAlt}
-                color="textSecondary"
-                style={{ textTransform: "capitalize" }}
-              >
-                {label}
-              </Typography>
-            </Box>,
-          ]
-        : [
-            <Box className={classes.boxData}>
-              {loading ? (
-                <CircularProgress />
-              ) : (
-                <Typography
-                  className={classes.boxMain}
-                  style={{ fontSize: "3.5rem" }}
-                >
-                  {data}
-                </Typography>
-              )}
-            </Box>,
-            <Divider />,
-            <Box className={classes.boxFooter}>
-              <Typography className={classes.text} color="textSecondary">
-                {label}
-              </Typography>
-            </Box>,
-          ]}
-    </Box>
+      <CardItem
+        style={{ display: 'flex' }}
+        justifyContent="center"
+        alignItems="center"
+        height={120}
+      >
+        {loading ? (
+          <LoadingSpinner />
+        ) : currency ? (
+          <NumberFormat
+            value={data}
+            displayType={'text'}
+            thousandSeparator={true}
+            decimalScale={2}
+            prefix={'$'}
+            style={{
+              fontSize: '3.5rem',
+              textAlign: 'center',
+              display: 'block',
+              height: 84,
+            }}
+          />
+        ) : (
+          <Typography
+            className={classes.boxMain}
+            style={{ fontSize: '3.5rem' }}
+            align="center"
+          >
+            {data}
+          </Typography>
+        )}
+      </CardItem>
+      <Divider />
+      <CardItem
+        style={{ display: 'flex' }}
+        justifyContent="center"
+        alignItems="center"
+        height={40}
+      >
+        <Typography
+          className={classes.boxAlt}
+          color="textSecondary"
+          style={{ textTransform: 'capitalize' }}
+          align="center"
+        >
+          {label}
+        </Typography>
+      </CardItem>
+    </CardContainer>
   );
 };
 
