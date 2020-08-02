@@ -1,22 +1,10 @@
 import _ from 'lodash';
-import {
-  Paper,
-  Button,
-  Icon,
-  Typography,
-  Input,
-  Table,
-  TableBody,
-  TableCell,
-  TablePagination,
-  TableRow,
-} from '@material-ui/core';
+import { Paper, Button, Input } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
-import ProductsTableHead from './Head.js';
 import { getGallery } from '../../services/artwork.js';
+import Datatable from '../../components/Datatable/Datatable.js';
 
 const MyArtwork = () => {
   const [state, setState] = useState({
@@ -144,7 +132,17 @@ const MyArtwork = () => {
         </Button>
       </div>
       <div className="w-full flex flex-col">
-        <Table />
+        <Datatable
+          data={state.artwork}
+          sort={state.sort}
+          page={state.page}
+          rows={state.rows}
+          empty={'You have no artwork'}
+          handleRequestSort={handleRequestSort}
+          handleRowClick={handleRowClick}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+        />
       </div>
     </>
   );

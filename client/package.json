@@ -19,6 +19,7 @@
     "formik": "^2.1.4",
     "install": "^0.13.0",
     "lodash": "^4.17.15",
+    "mui-datatables": "^3.3.1",
     "notistack": "^0.9.9",
     "react": "^16.13.1",
     "react-copy-to-clipboard": "^5.0.2",

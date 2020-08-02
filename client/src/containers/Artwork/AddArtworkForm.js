@@ -1,5 +1,5 @@
-import React from "react";
-import { useFormik } from "formik";
+import React from 'react';
+import { useFormik } from 'formik';
 import {
   Container,
   Card,
@@ -8,13 +8,13 @@ import {
   CardActions,
   TextField,
   Button,
-} from "@material-ui/core";
-import UploadInput from "../../shared/UploadInput/UploadInput.js";
-import SelectInput from "../../shared/SelectInput/SelectInput.js";
-import PriceInput from "../../shared/PriceInput/PriceInput.js";
-import { useHistory } from "react-router-dom";
-import { artworkValidation } from "../../validation/artwork.js";
-import AddArtworkStyles from "../../components/Artwork/AddArtwork.style.js";
+} from '@material-ui/core';
+import UploadInput from '../../shared/UploadInput/UploadInput.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
+import PriceInput from '../../shared/PriceInput/PriceInput.js';
+import { useHistory } from 'react-router-dom';
+import { artworkValidation } from '../../validation/artwork.js';
+/* import AddArtworkStyles from "../../components/Artwork/AddArtwork.style.js"; */
 
 const AddArtworkForm = ({
   capabilities,
@@ -24,7 +24,8 @@ const AddArtworkForm = ({
   deleteEmptyValues,
 }) => {
   const history = useHistory();
-  const classes = AddArtworkStyles();
+  /* const classes = AddArtworkStyles(); */
+  const classes = {};
 
   const {
     setFieldValue,
@@ -37,21 +38,21 @@ const AddArtworkForm = ({
     errors,
   } = useFormik({
     initialValues: {
-      artworkMedia: "",
-      artworkTitle: "",
-      artworkType: "",
-      artworkAvailability: "",
-      artworkLicense: "",
-      artworkUse: "",
-      artworkPersonal: "",
-      artworkCommercial: "",
-      artworkCategory: "",
-      artworkDescription: "",
+      artworkMedia: '',
+      artworkTitle: '',
+      artworkType: '',
+      artworkAvailability: '',
+      artworkLicense: '',
+      artworkUse: '',
+      artworkPersonal: '',
+      artworkCommercial: '',
+      artworkCategory: '',
+      artworkDescription: '',
     },
     validationSchema: artworkValidation,
     async onSubmit(values) {
       const formData = new FormData();
-      formData.append("artworkMedia", values.artworkMedia[0]);
+      formData.append('artworkMedia', values.artworkMedia[0]);
       try {
         const {
           data: { artworkCover, artworkMedia, artworkDimensions },
@@ -62,8 +63,8 @@ const AddArtworkForm = ({
         const data = deleteEmptyValues(values);
         await postArtwork({ data });
         history.push({
-          pathname: "/",
-          state: { message: "Artwork published" },
+          pathname: '/',
+          state: { message: 'Artwork published' },
         });
       } catch (err) {
         console.log(err);
@@ -81,9 +82,9 @@ const AddArtworkForm = ({
             </Typography>
             {!user.stripeId
               ? 'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
-              : capabilities.cardPayments !== "active" ||
-                capabilities.platformPayments !== "active"
-              ? "To make your artwork commercially available, complete your Stripe account information"
+              : capabilities.cardPayments !== 'active' ||
+                capabilities.platformPayments !== 'active'
+              ? 'To make your artwork commercially available, complete your Stripe account information'
               : null}
             <CardContent>
               <UploadInput name="artworkMedia" setFieldValue={setFieldValue} />
@@ -94,7 +95,7 @@ const AddArtworkForm = ({
                 value={values.artworkTitle}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                helperText={touched.artworkTitle ? errors.artworkTitle : ""}
+                helperText={touched.artworkTitle ? errors.artworkTitle : ''}
                 error={touched.artworkTitle && Boolean(errors.artworkTitle)}
                 margin="dense"
                 variant="outlined"
@@ -107,44 +108,44 @@ const AddArtworkForm = ({
                 handleChange={handleChange}
                 handleBlur={handleBlur}
                 helperText={
-                  touched.artworkAvailability ? errors.artworkAvailability : ""
+                  touched.artworkAvailability ? errors.artworkAvailability : ''
                 }
                 error={
                   touched.artworkAvailability &&
                   Boolean(errors.artworkAvailability)
                 }
                 options={[
-                  { value: "" },
-                  { value: "available", text: "Available for download" },
-                  { value: "unavailable", text: "Only for preview" },
+                  { value: '' },
+                  { value: 'available', text: 'Available for download' },
+                  { value: 'unavailable', text: 'Only for preview' },
                 ]}
               />
-              {values.artworkAvailability === "available" && (
+              {values.artworkAvailability === 'available' && (
                 <SelectInput
                   name="artworkType"
                   label="Type"
                   value={values.artworkType}
                   handleChange={handleChange}
                   handleBlur={handleBlur}
-                  helperText={touched.artworkType ? errors.artworkType : ""}
+                  helperText={touched.artworkType ? errors.artworkType : ''}
                   error={touched.artworkType && Boolean(errors.artworkType)}
                   options={[
-                    { value: "" },
+                    { value: '' },
                     {
-                      value: "commercial",
-                      text: "Commercial",
+                      value: 'commercial',
+                      text: 'Commercial',
                       disabled:
                         user.stripeId &&
-                        capabilities.cardPayments === "active" &&
-                        capabilities.platformPayments === "active"
+                        capabilities.cardPayments === 'active' &&
+                        capabilities.platformPayments === 'active'
                           ? false
                           : true,
                     },
-                    { value: "free", text: "Free" },
+                    { value: 'free', text: 'Free' },
                   ]}
                 />
               )}
-              {values.artworkAvailability === "available" && (
+              {values.artworkAvailability === 'available' && (
                 <SelectInput
                   name="artworkLicense"
                   label="License"
@@ -152,20 +153,20 @@ const AddArtworkForm = ({
                   handleChange={handleChange}
                   handleBlur={handleBlur}
                   helperText={
-                    touched.artworkLicense ? errors.artworkLicense : ""
+                    touched.artworkLicense ? errors.artworkLicense : ''
                   }
                   error={
                     touched.artworkLicense && Boolean(errors.artworkLicense)
                   }
                   options={[
-                    { value: "" },
-                    { value: "commercial", text: "Commercial" },
-                    { value: "personal", text: "Personal" },
+                    { value: '' },
+                    { value: 'commercial', text: 'Commercial' },
+                    { value: 'personal', text: 'Personal' },
                   ]}
                 />
               )}
-              {values.artworkAvailability === "available" &&
-                values.artworkType === "commercial" && (
+              {values.artworkAvailability === 'available' &&
+                values.artworkType === 'commercial' && (
                   <PriceInput
                     name="artworkPersonal"
                     label="Price"
@@ -173,7 +174,7 @@ const AddArtworkForm = ({
                     handleChange={handleChange}
                     handleBlur={handleBlur}
                     helperText={
-                      touched.artworkPersonal ? errors.artworkPersonal : ""
+                      touched.artworkPersonal ? errors.artworkPersonal : ''
                     }
                     error={
                       touched.artworkPersonal && Boolean(errors.artworkPersonal)
@@ -183,44 +184,44 @@ const AddArtworkForm = ({
                     fullWidth
                   />
                 )}
-              {values.artworkAvailability === "available" &&
-                values.artworkLicense === "commercial" && (
+              {values.artworkAvailability === 'available' &&
+                values.artworkLicense === 'commercial' && (
                   <SelectInput
                     name="artworkUse"
                     label="Commercial use"
                     value={values.artworkUse}
                     handleChange={handleChange}
                     handleBlur={handleBlur}
-                    helperText={touched.artworkUse ? errors.artworkUse : ""}
+                    helperText={touched.artworkUse ? errors.artworkUse : ''}
                     error={touched.artworkUse && Boolean(errors.artworkUse)}
                     options={[
-                      { value: "" },
+                      { value: '' },
                       {
-                        value: "separate",
-                        text: "Charge commercial license separately",
+                        value: 'separate',
+                        text: 'Charge commercial license separately',
                         disabled:
                           user.stripeId &&
-                          capabilities.cardPayments === "active" &&
-                          capabilities.platformPayments === "active"
+                          capabilities.cardPayments === 'active' &&
+                          capabilities.platformPayments === 'active'
                             ? false
                             : true,
                       },
-                      values.artworkAvailability === "available" &&
-                      values.artworkType === "commercial"
+                      values.artworkAvailability === 'available' &&
+                      values.artworkType === 'commercial'
                         ? {
-                            value: "included",
-                            text: "Include commercial license in the price",
+                            value: 'included',
+                            text: 'Include commercial license in the price',
                           }
                         : {
-                            value: "included",
-                            text: "Offer commercial license free of charge",
+                            value: 'included',
+                            text: 'Offer commercial license free of charge',
                           },
                     ]}
                   />
                 )}
-              {values.artworkAvailability === "available" &&
-                values.artworkLicense === "commercial" &&
-                values.artworkUse === "separate" && (
+              {values.artworkAvailability === 'available' &&
+                values.artworkLicense === 'commercial' &&
+                values.artworkUse === 'separate' && (
                   <PriceInput
                     name="artworkCommercial"
                     label="Commercial license"
@@ -228,7 +229,7 @@ const AddArtworkForm = ({
                     handleChange={handleChange}
                     handleBlur={handleBlur}
                     helperText={
-                      touched.artworkCommercial ? errors.artworkCommercial : ""
+                      touched.artworkCommercial ? errors.artworkCommercial : ''
                     }
                     error={
                       touched.artworkCommercial &&
@@ -247,7 +248,7 @@ const AddArtworkForm = ({
                 onChange={handleChange}
                 onBlur={handleBlur}
                 helperText={
-                  touched.artworkDescription ? errors.artworkDescription : ""
+                  touched.artworkDescription ? errors.artworkDescription : ''
                 }
                 error={
                   touched.artworkDescription &&

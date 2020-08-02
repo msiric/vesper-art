@@ -1,40 +1,36 @@
-import _ from "lodash";
-import {
-  Paper,
-  Button,
-  Icon,
-  Typography,
-  Input,
-  Table,
-  TableBody,
-  TableCell,
-  TablePagination,
-  TableRow,
-} from "@material-ui/core";
-import { Link } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-import { withRouter, useHistory } from "react-router-dom";
-// import ProductsTableHead from "./Head.js";
-import { getGallery } from "../../services/artwork.js";
+import React, { useEffect, useState } from 'react';
+import _ from 'lodash';
+import { Paper, Button, Typography, Input } from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import { withRouter, useHistory } from 'react-router-dom';
+import Datatable from '../../components/Datatable/Datatable2.js';
+import { getGallery } from '../../services/artwork.js';
+import DatatableWrapper from '../../components/Datatable/DatatableWrapper.js';
 
 function ProductsTable() {
   const [state, setState] = useState({
     loading: false,
     artwork: [],
-    search: "",
+    search: '',
     page: 0,
-    rows: 10,
+    limit: 10,
     sort: {
-      direction: "asc",
+      direction: 'asc',
       id: null,
     },
+    hasMore: true,
+    dataCursor: 0,
+    dataCeiling: 20,
   });
 
   const history = useHistory();
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await getGallery();
+      const { data } = await getGallery({
+        dataCursor: state.dataCursor,
+        dataCeiling: state.dataCeiling,
+      });
       setState({
         ...state,
         loading: false,
@@ -68,10 +64,10 @@ function ProductsTable() {
 
   function handleRequestSort(e, property) {
     const id = property;
-    let direction = "desc";
+    let direction = 'desc';
 
-    if (state.sort.id === property && state.sort.direction === "desc") {
-      direction = "asc";
+    if (state.sort.id === property && state.sort.direction === 'desc') {
+      direction = 'asc';
     }
 
     setState((prevState) => ({
@@ -93,7 +89,7 @@ function ProductsTable() {
   function handleChangeRowsPerPage(e) {
     setState((prevState) => ({
       ...prevState,
-      rows: e.target.value,
+      limit: e.target.value,
     }));
   }
 
@@ -129,7 +125,7 @@ function ProductsTable() {
               fullWidth
               value={state.search}
               inputProps={{
-                "aria-label": "Search",
+                'aria-label': 'Search',
               }}
               onChange={(e) => handleSearchChange(e)}
             />
@@ -145,83 +141,63 @@ function ProductsTable() {
         </Button>
       </div>
       <div className="w-full flex flex-col">
-        <Table className="min-w-xl" aria-labelledby="tableTitle">
-          {/* <ProductsTableHead
-            artwork={state.sort}
-            handleRequestSort={handleRequestSort}
-            rowCount={state.artwork.length}
-                    />*/}
-
-          <TableBody>
-            {_.orderBy(
-              state.artwork,
-              [
-                (o) => {
-                  switch (state.sort.id) {
-                    case "categories": {
-                      return o.categories[0];
-                    }
-                    default: {
-                      return o[state.sort.id];
-                    }
-                  }
-                },
-              ],
-              [state.sort.direction]
-            )
-              .slice(
-                state.page * state.rows,
-                state.page * state.rows + state.rows
-              )
-              .map((n) => {
-                return (
-                  <TableRow
-                    className="h-64 cursor-pointer"
-                    hover
-                    role="checkbox"
-                    tabIndex={-1}
-                    key={n.id}
-                    onClick={(e) => handleRowClick(n._id)}
-                  >
-                    <TableCell component="th" scope="row" align="left">
-                      <img src={n.current.cover} alt={n.name} />
-                    </TableCell>
-
-                    <TableCell component="th" scope="row" align="right">
-                      {n.current.title}
-                    </TableCell>
-
-                    <TableCell component="th" scope="row" align="right">
-                      {n.current.type}
-                    </TableCell>
-
-                    <TableCell component="th" scope="row" align="right">
-                      ${n.current.personal}
-                    </TableCell>
-
-                    <TableCell component="th" scope="row" align="right">
-                      ${n.current.commercial}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-        <TablePagination
-          className="overflow-hidden"
-          component="div"
-          count={state.artwork.length}
-          rowsPerPage={state.rows}
+        {/* <Datatable
+          rows={[
+            {
+              id: 'cover',
+              align: 'left',
+              disablePadding: false,
+              label: 'Cover',
+              sort: true,
+            },
+            {
+              id: 'title',
+              align: 'left',
+              disablePadding: false,
+              label: 'Title',
+              sort: true,
+            },
+            {
+              id: 'availability',
+              align: 'right',
+              disablePadding: false,
+              label: 'Availability',
+              sort: true,
+            },
+            {
+              id: 'type',
+              align: 'right',
+              disablePadding: false,
+              label: 'Type',
+              sort: true,
+            },
+            {
+              id: 'personal',
+              align: 'right',
+              disablePadding: false,
+              label: 'Personal license',
+              sort: true,
+            },
+            {
+              id: 'commercial',
+              align: 'right',
+              disablePadding: false,
+              label: 'Commercial license',
+              sort: true,
+            },
+          ]}
+          data={state.artwork}
+          sort={state.sort}
           page={state.page}
-          backIconButtonProps={{
-            "aria-label": "Previous Page",
-          }}
-          nextIconButtonProps={{
-            "aria-label": "Next Page",
-          }}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
+          limit={state.limit}
+          empty={'You have no artwork'}
+          handleRequestSort={handleRequestSort}
+          handleRowClick={handleRowClick}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+        /> */}
+        {/* <DatatableWrapper /> */}
+        <Datatable data={state.artwork} />
       </div>
     </>
   );

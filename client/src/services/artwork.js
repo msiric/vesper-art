@@ -4,21 +4,29 @@ export const postMedia = async ({ data }) =>
   await ax.post('/api/artwork_media_upload', data);
 export const postArtwork = async ({ data }) =>
   await ax.post('/api/add_artwork', data);
-export const getArtwork = async ({ dataCursor, dataCeiling }) =>
-  typeof dataCursor !== 'undefined' && typeof dataCeiling !== 'undefined'
+export const getArtwork = async ({ dataCursor = null, dataCeiling = null }) =>
+  typeof dataCursor !== null && typeof dataCeiling !== null
     ? await ax.get(
         `/api/artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
       )
     : await ax.get(`/api/artwork`);
-export const getDetails = async ({ artworkId, dataCursor, dataCeiling }) =>
-  typeof dataCursor !== 'undefined' && typeof dataCeiling !== 'undefined'
+export const getDetails = async ({
+  artworkId,
+  dataCursor = null,
+  dataCeiling = null,
+}) =>
+  typeof dataCursor !== null && typeof dataCeiling !== null
     ? await ax.get(
         `/api/artwork/${artworkId}?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
       )
     : await ax.get(`/api/artwork/${artworkId}`);
 export const deleteComment = async ({ artworkId, commentId }) =>
   await ax.delete(`/api/artwork/${artworkId}/comment/${commentId}`);
-export const getComments = async ({ artworkId, dataCursor, dataCeiling }) =>
+export const getComments = async ({
+  artworkId,
+  dataCursor = null,
+  dataCeiling = null,
+}) =>
   await ax.get(
     `/api/artwork/${artworkId}/comments?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
   );
@@ -32,7 +40,12 @@ export const deleteArtwork = async ({ artworkId }) =>
   await ax.delete(`/api/edit_artwork/${artworkId}`);
 export const patchArtwork = async ({ artworkId, data }) =>
   await ax.patch(`/api/edit_artwork/${artworkId}`, data);
-export const getGallery = async () => await ax.get('/api/my_artwork');
+export const getGallery = async ({ dataCursor = null, dataCeiling = null }) =>
+  typeof dataCursor !== null && typeof dataCeiling !== null
+    ? await ax.get(
+        `/api/my_artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+      )
+    : await ax.get('/api/my_artwork');
 export const postSave = async ({ artworkId }) =>
   await ax.post(`/api/save_artwork/${artworkId}`);
 export const deleteSave = async ({ artworkId }) =>

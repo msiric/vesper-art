@@ -1,9 +1,9 @@
-/* import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../components/Store/Store.js";
-import { deleteEmptyValues } from "../../utils/helpers.js";
-import { postMedia, postArtwork } from "../../services/artwork.js";
-import { getUser } from "../../services/stripe.js";
-import AddArtworkForm from "../../components/Artwork/AddArtworkForm.js";
+import React, { useContext, useState, useEffect } from 'react';
+import { Context } from '../../context/Store.js';
+import { deleteEmptyValues } from '../../utils/helpers.js';
+import { postMedia, postArtwork } from '../../services/artwork.js';
+import { getUser } from '../../services/stripe.js';
+import AddArtworkForm from '../../containers/Artwork/AddArtworkForm.js';
 
 const AddArtwork = () => {
   const [store, dispatch] = useContext(Context);
@@ -37,4 +37,3 @@ const AddArtwork = () => {
 };
 
 export default AddArtwork;
- */
