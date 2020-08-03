@@ -16,28 +16,35 @@ import {
 } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
 
-const CustomToolbar = () => {
+const CustomToolbar = ({ addOptions }) => {
   const history = useHistory();
 
   const handleAdd = () => {
-    history.push("/add_artwork");
+    history.push(`/${addOptions.route}`);
   };
 
   return (
-    <Tooltip title="Add artwork">
-      <IconButton onClick={handleAdd}>
-        <AddIcon />
-      </IconButton>
-    </Tooltip>
+    addOptions.enabled && (
+      <Tooltip title={addOptions.title}>
+        <IconButton onClick={handleAdd}>
+          <AddIcon />
+        </IconButton>
+      </Tooltip>
+    )
   );
 };
 
-const CustomToolbarSelect = ({ selectedRows, displayData }) => {
+const CustomToolbarSelect = ({
+  selectedRows,
+  displayData,
+  editOptions,
+  deleteOptions,
+}) => {
   const history = useHistory();
 
   const handleEdit = () => {
     history.push(
-      `/edit_artwork/${
+      `/${editOptions.route}/${
         displayData.find(
           (item) => item.dataIndex === selectedRows.data[0].dataIndex
         ).data[0]
@@ -59,23 +66,32 @@ const CustomToolbarSelect = ({ selectedRows, displayData }) => {
 
   return (
     <div className={classes.iconContainer}>
-      {selectedRows.data.length === 1 && (
-        <Tooltip title={"Edit artwork"}>
+      {editOptions.enabled && selectedRows.data.length === 1 && (
+        <Tooltip title={editOptions.title}>
           <IconButton className={classes.iconButton} onClick={handleEdit}>
             <EditIcon className={classes.icon} />
           </IconButton>
         </Tooltip>
       )}
-      <Tooltip title={"Delete artwork"}>
-        <IconButton className={classes.iconButton} onClick={handleDelete}>
-          <DeleteIcon className={classes.icon} />
-        </IconButton>
-      </Tooltip>
+      {deleteOptions.enabled && (
+        <Tooltip title={deleteOptions.title}>
+          <IconButton className={classes.iconButton} onClick={handleDelete}>
+            <DeleteIcon className={classes.icon} />
+          </IconButton>
+        </Tooltip>
+      )}
     </div>
   );
 };
 
-const Datatable = ({ columns, data }) => {
+const Datatable = ({
+  title,
+  columns,
+  data,
+  addOptions,
+  editOptions,
+  deleteOptions,
+}) => {
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState("100%");
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
@@ -89,18 +105,20 @@ const Datatable = ({ columns, data }) => {
     responsive,
     tableBodyHeight,
     tableBodyMaxHeight,
-    customToolbar: () => <CustomToolbar />,
+    customToolbar: () => <CustomToolbar addOptions={addOptions} />,
     customToolbarSelect: (selectedRows, displayData) => (
       <CustomToolbarSelect
         selectedRows={selectedRows}
         displayData={displayData}
+        editOptions={editOptions}
+        deleteOptions={deleteOptions}
       />
     ),
   };
 
   return (
     <MUIDataTable
-      title={"My artwork"}
+      title={title}
       data={data}
       columns={columns}
       options={options}

@@ -43,6 +43,7 @@ function ProductsTable() {
 
   return (
     <Datatable
+      title="My artwork"
       columns={[
         {
           name: "Id",
@@ -73,6 +74,17 @@ function ProductsTable() {
         artwork.current.personal,
         artwork.current.commercial,
       ])}
+      addOptions={{ enabled: true, title: "Add artwork", route: "add_artwork" }}
+      editOptions={{
+        enabled: true,
+        title: "Edit artwork",
+        route: "edit_artwork",
+      }}
+      deleteOptions={{
+        enabled: true,
+        title: "Delete artwork",
+        route: "delete_artwork",
+      }}
     />
   );
 }
