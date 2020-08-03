@@ -88,6 +88,7 @@ const Datatable = ({
   title,
   columns,
   data,
+  empty,
   addOptions,
   editOptions,
   deleteOptions,
@@ -114,6 +115,11 @@ const Datatable = ({
         deleteOptions={deleteOptions}
       />
     ),
+    textLabels: {
+      body: {
+        noMatch: empty,
+      },
+    },
   };
 
   return (
