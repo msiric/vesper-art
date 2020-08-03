@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
-const Schema = mongoose.Schema;
 import mongooseDeepPopulate from "mongoose-deep-populate";
 
 const deepPopulate = mongooseDeepPopulate(mongoose);
+
+const Schema = mongoose.Schema;
+
 import fuzzySearch from "mongoose-fuzzy-searching";
 import { formatPrice } from "../common/helpers.js";
 

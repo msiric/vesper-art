@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import mongooseDeepPopulate from "mongoose-deep-populate";
 
 const deepPopulate = mongooseDeepPopulate(mongoose);
+
 const Schema = mongoose.Schema;
 import { formatPrice } from "../common/helpers.js";
 
@@ -21,10 +22,10 @@ const OrderSchema = new Schema({
   created: { type: Date, default: Date.now },
 });
 
+OrderSchema.plugin(deepPopulate);
+
 OrderSchema.set("toObject", { getters: true });
 OrderSchema.set("toJSON", { getters: true });
-
-OrderSchema.plugin(deepPopulate);
 
 const Order = mongoose.model("Order", OrderSchema);
 
