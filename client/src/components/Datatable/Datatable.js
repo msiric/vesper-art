@@ -14,9 +14,14 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
 } from "@material-ui/icons";
+import { useHistory } from "react-router-dom";
 
 const CustomToolbar = () => {
-  const handleAdd = () => {};
+  const history = useHistory();
+
+  const handleAdd = () => {
+    history.push("/add_artwork");
+  };
 
   return (
     <Tooltip title="Add artwork">
@@ -27,20 +32,26 @@ const CustomToolbar = () => {
   );
 };
 
-const CustomToolbarSelect = ({ selectedRows }) => {
+const CustomToolbarSelect = ({ selectedRows, displayData }) => {
+  const history = useHistory();
+
   const handleEdit = () => {
-    console.log(
-      `edit artwork with dataIndex: ${selectedRows.data.map(
-        (row) => row.dataIndex
-      )}`
+    history.push(
+      `/edit_artwork/${
+        displayData.find(
+          (item) => item.dataIndex === selectedRows.data[0].dataIndex
+        ).data[0]
+      }`
     );
   };
 
   const handleDelete = () => {
     console.log(
-      `delete artwork with dataIndexes: ${selectedRows.data.map(
-        (row) => row.dataIndex
-      )}`
+      `delete artwork with dataIndexes: ${displayData
+        .filter((item) =>
+          selectedRows.data.find((row) => item.dataIndex === row.dataIndex)
+        )
+        .map((element) => element.data[0])}`
     );
   };
 
@@ -79,8 +90,11 @@ const Datatable = ({ columns, data }) => {
     tableBodyHeight,
     tableBodyMaxHeight,
     customToolbar: () => <CustomToolbar />,
-    customToolbarSelect: (selectedRows) => (
-      <CustomToolbarSelect selectedRows={selectedRows} />
+    customToolbarSelect: (selectedRows, displayData) => (
+      <CustomToolbarSelect
+        selectedRows={selectedRows}
+        displayData={displayData}
+      />
     ),
   };
 

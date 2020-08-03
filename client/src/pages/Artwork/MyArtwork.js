@@ -45,10 +45,16 @@ function ProductsTable() {
     <Datatable
       columns={[
         {
+          name: "Id",
+          options: {
+            display: false,
+          },
+        },
+        {
           name: "Cover",
           options: {
             customBodyRender: (value, tableMeta, updateValue) => (
-              <img src={value} />
+              <img style={{ width: "85%", maxWidth: 200 }} src={value} />
             ),
           },
         },
@@ -59,6 +65,7 @@ function ProductsTable() {
         "Commercial license",
       ]}
       data={state.artwork.map((artwork) => [
+        artwork._id,
         artwork.current.cover,
         artwork.current.title,
         artwork.current.availability,
