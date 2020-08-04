@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Context } from '../../components/Store/Store.js';
 import { ax } from '../../containers/Interceptor/Interceptor.js';
 import { withRouter, Link } from 'react-router-dom';
-import { useFormik } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import {
   Button,
@@ -52,31 +52,6 @@ const Header = ({ history }) => {
   });
 
   const classes = HeaderStyles();
-
-  const {
-    setFieldValue,
-    isSubmitting,
-    handleSubmit,
-    handleChange,
-    handleBlur,
-    touched,
-    values,
-    errors,
-  } = useFormik({
-    initialValues: {
-      searchInput: '',
-    },
-    searchValidation,
-    async onSubmit(values) {
-      try {
-        history.push(
-          `/search?query=${values.searchInput}&type=${store.main.search}`
-        );
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  });
 
   const handleProfileMenuOpen = (e) => {
     setState((prevState) => ({
@@ -411,46 +386,65 @@ const Header = ({ history }) => {
             Material-UI
           </Typography>
           <div className={classes.search}>
-            <form className={classes.form} onSubmit={handleSubmit}>
-              <IconButton
-                title={
-                  store.main.search === 'artwork'
-                    ? 'Search artwork'
-                    : 'Search users'
+            <Formik
+              initialValues={{
+                searchInput: '',
+              }}
+              validationSchema={searchValidation}
+              onSubmit={async (values, { resetForm }) => {
+                try {
+                  history.push(
+                    `/search?query=${values.searchInput}&type=${store.main.search}`
+                  );
+                } catch (err) {
+                  console.log(err);
                 }
-                onClick={handleToggle}
-                className={classes.typeIcon}
-                disableFocusRipple
-                disableRipple
-              >
-                {store.main.search === 'artwork' ? (
-                  <ArtworkIcon />
-                ) : (
-                  <UserIcon />
-                )}
-              </IconButton>
-              <InputBase
-                name="searchInput"
-                type="text"
-                value={values.searchInput}
-                placeholder="Search…"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput,
-                }}
-                inputProps={{ 'aria-label': 'search' }}
-              />
-              <IconButton
-                onClick={handleSubmit}
-                className={classes.searchIcon}
-                disableFocusRipple
-                disableRipple
-              >
-                <SearchIcon />
-              </IconButton>
-            </form>
+              }}
+            >
+              {({ values, errors, touched, isSubmitting }) => (
+                <Form className={classes.card}>
+                  <IconButton
+                    title={
+                      store.main.search === 'artwork'
+                        ? 'Search artwork'
+                        : 'Search users'
+                    }
+                    onClick={handleToggle}
+                    className={classes.typeIcon}
+                    disableFocusRipple
+                    disableRipple
+                  >
+                    {store.main.search === 'artwork' ? (
+                      <ArtworkIcon />
+                    ) : (
+                      <UserIcon />
+                    )}
+                  </IconButton>
+                  <Field name="searchInput">
+                    {({ field, form, meta }) => (
+                      <InputBase
+                        {...field}
+                        type="text"
+                        placeholder="Search…"
+                        classes={{
+                          root: classes.inputRoot,
+                          input: classes.inputInput,
+                        }}
+                        inputProps={{ 'aria-label': 'search' }}
+                      />
+                    )}
+                  </Field>
+                  <IconButton
+                    onClick={handleSubmit}
+                    className={classes.searchIcon}
+                    disableFocusRipple
+                    disableRipple
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                </Form>
+              )}
+            </Formik>
           </div>
           <div className={classes.grow} />
           {store.user.authenticated ? (
