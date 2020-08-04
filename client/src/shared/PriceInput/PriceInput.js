@@ -23,13 +23,13 @@ const FormattedNumber = ({ name, inputRef, onChange, ...other }) => {
   );
 };
 
-const PriceInput = ({ handleChange, handleBlur, ...other }) => {
+const PriceInput = ({ onChange, onBlur, ...other }) => {
   return (
     <div>
       <TextField
         {...other}
-        onChange={handleChange}
-        onBlur={handleBlur}
+        onChange={onChange}
+        onBlur={onBlur}
         InputProps={{
           inputComponent: FormattedNumber,
         }}

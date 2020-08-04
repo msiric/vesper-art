@@ -10,8 +10,8 @@ import {
 const SelectInput = ({
   name,
   label,
-  handleChange,
-  handleBlur,
+  onChange,
+  onBlur,
   helperText,
   error,
   options,
@@ -26,8 +26,8 @@ const SelectInput = ({
         {...other}
         error={error}
         label={label}
-        onChange={handleChange}
-        onBlur={handleBlur}
+        onChange={onChange}
+        onBlur={onBlur}
         inputProps={{
           name: name,
           id: name,

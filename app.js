@@ -9,13 +9,11 @@ import createError from 'http-errors';
 import { mongo } from './config/secret.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import http from 'http';
 import api from './routes/api/index.js';
 import stripe from './routes/stripe/index.js';
 
 const app = express();
 const __dirname = path.resolve();
-http.Server(app);
 
 app.use(
   cors({

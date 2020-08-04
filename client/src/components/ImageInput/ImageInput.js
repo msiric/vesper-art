@@ -12,7 +12,7 @@ import {
   Clear as ClearIcon,
   Error as ErrorIcon,
 } from '@material-ui/icons';
-import { typeqastTheme } from '../../constants/theme.js';
+import { artepunktTheme } from '../../constants/theme.js';
 
 const useStyles = makeStyles((theme) => ({
   imageInputFile: { display: 'none' },
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     margin: 'auto',
     width: 160,
     height: 160,
-    borderColor: typeqastTheme.palette.secondary.main,
+    borderColor: artepunktTheme.palette.secondary.main,
     borderStyle: 'solid',
     borderSize: '1px',
     '&:hover': {
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     opacity: 1,
     transition: '.5s ease',
-    backgroundColor: typeqastTheme.palette.secondary.main,
+    backgroundColor: artepunktTheme.palette.secondary.main,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     opacity: 1,
     transition: '.5s ease',
-    backgroundColor: typeqastTheme.palette.secondary.main,
+    backgroundColor: artepunktTheme.palette.secondary.main,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     opacity: 0,
     transition: '.5s ease',
-    backgroundColor: typeqastTheme.palette.secondary.main,
+    backgroundColor: artepunktTheme.palette.secondary.main,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
