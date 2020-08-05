@@ -51,8 +51,8 @@ const schema = Joi.object().keys({
     }),
   }),
   artworkDescription: Joi.string().required(),
-  artworkMedia: Joi.string().required(),
-  artworkCover: Joi.string().required(),
+  /*   artworkMedia: Joi.string().required(),
+  artworkCover: Joi.string().required(), */
   // artworkCategory: Joi.string().required(),
 });
 

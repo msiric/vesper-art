@@ -113,10 +113,10 @@ export const postNewArtwork = async ({
   artworkData,
   session,
 }) => {
-  const { artworkUpload } = finalizeMediaUpload({
-    path: artworkPath,
-    filename: artworkFilename,
-    type: 'artwork',
+  const artworkUpload = await finalizeMediaUpload({
+    filePath: artworkPath,
+    fileName: artworkFilename,
+    fileType: 'artwork',
   });
   const { error } = artworkValidator(sanitizeData(artworkData));
   if (error) throw createError(400, error);

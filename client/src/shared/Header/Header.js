@@ -119,6 +119,7 @@ const Header = ({ history }) => {
   };
 
   const handleNotificationsMenuOpen = async (e) => {
+    const target = e.currentTarget;
     if (
       (store.user.notifications.hasMore && !store.user.notifications.items) ||
       (store.user.notifications.hasMore &&
@@ -132,6 +133,7 @@ const Header = ({ history }) => {
         notifications: {
           ...store.user.notifications,
           count: 0,
+          anchor: target,
           loading: true,
         },
       });
@@ -154,7 +156,7 @@ const Header = ({ history }) => {
             dataCursor:
               store.user.notifications.dataCursor +
               store.user.notifications.dataCeiling,
-            anchor: e.currentTarget,
+            anchor: target,
             loading: false,
           },
         });
@@ -175,7 +177,7 @@ const Header = ({ history }) => {
         notifications: {
           ...store.user.notifications,
           count: 0,
-          anchor: e.currentTarget,
+          anchor: target,
         },
       });
     }

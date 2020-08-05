@@ -46,17 +46,19 @@ const AddArtworkForm = ({
           }}
           validationSchema={artworkValidation}
           onSubmit={async (values, { resetForm }) => {
+            const data = deleteEmptyValues(values);
             const formData = new FormData();
-            formData.append('artworkMedia', values.artworkMedia[0]);
+            for (let value of Object.keys(data)) {
+              formData.append(value, data[value]);
+            }
             try {
-              const {
+              /*               const {
                 data: { artworkCover, artworkMedia, artworkDimensions },
               } = await postMedia({ data: formData });
               values.artworkCover = artworkCover;
               values.artworkMedia = artworkMedia;
-              values.artworkDimensions = artworkDimensions;
-              const data = deleteEmptyValues(values);
-              await postArtwork({ data });
+              values.artworkDimensions = artworkDimensions; */
+              await postArtwork({ data: formData });
               history.push({
                 pathname: '/',
                 state: { message: 'Artwork published' },

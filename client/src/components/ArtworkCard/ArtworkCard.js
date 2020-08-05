@@ -132,7 +132,8 @@ const ArtworkCard = ({ artwork }) => {
         style={{
           paddingTop:
             artwork.current.height /
-            (artwork.current.width / upload.artwork.fileTransform.width),
+            (artwork.current.width / upload.artwork.fileTransform.width) /
+            2,
           maxWidth: upload.artwork.fileTransform.width,
         }}
         image={artwork.current.cover}

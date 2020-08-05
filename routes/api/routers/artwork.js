@@ -86,7 +86,7 @@ router.route('/add_artwork').post(
   handler(postNewArtwork, true, (req, res, next) => ({
     artworkPath: req.file ? req.file.path : '',
     artworkFilename: req.file ? req.file.filename : '',
-    ...req.body,
+    artworkData: { ...req.body },
   }))
 );
 

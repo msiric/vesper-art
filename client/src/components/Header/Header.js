@@ -107,6 +107,7 @@ const Header = ({ history }) => {
         notifications: {
           ...store.user.notifications,
           count: 0,
+          anchor: e.currentTarget,
           loading: true,
         },
       });
