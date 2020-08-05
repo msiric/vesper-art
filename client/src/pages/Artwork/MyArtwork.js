@@ -75,6 +75,7 @@ function ProductsTable() {
         artwork.current.commercial,
       ])}
       empty="You have no artwork"
+      redirect="artwork"
       addOptions={{ enabled: true, title: "Add artwork", route: "add_artwork" }}
       editOptions={{
         enabled: true,

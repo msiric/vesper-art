@@ -89,6 +89,7 @@ const Datatable = ({
   columns,
   data,
   empty,
+  redirect,
   addOptions,
   editOptions,
   deleteOptions,
@@ -96,6 +97,8 @@ const Datatable = ({
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState("100%");
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
+
+  const history = useHistory();
 
   const options = {
     filter: false,
@@ -115,6 +118,7 @@ const Datatable = ({
         deleteOptions={deleteOptions}
       />
     ),
+    onRowClick: (data) => history.push(`/${redirect}/${data[0]}`),
     textLabels: {
       body: {
         noMatch: empty,
