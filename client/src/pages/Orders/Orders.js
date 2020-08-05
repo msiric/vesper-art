@@ -96,6 +96,7 @@ const Orders = () => {
         order.current.commercial,
       ])}
       empty="You have no orders"
+      loading={state.loading}
       redirect="orders"
       addOptions={{ enabled: false, title: "", route: "" }}
       editOptions={{

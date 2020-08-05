@@ -1,20 +1,20 @@
-import _ from 'lodash';
-import { Paper, Button, Input } from '@material-ui/core';
-import { Link } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
-import { withRouter, useHistory } from 'react-router-dom';
-import { getGallery } from '../../services/artwork.js';
-import Datatable from '../../components/Datatable/Datatable.js';
+import _ from "lodash";
+import { Paper, Button, Input } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { withRouter, useHistory } from "react-router-dom";
+import { getGallery } from "../../services/artwork.js";
+import Datatable from "../../components/Datatable/Datatable.js";
 
 const MyArtwork = () => {
   const [state, setState] = useState({
     loading: false,
     artwork: [],
-    search: '',
+    search: "",
     page: 0,
     rows: 10,
     sort: {
-      direction: 'asc',
+      direction: "asc",
       id: null,
     },
   });
@@ -57,10 +57,10 @@ const MyArtwork = () => {
 
   function handleRequestSort(e, property) {
     const id = property;
-    let direction = 'desc';
+    let direction = "desc";
 
-    if (state.sort.id === property && state.sort.direction === 'desc') {
-      direction = 'asc';
+    if (state.sort.id === property && state.sort.direction === "desc") {
+      direction = "asc";
     }
 
     setState((prevState) => ({
@@ -116,7 +116,7 @@ const MyArtwork = () => {
               fullWidth
               value={state.search}
               inputProps={{
-                'aria-label': 'Search',
+                "aria-label": "Search",
               }}
               onChange={(e) => handleSearchChange(e)}
             />
@@ -137,7 +137,8 @@ const MyArtwork = () => {
           sort={state.sort}
           page={state.page}
           rows={state.rows}
-          empty={'You have no artwork'}
+          empty={"You have no artwork"}
+          loading={state.loading}
           handleRequestSort={handleRequestSort}
           handleRowClick={handleRowClick}
           handleChangePage={handleChangePage}

@@ -8,7 +8,7 @@ import { getGallery } from "../../services/artwork.js";
 
 function ProductsTable() {
   const [state, setState] = useState({
-    loading: false,
+    loading: true,
     artwork: [],
     hasMore: true,
     dataCursor: 0,
@@ -75,6 +75,7 @@ function ProductsTable() {
         artwork.current.commercial,
       ])}
       empty="You have no artwork"
+      loading={state.loading}
       redirect="artwork"
       addOptions={{ enabled: true, title: "Add artwork", route: "add_artwork" }}
       editOptions={{

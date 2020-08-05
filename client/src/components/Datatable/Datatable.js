@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import MUIDataTable from "mui-datatables";
 import {
+  Box,
   InputLabel,
   MenuItem,
   FormHelperText,
@@ -8,6 +9,7 @@ import {
   Select,
   Tooltip,
   IconButton,
+  CircularProgress,
 } from "@material-ui/core";
 import {
   Add as AddIcon,
@@ -89,6 +91,7 @@ const Datatable = ({
   columns,
   data,
   empty,
+  loading,
   redirect,
   addOptions,
   editOptions,
@@ -121,7 +124,7 @@ const Datatable = ({
     onRowClick: (data) => history.push(`/${redirect}/${data[0]}`),
     textLabels: {
       body: {
-        noMatch: empty,
+        noMatch: loading ? <CircularProgress /> : empty,
       },
     },
   };
