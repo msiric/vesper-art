@@ -1,9 +1,9 @@
-import React, { useContext, useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Context } from "../../context/Store.js";
-import SelectInput from "../../shared/SelectInput/SelectInput.js";
-import { useFormik, Formik, Form, Field } from "formik";
-import * as Yup from "yup";
+import React, { useContext, useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Context } from '../../context/Store.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
+import { useFormik, Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
 import {
   Typography,
   Button,
@@ -12,7 +12,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Link as Anchor,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   CheckCircleRounded as ConfirmIcon,
   MoreVertRounded as MoreIcon,
@@ -28,18 +28,22 @@ import {
   EmailRounded as EmailIcon,
   DoneRounded as CheckIcon,
   RemoveCircleRounded as DeactivateIcon,
-} from "@material-ui/icons";
+} from '@material-ui/icons';
+import EditEmailForm from '../../containers/EditEmailForm/EditEmailForm.js';
+import EditPasswordForm from '../../containers/EditPasswordForm/EditPasswordForm.js';
+import EditPreferencesForm from '../../containers/EditPreferencesForm/EditPreferencesForm.js';
+import SubHeading from '../SubHeading/SubHeading.js';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    width: '100%',
   },
   accordion: {
-    minHeight: 150,
+    minHeight: 80,
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
-    flexBasis: "33.33%",
+    flexBasis: '33.33%',
     flexShrink: 0,
   },
   secondaryHeading: {
@@ -58,10 +62,11 @@ const SettingsAccordion = ({
 
   return (
     <div className={classes.root}>
+      <SubHeading text={'Account settings'} />
       <Accordion
         className={classes.accordion}
-        expanded={expanded === "panel1"}
-        onChange={handlePanelChange("panel1")}
+        expanded={expanded === 'panel1'}
+        onChange={handlePanelChange('panel1')}
       >
         <AccordionSummary
           expandIcon={<UpIcon />}
@@ -72,7 +77,7 @@ const SettingsAccordion = ({
             Change email address
           </Typography>
           <Typography className={classes.secondaryHeading}>
-            {user.email}{" "}
+            {user.email}{' '}
             {user.verified ? (
               <Chip
                 label="Verified"
@@ -91,12 +96,14 @@ const SettingsAccordion = ({
             )}
           </Typography>
         </AccordionSummary>
-        <AccordionDetails></AccordionDetails>
+        <AccordionDetails>
+          <EditEmailForm />
+        </AccordionDetails>
       </Accordion>
       <Accordion
         className={classes.accordion}
-        expanded={expanded === "panel2"}
-        onChange={handlePanelChange("panel2")}
+        expanded={expanded === 'panel2'}
+        onChange={handlePanelChange('panel2')}
       >
         <AccordionSummary
           expandIcon={<UpIcon />}
@@ -108,29 +115,14 @@ const SettingsAccordion = ({
             *********
           </Typography>
         </AccordionSummary>
-        <AccordionDetails></AccordionDetails>
+        <AccordionDetails>
+          <EditPasswordForm />
+        </AccordionDetails>
       </Accordion>
       <Accordion
         className={classes.accordion}
-        expanded={expanded === "panel3"}
-        onChange={handlePanelChange("panel3")}
-      >
-        <AccordionSummary
-          expandIcon={<UpIcon />}
-          aria-controls="panel3bh-content"
-          id="panel3bh-header"
-        >
-          <Typography className={classes.heading}>Preferences</Typography>
-          <Typography className={classes.secondaryHeading}>
-            Change saved artwork visibility
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails></AccordionDetails>
-      </Accordion>
-      <Accordion
-        className={classes.accordion}
-        expanded={expanded === "panel4"}
-        onChange={handlePanelChange("panel4")}
+        expanded={expanded === 'panel4'}
+        onChange={handlePanelChange('panel4')}
       >
         <AccordionSummary
           expandIcon={<UpIcon />}
@@ -138,27 +130,10 @@ const SettingsAccordion = ({
           id="panel4bh-header"
         >
           <Typography className={classes.heading}>
-            Billing information
-          </Typography>
-          <Typography className={classes.secondaryHeading}>
-            Change billing information
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails></AccordionDetails>
-      </Accordion>
-      <Accordion
-        className={classes.accordion}
-        expanded={expanded === "panel6"}
-        onChange={handlePanelChange("panel6")}
-      >
-        <AccordionSummary
-          expandIcon={<UpIcon />}
-          aria-controls="panel6bh-content"
-          id="panel6bh-header"
-        >
-          <Typography className={classes.heading}>Account settings</Typography>
-          <Typography className={classes.secondaryHeading}>
             Deactivate account
+          </Typography>
+          <Typography className={classes.secondaryHeading}>
+            {`Delete ${user.name}'s history`}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -174,6 +149,57 @@ const SettingsAccordion = ({
             Deactivate
           </Button>
         </AccordionDetails>
+      </Accordion>
+      <SubHeading text={'Configure preferences'} top={2} />
+      <Accordion
+        className={classes.accordion}
+        expanded={expanded === 'panel3'}
+        onChange={handlePanelChange('panel3')}
+      >
+        <AccordionSummary
+          expandIcon={<UpIcon />}
+          aria-controls="panel3bh-content"
+          id="panel3bh-header"
+        >
+          <Typography className={classes.heading}>Preferences</Typography>
+          <Typography className={classes.secondaryHeading}>
+            Change saved artwork visibility
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <EditPreferencesForm />
+        </AccordionDetails>
+      </Accordion>
+      <SubHeading text={'Terms and privacy'} top={2} />
+      <Accordion
+        className={classes.accordion}
+        expanded={expanded === 'panel5'}
+        onChange={handlePanelChange('panel5')}
+      >
+        <AccordionSummary
+          expandIcon={<UpIcon />}
+          aria-controls="panel5bh-content"
+          id="panel5bh-header"
+        >
+          <Typography className={classes.heading}>Terms of service</Typography>
+          <Typography className={classes.secondaryHeading}>/</Typography>
+        </AccordionSummary>
+        <AccordionDetails></AccordionDetails>
+      </Accordion>
+      <Accordion
+        className={classes.accordion}
+        expanded={expanded === 'panel6'}
+        onChange={handlePanelChange('panel6')}
+      >
+        <AccordionSummary
+          expandIcon={<UpIcon />}
+          aria-controls="panel6bh-content"
+          id="panel6bh-header"
+        >
+          <Typography className={classes.heading}>Privacy policy</Typography>
+          <Typography className={classes.secondaryHeading}>/</Typography>
+        </AccordionSummary>
+        <AccordionDetails></AccordionDetails>
       </Accordion>
     </div>
   );

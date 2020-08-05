@@ -1,5 +1,4 @@
-/* import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { Context } from '../Store/Store.js';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
@@ -20,7 +19,6 @@ import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import PriceInput from '../../shared/PriceInput/PriceInput.js';
 import { ax } from '../../containers/Interceptor/Interceptor.js';
 import { deleteEmptyValues } from '../../utils/helpers.js';
-import EditArtworkStyles from './EditArtwork.style.js';
 import {
   editArtwork,
   deleteArtwork,
@@ -31,31 +29,40 @@ import { getUser } from '../../services/stripe.js';
 import ImageInput from '../../components/ImageInput/ImageInput.js';
 import { artworkValidation } from '../../validation/artwork.js';
 
-const EditArtworkForm = ({ match }) => {
+const EditArtworkForm = ({
+  loading,
+  artwork,
+  user,
+  capabilities,
+  stripeId,
+  match,
+  handleDeleteArtwork,
+  isDeleting,
+}) => {
   const history = useHistory();
   const classes = {};
 
   return (
     <Container fixed className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>
-        {state.loading ? (
+        {loading ? (
           <Grid item xs={12} className={classes.loader}>
             <CircularProgress />
           </Grid>
-        ) : state.artwork._id ? (
+        ) : artwork._id ? (
           <Grid item sm={12} className={classes.container}>
             <Formik
               initialValues={{
-                artworkMedia: state.artwork.media || '',
-                artworkTitle: state.artwork.title || '',
-                artworkType: state.artwork.type || '',
-                artworkAvailability: state.artwork.availability || '',
-                artworkLicense: state.artwork.license || '',
-                artworkUse: state.artwork.use || '',
-                artworkPersonal: state.artwork.personal || '',
-                artworkCommercial: state.artwork.commercial || '',
-                artworkCategory: state.artwork.category || '',
-                artworkDescription: state.artwork.description || '',
+                artworkMedia: artwork.media || '',
+                artworkTitle: artwork.title || '',
+                artworkType: artwork.type || '',
+                artworkAvailability: artwork.availability || '',
+                artworkLicense: artwork.license || '',
+                artworkUse: artwork.use || '',
+                artworkPersonal: artwork.personal || '',
+                artworkCommercial: artwork.commercial || '',
+                artworkCategory: artwork.category || '',
+                artworkDescription: artwork.description || '',
               }}
               enableReinitialize={true}
               validationSchema={artworkValidation}
@@ -85,10 +92,10 @@ const EditArtworkForm = ({ match }) => {
                     <Typography variant="h6" align="center">
                       Edit artwork
                     </Typography>
-                    {!store.user.stripeId
+                    {!stripeId
                       ? 'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
-                      : state.capabilities.cardPayments !== 'active' ||
-                        state.capabilities.platformPayments !== 'active'
+                      : capabilities.cardPayments !== 'active' ||
+                        capabilities.platformPayments !== 'active'
                       ? 'To make your artwork commercially available, complete your Stripe account information'
                       : null}
                     <CardContent>
@@ -290,7 +297,7 @@ const EditArtworkForm = ({ match }) => {
                       <Button
                         type="submit"
                         color="primary"
-                        disabled={isSubmitting || state.isDeleting}
+                        disabled={isSubmitting || isDeleting}
                       >
                         Publish artwork
                       </Button>
@@ -298,7 +305,7 @@ const EditArtworkForm = ({ match }) => {
                         type="button"
                         color="error"
                         onClick={handleDeleteArtwork}
-                        disabled={isSubmitting || state.isDeleting}
+                        disabled={isSubmitting || isDeleting}
                       >
                         Delete artwork
                       </Button>
@@ -317,4 +324,3 @@ const EditArtworkForm = ({ match }) => {
 };
 
 export default EditArtworkForm;
- */
