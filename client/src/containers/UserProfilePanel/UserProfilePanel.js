@@ -1,7 +1,7 @@
-import React from 'react';
-import { Grid, Paper, Divider } from '@material-ui/core';
-import ProfileCard from '../../components/ProfileCard/ProfileCard.js';
-import ProfileShare from '../../components/ProfileShare/ProfileShare.js';
+import React from "react";
+import { Grid, Paper, Divider } from "@material-ui/core";
+import ProfileCard from "../../components/ProfileCard/ProfileCard.js";
+import ProfileShare from "../../components/ProfileShare/ProfileShare.js";
 
 const UserProfilePanel = ({ user, handleModalOpen }) => {
   return (
