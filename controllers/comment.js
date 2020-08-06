@@ -1,20 +1,20 @@
-import mongoose from 'mongoose';
-import createError from 'http-errors';
+import mongoose from "mongoose";
+import createError from "http-errors";
 import {
   fetchArtworkById,
   addArtworkComment,
   removeArtworkComment,
-} from '../services/artwork.js';
+} from "../services/artwork.js";
 import {
   addNewComment,
   editExistingComment,
   removeExistingComment,
-} from '../services/comment.js';
-import commentValidator from '../validation/comment.js';
-import { sanitizeData } from '../utils/helpers.js';
-import { addUserNotification } from '../services/user.js';
-import { addNewNotification } from '../services/notification.js';
-import socketApi from '../lib/socket.js';
+} from "../services/comment.js";
+import commentValidator from "../validation/comment.js";
+import { sanitizeData } from "../utils/helpers.js";
+import { addUserNotification } from "../services/user.js";
+import { addNewNotification } from "../services/notification.js";
+import socketApi from "../lib/socket.js";
 
 export const postComment = async ({
   userId,
@@ -26,7 +26,7 @@ export const postComment = async ({
   if (error) throw createError(400, error);
   const foundArtwork = await fetchArtworkById({ artworkId, session });
   if (!foundArtwork) {
-    throw createError(400, 'Artwork not found');
+    throw createError(400, "Artwork not found");
   } else {
     const savedComment = await addNewComment({
       artworkId,
@@ -43,14 +43,14 @@ export const postComment = async ({
     if (!savedComment.owner.equals(updatedArtwork.owner)) {
       await addNewNotification({
         notificationLink: foundArtwork._id,
-        notificationType: 'comment',
+        notificationType: "comment",
         notificationReceiver: updatedArtwork.owner,
         session,
       });
       socketApi.sendNotification(updatedArtwork.owner);
     }
     return {
-      message: 'Comment posted successfully',
+      message: "Comment posted successfully",
       payload: savedComment,
     };
   }
@@ -70,7 +70,7 @@ export const patchComment = async ({
     userId,
     commentContent,
   });
-  return { message: 'Comment updated successfully' };
+  return { message: "Comment updated successfully" };
 };
 
 export const deleteComment = async ({
@@ -86,5 +86,5 @@ export const deleteComment = async ({
     userId,
     session,
   });
-  return { message: 'Comment deleted successfully' };
+  return { message: "Comment deleted successfully" };
 };

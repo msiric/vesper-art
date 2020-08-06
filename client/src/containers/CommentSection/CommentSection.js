@@ -97,7 +97,11 @@ const CommentSection = ({
                           }
                           secondary={
                             edits[comment._id] ? (
-                              <EditCommentForm />
+                              <EditCommentForm
+                                comment={comment}
+                                artwork={artwork}
+                                handleCommentClose={handleCommentClose}
+                              />
                             ) : (
                               <Typography>{comment.content}</Typography>
                             )
