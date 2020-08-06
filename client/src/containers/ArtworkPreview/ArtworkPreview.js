@@ -139,15 +139,13 @@ const ArtworkPreview = ({ artwork }) => {
   const classes = useStyles();
 
   return (
-    <Grid item sm={12} md={7} className={classes.artworkPreviewItem}>
-      <Card className={classes.artworkPreviewCard}>
-        <CardMedia
-          className={classes.artworkPreviewMedia}
-          image={artwork.current.cover}
-          title={artwork.current.title}
-        />
-      </Card>
-    </Grid>
+    <Card className={classes.artworkPreviewCard}>
+      <CardMedia
+        className={classes.artworkPreviewMedia}
+        image={artwork.current.cover}
+        title={artwork.current.title}
+      />
+    </Card>
   );
 };
 

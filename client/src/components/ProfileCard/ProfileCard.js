@@ -1,35 +1,35 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import { Link as RouterLink } from "react-router-dom";
-import { artepunktTheme } from "../../constants/theme.js";
-import { formatDate } from "../../../../common/helpers.js";
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import { Link as RouterLink } from 'react-router-dom';
+import { artepunktTheme } from '../../constants/theme.js';
+import { formatDate } from '../../../../common/helpers.js';
 
 const useStyles = makeStyles({
   profileCardContainer: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: artepunktTheme.padding.container,
   },
   profileCardName: {
     marginTop: 10,
-    display: "block",
-    textAlign: "center",
-    textDecoration: "none",
+    display: 'block',
+    textAlign: 'center',
+    textDecoration: 'none',
   },
   profileCardAvatar: {
-    textAlign: "center",
-    width: "100px",
-    height: "100px",
-    borderRadius: "50%",
+    textAlign: 'center',
+    width: '100px',
+    height: '100px',
+    borderRadius: '50%',
   },
 });
 
@@ -39,7 +39,7 @@ const ProfileCard = ({ user, handleModalOpen, fullHeight }) => {
   return (
     <Card
       className={classes.profileCardContainer}
-      style={{ height: fullHeight ? "100%" : "auto" }}
+      style={{ height: fullHeight ? '50%' : 'auto' }}
     >
       <CardMedia
         component={RouterLink}
@@ -67,7 +67,7 @@ const ProfileCard = ({ user, handleModalOpen, fullHeight }) => {
           component="p"
           align="center"
         >
-          {user.description || "No description specified"}
+          {user.description || 'No description specified'}
         </Typography>
         <Typography
           variant="body2"
@@ -75,7 +75,7 @@ const ProfileCard = ({ user, handleModalOpen, fullHeight }) => {
           component="p"
           align="center"
         >
-          {user.country || "No country specified"}
+          {user.country || 'No country specified'}
         </Typography>
         <Typography
           variant="body2"
@@ -83,7 +83,7 @@ const ProfileCard = ({ user, handleModalOpen, fullHeight }) => {
           component="p"
           align="center"
         >
-          {`Joined ${formatDate(new Date(user.created), "MMM yyyy")}`}
+          {`Joined ${formatDate(new Date(user.created), 'MMM yyyy')}`}
         </Typography>
       </CardContent>
       {user.editable && (

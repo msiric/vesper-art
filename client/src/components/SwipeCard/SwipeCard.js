@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Box,
   AppBar,
@@ -7,31 +7,31 @@ import {
   Typography,
   Grid,
   CircularProgress,
-} from "@material-ui/core";
-import SwipeableViews from "react-swipeable-views";
-import { makeStyles } from "@material-ui/core/styles";
-import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
-import LoadingSpinner from "../LoadingSpinner/LoadingSpinner.js";
+} from '@material-ui/core';
+import SwipeableViews from 'react-swipeable-views';
+import { makeStyles } from '@material-ui/core/styles';
+import ArtworkPanel from '../../containers/ArtworkPanel/ArtworkPanel.js';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner.js';
 
 const useStyles = makeStyles({
   profileArtworkContainer: {
-    height: "100%",
-    "&> div": {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      height: "calc(100% - 48px)",
+    height: '100%',
+    '&> div': {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: 'calc(100% - 48px)',
     },
-    "&> div> div": {
-      height: "100%",
-      width: "100%",
+    '&> div> div': {
+      height: '100%',
+      width: '100%',
     },
   },
   swipeCardBox: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
   },
 });
 
@@ -45,7 +45,7 @@ const SwipeCard = ({
 
   return (
     <Box className={classes.profileArtworkContainer}>
-      <AppBar position="static" color="default">
+      <AppBar position="static" color="transparent">
         <Tabs
           value={tabs.value}
           onChange={handleTabsChange}

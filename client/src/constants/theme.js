@@ -41,6 +41,18 @@ export const artepunktTheme = createMuiTheme({
     spacing: 8,
     container: 20,
   },
+  props: {
+    MuiButton: {
+      variant: 'contained',
+      color: 'primary',
+    },
+    MuiPaper: {
+      elevation: 9,
+    },
+    MuiCard: {
+      elevation: 6,
+    },
+  },
 });
 
 artepunktTheme.overrides.MuiSnackbarContent = {
