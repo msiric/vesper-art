@@ -1,6 +1,6 @@
-import React, { useContext, useState } from 'react';
-import { Context } from '../../context/Store.js';
-import { Formik, Form, Field } from 'formik';
+import React, { useContext, useState } from "react";
+import { Context } from "../../context/Store.js";
+import { Formik, Form, Field } from "formik";
 import {
   Grid,
   List,
@@ -20,18 +20,18 @@ import {
   Paper,
   Button,
   Link as Anchor,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import {
   MoreVertRounded as MoreIcon,
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
-} from '@material-ui/icons';
-import { Link, useHistory } from 'react-router-dom';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { postComment, patchComment } from '../../services/artwork.js';
-import { commentValidation } from '../../validation/comment.js';
-import AddCommentForm from '../Comment/AddCommentForm.js';
-import EditCommentForm from '../Comment/EditCommentForm.js';
+} from "@material-ui/icons";
+import { Link, useHistory } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { postComment, patchComment } from "../../services/artwork.js";
+import { commentValidation } from "../../validation/comment.js";
+import AddCommentForm from "../Comment/AddCommentForm.js";
+import EditCommentForm from "../Comment/EditCommentForm.js";
 
 const CommentSection = ({
   artwork,
@@ -87,10 +87,10 @@ const CommentSection = ({
                                   to={`/user/${comment.owner.name}`}
                                   className={`${classes.fonts} ${classes.noLink}`}
                                 >
-                                  {comment.owner.name}{' '}
+                                  {comment.owner.name}{" "}
                                 </Typography>
                                 <span className={classes.modified}>
-                                  {comment.modified ? 'edited' : null}
+                                  {comment.modified ? "edited" : null}
                                 </span>
                               </>
                             )
@@ -124,7 +124,7 @@ const CommentSection = ({
             ) : (
               <p>No comments</p>
             )}
-            <AddCommentForm />
+            <AddCommentForm artwork={artwork} />
           </Typography>
         </CardContent>
       </Card>
