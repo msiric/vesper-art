@@ -1,6 +1,6 @@
-import React, { useContext, useState } from "react";
-import { Context } from "../../context/Store.js";
-import { Formik, Form, Field } from "formik";
+import React, { useContext, useState } from 'react';
+import { Context } from '../../context/Store.js';
+import { Formik, Form, Field } from 'formik';
 import {
   Grid,
   List,
@@ -20,18 +20,18 @@ import {
   Paper,
   Button,
   Link as Anchor,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   MoreVertRounded as MoreIcon,
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
-} from "@material-ui/icons";
-import { Link, useHistory } from "react-router-dom";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { postComment, patchComment } from "../../services/artwork.js";
-import { commentValidation } from "../../validation/comment.js";
-import AddCommentForm from "../Comment/AddCommentForm.js";
-import EditCommentForm from "../Comment/EditCommentForm.js";
+} from '@material-ui/icons';
+import { Link, useHistory } from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { postComment, patchComment } from '../../services/artwork.js';
+import { commentValidation } from '../../validation/comment.js';
+import AddCommentForm from '../Comment/AddCommentForm.js';
+import EditCommentForm from '../Comment/EditCommentForm.js';
 
 const CommentSection = ({
   artwork,
@@ -80,20 +80,26 @@ const CommentSection = ({
                         </ListItemAvatar>
                         <ListItemText
                           primary={
-                            edits[comment._id] ? null : (
-                              <>
-                                <Typography
-                                  component={Link}
-                                  to={`/user/${comment.owner.name}`}
-                                  className={`${classes.fonts} ${classes.noLink}`}
-                                >
-                                  {comment.owner.name}{" "}
-                                </Typography>
-                                <span className={classes.modified}>
-                                  {comment.modified ? "edited" : null}
-                                </span>
-                              </>
-                            )
+                            edits[comment._id]
+                              ? null
+                              : [
+                                  <Typography
+                                    component={Link}
+                                    to={`/user/${comment.owner.name}`}
+                                    className={`${classes.fonts} ${classes.noLink}`}
+                                    style={{ textDecoration: 'none' }}
+                                    color="primary"
+                                  >
+                                    {comment.owner.name}
+                                  </Typography>,
+                                  <Typography
+                                    className={classes.modified}
+                                    component="span"
+                                    style={{ marginLeft: 10 }}
+                                  >
+                                    {comment.modified ? 'edited' : null}
+                                  </Typography>,
+                                ]
                           }
                           secondary={
                             edits[comment._id] ? (

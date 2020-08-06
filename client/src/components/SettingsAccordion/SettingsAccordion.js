@@ -67,6 +67,7 @@ const SettingsAccordion = ({
         className={classes.accordion}
         expanded={expanded === 'panel1'}
         onChange={handlePanelChange('panel1')}
+        elevation={3}
       >
         <AccordionSummary
           expandIcon={<UpIcon />}
@@ -104,6 +105,7 @@ const SettingsAccordion = ({
         className={classes.accordion}
         expanded={expanded === 'panel2'}
         onChange={handlePanelChange('panel2')}
+        elevation={3}
       >
         <AccordionSummary
           expandIcon={<UpIcon />}
@@ -123,6 +125,7 @@ const SettingsAccordion = ({
         className={classes.accordion}
         expanded={expanded === 'panel4'}
         onChange={handlePanelChange('panel4')}
+        elevation={3}
       >
         <AccordionSummary
           expandIcon={<UpIcon />}
@@ -155,6 +158,7 @@ const SettingsAccordion = ({
         className={classes.accordion}
         expanded={expanded === 'panel3'}
         onChange={handlePanelChange('panel3')}
+        elevation={3}
       >
         <AccordionSummary
           expandIcon={<UpIcon />}
@@ -175,6 +179,7 @@ const SettingsAccordion = ({
         className={classes.accordion}
         expanded={expanded === 'panel5'}
         onChange={handlePanelChange('panel5')}
+        elevation={3}
       >
         <AccordionSummary
           expandIcon={<UpIcon />}
@@ -190,6 +195,7 @@ const SettingsAccordion = ({
         className={classes.accordion}
         expanded={expanded === 'panel6'}
         onChange={handlePanelChange('panel6')}
+        elevation={3}
       >
         <AccordionSummary
           expandIcon={<UpIcon />}

@@ -7,10 +7,7 @@ const useStyles = makeStyles((muiTheme) => ({
     zIndex: 1000,
     padding: muiTheme.spacing(3, 2),
     marginTop: 'auto',
-    backgroundColor:
-      muiTheme.palette.type === 'light'
-        ? muiTheme.palette.grey[200]
-        : muiTheme.palette.grey[800],
+    backgroundColor: muiTheme.palette.grey[800],
     textAlign: 'center',
   },
 }));
