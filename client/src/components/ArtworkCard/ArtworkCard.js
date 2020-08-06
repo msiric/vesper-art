@@ -1,101 +1,104 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import { upload } from '../../../../common/constants.js';
-import Card from '@material-ui/core/Card';
-import Box from '@material-ui/core/Box';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardActions from '@material-ui/core/CardActions';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import { red } from '@material-ui/core/colors';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
-import { Typography } from '@material-ui/core';
+import React from "react";
+import { Link } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
+import { upload } from "../../../../common/constants.js";
+import Card from "@material-ui/core/Card";
+import Box from "@material-ui/core/Box";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardMedia from "@material-ui/core/CardMedia";
+import CardActions from "@material-ui/core/CardActions";
+import Avatar from "@material-ui/core/Avatar";
+import IconButton from "@material-ui/core/IconButton";
+import { red } from "@material-ui/core/colors";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import ShareIcon from "@material-ui/icons/Share";
+import { Typography } from "@material-ui/core";
+import FavoriteButton from "../FavoriteButton/FavoriteButton.js";
+import ShareButton from "../ShareButton/ShareButton.js";
+import EditButton from "../EditButton/EditButton.js";
 
 const useStyles = makeStyles((theme) => ({
   media: {
     height: 0,
   },
   expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
+    transform: "rotate(0deg)",
+    marginLeft: "auto",
+    transition: theme.transitions.create("transform", {
       duration: theme.transitions.duration.shortest,
     }),
   },
   expandOpen: {
-    transform: 'rotate(180deg)',
+    transform: "rotate(180deg)",
   },
   avatar: {
     backgroundColor: red[500],
   },
   artworkContainer: {
     margin: 12,
-    position: 'relative',
-    '&:hover': {
-      '& $artworkHeader': {
+    position: "relative",
+    "&:hover": {
+      "& $artworkHeader": {
         height: 60,
       },
-      '& $artworkFooter': {
+      "& $artworkFooter": {
         height: 60,
       },
     },
   },
   artworkHeader: {
-    '& div': {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      overflow: 'hidden',
+    "& div": {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      overflow: "hidden",
       padding: 12,
     },
-    width: '100%',
+    width: "100%",
     height: 0,
     padding: 0,
-    position: 'absolute',
+    position: "absolute",
     top: 0,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    transition: 'height 0.5s',
-    display: 'flex',
-    justifyContent: 'left',
-    alignItems: 'center',
-    overflow: 'hidden',
+    backgroundColor: "rgba(0,0,0,0.3)",
+    transition: "height 0.5s",
+    display: "flex",
+    justifyContent: "left",
+    alignItems: "center",
+    overflow: "hidden",
   },
   artworkFooter: {
-    '& button': {
-      color: 'white',
+    "& button": {
+      color: "white",
     },
-    width: '100%',
+    width: "100%",
     height: 0,
     padding: 0,
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    transition: 'height 0.5s',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    overflow: 'hidden',
+    backgroundColor: "rgba(0,0,0,0.3)",
+    transition: "height 0.5s",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    overflow: "hidden",
   },
   artworkTitle: {
-    color: 'white',
-    textDecoration: 'none',
-    '&:hover': {
-      textDecoration: 'underline',
+    color: "white",
+    textDecoration: "none",
+    "&:hover": {
+      textDecoration: "underline",
     },
   },
   artworkSeller: {
-    color: 'white',
-    textDecoration: 'none',
-    '&:hover': {
-      textDecoration: 'underline',
+    color: "white",
+    textDecoration: "none",
+    "&:hover": {
+      textDecoration: "underline",
     },
   },
 }));
 
-const ArtworkCard = ({ artwork }) => {
+const ArtworkCard = ({ user, artwork }) => {
   const classes = useStyles();
 
   return (
@@ -141,18 +144,17 @@ const ArtworkCard = ({ artwork }) => {
       />
       <CardActions disableSpacing className={classes.artworkFooter}>
         <Box>
-          <IconButton
-            aria-label="Save artwork"
-            className={classes.artworkColor}
-          >
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton
-            aria-label="Share artwork"
-            className={classes.artworkColor}
-          >
-            <ShareIcon />
-          </IconButton>
+          {artwork.owner._id === user.id ? (
+            <EditButton artwork={artwork} />
+          ) : (
+            [
+              <FavoriteButton
+                artwork={artwork}
+                favorited={user.saved[artwork._id]}
+              />,
+              <ShareButton artwork={artwork} />,
+            ]
+          )}
         </Box>
         <Box>
           <IconButton
@@ -160,11 +162,11 @@ const ArtworkCard = ({ artwork }) => {
             className={classes.artworkColor}
           >
             <Typography noWrap>
-              {artwork.current.availability === 'unavailable'
+              {artwork.current.availability === "unavailable"
                 ? `${
                     artwork.current.personal
                       ? `$${artwork.current.personal}`
-                      : ' Free'
+                      : " Free"
                   }
                   /
                     ${
@@ -172,9 +174,9 @@ const ArtworkCard = ({ artwork }) => {
                         ? `$${artwork.current.commercial}`
                         : artwork.current.personal
                         ? artwork.current.personal
-                        : ' Free'
+                        : " Free"
                     }`
-                : 'Preview only'}
+                : "Preview only"}
             </Typography>
           </IconButton>
         </Box>

@@ -86,13 +86,13 @@ export const fetchUserProfile = async ({
             skip: dataSkip,
           },
           populate: {
-            path: "current",
+            path: "owner current",
           },
         }
       : {
           path: "artwork",
           populate: {
-            path: "current",
+            path: "owner current",
           },
         }
   );

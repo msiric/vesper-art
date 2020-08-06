@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react';
-import { Context } from '../Store/Store.js';
-import StackGrid from 'react-stack-grid';
-import Modal from '../../shared/Modal/Modal.js';
+import React, { useState, useContext } from "react";
+import { Context } from "../Store/Store.js";
+import StackGrid from "react-stack-grid";
+import Modal from "../../shared/Modal/Modal.js";
 import {
   Paper,
   Card,
@@ -13,14 +13,14 @@ import {
   IconButton,
   Grid,
   CircularProgress,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import {
   FavoriteBorderRounded as SaveIcon,
   FavoriteRounded as SavedIcon,
   ShareRounded as ShareIcon,
   LinkRounded as CopyIcon,
   EditRounded as EditIcon,
-} from '@material-ui/icons';
+} from "@material-ui/icons";
 import {
   FacebookShareButton,
   WhatsappShareButton,
@@ -30,15 +30,15 @@ import {
   WhatsappIcon,
   RedditIcon,
   TwitterIcon,
-} from 'react-share';
-import { withSnackbar } from 'notistack';
-import { Link } from 'react-router-dom';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import GalleryStyles from './Gallery.style.js';
-import { postSave, deleteSave } from '../../services/artwork.js';
-import { useTheme } from '@material-ui/core/styles';
-import ArtworkCard from '../../components/ArtworkCard/ArtworkCard.js';
+} from "react-share";
+import { withSnackbar } from "notistack";
+import { Link } from "react-router-dom";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import InfiniteScroll from "react-infinite-scroll-component";
+import GalleryStyles from "./Gallery.style.js";
+import { postSave, deleteSave } from "../../services/artwork.js";
+import { useTheme } from "@material-ui/core/styles";
+import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
 
 const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
   const [store, dispatch] = useContext(Context);
@@ -53,7 +53,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
   const theme = useTheme();
 
   const artwork = elements.map((element) =>
-    type !== 'version'
+    type !== "version"
       ? {
           /*           data: element.current,
           owner: element.owner, */
@@ -80,12 +80,12 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
           <CopyToClipboard
             text={url}
             onCopy={() =>
-              enqueueSnackbar('Link copied', {
-                variant: 'success',
+              enqueueSnackbar("Link copied", {
+                variant: "success",
                 autoHideDuration: 1000,
                 anchorOrigin: {
-                  vertical: 'top',
-                  horizontal: 'center',
+                  vertical: "top",
+                  horizontal: "center",
                 },
               })
             }
@@ -132,17 +132,17 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
     try {
       await postSave({ artworkId: id });
       dispatch({
-        type: 'updateSaves',
+        type: "updateSaves",
         saved: {
           [id]: true,
         },
       });
-      enqueueSnackbar('Artwork saved', {
-        variant: 'success',
+      enqueueSnackbar("Artwork saved", {
+        variant: "success",
         autoHideDuration: 1000,
         anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
+          vertical: "top",
+          horizontal: "center",
         },
       });
     } catch (err) {
@@ -154,17 +154,17 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
     try {
       await deleteSave({ artworkId: id });
       dispatch({
-        type: 'updateSaves',
+        type: "updateSaves",
         saved: {
           [id]: false,
         },
       });
-      enqueueSnackbar('Artwork unsaved', {
-        variant: 'success',
+      enqueueSnackbar("Artwork unsaved", {
+        variant: "success",
         autoHideDuration: 1000,
         anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
+          vertical: "top",
+          horizontal: "center",
         },
       });
     } catch (err) {
@@ -234,7 +234,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
         {/* specify cover width */}
         <StackGrid columnWidth={150} gutterWidth={0} gutterHeight={0}>
           {elements.map((artwork) => (
-            <ArtworkCard artwork={artwork} />
+            <ArtworkCard user={store.user} artwork={artwork} />
             /*           <div
               key={artwork._id}
               component={Link}

@@ -100,7 +100,12 @@ const Profile = ({ match, enqueueSnackbar }) => {
         setState({
           ...state,
           loading: false,
-          user: { ...data.user, editable: true, artwork: data.artwork },
+          user: {
+            ...data.user,
+            editable: true,
+            artwork: data.artwork,
+            savedArtwork: [],
+          },
           scroll: {
             ...state.scroll,
             artwork: {
@@ -119,7 +124,12 @@ const Profile = ({ match, enqueueSnackbar }) => {
         setState({
           ...state,
           loading: false,
-          user: { ...data.user, editable: false, artwork: data.artwork },
+          user: {
+            ...data.user,
+            editable: false,
+            artwork: data.artwork,
+            savedArtwork: [],
+          },
           scroll: {
             ...state.scroll,
             artwork: {
