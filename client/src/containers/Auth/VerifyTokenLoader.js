@@ -1,5 +1,5 @@
+import { CircularProgress, Container, Grid } from '@material-ui/core';
 import React, { useEffect } from 'react';
-import { Container, Grid, CircularProgress } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { getToken } from '../../services/auth.js';
 
@@ -15,6 +15,7 @@ const VerifyTokenLoader = ({ match }) => {
         state: { message: 'Email successfully verified' },
       });
     } catch (err) {
+      console.log(err);
       history.push({
         pathname: '/',
         state: { message: 'An error occurred' },

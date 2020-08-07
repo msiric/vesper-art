@@ -1,25 +1,26 @@
-import React from 'react';
 import {
+  Avatar,
+  Divider,
+  IconButton,
   ListItem,
   ListItemAvatar,
-  ListItemText,
   ListItemSecondaryAction,
-  IconButton,
-  Avatar,
+  ListItemText,
   Typography,
-  Divider,
 } from '@material-ui/core';
-import { Link } from 'react-router-dom';
 import {
-  NotificationsRounded as NotificationsIcon,
   DraftsRounded as ReadIcon,
   MarkunreadRounded as UnreadIcon,
+  NotificationsRounded as NotificationsIcon,
 } from '@material-ui/icons';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { formatDate } from '../../../../common/helpers.js';
 import NotificationItemStyles from './NotificationItem.style.js';
 
 const NotificationItem = ({
   notification,
+  handleRedirectClick,
   handleReadClick,
   handleUnreadClick,
 }) => {
@@ -54,11 +55,20 @@ const NotificationItem = ({
         </ListItemAvatar>
         <ListItemText
           primary={
-            <Typography component={Link} to={data.link}>
+            <Typography
+              component={Link}
+              to={data.link}
+              onClick={() => handleRedirectClick(notification, data.link)}
+              color="primary"
+            >
               {data.label}
             </Typography>
           }
-          secondary={<Typography>{notification.created}</Typography>}
+          secondary={
+            <Typography>
+              {formatDate(new Date(notification.created), 'dd/MM/yyyy HH:mm')}
+            </Typography>
+          }
         />
         <ListItemSecondaryAction>
           <IconButton

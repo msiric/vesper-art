@@ -1,9 +1,8 @@
-import mongoose from 'mongoose';
-import Artwork from '../models/artwork.js';
-import Version from '../models/version.js';
-import License from '../models/license.js';
 import crypto from 'crypto';
 import currency from 'currency.js';
+import Artwork from '../models/artwork.js';
+import License from '../models/license.js';
+import Version from '../models/version.js';
 
 export const fetchArtworkById = async ({ artworkId, session = null }) => {
   return await Artwork.findOne({
@@ -37,7 +36,7 @@ export const fetchArtworkDetails = async ({
     $and: [{ _id: artworkId }, { active: true }],
   })
     .populate(
-      dataSkip && dataLimit
+      dataSkip !== undefined && dataLimit !== undefined
         ? {
             path: 'comments',
             options: {

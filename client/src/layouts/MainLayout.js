@@ -1,8 +1,8 @@
+import { Backdrop, Box, CircularProgress } from '@material-ui/core';
 import React, { useContext } from 'react';
-import { Context } from '../context/Store.js';
-import { Backdrop, CircularProgress, Box } from '@material-ui/core';
-import Header from '../shared/Header/Header.js';
 import Footer from '../components/Footer/Footer.js';
+import Header from '../components/Header/Header.js';
+import { Context } from '../context/Store.js';
 import MainLayoutStyles from './MainLayout.style.js';
 
 const MainLayout = ({ children }) => {

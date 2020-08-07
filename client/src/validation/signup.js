@@ -10,5 +10,5 @@ export const signupValidation = Yup.object().shape({
     .required('Enter your password'),
   userConfirm: Yup.string()
     .required('Confirm your password')
-    .oneOf([Yup.ref('password')], 'Passwords do not match'),
+    .oneOf([Yup.ref('userPassword')], 'Passwords do not match'),
 });

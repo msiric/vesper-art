@@ -1,13 +1,17 @@
-import React from 'react';
+import { CircularProgress, Divider, Grid, List, Menu } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Menu, List, Divider, Grid, CircularProgress } from '@material-ui/core';
-import NotificationItem from './NotificationItem.js';
+import React from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import NotificationItem from './NotificationItem.js';
 import NotificationsMenuStyles from './NotificationsMenu.style.js';
 
 const StyledMenu = withStyles({
   paper: {
     border: '1px solid #d3d4d5',
+    width: 300,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })((props) => (
   <Menu
@@ -28,6 +32,7 @@ const StyledMenu = withStyles({
 const NotificationsMenu = ({
   notifications,
   handleNotificationsMenuClose,
+  handleRedirectClick,
   handleReadClick,
   handleUnreadClick,
   loadMore,
@@ -60,6 +65,7 @@ const NotificationsMenu = ({
                   {index === 0 ? <Divider /> : null}
                   <NotificationItem
                     notification={notification}
+                    handleRedirectClick={handleRedirectClick}
                     handleReadClick={handleReadClick}
                     handleUnreadClick={handleUnreadClick}
                   />

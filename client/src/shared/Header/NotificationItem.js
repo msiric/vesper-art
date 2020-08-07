@@ -1,21 +1,20 @@
-import React from 'react';
 import {
+  Avatar,
+  Divider,
+  IconButton,
   ListItem,
   ListItemAvatar,
-  ListItemText,
   ListItemSecondaryAction,
-  IconButton,
-  Avatar,
+  ListItemText,
   Typography,
-  Divider,
 } from '@material-ui/core';
-import { Link } from 'react-router-dom';
 import {
-  NotificationsRounded as NotificationsIcon,
   DraftsRounded as ReadIcon,
   MarkunreadRounded as UnreadIcon,
+  NotificationsRounded as NotificationsIcon,
 } from '@material-ui/icons';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import NotificationItemStyles from './NotificationItem.style.js';
 
 const NotificationItem = ({
@@ -54,7 +53,12 @@ const NotificationItem = ({
         </ListItemAvatar>
         <ListItemText
           primary={
-            <Typography component={Link} to={data.link}>
+            <Typography
+              component={Link}
+              to={data.link}
+              style={{ textDecoration: 'none' }}
+              color="primary"
+            >
               {data.label}
             </Typography>
           }

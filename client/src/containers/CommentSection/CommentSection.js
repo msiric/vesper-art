@@ -1,35 +1,22 @@
-import React, { useContext, useState } from 'react';
-import { Context } from '../../context/Store.js';
-import { Formik, Form, Field } from 'formik';
 import {
-  Grid,
+  Avatar,
+  Card,
+  CardContent,
+  Divider,
+  IconButton,
   List,
   ListItem,
   ListItemAvatar,
-  IconButton,
   ListItemSecondaryAction,
-  Avatar,
   ListItemText,
-  Divider,
-  CircularProgress,
-  Card,
-  CardMedia,
-  CardContent,
   Typography,
-  TextField,
-  Paper,
-  Button,
-  Link as Anchor,
 } from '@material-ui/core';
-import {
-  MoreVertRounded as MoreIcon,
-  DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon,
-} from '@material-ui/icons';
-import { Link, useHistory } from 'react-router-dom';
+import { MoreVertRounded as MoreIcon } from '@material-ui/icons';
+import React, { useContext } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { postComment, patchComment } from '../../services/artwork.js';
-import { commentValidation } from '../../validation/comment.js';
+import { Link, useHistory } from 'react-router-dom';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import { Context } from '../../context/Store.js';
 import AddCommentForm from '../Comment/AddCommentForm.js';
 import EditCommentForm from '../Comment/EditCommentForm.js';
 
@@ -38,6 +25,8 @@ const CommentSection = ({
   edits,
   scroll,
   loadMoreComments,
+  handleCommentAdd,
+  handleCommentEdit,
   handleCommentClose,
   handlePopoverOpen,
 }) => {
@@ -54,15 +43,12 @@ const CommentSection = ({
         <Typography variant="body2" color="textSecondary" component="p">
           {artwork.comments.length ? (
             <InfiniteScroll
+              style={{ overflow: 'hidden' }}
               className={classes.scroller}
               dataLength={artwork.comments.length}
               next={loadMoreComments}
               hasMore={scroll.comments.hasMore}
-              loader={
-                <Grid item xs={12} className={classes.loader}>
-                  <CircularProgress />
-                </Grid>
-              }
+              loader={<LoadingSpinner />}
             >
               <List className={classes.root}>
                 {artwork.comments.map((comment) => (
@@ -105,6 +91,7 @@ const CommentSection = ({
                             <EditCommentForm
                               comment={comment}
                               artwork={artwork}
+                              handleCommentEdit={handleCommentEdit}
                               handleCommentClose={handleCommentClose}
                             />
                           ) : (
@@ -133,7 +120,10 @@ const CommentSection = ({
           ) : (
             <p>No comments</p>
           )}
-          <AddCommentForm artwork={artwork} />
+          <AddCommentForm
+            artwork={artwork}
+            handleCommentAdd={handleCommentAdd}
+          />
         </Typography>
       </CardContent>
     </Card>

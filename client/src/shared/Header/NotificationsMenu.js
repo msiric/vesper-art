@@ -1,8 +1,8 @@
-import React from 'react';
+import { CircularProgress, Divider, Grid, List, Menu } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Menu, List, Divider, Grid, CircularProgress } from '@material-ui/core';
-import NotificationItem from './NotificationItem.js';
+import React from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import NotificationItem from './NotificationItem.js';
 import NotificationsMenuStyles from './NotificationsMenu.style.js';
 
 const StyledMenu = withStyles({

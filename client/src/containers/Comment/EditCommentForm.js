@@ -1,10 +1,15 @@
+import { Button, TextField } from '@material-ui/core';
+import { Field, Form, Formik } from 'formik';
 import React from 'react';
-import { Formik, Form, Field } from 'formik';
-import { TextField, Button } from '@material-ui/core';
-import { commentValidation } from '../../validation/comment.js';
 import { patchComment } from '../../services/artwork.js';
+import { commentValidation } from '../../validation/comment.js';
 
-const EditCommentForm = ({ comment, artwork, handleCommentClose }) => {
+const EditCommentForm = ({
+  comment,
+  artwork,
+  handleCommentEdit,
+  handleCommentClose,
+}) => {
   const classes = {};
 
   return (
@@ -19,25 +24,7 @@ const EditCommentForm = ({ comment, artwork, handleCommentClose }) => {
           commentId: comment._id,
           data: values,
         });
-        /*       setState((prevState) => ({
-          ...prevState,
-          artwork: {
-            ...prevState.artwork,
-            comments: prevState.artwork.comments.map((item) =>
-              item._id === comment._id
-                ? {
-                    ...item,
-                    content: values.commentContent,
-                    modified: true,
-                  }
-                : item
-            ),
-          },
-          edits: {
-            ...prevState.edits,
-            [comment._id]: false,
-          },
-        })); */
+        handleCommentEdit(comment._id, values.commentContent);
         resetForm();
       }}
     >

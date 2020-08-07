@@ -1,44 +1,35 @@
-import React, { useState, useContext } from 'react';
-import { Context } from '../../components/Store/Store.js';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
-import { withRouter, Link } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
 import {
-  Button,
   AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  InputBase,
   Badge,
-  MenuItem,
+  Button,
+  IconButton,
+  InputBase,
   Menu,
+  MenuItem,
+  Toolbar,
+  Typography,
 } from '@material-ui/core';
 import {
-  AddBoxRounded as AddIcon,
-  MenuRounded as MenuIcon,
-  SearchRounded as SearchIcon,
-  AccountCircleRounded as AccountIcon,
-  MailRounded as MailIcon,
-  NotificationsRounded as NotificationsIcon,
-  MoreVertRounded as MoreIcon,
-  ShoppingCartRounded as CartIcon,
-  AssessmentRounded as DashboardIcon,
-  AssignmentRounded as OrdersIcon,
-  FavoriteRounded as SavedIcon,
-  SettingsRounded as SettingsIcon,
-  ImageRounded as ArtworkIcon,
   AccountBoxRounded as UserIcon,
+  AccountCircleRounded as AccountIcon,
+  ImageRounded as ArtworkIcon,
+  MoreVertRounded as MoreIcon,
+  NotificationsRounded as NotificationsIcon,
+  SearchRounded as SearchIcon,
 } from '@material-ui/icons';
-import NotificationsMenu from './NotificationsMenu.js';
-import HeaderStyles from './Header.style.js';
+import { Field, Form, Formik } from 'formik';
+import React, { useContext, useState } from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import * as Yup from 'yup';
+import { Context } from '../../context/Store.js';
 import {
   getNotifications,
-  postLogout,
   patchRead,
   patchUnread,
+  postLogout,
 } from '../../services/user.js';
+import HeaderStyles from './Header.style.js';
+import NotificationsMenu from './NotificationsMenu.js';
 
 const searchValidation = Yup.object().shape({
   searchInput: Yup.string().trim().required('Search input is required'),
@@ -94,11 +85,13 @@ const Header = ({ history }) => {
   };
 
   const handleNotificationsMenuOpen = async (e) => {
+    const target = e.currentTarget;
     if (
       (store.user.notifications.hasMore && !store.user.notifications.items) ||
       (store.user.notifications.hasMore &&
         store.user.notifications.items.length === 0) ||
       (!store.user.notifications.hasMore &&
+        store.user.notifications.count !== 0 &&
         store.user.notifications.count !==
           store.user.notifications.items.length)
     ) {
@@ -107,7 +100,7 @@ const Header = ({ history }) => {
         notifications: {
           ...store.user.notifications,
           count: 0,
-          anchor: e.currentTarget,
+          anchor: target,
           loading: true,
         },
       });
@@ -130,7 +123,7 @@ const Header = ({ history }) => {
             dataCursor:
               store.user.notifications.dataCursor +
               store.user.notifications.dataCeiling,
-            anchor: e.currentTarget,
+            anchor: target,
             loading: false,
           },
         });
@@ -151,7 +144,7 @@ const Header = ({ history }) => {
         notifications: {
           ...store.user.notifications,
           count: 0,
-          anchor: e.currentTarget,
+          anchor: target,
         },
       });
     }
@@ -182,6 +175,11 @@ const Header = ({ history }) => {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const handleRedirectClick = (notification, link) => {
+    history.push(link);
+    handleReadClick(notification._id);
   };
 
   const handleReadClick = async (id) => {
@@ -402,7 +400,7 @@ const Header = ({ history }) => {
                 }
               }}
             >
-              {({ values, errors, touched, isSubmitting }) => (
+              {({ values, errors, touched, isSubmitting, handleSubmit }) => (
                 <Form className={classes.card}>
                   <IconButton
                     title={
@@ -531,6 +529,7 @@ const Header = ({ history }) => {
       <NotificationsMenu
         notifications={store.user.notifications}
         handleNotificationsMenuClose={handleNotificationsMenuClose}
+        handleRedirectClick={handleRedirectClick}
         handleReadClick={handleReadClick}
         handleUnreadClick={handleUnreadClick}
         loadMore={loadMore}

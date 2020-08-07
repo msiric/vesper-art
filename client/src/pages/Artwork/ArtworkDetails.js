@@ -1,60 +1,30 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../../context/Store.js';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import { useFormik, Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
 import {
-  Modal,
+  Button,
+  CircularProgress,
   Container,
   Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  IconButton,
-  ListItemSecondaryAction,
-  Avatar,
-  ListItemText,
-  Divider,
-  CircularProgress,
-  Card,
-  CardMedia,
-  CardContent,
-  CardActions,
-  Typography,
-  TextField,
-  Paper,
-  Button,
-  FormControl,
-  MenuItem,
-  InputLabel,
-  Select,
+  Modal,
   Popover,
-  Link as Anchor,
 } from '@material-ui/core';
 import {
-  MoreVertRounded as MoreIcon,
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
 } from '@material-ui/icons';
-import { Link, useHistory } from 'react-router-dom';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import ArtistSection from '../../containers/ArtistSection/ArtistSection.js';
+import ArtworkInfo from '../../containers/ArtworkInfo/ArtworkInfo.js';
+import ArtworkPreview from '../../containers/ArtworkPreview/ArtworkPreview.js';
+import CommentSection from '../../containers/CommentSection/CommentSection.js';
+import AddLicenseForm from '../../containers/License/AddLicenseForm.js';
+import { Context } from '../../context/Store.js';
 import {
-  getDetails,
   deleteComment,
   getComments,
-  postComment,
-  patchComment,
+  getDetails,
 } from '../../services/artwork.js';
-import AddCommentForm from '../../containers/Comment/AddCommentForm.js';
-import EditCommentForm from '../../containers/Comment/EditCommentForm.js';
-import AddLicenseForm from '../../containers/License/AddLicenseForm.js';
-import ArtworkPreview from '../../containers/ArtworkPreview/ArtworkPreview.js';
-import ArtworkInfo from '../../containers/ArtworkInfo/ArtworkInfo.js';
-import CommentSection from '../../containers/CommentSection/CommentSection.js';
-import ArtistSection from '../../containers/ArtistSection/ArtistSection.js';
 
-const ArtworkDetails = ({ match, socket }) => {
+const ArtworkDetails = ({ match, location, socket }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
@@ -120,6 +90,48 @@ const ArtworkDetails = ({ match, socket }) => {
     } catch (err) {
       setState({ ...state, loading: false });
     }
+  };
+
+  const handleCommentAdd = (comment) => {
+    setState((prevState) => ({
+      ...prevState,
+      artwork: {
+        ...prevState.artwork,
+        comments: [
+          ...prevState.artwork.comments,
+          {
+            ...comment,
+            owner: {
+              _id: store.user.id,
+              name: store.user.name,
+              photo: store.user.photo,
+            },
+          },
+        ],
+      },
+    }));
+  };
+
+  const handleCommentEdit = (id, content) => {
+    setState((prevState) => ({
+      ...prevState,
+      artwork: {
+        ...prevState.artwork,
+        comments: prevState.artwork.comments.map((item) =>
+          item._id === id
+            ? {
+                ...item,
+                content: content,
+                modified: true,
+              }
+            : item
+        ),
+      },
+      edits: {
+        ...prevState.edits,
+        [id]: false,
+      },
+    }));
   };
 
   const handleModalOpen = () => {
@@ -221,14 +233,16 @@ const ArtworkDetails = ({ match, socket }) => {
         loading: false,
         artwork: {
           ...prevState.artwork,
-          comments: [...prevState.artwork.comments].concat(data.comments),
+          comments: [...prevState.artwork.comments].concat(
+            data.artwork.comments
+          ),
         },
         scroll: {
           ...state.scroll,
           comments: {
             ...state.scroll.comments,
             hasMore:
-              data.comments.length < state.scroll.comments.dataCeiling
+              data.artwork.comments.length < state.scroll.comments.dataCeiling
                 ? false
                 : true,
             dataCursor:
@@ -244,7 +258,7 @@ const ArtworkDetails = ({ match, socket }) => {
 
   useEffect(() => {
     fetchArtwork();
-  }, []);
+  }, [location]);
 
   return (
     <Container fixed className={classes.fixed}>
@@ -263,6 +277,8 @@ const ArtworkDetails = ({ match, socket }) => {
                 edits={state.edits}
                 scroll={state.scroll}
                 loadMoreComments={loadMoreComments}
+                handleCommentAdd={handleCommentAdd}
+                handleCommentEdit={handleCommentEdit}
                 handleCommentClose={handleCommentClose}
                 handlePopoverOpen={handlePopoverOpen}
               />

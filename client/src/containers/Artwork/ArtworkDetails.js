@@ -1,56 +1,15 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../Store/Store.js';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import { useFormik, Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
+import { Container } from '@material-ui/core';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import {
-  Modal,
-  Container,
-  Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  IconButton,
-  ListItemSecondaryAction,
-  Avatar,
-  ListItemText,
-  Divider,
-  CircularProgress,
-  Card,
-  CardMedia,
-  CardContent,
-  CardActions,
-  Typography,
-  TextField,
-  Paper,
-  Button,
-  FormControl,
-  MenuItem,
-  InputLabel,
-  Select,
-  Popover,
-  Link as Anchor,
-} from '@material-ui/core';
-import {
-  MoreVertRounded as MoreIcon,
-  DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon,
-} from '@material-ui/icons';
-import { Link, useHistory } from 'react-router-dom';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
-import {
-  getDetails,
   deleteComment,
   getComments,
-  postComment,
-  patchComment,
+  getDetails,
 } from '../../services/artwork.js';
+import { Context } from '../Store/Store.js';
 import ArtworkDetailsStyles from './ArtworkDetails.style.js';
-import { commentValidation } from '../../validation/comment.js';
-import { licenseValidation } from '../../validation/license.js';
 
-const ArtworkDetails = ({ match, socket }) => {
+const ArtworkDetails = ({ match, location, socket }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
@@ -240,7 +199,7 @@ const ArtworkDetails = ({ match, socket }) => {
 
   useEffect(() => {
     fetchArtwork();
-  }, []);
+  }, [location]);
 
   return (
     <Container fixed className={classes.fixed}>

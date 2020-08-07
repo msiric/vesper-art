@@ -1,11 +1,11 @@
+import { Button, TextField } from '@material-ui/core';
+import { Field, Form, Formik } from 'formik';
 import React, { useContext } from 'react';
 import { Context } from '../../context/Store.js';
-import { Formik, Form, Field } from 'formik';
-import { TextField, Button } from '@material-ui/core';
-import { commentValidation } from '../../validation/comment.js';
 import { postComment } from '../../services/artwork.js';
+import { commentValidation } from '../../validation/comment.js';
 
-const AddCommentForm = ({ artwork }) => {
+const AddCommentForm = ({ artwork, handleCommentAdd }) => {
   const [store, dispatch] = useContext(Context);
   const classes = {};
 
@@ -21,23 +21,7 @@ const AddCommentForm = ({ artwork }) => {
           artworkId: artwork._id,
           data: values,
         });
-        /*       setState((prevState) => ({
-          ...prevState,
-          artwork: {
-            ...prevState.artwork,
-            comments: [
-              ...prevState.artwork.comments,
-              {
-                ...data.payload,
-                owner: {
-                  _id: store.user.id,
-                  name: store.user.name,
-                  photo: store.user.photo,
-                },
-              },
-            ],
-          },
-        })); */
+        handleCommentAdd(data.payload);
         resetForm();
       }}
     >
