@@ -118,7 +118,15 @@ const CommentSection = ({
             </List>
           </InfiniteScroll>
         ) : (
-          <p>No comments</p>
+          <Box
+            height={70}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            mb={-2}
+          >
+            <Typography>No comments</Typography>
+          </Box>
         )}
         <AddCommentForm artwork={artwork} handleCommentAdd={handleCommentAdd} />
       </CardContent>
