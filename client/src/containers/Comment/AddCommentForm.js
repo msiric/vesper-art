@@ -1,4 +1,4 @@
-import { Button, TextField } from '@material-ui/core';
+import { Box, Button, TextField } from '@material-ui/core';
 import { Field, Form, Formik } from 'formik';
 import React, { useContext } from 'react';
 import { Context } from '../../context/Store.js';
@@ -27,13 +27,14 @@ const AddCommentForm = ({ artwork, handleCommentAdd }) => {
     >
       {({ values, errors, touched, isSubmitting }) => (
         <Form className={classes.card}>
-          <div className={classes.editCommentForm}>
+          <Box m={2}>
             <Field name="commentContent">
               {({ field, form: { touched, errors }, meta }) => (
                 <TextField
                   {...field}
                   type="text"
                   label="Type a comment"
+                  onBlur={() => null}
                   helperText={meta.touched && meta.error}
                   error={meta.touched && Boolean(meta.error)}
                   margin="dense"
@@ -42,8 +43,8 @@ const AddCommentForm = ({ artwork, handleCommentAdd }) => {
                 />
               )}
             </Field>
-          </div>
-          <div className={classes.editCommentActions}>
+          </Box>
+          <Box m={2}>
             <Button
               type="submit"
               color="primary"
@@ -52,7 +53,7 @@ const AddCommentForm = ({ artwork, handleCommentAdd }) => {
             >
               Post
             </Button>
-          </div>
+          </Box>
         </Form>
       )}
     </Formik>

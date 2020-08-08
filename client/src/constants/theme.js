@@ -1,4 +1,31 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import {
+  Card as MuiCard,
+  Container as MuiContainer,
+  Grid as MuiGrid,
+  List as MuiList,
+  Paper as MuiPaper,
+  Popover as MuiPopover,
+  Typography as MuiTypography,
+} from '@material-ui/core';
+import { createMuiTheme, styled } from '@material-ui/core/styles';
+import {
+  compose,
+  flexbox,
+  palette,
+  sizing,
+  spacing,
+  typography,
+} from '@material-ui/system';
+
+export const Container = styled(MuiContainer)(compose(spacing, flexbox));
+export const Grid = styled(MuiGrid)(compose(spacing, flexbox));
+export const Card = styled(MuiCard)(compose(spacing, flexbox, sizing));
+export const Paper = styled(MuiPaper)(compose(spacing, flexbox, sizing));
+export const List = styled(MuiList)(compose(spacing, flexbox, sizing));
+export const Popover = styled(MuiPopover)(compose(spacing, flexbox, sizing));
+export const Typography = styled(MuiTypography)(
+  compose(typography, spacing, palette)
+);
 
 export const artepunktTheme = createMuiTheme({
   typography: {
@@ -55,6 +82,13 @@ export const artepunktTheme = createMuiTheme({
   },
 });
 
+/* artepunktTheme.overrides.MuiTypography = {
+  root: {
+    '&:hover': {
+      color: artepunktTheme.palette.primary.main,
+    },
+  },
+}; */
 artepunktTheme.overrides.MuiSnackbarContent = {
   root: {
     padding: '0 10px',

@@ -1,10 +1,10 @@
 import {
+  Box,
   Button,
   CircularProgress,
   Container,
   Grid,
   Modal,
-  Popover,
 } from '@material-ui/core';
 import {
   DeleteRounded as DeleteIcon,
@@ -12,6 +12,7 @@ import {
 } from '@material-ui/icons';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Popover } from '../../constants/theme.js';
 import ArtistSection from '../../containers/ArtistSection/ArtistSection.js';
 import ArtworkInfo from '../../containers/ArtworkInfo/ArtworkInfo.js';
 import ArtworkPreview from '../../containers/ArtworkPreview/ArtworkPreview.js';
@@ -317,13 +318,12 @@ const ArtworkDetails = ({ match, location, socket }) => {
           vertical: 'top',
           horizontal: 'center',
         }}
+        width={120}
         transition
       >
-        <div className={classes.moreOptions}>
+        <Box>
           <Button
-            variant="contained"
-            color="error"
-            className={classes.button}
+            variant="text"
             startIcon={<EditIcon />}
             onClick={() => handleCommentOpen(state.popover.id)}
             fullWidth
@@ -331,16 +331,14 @@ const ArtworkDetails = ({ match, location, socket }) => {
             Edit
           </Button>
           <Button
-            variant="contained"
-            color="error"
-            className={classes.button}
+            variant="text"
             startIcon={<DeleteIcon />}
             onClick={() => handleCommentDelete(state.popover.id)}
             fullWidth
           >
             Delete
           </Button>
-        </div>
+        </Box>
       </Popover>
     </Container>
   );

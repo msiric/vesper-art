@@ -1,4 +1,4 @@
-import { Button, TextField } from '@material-ui/core';
+import { Box, Button, TextField } from '@material-ui/core';
 import { Field, Form, Formik } from 'formik';
 import React from 'react';
 import { patchComment } from '../../services/artwork.js';
@@ -30,7 +30,7 @@ const EditCommentForm = ({
     >
       {({ values, errors, touched, isSubmitting }) => (
         <Form className={classes.card}>
-          <div className={classes.editCommentForm}>
+          <Box className={classes.editCommentForm}>
             <Field name="commentContent">
               {({ field, form: { touched, errors }, meta }) => (
                 <TextField
@@ -45,25 +45,19 @@ const EditCommentForm = ({
                 />
               )}
             </Field>
-          </div>
-          <div className={classes.editCommentActions}>
+          </Box>
+          <Box display="flex" justifyContent="space-between">
+            <Button type="submit" color="primary" disabled={isSubmitting}>
+              Save
+            </Button>
             <Button
               type="button"
               color="primary"
               onClick={() => handleCommentClose(comment._id)}
-              fullWidth
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              color="primary"
-              fullWidth
-              disabled={isSubmitting}
-            >
-              Save
-            </Button>
-          </div>
+          </Box>
         </Form>
       )}
     </Formik>
