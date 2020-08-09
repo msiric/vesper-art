@@ -1,16 +1,7 @@
-import React from 'react';
-import {
-  Box,
-  AppBar,
-  Tabs,
-  Tab,
-  Typography,
-  Grid,
-  CircularProgress,
-} from '@material-ui/core';
-import SwipeableViews from 'react-swipeable-views';
+import { AppBar, Box, Tab, Tabs, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import ArtworkPanel from '../../containers/ArtworkPanel/ArtworkPanel.js';
+import React from 'react';
+import SwipeableViews from 'react-swipeable-views';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner.js';
 
 const useStyles = makeStyles({
@@ -35,16 +26,11 @@ const useStyles = makeStyles({
   },
 });
 
-const SwipeCard = ({
-  tabs,
-  handleTabsChange,
-  handleChangeIndex,
-  handleLoadMore,
-}) => {
+const SwipeCard = ({ tabs, handleTabsChange, handleChangeIndex, margin }) => {
   const classes = useStyles();
 
   return (
-    <Box className={classes.profileArtworkContainer}>
+    <Box className={classes.profileArtworkContainer} m={margin}>
       <AppBar position="static" color="transparent">
         <Tabs
           value={tabs.value}
@@ -71,17 +57,16 @@ const SwipeCard = ({
             <Box className={classes.swipeCardBox} hidden={tabs.value !== index}>
               {item.loading ? (
                 <LoadingSpinner />
-              ) : item.content.length ? (
-                <ArtworkPanel
-                  elements={item.content}
-                  hasMore={item.hasMore}
-                  loadMore={handleLoadMore}
-                  type={item.type}
-                />
+              ) : item.iterable ? (
+                item.content ? (
+                  item.component
+                ) : (
+                  <Typography variant="h6" align="center">
+                    {item.error}
+                  </Typography>
+                )
               ) : (
-                <Typography variant="h6" align="center">
-                  {item.error}
-                </Typography>
+                item.component
               )}
             </Box>
           ) : null

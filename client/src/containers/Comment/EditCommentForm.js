@@ -52,7 +52,7 @@ const EditCommentForm = ({
             </Button>
             <Button
               type="button"
-              color="primary"
+              color="warning"
               onClick={() => handleCommentClose(comment._id)}
             >
               Cancel

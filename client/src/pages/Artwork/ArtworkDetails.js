@@ -12,6 +12,7 @@ import {
 } from '@material-ui/icons';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { upload } from '../../../../common/constants.js';
 import { Popover } from '../../constants/theme.js';
 import ArtistSection from '../../containers/ArtistSection/ArtistSection.js';
 import ArtworkInfo from '../../containers/ArtworkInfo/ArtworkInfo.js';
@@ -31,6 +32,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
     loading: true,
     artwork: {},
     license: 'personal',
+    height: 400,
     modal: {
       open: false,
     },
@@ -38,6 +40,9 @@ const ArtworkDetails = ({ match, location, socket }) => {
       id: null,
       anchorEl: null,
       open: false,
+    },
+    tabs: {
+      value: 0,
     },
     edits: {},
     scroll: {
@@ -62,6 +67,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
         ...state,
         loading: false,
         artwork: data.artwork,
+        height:
+          data.artwork.current.height /
+            (data.artwork.current.width / upload.artwork.fileTransform.width) +
+          70,
         scroll: {
           ...state.scroll,
           comments: {
@@ -158,6 +167,20 @@ const ArtworkDetails = ({ match, location, socket }) => {
 
   const handleLicenseChange = (value) => {
     setState({ ...state, license: value });
+  };
+
+  const handleTabsChange = (e, newValue) => {
+    setState((prevState) => ({
+      ...prevState,
+      tabs: { ...prevState.tabs, value: newValue },
+    }));
+  };
+
+  const handleChangeIndex = (index) => {
+    setState((prevState) => ({
+      ...prevState,
+      tabs: { ...prevState.tabs, value: index },
+    }));
   };
 
   const handlePopoverOpen = (e, id) => {
@@ -271,7 +294,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
         ) : state.artwork._id ? (
           <>
             <Grid item sm={12} md={8} className={classes.artworkPreviewItem}>
-              <ArtworkPreview artwork={state.artwork} />
+              <ArtworkPreview artwork={state.artwork} height={state.height} />
               <br />
               <CommentSection
                 artwork={state.artwork}
@@ -289,7 +312,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
               <br />
               <ArtworkInfo
                 artwork={state.artwork}
+                tabs={state.tabs}
                 license={state.license}
+                handleTabsChange={handleTabsChange}
+                handleChangeIndex={handleChangeIndex}
                 handleDownload={handleDownload}
               />
             </Grid>

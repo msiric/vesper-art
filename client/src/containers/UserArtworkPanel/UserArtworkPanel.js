@@ -1,7 +1,8 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Paper } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 import SwipeCard from '../../components/SwipeCard/SwipeCard.js';
+import ArtworkPanel from '../../containers/ArtworkPanel/ArtworkPanel.js';
 
 const useStyles = makeStyles({
   paper: {
@@ -43,15 +44,31 @@ const UserArtworkPanel = ({
               items: [
                 {
                   display: true,
-                  content: user.artwork,
-                  type: 'artwork',
+                  iterable: true,
+                  content: user.artwork.length,
+                  component: (
+                    <ArtworkPanel
+                      elements={user.artwork}
+                      hasMore={null}
+                      loadMore={loadMoreArtwork}
+                      type="artwork"
+                    />
+                  ),
                   error: 'You have no artwork to display',
                   loading: false,
                 },
                 {
                   display: true,
-                  content: user.savedArtwork,
-                  type: 'artwork',
+                  iterable: true,
+                  content: user.savedArtwork.length,
+                  component: (
+                    <ArtworkPanel
+                      elements={user.savedArtwork}
+                      hasMore={null}
+                      loadMore={loadMoreSaves}
+                      type="artwork"
+                    />
+                  ),
                   error: 'You have no saved artwork',
                   loading: tabs.loading,
                 },
@@ -59,7 +76,6 @@ const UserArtworkPanel = ({
             }}
             handleTabsChange={handleTabsChange}
             handleChangeIndex={handleChangeIndex}
-            handleLoadMore={loadMoreArtwork}
           />
         </Paper>
       ) : (
@@ -79,15 +95,31 @@ const UserArtworkPanel = ({
               items: [
                 {
                   display: true,
-                  content: user.artwork,
-                  type: 'artwork',
+                  iterable: true,
+                  content: user.artwork.length,
+                  component: (
+                    <ArtworkPanel
+                      elements={user.artwork}
+                      hasMore={null}
+                      loadMore={loadMoreArtwork}
+                      type="artwork"
+                    />
+                  ),
                   error: 'This user has no artwork to display',
                   loading: false,
                 },
                 {
                   display: user.displaySaves,
-                  content: user.savedArtwork,
-                  type: 'artwork',
+                  iterable: true,
+                  content: user.savedArtwork.length,
+                  component: (
+                    <ArtworkPanel
+                      elements={user.savedArtwork}
+                      hasMore={null}
+                      loadMore={loadMoreSaves}
+                      type="artwork"
+                    />
+                  ),
                   error: 'This user has no saved artwork',
                   loading: tabs.loading,
                 },
@@ -95,7 +127,6 @@ const UserArtworkPanel = ({
             }}
             handleTabsChange={handleTabsChange}
             handleChangeIndex={handleChangeIndex}
-            handleLoadMore={loadMoreSaves}
           />
         </Paper>
       )}

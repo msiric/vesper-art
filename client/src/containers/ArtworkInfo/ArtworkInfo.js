@@ -1,26 +1,26 @@
 import React, { useContext } from 'react';
-import { Context } from '../../context/Store.js';
-import _ from 'lodash';
-import {
-  Paper,
-  Button,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-} from '@material-ui/core';
-import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
+import PricingCard from '../../components/PricingCard/PricingCard.js';
+import SwipeCard from '../../components/SwipeCard/SwipeCard.js';
+import { Card, CardContent, Typography } from '../../constants/theme.js';
+import { Context } from '../../context/Store.js';
 
-const ArtworkInfo = ({ artwork, license, handleDownload, match }) => {
+const ArtworkInfo = ({
+  artwork,
+  license,
+  tabs,
+  handleTabsChange,
+  handleChangeIndex,
+  handleDownload,
+  match,
+}) => {
   const [store, dispatch] = useContext(Context);
   const classes = {};
 
   return (
-    <Card className={classes.root} style={{ height: '45%' }}>
+    <Card className={classes.root} style={{ minHeight: 410 }}>
       <CardContent>
-        <Typography variant="h5" component="h2" align="center">
+        <Typography variant="h5" component="h2" align="center" m={2}>
           {artwork.current.title}
         </Typography>
         <Typography
@@ -31,7 +31,7 @@ const ArtworkInfo = ({ artwork, license, handleDownload, match }) => {
           {artwork.current.description}
         </Typography>
         {artwork.current.availability === 'available' ? (
-          <>
+          /*           <>
             <Typography variant="body2" component="p" align="center">
               Artwork price:
               {artwork.current.personal
@@ -46,14 +46,84 @@ const ArtworkInfo = ({ artwork, license, handleDownload, match }) => {
                 ? ` $${artwork.current.personal}`
                 : ' Free'}
             </Typography>
-          </>
+          </> */
+          <SwipeCard
+            tabs={{
+              value: tabs.value,
+              headings: [
+                { display: true, label: 'Personal license', props: {} },
+                { display: true, label: 'Commercial license', props: {} },
+              ],
+              items: [
+                {
+                  display: true,
+                  iterable: false,
+                  content: null,
+                  component: (
+                    <PricingCard
+                      price={artwork.current.personal}
+                      heading="Personal use license. Use for personal projects, social media, and
+                  non commercial activities"
+                      list={[
+                        {
+                          label: 'Personal blogging, websites and social media',
+                        },
+                        {
+                          label:
+                            'Home printing, art and craft projects, personal portfolios and gifts',
+                        },
+                        { label: 'Students and charities' },
+                        {
+                          label:
+                            'The personal use license is not suitable for commercial activities',
+                        },
+                      ]}
+                    />
+                  ),
+                  error: null,
+                  loading: false,
+                },
+                {
+                  display: true,
+                  iterable: false,
+                  content: null,
+                  component: (
+                    <PricingCard
+                      price={artwork.current.commercial}
+                      heading="Commercial use license. Use anywhere in the world for unlimited projects with no expiration dates"
+                      list={[
+                        {
+                          label:
+                            'Print and digital advertising, broadcasts, product packaging, presentations, websites and blogs',
+                        },
+                        {
+                          label:
+                            'Home printing, art and craft projects, personal portfolios and gifts',
+                        },
+                        { label: 'Students and charities' },
+                        {
+                          label:
+                            'The personal use license is not suitable for commercial activities',
+                        },
+                      ]}
+                    />
+                  ),
+                  error: null,
+                  loading: false,
+                },
+              ],
+            }}
+            handleTabsChange={handleTabsChange}
+            handleChangeIndex={handleChangeIndex}
+            margin="16px -16px"
+          />
         ) : (
           <Typography variant="body2" component="p" align="center">
             Preview only
           </Typography>
         )}
       </CardContent>
-      <CardActions>
+      {/*       <CardActions>
         {artwork.owner._id !== store.user.id ? (
           artwork.current.availability === 'available' ? (
             license === 'personal' ? (
@@ -90,6 +160,7 @@ const ArtworkInfo = ({ artwork, license, handleDownload, match }) => {
           </Button>
         )}
       </CardActions>
+     */}
     </Card>
   );
 };

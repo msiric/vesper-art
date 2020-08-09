@@ -1,5 +1,6 @@
 import {
   Card as MuiCard,
+  CardContent as MuiCardContent,
   Container as MuiContainer,
   Grid as MuiGrid,
   List as MuiList,
@@ -20,6 +21,9 @@ import {
 export const Container = styled(MuiContainer)(compose(spacing, flexbox));
 export const Grid = styled(MuiGrid)(compose(spacing, flexbox));
 export const Card = styled(MuiCard)(compose(spacing, flexbox, sizing));
+export const CardContent = styled(MuiCardContent)(
+  compose(spacing, flexbox, sizing)
+);
 export const Paper = styled(MuiPaper)(compose(spacing, flexbox, sizing));
 export const List = styled(MuiList)(compose(spacing, flexbox, sizing));
 export const Popover = styled(MuiPopover)(compose(spacing, flexbox, sizing));

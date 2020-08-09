@@ -2,7 +2,6 @@ import { Box, Card, CardMedia } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { upload } from '../../../../common/constants.js';
 import { Typography } from '../../constants/theme.js';
 
 const useStyles = makeStyles((muiTheme) => ({
@@ -111,7 +110,7 @@ const useStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const ArtworkPreview = ({ artwork }) => {
+const ArtworkPreview = ({ artwork, height }) => {
   const history = useHistory();
   const classes = useStyles();
 
@@ -119,10 +118,7 @@ const ArtworkPreview = ({ artwork }) => {
     <Card
       className={classes.artworkPreviewCard}
       style={{
-        height:
-          artwork.current.height /
-            (artwork.current.width / upload.artwork.fileTransform.width) +
-          70,
+        height: height,
       }}
     >
       <Box>
