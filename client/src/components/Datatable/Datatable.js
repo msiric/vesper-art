@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import MUIDataTable from "mui-datatables";
+import React, { useState } from 'react';
+import MUIDataTable from 'mui-datatables';
 import {
   Box,
   InputLabel,
@@ -10,13 +10,13 @@ import {
   Tooltip,
   IconButton,
   CircularProgress,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-} from "@material-ui/icons";
-import { useHistory } from "react-router-dom";
+} from '@material-ui/icons';
+import { useHistory } from 'react-router-dom';
 
 const CustomToolbar = ({ addOptions }) => {
   const history = useHistory();
@@ -97,9 +97,9 @@ const Datatable = ({
   editOptions,
   deleteOptions,
 }) => {
-  const [responsive, setResponsive] = useState("vertical");
-  const [tableBodyHeight, setTableBodyHeight] = useState("100%");
-  const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
+  const [responsive, setResponsive] = useState('vertical');
+  const [tableBodyHeight, setTableBodyHeight] = useState('100%');
+  const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState('');
 
   const history = useHistory();
 
@@ -108,7 +108,7 @@ const Datatable = ({
     print: false,
     download: false,
     viewColumns: false,
-    filterType: "dropdown",
+    filterType: 'dropdown',
     responsive,
     tableBodyHeight,
     tableBodyMaxHeight,

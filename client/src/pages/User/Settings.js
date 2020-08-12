@@ -158,15 +158,13 @@ const Settings = () => {
           </Grid>
         ) : state.user._id ? (
           <Grid item sm={12} className={classes.grid}>
-            <Card style={{ padding: '50px 30px' }} elevation={6}>
-              <MainHeading text={'Settings'} />
-              <SettingsAccordion
-                expanded={state.panel.expanded}
-                user={state.user}
-                handlePanelChange={handlePanelChange}
-                handleDeactivateUser={handleDeactivateUser}
-              />
-            </Card>
+            <MainHeading text={'Settings'} />
+            <SettingsAccordion
+              expanded={state.panel.expanded}
+              user={state.user}
+              handlePanelChange={handlePanelChange}
+              handleDeactivateUser={handleDeactivateUser}
+            />
           </Grid>
         ) : (
           history.push('/')

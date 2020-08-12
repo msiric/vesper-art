@@ -29,7 +29,7 @@ const UserArtworkPanel = ({
   const classes = useStyles();
 
   return (
-    <Grid item xs={12} md={8} className={classes.grid}>
+    <Grid item xs={12} className={classes.grid}>
       {user.editable ? (
         <Paper className={classes.paper}>
           <SwipeCard

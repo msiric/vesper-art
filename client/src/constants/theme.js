@@ -1,12 +1,16 @@
 import {
   Card as MuiCard,
   CardContent as MuiCardContent,
+  CardMedia as MuiCardMedia,
   Container as MuiContainer,
+  CardActions as MuiCardActions,
   Grid as MuiGrid,
   List as MuiList,
   Paper as MuiPaper,
   Popover as MuiPopover,
   Typography as MuiTypography,
+  Button as MuiButton,
+  Avatar as MuiAvatar,
 } from '@material-ui/core';
 import { createMuiTheme, styled } from '@material-ui/core/styles';
 import {
@@ -16,6 +20,7 @@ import {
   sizing,
   spacing,
   typography,
+  borders,
 } from '@material-ui/system';
 
 export const Container = styled(MuiContainer)(compose(spacing, flexbox));
@@ -24,12 +29,22 @@ export const Card = styled(MuiCard)(compose(spacing, flexbox, sizing));
 export const CardContent = styled(MuiCardContent)(
   compose(spacing, flexbox, sizing)
 );
+export const CardActions = styled(MuiCardActions)(
+  compose(spacing, flexbox, sizing)
+);
+export const CardMedia = styled(MuiCardMedia)(
+  compose(spacing, flexbox, sizing)
+);
 export const Paper = styled(MuiPaper)(compose(spacing, flexbox, sizing));
 export const List = styled(MuiList)(compose(spacing, flexbox, sizing));
 export const Popover = styled(MuiPopover)(compose(spacing, flexbox, sizing));
 export const Typography = styled(MuiTypography)(
   compose(typography, spacing, palette)
 );
+export const Button = styled(MuiButton)(
+  compose(typography, spacing, palette, sizing)
+);
+export const Avatar = styled(MuiAvatar)(compose(sizing, spacing, borders));
 
 export const artepunktTheme = createMuiTheme({
   typography: {
@@ -117,5 +132,11 @@ artepunktTheme.overrides.MuiCardActions = {
   root: {
     padding: 0,
     justifyContent: 'center',
+  },
+};
+
+artepunktTheme.overrides.MuiAccordionSummary = {
+  root: {
+    minHeight: 80,
   },
 };

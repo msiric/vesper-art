@@ -47,7 +47,7 @@ const DashboardCard = ({ currency, data, label, loading }) => {
       alignItems="center"
       flexDirection="column"
       border={1}
-      height={160}
+      height={180}
       m={1}
     >
       <CardItem
@@ -87,7 +87,7 @@ const DashboardCard = ({ currency, data, label, loading }) => {
         style={{ display: 'flex' }}
         justifyContent="center"
         alignItems="center"
-        height={40}
+        height={60}
       >
         <Typography
           className={classes.boxAlt}

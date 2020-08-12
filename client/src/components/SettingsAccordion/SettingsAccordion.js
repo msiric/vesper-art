@@ -38,9 +38,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
   },
-  accordion: {
-    minHeight: 80,
-  },
   heading: {
     fontSize: theme.typography.pxToRem(15),
     flexBasis: '33.33%',

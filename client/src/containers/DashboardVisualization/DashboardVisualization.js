@@ -34,7 +34,7 @@ import DashboardCard from '../../components/DashboardCard/DashboardCard.js';
 import DashboardStatistics from '../DashboardStatistics/DashboardStatistics.js';
 import { styled } from '@material-ui/core/styles';
 import { compose, flexbox, typography } from '@material-ui/system';
-import { artepunktTheme } from '../../constants/theme.js';
+import { artepunktTheme, Card } from '../../constants/theme.js';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 
 const GridItem = styled(Grid)(compose(typography));
@@ -52,42 +52,44 @@ const DashboardVisualization = ({
     <Grid container className={classes.graphArea} spacing={6}>
       <GridItem item xs={12} md={8} mb={artepunktTheme.margin.spacing}>
         <Box className={classes.graph}>
-          <Box height={540}>
-            {loading ? (
-              <LoadingSpinner />
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={graphData}
-                  margin={{
-                    top: 5,
-                    left: 5,
-                    bottom: 5,
-                    right: 5,
-                  }}
-                >
-                  <XAxis dataKey="date" />
-                  <YAxis tick={false} width={1} />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    name="Personal licenses"
-                    type="monotone"
-                    dataKey="pl"
-                    stroke="#8884d8"
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    name="Commercial licenses"
-                    type="monotone"
-                    dataKey="cl"
-                    stroke="#82ca9d"
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            )}
-          </Box>
+          <Card m={1} p={2}>
+            <Box height={540}>
+              {loading ? (
+                <LoadingSpinner />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={graphData}
+                    margin={{
+                      top: 5,
+                      left: 5,
+                      bottom: 5,
+                      right: 5,
+                    }}
+                  >
+                    <XAxis dataKey="date" />
+                    <YAxis tick={false} width={1} />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                      name="Personal licenses"
+                      type="monotone"
+                      dataKey="pl"
+                      stroke="#8884d8"
+                      activeDot={{ r: 6 }}
+                    />
+                    <Line
+                      name="Commercial licenses"
+                      type="monotone"
+                      dataKey="cl"
+                      stroke="#82ca9d"
+                      activeDot={{ r: 6 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+            </Box>
+          </Card>
         </Box>
       </GridItem>
       <GridItem item xs={12} md={4} className={classes.grid}>

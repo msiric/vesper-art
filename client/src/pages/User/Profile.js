@@ -224,11 +224,14 @@ const Profile = ({ match, enqueueSnackbar }) => {
       <Grid container className={classes.profile__container} spacing={2}>
         {state.user._id ? (
           <>
-            <UserProfileBanner />
-            <UserProfilePanel
+            <UserProfileBanner
               user={state.user}
               handleModalOpen={handleModalOpen}
             />
+            {/*             <UserProfilePanel
+              user={state.user}
+              handleModalOpen={handleModalOpen}
+            /> */}
             <UserArtworkPanel
               tabs={state.tabs}
               user={state.user}
