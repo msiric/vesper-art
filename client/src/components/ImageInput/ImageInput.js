@@ -1,11 +1,6 @@
 import React, { createRef, useState, useEffect } from 'react';
-import {
-  Avatar,
-  Typography,
-  Box,
-  IconButton,
-  CircularProgress,
-} from '@material-ui/core';
+import { Box, IconButton, CircularProgress } from '@material-ui/core';
+import { Avatar, Typography } from '../../constants/theme.js';
 import { makeStyles } from '@material-ui/core';
 import {
   Publish as UploadIcon,
@@ -21,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    marginBottom: 20,
   },
   imageInputTitle: {
     margin: 'auto',
@@ -29,12 +25,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
   imageInputAvatar: {
-    margin: 'auto',
-    width: 160,
-    height: 160,
-    borderColor: artepunktTheme.palette.secondary.main,
-    borderStyle: 'solid',
-    borderSize: '1px',
+    cursor: 'pointer',
     '&:hover': {
       '& $overlayRemove': {
         opacity: 1,
@@ -56,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     opacity: 1,
     transition: '.5s ease',
-    backgroundColor: artepunktTheme.palette.secondary.main,
+    backgroundColor: artepunktTheme.palette.primary.main,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -71,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     opacity: 1,
     transition: '.5s ease',
-    backgroundColor: artepunktTheme.palette.secondary.main,
+    backgroundColor: artepunktTheme.palette.primary.main,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -86,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     opacity: 0,
     transition: '.5s ease',
-    backgroundColor: artepunktTheme.palette.secondary.main,
+    backgroundColor: artepunktTheme.palette.primary.main,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -122,6 +113,7 @@ const ImageInput = ({
   helperText,
   title,
   preview,
+  shape,
 }) => {
   const [state, setState] = useState({
     loading: false,
@@ -186,7 +178,16 @@ const ImageInput = ({
       <Typography className={classes.imageInputTitle} variant="h5" noWrap>
         {title}
       </Typography>
-      <Avatar className={classes.imageInputAvatar} onClick={showFileUpload}>
+      <Avatar
+        m="auto"
+        width={shape === 'square' ? 300 : 160}
+        height={shape === 'square' ? '100%' : 160}
+        minHeight={shape === 'square' ? 200 : 'auto'}
+        borderColor={artepunktTheme.palette.primary.main}
+        className={classes.imageInputAvatar}
+        onClick={showFileUpload}
+        variant={shape}
+      >
         {state.loading ? (
           <Box className={classes.imageInputLoading}>
             <CircularProgress color="white" />
@@ -222,7 +223,7 @@ const ImageInput = ({
       {error ? (
         <Typography
           variant="caption"
-          color="error"
+          color={artepunktTheme.palette.error.main}
           noWrap
           className={classes.imageInputText}
         >

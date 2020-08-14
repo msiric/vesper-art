@@ -113,6 +113,7 @@ const EditArtworkForm = ({
                             helperText={meta.touched && meta.error}
                             error={meta.touched && Boolean(meta.error)}
                             preview={false}
+                            shape="square"
                           />
                         )}
                       </Field>

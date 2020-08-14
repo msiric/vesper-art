@@ -67,6 +67,7 @@ const EditUserForm = ({ match, user, handleModalClose }) => {
                     helperText={meta.touched && meta.error}
                     error={meta.touched && Boolean(meta.error)}
                     preview={false}
+                    shape="rounded"
                   />
                 )}
               </Field>

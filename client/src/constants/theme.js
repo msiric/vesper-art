@@ -140,3 +140,10 @@ artepunktTheme.overrides.MuiAccordionSummary = {
     minHeight: 80,
   },
 };
+
+artepunktTheme.overrides.MuiFormHelperText = {
+  contained: {
+    marginLeft: 0,
+    marginRight: 0,
+  },
+};
