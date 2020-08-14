@@ -1,11 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../../context/Store.js';
-import { Grid, CircularProgress } from '@material-ui/core';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
-import { getArtwork } from '../../services/artwork.js';
-import { withSnackbar } from 'notistack';
-import ArtworkPanel from '../../containers/ArtworkPanel/ArtworkPanel.js';
-import mockArtwork from '../../constants/mockArtwork.json';
+import { CircularProgress, Grid } from "@material-ui/core";
+import { withSnackbar } from "notistack";
+import React, { useContext, useEffect, useState } from "react";
+import SelectInput from "../../components/SelectInput/SelectInput.js";
+import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
+import { Context } from "../../context/Store.js";
+import { getArtwork } from "../../services/artwork.js";
 
 const Home = ({ location, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -79,11 +78,11 @@ const Home = ({ location, enqueueSnackbar }) => {
     fetchArtwork();
     if (location.state && location.state.message) {
       enqueueSnackbar(location.state.message, {
-        variant: 'success',
+        variant: "success",
         autoHideDuration: 1000,
         anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
+          vertical: "top",
+          horizontal: "center",
         },
       });
     }
@@ -109,6 +108,20 @@ const Home = ({ location, enqueueSnackbar }) => {
   return (
     <Grid container className={classes.container}>
       <Grid item xs={12} className={classes.grid}>
+        <SelectInput
+          name="artworkType"
+          label="Type"
+          options={[
+            { value: "" },
+            { value: "available", text: "Available for download" },
+            { value: "unavailable", text: "Only for preview" },
+            { value: "free", text: "Free of charge" },
+          ]}
+          margin="dense"
+          variant="outlined"
+        />
+      </Grid>
+      <Grid item xs={12} className={classes.grid}>
         {state.loading ? (
           <CircularProgress />
         ) : state.artwork.length ? (
@@ -119,7 +132,7 @@ const Home = ({ location, enqueueSnackbar }) => {
             type="artwork"
           />
         ) : (
-          'No artwork'
+          "No artwork"
         )}
       </Grid>
     </Grid>
