@@ -1,15 +1,14 @@
-import { Box, TextField } from "@material-ui/core";
-import { NewReleasesRounded as AlertIcon } from "@material-ui/icons";
+import { TextField } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { useHistory } from "react-router-dom";
+import HelpBox from "../../components/HelpBox/HelpBox.js";
 import ImageInput from "../../components/ImageInput/ImageInput.js";
 import {
   Button,
   Card,
   CardActions,
   CardContent,
-  Typography,
 } from "../../constants/theme.js";
 import PriceInput from "../../shared/PriceInput/PriceInput.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
@@ -68,24 +67,18 @@ const AddArtworkForm = ({
       >
         {({ values, errors, touched, isSubmitting }) => (
           <Form className={classes.card}>
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              border="1px solid"
-              borderRadius={4}
-              p={2}
-            >
-              <AlertIcon />
-              <Typography fontWeight="bold" ml={2}>
-                {!user.stripeId
-                  ? 'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
-                  : capabilities.cardPayments !== "active" ||
-                    capabilities.platformPayments !== "active"
-                  ? "To make your artwork commercially available, complete your Stripe account information"
-                  : null}
-              </Typography>
-            </Box>
+            {!user.stripeId ? (
+              <HelpBox
+                type="alert"
+                label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
+              />
+            ) : capabilities.cardPayments !== "active" ||
+              capabilities.platformPayments !== "active" ? (
+              <HelpBox
+                type="alert"
+                label="To make your artwork commercially available, complete your Stripe account information"
+              />
+            ) : null}
             <CardContent>
               <Field name="artworkMedia">
                 {({
