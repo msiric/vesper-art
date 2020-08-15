@@ -3,108 +3,108 @@ import {
   CircularProgress,
   IconButton,
   makeStyles,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   Clear as ClearIcon,
   Error as ErrorIcon,
   Publish as UploadIcon,
-} from "@material-ui/icons";
-import React, { createRef, useEffect, useState } from "react";
-import { artepunktTheme, Avatar, Typography } from "../../constants/theme.js";
+} from '@material-ui/icons';
+import React, { createRef, useEffect, useState } from 'react';
+import { artepunktTheme, Avatar, Typography } from '../../constants/theme.js';
 
 const useStyles = makeStyles((theme) => ({
-  imageInputFile: { display: "none" },
+  imageInputFile: { display: 'none' },
   imageInputContainer: {
-    margin: "auto",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    margin: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     marginBottom: 20,
   },
   imageInputTitle: {
-    margin: "auto",
-    display: "flex",
-    justifyContent: "center",
+    margin: 'auto',
+    display: 'flex',
+    justifyContent: 'center',
     padding: theme.spacing(1),
   },
   imageInputAvatar: {
-    cursor: "pointer",
-    "&:hover": {
-      "& $overlayRemove": {
+    cursor: 'pointer',
+    '&:hover': {
+      '& $overlayRemove': {
         opacity: 1,
       },
     },
   },
   imageInputPreview: {
-    height: "100%",
-    width: "100%",
-    objectFit: "cover",
+    height: '100%',
+    width: '100%',
+    objectFit: 'cover',
   },
   imageInputLoading: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
     opacity: 1,
-    transition: ".5s ease",
+    transition: '.5s ease',
     backgroundColor: artepunktTheme.palette.primary.main,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageInputUpload: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
     opacity: 1,
-    transition: ".5s ease",
+    transition: '.5s ease',
     backgroundColor: artepunktTheme.palette.primary.main,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageInputRemove: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
     opacity: 0,
-    transition: ".5s ease",
+    transition: '.5s ease',
     backgroundColor: artepunktTheme.palette.primary.main,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageInputError: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
     opacity: 1,
-    transition: ".5s ease",
+    transition: '.5s ease',
     backgroundColor: theme.palette.error.main,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageInputText: {
     marginTop: 3,
   },
   imageInputIcon: {
-    color: "white",
+    color: 'white',
   },
 }));
 
@@ -132,7 +132,7 @@ const ImageInput = ({
       setState((prevState) => ({
         ...prevState,
         file: preview,
-        imagePreviewUrl: `data:${preview.type};base64,${preview.base64}`,
+        imagePreviewUrl: preview,
       }));
   }, []);
 
@@ -183,9 +183,9 @@ const ImageInput = ({
       </Typography>
       <Avatar
         m="auto"
-        width={shape === "square" ? 400 : 160}
-        height={shape === "square" ? "100%" : 160}
-        minHeight={shape === "square" ? 400 : "auto"}
+        width={shape === 'square' ? 400 : 160}
+        height={shape === 'square' ? '100%' : 160}
+        minHeight={shape === 'square' ? 400 : 'auto'}
         borderColor={artepunktTheme.palette.primary.main}
         className={classes.imageInputAvatar}
         onClick={showFileUpload}

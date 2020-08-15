@@ -28,6 +28,7 @@ import {
 } from '../../services/artwork.js';
 import { getUser } from '../../services/stripe.js';
 import EditArtworkForm from '../../containers/Artwork/EditArtworkForm.js';
+import MainHeading from '../../components/MainHeading/MainHeading.js';
 
 const EditArtwork = ({ match }) => {
   const [store, dispatch] = useContext(Context);
@@ -88,7 +89,15 @@ const EditArtwork = ({ match }) => {
           </Grid>
         ) : state.artwork._id ? (
           <Grid item sm={12} className={classes.container}>
-            <EditArtworkForm />
+            <MainHeading text={'Edit artwork'} />
+            <EditArtworkForm
+              loading={state.loading}
+              capabilities={state.capabilities}
+              artwork={state.artwork}
+              user={store.user}
+              patchArtwork={patchArtwork}
+              deleteEmptyValues={deleteEmptyValues}
+            />
           </Grid>
         ) : (
           history.push('/')

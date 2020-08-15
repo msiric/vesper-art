@@ -36,7 +36,6 @@ const AddArtwork = () => {
             capabilities={state.capabilities}
             user={store.user}
             postArtwork={postArtwork}
-            postMedia={postMedia}
             deleteEmptyValues={deleteEmptyValues}
           />
         </Grid>
