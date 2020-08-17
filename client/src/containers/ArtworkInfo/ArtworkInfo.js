@@ -1,3 +1,4 @@
+import { Box, Divider } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { withRouter } from 'react-router-dom';
 import PricingCard from '../../components/PricingCard/PricingCard.js';
@@ -18,18 +19,8 @@ const ArtworkInfo = ({
   const classes = {};
 
   return (
-    <Card className={classes.root} style={{ minHeight: 410 }}>
-      <CardContent>
-        <Typography variant="h5" component="h2" align="center" m={2}>
-          {artwork.current.title}
-        </Typography>
-        <Typography
-          className={classes.pos}
-          color="textSecondary"
-          align="center"
-        >
-          {artwork.current.description}
-        </Typography>
+    <Card className={classes.root} style={{ minHeight: 410 }} >
+      <CardContent pt={0} pb={0}>
         {artwork.current.availability === 'available' ? (
           /*           <>
             <Typography variant="body2" component="p" align="center">
@@ -115,12 +106,23 @@ const ArtworkInfo = ({
             }}
             handleTabsChange={handleTabsChange}
             handleChangeIndex={handleChangeIndex}
-            margin="16px -16px"
+            margin="0px -16px"
           />
         ) : (
-          <Typography variant="body2" component="p" align="center">
-            Preview only
-          </Typography>
+          [
+            <Box alignItems="flex-end">
+              <Typography fontSize={36} align="center">
+                Preview only
+              </Typography>
+            </Box>,
+            <Divider />,
+            <Box display="flex" flexDirection="column">
+              <Typography variant="subtitle1" m={2}>
+                This artwork cannot be purchased or downloaded since it is
+                preview only
+              </Typography>
+            </Box>,
+          ]
         )}
       </CardContent>
       {/*       <CardActions>

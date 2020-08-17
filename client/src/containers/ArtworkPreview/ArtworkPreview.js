@@ -1,4 +1,4 @@
-import { Box, Card, CardMedia } from '@material-ui/core';
+import { Box, Card, CardMedia, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -136,6 +136,10 @@ const ArtworkPreview = ({ artwork, height }) => {
         title={artwork.current.title}
       />
       <Box>
+        <Typography m={2} fontSize="h6.fontSize">
+          {artwork.current.description}
+        </Typography>
+        <Divider />
         <Typography ml={2} mt={2} mr={2} fontSize={12} fontStyle="italic">
           You are previewing a low resolution thumbnail of the original artwork
         </Typography>

@@ -169,10 +169,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
     setState({ ...state, license: value });
   };
 
-  const handleTabsChange = (e, newValue) => {
+  const handleTabsChange = (e, index) => {
     setState((prevState) => ({
       ...prevState,
-      tabs: { ...prevState.tabs, value: newValue },
+      tabs: { ...prevState.tabs, value: index },
     }));
   };
 

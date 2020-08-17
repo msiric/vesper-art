@@ -23,12 +23,7 @@ const PricingCard = ({ price, heading, list }) => {
             </Typography>
           ) : null}
           <Box alignItems="flex-end">
-            <Typography
-              className="text-72 mx-4 font-light leading-none"
-              fontSize={72}
-            >
-              {price || 'Free'}
-            </Typography>
+            <Typography fontSize={48}>{price || 'Free'}</Typography>
           </Box>
         </Box>
 
@@ -51,7 +46,7 @@ const PricingCard = ({ price, heading, list }) => {
         </Box>
       </CardContent>
 
-      <Box display="flex" justifyContent="center" pb={32}>
+      <Box display="flex" justifyContent="center">
         {price ? (
           <Button variant="contained" color="primary">
             Purchase

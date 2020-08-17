@@ -1,32 +1,31 @@
-import mongoose from 'mongoose';
 import createError from 'http-errors';
-import { sanitizeData, formatParams } from '../utils/helpers.js';
-import { deleteS3Object, finalizeMediaUpload } from '../utils/upload.js';
-import artworkValidator from '../validation/artwork.js';
 import {
-  fetchActiveArtworks,
-  fetchArtworkDetails,
-  fetchArtworkComments,
-  fetchArtworkReviews,
-  fetchUserArtworks,
-  fetchArtworkByOwner,
-  fetchArtworkLicenses,
+  addArtworkSave,
   addNewArtwork,
   addNewVersion,
-  addArtworkSave,
-  removeArtworkSave,
-  saveLicenseSet,
-  removeArtworkVersion,
   deactivateExistingArtwork,
+  fetchActiveArtworks,
+  fetchArtworkByOwner,
+  fetchArtworkComments,
+  fetchArtworkDetails,
+  fetchArtworkLicenses,
+  fetchArtworkReviews,
+  fetchUserArtworks,
+  removeArtworkSave,
+  removeArtworkVersion,
+  saveLicenseSet,
 } from '../services/artwork.js';
-import {
-  fetchUserById,
-  addUserSave,
-  removeUserSave,
-  addUserArtwork,
-} from '../services/user.js';
 import { fetchOrderByVersion } from '../services/order.js';
 import { fetchStripeAccount } from '../services/stripe.js';
+import {
+  addUserArtwork,
+  addUserSave,
+  fetchUserById,
+  removeUserSave,
+} from '../services/user.js';
+import { formatParams, sanitizeData } from '../utils/helpers.js';
+import { deleteS3Object, finalizeMediaUpload } from '../utils/upload.js';
+import artworkValidator from '../validation/artwork.js';
 
 export const getArtwork = async ({ dataCursor, dataCeiling }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
@@ -138,7 +137,7 @@ export const postNewArtwork = async ({
       (artworkData.artworkPersonal || artworkData.artworkCommercial) &&
       // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
       (foundAccount.capabilities.card_payments !== 'active' ||
-        foundAccount.capabilities.platform_payments !== 'active')
+        foundAccount.capabilities.transfers !== 'active')
     ) {
       throw createError(
         400,
@@ -202,7 +201,7 @@ export const updateArtwork = async ({
         (artworkData.artworkPersonal || artworkData.artworkCommercial) &&
         // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
         (foundAccount.capabilities.card_payments !== 'active' ||
-          foundAccount.capabilities.platform_payments !== 'active')
+          foundAccount.capabilities.transfers !== 'active')
       ) {
         throw createError(
           400,

@@ -1,35 +1,35 @@
-import mongoose from 'mongoose';
-import { server, stripe as processor } from '../config/secret.js';
-import { payment } from '../config/constants.js';
-import License from '../models/license.js';
-import crypto from 'crypto';
-import createError from 'http-errors';
 import axios from 'axios';
-import FormData from 'form-data';
-import querystring from 'querystring';
+import crypto from 'crypto';
 import currency from 'currency.js';
-import {
-  constructStripeEvent,
-  constructStripeLink,
-  constructStripePayout,
-  constructStripeIntent,
-  updateStripeIntent,
-  fetchStripeAccount,
-  fetchStripeBalance,
-} from '../services/stripe.js';
-import {
-  fetchUserDiscount,
-  editUserStripe,
-  editUserPurchase,
-} from '../services/user.js';
+import FormData from 'form-data';
+import createError from 'http-errors';
+import mongoose from 'mongoose';
+import querystring from 'querystring';
+import { payment } from '../config/constants.js';
+import { server, stripe as processor } from '../config/secret.js';
+import socketApi from '../lib/socket.js';
+import License from '../models/license.js';
 import { fetchArtworkDetails } from '../services/artwork.js';
 import { addNewLicenses } from '../services/license.js';
-import { addNewOrder } from '../services/order.js';
 import { addNewNotification } from '../services/notification.js';
-import socketApi from '../lib/socket.js';
-import orderValidator from '../validation/order.js';
-import licenseValidator from '../validation/license.js';
+import { addNewOrder } from '../services/order.js';
+import {
+  constructStripeEvent,
+  constructStripeIntent,
+  constructStripeLink,
+  constructStripePayout,
+  fetchStripeAccount,
+  fetchStripeBalance,
+  updateStripeIntent,
+} from '../services/stripe.js';
+import {
+  editUserPurchase,
+  editUserStripe,
+  fetchUserDiscount,
+} from '../services/user.js';
 import { sanitizeData } from '../utils/helpers.js';
+import licenseValidator from '../validation/license.js';
+import orderValidator from '../validation/order.js';
 
 export const receiveWebhookEvent = async ({
   stripeSignature,
@@ -61,7 +61,7 @@ export const getStripeUser = async ({ accountId }) => {
     capabilities: {
       cardPayments: foundAccount.capabilities.card_payments,
       // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
-      platformPayments: foundAccount.capabilities.platform_payments,
+      platformPayments: foundAccount.capabilities.transfers,
     },
   };
 };
