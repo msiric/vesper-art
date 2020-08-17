@@ -134,17 +134,26 @@ const Onboarding = () => {
                     {/* $TODO Refactor supportedCountries */}
                     {store.user.origin ? (
                       supportedCountries[store.user.origin] ? (
-                        <Typography color="textSecondary">
+                        <Typography
+                          color="textSecondary"
+                          style={{ alignSelf: 'flex-start' }}
+                        >
                           Please confirm your registered business address
                         </Typography>
                       ) : (
-                        <Typography color="textSecondary">
+                        <Typography
+                          color="textSecondary"
+                          style={{ alignSelf: 'flex-start' }}
+                        >
                           Your currently saved registered business address is
                           not supported for Stripe payments
                         </Typography>
                       )
                     ) : (
-                      <Typography color="textSecondary">
+                      <Typography
+                        color="textSecondary"
+                        style={{ alignSelf: 'flex-start' }}
+                      >
                         Please select your registered business address
                       </Typography>
                     )}
