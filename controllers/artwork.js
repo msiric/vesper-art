@@ -136,6 +136,7 @@ export const postNewArtwork = async ({
     });
     if (
       (artworkData.artworkPersonal || artworkData.artworkCommercial) &&
+      // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
       (foundAccount.capabilities.card_payments !== 'active' ||
         foundAccount.capabilities.platform_payments !== 'active')
     ) {
@@ -199,6 +200,7 @@ export const updateArtwork = async ({
       });
       if (
         (artworkData.artworkPersonal || artworkData.artworkCommercial) &&
+        // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
         (foundAccount.capabilities.card_payments !== 'active' ||
           foundAccount.capabilities.platform_payments !== 'active')
       ) {

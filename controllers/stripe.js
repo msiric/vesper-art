@@ -60,6 +60,7 @@ export const getStripeUser = async ({ accountId }) => {
   return {
     capabilities: {
       cardPayments: foundAccount.capabilities.card_payments,
+      // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
       platformPayments: foundAccount.capabilities.platform_payments,
     },
   };
@@ -70,7 +71,7 @@ export const managePaymentIntent = async ({
   userId,
   artworkId,
   intentId,
-  licenses,
+  userLicenses,
   session,
 }) => {
   const foundUser = await fetchUserDiscount({ userId, session });
@@ -79,7 +80,7 @@ export const managePaymentIntent = async ({
     if (foundArtwork) {
       let personalLicenses = 0;
       let commercialLicenses = 0;
-      licenses.map((license) => {
+      userLicenses.map((license) => {
         if (license.licenseType === 'personal') {
           personalLicenses += foundArtwork.current.personal;
           license.licensePrice = currency(
@@ -122,7 +123,7 @@ export const managePaymentIntent = async ({
         spent: buyerTotal.intValue,
         earned: sellerTotal.intValue,
         fee: platformTotal.intValue,
-        licenses: licenses,
+        licenses: userLicenses,
       };
       const paymentIntent = intentId
         ? await updateStripeIntent({
@@ -167,7 +168,7 @@ export const redirectToStripe = async ({ userAccount, userOnboarded }) => {
   return { url: loginLink.url };
 };
 
-export const onboardUser = async ({ req, res, userCountry, userEmail }) => {
+export const onboardUser = async ({ req, res, userOrigin, userEmail }) => {
   req.session.state = Math.random().toString(36).slice(2);
   req.session.id = res.locals.user.id;
   req.session.name = res.locals.user.name;
@@ -181,7 +182,7 @@ export const onboardUser = async ({ req, res, userCountry, userEmail }) => {
     'stripe_user[first_name]': undefined,
     'stripe_user[last_name]': undefined,
     'stripe_user[email]': userEmail || undefined,
-    'stripe_user[country]': userCountry || undefined,
+    'stripe_user[country]': userOrigin || undefined,
   };
 
   // If we're suggesting this account have the `card_payments` capability,

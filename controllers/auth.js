@@ -115,6 +115,7 @@ export const postLogIn = async ({
       active: foundUser.active,
       stripeId: foundUser.stripeId,
       country: foundUser.country,
+      origin: foundUser.origin,
       jwtVersion: foundUser.jwtVersion,
     };
 

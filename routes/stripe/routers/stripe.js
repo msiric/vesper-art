@@ -51,6 +51,8 @@ router.route('/dashboard').get(
 router.route('/authorize').post(
   isAuthenticated,
   handler(onboardUser, false, (req, res, next) => ({
+    req,
+    res,
     ...req.body,
     username: res.locals.user ? res.locals.user.name : null,
   }))

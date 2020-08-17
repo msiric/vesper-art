@@ -23,6 +23,7 @@ import {
 import { deleteS3Object } from '../utils/upload.js';
 import createError from 'http-errors';
 import { fetchStripeBalance } from '../services/stripe.js';
+import originValidator from '../validation/origin.js';
 import profileValidator from '../validation/profile.js';
 import emailValidator from '../validation/email.js';
 import passwordValidator from '../validation/password.js';
@@ -84,6 +85,18 @@ export const getUserPurchases = async ({ userId, rangeFrom, rangeTo }) => {
   return { statistics: foundOrders };
 };
 
+export const updateUserOrigin = async ({ userId, userOrigin, session }) => {
+  const { error } = originValidator(sanitizeData({ userOrigin }));
+  if (error) throw createError(400, error);
+  const foundUser = await fetchUserById({ userId, session });
+  if (foundUser) {
+    if (userOrigin) foundUser.origin = userOrigin;
+    await foundUser.save({ session });
+    return { message: 'User origin updated' };
+  }
+  throw createError(400, 'User not found');
+};
+
 export const updateUserProfile = async ({
   userId,
   userMedia,
@@ -101,7 +114,7 @@ export const updateUserProfile = async ({
     if (userMedia) foundUser.photo = userMedia;
     if (userDescription) foundUser.description = userDescription;
     if (userCountry) foundUser.country = userCountry;
-    if (userDimensions.height && userDimensions.width) {
+    if (userDimensions && userDimensions.height && userDimensions.width) {
       foundUser.height = userDimensions.height;
       foundUser.width = userDimensions.width;
     }

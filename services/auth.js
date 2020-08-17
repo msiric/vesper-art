@@ -29,6 +29,7 @@ export const addNewUser = async ({
   newUser.purchases = [];
   newUser.sales = [];
   newUser.country = null;
+  newUser.origin = null;
   newUser.stripeId = null;
   newUser.active = true;
   return await newUser.save({ session });
