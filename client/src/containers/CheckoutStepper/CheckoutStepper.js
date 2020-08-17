@@ -2,6 +2,7 @@ import {
   Box,
   Grid,
   Step,
+  StepConnector,
   StepLabel,
   Stepper,
   withStyles,
@@ -61,7 +62,7 @@ const StepperIcons = ({ active, completed, icon }) => {
   );
 };
 
-const StepConnector = withStyles((theme) => ({
+const Connector = withStyles((theme) => ({
   alternativeLabel: {
     top: 22,
   },
@@ -81,7 +82,7 @@ const StepConnector = withStyles((theme) => ({
     backgroundColor: '#eaeaf0',
     borderRadius: 1,
   },
-}));
+}))(StepConnector);
 
 // OVERALL STYLE
 const style = makeStyles((theme) => ({
@@ -260,7 +261,7 @@ const CheckoutStepper = ({
     <>
       <Stepper
         alternativeLabel
-        connector={<StepConnector />}
+        connector={<Connector />}
         activeStep={state.step}
       >
         {/* Change the number of loops here based on StepContent */}
