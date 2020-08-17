@@ -19,7 +19,7 @@ const ArtworkInfo = ({
   const classes = {};
 
   return (
-    <Card className={classes.root} style={{ minHeight: 410 }} >
+    <Card className={classes.root} style={{ minHeight: 410 }}>
       <CardContent pt={0} pb={0}>
         {artwork.current.availability === 'available' ? (
           /*           <>
@@ -52,6 +52,7 @@ const ArtworkInfo = ({
                   content: null,
                   component: (
                     <PricingCard
+                      id={artwork.current._id}
                       price={artwork.current.personal}
                       heading="Personal use license. Use for personal projects, social media, and
                   non commercial activities"
@@ -80,6 +81,7 @@ const ArtworkInfo = ({
                   content: null,
                   component: (
                     <PricingCard
+                      id={artwork.current._id}
                       price={artwork.current.commercial}
                       heading="Commercial use license. Use anywhere in the world for unlimited projects with no expiration dates"
                       list={[
