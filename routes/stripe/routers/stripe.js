@@ -51,17 +51,17 @@ router.route('/dashboard').get(
 router.route('/authorize').post(
   isAuthenticated,
   handler(onboardUser, false, (req, res, next) => ({
-    req,
-    res,
+    sessionData: req.session,
+    responseData: res.locals,
     ...req.body,
-    username: res.locals.user ? res.locals.user.name : null,
   }))
 );
 
 router.route('/token').get(
-  handler(assignStripeId, true, (req, res, next) => ({
-    sessionState: req.session.state,
-    ...req.query,
+  handler(assignStripeId, false, (req, res, next) => ({
+    responseObject: res,
+    sessionData: req.session,
+    queryData: req.query,
   }))
 );
 

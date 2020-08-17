@@ -25,6 +25,7 @@ import { postAuthorize } from '../../services/stripe.js';
 import { originValidation } from '../../validation/origin.js';
 import HelpBox from '../../components/HelpBox/HelpBox.js';
 import { LabelImportantRounded as LabelIcon } from '@material-ui/icons';
+import Axios from 'axios';
 
 const supportedCountries = [
   { value: '' },
@@ -92,14 +93,9 @@ const Onboarding = () => {
                       Start getting paid
                     </Typography>
                     <Typography color="textSecondary" mb={4}>
-                      On the next page you will be taken to Stripe's website
-                      where you will finish the onboarding process. This is
-                      mandatory in order to secure your balance and to generate
-                      payouts on demand. It goes without saying that having
-                      Stripe keep track of your balance and handle all the
-                      transactions is much more secure and reliable than doing
-                      this ourselves, so you can rest assured that your earnings
-                      are safe and protected at all times.
+                      We use Stripe to make sure you get paid on time and to
+                      keep your personal bank and details secure. Click on
+                      continue to set up your payments on Stripe.
                     </Typography>
                     <List
                       component="nav"
@@ -176,6 +172,7 @@ const Onboarding = () => {
                           userOrigin: values.userOrigin,
                           userEmail: store.user.email,
                         });
+
                         window.location.href = data.url;
                       }
                     } catch (err) {

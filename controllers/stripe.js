@@ -168,14 +168,19 @@ export const redirectToStripe = async ({ userAccount, userOnboarded }) => {
   return { url: loginLink.url };
 };
 
-export const onboardUser = async ({ req, res, userOrigin, userEmail }) => {
-  req.session.state = Math.random().toString(36).slice(2);
-  req.session.id = res.locals.user.id;
-  req.session.name = res.locals.user.name;
+export const onboardUser = async ({
+  sessionData,
+  responseData,
+  userOrigin,
+  userEmail,
+}) => {
+  sessionData.state = Math.random().toString(36).slice(2);
+  sessionData.id = responseData.user.id;
+  sessionData.name = responseData.user.name;
 
   const parameters = {
     client_id: processor.clientId,
-    state: req.session.state,
+    state: sessionData.state,
     redirect_uri: `${server.serverDomain}/stripe/token`,
     'stripe_user[business_type]': 'individual',
     'stripe_user[business_name]': undefined,
@@ -202,15 +207,21 @@ export const onboardUser = async ({ req, res, userOrigin, userEmail }) => {
   };
 };
 
-export const assignStripeId = async ({ sessionState, queryState, session }) => {
-  if (sessionState != queryState)
+export const assignStripeId = async ({
+  responseObject,
+  sessionData,
+  queryData,
+  session,
+}) => {
+  console.log('tu smo');
+  if (sessionData.state != queryData.state)
     throw createError(500, 'There was an error in the onboarding process');
 
   const formData = new FormData();
   formData.append('grant_type', 'authorization_code');
   formData.append('client_id', processor.clientId);
   formData.append('client_secret', processor.secretKey);
-  formData.append('code', req.query.code);
+  formData.append('code', queryData.code);
 
   const expressAuthorized = await axios.post(processor.tokenUri, formData, {
     headers: formData.getHeaders(),
@@ -219,18 +230,18 @@ export const assignStripeId = async ({ sessionState, queryState, session }) => {
   if (expressAuthorized.error) throw createError(500, expressAuthorized.error);
 
   await editUserStripe({
-    userId: req.session.id,
+    userId: sessionData.id,
     stripeId: expressAuthorized.data.stripe_user_id,
     session,
   });
 
-  const username = req.session.name;
+  const username = sessionData.name;
 
-  req.session.state = null;
-  req.session.id = null;
-  req.session.name = null;
+  sessionData.state = null;
+  sessionData.id = null;
+  sessionData.name = null;
 
-  return res.redirect(`/user/${username}`);
+  return responseObject.redirect(`http://localhost:3000/user/${username}`);
 };
 
 export const createPayout = async ({ userId, session }) => {
