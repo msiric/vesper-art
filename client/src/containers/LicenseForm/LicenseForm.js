@@ -2,14 +2,77 @@ import {
   Button,
   CardActions,
   CircularProgress,
-  Grid,
-  Typography,
+  Box,
+  IconButton,
 } from '@material-ui/core';
+import { Grid, Container, Typography } from '../../constants/theme.js';
+import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { CheckRounded as CheckIcon } from '@material-ui/icons';
+import { DeleteRounded as DeleteIcon } from '@material-ui/icons';
 import { Field, FieldArray, Form, Formik } from 'formik';
 import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { postIntent } from '../../services/stripe.js';
-import SelectField from '../../shared/SelectInput/SelectInput.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
+import QuantityButton from '../../components/QuantityButton/QuantityButton.js';
+import { makeStyles } from '@material-ui/core/styles';
+import CheckoutCard from '../../components/CheckoutCard/CheckoutCard.js';
+import MainHeading from '../../components/MainHeading/MainHeading.js';
+
+const LicenseFormStyles = makeStyles((muiTheme) => ({
+  fixed: {
+    height: '100%',
+  },
+  container: {
+    flex: 1,
+    height: '100%',
+  },
+  artwork: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  root: {
+    display: 'flex',
+    width: '100%',
+  },
+  loader: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  details: {
+    display: 'flex',
+    width: '100%',
+  },
+  cover: {
+    minWidth: 50,
+    maxWidth: 200,
+    width: '100%',
+  },
+  controls: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: 16,
+    width: '100%',
+  },
+  playIcon: {
+    height: 38,
+    width: 38,
+  },
+  rightList: {
+    textAlign: 'right',
+  },
+  manageLicenses: {
+    padding: '8px 16px',
+  },
+  content: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+}));
 
 const validationSchema = Yup.object().shape({
   licenses: Yup.array().of(
@@ -23,13 +86,13 @@ const validationSchema = Yup.object().shape({
 
 const LicenseForm = ({
   artwork,
-  licenses,
+  license,
   handleSecretSave,
   handleStepChange,
-  handleLicenseSave,
+  handleLicenseChange,
 }) => {
   const [state, setState] = useState({ loading: false });
-  const classes = {};
+  const classes = LicenseFormStyles();
 
   const retrieveIntentId = () => {
     const checkoutItem = JSON.parse(
@@ -46,20 +109,20 @@ const LicenseForm = ({
     }
   };
 
-  const handleNextClick = async (values) => {
+  const handleNextClick = async (value) => {
     try {
       setState((prevState) => ({ ...prevState, loading: true }));
       const intentId = retrieveIntentId();
       const { data } = await postIntent({
         artworkId: artwork._id,
-        licenses,
+        userLicense: license,
         intentId,
       });
       const versionId = artwork.current._id.toString();
       const storageObject = {
         versionId: versionId,
         intentId: data.intent.id,
-        licenseList: licenses,
+        licenseType: license,
       };
       window.sessionStorage.setItem(artwork._id, JSON.stringify(storageObject));
       handleSecretSave(data.intent.secret);
@@ -71,137 +134,129 @@ const LicenseForm = ({
     }
   };
 
+  const licenseOptions =
+    license === 'personal'
+      ? [
+          {
+            label: 'Personal blogging, websites and social media',
+          },
+          {
+            label:
+              'Home printing, art and craft projects, personal portfolios and gifts',
+          },
+          { label: 'Students and charities' },
+          {
+            label:
+              'The personal use license is not suitable for commercial activities',
+          },
+        ]
+      : [
+          {
+            label:
+              'Print and digital advertising, broadcasts, product packaging, presentations, websites and blogs',
+          },
+          {
+            label:
+              'Home printing, art and craft projects, personal portfolios and gifts',
+          },
+          { label: 'Students and charities' },
+          {
+            label:
+              'The personal use license is not suitable for commercial activities',
+          },
+        ];
+
   return (
-    <>
-      <Formik
-        initialValues={{
-          licenses: licenses,
-        }}
-        enableReinitialize
-        validationSchema={validationSchema}
-        onSubmit={async (values) => {
-          handleLicenseSave(values.licenses);
-        }}
-      >
-        {({ values, errors, touched, enableReinitialize }) => (
-          <Form>
-            <Grid item xs={12}>
-              <Typography variant="h6">License Information</Typography>
-              <FieldArray
-                name="licenses"
-                render={(arrayHelpers) => (
-                  <div>
-                    {values.licenses && values.licenses.length > 0
-                      ? values.licenses.map((value, index) => (
-                          <div key={index}>
-                            <Field
-                              name={`licenses.${index}.licenseType`}
-                              as="select"
-                            >
-                              {({ field, form: { touched, errors }, meta }) =>
-                                artwork.current &&
-                                artwork.current.license === 'commercial' ? (
-                                  <SelectField
-                                    {...field}
-                                    handleChange={field.onChange}
-                                    handleBlur={field.onBlur}
-                                    label="License type"
-                                    helperText={meta.touched && meta.error}
-                                    error={meta.touched && Boolean(meta.error)}
-                                    options={[
-                                      {
-                                        value: 'personal',
-                                        text: 'Personal',
-                                      },
-                                      {
-                                        value: 'commercial',
-                                        text: 'Commercial',
-                                      },
-                                    ]}
-                                  />
-                                ) : (
-                                  <SelectField
-                                    {...field}
-                                    handleChange={field.onChange}
-                                    handleBlur={field.onBlur}
-                                    label="License type"
-                                    helperText={meta.touched && meta.error}
-                                    error={meta.touched && Boolean(meta.error)}
-                                    options={[
-                                      {
-                                        value: 'personal',
-                                        text: 'Personal',
-                                      },
-                                    ]}
-                                    disabled
-                                  />
-                                )
-                              }
-                            </Field>
-                            {values.licenses.length > 1 ? (
-                              <Button
-                                type="button"
-                                color="error"
-                                onClick={() => arrayHelpers.remove(index)}
-                              >
-                                Delete license
-                              </Button>
-                            ) : null}
-                          </div>
-                        ))
-                      : null}
-                    <div>
-                      <Button
-                        type="button"
-                        color="primary"
-                        onClick={() =>
-                          arrayHelpers.push(
-                            artwork.current &&
-                              artwork.current.license === 'commercial'
-                              ? {
-                                  licenseType: '',
-                                }
-                              : {
-                                  licenseType: 'personal',
-                                }
-                          )
+    <Container fixed p={2}>
+      <Grid container>
+        <Grid item xs={12} className={classes.artwork}>
+          <CheckoutCard artwork={artwork} />
+        </Grid>
+        <Grid item xs={12} className={classes.actions}>
+          <Formik
+            initialValues={{
+              licenseType: license,
+            }}
+            enableReinitialize
+            validationSchema={validationSchema}
+            onSubmit={async (values) => {}}
+          >
+            {({ values, errors, touched, enableReinitialize }) => (
+              <Form style={{ width: '100%' }}>
+                <Grid item xs={12}>
+                  <Field name="licenseType">
+                    {({ field, form: { touched, errors }, meta }) => (
+                      <SelectInput
+                        {...field}
+                        label="License type"
+                        helperText={meta.touched && meta.error}
+                        error={meta.touched && Boolean(meta.error)}
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          handleLicenseChange(e.target.value);
+                        }}
+                        options={
+                          artwork.current &&
+                          artwork.current.license === 'commercial'
+                            ? [
+                                {
+                                  value: 'personal',
+                                  text: 'Personal',
+                                },
+                                {
+                                  value: 'commercial',
+                                  text: 'Commercial',
+                                },
+                              ]
+                            : [
+                                {
+                                  value: 'personal',
+                                  text: 'Personal',
+                                },
+                              ]
                         }
-                      >
-                        Add license
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              />
-              <CardActions className={classes.actions}>
-                <Button type="submit" color="primary">
-                  Apply
-                </Button>
-              </CardActions>
-            </Grid>
-            <Grid container item justify="flex-end">
-              <Button disabled={true} className={classes.button}>
-                Back
-              </Button>
-              <Button
-                onClick={() => handleNextClick(values)}
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                type="button"
-                disabled={!licenses.length}
-              >
-                {state.loading ? (
-                  <CircularProgress color="secondary" size={24} />
-                ) : (
-                  'Next'
-                )}
-              </Button>
-            </Grid>
-          </Form>
-        )}
-      </Formik>
-    </>
+                        margin="dense"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    )}
+                  </Field>
+                  <List component="nav" aria-label="Features">
+                    {licenseOptions.map((item) => (
+                      <ListItem>
+                        <ListItemIcon>
+                          <CheckIcon />
+                        </ListItemIcon>
+                        <ListItemText primary={item.label} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Grid>
+                <Box display="flex" justifyContent="space-between">
+                  <Button disabled={true} className={classes.button}>
+                    Back
+                  </Button>
+                  <Button
+                    onClick={() => handleNextClick(values)}
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                    type="button"
+                    disabled={!license}
+                  >
+                    {state.loading ? (
+                      <CircularProgress color="secondary" size={24} />
+                    ) : (
+                      'Next'
+                    )}
+                  </Button>
+                </Box>
+              </Form>
+            )}
+          </Formik>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 

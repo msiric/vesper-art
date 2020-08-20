@@ -110,12 +110,12 @@ const style = makeStyles((theme) => ({
 const CheckoutStepper = ({
   secret,
   artwork,
-  licenses,
+  license,
   billing,
   discount,
   handlePaymentSubmit,
   handleSecretSave,
-  handleLicenseSave,
+  handleLicenseChange,
   handleBillingSave,
 }) => {
   const classes = style();
@@ -137,10 +137,10 @@ const CheckoutStepper = ({
       return (
         <LicenseForm
           artwork={artwork}
-          licenses={licenses}
+          license={license}
           handleSecretSave={handleSecretSave}
           handleStepChange={handleStepChange}
-          handleLicenseSave={handleLicenseSave}
+          handleLicenseChange={handleLicenseChange}
         />
       );
     else if (step === 1)
@@ -156,7 +156,7 @@ const CheckoutStepper = ({
         <PaymentForm
           secret={secret}
           artwork={artwork}
-          licenses={licenses}
+          license={license}
           discount={discount}
           billing={billing}
           handlePaymentSubmit={handlePaymentSubmit}

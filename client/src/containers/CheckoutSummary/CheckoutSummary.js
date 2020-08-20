@@ -25,20 +25,14 @@ const CheckoutSummary = ({
   match,
   location,
   artwork,
-  licenses,
+  license,
   discount,
   handleDiscountEdit,
 }) => {
   const [state, setState] = useState({
     summary: {
-      personal: {
-        length: 0,
-        amount: 0,
-      },
-      commercial: {
-        length: 0,
-        amount: 0,
-      },
+      license: null,
+      amount: 0,
     },
   });
 
@@ -46,33 +40,17 @@ const CheckoutSummary = ({
 
   const classes = {};
 
-  const getLicenseLength = (condition, array) => {
-    return array.filter((item) => item.licenseType === condition).length;
-  };
-
   useEffect(() => {
     if (artwork._id) {
-      const personalLicensesLength = getLicenseLength('personal', licenses);
-      const commercialLicensesLength = getLicenseLength('commercial', licenses);
-      const personalLicensesAmount =
-        personalLicensesLength * artwork.current.personal;
-      const commercialLicensesAmount =
-        commercialLicensesLength * artwork.current.commercial;
       setState((prevState) => ({
         ...prevState,
         summary: {
-          personal: {
-            length: personalLicensesLength,
-            amount: personalLicensesAmount,
-          },
-          commercial: {
-            length: commercialLicensesLength,
-            amount: commercialLicensesAmount,
-          },
+          license: license,
+          amount: artwork.current[license],
         },
       }));
     }
-  }, [licenses]);
+  }, [license]);
 
   return (
     <Card className={classes.summary}>
@@ -86,24 +64,11 @@ const CheckoutSummary = ({
               primary={<Typography>{artwork.current.title}</Typography>}
               secondary={
                 <div>
-                  {state.summary.personal.length ? (
-                    <div>
-                      {state.summary.personal.length === 1
-                        ? `${state.summary.personal.length} personal license`
-                        : `${state.summary.personal.length} personal licenses`}
-                    </div>
-                  ) : null}
-                  {state.summary.commercial.length ? (
-                    <div>
-                      {state.summary.commercial.length === 1
-                        ? `${state.summary.commercial.length} commercial license`
-                        : `${state.summary.commercial.length} commercial licenses`}
-                    </div>
-                  ) : null}
-                  {!state.summary.personal.length &&
-                  !state.summary.commercial.length
-                    ? 'No licenses found'
-                    : null}
+                  {!state.summary.license ? (
+                    <div>No licenses selected</div>
+                  ) : (
+                    <div>{`1 ${license} license`}</div>
+                  )}
                 </div>
               }
             />
@@ -113,116 +78,24 @@ const CheckoutSummary = ({
               }
               secondary={
                 <div className={classes.rightList}>
-                  {state.summary.personal.length ? (
-                    <div>
-                      {state.summary.personal.amount ? (
-                        <NumberFormat
-                          value={state.summary.personal.amount}
-                          displayType={'text'}
-                          thousandSeparator={true}
-                          decimalScale={2}
-                          prefix={'$'}
-                        />
-                      ) : (
-                        '$0'
-                      )}
-                    </div>
-                  ) : null}
-                  {state.summary.commercial.length ? (
-                    <div>
-                      {state.summary.commercial.amount ? (
-                        <NumberFormat
-                          value={state.summary.commercial.amount}
-                          displayType={'text'}
-                          thousandSeparator={true}
-                          decimalScale={2}
-                          prefix={'$'}
-                        />
-                      ) : (
-                        '$0'
-                      )}
-                    </div>
-                  ) : null}
-                  {!state.summary.personal.length &&
-                  !state.summary.commercial.length
-                    ? '$0'
-                    : null}
+                  <div>
+                    {state.summary.license ? (
+                      <NumberFormat
+                        value={state.summary.amount}
+                        displayType={'text'}
+                        thousandSeparator={true}
+                        decimalScale={2}
+                        prefix={'$'}
+                      />
+                    ) : (
+                      '$0'
+                    )}
+                  </div>
                 </div>
               }
             />
           </ListItem>
 
-          <Divider />
-          <ListItem className={classes.listItem}>
-            <ListItemText
-              primary={<Typography>Items</Typography>}
-              secondary={
-                <div>
-                  {state.summary.personal.length ? (
-                    <div>
-                      {state.summary.personal.length === 1
-                        ? `${state.summary.personal.length} personal license`
-                        : `${state.summary.personal.length} personal licenses`}
-                    </div>
-                  ) : null}
-                  {state.summary.commercial.length ? (
-                    <div>
-                      {state.summary.commercial.length === 1
-                        ? `${state.summary.commercial.length} commercial license`
-                        : `${state.summary.commercial.length} commercial licenses`}
-                    </div>
-                  ) : null}
-                  {!state.summary.personal.length &&
-                  !state.summary.commercial.length
-                    ? 'No licenses found'
-                    : null}
-                </div>
-              }
-            />
-            <ListItemText
-              primary={
-                <Typography className={classes.rightList}>Subtotal</Typography>
-              }
-              secondary={
-                <div className={classes.rightList}>
-                  {state.summary.personal.length ? (
-                    <div>
-                      {state.summary.personal.amount ? (
-                        <NumberFormat
-                          value={state.summary.personal.amount}
-                          displayType={'text'}
-                          thousandSeparator={true}
-                          decimalScale={2}
-                          prefix={'$'}
-                        />
-                      ) : (
-                        '$0'
-                      )}
-                    </div>
-                  ) : null}
-                  {state.summary.commercial.length ? (
-                    <div>
-                      {state.summary.commercial.amount ? (
-                        <NumberFormat
-                          value={state.summary.commercial.amount}
-                          displayType={'text'}
-                          thousandSeparator={true}
-                          decimalScale={2}
-                          prefix={'$'}
-                        />
-                      ) : (
-                        '$0'
-                      )}
-                    </div>
-                  ) : null}
-                  {!state.summary.personal.length &&
-                  !state.summary.commercial.length
-                    ? '$0'
-                    : null}
-                </div>
-              }
-            />
-          </ListItem>
           <Divider />
           {discount ? (
             <>
@@ -248,9 +121,7 @@ const CheckoutSummary = ({
                       <Typography className={classes.rightList}>
                         <NumberFormat
                           value={(
-                            (state.summary.personal.amount +
-                              state.summary.commercial.amount) *
-                            discount.discount
+                            state.summary.amount * discount.discount
                           ).toFixed(2)}
                           displayType={'text'}
                           thousandSeparator={true}
@@ -282,12 +153,11 @@ const CheckoutSummary = ({
                 <div>
                   <Typography className={classes.rightList}>
                     <NumberFormat
-                      value={(
-                        (state.summary.personal.amount +
-                          state.summary.commercial.amount) *
-                          0.05 +
-                        2.35
-                      ).toFixed(2)}
+                      value={
+                        state.summary.amount
+                          ? (state.summary.amount * 0.05 + 2.35).toFixed(2)
+                          : 0
+                      }
                       displayType={'text'}
                       thousandSeparator={true}
                       decimalScale={2}
@@ -303,23 +173,12 @@ const CheckoutSummary = ({
             <ListItemText
               primary={<Typography>Order</Typography>}
               secondary={
-                state.summary.personal.length +
-                state.summary.commercial.length ? (
+                state.summary.license ? (
                   <Typography>
-                    {state.summary.personal.length +
-                      state.summary.commercial.length ===
-                    1
-                      ? `${
-                          state.summary.personal.length +
-                          state.summary.commercial.length
-                        } license`
-                      : `${
-                          state.summary.personal.length +
-                          state.summary.commercial.length
-                        } licenses`}
+                    {`1 ${state.summary.license} license`}
                   </Typography>
                 ) : (
-                  'No licenses found'
+                  'No licenses selected'
                 )
               }
             />
@@ -329,20 +188,13 @@ const CheckoutSummary = ({
               }
               secondary={
                 <Typography className={classes.rightList}>
-                  {discount ? (
-                    state.summary.personal.amount +
-                    state.summary.commercial.amount ? (
+                  {state.summary.amount ? (
+                    discount ? (
                       <NumberFormat
                         value={(
-                          state.summary.personal.amount +
-                          state.summary.commercial.amount -
-                          (state.summary.personal.amount +
-                            state.summary.commercial.amount) *
-                            discount.discount +
-                          ((state.summary.personal.amount +
-                            state.summary.commercial.amount) *
-                            0.05 +
-                            2.35)
+                          state.summary.amount -
+                          state.summary.amount * discount.discount +
+                          (state.summary.amount * 0.05 + 2.35)
                         ).toFixed(2)}
                         displayType={'text'}
                         thousandSeparator={true}
@@ -350,26 +202,25 @@ const CheckoutSummary = ({
                         prefix={'$'}
                       />
                     ) : (
-                      '$0'
+                      <NumberFormat
+                        value={(
+                          state.summary.amount +
+                          (state.summary.amount * 0.05 + 2.35)
+                        ).toFixed(2)}
+                        displayType={'text'}
+                        thousandSeparator={true}
+                        decimalScale={2}
+                        prefix={'$'}
+                      />
                     )
-                  ) : state.summary.personal.amount +
-                    state.summary.commercial.amount ? (
+                  ) : (
                     <NumberFormat
-                      value={(
-                        state.summary.personal.amount +
-                        state.summary.commercial.amount +
-                        ((state.summary.personal.amount +
-                          state.summary.commercial.amount) *
-                          0.05 +
-                          2.35)
-                      ).toFixed(2)}
+                      value={0}
                       displayType={'text'}
                       thousandSeparator={true}
                       decimalScale={2}
                       prefix={'$'}
                     />
-                  ) : (
-                    '$0'
                   )}
                 </Typography>
               }

@@ -12,6 +12,7 @@ const ArtworkInfo = ({
   tabs,
   handleTabsChange,
   handleChangeIndex,
+  handlePurchase,
   handleDownload,
   match,
 }) => {
@@ -19,7 +20,7 @@ const ArtworkInfo = ({
   const classes = {};
 
   return (
-    <Card className={classes.root} style={{ minHeight: 410 }}>
+    <Card className={classes.root}>
       <CardContent pt={0} pb={0}>
         {artwork.current.availability === 'available' ? (
           /*           <>
@@ -56,20 +57,10 @@ const ArtworkInfo = ({
                       price={artwork.current.personal}
                       heading="Personal use license. Use for personal projects, social media, and
                   non commercial activities"
-                      list={[
-                        {
-                          label: 'Personal blogging, websites and social media',
-                        },
-                        {
-                          label:
-                            'Home printing, art and craft projects, personal portfolios and gifts',
-                        },
-                        { label: 'Students and charities' },
-                        {
-                          label:
-                            'The personal use license is not suitable for commercial activities',
-                        },
-                      ]}
+                      list={[]}
+                      license="personal"
+                      handlePurchase={handlePurchase}
+                      handleDownload={handleDownload}
                     />
                   ),
                   error: null,
@@ -84,21 +75,10 @@ const ArtworkInfo = ({
                       id={artwork._id}
                       price={artwork.current.commercial}
                       heading="Commercial use license. Use anywhere in the world for unlimited projects with no expiration dates"
-                      list={[
-                        {
-                          label:
-                            'Print and digital advertising, broadcasts, product packaging, presentations, websites and blogs',
-                        },
-                        {
-                          label:
-                            'Home printing, art and craft projects, personal portfolios and gifts',
-                        },
-                        { label: 'Students and charities' },
-                        {
-                          label:
-                            'The personal use license is not suitable for commercial activities',
-                        },
-                      ]}
+                      list={[]}
+                      license="commercial"
+                      handlePurchase={handlePurchase}
+                      handleDownload={handleDownload}
                     />
                   ),
                   error: null,

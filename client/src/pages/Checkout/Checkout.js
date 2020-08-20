@@ -26,7 +26,7 @@ const Checkout = ({ match, location }) => {
     secret: null,
     artwork: {},
     billing: {},
-    licenses: [],
+    license: null,
     discount: {},
     loading: true,
   });
@@ -39,13 +39,13 @@ const Checkout = ({ match, location }) => {
     setState((prevState) => ({ ...prevState, secret: value }));
   };
 
-  const handleLicenseSave = async (licenses) => {
+  const handleLicenseChange = async (license) => {
     try {
       const versionId = state.artwork.current._id.toString();
       const storageObject = {
         versionId: versionId,
         intentId: null,
-        licenseList: licenses,
+        licenseType: license,
       };
       window.sessionStorage.setItem(
         state.artwork._id,
@@ -53,7 +53,7 @@ const Checkout = ({ match, location }) => {
       );
       setState((prevState) => ({
         ...prevState,
-        licenses: licenses,
+        license: license,
       }));
     } catch (err) {
       console.log(err);
@@ -81,7 +81,7 @@ const Checkout = ({ match, location }) => {
     if (checkoutItem) {
       const currentId = artwork.current._id.toString();
       if (checkoutItem.versionId === currentId) {
-        return checkoutItem.licenseList;
+        return checkoutItem.licenseType;
       } else {
         window.sessionStorage.removeItem(artwork._id);
         console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
@@ -110,7 +110,7 @@ const Checkout = ({ match, location }) => {
         loading: false,
         stripe: stripe,
         artwork: data.artwork,
-        licenses: licenses ? licenses : [],
+        license: location.state.license || null,
         billing: billing,
         discount: data.discount,
       });
@@ -144,11 +144,11 @@ const Checkout = ({ match, location }) => {
                           <CheckoutStepper
                             secret={state.secret}
                             artwork={state.artwork}
-                            licenses={state.licenses}
+                            license={state.license}
                             billing={state.billing}
                             discount={state.discount}
                             handleSecretSave={handleSecretSave}
-                            handleLicenseSave={handleLicenseSave}
+                            handleLicenseChange={handleLicenseChange}
                             handleBillingSave={handleBillingSave}
                           />
                         </Elements>
@@ -161,7 +161,7 @@ const Checkout = ({ match, location }) => {
             <Grid item xs={12} md={4} className={classes.actions}>
               <CheckoutSummary
                 artwork={state.artwork}
-                licenses={state.licenses}
+                license={state.license}
                 discount={state.discount}
                 handleDiscountEdit={handleDiscountEdit}
               />

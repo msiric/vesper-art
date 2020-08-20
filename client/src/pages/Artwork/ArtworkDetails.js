@@ -90,6 +90,15 @@ const ArtworkDetails = ({ match, location, socket }) => {
     }
   };
 
+  const handlePurchase = async (id, license) => {
+    history.push({
+      pathname: `/checkout/${id}`,
+      state: {
+        license,
+      },
+    });
+  };
+
   const handleDownload = async (id) => {
     try {
       const { data } = await getDetails({
@@ -316,6 +325,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
                 license={state.license}
                 handleTabsChange={handleTabsChange}
                 handleChangeIndex={handleChangeIndex}
+                handlePurchase={handlePurchase}
                 handleDownload={handleDownload}
               />
             </Grid>

@@ -2,6 +2,7 @@ import {
   Avatar as MuiAvatar,
   Button as MuiButton,
   Card as MuiCard,
+  CardHeader as MuiCardHeader,
   CardActions as MuiCardActions,
   CardContent as MuiCardContent,
   CardMedia as MuiCardMedia,
@@ -21,11 +22,15 @@ import {
   sizing,
   spacing,
   typography,
+  breakpoints,
 } from '@material-ui/system';
 
 export const Container = styled(MuiContainer)(compose(spacing, flexbox));
 export const Grid = styled(MuiGrid)(compose(spacing, flexbox));
 export const Card = styled(MuiCard)(compose(spacing, flexbox, sizing));
+export const CardHeader = styled(MuiCardHeader)(
+  compose(spacing, flexbox, sizing)
+);
 export const CardContent = styled(MuiCardContent)(
   compose(spacing, flexbox, sizing)
 );

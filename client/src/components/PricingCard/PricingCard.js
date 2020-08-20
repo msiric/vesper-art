@@ -13,7 +13,15 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Card, Typography } from '../../constants/theme.js';
 
-const PricingCard = ({ id, price, heading, list }) => {
+const PricingCard = ({
+  id,
+  price,
+  heading,
+  list,
+  license,
+  handlePurchase,
+  handleDownload,
+}) => {
   return (
     <Card width="100%" height="100%">
       <CardContent p={32}>
@@ -50,15 +58,18 @@ const PricingCard = ({ id, price, heading, list }) => {
       <Box display="flex" justifyContent="center">
         {price ? (
           <Button
-            component={RouterLink}
-            to={`/checkout/${id}`}
+            onClick={() => handlePurchase(id, license)}
             variant="contained"
             color="primary"
           >
             Purchase
           </Button>
         ) : (
-          <Button variant="contained" color="primary">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleDownload(id, license)}
+          >
             Download
           </Button>
         )}
