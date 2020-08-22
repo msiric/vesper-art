@@ -1,18 +1,8 @@
+import { Container, Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
-import {
-  Paper,
-  Button,
-  Typography,
-  Input,
-  Container,
-  Grid,
-} from '@material-ui/core';
-import { Link } from 'react-router-dom';
-import { withRouter, useHistory } from 'react-router-dom';
+import { useHistory, withRouter } from 'react-router-dom';
 import Datatable from '../../components/Datatable/Datatable.js';
 import { getGallery } from '../../services/artwork.js';
-import MainHeading from '../../components/MainHeading/MainHeading.js';
 
 function ProductsTable() {
   const [state, setState] = useState({
@@ -63,7 +53,7 @@ function ProductsTable() {
                 },
               },
               {
-                name: 'Cover',
+                name: 'Artwork',
                 options: {
                   customBodyRender: (value, tableMeta, updateValue) => (
                     <img style={{ width: '85%', maxWidth: 200 }} src={value} />

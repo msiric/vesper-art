@@ -1,30 +1,9 @@
-import _ from 'lodash';
-import {
-  Container,
-  Grid,
-  CircularProgress,
-  Paper,
-  Button,
-  Link,
-  Icon,
-  Typography,
-  Input,
-  Table,
-  TableBody,
-  TableCell,
-  TablePagination,
-  TableRow,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from '@material-ui/core';
+import { Container, Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { withRouter, useHistory } from 'react-router-dom';
-import { format } from 'date-fns';
+import { useHistory, withRouter } from 'react-router-dom';
+import { formatDate } from '../../../../common/helpers.js';
 import Datatable from '../../components/Datatable/Datatable.js';
 import { getOrders } from '../../services/orders.js';
-import { formatDate } from '../../../../common/helpers.js';
 
 const Orders = () => {
   const [state, setState] = useState({
@@ -80,7 +59,7 @@ const Orders = () => {
                 },
               },
               {
-                name: 'Cover',
+                name: 'Artwork',
                 options: {
                   customBodyRender: (value, tableMeta, updateValue) => (
                     <img style={{ width: '85%', maxWidth: 200 }} src={value} />

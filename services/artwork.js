@@ -304,10 +304,7 @@ export const addNewLicense = async ({
   newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
   newLicense.type = licenseData.licenseType;
   newLicense.active = false;
-  newLicense.price =
-    licenseData.licenseType == 'commercial'
-      ? artworkData.current.commercial
-      : artworkData.current.personal;
+  newLicense.price = artworkData.current[licenseData.licenseType];
   return await newLicense.save({ session });
 };
 

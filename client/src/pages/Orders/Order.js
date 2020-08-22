@@ -1,40 +1,24 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Context } from "../../context/Store.js";
-import _ from "lodash";
 import {
-  Grid,
-  CircularProgress,
-  Paper,
-  Button,
-  Icon,
-  Typography,
-  Input,
-  Table,
-  TableBody,
-  TableCell,
-  TablePagination,
-  TableRow,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Tabs,
-  Tab,
   Avatar,
+  Button,
+  Tab,
+  Tabs,
   TextField,
-} from "@material-ui/core";
-import * as Yup from "yup";
-import { Rating } from "@material-ui/lab";
-import { useFormik, Formik, Form, Field } from "formik";
-import { Link } from "react-router-dom";
-import { withRouter, useHistory } from "react-router-dom";
-import { format } from "date-fns";
-import Modal from "../../shared/Modal/Modal.js";
-import { postReview, getOrder } from "../../services/orders.js";
+  Typography,
+} from '@material-ui/core';
+import { Rating } from '@material-ui/lab';
+import { format } from 'date-fns';
+import { Field, Form, Formik } from 'formik';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory, withRouter } from 'react-router-dom';
+import * as Yup from 'yup';
+import { Context } from '../../context/Store.js';
+import { getOrder, postReview } from '../../services/orders.js';
+import Modal from '../../shared/Modal/Modal.js';
 
 const reviewValidation = Yup.object().shape({
-  rating: Yup.number().min(1).max(5).required("Rating cannot be empty"),
-  content: Yup.string().trim().required("Revieww cannot be empty"),
+  rating: Yup.number().min(1).max(5).required('Rating cannot be empty'),
+  content: Yup.string().trim().required('Review cannot be empty'),
 });
 
 const Order = ({ match }) => {
@@ -57,7 +41,7 @@ const Order = ({ match }) => {
         <Formik
           initialValues={{
             rating: 0,
-            content: "",
+            content: '',
           }}
           enableReinitialize
           validationSchema={reviewValidation}
@@ -189,7 +173,7 @@ const Order = ({ match }) => {
         textColor="primary"
         variant="scrollable"
         scrollButtons="auto"
-        classes={{ root: "w-full h-64" }}
+        classes={{ root: 'w-full h-64' }}
       >
         <Tab className="h-64 normal-case" label="Details" />
         <Tab className="h-64 normal-case" label="Invoice" />
@@ -275,7 +259,7 @@ const Order = ({ match }) => {
                       <th>Cover</th>
                       <th>Name</th>
                       <th>Artist</th>
-                      <th>Licenses</th>
+                      <th>License</th>
                       <th>Amount</th>
                       <th>Date</th>
                     </tr>
@@ -285,9 +269,9 @@ const Order = ({ match }) => {
                       <td>{state.order.version.cover}</td>
                       <td>{state.order.version.title}</td>
                       <td>{state.order.seller.name}</td>
-                      <td>{state.order.licenses.length}</td>
+                      <td>{state.order.license.type}</td>
                       <td>${state.order.spent}</td>
-                      <td>{formatDate(state.order.created, "dd/MM/yyyy")}</td>
+                      <td>{formatDate(state.order.created, 'dd/MM/yyyy')}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -295,7 +279,7 @@ const Order = ({ match }) => {
 
               <div className="pb-16 flex items-center">
                 <Typography className="h2 mx-16" color="textSecondary">
-                  Licenses
+                  License
                 </Typography>
               </div>
 
@@ -312,34 +296,41 @@ const Order = ({ match }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {state.order.licenses.map((license) => (
-                      <tr key={license._id}>
-                        <td>
-                          <Typography className="truncate">
-                            {license.fingerprint}
-                          </Typography>
-                        </td>
-                        <td className="w-64 text-right">
-                          <span className="truncate">{license.type}</span>
-                        </td>
-                        <td className="w-64 text-right">
-                          <span className="truncate">{license.owner}</span>
-                        </td>
-                        <td className="w-64 text-right">
-                          <span className="truncate">
-                            {license.artwork.owner}
-                          </span>
-                        </td>
-                        <td className="w-64 text-right">
-                          <span className="truncate">${license.price}</span>
-                        </td>
-                        <td className="w-64 text-right">
-                          <span className="truncate">
-                            {formatDate(license.created, "dd/MM/yyyy")}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                    <tr key={state.order.license._id}>
+                      <td>
+                        <Typography className="truncate">
+                          {state.order.license.fingerprint}
+                        </Typography>
+                      </td>
+                      <td className="w-64 text-right">
+                        <span className="truncate">
+                          {state.order.license.type}
+                        </span>
+                      </td>
+                      <td className="w-64 text-right">
+                        <span className="truncate">
+                          {state.order.license.owner}
+                        </span>
+                      </td>
+                      <td className="w-64 text-right">
+                        <span className="truncate">
+                          {state.order.license.artwork.owner}
+                        </span>
+                      </td>
+                      <td className="w-64 text-right">
+                        <span className="truncate">
+                          ${state.order.license.price}
+                        </span>
+                      </td>
+                      <td className="w-64 text-right">
+                        <span className="truncate">
+                          {formatDate(
+                            state.order.license.created,
+                            'dd/MM/yyyy'
+                          )}
+                        </span>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>

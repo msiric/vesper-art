@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import Order from '../models/order.js';
 import User from '../models/user.js';
 
@@ -49,7 +48,6 @@ export const fetchOrderDetails = async ({
     .populate('version')
     .populate('artwork')
     .deepPopulate('license.artwork')
-    .populate('review')
     .session(session);
 };
 
