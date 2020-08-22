@@ -54,7 +54,6 @@ export const updateAccessToken = async (req, res, next) => {
     photo: foundUser.photo,
     messages: foundUser.inbox,
     notifications: foundUser.notifications,
-    cart: foundUser.cart,
     saved: foundUser.savedArtwork,
     active: foundUser.active,
     stripeId: foundUser.stripeId,

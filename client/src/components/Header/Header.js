@@ -330,15 +330,6 @@ const Header = ({ history }) => {
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
-      {/* $CART */}
-      {/* <MenuItem component={Link} to="/cart">
-        <IconButton aria-label="Show cart" color="inherit">
-          <Badge badgeContent={store.user.cartSize} color="secondary">
-            <CartIcon />
-          </Badge>
-        </IconButton>
-        <p>Cart</p>
-      </MenuItem> */}
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           aria-label="Show profile"
@@ -466,16 +457,6 @@ const Header = ({ history }) => {
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
-                {/* <IconButton
-                  component={Link}
-                  to="/cart"
-                  aria-label="Show cart"
-                  color="inherit"
-                >
-                  <Badge badgeContent={store.user.cartSize} color="secondary">
-                    <CartIcon />
-                  </Badge>
-                </IconButton> */}
                 <IconButton
                   edge="end"
                   aria-label="Show profile"

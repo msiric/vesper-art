@@ -38,12 +38,6 @@ const UserSchema = new Schema({
   resetToken: String,
   resetExpiry: Date,
   jwtVersion: { type: Number, default: 0 },
-  cart: [
-    {
-      artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
-      licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }],
-    },
-  ],
   discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
   inbox: Number,
   notifications: Number,

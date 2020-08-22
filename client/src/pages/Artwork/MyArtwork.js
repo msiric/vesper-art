@@ -88,6 +88,7 @@ function ProductsTable() {
             empty="You have no artwork"
             loading={state.loading}
             redirect="artwork"
+            selectable={true}
             addOptions={{
               enabled: true,
               title: 'Add artwork',

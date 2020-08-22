@@ -9,7 +9,7 @@ export const orderValidation = Yup.object().shape({
   orderArtwork: Yup.objectId().required(),
   orderVersion: Yup.objectId().required(),
   orderDiscount: Yup.objectId().required(),
-  orderLicenses: Yup.array().items(Yup.objectId()).required(),
+  orderLicense: Yup.objectId().required(),
   orderSpent: Yup.number().integer().required(),
   orderEarned: Yup.number().integer().required(),
   orderFee: Yup.number().integer().required(),

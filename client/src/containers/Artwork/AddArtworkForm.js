@@ -71,6 +71,12 @@ const AddArtworkForm = ({
                 type="alert"
                 label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
               />
+            ) : capabilities.cardPayments === 'pending' ||
+              capabilities.platformPayments === 'pending' ? (
+              <HelpBox
+                type="alert"
+                label="To make your artwork commercially available, please wait for Stripe to verify the information you entered"
+              />
             ) : capabilities.cardPayments !== 'active' ||
               capabilities.platformPayments !== 'active' ? (
               <HelpBox

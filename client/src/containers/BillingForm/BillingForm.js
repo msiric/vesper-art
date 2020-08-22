@@ -3,6 +3,7 @@ import { Field, Form, Formik } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
 import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput.js';
+import { countries } from '../../../../common/constants.js';
 import { makeStyles } from '@material-ui/core/styles';
 
 const BillingFormStyles = makeStyles((muiTheme) => ({
@@ -59,8 +60,6 @@ const BillingFormStyles = makeStyles((muiTheme) => ({
     flexDirection: 'column',
   },
 }));
-
-const countries = [];
 
 const validationSchema = Yup.object().shape({
   firstname: Yup.string().trim().required('First name is required'),

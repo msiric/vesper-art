@@ -34,10 +34,6 @@ const store = {
       loading: false,
     },
     saved: {},
-    cart: {
-      items: {},
-      count: 0,
-    },
   },
 };
 
@@ -64,7 +60,6 @@ const reducer = (state, action) => {
           messages: action.messages,
           notifications: action.notifications,
           saved: action.saved,
-          cart: action.cart,
           stripeId: action.stripeId,
           country: action.country,
         },
@@ -96,7 +91,6 @@ const reducer = (state, action) => {
           messages: action.messages,
           notifications: action.notifications,
           saved: action.saved,
-          cart: action.cart,
         },
       };
     case 'updateUser':
@@ -115,7 +109,6 @@ const reducer = (state, action) => {
             count: action.notifications.count,
           },
           saved: action.saved,
-          cart: action.cart,
         },
       };
     case 'setSearch':
@@ -154,10 +147,6 @@ const reducer = (state, action) => {
             loading: false,
           },
           saved: {},
-          cart: {
-            items: {},
-            count: 0,
-          },
         },
       };
     case 'updateToken':
@@ -166,14 +155,6 @@ const reducer = (state, action) => {
         user: {
           ...state.user,
           token: action.token,
-        },
-      };
-    case 'updateCart':
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          cart: action.cart,
         },
       };
     case 'updateSaves':

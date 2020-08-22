@@ -115,7 +115,7 @@ const LicenseForm = ({
       const intentId = retrieveIntentId();
       const { data } = await postIntent({
         artworkId: artwork._id,
-        userLicense: license,
+        artworkLicense: license,
         intentId,
       });
       const versionId = artwork.current._id.toString();

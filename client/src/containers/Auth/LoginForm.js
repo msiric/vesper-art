@@ -54,13 +54,6 @@ const LoginForm = () => {
               object[item] = true;
               return object;
             }, {}),
-            cart: {
-              items: data.user.cart.reduce(function (object, item) {
-                object[item] = true;
-                return object;
-              }, {}),
-              count: Object.keys(data.user.cart).length,
-            },
           });
         }
 

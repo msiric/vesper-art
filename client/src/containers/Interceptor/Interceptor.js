@@ -70,13 +70,6 @@ const Interceptor = ({ children }) => {
               object[item] = true;
               return object;
             }, {}),
-            cart: {
-              items: data.user.cart.reduce(function (object, item) {
-                object[item.artwork] = true;
-                return object;
-              }, {}),
-              count: Object.keys(data.user.cart).length,
-            },
           });
         } else {
           dispatch({
@@ -158,7 +151,6 @@ const Interceptor = ({ children }) => {
           messages: { items: [], count: data.user.messages },
           notifications: { count: data.user.notifications },
           saved: data.user.saved,
-          cart: { items: {}, count: data.user.cart },
         });
 
         const config = error.config;
@@ -209,7 +201,6 @@ const Interceptor = ({ children }) => {
           messages: { items: [], count: data.user.messages },
           notifications: { count: data.user.notifications },
           saved: data.user.saved,
-          cart: { items: {}, count: data.user.cart },
         });
         socket.emit('authenticateUser', `Bearer ${data.accessToken}`);
       } catch (err) {

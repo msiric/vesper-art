@@ -13,7 +13,7 @@ import {
   fetchUserArtworks,
   removeArtworkSave,
   removeArtworkVersion,
-  saveLicenseSet,
+  addNewLicense,
 } from '../services/artwork.js';
 import { fetchOrderByVersion } from '../services/order.js';
 import { fetchStripeAccount } from '../services/stripe.js';
@@ -319,24 +319,17 @@ export const unsaveArtwork = async ({ userId, artworkId, session }) => {
 
 // needs transaction (done)
 // $TODO validacija licenci?
-export const saveLicenses = async ({
-  userId,
-  artworkId,
-  licenses,
-  session,
-}) => {
-  if (licenses.length) {
-    const foundArtwork = await fetchArtworkDetails({ artworkId, session });
-    if (foundArtwork) {
-      await saveLicenseSet({
-        artworkData: foundArtwork,
-        licenseData: licenses,
-        userId,
-        session,
-      });
-      return { message: 'Licenses saved', licenses: savedLicenses };
-    }
-    throw createError(400, 'Artwork not found');
+export const saveLicense = async ({ userId, artworkId, license, session }) => {
+  const foundArtwork = await fetchArtworkDetails({ artworkId, session });
+  if (foundArtwork) {
+    await addNewLicense({
+      artworkData: foundArtwork,
+      licenseData: license,
+      userId,
+      session,
+    });
+    return { message: 'License saved', license: license };
   }
+  throw createError(400, 'Artwork not found');
   throw createError(400, 'Artwork needs to have at least one license');
 };

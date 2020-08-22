@@ -292,26 +292,23 @@ export const removeArtworkComment = async ({
 };
 
 // needs transaction (done)
-export const saveLicenseSet = async ({
+export const addNewLicense = async ({
   userId,
   artworkData,
-  licensesData,
+  licenseData,
   session = null,
 }) => {
-  const licenseSet = licensesData.map((license) => {
-    const newLicense = new License();
-    newLicense.owner = userId;
-    newLicense.artwork = artworkData._id;
-    newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
-    newLicense.type = license.licenseType;
-    newLicense.active = false;
-    newLicense.price =
-      license.licenseType == 'commercial'
-        ? artworkData.current.commercial
-        : artworkData.current.personal;
-    return newLicense;
-  });
-  return await License.insertMany(licenseSet, { session });
+  const newLicense = new License();
+  newLicense.owner = userId;
+  newLicense.artwork = artworkData._id;
+  newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+  newLicense.type = licenseData.licenseType;
+  newLicense.active = false;
+  newLicense.price =
+    licenseData.licenseType == 'commercial'
+      ? artworkData.current.commercial
+      : artworkData.current.personal;
+  return await newLicense.save({ session });
 };
 
 export const deactivateExistingArtwork = async ({

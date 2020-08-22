@@ -110,7 +110,6 @@ export const postLogIn = async ({
       photo: foundUser.photo,
       messages: foundUser.inbox,
       notifications: foundUser.notifications,
-      cart: foundUser.cart,
       saved: foundUser.savedArtwork,
       active: foundUser.active,
       stripeId: foundUser.stripeId,

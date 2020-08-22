@@ -18,7 +18,6 @@ export const addNewUser = async ({
   newUser.displaySaves = true;
   newUser.verificationToken = verificationToken;
   newUser.verified = false;
-  newUser.cart = [];
   newUser.discount = null;
   newUser.inbox = 0;
   newUser.notifications = 0;

@@ -19,8 +19,8 @@ const router = express.Router();
 // $TODO Bolje to treba
 router.route('/hooks', bodyParser.raw({ type: 'application/json' })).post(
   handler(receiveWebhookEvent, true, (req, res, next) => ({
-    signature: req.headers['stripe-signature'],
-    body: req.rawBody,
+    stripeSignature: req.headers['stripe-signature'],
+    stripeBody: req.rawBody,
   }))
 );
 

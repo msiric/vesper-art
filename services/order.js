@@ -9,7 +9,7 @@ export const addNewOrder = async ({ orderData, session = null }) => {
   newOrder.artwork = orderData.artworkId;
   newOrder.version = orderData.versionId;
   newOrder.discount = orderData.discountId;
-  newOrder.licenses = orderData.licenseIds;
+  newOrder.license = orderData.licenseId;
   newOrder.review = orderData.review;
   newOrder.spent = orderData.spent;
   newOrder.earned = orderData.earned;
@@ -48,7 +48,7 @@ export const fetchOrderDetails = async ({
     .populate('discount')
     .populate('version')
     .populate('artwork')
-    .deepPopulate('licenses.artwork')
+    .deepPopulate('license.artwork')
     .populate('review')
     .session(session);
 };
@@ -100,10 +100,10 @@ export const fetchOrdersBySeller = async ({
           { seller: userId },
           { created: { $gte: new Date(rangeFrom), $lt: new Date(rangeTo) } },
         ],
-      }).populate('review version licenses sales.review')
+      }).populate('review version license sales.review')
     : await Order.find({
         $and: [{ seller: userId }],
-      }).populate('review version licenses sales.review');
+      }).populate('review version license sales.review');
 };
 
 export const fetchOrdersByBuyer = async ({
@@ -118,8 +118,8 @@ export const fetchOrdersByBuyer = async ({
           { buyer: userId },
           { created: { $gte: new Date(rangeFrom), $lt: new Date(rangeTo) } },
         ],
-      }).populate('review version licenses sales.review')
+      }).populate('review version license sales.review')
     : await Order.find({
         $and: [{ buyer: userId }],
-      }).populate('review version licenses sales.review');
+      }).populate('review version license sales.review');
 };

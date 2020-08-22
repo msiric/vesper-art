@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./bin/www",
     "client": "cd client && npm start",
-    "webhook": "stripe listen --forward-to localhost:5000/hooks",
+    "webhook": "stripe listen --forward-to localhost:5000/stripe/hooks",
     "dev": "concurrently \"npm start\" \"npm run client\" \"npm run webhook\""
   },
   "author": "",

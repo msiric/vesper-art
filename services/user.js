@@ -39,7 +39,7 @@ export const fetchUserDiscount = async ({ userId, session = null }) => {
 export const fetchUserSales = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
-  }).deepPopulate('sales.buyer sales.version sales.review');
+  }).deepPopulate('sales.buyer sales.version sales');
 };
 
 export const editUserStripe = async ({ userId, stripeId, session = null }) => {
@@ -63,7 +63,7 @@ export const editUserSale = async ({ userId, orderId, session = null }) => {
 export const fetchUserPurchases = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
-  }).deepPopulate('purchases.seller purchases.version purchases.review');
+  }).deepPopulate('purchases.seller purchases.version purchases');
 };
 
 export const fetchUserProfile = async ({
@@ -145,7 +145,7 @@ export const fetchUserStatistics = async ({ userId, session = null }) => {
   return await User.findOne({
     $and: [{ _id: userId }, { active: true }],
   }).deepPopulate(
-    'purchases.version purchases.licenses sales.version sales.licenses'
+    'purchases.version purchases.license sales.version sales.license'
   );
 };
 
@@ -281,7 +281,6 @@ export const deactivateExistingUser = async ({ userId, session = null }) => {
         verified: false,
         resetToken: null,
         resetExpiry: null,
-        cart: null,
         discount: null,
         inbox: null,
         notifications: null,

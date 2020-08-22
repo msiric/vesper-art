@@ -11,7 +11,7 @@ import {
   getArtworkComments,
   getArtworkReviews,
   getLicenses,
-  saveLicenses,
+  saveLicense,
   getUserArtwork,
   postNewArtwork,
   editArtwork,
@@ -64,7 +64,7 @@ router
   )
   .post(
     [isAuthenticated, checkParamsId],
-    handler(saveLicenses, true, (req, res, next) => ({
+    handler(saveLicense, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))

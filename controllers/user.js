@@ -228,7 +228,6 @@ export const updateUserPreferences = async ({ userId, displaySaves }) => {
             verified: false,
             resetToken: null,
             resetExpiry: null,
-            cart: null,
             discount: null,
             inbox: null,
             notifications: null,
