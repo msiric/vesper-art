@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import License from '../models/license.js';
 
 export const fetchLicenseByFingerprint = async ({
@@ -11,6 +10,20 @@ export const fetchLicenseByFingerprint = async ({
   }).populate('artwork');
 };
 
-export const addNewLicenses = async ({ licenses, session = null }) => {
-  return await License.insertMany(licenses, { session });
+export const addNewLicense = async ({
+  userId,
+  artworkData,
+  licenseData,
+  session = null,
+}) => {
+  const newLicense = new License();
+  newLicense.owner = userId;
+  newLicense.artwork = artworkData._id;
+  newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+  newLicense.assignee = licenseData.licenseAssignee;
+  newLicense.company = licenseData.licenseCompany;
+  newLicense.type = licenseData.licenseType;
+  newLicense.active = false;
+  newLicense.price = artworkData.current[licenseData.licenseType];
+  return await newLicense.save({ session });
 };

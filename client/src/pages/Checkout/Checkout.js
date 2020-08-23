@@ -1,17 +1,33 @@
 import {
   Box,
+  Button,
   CircularProgress,
   Container,
   Grid,
+  makeStyles,
   Paper,
+  Step,
+  StepConnector,
+  StepLabel,
+  Stepper,
+  withStyles,
 } from '@material-ui/core';
+import {
+  CardMembershipRounded as LicenseIcon,
+  ContactMailRounded as BillingIcon,
+  PaymentRounded as PaymentIcon,
+} from '@material-ui/icons';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import clsx from 'clsx';
+import { Form, Formik } from 'formik';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Yup from 'yup';
-import CheckoutStepper from '../../containers/CheckoutStepper/CheckoutStepper.js';
+import BillingForm from '../../containers/BillingForm/BillingForm.js';
 import CheckoutSummary from '../../containers/CheckoutSummary/CheckoutSummary.js';
+import LicenseForm from '../../containers/LicenseForm/LicenseForm.js';
+import PaymentForm from '../../containers/PaymentForm/PaymentForm.js';
 import { Context } from '../../context/Store.js';
 import { getCheckout } from '../../services/checkout.js';
 
@@ -19,16 +35,85 @@ const validationSchema = Yup.object().shape({
   discountCode: Yup.string().trim().required('Discount cannot be empty'),
 });
 
+const iconsStyle = makeStyles((theme) => ({
+  root: {
+    backgroundColor: '#ccc',
+    zIndex: 1,
+    color: '#fff',
+    width: 50,
+    height: 50,
+    display: 'flex',
+    borderRadius: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  active: {
+    background: theme.palette.primary.main,
+    boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
+  },
+  completed: {
+    background: theme.palette.primary.main,
+  },
+}));
+
+const StepperIcons = ({ active, completed, icon }) => {
+  const classes = iconsStyle();
+
+  const icons = {
+    1: <LicenseIcon />,
+    2: <BillingIcon />,
+    3: <PaymentIcon />,
+  };
+
+  return (
+    <div
+      className={clsx(classes.root, {
+        [classes.active]: active,
+        [classes.completed]: completed,
+      })}
+    >
+      {icons[String(icon)]}
+    </div>
+  );
+};
+
+const Connector = withStyles((theme) => ({
+  alternativeLabel: {
+    top: 22,
+  },
+  active: {
+    '& $line': {
+      background: theme.palette.primary.main,
+    },
+  },
+  completed: {
+    '& $line': {
+      background: theme.palette.primary.main,
+    },
+  },
+  line: {
+    height: 3,
+    border: 0,
+    backgroundColor: '#eaeaf0',
+    borderRadius: 1,
+  },
+}))(StepConnector);
+
 const Checkout = ({ match, location }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     stripe: null,
     secret: null,
     artwork: {},
-    billing: {},
-    license: null,
     discount: {},
+    billing: {},
+    license: {
+      type: null,
+      assignee: '',
+      company: '',
+    },
     loading: true,
+    step: 0,
   });
 
   const history = useHistory();
@@ -89,6 +174,49 @@ const Checkout = ({ match, location }) => {
     }
   };
 
+  const handleStepChange = (value) => {
+    setState((prevState) => ({
+      ...prevState,
+      step: prevState.step + value,
+    }));
+  };
+
+  async function _submitForm(values, actions) {
+    await _sleep(1000);
+    alert(JSON.stringify(values, null, 2));
+    actions.setSubmitting(false);
+
+    setActiveStep(activeStep + 1);
+  }
+
+  function _handleSubmit(values, actions) {
+    if (isLastStep) {
+      _submitForm(values, actions);
+    } else {
+      setActiveStep(activeStep + 1);
+      actions.setTouched({});
+      actions.setSubmitting(false);
+    }
+  }
+
+  const renderForm = ({ step }) => {
+    switch (step) {
+      case 0:
+        return (
+          <LicenseForm
+            artwork={state.artwork}
+            handleSecretSave={handleSecretSave}
+          />
+        );
+      case 1:
+        return <BillingForm />;
+      case 2:
+        return <PaymentForm secret={state.secret} artwork={state.artwork} />;
+      default:
+        return <div>Not Found</div>;
+    }
+  };
+
   const fetchData = async () => {
     try {
       const billing = {
@@ -104,13 +232,17 @@ const Checkout = ({ match, location }) => {
       const stripe = await loadStripe(
         'pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z'
       );
-      const licenses = retrieveLicenseInformation(data.artwork);
+      /*       const license = retrieveLicenseInformation(data.artwork); */
       setState({
         ...state,
         loading: false,
         stripe: stripe,
         artwork: data.artwork,
-        license: location.state.license || null,
+        license: {
+          type: location.state.license || null,
+          assignee: '',
+          company: '',
+        },
         billing: billing,
         discount: data.discount,
       });
@@ -139,20 +271,109 @@ const Checkout = ({ match, location }) => {
                     <CircularProgress />
                   ) : (
                     <Paper elevation={5}>
-                      {state.stripe ? (
-                        <Elements stripe={state.stripe}>
-                          <CheckoutStepper
-                            secret={state.secret}
-                            artwork={state.artwork}
-                            license={state.license}
-                            billing={state.billing}
-                            discount={state.discount}
-                            handleSecretSave={handleSecretSave}
-                            handleLicenseChange={handleLicenseChange}
-                            handleBillingSave={handleBillingSave}
-                          />
-                        </Elements>
-                      ) : null}
+                      <Formik
+                        initialValues={{
+                          licenseType: '',
+                          licenseAssignee: '',
+                          licenseCompany: '',
+                          discountCode: '',
+                          billingName: '',
+                          billingSurname: '',
+                          billingEmail: '',
+                          billingAddress: '',
+                          billingZip: '',
+                          billingCity: '',
+                          billingCountry: '',
+                        }}
+                        validationSchema={null}
+                        onSubmit={async (values, { resetForm }) => {
+                          /*  const formData = new FormData();
+                          formData.append('artworkMedia', values.artworkMedia[0]);
+                          try {
+                            const {
+                              data: { artworkCover, artworkMedia },
+                            } = await postMedia({ data: formData });
+                            values.artworkCover = artworkCover;
+                            values.artworkMedia = artworkMedia;
+                            const data = deleteEmptyValues(values);
+                            await patchArtwork({ artworkId: match.params.id, data });
+                            history.push({
+                              pathname: '/',
+                              state: { message: 'Artwork edited' },
+                            });
+                          } catch (err) {
+                            console.log(err);
+                          } */
+                        }}
+                      >
+                        {({ isSubmitting }) => (
+                          <Form>
+                            {state.stripe ? (
+                              <Elements stripe={state.stripe}>
+                                <Stepper
+                                  alternativeLabel
+                                  connector={<Connector />}
+                                  activeStep={state.step}
+                                >
+                                  {[1, 2, 3].map((e) => (
+                                    <Step key={e}>
+                                      <StepLabel
+                                        StepIconComponent={StepperIcons}
+                                      />
+                                    </Step>
+                                  ))}
+                                </Stepper>
+                                <Box className={classes.mainBox}>
+                                  {state.step === 3 ? (
+                                    <Grid
+                                      container
+                                      spacing={3}
+                                      direction="column"
+                                      justify="space-around"
+                                      alignItems="center"
+                                      style={{ height: '400px' }}
+                                    ></Grid>
+                                  ) : (
+                                    <Grid container spacing={3}>
+                                      {renderForm({
+                                        step: state.step,
+                                      })}
+                                    </Grid>
+                                  )}
+                                </Box>
+                                <Box
+                                  display="flex"
+                                  justifyContent="space-between"
+                                >
+                                  <Button
+                                    disabled={state.step === 0}
+                                    className={classes.button}
+                                    onClick={() => handleStepChange(-1)}
+                                  >
+                                    Back
+                                  </Button>
+                                  <Button
+                                    onClick={() => handleStepChange(1)}
+                                    variant="contained"
+                                    color="primary"
+                                    className={classes.button}
+                                    type="button"
+                                  >
+                                    {state.loading ? (
+                                      <CircularProgress
+                                        color="secondary"
+                                        size={24}
+                                      />
+                                    ) : (
+                                      'Next'
+                                    )}
+                                  </Button>
+                                </Box>
+                              </Elements>
+                            ) : null}
+                          </Form>
+                        )}
+                      </Formik>
                     </Paper>
                   )}
                 </Container>

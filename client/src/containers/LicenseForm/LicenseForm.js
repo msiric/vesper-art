@@ -1,23 +1,12 @@
-import {
-  Button,
-  CardActions,
-  CircularProgress,
-  Box,
-  IconButton,
-} from '@material-ui/core';
-import { Grid, Container, Typography } from '../../constants/theme.js';
 import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { CheckRounded as CheckIcon } from '@material-ui/icons';
-import { DeleteRounded as DeleteIcon } from '@material-ui/icons';
-import { Field, FieldArray, Form, Formik } from 'formik';
 import React, { useState } from 'react';
 import * as Yup from 'yup';
-import { postIntent } from '../../services/stripe.js';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import QuantityButton from '../../components/QuantityButton/QuantityButton.js';
-import { makeStyles } from '@material-ui/core/styles';
 import CheckoutCard from '../../components/CheckoutCard/CheckoutCard.js';
-import MainHeading from '../../components/MainHeading/MainHeading.js';
+import TextInput from '../../components/TextInput/TextInput.js';
+import { Container, Grid } from '../../constants/theme.js';
+import { postIntent } from '../../services/stripe.js';
 
 const LicenseFormStyles = makeStyles((muiTheme) => ({
   fixed: {
@@ -173,87 +162,101 @@ const LicenseForm = ({
           <CheckoutCard artwork={artwork} />
         </Grid>
         <Grid item xs={12} className={classes.actions}>
-          <Formik
+          {/*           <Formik
             initialValues={{
-              licenseType: license,
+              licenseType: license.type,
+              licenseAssignee: license.assignee,
+              licenseCompany: license.company,
             }}
             enableReinitialize
             validationSchema={validationSchema}
             onSubmit={async (values) => {}}
           >
             {({ values, errors, touched, enableReinitialize }) => (
-              <Form style={{ width: '100%' }}>
-                <Grid item xs={12}>
-                  <Field name="licenseType">
-                    {({ field, form: { touched, errors }, meta }) => (
-                      <SelectInput
-                        {...field}
-                        label="License type"
-                        helperText={meta.touched && meta.error}
-                        error={meta.touched && Boolean(meta.error)}
-                        onChange={(e) => {
-                          field.onChange(e.target.value);
-                          handleLicenseChange(e.target.value);
-                        }}
-                        options={
-                          artwork.current &&
-                          artwork.current.license === 'commercial'
-                            ? [
-                                {
-                                  value: 'personal',
-                                  text: 'Personal',
-                                },
-                                {
-                                  value: 'commercial',
-                                  text: 'Commercial',
-                                },
-                              ]
-                            : [
-                                {
-                                  value: 'personal',
-                                  text: 'Personal',
-                                },
-                              ]
-                        }
-                        margin="dense"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    )}
-                  </Field>
-                  <List component="nav" aria-label="Features">
-                    {licenseOptions.map((item) => (
-                      <ListItem>
-                        <ListItemIcon>
-                          <CheckIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={item.label} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Grid>
-                <Box display="flex" justifyContent="space-between">
-                  <Button disabled={true} className={classes.button}>
-                    Back
-                  </Button>
-                  <Button
-                    onClick={() => handleNextClick(values)}
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    type="button"
-                    disabled={!license}
-                  >
-                    {state.loading ? (
-                      <CircularProgress color="secondary" size={24} />
-                    ) : (
-                      'Next'
-                    )}
-                  </Button>
-                </Box>
-              </Form>
+              <Form style={{ width: '100%' }}> */}
+          <Grid item xs={12}>
+            {/*             <Field name="licenseAssignee">
+              {({ field, form: { touched, errors }, meta }) => (
+                <TextField {...field} />
+              )}
+            </Field>
+            <Field name="licenseCompany">
+              {({ field, form: { touched, errors }, meta }) => (
+                <TextField {...field} />
+              )}
+            </Field> */}
+            <TextInput name="licenseAssignee" label="License assignee" />
+
+            <TextInput name="licenseCompany" label="License company" />
+            {/*              <Field name="licenseType">
+              {({ field, form: { touched, errors }, meta }) => (
+                <SelectInput
+                  {...field}
+                  label="License type"
+                  helperText={meta.touched && meta.error}
+                  error={meta.touched && Boolean(meta.error)}
+                                     onChange={(e) => {
+                    field.onChange(e.target.value);
+                    handleLicenseChange(e.target.value);
+                  }} 
+                  options={
+                    artwork.current && artwork.current.license === 'commercial'
+                      ? [
+                          {
+                            value: 'personal',
+                            text: 'Personal',
+                          },
+                          {
+                            value: 'commercial',
+                            text: 'Commercial',
+                          },
+                        ]
+                      : [
+                          {
+                            value: 'personal',
+                            text: 'Personal',
+                          },
+                        ]
+                  }
+                  margin="dense"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+            </Field> */}
+            <List component="nav" aria-label="Features">
+              {licenseOptions.map((item) => (
+                <ListItem>
+                  <ListItemIcon>
+                    <CheckIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={item.label} />
+                </ListItem>
+              ))}
+            </List>
+          </Grid>
+          {/*           <Box display="flex" justifyContent="space-between">
+            <Button disabled={true} className={classes.button}>
+              Back
+            </Button>
+            <Button
+              onClick={() => handleNextClick(values)}
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              type="button"
+              disabled={!license}
+            >
+              {state.loading ? (
+                <CircularProgress color="secondary" size={24} />
+              ) : (
+                'Next'
+              )}
+            </Button>
+          </Box> */}
+          {/*               </Form>
             )}
-          </Formik>
+          </Formik> */}
         </Grid>
       </Grid>
     </Container>

@@ -1,37 +1,24 @@
-import React, { useContext, useRef, useState, useEffect } from 'react';
-import { Context } from '../Store/Store.js';
-import SelectField from '../../shared/SelectInput/SelectInput.js';
-import NumberFormat from 'react-number-format';
-import Summary from './Summary.js';
-import Steppers from './Steppers.js';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import { Formik, Form, Field, FieldArray } from 'formik';
-import * as Yup from 'yup';
 import {
   Box,
-  Paper,
-  Modal,
+  CircularProgress,
   Container,
   Grid,
-  CircularProgress,
-  Card,
-  CardMedia,
-  CardContent,
-  CardActions,
-  Typography,
-  TextField,
-  List,
-  ListItem,
-  ListItemText,
-  Button,
-  Divider,
+  Paper,
+  Step,
+  StepLabel,
+  Stepper,
 } from '@material-ui/core';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
-import CheckoutStyles from './Checkout.style.js';
 import { getCheckout } from '../../services/checkout.js';
-import { discountValidation } from '../../validation/discount.js';
+import BillingForm from '../BillingForm/BillingForm.js';
+import LicenseForm from '../LicenseForm/LicenseForm.js';
+import PaymentForm from '../PaymentForm/PaymentForm.js';
+import { Context } from '../Store/Store.js';
+import CheckoutStyles from './Checkout.style.js';
+import Summary from './Summary.js';
 
 const Checkout = ({ match, location }) => {
   const [store, dispatch] = useContext(Context);
@@ -43,6 +30,7 @@ const Checkout = ({ match, location }) => {
     licenses: [],
     discount: {},
     loading: true,
+    step: 0,
   });
 
   const history = useHistory();
@@ -53,13 +41,13 @@ const Checkout = ({ match, location }) => {
     setState((prevState) => ({ ...prevState, secret: value }));
   };
 
-  const handleLicenseSave = async (licenses) => {
+  const handleLicenseChange = async (license) => {
     try {
       const versionId = state.artwork.current._id.toString();
       const storageObject = {
         versionId: versionId,
         intentId: null,
-        licenseList: licenses,
+        licenseType: license,
       };
       window.sessionStorage.setItem(
         state.artwork._id,
@@ -67,7 +55,7 @@ const Checkout = ({ match, location }) => {
       );
       setState((prevState) => ({
         ...prevState,
-        licenses: licenses,
+        license: license,
       }));
     } catch (err) {
       console.log(err);
@@ -101,6 +89,40 @@ const Checkout = ({ match, location }) => {
         console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
       }
     }
+  };
+
+  const handleStepChange = (value) => {
+    setState((prevState) => ({
+      ...prevState,
+      step: prevState.step + value,
+    }));
+  };
+
+  const renderForm = ({ step }) => {
+    if (step === 0)
+      return (
+        <LicenseForm
+          artwork={artwork}
+          license={license}
+          handleSecretSave={handleSecretSave}
+          handleLicenseChange={handleLicenseChange}
+        />
+      );
+    else if (step === 1)
+      return (
+        <BillingForm billing={billing} handleBillingSave={handleBillingSave} />
+      );
+    else
+      return (
+        <PaymentForm
+          secret={secret}
+          artwork={artwork}
+          license={license}
+          discount={discount}
+          billing={billing}
+          handlePaymentSubmit={handlePaymentSubmit}
+        />
+      );
   };
 
   const fetchData = async () => {
@@ -153,20 +175,81 @@ const Checkout = ({ match, location }) => {
                     <CircularProgress />
                   ) : (
                     <Paper elevation={5}>
-                      {state.stripe ? (
-                        <Elements stripe={state.stripe}>
-                          <Steppers
-                            secret={state.secret}
-                            artwork={state.artwork}
-                            licenses={state.licenses}
-                            billing={state.billing}
-                            discount={state.discount}
-                            handleSecretSave={handleSecretSave}
-                            handleLicenseSave={handleLicenseSave}
-                            handleBillingSave={handleBillingSave}
-                          />
-                        </Elements>
-                      ) : null}
+                      <Formik
+                        initialValues={{
+                          licenseType: '',
+                          licenseAssignee: '',
+                          licenseCompany: '',
+                          discountCode: '',
+                          billingName: '',
+                          billingSurname: '',
+                          billingEmail: '',
+                          billingAddress: '',
+                          billingZip: '',
+                          billingCity: '',
+                          billingCountry: '',
+                        }}
+                        validationSchema={null}
+                        onSubmit={async (values, { resetForm }) => {
+                          /*  const formData = new FormData();
+                          formData.append('artworkMedia', values.artworkMedia[0]);
+                          try {
+                            const {
+                              data: { artworkCover, artworkMedia },
+                            } = await postMedia({ data: formData });
+                            values.artworkCover = artworkCover;
+                            values.artworkMedia = artworkMedia;
+                            const data = deleteEmptyValues(values);
+                            await patchArtwork({ artworkId: match.params.id, data });
+                            history.push({
+                              pathname: '/',
+                              state: { message: 'Artwork edited' },
+                            });
+                          } catch (err) {
+                            console.log(err);
+                          } */
+                        }}
+                      >
+                        {({ isSubmitting }) => (
+                          <Form>
+                            {state.stripe ? (
+                              <Elements stripe={state.stripe}>
+                                <Stepper
+                                  alternativeLabel
+                                  connector={<Connector />}
+                                  activeStep={state.step}
+                                >
+                                  {[1, 2, 3].map((e) => (
+                                    <Step key={e}>
+                                      <StepLabel
+                                        StepIconComponent={StepperIcons}
+                                      />
+                                    </Step>
+                                  ))}
+                                </Stepper>
+                                <Box className={classes.mainBox}>
+                                  {state.step === 3 ? (
+                                    <Grid
+                                      container
+                                      spacing={3}
+                                      direction="column"
+                                      justify="space-around"
+                                      alignItems="center"
+                                      style={{ height: '400px' }}
+                                    ></Grid>
+                                  ) : (
+                                    <Grid container spacing={3}>
+                                      {renderForm({
+                                        step: state.step,
+                                      })}
+                                    </Grid>
+                                  )}
+                                </Box>
+                              </Elements>
+                            ) : null}
+                          </Form>
+                        )}
+                      </Formik>
                     </Paper>
                   )}
                 </Container>

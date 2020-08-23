@@ -10,7 +10,6 @@ import { server, stripe as processor } from '../config/secret.js';
 import socketApi from '../lib/socket.js';
 import License from '../models/license.js';
 import { fetchArtworkDetails } from '../services/artwork.js';
-import { addNewLicenses } from '../services/license.js';
 import { addNewNotification } from '../services/notification.js';
 import { addNewOrder } from '../services/order.js';
 import {
@@ -81,9 +80,9 @@ export const managePaymentIntent = async ({
     if (foundArtwork) {
       // $TODO Bolje sredit validaciju
       const licensePrice =
-        artworkLicense === 'personal'
+        artworkLicense.type === 'personal'
           ? foundArtwork.current.personal
-          : artworkLicense === 'commercial'
+          : artworkLicense.type === 'commercial'
           ? foundArtwork.current.commercial
           : 0;
       const buyerFee = currency(licensePrice)
@@ -110,9 +109,11 @@ export const managePaymentIntent = async ({
         spent: buyerTotal.intValue,
         earned: sellerTotal.intValue,
         fee: platformTotal.intValue,
-        license: {
-          type: artworkLicense,
-          price: foundArtwork.current[artworkLicense],
+        licenseData: {
+          licenseAssignee: artworkLicense.assignee,
+          licenseCompany: artworkLicense.company,
+          licenseType: artworkLicense.type,
+          licensePrice: foundArtwork.current[artworkLicense.type],
         },
       };
       const paymentIntent = intentId
@@ -263,14 +264,20 @@ const processTransaction = async ({ stripeIntent, session }) => {
   const versionId = mongoose.Types.ObjectId(orderData.versionId);
   const discountId = mongoose.Types.ObjectId(orderData.discountId);
   const intentId = stripeIntent.id;
-  const licenseType = orderData.license.type;
-  const licensePrice = orderData.license.price;
+  const {
+    licenseAssignee,
+    licenseCompany,
+    licenseType,
+    licensePrice,
+  } = orderData.licenseData;
   const { licenseError } = licenseValidator(
     sanitizeData({
       licenseOwner: buyerId,
       licenseArtwork: artworkId,
-      licenseType: licenseType,
-      licensePrice: licensePrice,
+      licenseAssignee,
+      licenseCompany,
+      licenseType,
+      licensePrice,
     })
   );
   if (licenseError) throw createError(400, licenseError);
@@ -278,6 +285,8 @@ const processTransaction = async ({ stripeIntent, session }) => {
   newLicense.owner = buyerId;
   newLicense.artwork = artworkId;
   newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+  newLicense.assignee = licenseAssignee;
+  newLicense.company = licenseCompany;
   newLicense.type = licenseType;
   newLicense.active = true;
   newLicense.price = licensePrice;

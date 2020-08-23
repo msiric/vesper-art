@@ -1,10 +1,10 @@
-import { Button, Grid, TextField, Typography } from '@material-ui/core';
-import { Field, Form, Formik } from 'formik';
+import { Grid, TextField, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Field } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
-import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput.js';
 import { countries } from '../../../../common/constants.js';
-import { makeStyles } from '@material-ui/core/styles';
+import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput.js';
 
 const BillingFormStyles = makeStyles((muiTheme) => ({
   fixed: {
@@ -76,7 +76,7 @@ const BillingForm = ({ billing, handleStepChange, handleBillingSave }) => {
 
   return (
     <>
-      <Formik
+      {/*       <Formik
         initialValues={{ ...billing }}
         enableReinitialize
         validationSchema={validationSchema}
@@ -86,154 +86,151 @@ const BillingForm = ({ billing, handleStepChange, handleBillingSave }) => {
         }}
       >
         {({ values, errors, touched, enableReinitialize }) => (
-          <Form>
-            <Grid item xs={12}>
-              <Typography variant="h6">Billing Information</Typography>
+          <Form> */}
+      <Grid item xs={12}>
+        <Typography variant="h6">Billing Information</Typography>
 
-              <Grid item xs={12} sm={4}>
-                <Field name="firstname">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      label="First name"
-                      type="text"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                    />
-                  )}
-                </Field>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Field name="lastname">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      label="Last name"
-                      type="text"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                    />
-                  )}
-                </Field>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Field name="email">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      label="Email"
-                      type="text"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                    />
-                  )}
-                </Field>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Field name="address">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      label="Street address"
-                      type="text"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                    />
-                  )}
-                </Field>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Field name="zip">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      label="Postal code"
-                      type="text"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                    />
-                  )}
-                </Field>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Field name="city">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      label="City"
-                      type="text"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                    />
-                  )}
-                </Field>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Field name="country">
-                  {({
-                    field,
-                    form: { touched, errors, setFieldValue, setFieldTouched },
-                    meta,
-                  }) => (
-                    <AutocompleteInput
-                      {...field}
-                      options={countries}
-                      handleChange={(e, value) =>
-                        setFieldValue('country', value || '')
-                      }
-                      handleBlur={() => setFieldTouched('country', true)}
-                      getOptionLabel={(option) => option.name}
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      label="Country"
-                    />
-                  )}
-                </Field>
-              </Grid>
-            </Grid>
-            <Grid container item justify="flex-end">
-              <Button
-                className={classes.button}
-                onClick={() => handleStepChange(-1)}
-              >
-                Back
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                type="submit"
-              >
-                Next
-              </Button>
-            </Grid>
-          </Form>
+        <Grid item xs={12} sm={4}>
+          <Field name="billingName">
+            {({ field, form: { touched, errors }, meta }) => (
+              <TextField
+                {...field}
+                label="First name"
+                type="text"
+                helperText={meta.touched && meta.error}
+                error={meta.touched && Boolean(meta.error)}
+                margin="dense"
+                variant="outlined"
+                fullWidth
+                multiline
+              />
+            )}
+          </Field>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Field name="billingSurname">
+            {({ field, form: { touched, errors }, meta }) => (
+              <TextField
+                {...field}
+                label="Last name"
+                type="text"
+                helperText={meta.touched && meta.error}
+                error={meta.touched && Boolean(meta.error)}
+                margin="dense"
+                variant="outlined"
+                fullWidth
+                multiline
+              />
+            )}
+          </Field>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Field name="billingEmail">
+            {({ field, form: { touched, errors }, meta }) => (
+              <TextField
+                {...field}
+                label="Email"
+                type="text"
+                helperText={meta.touched && meta.error}
+                error={meta.touched && Boolean(meta.error)}
+                margin="dense"
+                variant="outlined"
+                fullWidth
+                multiline
+              />
+            )}
+          </Field>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Field name="billingAddress">
+            {({ field, form: { touched, errors }, meta }) => (
+              <TextField
+                {...field}
+                label="Street address"
+                type="text"
+                helperText={meta.touched && meta.error}
+                error={meta.touched && Boolean(meta.error)}
+                margin="dense"
+                variant="outlined"
+                fullWidth
+                multiline
+              />
+            )}
+          </Field>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Field name="billingZip">
+            {({ field, form: { touched, errors }, meta }) => (
+              <TextField
+                {...field}
+                label="Postal code"
+                type="text"
+                helperText={meta.touched && meta.error}
+                error={meta.touched && Boolean(meta.error)}
+                margin="dense"
+                variant="outlined"
+                fullWidth
+                multiline
+              />
+            )}
+          </Field>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Field name="billingCity">
+            {({ field, form: { touched, errors }, meta }) => (
+              <TextField
+                {...field}
+                label="City"
+                type="text"
+                helperText={meta.touched && meta.error}
+                error={meta.touched && Boolean(meta.error)}
+                margin="dense"
+                variant="outlined"
+                fullWidth
+                multiline
+              />
+            )}
+          </Field>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Field name="billingCountry">
+            {({
+              field,
+              form: { touched, errors, setFieldValue, setFieldTouched },
+              meta,
+            }) => (
+              <AutocompleteInput
+                {...field}
+                options={countries}
+                handleChange={(e, value) =>
+                  setFieldValue('country', value || '')
+                }
+                handleBlur={() => setFieldTouched('country', true)}
+                getOptionLabel={(option) => option.name}
+                helperText={meta.touched && meta.error}
+                error={meta.touched && Boolean(meta.error)}
+                label="Country"
+              />
+            )}
+          </Field>
+        </Grid>
+      </Grid>
+      {/*       <Grid container item justify="flex-end">
+        <Button className={classes.button} onClick={() => handleStepChange(-1)}>
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          type="submit"
+        >
+          Next
+        </Button>
+      </Grid> */}
+      {/*           </Form>
         )}
-      </Formik>
+      </Formik> */}
     </>
   );
 };

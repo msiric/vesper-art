@@ -1,6 +1,9 @@
 import {
   Avatar,
+  Box,
   Button,
+  Container,
+  Grid,
   Tab,
   Tabs,
   TextField,
@@ -37,7 +40,7 @@ const Order = ({ match }) => {
 
   const modalBody = () => {
     return (
-      <div className={classes.reviewContainer}>
+      <Box className={classes.reviewContainer}>
         <Formik
           initialValues={{
             rating: 0,
@@ -70,7 +73,7 @@ const Order = ({ match }) => {
         >
           {({ values, errors, touched }) => (
             <Form className={classes.publishReview}>
-              <div>
+              <Box>
                 <Field name="rating">
                   {({
                     field,
@@ -94,16 +97,16 @@ const Order = ({ match }) => {
                     />
                   )}
                 </Field>
-              </div>
-              <div>
+              </Box>
+              <Box>
                 <Button type="submit" color="primary" fullWidth>
                   Publish
                 </Button>
-              </div>
+              </Box>
             </Form>
           )}
         </Formik>
-      </div>
+      </Box>
     );
   };
 
@@ -156,192 +159,198 @@ const Order = ({ match }) => {
   }, []);
 
   return (
-    <>
-      <div className="flex flex-1 w-full items-center justify-between">
-        <div className="flex flex-1 flex-col items-center sm:items-start">
-          <div className="flex flex-col min-w-0 items-center sm:items-start">
-            <Typography className="text-16 sm:text-20 truncate">
-              {`Order ID: ${state.order._id}`}
-            </Typography>
-          </div>
-        </div>
-      </div>
-      <Tabs
-        value={state.tab}
-        onChange={handleChangeTab}
-        indicatorColor="primary"
-        textColor="primary"
-        variant="scrollable"
-        scrollButtons="auto"
-        classes={{ root: 'w-full h-64' }}
-      >
-        <Tab className="h-64 normal-case" label="Details" />
-        <Tab className="h-64 normal-case" label="Invoice" />
-      </Tabs>
-      <div className="p-16 sm:p-24 max-w-2xl w-full">
-        {/* Order Details */}
-        {state.tab === 0 && (
-          <div>
-            <div className="pb-48">
-              <div className="pb-16 flex items-center">
-                <Typography className="h2 mx-16" color="textSecondary">
-                  Customer
+    <Container fixed>
+      <Grid container spacing={2}>
+        <Grid item sm={12}>
+          <Box className="flex flex-1 w-full items-center justify-between">
+            <Box className="flex flex-1 flex-col items-center sm:items-start">
+              <Box className="flex flex-col min-w-0 items-center sm:items-start">
+                <Typography className="text-16 sm:text-20 truncate">
+                  {`Order ID: ${state.order._id}`}
                 </Typography>
-              </div>
+              </Box>
+            </Box>
+          </Box>
+          <Tabs
+            value={state.tab}
+            onChange={handleChangeTab}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
+            classes={{ root: 'w-full h-64' }}
+          >
+            <Tab className="h-64 normal-case" label="Details" />
+            <Tab className="h-64 normal-case" label="Invoice" />
+          </Tabs>
+          <Box className="p-16 sm:p-24 max-w-2xl w-full">
+            {/* Order Details */}
+            {state.tab === 0 && (
+              <Box>
+                <Box className="pb-48">
+                  <Box className="pb-16 flex items-center">
+                    <Typography className="h2 mx-16" color="textSecondary">
+                      Customer
+                    </Typography>
+                  </Box>
 
-              <div className="mb-24">
-                <div className="table-responsive mb-16">
-                  <table className="simple">
-                    <thead>
-                      <tr>
-                        <th>Photo</th>
-                        <th>Name</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <Avatar src={state.order.buyer.photo} />
-                        </td>
-                        <td>
-                          <div className="flex items-center">
-                            <Typography className="truncate mx-8">
-                              {state.order.buyer.name}
+                  <Box className="mb-24">
+                    <Box className="table-responsive mb-16">
+                      <table className="simple">
+                        <thead>
+                          <tr>
+                            <th>Photo</th>
+                            <th>Name</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <Avatar src={state.order.buyer.photo} />
+                            </td>
+                            <td>
+                              <Box className="flex items-center">
+                                <Typography className="truncate mx-8">
+                                  {state.order.buyer.name}
+                                </Typography>
+                              </Box>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </Box>
+                  </Box>
+                </Box>
+
+                {state.order.review ? (
+                  <Box className="pb-48">
+                    <Box className="pb-16 flex items-center">
+                      <Typography className="h2 mx-16" color="textSecondary">
+                        Review
+                      </Typography>
+                      <Typography className="h2 mx-16" color="textSecondary">
+                        {state.order.review.rating}
+                      </Typography>
+                      <Typography className="h2 mx-16" color="textSecondary">
+                        {state.order.review.content}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ) : (
+                  <Box className="pb-48">
+                    <Box className="pb-16 flex items-center">
+                      <Typography
+                        onClick={handleModalOpen}
+                        className="h2 mx-16"
+                        color="textSecondary"
+                      >
+                        Leave a review
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
+
+                <Box className="pb-48">
+                  <Box className="pb-16 flex items-center">
+                    <Typography className="h2 mx-16" color="textSecondary">
+                      Artwork
+                    </Typography>
+                  </Box>
+
+                  <Box className="table-responsive">
+                    <table className="simple">
+                      <thead>
+                        <tr>
+                          <th>Cover</th>
+                          <th>Name</th>
+                          <th>Artist</th>
+                          <th>License</th>
+                          <th>Amount</th>
+                          <th>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>{state.order.version.cover}</td>
+                          <td>{state.order.version.title}</td>
+                          <td>{state.order.seller.name}</td>
+                          <td>{state.order.license.type}</td>
+                          <td>${state.order.spent}</td>
+                          <td>
+                            {formatDate(state.order.created, 'dd/MM/yyyy')}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </Box>
+
+                  <Box className="pb-16 flex items-center">
+                    <Typography className="h2 mx-16" color="textSecondary">
+                      License
+                    </Typography>
+                  </Box>
+
+                  <Box className="table-responsive">
+                    <table className="simple">
+                      <thead>
+                        <tr>
+                          <th>Fingerprint</th>
+                          <th>Type</th>
+                          <th>Buyer ID</th>
+                          <th>Seller ID</th>
+                          <th>Price</th>
+                          <th>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr key={state.order.license._id}>
+                          <td>
+                            <Typography className="truncate">
+                              {state.order.license.fingerprint}
                             </Typography>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            {state.order.review ? (
-              <div className="pb-48">
-                <div className="pb-16 flex items-center">
-                  <Typography className="h2 mx-16" color="textSecondary">
-                    Review
-                  </Typography>
-                  <Typography className="h2 mx-16" color="textSecondary">
-                    {state.order.review.rating}
-                  </Typography>
-                  <Typography className="h2 mx-16" color="textSecondary">
-                    {state.order.review.content}
-                  </Typography>
-                </div>
-              </div>
-            ) : (
-              <div className="pb-48">
-                <div className="pb-16 flex items-center">
-                  <Typography
-                    onClick={handleModalOpen}
-                    className="h2 mx-16"
-                    color="textSecondary"
-                  >
-                    Leave a review
-                  </Typography>
-                </div>
-              </div>
+                          </td>
+                          <td className="w-64 text-right">
+                            <span className="truncate">
+                              {state.order.license.type}
+                            </span>
+                          </td>
+                          <td className="w-64 text-right">
+                            <span className="truncate">
+                              {state.order.license.owner}
+                            </span>
+                          </td>
+                          <td className="w-64 text-right">
+                            <span className="truncate">
+                              {state.order.license.artwork.owner}
+                            </span>
+                          </td>
+                          <td className="w-64 text-right">
+                            <span className="truncate">
+                              ${state.order.license.price}
+                            </span>
+                          </td>
+                          <td className="w-64 text-right">
+                            <span className="truncate">
+                              {formatDate(
+                                state.order.license.created,
+                                'dd/MM/yyyy'
+                              )}
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </Box>
+                </Box>
+              </Box>
             )}
-
-            <div className="pb-48">
-              <div className="pb-16 flex items-center">
-                <Typography className="h2 mx-16" color="textSecondary">
-                  Artwork
-                </Typography>
-              </div>
-
-              <div className="table-responsive">
-                <table className="simple">
-                  <thead>
-                    <tr>
-                      <th>Cover</th>
-                      <th>Name</th>
-                      <th>Artist</th>
-                      <th>License</th>
-                      <th>Amount</th>
-                      <th>Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{state.order.version.cover}</td>
-                      <td>{state.order.version.title}</td>
-                      <td>{state.order.seller.name}</td>
-                      <td>{state.order.license.type}</td>
-                      <td>${state.order.spent}</td>
-                      <td>{formatDate(state.order.created, 'dd/MM/yyyy')}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="pb-16 flex items-center">
-                <Typography className="h2 mx-16" color="textSecondary">
-                  License
-                </Typography>
-              </div>
-
-              <div className="table-responsive">
-                <table className="simple">
-                  <thead>
-                    <tr>
-                      <th>Fingerprint</th>
-                      <th>Type</th>
-                      <th>Buyer ID</th>
-                      <th>Seller ID</th>
-                      <th>Price</th>
-                      <th>Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr key={state.order.license._id}>
-                      <td>
-                        <Typography className="truncate">
-                          {state.order.license.fingerprint}
-                        </Typography>
-                      </td>
-                      <td className="w-64 text-right">
-                        <span className="truncate">
-                          {state.order.license.type}
-                        </span>
-                      </td>
-                      <td className="w-64 text-right">
-                        <span className="truncate">
-                          {state.order.license.owner}
-                        </span>
-                      </td>
-                      <td className="w-64 text-right">
-                        <span className="truncate">
-                          {state.order.license.artwork.owner}
-                        </span>
-                      </td>
-                      <td className="w-64 text-right">
-                        <span className="truncate">
-                          ${state.order.license.price}
-                        </span>
-                      </td>
-                      <td className="w-64 text-right">
-                        <span className="truncate">
-                          {formatDate(
-                            state.order.license.created,
-                            'dd/MM/yyyy'
-                          )}
-                        </span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-        {/* Invoice */}
-        {/* {state.tab === 2 && <OrderInvoice order={order} />} */}
-      </div>
-      <Modal {...state.modal} handleClose={handleModalClose} />
-    </>
+            {/* Invoice */}
+            {/* {state.tab === 2 && <OrderInvoice order={order} />} */}
+          </Box>
+          <Modal {...state.modal} handleClose={handleModalClose} />
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 
