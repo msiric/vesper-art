@@ -152,12 +152,30 @@ const LicenseForm = ({ artwork, license }) => {
           <Grid item xs={12}>
             <Field name="licenseAssignee">
               {({ field, form: { touched, errors }, meta }) => (
-                <TextField {...field} />
+                <TextField
+                  {...field}
+                  type="text"
+                  label="License assignee"
+                  error={meta.touched && meta.error}
+                  helperText={meta.touched && meta.error}
+                  margin="dense"
+                  variant="outlined"
+                  fullWidth
+                />
               )}
             </Field>
             <Field name="licenseCompany">
               {({ field, form: { touched, errors }, meta }) => (
-                <TextField {...field} />
+                <TextField
+                  {...field}
+                  type="text"
+                  label="License company"
+                  error={meta.touched && meta.error}
+                  helperText={meta.touched && meta.error}
+                  margin="dense"
+                  variant="outlined"
+                  fullWidth
+                />
               )}
             </Field>
             {/*             <TextInput name="licenseAssignee" label="License assignee" />
