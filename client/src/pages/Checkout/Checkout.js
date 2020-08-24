@@ -13,6 +13,7 @@ import {
   withStyles,
 } from '@material-ui/core';
 import {
+  AssignmentRounded as SummaryIcon,
   CardMembershipRounded as LicenseIcon,
   ContactMailRounded as BillingIcon,
   PaymentRounded as PaymentIcon,
@@ -35,6 +36,7 @@ const STEPS = [
   'License information',
   'Billing information',
   'Payment information',
+  'Order summary',
 ];
 
 const validationSchema = Yup.object().shape({
@@ -69,6 +71,7 @@ const StepperIcons = ({ active, completed, icon }) => {
     1: <LicenseIcon />,
     2: <BillingIcon />,
     3: <PaymentIcon />,
+    4: <SummaryIcon />,
   };
 
   return (
@@ -111,18 +114,11 @@ const Checkout = ({ match, location }) => {
     stripe: null,
     secret: null,
     artwork: {},
-    discount: {},
-    billing: {},
-    license: {
-      type: null,
-      assignee: '',
-      company: '',
-    },
-    loading: true,
     step: {
       current: 0,
       length: STEPS.length,
     },
+    loading: true,
   });
 
   const history = useHistory();
@@ -203,19 +199,18 @@ const Checkout = ({ match, location }) => {
     }
   };
 
-  const renderForm = ({ step }) => {
+  const renderForm = ({ step, values }) => {
     switch (step) {
       case 0:
         return (
-          <LicenseForm
-            artwork={state.artwork}
-            handleSecretSave={handleSecretSave}
-          />
+          <LicenseForm artwork={state.artwork} license={values.licenseType} />
         );
       case 1:
         return <BillingForm />;
       case 2:
         return <PaymentForm secret={state.secret} artwork={state.artwork} />;
+      case 3:
+        return <>ORDER SUMMARY</>;
       default:
         return <div>Not Found</div>;
     }
@@ -267,51 +262,32 @@ const Checkout = ({ match, location }) => {
             <CircularProgress />
           </Grid>
         ) : state.artwork._id ? (
-          <>
-            <Grid item xs={12} md={8} className={classes.artwork}>
-              <Box component="main">
-                <Container maxWidth="md">
-                  {state.loading ? (
-                    <CircularProgress />
-                  ) : (
-                    <Paper elevation={5}>
-                      <Formik
-                        initialValues={{
-                          licenseType: '',
-                          licenseAssignee: '',
-                          licenseCompany: '',
-                          discountCode: '',
-                          billingName: '',
-                          billingSurname: '',
-                          billingEmail: '',
-                          billingAddress: '',
-                          billingZip: '',
-                          billingCity: '',
-                          billingCountry: '',
-                        }}
-                        validationSchema={null}
-                        onSubmit={async (values, { resetForm }) => {
-                          handleSubmit(values);
-                          /*  const formData = new FormData();
-                          formData.append('artworkMedia', values.artworkMedia[0]);
-                          try {
-                            const {
-                              data: { artworkCover, artworkMedia },
-                            } = await postMedia({ data: formData });
-                            values.artworkCover = artworkCover;
-                            values.artworkMedia = artworkMedia;
-                            const data = deleteEmptyValues(values);
-                            await patchArtwork({ artworkId: match.params.id, data });
-                            history.push({
-                              pathname: '/',
-                              state: { message: 'Artwork edited' },
-                            });
-                          } catch (err) {
-                            console.log(err);
-                          } */
-                        }}
-                      >
-                        {({ isSubmitting }) => (
+          <Formik
+            initialValues={{
+              licenseType: '',
+              licenseAssignee: '',
+              licenseCompany: '',
+              discountCode: '',
+              billingName: '',
+              billingSurname: '',
+              billingEmail: '',
+              billingAddress: '',
+              billingZip: '',
+              billingCity: '',
+              billingCountry: '',
+            }}
+            validationSchema={null}
+            onSubmit={handleSubmit}
+          >
+            {({ isSubmitting, values }) => (
+              <>
+                <Grid item xs={12} md={8} className={classes.artwork}>
+                  <Box component="main">
+                    <Container maxWidth="md">
+                      {state.loading ? (
+                        <CircularProgress />
+                      ) : (
+                        <Paper elevation={5}>
                           <Form>
                             {state.stripe ? (
                               <Elements stripe={state.stripe}>
@@ -320,7 +296,7 @@ const Checkout = ({ match, location }) => {
                                   connector={<Connector />}
                                   activeStep={state.step.current}
                                 >
-                                  {[1, 2, 3].map((e) => (
+                                  {STEPS.map((e) => (
                                     <Step key={e}>
                                       <StepLabel
                                         StepIconComponent={StepperIcons}
@@ -329,22 +305,12 @@ const Checkout = ({ match, location }) => {
                                   ))}
                                 </Stepper>
                                 <Box className={classes.mainBox}>
-                                  {isLastStep ? (
-                                    <Grid
-                                      container
-                                      spacing={3}
-                                      direction="column"
-                                      justify="space-around"
-                                      alignItems="center"
-                                      style={{ height: '400px' }}
-                                    ></Grid>
-                                  ) : (
-                                    <Grid container spacing={3}>
-                                      {renderForm({
-                                        step: state.step.current,
-                                      })}
-                                    </Grid>
-                                  )}
+                                  <Grid container spacing={3}>
+                                    {renderForm({
+                                      step: state.step.current,
+                                      values: values,
+                                    })}
+                                  </Grid>
                                 </Box>
                                 <Box
                                   display="flex"
@@ -376,23 +342,21 @@ const Checkout = ({ match, location }) => {
                               </Elements>
                             ) : null}
                           </Form>
-                        )}
-                      </Formik>
-                    </Paper>
-                  )}
-                </Container>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={4} className={classes.actions}>
-              <CheckoutSummary
-                artwork={state.artwork}
-                license={state.license}
-                discount={state.discount}
-                handleDiscountEdit={handleDiscountEdit}
-              />
-              <br />
-            </Grid>
-          </>
+                        </Paper>
+                      )}
+                    </Container>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={4} className={classes.actions}>
+                  <CheckoutSummary
+                    artwork={state.artwork}
+                    license={values.licenseType}
+                  />
+                  <br />
+                </Grid>
+              </>
+            )}
+          </Formik>
         ) : (
           history.push('/')
         )}

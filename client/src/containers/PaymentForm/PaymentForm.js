@@ -1,4 +1,5 @@
-import { Button, Grid, TextField, Typography } from '@material-ui/core';
+import { Grid, TextField, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   CardCvcElement,
   CardExpiryElement,
@@ -9,8 +10,6 @@ import {
 import { withSnackbar } from 'notistack';
 import React, { useImperativeHandle, useRef } from 'react'; //, {useState }
 import { useHistory } from 'react-router-dom';
-
-import { makeStyles } from '@material-ui/core/styles';
 
 const PaymentFormStyles = makeStyles((muiTheme) => ({
   fixed: {
@@ -81,15 +80,7 @@ const StripeInput = ({ component: Component, inputRef, ...other }) => {
   );
 };
 
-const PaymentForm = ({
-  secret,
-  artwork,
-  license,
-  billing,
-  discount,
-  handleStepChange,
-  enqueueSnackbar,
-}) => {
+const PaymentForm = ({ secret, artwork }) => {
   const classes = PaymentFormStyles();
 
   const stripe = useStripe();
@@ -109,7 +100,7 @@ const PaymentForm = ({
     'visaelectron',
   ];
 
-  const handlePaymentSubmit = async () => {
+  /*   const handlePaymentSubmit = async () => {
     if (!secret || !stripe || !elements) {
       // $TODO Enqueue error;
     }
@@ -159,7 +150,7 @@ const PaymentForm = ({
         },
       });
     }
-  };
+  }; */
 
   return (
     <>
@@ -230,20 +221,6 @@ const PaymentForm = ({
           }}
           InputLabelProps={{ shrink: true }}
         />
-      </Grid>
-      <Grid container item justify="flex-end">
-        <Button className={classes.button} onClick={() => handleStepChange(-1)}>
-          Back
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          type="submit"
-          onClick={handlePaymentSubmit}
-        >
-          Pay
-        </Button>
       </Grid>
     </>
   );

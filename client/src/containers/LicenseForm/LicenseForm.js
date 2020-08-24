@@ -1,12 +1,18 @@
-import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import {
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  TextField,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { CheckRounded as CheckIcon } from '@material-ui/icons';
+import { Field } from 'formik';
 import React, { useState } from 'react';
 import * as Yup from 'yup';
 import CheckoutCard from '../../components/CheckoutCard/CheckoutCard.js';
-import TextInput from '../../components/TextInput/TextInput.js';
 import { Container, Grid } from '../../constants/theme.js';
-import { postIntent } from '../../services/stripe.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
 
 const LicenseFormStyles = makeStyles((muiTheme) => ({
   fixed: {
@@ -73,13 +79,7 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const LicenseForm = ({
-  artwork,
-  license,
-  handleSecretSave,
-  handleStepChange,
-  handleLicenseChange,
-}) => {
+const LicenseForm = ({ artwork, license }) => {
   const [state, setState] = useState({ loading: false });
   const classes = LicenseFormStyles();
 
@@ -95,31 +95,6 @@ const LicenseForm = ({
         window.sessionStorage.removeItem(artwork._id);
         console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
       }
-    }
-  };
-
-  const handleNextClick = async (value) => {
-    try {
-      setState((prevState) => ({ ...prevState, loading: true }));
-      const intentId = retrieveIntentId();
-      const { data } = await postIntent({
-        artworkId: artwork._id,
-        artworkLicense: license,
-        intentId,
-      });
-      const versionId = artwork.current._id.toString();
-      const storageObject = {
-        versionId: versionId,
-        intentId: data.intent.id,
-        licenseType: license,
-      };
-      window.sessionStorage.setItem(artwork._id, JSON.stringify(storageObject));
-      handleSecretSave(data.intent.secret);
-      handleStepChange(1);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
@@ -175,7 +150,7 @@ const LicenseForm = ({
             {({ values, errors, touched, enableReinitialize }) => (
               <Form style={{ width: '100%' }}> */}
           <Grid item xs={12}>
-            {/*             <Field name="licenseAssignee">
+            <Field name="licenseAssignee">
               {({ field, form: { touched, errors }, meta }) => (
                 <TextField {...field} />
               )}
@@ -184,21 +159,16 @@ const LicenseForm = ({
               {({ field, form: { touched, errors }, meta }) => (
                 <TextField {...field} />
               )}
-            </Field> */}
-            <TextInput name="licenseAssignee" label="License assignee" />
-
-            <TextInput name="licenseCompany" label="License company" />
-            {/*              <Field name="licenseType">
+            </Field>
+            {/*             <TextInput name="licenseAssignee" label="License assignee" />
+            <TextInput name="licenseCompany" label="License company" /> */}
+            <Field name="licenseType">
               {({ field, form: { touched, errors }, meta }) => (
                 <SelectInput
                   {...field}
                   label="License type"
                   helperText={meta.touched && meta.error}
                   error={meta.touched && Boolean(meta.error)}
-                                     onChange={(e) => {
-                    field.onChange(e.target.value);
-                    handleLicenseChange(e.target.value);
-                  }} 
                   options={
                     artwork.current && artwork.current.license === 'commercial'
                       ? [
@@ -223,7 +193,7 @@ const LicenseForm = ({
                   fullWidth
                 />
               )}
-            </Field> */}
+            </Field>
             <List component="nav" aria-label="Features">
               {licenseOptions.map((item) => (
                 <ListItem>

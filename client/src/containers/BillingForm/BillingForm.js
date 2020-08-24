@@ -71,7 +71,7 @@ const validationSchema = Yup.object().shape({
   country: Yup.string().trim().required('Country is required'),
 });
 
-const BillingForm = ({ billing, handleStepChange, handleBillingSave }) => {
+const BillingForm = () => {
   const classes = BillingFormStyles();
 
   return (
