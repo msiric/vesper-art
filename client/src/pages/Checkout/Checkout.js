@@ -31,13 +31,16 @@ import LicenseForm from '../../containers/LicenseForm/LicenseForm.js';
 import PaymentForm from '../../containers/PaymentForm/PaymentForm.js';
 import { Context } from '../../context/Store.js';
 import { getCheckout } from '../../services/checkout.js';
-
+import { billingValidation } from '../../validation/billing.js';
+import { licenseValidation } from '../../validation/license.js';
 const STEPS = [
   'License information',
   'Billing information',
   'Payment information',
   'Order summary',
 ];
+
+const checkoutValidation = [licenseValidation, billingValidation, null];
 
 const validationSchema = Yup.object().shape({
   discountCode: Yup.string().trim().required('Discount cannot be empty'),
@@ -151,20 +154,6 @@ const Checkout = ({ match, location }) => {
     }
   };
 
-  const handleBillingSave = async (billing) => {
-    setState((prevState) => ({
-      ...prevState,
-      billing: billing,
-    }));
-  };
-
-  const handleDiscountEdit = (discount) => {
-    setState((prevState) => ({
-      ...prevState,
-      discount: discount,
-    }));
-  };
-
   const retrieveLicenseInformation = (artwork) => {
     const checkoutItem = JSON.parse(
       window.sessionStorage.getItem(artwork._id.toString())
@@ -276,7 +265,7 @@ const Checkout = ({ match, location }) => {
               billingCity: '',
               billingCountry: '',
             }}
-            validationSchema={null}
+            validationSchema={checkoutValidation[state.step.current]}
             onSubmit={handleSubmit}
           >
             {({ isSubmitting, values }) => (
