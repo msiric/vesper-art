@@ -31,6 +31,12 @@ import PaymentForm from '../../containers/PaymentForm/PaymentForm.js';
 import { Context } from '../../context/Store.js';
 import { getCheckout } from '../../services/checkout.js';
 
+const STEPS = [
+  'License information',
+  'Billing information',
+  'Payment information',
+];
+
 const validationSchema = Yup.object().shape({
   discountCode: Yup.string().trim().required('Discount cannot be empty'),
 });
@@ -113,12 +119,16 @@ const Checkout = ({ match, location }) => {
       company: '',
     },
     loading: true,
-    step: 0,
+    step: {
+      current: 0,
+      length: STEPS.length,
+    },
   });
 
   const history = useHistory();
 
   const classes = {};
+  const isLastStep = state.step.current === state.step.length - 1;
 
   const handleSecretSave = (value) => {
     setState((prevState) => ({ ...prevState, secret: value }));
@@ -177,27 +187,21 @@ const Checkout = ({ match, location }) => {
   const handleStepChange = (value) => {
     setState((prevState) => ({
       ...prevState,
-      step: prevState.step + value,
+      step: { ...prevState.step, current: prevState.step.current + value },
     }));
   };
 
-  async function _submitForm(values, actions) {
-    await _sleep(1000);
-    alert(JSON.stringify(values, null, 2));
-    actions.setSubmitting(false);
+  const submitForm = async (values, actions) => {
+    console.log(values, actions);
+  };
 
-    setActiveStep(activeStep + 1);
-  }
-
-  function _handleSubmit(values, actions) {
+  const handleSubmit = (values, actions) => {
     if (isLastStep) {
-      _submitForm(values, actions);
+      submitForm(values, actions);
     } else {
-      setActiveStep(activeStep + 1);
-      actions.setTouched({});
-      actions.setSubmitting(false);
+      handleStepChange(1);
     }
-  }
+  };
 
   const renderForm = ({ step }) => {
     switch (step) {
@@ -287,6 +291,7 @@ const Checkout = ({ match, location }) => {
                         }}
                         validationSchema={null}
                         onSubmit={async (values, { resetForm }) => {
+                          handleSubmit(values);
                           /*  const formData = new FormData();
                           formData.append('artworkMedia', values.artworkMedia[0]);
                           try {
@@ -313,7 +318,7 @@ const Checkout = ({ match, location }) => {
                                 <Stepper
                                   alternativeLabel
                                   connector={<Connector />}
-                                  activeStep={state.step}
+                                  activeStep={state.step.current}
                                 >
                                   {[1, 2, 3].map((e) => (
                                     <Step key={e}>
@@ -324,7 +329,7 @@ const Checkout = ({ match, location }) => {
                                   ))}
                                 </Stepper>
                                 <Box className={classes.mainBox}>
-                                  {state.step === 3 ? (
+                                  {isLastStep ? (
                                     <Grid
                                       container
                                       spacing={3}
@@ -336,7 +341,7 @@ const Checkout = ({ match, location }) => {
                                   ) : (
                                     <Grid container spacing={3}>
                                       {renderForm({
-                                        step: state.step,
+                                        step: state.step.current,
                                       })}
                                     </Grid>
                                   )}
@@ -346,18 +351,17 @@ const Checkout = ({ match, location }) => {
                                   justifyContent="space-between"
                                 >
                                   <Button
-                                    disabled={state.step === 0}
+                                    disabled={state.step.current === 0}
                                     className={classes.button}
                                     onClick={() => handleStepChange(-1)}
                                   >
                                     Back
                                   </Button>
                                   <Button
-                                    onClick={() => handleStepChange(1)}
                                     variant="contained"
                                     color="primary"
                                     className={classes.button}
-                                    type="button"
+                                    type="submit"
                                   >
                                     {state.loading ? (
                                       <CircularProgress
