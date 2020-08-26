@@ -1,18 +1,23 @@
 import {
+  Button,
   Card,
+  CardActions,
   CardContent,
   Divider,
   Grid,
   List,
   ListItem,
   ListItemText,
+  TextField,
   Typography,
 } from '@material-ui/core';
+import { Field, Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import NumberFormat from 'react-number-format';
 import { useHistory } from 'react-router-dom';
 import * as Yup from 'yup';
 import CheckoutCard from '../../components/CheckoutCard/CheckoutCard.js';
+import { postDiscount } from '../../services/checkout.js';
 
 const validationSchema = Yup.object().shape({
   discountCode: Yup.string().trim().required('Discount cannot be empty'),
@@ -24,7 +29,7 @@ const CheckoutSummary = ({
   artwork,
   license,
   discount,
-  handleDiscountEdit,
+  handleDiscountChange,
 }) => {
   const [state, setState] = useState({
     summary: {
@@ -227,6 +232,53 @@ const CheckoutSummary = ({
             />
           </ListItem>
         </List>
+        {/* Update intent when discount changes */}
+        {discount ? (
+          <Button
+            type="button"
+            color="error"
+            onClick={() => handleDiscountChange(null)}
+            fullWidth
+          >
+            Remove discount
+          </Button>
+        ) : (
+          <Formik
+            initialValues={{
+              discountCode: '',
+            }}
+            validationSchema={validationSchema}
+            onSubmit={async (values) => {
+              const { data } = await postDiscount({ data: values });
+              handleDiscountChange(data.payload);
+            }}
+          >
+            {({ values, errors, touched, enableReinitialize }) => (
+              <Form>
+                <Field name="discountCode">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      onBlur={() => null}
+                      label="Discount"
+                      type="text"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  )}
+                </Field>
+                <CardActions className={classes.actions}>
+                  <Button type="submit" color="primary" fullWidth>
+                    Apply
+                  </Button>
+                </CardActions>
+              </Form>
+            )}
+          </Formik>
+        )}
       </CardContent>
     </Card>
   );

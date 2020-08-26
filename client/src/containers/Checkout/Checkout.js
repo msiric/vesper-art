@@ -69,7 +69,7 @@ const Checkout = ({ match, location }) => {
     }));
   };
 
-  const handleDiscountEdit = (discount) => {
+  const handleDiscountChange = (discount) => {
     setState((prevState) => ({
       ...prevState,
       discount: discount,
@@ -260,7 +260,7 @@ const Checkout = ({ match, location }) => {
                 artwork={state.artwork}
                 licenses={state.licenses}
                 discount={state.discount}
-                handleDiscountEdit={handleDiscountEdit}
+                handleDiscountChange={handleDiscountChange}
               />
               <br />
             </Grid>

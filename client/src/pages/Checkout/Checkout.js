@@ -119,7 +119,7 @@ const Checkout = ({ match, location }) => {
     secret: null,
     artwork: {},
     license: '',
-    discount: '',
+    discount: null,
     step: {
       current: 0,
       length: STEPS.length,
@@ -157,8 +157,8 @@ const Checkout = ({ match, location }) => {
     }
   };
 
-  const handleDiscountDelete = () => {
-    setState((prevState) => ({ ...prevState, discount: null }));
+  const handleDiscountChange = (value) => {
+    setState((prevState) => ({ ...prevState, discount: value }));
   };
 
   const retrieveLicenseInformation = (artwork) => {
@@ -215,7 +215,7 @@ const Checkout = ({ match, location }) => {
             artwork={state.artwork}
             license={state.license}
             discount={state.discount}
-            handleDiscountDelete={handleDiscountDelete}
+            handleDiscountChange={handleDiscountChange}
           />
         );
       default:

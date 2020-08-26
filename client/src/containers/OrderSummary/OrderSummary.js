@@ -1,6 +1,5 @@
-import { Button, CardActions, TextField, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Field } from 'formik';
 import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { Container, Grid } from '../../constants/theme.js';
@@ -70,7 +69,7 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const OrderSummary = ({ artwork, license, discount, handleDiscountDelete }) => {
+const OrderSummary = ({ artwork, license, discount, handleDiscountChange }) => {
   const [state, setState] = useState({ loading: false });
   const classes = LicenseFormStyles();
 
@@ -126,42 +125,7 @@ const OrderSummary = ({ artwork, license, discount, handleDiscountDelete }) => {
       <Grid container>
         <Typography variant="h5">Order summary</Typography>
         <Grid item xs={12} className={classes.actions}>
-          <Grid item xs={12}>
-            {/* Update intent when discount changes */}
-            {discount ? (
-              <Button
-                type="button"
-                color="error"
-                onClick={() => handleDiscountDelete('discountCode')}
-                fullWidth
-              >
-                Remove discount
-              </Button>
-            ) : (
-              <>
-                <Field name="discountCode">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      onBlur={() => null}
-                      label="Discount"
-                      type="text"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                  )}
-                </Field>
-                <CardActions className={classes.actions}>
-                  <Button type="submit" color="primary" fullWidth>
-                    Apply
-                  </Button>
-                </CardActions>
-              </>
-            )}
-          </Grid>
+          <Grid item xs={12}></Grid>
         </Grid>
       </Grid>
     </Container>
