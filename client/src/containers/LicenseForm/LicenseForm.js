@@ -4,13 +4,13 @@ import {
   ListItemIcon,
   ListItemText,
   TextField,
+  Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { CheckRounded as CheckIcon } from '@material-ui/icons';
 import { Field } from 'formik';
 import React, { useState } from 'react';
 import * as Yup from 'yup';
-import CheckoutCard from '../../components/CheckoutCard/CheckoutCard.js';
 import { Container, Grid } from '../../constants/theme.js';
 import SelectInput from '../../shared/SelectInput/SelectInput.js';
 
@@ -79,7 +79,7 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const LicenseForm = ({ artwork, license }) => {
+const LicenseForm = ({ artwork, license, handleLicenseChange }) => {
   const [state, setState] = useState({ loading: false });
   const classes = LicenseFormStyles();
 
@@ -133,9 +133,7 @@ const LicenseForm = ({ artwork, license }) => {
   return (
     <Container fixed p={2}>
       <Grid container>
-        <Grid item xs={12} className={classes.artwork}>
-          <CheckoutCard artwork={artwork} />
-        </Grid>
+        <Typography variant="h5">License information</Typography>
         <Grid item xs={12} className={classes.actions}>
           {/*           <Formik
             initialValues={{
@@ -187,6 +185,7 @@ const LicenseForm = ({ artwork, license }) => {
                   label="License type"
                   helperText={meta.touched && meta.error}
                   error={meta.touched && Boolean(meta.error)}
+                  onChange={(e) => handleLicenseChange(e.target.value)}
                   options={
                     artwork.current && artwork.current.license === 'commercial'
                       ? [

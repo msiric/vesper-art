@@ -1,22 +1,12 @@
-import React from 'react';
+import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Collapse, Avatar, IconButton } from '@material-ui/core';
-import {
-  Card,
-  Grid,
-  Container,
-  CardHeader,
-  CardMedia,
-  CardContent,
-  CardActions,
-  Typography,
-} from '../../constants/theme.js';
+import React from 'react';
+import { CardHeader, CardMedia, Grid } from '../../constants/theme.js';
 
 const useStyles = makeStyles((theme) => ({
   media: {
-    minWidth: 75,
+    minWidth: 50,
     width: '100%',
-    paddingTop: '50%',
   },
 }));
 
@@ -26,7 +16,7 @@ const CheckoutCard = ({ artwork }) => {
   return (
     <Grid container p={0} my={4}>
       <Grid item xs={12} md={5} style={{ display: 'flex' }}>
-        <Box display="flex" width="100%">
+        <Box display="flex" width="100%" py={0}>
           <CardMedia
             className={classes.media}
             image={artwork.current.cover}
@@ -40,13 +30,14 @@ const CheckoutCard = ({ artwork }) => {
             title={artwork.current.title}
             subheader={artwork.owner.name}
             px={2}
+            py={0}
             md={{ px: 0 }}
           />
-          <CardContent>
+          {/*           <CardContent>
             <Typography variant="body2" color="textSecondary" component="p">
               {artwork.current.description}
             </Typography>
-          </CardContent>
+          </CardContent> */}
         </Box>
       </Grid>
     </Grid>

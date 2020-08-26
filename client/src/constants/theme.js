@@ -2,9 +2,9 @@ import {
   Avatar as MuiAvatar,
   Button as MuiButton,
   Card as MuiCard,
-  CardHeader as MuiCardHeader,
   CardActions as MuiCardActions,
   CardContent as MuiCardContent,
+  CardHeader as MuiCardHeader,
   CardMedia as MuiCardMedia,
   Container as MuiContainer,
   Grid as MuiGrid,
@@ -22,7 +22,6 @@ import {
   sizing,
   spacing,
   typography,
-  breakpoints,
 } from '@material-ui/system';
 
 export const Container = styled(MuiContainer)(compose(spacing, flexbox));
@@ -86,11 +85,11 @@ export const artepunktTheme = createMuiTheme({
     },
   },
   padding: {
-    container: 20,
+    container: 2,
   },
   margin: {
-    spacing: 8,
-    container: 20,
+    element: 2,
+    container: 2,
   },
   props: {
     MuiButton: {
@@ -112,7 +111,7 @@ export const artepunktTheme = createMuiTheme({
       color: artepunktTheme.palette.primary.main,
     },
   },
-}; */
+}; 
 artepunktTheme.overrides.MuiSnackbarContent = {
   root: {
     padding: '0 10px',
@@ -143,3 +142,4 @@ artepunktTheme.overrides.MuiFormHelperText = {
     marginRight: 0,
   },
 };
+*/

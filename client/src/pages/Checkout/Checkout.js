@@ -28,6 +28,7 @@ import * as Yup from 'yup';
 import BillingForm from '../../containers/BillingForm/BillingForm.js';
 import CheckoutSummary from '../../containers/CheckoutSummary/CheckoutSummary.js';
 import LicenseForm from '../../containers/LicenseForm/LicenseForm.js';
+import OrderSummary from '../../containers/OrderSummary/OrderSummary.js';
 import PaymentForm from '../../containers/PaymentForm/PaymentForm.js';
 import { Context } from '../../context/Store.js';
 import { getCheckout } from '../../services/checkout.js';
@@ -117,6 +118,8 @@ const Checkout = ({ match, location }) => {
     stripe: null,
     secret: null,
     artwork: {},
+    license: '',
+    discount: '',
     step: {
       current: 0,
       length: STEPS.length,
@@ -135,7 +138,7 @@ const Checkout = ({ match, location }) => {
 
   const handleLicenseChange = async (license) => {
     try {
-      const versionId = state.artwork.current._id.toString();
+      /*       const versionId = state.artwork.current._id.toString();
       const storageObject = {
         versionId: versionId,
         intentId: null,
@@ -144,7 +147,7 @@ const Checkout = ({ match, location }) => {
       window.sessionStorage.setItem(
         state.artwork._id,
         JSON.stringify(storageObject)
-      );
+      ); */
       setState((prevState) => ({
         ...prevState,
         license: license,
@@ -152,6 +155,10 @@ const Checkout = ({ match, location }) => {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const handleDiscountDelete = () => {
+    setState((prevState) => ({ ...prevState, discount: null }));
   };
 
   const retrieveLicenseInformation = (artwork) => {
@@ -188,18 +195,29 @@ const Checkout = ({ match, location }) => {
     }
   };
 
-  const renderForm = ({ step, values }) => {
+  const renderForm = (step) => {
     switch (step) {
       case 0:
         return (
-          <LicenseForm artwork={state.artwork} license={values.licenseType} />
+          <LicenseForm
+            artwork={state.artwork}
+            license={state.license}
+            handleLicenseChange={handleLicenseChange}
+          />
         );
       case 1:
         return <BillingForm />;
       case 2:
         return <PaymentForm secret={state.secret} artwork={state.artwork} />;
       case 3:
-        return <>ORDER SUMMARY</>;
+        return (
+          <OrderSummary
+            artwork={state.artwork}
+            license={state.license}
+            discount={state.discount}
+            handleDiscountDelete={handleDiscountDelete}
+          />
+        );
       default:
         return <div>Not Found</div>;
     }
@@ -226,11 +244,7 @@ const Checkout = ({ match, location }) => {
         loading: false,
         stripe: stripe,
         artwork: data.artwork,
-        license: {
-          type: location.state.license || null,
-          assignee: '',
-          company: '',
-        },
+        license: location.state.license,
         billing: billing,
         discount: data.discount,
       });
@@ -251,32 +265,35 @@ const Checkout = ({ match, location }) => {
             <CircularProgress />
           </Grid>
         ) : state.artwork._id ? (
-          <Formik
-            initialValues={{
-              licenseType: '',
-              licenseAssignee: '',
-              licenseCompany: '',
-              discountCode: '',
-              billingName: '',
-              billingSurname: '',
-              billingEmail: '',
-              billingAddress: '',
-              billingZip: '',
-              billingCity: '',
-              billingCountry: '',
-            }}
-            validationSchema={checkoutValidation[state.step.current]}
-            onSubmit={handleSubmit}
-          >
-            {({ isSubmitting, values }) => (
-              <>
-                <Grid item xs={12} md={8} className={classes.artwork}>
-                  <Box component="main">
-                    <Container maxWidth="md">
-                      {state.loading ? (
-                        <CircularProgress />
-                      ) : (
-                        <Paper elevation={5}>
+          <>
+            <Grid item xs={12} md={8} className={classes.artwork}>
+              <Box component="main">
+                <Container maxWidth="md">
+                  {state.loading ? (
+                    <CircularProgress />
+                  ) : (
+                    <Paper elevation={5}>
+                      <Formik
+                        initialValues={{
+                          discountCode: state.discount,
+                          licenseType: state.license,
+                          licenseAssignee: '',
+                          licenseCompany: '',
+                          billingName: '',
+                          billingSurname: '',
+                          billingEmail: '',
+                          billingAddress: '',
+                          billingZip: '',
+                          billingCity: '',
+                          billingCountry: '',
+                        }}
+                        enableReinitialize
+                        validationSchema={
+                          checkoutValidation[state.step.current]
+                        }
+                        onSubmit={handleSubmit}
+                      >
+                        {({ isSubmitting, values, setFieldValue }) => (
                           <Form>
                             {state.stripe ? (
                               <Elements stripe={state.stripe}>
@@ -295,10 +312,7 @@ const Checkout = ({ match, location }) => {
                                 </Stepper>
                                 <Box className={classes.mainBox}>
                                   <Grid container spacing={3}>
-                                    {renderForm({
-                                      step: state.step.current,
-                                      values: values,
-                                    })}
+                                    {renderForm(state.step.current)}
                                   </Grid>
                                 </Box>
                                 <Box
@@ -331,21 +345,21 @@ const Checkout = ({ match, location }) => {
                               </Elements>
                             ) : null}
                           </Form>
-                        </Paper>
-                      )}
-                    </Container>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={4} className={classes.actions}>
-                  <CheckoutSummary
-                    artwork={state.artwork}
-                    license={values.licenseType}
-                  />
-                  <br />
-                </Grid>
-              </>
-            )}
-          </Formik>
+                        )}
+                      </Formik>
+                    </Paper>
+                  )}
+                </Container>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={4} className={classes.actions}>
+              <CheckoutSummary
+                artwork={state.artwork}
+                license={state.license}
+              />
+              <br />
+            </Grid>
+          </>
         ) : (
           history.push('/')
         )}

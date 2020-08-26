@@ -203,7 +203,7 @@ const BillingForm = () => {
                 {...field}
                 options={countries}
                 handleChange={(e, value) =>
-                  setFieldValue('country', value || '')
+                  setFieldValue('billingCountry', value || '')
                 }
                 handleBlur={() => setFieldTouched('country', true)}
                 getOptionLabel={(option) => option.name}
