@@ -1,59 +1,38 @@
-import React, { useState, useContext } from "react";
-import { Context } from "../../context/Store.js";
-import StackGrid from "react-stack-grid";
-import Masonry from "react-masonry-css";
-import { upload } from "../../../../common/constants.js";
-import Modal from "../../shared/Modal/Modal.js";
+import { CircularProgress, Grid, Paper } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { LinkRounded as CopyIcon } from '@material-ui/icons';
+import React, { useContext, useState } from 'react';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import Masonry from 'react-masonry-css';
 import {
-  Paper,
-  Card,
-  CardHeader,
-  CardMedia,
-  CardContent,
-  Typography,
-  CardActions,
-  IconButton,
-  Grid,
-  CircularProgress,
-} from "@material-ui/core";
-import {
-  FavoriteBorderRounded as SaveIcon,
-  FavoriteRounded as SavedIcon,
-  ShareRounded as ShareIcon,
-  LinkRounded as CopyIcon,
-  EditRounded as EditIcon,
-} from "@material-ui/icons";
-import {
-  FacebookShareButton,
-  WhatsappShareButton,
-  RedditShareButton,
-  TwitterShareButton,
   FacebookIcon,
-  WhatsappIcon,
+  FacebookShareButton,
   RedditIcon,
+  RedditShareButton,
   TwitterIcon,
-} from "react-share";
-import { withSnackbar } from "notistack";
-import { Link } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { postSave, deleteSave } from "../../services/artwork.js";
-import { useTheme } from "@material-ui/core/styles";
-import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from 'react-share';
+import { upload } from '../../../../common/constants.js';
+import ArtworkCard from '../../components/ArtworkCard/ArtworkCard.js';
+import { Context } from '../../context/Store.js';
+import { deleteSave, postSave } from '../../services/artwork.js';
+import Modal from '../../shared/Modal/Modal.js';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    minHeight: "86.5vh",
+    minHeight: '86.5vh',
   },
   masonryGrid: {
-    display: "flex",
-    flexWrap: "wrap",
+    display: 'flex',
+    flexWrap: 'wrap',
   },
   masonryGridColumn: {
     maxWidth: upload.artwork.fileTransform.width,
     minWidth: 320,
-    width: "100%",
+    width: '100%',
   },
 }));
 
@@ -84,24 +63,6 @@ const ArtworkPanel = ({
   const classes = useStyles();
   const theme = useTheme();
 
-  const artwork = elements.map((element) =>
-    type !== "version"
-      ? {
-          /*           data: element.current,
-          owner: element.owner, */
-          src: element.current.cover,
-          height: element.current.height,
-          width: element.current.width,
-        }
-      : {
-          data: element,
-          owner: element.artwork.owner,
-          src: element.cover,
-          height: element.height,
-          width: element.width,
-        }
-  );
-
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;
     const title = store.main.brand;
@@ -112,12 +73,12 @@ const ArtworkPanel = ({
           <CopyToClipboard
             text={url}
             onCopy={() =>
-              enqueueSnackbar("Link copied", {
-                variant: "success",
+              enqueueSnackbar('Link copied', {
+                variant: 'success',
                 autoHideDuration: 1000,
                 anchorOrigin: {
-                  vertical: "top",
-                  horizontal: "center",
+                  vertical: 'top',
+                  horizontal: 'center',
                 },
               })
             }
@@ -164,17 +125,17 @@ const ArtworkPanel = ({
     try {
       await postSave({ artworkId: id });
       dispatch({
-        type: "updateSaves",
+        type: 'updateSaves',
         saved: {
           [id]: true,
         },
       });
-      enqueueSnackbar("Artwork saved", {
-        variant: "success",
+      enqueueSnackbar('Artwork saved', {
+        variant: 'success',
         autoHideDuration: 1000,
         anchorOrigin: {
-          vertical: "top",
-          horizontal: "center",
+          vertical: 'top',
+          horizontal: 'center',
         },
       });
     } catch (err) {
@@ -186,17 +147,17 @@ const ArtworkPanel = ({
     try {
       await deleteSave({ artworkId: id });
       dispatch({
-        type: "updateSaves",
+        type: 'updateSaves',
         saved: {
           [id]: false,
         },
       });
-      enqueueSnackbar("Artwork unsaved", {
-        variant: "success",
+      enqueueSnackbar('Artwork unsaved', {
+        variant: 'success',
         autoHideDuration: 1000,
         anchorOrigin: {
-          vertical: "top",
-          horizontal: "center",
+          vertical: 'top',
+          horizontal: 'center',
         },
       });
     } catch (err) {
@@ -230,7 +191,7 @@ const ArtworkPanel = ({
     <Paper className={classes.paper}>
       <InfiniteScroll
         className={classes.scroller}
-        dataLength={artwork.length}
+        dataLength={elements.length}
         next={loadMore}
         hasMore={hasMore}
         loader={
@@ -261,7 +222,7 @@ const ArtworkPanel = ({
           columnClassName={classes.masonryGridColumn}
         >
           {elements.map((artwork) => (
-            <ArtworkCard user={store.user} artwork={artwork} />
+            <ArtworkCard user={store.user} artwork={artwork} type={type} />
             /*           <div
               key={artwork._id}
               component={Link}

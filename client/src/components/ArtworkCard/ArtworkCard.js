@@ -1,21 +1,18 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import { upload } from '../../../../common/constants.js';
-import Card from '@material-ui/core/Card';
+import { Typography } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
-import CardActions from '@material-ui/core/CardActions';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
 import { red } from '@material-ui/core/colors';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
-import { Typography } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { upload } from '../../../../common/constants.js';
+import EditButton from '../EditButton/EditButton.js';
 import FavoriteButton from '../FavoriteButton/FavoriteButton.js';
 import ShareButton from '../ShareButton/ShareButton.js';
-import EditButton from '../EditButton/EditButton.js';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -98,8 +95,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ArtworkCard = ({ user, artwork }) => {
+const ArtworkCard = ({ user, artwork, type }) => {
   const classes = useStyles();
+
+  const item =
+    type !== 'version'
+      ? {
+          _id: artwork._id,
+          data: artwork.current,
+          owner: artwork.owner,
+          src: artwork.current.cover,
+          height: artwork.current.height,
+          width: artwork.current.width,
+        }
+      : {
+          _id: artwork.artwork._id,
+          data: artwork,
+          owner: artwork.artwork.owner,
+          src: artwork.cover,
+          height: artwork.height,
+          width: artwork.width,
+        };
 
   return (
     <Card className={classes.artworkContainer}>
@@ -109,10 +125,10 @@ const ArtworkCard = ({ user, artwork }) => {
             noWrap
             variant="h5"
             component={Link}
-            to={`/artwork/${artwork._id}`}
+            to={`/artwork/${item._id}`}
             className={classes.artworkTitle}
           >
-            {artwork.current.title}
+            {item.data.title}
           </Typography>
         }
         subheader={
@@ -120,37 +136,37 @@ const ArtworkCard = ({ user, artwork }) => {
             noWrap
             variant="body1"
             component={Link}
-            to={`/user/${artwork.owner.name}`}
+            to={`/user/${item.owner.name}`}
             className={classes.artworkSeller}
           >
-            {artwork.owner.name}
+            {item.owner.name}
           </Typography>
         }
         className={classes.artworkHeader}
       />
       <CardMedia
         component={Link}
-        to={`/artwork/${artwork._id}`}
+        to={`/artwork/${item._id}`}
         className={classes.media}
         style={{
           paddingTop:
-            artwork.current.height /
-            (artwork.current.width / upload.artwork.fileTransform.width) /
+            item.data.height /
+            (item.data.width / upload.artwork.fileTransform.width) /
             2,
           maxWidth: upload.artwork.fileTransform.width,
         }}
-        image={artwork.current.cover}
-        title={artwork.title}
+        image={item.data.cover}
+        title={item.title}
       />
       <CardActions disableSpacing className={classes.artworkFooter}>
         <Box>
-          {artwork.owner._id === user.id ? (
+          {item.owner._id === user.id ? (
             <EditButton artwork={artwork} />
           ) : (
             [
               <FavoriteButton
                 artwork={artwork}
-                favorited={user.saved[artwork._id]}
+                favorited={user.saved[item._id]}
               />,
               <ShareButton artwork={artwork} />,
             ]
@@ -162,18 +178,14 @@ const ArtworkCard = ({ user, artwork }) => {
             className={classes.artworkColor}
           >
             <Typography noWrap>
-              {artwork.current.availability === 'available'
-                ? `${
-                    artwork.current.personal
-                      ? `$${artwork.current.personal}`
-                      : ' Free'
-                  }
+              {item.data.availability === 'available'
+                ? `${item.data.personal ? `$${item.data.personal}` : ' Free'}
                   /
                     ${
-                      artwork.current.commercial
-                        ? `$${artwork.current.commercial}`
-                        : artwork.current.personal
-                        ? artwork.current.personal
+                      item.data.commercial
+                        ? `$${item.data.commercial}`
+                        : item.data.personal
+                        ? item.data.personal
                         : ' Free'
                     }`
                 : 'Preview only'}
