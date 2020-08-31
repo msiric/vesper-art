@@ -1,8 +1,7 @@
-import mongoose from 'mongoose';
-import { formatParams, sanitizeData } from '../utils/helpers.js';
-import { fetchArtworkResults, fetchUserResults } from '../services/search.js';
-import searchValidator from '../validation/search.js';
 import createError from 'http-errors';
+import { fetchArtworkResults, fetchUserResults } from '../services/search.js';
+import { formatParams, sanitizeData } from '../utils/helpers.js';
+import searchValidator from '../validation/search.js';
 
 export const getResults = async ({
   searchQuery,

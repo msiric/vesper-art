@@ -1,44 +1,35 @@
-import React, { useState, useContext } from 'react';
-import { Context } from '../../context/Store.js';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
-import { withRouter, Link } from 'react-router-dom';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import {
-  Button,
   AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  InputBase,
   Badge,
-  MenuItem,
+  Button,
+  IconButton,
+  InputBase,
   Menu,
+  MenuItem,
+  Toolbar,
+  Typography,
 } from '@material-ui/core';
 import {
-  AddBoxRounded as AddIcon,
-  MenuRounded as MenuIcon,
-  SearchRounded as SearchIcon,
-  AccountCircleRounded as AccountIcon,
-  MailRounded as MailIcon,
-  NotificationsRounded as NotificationsIcon,
-  MoreVertRounded as MoreIcon,
-  ShoppingCartRounded as CartIcon,
-  AssessmentRounded as DashboardIcon,
-  AssignmentRounded as OrdersIcon,
-  FavoriteRounded as SavedIcon,
-  SettingsRounded as SettingsIcon,
-  ImageRounded as ArtworkIcon,
   AccountBoxRounded as UserIcon,
+  AccountCircleRounded as AccountIcon,
+  ImageRounded as ArtworkIcon,
+  MoreVertRounded as MoreIcon,
+  NotificationsRounded as NotificationsIcon,
+  SearchRounded as SearchIcon,
 } from '@material-ui/icons';
-import NotificationsMenu from './NotificationsMenu.js';
-import HeaderStyles from './Header.style.js';
+import { useFormik } from 'formik';
+import React, { useContext, useState } from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import * as Yup from 'yup';
+import { Context } from '../../context/Store.js';
 import {
   getNotifications,
-  postLogout,
   patchRead,
   patchUnread,
+  postLogout,
 } from '../../services/user.js';
+import HeaderStyles from './Header.style.js';
+import NotificationsMenu from './NotificationsMenu.js';
 
 const searchValidation = Yup.object().shape({
   searchInput: Yup.string().trim().required('Search input is required'),
@@ -69,9 +60,7 @@ const Header = ({ history }) => {
     searchValidation,
     async onSubmit(values) {
       try {
-        history.push(
-          `/search?query=${values.searchInput}&type=${store.main.search}`
-        );
+        history.push(`/search?q=${values.searchInput}&t=${store.main.search}`);
       } catch (err) {
         console.log(err);
       }

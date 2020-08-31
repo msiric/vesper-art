@@ -7,7 +7,7 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import {
   AccountBoxRounded as UserIcon,
@@ -15,7 +15,7 @@ import {
   ImageRounded as ArtworkIcon,
   MoreVertRounded as MoreIcon,
   NotificationsRounded as NotificationsIcon,
-  SearchRounded as SearchIcon,
+  SearchRounded as SearchIcon
 } from '@material-ui/icons';
 import { Field, Form, Formik } from 'formik';
 import React, { useContext, useState } from 'react';
@@ -26,7 +26,7 @@ import {
   getNotifications,
   patchRead,
   patchUnread,
-  postLogout,
+  postLogout
 } from '../../services/user.js';
 import HeaderStyles from './Header.style.js';
 import NotificationsMenu from './NotificationsMenu.js';
@@ -384,7 +384,7 @@ const Header = ({ history }) => {
               onSubmit={async (values, { resetForm }) => {
                 try {
                   history.push(
-                    `/search?query=${values.searchInput}&type=${store.main.search}`
+                    `/search?q=${values.searchInput}&t=${store.main.search}`
                   );
                 } catch (err) {
                   console.log(err);
