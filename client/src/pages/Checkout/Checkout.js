@@ -10,13 +10,12 @@ import {
   StepConnector,
   StepLabel,
   Stepper,
-  withStyles,
+  withStyles
 } from '@material-ui/core';
 import {
-  AssignmentRounded as SummaryIcon,
   CardMembershipRounded as LicenseIcon,
   ContactMailRounded as BillingIcon,
-  PaymentRounded as PaymentIcon,
+  PaymentRounded as PaymentIcon
 } from '@material-ui/icons';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -28,7 +27,6 @@ import * as Yup from 'yup';
 import BillingForm from '../../containers/BillingForm/BillingForm.js';
 import CheckoutSummary from '../../containers/CheckoutSummary/CheckoutSummary.js';
 import LicenseForm from '../../containers/LicenseForm/LicenseForm.js';
-import OrderSummary from '../../containers/OrderSummary/OrderSummary.js';
 import PaymentForm from '../../containers/PaymentForm/PaymentForm.js';
 import { Context } from '../../context/Store.js';
 import { getCheckout } from '../../services/checkout.js';
@@ -38,7 +36,6 @@ const STEPS = [
   'License information',
   'Billing information',
   'Payment information',
-  'Order summary',
 ];
 
 const checkoutValidation = [licenseValidation, billingValidation, null];
@@ -75,7 +72,6 @@ const StepperIcons = ({ active, completed, icon }) => {
     1: <LicenseIcon />,
     2: <BillingIcon />,
     3: <PaymentIcon />,
-    4: <SummaryIcon />,
   };
 
   return (
@@ -209,15 +205,7 @@ const Checkout = ({ match, location }) => {
         return <BillingForm />;
       case 2:
         return <PaymentForm secret={state.secret} artwork={state.artwork} />;
-      case 3:
-        return (
-          <OrderSummary
-            artwork={state.artwork}
-            license={state.license}
-            discount={state.discount}
-            handleDiscountChange={handleDiscountChange}
-          />
-        );
+
       default:
         return <div>Not Found</div>;
     }
