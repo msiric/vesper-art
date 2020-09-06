@@ -1,29 +1,28 @@
-import mongoose from 'mongoose';
+import bcrypt from 'bcrypt-nodejs';
+import crypto from 'crypto';
+import createError from 'http-errors';
+import randomString from 'randomstring';
+import { server } from '../config/secret.js';
+import {
+  addNewUser,
+  editUserResetToken,
+  editUserVerification,
+  logUserOut,
+  refreshAccessToken,
+  revokeAccessToken,
+} from '../services/auth.js';
+import { editUserPassword, fetchUserByCreds } from '../services/user.js';
 import {
   createAccessToken,
   createRefreshToken,
   sendRefreshToken,
 } from '../utils/auth.js';
-import randomString from 'randomstring';
-import bcrypt from 'bcrypt-nodejs';
-import crypto from 'crypto';
 import { sendEmail } from '../utils/email.js';
-import { server } from '../config/secret.js';
-import {
-  logUserOut,
-  refreshAccessToken,
-  revokeAccessToken,
-  editUserResetToken,
-  editUserVerification,
-  addNewUser,
-} from '../services/auth.js';
-import signupValidator from '../validation/signup.js';
-import loginValidator from '../validation/login.js';
-import emailValidator from '../validation/email.js';
-import resetValidator from '../validation/reset.js';
 import { sanitizeData } from '../utils/helpers.js';
-import { fetchUserByCreds, editUserPassword } from '../services/user.js';
-import createError from 'http-errors';
+import emailValidator from '../validation/email.js';
+import loginValidator from '../validation/login.js';
+import resetValidator from '../validation/reset.js';
+import signupValidator from '../validation/signup.js';
 
 // needs transaction (not tested)
 export const postSignUp = async ({
@@ -113,6 +112,7 @@ export const postLogIn = async ({
       saved: foundUser.savedArtwork,
       active: foundUser.active,
       stripeId: foundUser.stripeId,
+      intentIds: foundUser.intentIds,
       country: foundUser.country,
       origin: foundUser.origin,
       jwtVersion: foundUser.jwtVersion,

@@ -10,20 +10,25 @@ import {
   StepConnector,
   StepLabel,
   Stepper,
-  withStyles
+  withStyles,
 } from '@material-ui/core';
 import {
   CardMembershipRounded as LicenseIcon,
   ContactMailRounded as BillingIcon,
-  PaymentRounded as PaymentIcon
+  PaymentRounded as PaymentIcon,
 } from '@material-ui/icons';
-import { Elements } from '@stripe/react-stripe-js';
+import {
+  CardNumberElement,
+  Elements,
+  useElements,
+} from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import clsx from 'clsx';
 import { Form, Formik } from 'formik';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Yup from 'yup';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 import BillingForm from '../../containers/BillingForm/BillingForm.js';
 import CheckoutSummary from '../../containers/CheckoutSummary/CheckoutSummary.js';
 import LicenseForm from '../../containers/LicenseForm/LicenseForm.js';
@@ -109,9 +114,42 @@ const Connector = withStyles((theme) => ({
 }))(StepConnector);
 
 const Checkout = ({ match, location }) => {
-  const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     stripe: null,
+    loading: true,
+  });
+
+  const fetchData = async () => {
+    try {
+      const stripe = await loadStripe(
+        'pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z'
+      );
+      setState({
+        ...state,
+        loading: false,
+        stripe: stripe,
+      });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return state.loading ? (
+    <LoadingSpinner />
+  ) : (
+    <Elements stripe={state.stripe}>
+      <Processor match={match} location={location} stripe={state.stripe} />
+    </Elements>
+  );
+};
+
+const Processor = ({ match, location, stripe }) => {
+  const [store, dispatch] = useContext(Context);
+  const [state, setState] = useState({
     secret: null,
     artwork: {},
     license: '',
@@ -123,6 +161,7 @@ const Checkout = ({ match, location }) => {
     loading: true,
   });
 
+  const elements = useElements();
   const history = useHistory();
 
   const classes = {};
@@ -180,7 +219,57 @@ const Checkout = ({ match, location }) => {
   };
 
   const submitForm = async (values, actions) => {
-    console.log(values, actions);
+    if (!state.secret || !stripe || !elements) {
+      console.log('nije dobro');
+      console.log(state.secret, stripe, elements);
+      // $TODO Enqueue error;
+    }
+    const cardElement = elements.getElement(CardNumberElement);
+    const stripeData = {
+      payment_method: {
+        card: cardElement,
+        billing_details: {
+          address: {
+            city: values.billingCity,
+            country: values.billingCountry,
+            line1: values.billingAddress,
+            line2: null,
+            postal_code: values.billingZip,
+            state: null,
+          },
+          email: values.billingEmail,
+          name: `${values.billingName} ${values.billingSurname}`,
+          phone: null,
+        },
+      },
+    };
+    const { paymentIntent, error } = await stripe.confirmCardPayment(
+      state.secret,
+      stripeData
+    );
+
+    if (error) {
+      console.log('fail');
+      console.log(error);
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      console.log('success');
+      /*         enqueueSnackbar('Payment successful', {
+          variant: 'success',
+          autoHideDuration: 1000,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center',
+          },
+        });
+        enqueueSnackbar('Your purchase will appear in the "orders" page soon', {
+          variant: 'success',
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center',
+          },
+        }); */
+    }
   };
 
   const handleSubmit = (values, actions) => {
@@ -223,14 +312,10 @@ const Checkout = ({ match, location }) => {
         country: '',
       };
       const { data } = await getCheckout({ artworkId: match.params.id });
-      const stripe = await loadStripe(
-        'pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z'
-      );
       /*       const license = retrieveLicenseInformation(data.artwork); */
       setState({
         ...state,
         loading: false,
-        stripe: stripe,
         artwork: data.artwork,
         license: location.state.license,
         billing: billing,
@@ -249,9 +334,7 @@ const Checkout = ({ match, location }) => {
     <Container fixed className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>
         {state.loading ? (
-          <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
-          </Grid>
+          <LoadingSpinner />
         ) : state.artwork._id ? (
           <>
             <Grid item xs={12} md={8} className={classes.artwork}>
@@ -283,8 +366,8 @@ const Checkout = ({ match, location }) => {
                       >
                         {({ isSubmitting, values, setFieldValue }) => (
                           <Form>
-                            {state.stripe ? (
-                              <Elements stripe={state.stripe}>
+                            {stripe ? (
+                              <Box>
                                 <Stepper
                                   alternativeLabel
                                   connector={<Connector />}
@@ -330,7 +413,7 @@ const Checkout = ({ match, location }) => {
                                     )}
                                   </Button>
                                 </Box>
-                              </Elements>
+                              </Box>
                             ) : null}
                           </Form>
                         )}

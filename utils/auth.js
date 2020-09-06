@@ -1,5 +1,5 @@
-import User from '../models/user.js';
 import jwt from 'jsonwebtoken';
+import User from '../models/user.js';
 
 export const createAccessToken = ({ userData }) => {
   return jwt.sign(
@@ -57,6 +57,7 @@ export const updateAccessToken = async (req, res, next) => {
     saved: foundUser.savedArtwork,
     active: foundUser.active,
     stripeId: foundUser.stripeId,
+    intentIds: foundUser.intentIds,
     country: foundUser.country,
     origin: foundUser.origin,
     jwtVersion: foundUser.jwtVersion,

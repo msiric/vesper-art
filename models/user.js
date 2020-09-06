@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
 import bcrypt from 'bcrypt-nodejs';
 import crypto from 'crypto';
+import mongoose from 'mongoose';
 import mongooseDeepPopulate from 'mongoose-deep-populate';
 import fuzzySearch from 'mongoose-fuzzy-searching';
 
@@ -48,6 +48,12 @@ const UserSchema = new Schema({
   purchases: [{ type: Schema.Types.ObjectId, ref: 'Order' }], // nesting
   sales: [{ type: Schema.Types.ObjectId, ref: 'Order' }], // nesting
   stripeId: String,
+  intentIds: [
+    {
+      intent: String,
+      artwork: { type: Schema.Types.ObjectId, ref: 'Version' },
+    },
+  ],
   active: Boolean,
   created: { type: Date, default: Date.now },
 });

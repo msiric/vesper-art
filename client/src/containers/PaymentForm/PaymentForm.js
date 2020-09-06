@@ -4,7 +4,6 @@ import {
   CardCvcElement,
   CardExpiryElement,
   CardNumberElement,
-  useElements,
   useStripe,
 } from '@stripe/react-stripe-js';
 import { withSnackbar } from 'notistack';
@@ -84,7 +83,6 @@ const PaymentForm = ({ secret, artwork }) => {
   const classes = PaymentFormStyles();
 
   const stripe = useStripe();
-  const elements = useElements();
   const history = useHistory();
 
   const cardsLogo = [
