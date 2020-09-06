@@ -35,6 +35,7 @@ import LicenseForm from '../../containers/LicenseForm/LicenseForm.js';
 import PaymentForm from '../../containers/PaymentForm/PaymentForm.js';
 import { Context } from '../../context/Store.js';
 import { getCheckout } from '../../services/checkout.js';
+import { postIntent } from '../../services/stripe.js';
 import { billingValidation } from '../../validation/billing.js';
 import { licenseValidation } from '../../validation/license.js';
 const STEPS = [
@@ -165,24 +166,9 @@ const Processor = ({ match, location, stripe }) => {
   const history = useHistory();
 
   const classes = {};
-  const isLastStep = state.step.current === state.step.length - 1;
-
-  const handleSecretSave = (value) => {
-    setState((prevState) => ({ ...prevState, secret: value }));
-  };
 
   const handleLicenseChange = async (license) => {
     try {
-      /*       const versionId = state.artwork.current._id.toString();
-      const storageObject = {
-        versionId: versionId,
-        intentId: null,
-        licenseType: license,
-      };
-      window.sessionStorage.setItem(
-        state.artwork._id,
-        JSON.stringify(storageObject)
-      ); */
       setState((prevState) => ({
         ...prevState,
         license: license,
@@ -196,18 +182,26 @@ const Processor = ({ match, location, stripe }) => {
     setState((prevState) => ({ ...prevState, discount: value }));
   };
 
-  const retrieveLicenseInformation = (artwork) => {
-    const checkoutItem = JSON.parse(
-      window.sessionStorage.getItem(artwork._id.toString())
-    );
-    if (checkoutItem) {
-      const currentId = artwork.current._id.toString();
-      if (checkoutItem.versionId === currentId) {
-        return checkoutItem.licenseType;
-      } else {
-        window.sessionStorage.removeItem(artwork._id);
-        console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
-      }
+  const saveIntent = async () => {
+    try {
+      setState((prevState) => ({ ...prevState, loading: true }));
+      const intentId = store.user.intents[state.artwork._id] || null;
+      const { data } = await postIntent({
+        artworkId: state.artwork._id,
+        artworkLicense: state.license,
+        intentId,
+      });
+      // $TODO if intentId is null push data.intent.id to user.intents array
+      setState((prevState) => ({
+        ...prevState,
+        secret: data.intent.secret,
+        loading: false,
+      }));
+      handleStepChange(1);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
@@ -218,7 +212,7 @@ const Processor = ({ match, location, stripe }) => {
     }));
   };
 
-  const submitForm = async (values, actions) => {
+  const submitForm = async (values) => {
     if (!state.secret || !stripe || !elements) {
       console.log('nije dobro');
       console.log(state.secret, stripe, elements);
@@ -273,8 +267,12 @@ const Processor = ({ match, location, stripe }) => {
   };
 
   const handleSubmit = (values, actions) => {
+    const isFirstStep = state.step.current === 0;
+    const isLastStep = state.step.current === state.step.length - 1;
     if (isLastStep) {
-      submitForm(values, actions);
+      submitForm(values);
+    } else if (isFirstStep) {
+      saveIntent();
     } else {
       handleStepChange(1);
     }

@@ -48,10 +48,10 @@ const UserSchema = new Schema({
   purchases: [{ type: Schema.Types.ObjectId, ref: 'Order' }], // nesting
   sales: [{ type: Schema.Types.ObjectId, ref: 'Order' }], // nesting
   stripeId: String,
-  intentIds: [
+  intents: [
     {
-      intent: String,
-      artwork: { type: Schema.Types.ObjectId, ref: 'Version' },
+      intentId: String,
+      artworkId: { type: Schema.Types.ObjectId, ref: 'Artwork' },
     },
   ],
   active: Boolean,

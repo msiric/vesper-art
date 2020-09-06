@@ -1,11 +1,10 @@
-import React, { useEffect, useContext } from 'react';
-import { Container, Grid, CircularProgress } from '@material-ui/core';
-import { Context } from '../../context/Store.js';
-import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import React, { useContext, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import openSocket from 'socket.io-client';
-import { postLogout } from '../../services/user.js';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import { Context } from '../../context/Store.js';
+import { postLogout } from '../../services/user.js';
 const ENDPOINT = 'http://localhost:5000';
 
 const ax = axios.create();
@@ -70,6 +69,10 @@ const Interceptor = ({ children }) => {
               object[item] = true;
               return object;
             }, {}),
+            intents: data.user.intents.reduce(function (object, item) {
+              object[item.artworkId] = item.intentId;
+              return object;
+            }, {})
           });
         } else {
           dispatch({

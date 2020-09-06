@@ -57,7 +57,7 @@ export const updateAccessToken = async (req, res, next) => {
     saved: foundUser.savedArtwork,
     active: foundUser.active,
     stripeId: foundUser.stripeId,
-    intentIds: foundUser.intentIds,
+    intents: foundUser.intents,
     country: foundUser.country,
     origin: foundUser.origin,
     jwtVersion: foundUser.jwtVersion,

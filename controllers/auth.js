@@ -112,7 +112,7 @@ export const postLogIn = async ({
       saved: foundUser.savedArtwork,
       active: foundUser.active,
       stripeId: foundUser.stripeId,
-      intentIds: foundUser.intentIds,
+      intents: foundUser.intents,
       country: foundUser.country,
       origin: foundUser.origin,
       jwtVersion: foundUser.jwtVersion,

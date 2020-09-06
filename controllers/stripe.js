@@ -327,6 +327,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
     session,
   });
   await editUserSale({ userId: sellerId, orderId: savedOrder._id, session });
+  // $TODO delete intentId found in user.intents array, using the artwork._id
   // new start
   await addNewNotification({
     notificationLink: savedOrder._id,
