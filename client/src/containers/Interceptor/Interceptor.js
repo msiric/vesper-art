@@ -72,7 +72,7 @@ const Interceptor = ({ children }) => {
             intents: data.user.intents.reduce(function (object, item) {
               object[item.artworkId] = item.intentId;
               return object;
-            }, {})
+            }, {}),
           });
         } else {
           dispatch({

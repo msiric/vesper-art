@@ -34,6 +34,7 @@ const store = {
       loading: false,
     },
     saved: {},
+    intents: {},
   },
 };
 
@@ -62,6 +63,7 @@ const reducer = (state, action) => {
           saved: action.saved,
           stripeId: action.stripeId,
           country: action.country,
+          intents: action.intents,
         },
       };
     case 'setMain':
@@ -91,6 +93,7 @@ const reducer = (state, action) => {
           messages: action.messages,
           notifications: action.notifications,
           saved: action.saved,
+          intents: action.intents,
         },
       };
     case 'updateUser':
@@ -109,6 +112,7 @@ const reducer = (state, action) => {
             count: action.notifications.count,
           },
           saved: action.saved,
+          intents: action.intents,
         },
       };
     case 'setSearch':
@@ -147,6 +151,7 @@ const reducer = (state, action) => {
             loading: false,
           },
           saved: {},
+          intents: {},
         },
       };
     case 'updateToken':

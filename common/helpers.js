@@ -6,6 +6,6 @@ export const formatDate = (date, form) => {
   return format(new Date(date), form);
 };
 
-export const formatPrice = (value) => {
+export const formatAmount = (value) => {
   return currency(value).divide(100);
 };

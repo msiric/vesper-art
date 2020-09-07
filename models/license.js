@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { formatPrice } from '../common/helpers.js';
+import { formatAmount } from '../common/helpers.js';
 const Schema = mongoose.Schema;
 
 const LicenseSchema = new Schema({
@@ -10,7 +10,7 @@ const LicenseSchema = new Schema({
   company: String,
   type: String,
   active: Boolean,
-  price: { type: Number, get: formatPrice },
+  price: { type: Number, get: formatAmount },
   created: { type: Date, default: Date.now },
 });
 

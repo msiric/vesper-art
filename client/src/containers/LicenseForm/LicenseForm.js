@@ -179,13 +179,13 @@ const LicenseForm = ({ artwork, license, handleLicenseChange }) => {
             {/*             <TextInput name="licenseAssignee" label="License assignee" />
             <TextInput name="licenseCompany" label="License company" /> */}
             <Field name="licenseType">
-              {({ field, form: { touched, errors }, meta }) => (
+              {({ field, form: { touched, errors, setFieldValue }, meta }) => (
                 <SelectInput
                   {...field}
                   label="License type"
                   helperText={meta.touched && meta.error}
                   error={meta.touched && Boolean(meta.error)}
-                  onChange={(e) => handleLicenseChange(e.target.value)}
+                  onChange={(e) => handleLicenseChange(e.target, setFieldValue)}
                   options={
                     artwork.current && artwork.current.license === 'commercial'
                       ? [

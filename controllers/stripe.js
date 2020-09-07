@@ -25,7 +25,7 @@ import {
   editUserPurchase,
   editUserSale,
   editUserStripe,
-  fetchUserDiscount,
+  fetchUserById,
 } from '../services/user.js';
 import { sanitizeData } from '../utils/helpers.js';
 import licenseValidator from '../validation/license.js';
@@ -71,11 +71,16 @@ export const managePaymentIntent = async ({
   userId,
   artworkId,
   intentId,
+  discountId,
   artworkLicense,
   session,
 }) => {
-  const foundUser = await fetchUserDiscount({ userId, session });
+  // $TODO Treba li dohvacat usera?
+  const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
+    const foundDiscount = discountId
+      ? await fetchDiscountById({ discountId, session })
+      : null;
     const foundArtwork = await fetchArtworkDetails({ artworkId, session });
     if (foundArtwork) {
       // $TODO Bolje sredit validaciju
@@ -89,8 +94,8 @@ export const managePaymentIntent = async ({
         .multiply(payment.buyerFee.multiplier)
         .add(payment.buyerFee.addend);
       const sellerFee = currency(1 - payment.appFee);
-      const discount = foundUser.discount
-        ? currency(licensePrice).multiply(foundUser.discount.discount)
+      const discount = foundDiscount
+        ? currency(licensePrice).multiply(foundDiscount.discount)
         : 0;
       const buyerTotal = currency(licensePrice)
         .subtract(discount)
@@ -105,7 +110,7 @@ export const managePaymentIntent = async ({
         sellerId: foundArtwork.owner._id,
         artworkId: foundArtwork._id,
         versionId: foundArtwork.current._id,
-        discountId: foundUser.discount ? foundUser.discount._id : null,
+        discountId: foundDiscount ? foundDiscount._id : null,
         spent: buyerTotal.intValue,
         earned: sellerTotal.intValue,
         fee: platformTotal.intValue,

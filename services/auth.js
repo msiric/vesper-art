@@ -1,6 +1,5 @@
-import mongoose from 'mongoose';
 import User from '../models/user.js';
-import { updateAccessToken, sendRefreshToken } from '../utils/auth.js';
+import { sendRefreshToken, updateAccessToken } from '../utils/auth.js';
 
 export const addNewUser = async ({
   userEmail,
@@ -18,7 +17,6 @@ export const addNewUser = async ({
   newUser.displaySaves = true;
   newUser.verificationToken = verificationToken;
   newUser.verified = false;
-  newUser.discount = null;
   newUser.inbox = 0;
   newUser.notifications = 0;
   newUser.rating = 0;

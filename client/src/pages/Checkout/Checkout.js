@@ -153,7 +153,7 @@ const Processor = ({ match, location, stripe }) => {
   const [state, setState] = useState({
     secret: null,
     artwork: {},
-    license: '',
+    license: location.state.license || '',
     discount: null,
     step: {
       current: 0,
@@ -167,11 +167,12 @@ const Processor = ({ match, location, stripe }) => {
 
   const classes = {};
 
-  const handleLicenseChange = async (license) => {
+  const handleLicenseChange = async (license, setFieldValue) => {
     try {
+      setFieldValue(license.name, license.value);
       setState((prevState) => ({
         ...prevState,
-        license: license,
+        license: license.value,
       }));
     } catch (err) {
       console.log(err);
@@ -179,16 +180,24 @@ const Processor = ({ match, location, stripe }) => {
   };
 
   const handleDiscountChange = (value) => {
-    setState((prevState) => ({ ...prevState, discount: value }));
+    setState((prevState) => {
+      console.log(prevState);
+      return { ...prevState, discount: value };
+    });
   };
 
-  const saveIntent = async () => {
+  const saveIntent = async (values) => {
     try {
       setState((prevState) => ({ ...prevState, loading: true }));
       const intentId = store.user.intents[state.artwork._id] || null;
       const { data } = await postIntent({
         artworkId: state.artwork._id,
-        artworkLicense: state.license,
+        artworkLicense: {
+          assignee: values.licenseAssignee,
+          company: values.licenseCompany,
+          type: values.licenseType,
+        },
+        discountId: state.discount ? state.discount._id : null,
         intentId,
       });
       // $TODO if intentId is null push data.intent.id to user.intents array
@@ -225,7 +234,7 @@ const Processor = ({ match, location, stripe }) => {
         billing_details: {
           address: {
             city: values.billingCity,
-            country: values.billingCountry,
+            country: values.billingCountry.value,
             line1: values.billingAddress,
             line2: null,
             postal_code: values.billingZip,
@@ -272,7 +281,7 @@ const Processor = ({ match, location, stripe }) => {
     if (isLastStep) {
       submitForm(values);
     } else if (isFirstStep) {
-      saveIntent();
+      saveIntent(values);
     } else {
       handleStepChange(1);
     }
@@ -311,14 +320,13 @@ const Processor = ({ match, location, stripe }) => {
       };
       const { data } = await getCheckout({ artworkId: match.params.id });
       /*       const license = retrieveLicenseInformation(data.artwork); */
-      setState({
+      setState((prevState) => ({
         ...state,
         loading: false,
         artwork: data.artwork,
-        license: location.state.license,
         billing: billing,
         discount: data.discount,
-      });
+      }));
     } catch (err) {
       setState({ ...state, loading: false });
     }
@@ -344,8 +352,7 @@ const Processor = ({ match, location, stripe }) => {
                     <Paper elevation={5}>
                       <Formik
                         initialValues={{
-                          discountCode: state.discount,
-                          licenseType: state.license,
+                          licenseType: location.state.license || '',
                           licenseAssignee: '',
                           licenseCompany: '',
                           billingName: '',
@@ -356,7 +363,6 @@ const Processor = ({ match, location, stripe }) => {
                           billingCity: '',
                           billingCountry: '',
                         }}
-                        enableReinitialize
                         validationSchema={
                           checkoutValidation[state.step.current]
                         }
@@ -425,6 +431,8 @@ const Processor = ({ match, location, stripe }) => {
               <CheckoutSummary
                 artwork={state.artwork}
                 license={state.license}
+                discount={state.discount}
+                handleDiscountChange={handleDiscountChange}
               />
               <br />
             </Grid>

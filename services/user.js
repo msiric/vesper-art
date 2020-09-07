@@ -30,12 +30,6 @@ export const fetchUserByCreds = async ({ userUsername, session = null }) => {
   }).session(session);
 };
 
-export const fetchUserDiscount = async ({ userId, session = null }) => {
-  return await User.findOne({
-    $and: [{ _id: userId }, { active: true }],
-  }).populate('discount');
-};
-
 export const fetchUserSales = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
@@ -281,7 +275,6 @@ export const deactivateExistingUser = async ({ userId, session = null }) => {
         verified: false,
         resetToken: null,
         resetExpiry: null,
-        discount: null,
         inbox: null,
         notifications: null,
         rating: null,
@@ -295,27 +288,5 @@ export const deactivateExistingUser = async ({ userId, session = null }) => {
         active: false,
       },
     }
-  ).session(session);
-};
-
-export const addUserDiscount = async ({
-  userId,
-  discountId,
-  session = null,
-}) => {
-  return await User.updateOne(
-    {
-      $and: [{ _id: userId }, { active: true }],
-    },
-    { discount: discountId }
-  ).session(session);
-};
-
-export const removeUserDiscount = async ({ userId, session = null }) => {
-  return await User.updateOne(
-    {
-      $and: [{ _id: userId }, { active: true }],
-    },
-    { discount: null }
   ).session(session);
 };

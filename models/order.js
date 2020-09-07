@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 import mongooseDeepPopulate from 'mongoose-deep-populate';
+import { formatAmount } from '../common/helpers.js';
 
 const deepPopulate = mongooseDeepPopulate(mongoose);
 
 const Schema = mongoose.Schema;
-import { formatPrice } from '../common/helpers.js';
 
 const OrderSchema = new Schema({
   buyer: { type: Schema.Types.ObjectId, ref: 'User' },
@@ -14,9 +14,9 @@ const OrderSchema = new Schema({
   license: { type: Schema.Types.ObjectId, ref: 'License' },
   discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
   review: { type: Schema.Types.ObjectId, ref: 'Review' },
-  spent: { type: Number, get: formatPrice },
-  earned: { type: Number, get: formatPrice },
-  fee: { type: Number, get: formatPrice },
+  spent: { type: Number, get: formatAmount },
+  earned: { type: Number, get: formatAmount },
+  fee: { type: Number, get: formatAmount },
   status: String,
   intent: String,
   created: { type: Date, default: Date.now },

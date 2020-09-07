@@ -38,7 +38,6 @@ const UserSchema = new Schema({
   resetToken: String,
   resetExpiry: Date,
   jwtVersion: { type: Number, default: 0 },
-  discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
   inbox: Number,
   notifications: Number,
   rating: Number,
