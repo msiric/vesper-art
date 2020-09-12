@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import Stripe from 'stripe';
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
@@ -73,11 +72,16 @@ export const updateStripeIntent = async ({
   intentId,
   intentAmount,
   intentFee,
+  orderData,
   session = null,
 }) => {
+  const paymentIntent = await stripe.paymentIntents.retrieve(intentId);
   return await stripe.paymentIntents.update(intentId, {
     amount: intentAmount,
     application_fee_amount: intentFee,
+    metadata: {
+      orderData: JSON.stringify(orderData),
+    },
   });
 };
 

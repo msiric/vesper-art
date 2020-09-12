@@ -85,9 +85,12 @@ export const managePaymentIntent = async ({
   // $TODO Treba li dohvacat usera?
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
+    // $TODO Check that discount is valid/active
     const foundDiscount = discountId
       ? await fetchDiscountById({ discountId, session })
       : null;
+    // $TODO Fetch by version id not artwork id
+    // $TODO Check that artwork isn't being updated while the payment is being processed
     const foundArtwork = await fetchArtworkDetails({ artworkId, session });
     if (foundArtwork) {
       // $TODO Bolje sredit validaciju
@@ -130,9 +133,10 @@ export const managePaymentIntent = async ({
       };
       const paymentIntent = intentId
         ? await updateStripeIntent({
+            intentAmount: buyerTotal.intValue,
+            intentFee: platformTotal.intValue,
+            orderData: orderData,
             intentId,
-            amount: buyerTotal.intValue,
-            application_fee_amount: platformTotal.intValue,
             session,
           })
         : await constructStripeIntent({
