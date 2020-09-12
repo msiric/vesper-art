@@ -1,33 +1,34 @@
-import mongoose from 'mongoose';
+import createError from 'http-errors';
 import randomString from 'randomstring';
-import { sendEmail } from '../utils/email.js';
 import { server } from '../config/secret.js';
-import { formatParams, sanitizeData } from '../utils/helpers.js';
 import {
-  fetchUserArtworks,
   fetchArtworksByOwner,
+  fetchUserArtworks,
 } from '../services/artwork.js';
-import { fetchOrdersBySeller, fetchOrdersByBuyer } from '../services/order.js';
+import { fetchOrdersByBuyer, fetchOrdersBySeller } from '../services/order.js';
+import { fetchStripeBalance } from '../services/stripe.js';
 import {
-  fetchUserById,
-  fetchUserByEmail,
-  fetchUserProfile,
-  fetchUserSaves,
-  fetchUserStatistics,
-  fetchUserNotifications,
+  addNewIntent,
+  deactivateExistingUser,
   editUserEmail,
   editUserPassword,
   editUserPreferences,
-  deactivateExistingUser,
+  fetchUserByEmail,
+  fetchUserById,
+  fetchUserNotifications,
+  fetchUserProfile,
+  fetchUserSaves,
+  fetchUserStatistics,
+  removeExistingIntent,
 } from '../services/user.js';
+import { sendEmail } from '../utils/email.js';
+import { formatParams, sanitizeData } from '../utils/helpers.js';
 import { deleteS3Object } from '../utils/upload.js';
-import createError from 'http-errors';
-import { fetchStripeBalance } from '../services/stripe.js';
-import originValidator from '../validation/origin.js';
-import profileValidator from '../validation/profile.js';
 import emailValidator from '../validation/email.js';
+import originValidator from '../validation/origin.js';
 import passwordValidator from '../validation/password.js';
 import preferencesValidator from '../validation/preferences.js';
+import profileValidator from '../validation/profile.js';
 import rangeValidator from '../validation/range.js';
 
 export const getUserProfile = async ({
@@ -144,6 +145,23 @@ export const getUserNotifications = async ({
     dataLimit,
   });
   return { notifications: foundNotifications };
+};
+
+export const createUserIntent = async ({ userId, artworkId, intentId }) => {
+  await addNewIntent({
+    userId,
+    artworkId,
+    intentId,
+  });
+  return { message: 'Intent successfully saved' };
+};
+
+export const deleteUserIntent = async ({ userId, intentId }) => {
+  await removeExistingIntent({
+    userId,
+    intentId,
+  });
+  return { message: 'Intent successfully deleted' };
 };
 
 export const updateUserEmail = async ({ userId, userEmail, session }) => {

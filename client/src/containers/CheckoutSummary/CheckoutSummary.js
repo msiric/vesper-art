@@ -17,7 +17,6 @@ import NumberFormat from 'react-number-format';
 import { useHistory } from 'react-router-dom';
 import * as Yup from 'yup';
 import CheckoutCard from '../../components/CheckoutCard/CheckoutCard.js';
-import { postDiscount } from '../../services/checkout.js';
 
 const validationSchema = Yup.object().shape({
   discountCode: Yup.string().trim().required('Discount cannot be empty'),
@@ -248,12 +247,15 @@ const CheckoutSummary = ({
               discountCode: '',
             }}
             validationSchema={validationSchema}
-            onSubmit={async (values) => {
-              const { data } = await postDiscount({ data: values });
-              handleDiscountChange(data.payload);
-            }}
+            onSubmit={handleDiscountChange}
           >
-            {({ values, errors, touched, enableReinitialize }) => (
+            {({
+              isSubmitting,
+              values,
+              errors,
+              touched,
+              enableReinitialize,
+            }) => (
               <Form>
                 <Field name="discountCode">
                   {({ field, form: { touched, errors }, meta }) => (
@@ -271,7 +273,12 @@ const CheckoutSummary = ({
                   )}
                 </Field>
                 <CardActions className={classes.actions}>
-                  <Button type="submit" color="primary" fullWidth>
+                  <Button
+                    type="submit"
+                    color="primary"
+                    disabled={isSubmitting}
+                    fullWidth
+                  >
                     Apply
                   </Button>
                 </CardActions>

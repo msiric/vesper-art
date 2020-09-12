@@ -1,26 +1,28 @@
 import express from 'express';
 import {
-  isAuthenticated,
+  createUserIntent,
+  deactivateUser,
+  deleteUserIntent,
+  getUserArtwork,
+  getUserNotifications,
+  getUserProfile,
+  getUserPurchases,
+  getUserSales,
+  getUserSaves,
+  getUserSettings,
+  getUserStatistics,
+  updateUserEmail,
+  updateUserOrigin,
+  updateUserPassword,
+  updateUserPreferences,
+  updateUserProfile,
+} from '../../../controllers/user.js';
+import {
   checkParamsId,
   checkParamsUsername,
+  isAuthenticated,
   requestHandler as handler,
 } from '../../../utils/helpers.js';
-import {
-  getUserProfile,
-  getUserArtwork,
-  updateUserProfile,
-  deactivateUser,
-  getUserSaves,
-  getUserSales,
-  getUserPurchases,
-  getUserSettings,
-  updateUserPreferences,
-  getUserNotifications,
-  updateUserEmail,
-  updateUserPassword,
-  getUserStatistics,
-  updateUserOrigin,
-} from '../../../controllers/user.js';
 
 const router = express.Router();
 
@@ -131,6 +133,21 @@ router.route('/user/:userId/update_password').patch(
   handler(updateUserPassword, false, (req, res, next) => ({
     ...req.params,
     ...req.body,
+  }))
+);
+
+router.route('/user/:userId/intents').post(
+  [isAuthenticated, checkParamsId],
+  handler(createUserIntent, false, (req, res, next) => ({
+    ...req.params,
+    ...req.body,
+  }))
+);
+
+router.route('/user/:userId/intents/:intentId').delete(
+  [isAuthenticated, checkParamsId],
+  handler(deleteUserIntent, false, (req, res, next) => ({
+    ...req.params,
   }))
 );
 

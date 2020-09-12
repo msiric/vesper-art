@@ -236,6 +236,42 @@ export const addUserNotification = async ({ userId, session = null }) => {
   ).session(session);
 };
 
+export const addNewIntent = async ({
+  userId,
+  artworkId,
+  intentId,
+  session = null,
+}) => {
+  return await User.updateOne(
+    { _id: userId },
+    {
+      $addToSet: {
+        intents: {
+          intentId: intentId,
+          artworkId: artworkId,
+        },
+      },
+    }
+  ).session(session);
+};
+
+export const removeExistingIntent = async ({
+  userId,
+  intentId,
+  session = null,
+}) => {
+  return await User.updateOne(
+    { _id: userId },
+    {
+      $pull: {
+        intents: {
+          intentId: intentId,
+        },
+      },
+    }
+  ).session(session);
+};
+
 export const editUserRating = async ({
   userId,
   userRating,

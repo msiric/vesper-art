@@ -207,6 +207,14 @@ const reducer = (state, action) => {
           notifications: action.notifications,
         },
       };
+    case 'updateIntents':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          intents: { ...state.user.intents, ...action.intents },
+        },
+      };
     case 'getState':
       return { ...state };
     default:

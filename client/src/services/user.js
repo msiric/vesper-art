@@ -55,3 +55,7 @@ export const patchRead = async ({ notificationId }) =>
   await ax.patch(`/api/read_notification/${notificationId}`);
 export const patchUnread = async ({ notificationId }) =>
   await ax.patch(`/api/unread_notification/${notificationId}`);
+export const postCheckout = async ({ userId, data }) =>
+  await ax.post(`/api/user/${userId}/intents`, data);
+export const patchCheckout = async ({ userId, intentId, data }) =>
+  await ax.patch(`/api/user/${userId}/intents/${intentId}`, data);

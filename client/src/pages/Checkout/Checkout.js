@@ -34,8 +34,9 @@ import CheckoutSummary from '../../containers/CheckoutSummary/CheckoutSummary.js
 import LicenseForm from '../../containers/LicenseForm/LicenseForm.js';
 import PaymentForm from '../../containers/PaymentForm/PaymentForm.js';
 import { Context } from '../../context/Store.js';
-import { getCheckout } from '../../services/checkout.js';
+import { getCheckout, postDiscount } from '../../services/checkout.js';
 import { postIntent } from '../../services/stripe.js';
+import { postCheckout } from '../../services/user.js';
 import { billingValidation } from '../../validation/billing.js';
 import { licenseValidation } from '../../validation/license.js';
 const STEPS = [
@@ -155,6 +156,7 @@ const Processor = ({ match, location, stripe }) => {
     artwork: {},
     license: location.state.license || '',
     discount: null,
+    intent: null,
     step: {
       current: 0,
       length: STEPS.length,
@@ -179,16 +181,38 @@ const Processor = ({ match, location, stripe }) => {
     }
   };
 
-  const handleDiscountChange = (value) => {
-    setState((prevState) => {
-      console.log(prevState);
-      return { ...prevState, discount: value };
-    });
+  const handleDiscountChange = async (values, actions) => {
+    try {
+      const intentId = store.user.intents[state.artwork._id] || null;
+      const {
+        data: { payload },
+      } = values
+        ? await postDiscount({ data: values })
+        : { data: { payload: null } };
+      if (intentId) {
+        await postIntent({
+          artworkId: state.artwork._id,
+          artworkLicense: {
+            assignee: '',
+            company: '',
+            type: state.license,
+          },
+          discountId: payload ? payload._id : null,
+          intentId,
+        });
+      }
+      setState((prevState) => {
+        console.log(prevState);
+        return { ...prevState, discount: payload };
+      });
+      actions && actions.setSubmitting(false);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const saveIntent = async (values) => {
+  const saveIntent = async (values, actions) => {
     try {
-      setState((prevState) => ({ ...prevState, loading: true }));
       const intentId = store.user.intents[state.artwork._id] || null;
       const { data } = await postIntent({
         artworkId: state.artwork._id,
@@ -200,12 +224,28 @@ const Processor = ({ match, location, stripe }) => {
         discountId: state.discount ? state.discount._id : null,
         intentId,
       });
-      // $TODO if intentId is null push data.intent.id to user.intents array
+      if (!intentId) {
+        try {
+          await postCheckout({
+            userId: store.user.id,
+            artworkId: state.artwork._id,
+            intentId: data.intent.id,
+          });
+          dispatch({
+            type: 'updateIntents',
+            intents: {
+              [state.artwork._id]: data.intent.id,
+            },
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      }
       setState((prevState) => ({
         ...prevState,
         secret: data.intent.secret,
-        loading: false,
       }));
+      actions.setSubmitting(false);
       handleStepChange(1);
     } catch (err) {
       console.log(err);
@@ -221,7 +261,7 @@ const Processor = ({ match, location, stripe }) => {
     }));
   };
 
-  const submitForm = async (values) => {
+  const submitForm = async (values, actions) => {
     if (!state.secret || !stripe || !elements) {
       console.log('nije dobro');
       console.log(state.secret, stripe, elements);
@@ -273,15 +313,16 @@ const Processor = ({ match, location, stripe }) => {
           },
         }); */
     }
+    actions.setSubmitting(false);
   };
 
   const handleSubmit = (values, actions) => {
     const isFirstStep = state.step.current === 0;
     const isLastStep = state.step.current === state.step.length - 1;
     if (isLastStep) {
-      submitForm(values);
+      submitForm(values, actions);
     } else if (isFirstStep) {
-      saveIntent(values);
+      saveIntent(values, actions);
     } else {
       handleStepChange(1);
     }
@@ -387,6 +428,7 @@ const Processor = ({ match, location, stripe }) => {
                                 </Stepper>
                                 <Box className={classes.mainBox}>
                                   <Grid container spacing={3}>
+                                    {console.log(values)}
                                     {renderForm(state.step.current)}
                                   </Grid>
                                 </Box>
@@ -406,6 +448,7 @@ const Processor = ({ match, location, stripe }) => {
                                     color="primary"
                                     className={classes.button}
                                     type="submit"
+                                    disabled={isSubmitting}
                                   >
                                     {state.loading ? (
                                       <CircularProgress
