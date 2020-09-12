@@ -27,6 +27,7 @@ import {
   editUserSale,
   editUserStripe,
   fetchUserById,
+  removeExistingIntent,
 } from '../services/user.js';
 import { sanitizeData } from '../utils/helpers.js';
 import licenseValidator from '../validation/license.js';
@@ -44,10 +45,15 @@ export const receiveWebhookEvent = async ({
     stripeSignature,
   });
 
+  console.log('stripe event', stripeEvent.type);
+
   switch (stripeEvent.type) {
     case 'payment_intent.succeeded':
       const paymentIntent = stripeEvent.data.object;
       await processTransaction({ stripeIntent: paymentIntent, session });
+      break;
+    case 'payment_intent.failed':
+      console.log('Failed payment');
       break;
     default:
       throw createError(400, 'Invalid Stripe event');
@@ -333,7 +339,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
     session,
   });
   await editUserSale({ userId: sellerId, orderId: savedOrder._id, session });
-  // $TODO delete intentId found in user.intents array, using the artwork._id
+  await removeExistingIntent({ userId: sellerId, intentId, session });
   // new start
   await addNewNotification({
     notificationLink: savedOrder._id,

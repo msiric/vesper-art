@@ -228,8 +228,10 @@ const Processor = ({ match, location, stripe }) => {
         try {
           await postCheckout({
             userId: store.user.id,
-            artworkId: state.artwork._id,
-            intentId: data.intent.id,
+            data: {
+              artworkId: state.artwork._id,
+              intentId: data.intent.id,
+            },
           });
           dispatch({
             type: 'updateIntents',
@@ -325,6 +327,7 @@ const Processor = ({ match, location, stripe }) => {
       saveIntent(values, actions);
     } else {
       handleStepChange(1);
+      actions.setSubmitting(false);
     }
   };
 

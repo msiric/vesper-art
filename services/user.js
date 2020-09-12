@@ -242,6 +242,7 @@ export const addNewIntent = async ({
   intentId,
   session = null,
 }) => {
+  console.log(typeof intentId);
   return await User.updateOne(
     { _id: userId },
     {

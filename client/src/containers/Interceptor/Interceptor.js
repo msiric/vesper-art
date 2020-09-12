@@ -70,6 +70,7 @@ const Interceptor = ({ children }) => {
               return object;
             }, {}),
             intents: data.user.intents.reduce(function (object, item) {
+              console.log(object, item);
               object[item.artworkId] = item.intentId;
               return object;
             }, {}),
