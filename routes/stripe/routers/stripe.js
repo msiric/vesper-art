@@ -1,18 +1,18 @@
+import bodyParser from 'body-parser';
 import express from 'express';
+import {
+  assignStripeId,
+  createPayout,
+  getStripeUser,
+  managePaymentIntent,
+  onboardUser,
+  receiveWebhookEvent,
+  redirectToStripe,
+} from '../../../controllers/stripe.js';
 import {
   isAuthenticated,
   requestHandler as handler,
 } from '../../../utils/helpers.js';
-import bodyParser from 'body-parser';
-import {
-  receiveWebhookEvent,
-  getStripeUser,
-  managePaymentIntent,
-  redirectToStripe,
-  onboardUser,
-  assignStripeId,
-  createPayout,
-} from '../../../controllers/stripe.js';
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ router.route('/account/:accountId').get(
   }))
 );
 
-router.route('/intent/:artworkId').post(
+router.route('/intent/:versionId').post(
   isAuthenticated,
   handler(managePaymentIntent, true, (req, res, next) => ({
     ...req.params,

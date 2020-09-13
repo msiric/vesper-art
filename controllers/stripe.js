@@ -9,7 +9,7 @@ import { payment } from '../config/constants.js';
 import { server, stripe as processor } from '../config/secret.js';
 import socketApi from '../lib/socket.js';
 import License from '../models/license.js';
-import { fetchArtworkDetails } from '../services/artwork.js';
+import { fetchVersionDetails } from '../services/artwork.js';
 import { fetchDiscountById } from '../services/discount.js';
 import { addNewNotification } from '../services/notification.js';
 import { addNewOrder } from '../services/order.js';
@@ -76,7 +76,7 @@ export const getStripeUser = async ({ accountId }) => {
 // $TODO validacija licenci
 export const managePaymentIntent = async ({
   userId,
-  artworkId,
+  versionId,
   intentId,
   discountId,
   artworkLicense,
@@ -91,14 +91,14 @@ export const managePaymentIntent = async ({
       : null;
     // $TODO Fetch by version id not artwork id
     // $TODO Check that artwork isn't being updated while the payment is being processed
-    const foundArtwork = await fetchArtworkDetails({ artworkId, session });
-    if (foundArtwork) {
+    const foundVersion = await fetchVersionDetails({ versionId, session });
+    if (foundVersion) {
       // $TODO Bolje sredit validaciju
       const licensePrice =
         artworkLicense.type === 'personal'
-          ? foundArtwork.current.personal
+          ? foundVersion.personal
           : artworkLicense.type === 'commercial'
-          ? foundArtwork.current.commercial
+          ? foundVersion.commercial
           : 0;
       const buyerFee = currency(licensePrice)
         .multiply(payment.buyerFee.multiplier)
@@ -117,9 +117,9 @@ export const managePaymentIntent = async ({
 
       const orderData = {
         buyerId: foundUser._id,
-        sellerId: foundArtwork.owner._id,
-        artworkId: foundArtwork._id,
-        versionId: foundArtwork.current._id,
+        sellerId: foundVersion.artwork.owner._id,
+        artworkId: foundVersion.artwork._id,
+        versionId: foundVersion._id,
         discountId: foundDiscount ? foundDiscount._id : null,
         spent: buyerTotal.intValue,
         earned: sellerTotal.intValue,
@@ -128,7 +128,7 @@ export const managePaymentIntent = async ({
           licenseAssignee: artworkLicense.assignee,
           licenseCompany: artworkLicense.company,
           licenseType: artworkLicense.type,
-          licensePrice: foundArtwork.current[artworkLicense.type],
+          licensePrice: foundVersion[artworkLicense.type],
         },
       };
       const paymentIntent = intentId
@@ -144,7 +144,7 @@ export const managePaymentIntent = async ({
             intentAmount: buyerTotal.intValue,
             intentCurrency: 'usd',
             intentFee: platformTotal.intValue,
-            sellerId: foundArtwork.owner.stripeId,
+            sellerId: foundVersion.artwork.owner.stripeId,
             orderData: orderData,
             session,
           });

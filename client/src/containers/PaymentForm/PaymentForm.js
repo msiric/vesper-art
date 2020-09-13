@@ -79,7 +79,7 @@ const StripeInput = ({ component: Component, inputRef, ...other }) => {
   );
 };
 
-const PaymentForm = ({ secret, artwork }) => {
+const PaymentForm = ({ secret, version }) => {
   const classes = PaymentFormStyles();
 
   const stripe = useStripe();

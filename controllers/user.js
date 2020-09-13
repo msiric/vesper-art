@@ -147,10 +147,10 @@ export const getUserNotifications = async ({
   return { notifications: foundNotifications };
 };
 
-export const createUserIntent = async ({ userId, artworkId, intentId }) => {
+export const createUserIntent = async ({ userId, versionId, intentId }) => {
   await addNewIntent({
     userId,
-    artworkId,
+    versionId,
     intentId,
   });
   return { message: 'Intent successfully saved' };

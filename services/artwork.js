@@ -26,6 +26,12 @@ export const fetchActiveArtworks = async ({
     );
 };
 
+export const fetchVersionDetails = async ({ versionId, session = null }) => {
+  return await Version.findOne({ _id: versionId }).deepPopulate(
+    'artwork.owner'
+  );
+};
+
 export const fetchArtworkDetails = async ({
   artworkId,
   dataSkip,

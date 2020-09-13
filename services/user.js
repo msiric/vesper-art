@@ -238,7 +238,7 @@ export const addUserNotification = async ({ userId, session = null }) => {
 
 export const addNewIntent = async ({
   userId,
-  artworkId,
+  versionId,
   intentId,
   session = null,
 }) => {
@@ -249,7 +249,7 @@ export const addNewIntent = async ({
       $addToSet: {
         intents: {
           intentId: intentId,
-          artworkId: artworkId,
+          versionId: versionId,
         },
       },
     }

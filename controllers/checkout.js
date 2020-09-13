@@ -1,11 +1,11 @@
 import createError from 'http-errors';
-import { fetchArtworkDetails } from '../services/artwork.js';
+import { fetchVersionDetails } from '../services/artwork.js';
 
-export const getCheckout = async ({ userId, artworkId }) => {
-  const foundArtwork = await fetchArtworkDetails({ artworkId });
-  if (foundArtwork) {
+export const getCheckout = async ({ userId, versionId }) => {
+  const foundVersion = await fetchVersionDetails({ versionId });
+  if (foundVersion && foundVersion.artwork.active) {
     return {
-      artwork: foundArtwork,
+      version: foundVersion,
     };
   }
   throw createError(400, 'Artwork not found');

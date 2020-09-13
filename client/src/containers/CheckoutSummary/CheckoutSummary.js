@@ -25,7 +25,7 @@ const validationSchema = Yup.object().shape({
 const CheckoutSummary = ({
   match,
   location,
-  artwork,
+  version,
   license,
   discount,
   handleDiscountChange,
@@ -42,12 +42,12 @@ const CheckoutSummary = ({
   const classes = {};
 
   useEffect(() => {
-    if (artwork._id) {
+    if (version._id) {
       setState((prevState) => ({
         ...prevState,
         summary: {
           license: license,
-          amount: artwork.current[license],
+          amount: version[license],
         },
       }));
     }
@@ -60,12 +60,12 @@ const CheckoutSummary = ({
           Order summary
         </Typography>
         <Grid item xs={12} className={classes.artwork}>
-          <CheckoutCard artwork={artwork} />
+          <CheckoutCard version={version} />
         </Grid>
         <List disablePadding>
-          <ListItem className={classes.listItem} key={artwork.current._id}>
+          <ListItem className={classes.listItem} key={version._id}>
             <ListItemText
-              primary={<Typography>{artwork.current.title}</Typography>}
+              primary={<Typography>{version.title}</Typography>}
               secondary={
                 <div>
                   {!state.summary.license ? (

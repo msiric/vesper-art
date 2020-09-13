@@ -1,14 +1,14 @@
 import express from 'express';
+import { getCheckout } from '../../../controllers/checkout.js';
 import {
-  isAuthenticated,
   checkParamsId,
+  isAuthenticated,
   requestHandler as handler,
 } from '../../../utils/helpers.js';
-import { getCheckout } from '../../../controllers/checkout.js';
 
 const router = express.Router();
 
-router.route('/checkout/:artworkId').get(
+router.route('/checkout/:versionId').get(
   [isAuthenticated, checkParamsId],
   handler(getCheckout, false, (req, res, next) => ({
     ...req.params,

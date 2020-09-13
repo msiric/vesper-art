@@ -79,24 +79,9 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const LicenseForm = ({ artwork, license, handleLicenseChange }) => {
+const LicenseForm = ({ version, license, handleLicenseChange }) => {
   const [state, setState] = useState({ loading: false });
   const classes = LicenseFormStyles();
-
-  const retrieveIntentId = () => {
-    const checkoutItem = JSON.parse(
-      window.sessionStorage.getItem(artwork._id.toString())
-    );
-    if (checkoutItem) {
-      const currentId = artwork.current._id.toString();
-      if (checkoutItem.versionId === currentId) {
-        return checkoutItem.intentId;
-      } else {
-        window.sessionStorage.removeItem(artwork._id);
-        console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
-      }
-    }
-  };
 
   const licenseOptions =
     license === 'personal'
@@ -187,7 +172,7 @@ const LicenseForm = ({ artwork, license, handleLicenseChange }) => {
                   error={meta.touched && Boolean(meta.error)}
                   onChange={(e) => handleLicenseChange(e.target, setFieldValue)}
                   options={
-                    artwork.current && artwork.current.license === 'commercial'
+                    version && version.license === 'commercial'
                       ? [
                           {
                             value: 'personal',

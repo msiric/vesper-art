@@ -50,7 +50,7 @@ const UserSchema = new Schema({
   intents: [
     {
       intentId: String,
-      artworkId: { type: Schema.Types.ObjectId, ref: 'Artwork' },
+      versionId: { type: Schema.Types.ObjectId, ref: 'Version' },
     },
   ],
   active: Boolean,

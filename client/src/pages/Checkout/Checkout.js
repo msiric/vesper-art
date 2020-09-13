@@ -183,7 +183,7 @@ const Processor = ({ match, location, stripe }) => {
 
   const handleDiscountChange = async (values, actions) => {
     try {
-      const intentId = store.user.intents[state.artwork._id] || null;
+      const intentId = store.user.intents[state.version._id] || null;
       const {
         data: { payload },
       } = values
@@ -191,7 +191,7 @@ const Processor = ({ match, location, stripe }) => {
         : { data: { payload: null } };
       if (intentId) {
         await postIntent({
-          artworkId: state.artwork._id,
+          versionId: state.version._id,
           artworkLicense: {
             assignee: '',
             company: '',
@@ -213,9 +213,9 @@ const Processor = ({ match, location, stripe }) => {
 
   const saveIntent = async (values, actions) => {
     try {
-      const intentId = store.user.intents[state.artwork._id] || null;
+      const intentId = store.user.intents[state.version._id] || null;
       const { data } = await postIntent({
-        artworkId: state.artwork._id,
+        versionId: state.version._id,
         artworkLicense: {
           assignee: values.licenseAssignee,
           company: values.licenseCompany,
@@ -229,14 +229,14 @@ const Processor = ({ match, location, stripe }) => {
           await postCheckout({
             userId: store.user.id,
             data: {
-              artworkId: state.artwork._id,
+              version: state.version._id,
               intentId: data.intent.id,
             },
           });
           dispatch({
             type: 'updateIntents',
             intents: {
-              [state.artwork._id]: data.intent.id,
+              [state.version._id]: data.intent.id,
             },
           });
         } catch (err) {
@@ -336,7 +336,7 @@ const Processor = ({ match, location, stripe }) => {
       case 0:
         return (
           <LicenseForm
-            artwork={state.artwork}
+            version={state.version}
             license={state.license}
             handleLicenseChange={handleLicenseChange}
           />
@@ -344,7 +344,7 @@ const Processor = ({ match, location, stripe }) => {
       case 1:
         return <BillingForm />;
       case 2:
-        return <PaymentForm secret={state.secret} artwork={state.artwork} />;
+        return <PaymentForm secret={state.secret} version={state.version} />;
 
       default:
         return <div>Not Found</div>;
@@ -362,12 +362,12 @@ const Processor = ({ match, location, stripe }) => {
         city: '',
         country: '',
       };
-      const { data } = await getCheckout({ artworkId: match.params.id });
+      const { data } = await getCheckout({ versionId: match.params.id });
       /*       const license = retrieveLicenseInformation(data.artwork); */
       setState((prevState) => ({
         ...state,
         loading: false,
-        artwork: data.artwork,
+        version: data.version,
         billing: billing,
         discount: data.discount,
       }));
@@ -385,7 +385,7 @@ const Processor = ({ match, location, stripe }) => {
       <Grid container className={classes.container} spacing={2}>
         {state.loading ? (
           <LoadingSpinner />
-        ) : state.artwork._id ? (
+        ) : state.version._id ? (
           <>
             <Grid item xs={12} md={8} className={classes.artwork}>
               <Box component="main">
@@ -475,7 +475,7 @@ const Processor = ({ match, location, stripe }) => {
             </Grid>
             <Grid item xs={12} md={4} className={classes.actions}>
               <CheckoutSummary
-                artwork={state.artwork}
+                version={state.version}
                 license={state.license}
                 discount={state.discount}
                 handleDiscountChange={handleDiscountChange}

@@ -136,7 +136,7 @@ const Checkout = ({ match, location }) => {
         city: '',
         country: '',
       };
-      const { data } = await getCheckout({ artworkId: match.params.id });
+      const { data } = await getCheckout({ versionId: match.params.id });
       const stripe = await loadStripe(
         'pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z'
       );
