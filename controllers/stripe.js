@@ -156,7 +156,7 @@ export const managePaymentIntent = async ({
           },
         };
       }
-      throw createError(400, 'Artwork has been updated');
+      throw createError(400, 'Artwork version is obsolete');
     }
     throw createError(400, 'Artwork not found');
   }
