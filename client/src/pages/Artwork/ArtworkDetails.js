@@ -162,6 +162,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
       },
     }));
   };
+
   // $TODO ADD RESET FORM METHOD
   const handleModalClose = ({ resetForm }) => {
     resetForm();
@@ -172,10 +173,6 @@ const ArtworkDetails = ({ match, location, socket }) => {
         open: false,
       },
     }));
-  };
-
-  const handleLicenseChange = (value) => {
-    setState({ ...state, license: value });
   };
 
   const handleTabsChange = (e, index) => {
@@ -326,7 +323,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
                 handleTabsChange={handleTabsChange}
                 handleChangeIndex={handleChangeIndex}
                 handlePurchase={handlePurchase}
-                handleDownload={handleDownload}
+                handleModalOpen={handleModalOpen}
               />
             </Grid>
           </>

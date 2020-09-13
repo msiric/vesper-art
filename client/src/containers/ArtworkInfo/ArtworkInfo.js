@@ -13,7 +13,7 @@ const ArtworkInfo = ({
   handleTabsChange,
   handleChangeIndex,
   handlePurchase,
-  handleDownload,
+  handleModalOpen,
   match,
 }) => {
   const [store, dispatch] = useContext(Context);
@@ -60,7 +60,7 @@ const ArtworkInfo = ({
                       list={[]}
                       license="personal"
                       handlePurchase={handlePurchase}
-                      handleDownload={handleDownload}
+                      handleModalOpen={handleModalOpen}
                     />
                   ),
                   error: null,
@@ -78,7 +78,7 @@ const ArtworkInfo = ({
                       list={[]}
                       license="commercial"
                       handlePurchase={handlePurchase}
-                      handleDownload={handleDownload}
+                      handleModalOpen={handleModalOpen}
                     />
                   ),
                   error: null,

@@ -10,7 +10,6 @@ import {
 } from '@material-ui/core';
 import { CheckRounded as CheckIcon } from '@material-ui/icons';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { Card, Typography } from '../../constants/theme.js';
 
 const PricingCard = ({
@@ -20,7 +19,7 @@ const PricingCard = ({
   list,
   license,
   handlePurchase,
-  handleDownload,
+  handleModalOpen,
 }) => {
   return (
     <Card width="100%" height="100%">
@@ -65,11 +64,7 @@ const PricingCard = ({
             Purchase
           </Button>
         ) : (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleDownload(id, license)}
-          >
+          <Button variant="contained" color="primary" onClick={handleModalOpen}>
             Download
           </Button>
         )}
