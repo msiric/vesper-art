@@ -18,7 +18,7 @@ import ArtistSection from '../../containers/ArtistSection/ArtistSection.js';
 import ArtworkInfo from '../../containers/ArtworkInfo/ArtworkInfo.js';
 import ArtworkPreview from '../../containers/ArtworkPreview/ArtworkPreview.js';
 import CommentSection from '../../containers/CommentSection/CommentSection.js';
-import AddLicenseForm from '../../containers/License/AddLicenseForm.js';
+import LicenseForm from '../../containers/LicenseForm/LicenseForm.js';
 import { Context } from '../../context/Store.js';
 import {
   deleteComment,
@@ -99,15 +99,11 @@ const ArtworkDetails = ({ match, location, socket }) => {
     });
   };
 
-  const handleDownload = async (id) => {
+  const handleDownload = async (values) => {
     try {
-      const { data } = await getDetails({
-        artworkId: match.params.id,
-      });
-      if (data.artwork._id)
-        setState({ ...state, loading: false, artwork: data.artwork });
+      console.log(values);
     } catch (err) {
-      setState({ ...state, loading: false });
+      console.log(err);
     }
   };
 
@@ -164,8 +160,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
   };
 
   // $TODO ADD RESET FORM METHOD
-  const handleModalClose = ({ resetForm }) => {
-    resetForm();
+  const handleModalClose = () => {
     setState((prevState) => ({
       ...prevState,
       modal: {
@@ -335,7 +330,15 @@ const ArtworkDetails = ({ match, location, socket }) => {
           handleClose={handleModalClose}
           ariaLabel="License modal"
         >
-          <AddLicenseForm />
+          <LicenseForm
+            version={state.artwork.current}
+            initial={{
+              standalone: true,
+              value: state.tabs.value === 0 ? 'personal' : 'commercial',
+              submit: handleDownload,
+            }}
+            handleModalClose={handleModalClose}
+          />
         </Modal>
       </Grid>
       {/* $TODO Separate component */}

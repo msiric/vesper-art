@@ -4,6 +4,10 @@ import {
   CircularProgress,
   Container,
   Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   makeStyles,
   Paper,
   Step,
@@ -14,6 +18,7 @@ import {
 } from '@material-ui/core';
 import {
   CardMembershipRounded as LicenseIcon,
+  CheckRounded as CheckIcon,
   ContactMailRounded as BillingIcon,
   PaymentRounded as PaymentIcon,
 } from '@material-ui/icons';
@@ -39,6 +44,7 @@ import { postIntent } from '../../services/stripe.js';
 import { postCheckout } from '../../services/user.js';
 import { billingValidation } from '../../validation/billing.js';
 import { licenseValidation } from '../../validation/license.js';
+
 const STEPS = [
   'License information',
   'Billing information',
@@ -163,6 +169,38 @@ const Processor = ({ match, location, stripe }) => {
     },
     loading: true,
   });
+
+  const licenseOptions =
+    state.license === 'personal'
+      ? [
+          {
+            label: 'Personal blogging, websites and social media',
+          },
+          {
+            label:
+              'Home printing, art and craft projects, personal portfolios and gifts',
+          },
+          { label: 'Students and charities' },
+          {
+            label:
+              'The personal use license is not suitable for commercial activities',
+          },
+        ]
+      : [
+          {
+            label:
+              'Print and digital advertising, broadcasts, product packaging, presentations, websites and blogs',
+          },
+          {
+            label:
+              'Home printing, art and craft projects, personal portfolios and gifts',
+          },
+          { label: 'Students and charities' },
+          {
+            label:
+              'The personal use license is not suitable for commercial activities',
+          },
+        ];
 
   const elements = useElements();
   const history = useHistory();
@@ -433,6 +471,23 @@ const Processor = ({ match, location, stripe }) => {
                                   <Grid container spacing={3}>
                                     {console.log(values)}
                                     {renderForm(state.step.current)}
+                                    {state.step.current === 0 && (
+                                      <List
+                                        component="nav"
+                                        aria-label="Features"
+                                      >
+                                        {licenseOptions.map((item) => (
+                                          <ListItem>
+                                            <ListItemIcon>
+                                              <CheckIcon />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                              primary={item.label}
+                                            />
+                                          </ListItem>
+                                        ))}
+                                      </List>
+                                    )}
                                   </Grid>
                                 </Box>
                                 <Box

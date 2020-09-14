@@ -1,14 +1,6 @@
-import {
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import { Box, Button, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { CheckRounded as CheckIcon } from '@material-ui/icons';
-import { Field } from 'formik';
+import { Field, Form, Formik } from 'formik';
 import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { Container, Grid } from '../../constants/theme.js';
@@ -79,156 +71,205 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const LicenseForm = ({ version, license, handleLicenseChange }) => {
+const changeLicense = (target, setFieldValue) =>
+  setFieldValue(target.name, target.value);
+
+const LicenseForm = ({
+  version,
+  handleLicenseChange = changeLicense,
+  initial = { standalone: false, value: 'personal', submit: () => null },
+  handleModalClose = () => null,
+}) => {
   const [state, setState] = useState({ loading: false });
   const classes = LicenseFormStyles();
-
-  const licenseOptions =
-    license === 'personal'
-      ? [
-          {
-            label: 'Personal blogging, websites and social media',
-          },
-          {
-            label:
-              'Home printing, art and craft projects, personal portfolios and gifts',
-          },
-          { label: 'Students and charities' },
-          {
-            label:
-              'The personal use license is not suitable for commercial activities',
-          },
-        ]
-      : [
-          {
-            label:
-              'Print and digital advertising, broadcasts, product packaging, presentations, websites and blogs',
-          },
-          {
-            label:
-              'Home printing, art and craft projects, personal portfolios and gifts',
-          },
-          { label: 'Students and charities' },
-          {
-            label:
-              'The personal use license is not suitable for commercial activities',
-          },
-        ];
 
   return (
     <Container fixed p={2}>
       <Grid container>
         <Typography variant="h5">License information</Typography>
         <Grid item xs={12} className={classes.actions}>
-          {/*           <Formik
-            initialValues={{
-              licenseType: license.type,
-              licenseAssignee: license.assignee,
-              licenseCompany: license.company,
-            }}
-            enableReinitialize
-            validationSchema={validationSchema}
-            onSubmit={async (values) => {}}
-          >
-            {({ values, errors, touched, enableReinitialize }) => (
-              <Form style={{ width: '100%' }}> */}
-          <Grid item xs={12}>
-            <Field name="licenseAssignee">
-              {({ field, form: { touched, errors }, meta }) => (
-                <TextField
-                  {...field}
-                  type="text"
-                  label="License assignee"
-                  error={meta.touched && meta.error}
-                  helperText={meta.touched && meta.error}
-                  margin="dense"
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
-            </Field>
-            <Field name="licenseCompany">
-              {({ field, form: { touched, errors }, meta }) => (
-                <TextField
-                  {...field}
-                  type="text"
-                  label="License company"
-                  error={meta.touched && meta.error}
-                  helperText={meta.touched && meta.error}
-                  margin="dense"
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
-            </Field>
-            {/*             <TextInput name="licenseAssignee" label="License assignee" />
-            <TextInput name="licenseCompany" label="License company" /> */}
-            <Field name="licenseType">
-              {({ field, form: { touched, errors, setFieldValue }, meta }) => (
-                <SelectInput
-                  {...field}
-                  label="License type"
-                  helperText={meta.touched && meta.error}
-                  error={meta.touched && Boolean(meta.error)}
-                  onChange={(e) => handleLicenseChange(e.target, setFieldValue)}
-                  options={
-                    version && version.license === 'commercial'
-                      ? [
-                          {
-                            value: 'personal',
-                            text: 'Personal',
-                          },
-                          {
-                            value: 'commercial',
-                            text: 'Commercial',
-                          },
-                        ]
-                      : [
-                          {
-                            value: 'personal',
-                            text: 'Personal',
-                          },
-                        ]
-                  }
-                  margin="dense"
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
-            </Field>
-            <List component="nav" aria-label="Features">
-              {licenseOptions.map((item) => (
-                <ListItem>
-                  <ListItemIcon>
-                    <CheckIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={item.label} />
-                </ListItem>
-              ))}
-            </List>
-          </Grid>
-          {/*           <Box display="flex" justifyContent="space-between">
-            <Button disabled={true} className={classes.button}>
-              Back
-            </Button>
-            <Button
-              onClick={() => handleNextClick(values)}
-              variant="contained"
-              color="primary"
-              className={classes.button}
-              type="button"
-              disabled={!license}
+          {initial.standalone ? (
+            <Formik
+              initialValues={{
+                licenseType: initial.value,
+                licenseAssignee: '',
+                licenseCompany: '',
+              }}
+              enableReinitialize
+              validationSchema={validationSchema}
+              onSubmit={initial.submit}
             >
-              {state.loading ? (
-                <CircularProgress color="secondary" size={24} />
-              ) : (
-                'Next'
+              {({
+                isSubmitting,
+                values,
+                errors,
+                touched,
+                enableReinitialize,
+              }) => (
+                <Form style={{ width: '100%' }}>
+                  <Grid item xs={12}>
+                    <Field name="licenseAssignee">
+                      {({ field, form: { touched, errors }, meta }) => (
+                        <TextField
+                          {...field}
+                          type="text"
+                          label="License assignee"
+                          error={meta.touched && meta.error}
+                          helperText={meta.touched && meta.error}
+                          margin="dense"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      )}
+                    </Field>
+                    <Field name="licenseCompany">
+                      {({ field, form: { touched, errors }, meta }) => (
+                        <TextField
+                          {...field}
+                          type="text"
+                          label="License company"
+                          error={meta.touched && meta.error}
+                          helperText={meta.touched && meta.error}
+                          margin="dense"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      )}
+                    </Field>
+                    {/*             <TextInput name="licenseAssignee" label="License assignee" />
+            <TextInput name="licenseCompany" label="License company" /> */}
+                    <Field name="licenseType">
+                      {({
+                        field,
+                        form: { touched, errors, setFieldValue },
+                        meta,
+                      }) => (
+                        <SelectInput
+                          {...field}
+                          label="License type"
+                          helperText={meta.touched && meta.error}
+                          error={meta.touched && Boolean(meta.error)}
+                          onChange={(e) =>
+                            handleLicenseChange(e.target, setFieldValue)
+                          }
+                          options={
+                            version && version.license === 'commercial'
+                              ? [
+                                  {
+                                    value: 'personal',
+                                    text: 'Personal',
+                                  },
+                                  {
+                                    value: 'commercial',
+                                    text: 'Commercial',
+                                  },
+                                ]
+                              : [
+                                  {
+                                    value: 'personal',
+                                    text: 'Personal',
+                                  },
+                                ]
+                          }
+                          margin="dense"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      )}
+                    </Field>
+                  </Grid>
+                  <Box display="flex" justifyContent="space-between">
+                    <Button
+                      type="submit"
+                      color="primary"
+                      disabled={isSubmitting}
+                    >
+                      Download
+                    </Button>
+                    <Button
+                      type="button"
+                      color="warning"
+                      onClick={handleModalClose}
+                    >
+                      Cancel
+                    </Button>
+                  </Box>
+                </Form>
               )}
-            </Button>
-          </Box> */}
-          {/*               </Form>
-            )}
-          </Formik> */}
+            </Formik>
+          ) : (
+            <Grid item xs={12}>
+              <Field name="licenseAssignee">
+                {({ field, form: { touched, errors }, meta }) => (
+                  <TextField
+                    {...field}
+                    type="text"
+                    label="License assignee"
+                    error={meta.touched && meta.error}
+                    helperText={meta.touched && meta.error}
+                    margin="dense"
+                    variant="outlined"
+                    fullWidth
+                  />
+                )}
+              </Field>
+              <Field name="licenseCompany">
+                {({ field, form: { touched, errors }, meta }) => (
+                  <TextField
+                    {...field}
+                    type="text"
+                    label="License company"
+                    error={meta.touched && meta.error}
+                    helperText={meta.touched && meta.error}
+                    margin="dense"
+                    variant="outlined"
+                    fullWidth
+                  />
+                )}
+              </Field>
+              {/*             <TextInput name="licenseAssignee" label="License assignee" />
+            <TextInput name="licenseCompany" label="License company" /> */}
+              <Field name="licenseType">
+                {({
+                  field,
+                  form: { touched, errors, setFieldValue },
+                  meta,
+                }) => (
+                  <SelectInput
+                    {...field}
+                    label="License type"
+                    helperText={meta.touched && meta.error}
+                    error={meta.touched && Boolean(meta.error)}
+                    onChange={(e) =>
+                      handleLicenseChange(e.target, setFieldValue)
+                    }
+                    options={
+                      version && version.license === 'commercial'
+                        ? [
+                            {
+                              value: 'personal',
+                              text: 'Personal',
+                            },
+                            {
+                              value: 'commercial',
+                              text: 'Commercial',
+                            },
+                          ]
+                        : [
+                            {
+                              value: 'personal',
+                              text: 'Personal',
+                            },
+                          ]
+                    }
+                    margin="dense"
+                    variant="outlined"
+                    fullWidth
+                  />
+                )}
+              </Field>
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </Container>
