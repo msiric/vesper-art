@@ -370,6 +370,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
     spent: orderData.spent,
     earned: orderData.earned,
     fee: orderData.fee,
+    commercial: true,
     status: 'completed',
     intentId: intentId,
   };

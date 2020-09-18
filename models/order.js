@@ -17,6 +17,7 @@ const OrderSchema = new Schema({
   spent: { type: Number, get: formatAmount },
   earned: { type: Number, get: formatAmount },
   fee: { type: Number, get: formatAmount },
+  commercial: Boolean,
   status: String,
   intent: String,
   created: { type: Date, default: Date.now },

@@ -94,6 +94,7 @@ export const postDownload = async ({
               spent: 0,
               earned: 0,
               fee: 0,
+              commercial: false,
               status: 'completed',
               intentId: null,
             };
