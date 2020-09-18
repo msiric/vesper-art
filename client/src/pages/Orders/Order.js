@@ -110,7 +110,7 @@ const Order = ({ match }) => {
     );
   };
 
-  const fetchOrders = async () => {
+  const fetchOrder = async () => {
     try {
       const { data } = await getOrder({ orderId: match.params.id });
       setState({
@@ -155,7 +155,7 @@ const Order = ({ match }) => {
   };
 
   useEffect(() => {
-    fetchOrders();
+    fetchOrder();
   }, []);
 
   return (
@@ -181,7 +181,9 @@ const Order = ({ match }) => {
             classes={{ root: 'w-full h-64' }}
           >
             <Tab className="h-64 normal-case" label="Details" />
-            <Tab className="h-64 normal-case" label="Invoice" />
+            {state.order.commercial && (
+              <Tab className="h-64 normal-case" label="Invoice" />
+            )}
           </Tabs>
           <Box className="p-16 sm:p-24 max-w-2xl w-full">
             {/* Order Details */}
