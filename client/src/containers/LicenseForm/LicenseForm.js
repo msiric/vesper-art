@@ -2,9 +2,9 @@ import { Box, Button, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Field, Form, Formik } from 'formik';
 import React, { useState } from 'react';
-import * as Yup from 'yup';
 import { Container, Grid } from '../../constants/theme.js';
 import SelectInput from '../../shared/SelectInput/SelectInput.js';
+import { licenseValidation } from '../../validation/license.js';
 
 const LicenseFormStyles = makeStyles((muiTheme) => ({
   fixed: {
@@ -61,16 +61,6 @@ const LicenseFormStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const validationSchema = Yup.object().shape({
-  licenses: Yup.array().of(
-    Yup.object().shape({
-      licenseType: Yup.string()
-        .matches(/(personal|commercial)/)
-        .required('License type is required'),
-    })
-  ),
-});
-
 const changeLicense = (target, setFieldValue) =>
   setFieldValue(target.name, target.value);
 
@@ -96,7 +86,7 @@ const LicenseForm = ({
                 licenseCompany: '',
               }}
               enableReinitialize
-              validationSchema={validationSchema}
+              validationSchema={licenseValidation}
               onSubmit={initial.submit}
             >
               {({

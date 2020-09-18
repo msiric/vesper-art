@@ -85,41 +85,68 @@ export const managePaymentIntent = async ({
   // $TODO Treba li dohvacat usera?
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
-    // $TODO Check that discount is valid/active
+    // $TODO Check that discount is valid/active (moze i bolje)
     const foundDiscount = discountId
       ? await fetchDiscountById({ discountId, session })
       : null;
-    // $TODO Fetch by version id not artwork id
-    // $TODO Check that artwork isn't being updated while the payment is being processed
     const foundVersion = await fetchVersionDetails({ versionId, session });
     if (foundVersion) {
       if (foundVersion._id.equals(foundVersion.artwork.current)) {
-        // $TODO Bolje sredit validaciju
+        // $TODO Bolje sredit validaciju licence
         const licensePrice =
           artworkLicense.type === 'personal'
             ? foundVersion.personal
             : artworkLicense.type === 'commercial'
             ? foundVersion.commercial
             : 0;
-        const buyerFee = currency(licensePrice)
-          .multiply(payment.buyerFee.multiplier)
-          .add(payment.buyerFee.addend);
-        const sellerFee = currency(1 - payment.appFee);
-        const discount =
-          foundDiscount && foundDiscount.active
-            ? currency(licensePrice).multiply(foundDiscount.discount)
-            : 0;
-        const buyerTotal = currency(licensePrice)
-          .subtract(discount)
-          .add(buyerFee);
-        const sellerTotal = currency(licensePrice).multiply(sellerFee);
-        const platformTotal = currency(buyerTotal).subtract(sellerTotal);
-        const stripeFees = currency(1.03).add(2).add(0.3);
-        const total = currency(platformTotal).subtract(stripeFees);
+        if (licensePrice !== -1) {
+          const buyerFee = currency(licensePrice)
+            .multiply(payment.buyerFee.multiplier)
+            .add(payment.buyerFee.addend);
+          const sellerFee = currency(1 - payment.appFee);
+          const discount =
+            foundDiscount && foundDiscount.active
+              ? currency(licensePrice).multiply(foundDiscount.discount)
+              : 0;
+          const buyerTotal = currency(licensePrice)
+            .subtract(discount)
+            .add(buyerFee);
+          const sellerTotal = currency(licensePrice).multiply(sellerFee);
+          const platformTotal = currency(buyerTotal).subtract(sellerTotal);
+          const stripeFees = currency(1.03).add(2).add(0.3);
+          const total = currency(platformTotal).subtract(stripeFees);
 
-        const orderData = intentId
-          ? artworkLicense.assignee
-            ? {
+          const orderData = intentId
+            ? artworkLicense.assignee
+              ? {
+                  discountId:
+                    foundDiscount && foundDiscount.active
+                      ? foundDiscount._id
+                      : null,
+                  spent: buyerTotal.intValue,
+                  earned: sellerTotal.intValue,
+                  fee: platformTotal.intValue,
+                  licenseData: {
+                    licenseAssignee: artworkLicense.assignee,
+                    licenseCompany: artworkLicense.company,
+                    licenseType: artworkLicense.type,
+                    licensePrice: foundVersion[artworkLicense.type],
+                  },
+                }
+              : {
+                  discountId:
+                    foundDiscount && foundDiscount.active
+                      ? foundDiscount._id
+                      : null,
+                  spent: buyerTotal.intValue,
+                  earned: sellerTotal.intValue,
+                  fee: platformTotal.intValue,
+                }
+            : {
+                buyerId: foundUser._id,
+                sellerId: foundVersion.artwork.owner._id,
+                artworkId: foundVersion.artwork._id,
+                versionId: foundVersion._id,
                 discountId:
                   foundDiscount && foundDiscount.active
                     ? foundDiscount._id
@@ -133,58 +160,32 @@ export const managePaymentIntent = async ({
                   licenseType: artworkLicense.type,
                   licensePrice: foundVersion[artworkLicense.type],
                 },
-              }
-            : {
-                discountId:
-                  foundDiscount && foundDiscount.active
-                    ? foundDiscount._id
-                    : null,
-                spent: buyerTotal.intValue,
-                earned: sellerTotal.intValue,
-                fee: platformTotal.intValue,
-              }
-          : {
-              buyerId: foundUser._id,
-              sellerId: foundVersion.artwork.owner._id,
-              artworkId: foundVersion.artwork._id,
-              versionId: foundVersion._id,
-              discountId:
-                foundDiscount && foundDiscount.active
-                  ? foundDiscount._id
-                  : null,
-              spent: buyerTotal.intValue,
-              earned: sellerTotal.intValue,
-              fee: platformTotal.intValue,
-              licenseData: {
-                licenseAssignee: artworkLicense.assignee,
-                licenseCompany: artworkLicense.company,
-                licenseType: artworkLicense.type,
-                licensePrice: foundVersion[artworkLicense.type],
-              },
-            };
-        const paymentIntent = intentId
-          ? await updateStripeIntent({
-              intentAmount: buyerTotal.intValue,
-              intentFee: platformTotal.intValue,
-              orderData: orderData,
-              intentId,
-              session,
-            })
-          : await constructStripeIntent({
-              intentMethod: 'card',
-              intentAmount: buyerTotal.intValue,
-              intentCurrency: 'usd',
-              intentFee: platformTotal.intValue,
-              sellerId: foundVersion.artwork.owner.stripeId,
-              orderData: orderData,
-              session,
-            });
-        return {
-          intent: {
-            id: paymentIntent.id,
-            secret: paymentIntent.client_secret,
-          },
-        };
+              };
+          const paymentIntent = intentId
+            ? await updateStripeIntent({
+                intentAmount: buyerTotal.intValue,
+                intentFee: platformTotal.intValue,
+                orderData: orderData,
+                intentId,
+                session,
+              })
+            : await constructStripeIntent({
+                intentMethod: 'card',
+                intentAmount: buyerTotal.intValue,
+                intentCurrency: 'usd',
+                intentFee: platformTotal.intValue,
+                sellerId: foundVersion.artwork.owner.stripeId,
+                orderData: orderData,
+                session,
+              });
+          return {
+            intent: {
+              id: paymentIntent.id,
+              secret: paymentIntent.client_secret,
+            },
+          };
+        }
+        throw createError(400, 'License type is not valid');
       }
       throw createError(400, 'Artwork version is obsolete');
     }

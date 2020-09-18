@@ -1,5 +1,5 @@
 import express from 'express';
-import { getCheckout } from '../../../controllers/checkout.js';
+import { getCheckout, postDownload } from '../../../controllers/checkout.js';
 import {
   checkParamsId,
   isAuthenticated,
@@ -12,6 +12,14 @@ router.route('/checkout/:versionId').get(
   [isAuthenticated, checkParamsId],
   handler(getCheckout, false, (req, res, next) => ({
     ...req.params,
+  }))
+);
+
+router.route('/download/:versionId').post(
+  [isAuthenticated, checkParamsId],
+  handler(postDownload, false, (req, res, next) => ({
+    ...req.params,
+    ...req.body,
   }))
 );
 
