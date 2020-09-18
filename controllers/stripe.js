@@ -84,7 +84,7 @@ export const managePaymentIntent = async ({
 }) => {
   // $TODO Treba li dohvacat usera?
   const foundUser = await fetchUserById({ userId, session });
-  if (foundUser) {
+  if (foundUser && foundUser.active) {
     // $TODO Check that discount is valid/active (moze i bolje)
     const foundDiscount = discountId
       ? await fetchDiscountById({ discountId, session })

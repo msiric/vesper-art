@@ -25,6 +25,7 @@ import {
   getComments,
   getDetails,
 } from '../../services/artwork.js';
+import { postDownload } from '../../services/checkout.js';
 
 const ArtworkDetails = ({ match, location, socket }) => {
   const [store, dispatch] = useContext(Context);
@@ -101,7 +102,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
 
   const handleDownload = async (values) => {
     try {
-      console.log(values);
+      const { data } = await postDownload({
+        versionId: state.artwork.current._id,
+        data: values,
+      });
     } catch (err) {
       console.log(err);
     }
