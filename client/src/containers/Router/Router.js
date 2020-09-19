@@ -1,8 +1,8 @@
-import React, { lazy, Suspense, useEffect, useContext } from 'react';
+import React, { lazy, Suspense, useContext } from 'react';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { Context } from '../../context/Store.js';
-import MainLayout from '../../layouts/MainLayout.js';
 import AuthLayout from '../../layouts/AuthLayout.js';
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import MainLayout from '../../layouts/MainLayout.js';
 
 const routes = [
   // Artwork router
@@ -127,7 +127,7 @@ const routes = [
   },
   {
     path: '/orders/:id',
-    Component: lazy(() => import('../../pages/Orders/Order')),
+    Component: lazy(() => import('../../pages/Orders/OrderTest')),
     exact: true,
     type: 'protected',
   },
