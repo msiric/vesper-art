@@ -5,8 +5,10 @@ import { Field, Form, Formik } from 'formik';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
 import * as Yup from 'yup';
-import ArtworkBar from '../../components/ArtworkBar/ArtworkBar.js';
+import LicenseCard from '../../components/LicenseCard/LicenseCard.js';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import OrderPreview from '../../components/OrderPreview/OrderPreview.js';
+import ProfileCard from '../../components/ProfileCard/ProfileCard.js';
 import { Context } from '../../context/Store.js';
 import { getOrder, postReview } from '../../services/orders.js';
 
@@ -157,13 +159,14 @@ const Order = ({ match }) => {
         ) : state.order._id ? (
           <>
             <Grid item xs={12} className={classes.artworkPreviewItem}>
-              <ArtworkBar
-                version={state.order.version}
-                buyer={state.order.buyer}
-                seller={state.order.seller}
-              />
+              <OrderPreview version={state.order.version} />
             </Grid>
-            <Grid item xs={12} className={classes.artistSectionItem}></Grid>
+            <Grid item xs={12} md={4} className={classes.artistSectionItem}>
+              <ProfileCard user={state.order.seller} />
+            </Grid>
+            <Grid item xs={12} md={8} className={classes.artistSectionItem}>
+              <LicenseCard license={state.order.license} />
+            </Grid>
           </>
         ) : (
           history.push('/')

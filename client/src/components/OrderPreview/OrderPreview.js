@@ -33,8 +33,9 @@ const useStyles = makeStyles((muiTheme) => ({
     color: muiTheme.palette.text.secondary,
   },
   artworkPreviewMedia: {
-    height: '100%',
-    backgroundSize: 'auto',
+    height: 600,
+    backgroundSize: 'contain',
+    margin: 20,
   },
   avatar: {
     width: muiTheme.spacing(10),
@@ -110,17 +111,18 @@ const useStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const ArtworkPreview = ({ version, height }) => {
+const OrderPreview = ({ version }) => {
   const history = useHistory();
   const classes = useStyles();
 
   return (
-    <Card
-      className={classes.artworkPreviewCard}
-      style={{
-        height: height,
-      }}
-    >
+    <Card className={classes.artworkPreviewCard}>
+      <CardMedia
+        className={classes.artworkPreviewMedia}
+        image={version.media}
+        title={version.title}
+      />
+      <Divider />
       <Box>
         <Typography
           m={2}
@@ -129,30 +131,12 @@ const ArtworkPreview = ({ version, height }) => {
         >{`${version.title}, ${new Date(
           version.created
         ).getFullYear()}`}</Typography>
-      </Box>
-      <CardMedia
-        className={classes.artworkPreviewMedia}
-        image={version.cover}
-        title={version.title}
-      />
-      <Box>
         <Typography m={2} fontSize="h6.fontSize">
           {version.description}
         </Typography>
-        <Divider />
-        <Typography ml={2} mt={2} mr={2} fontSize={12} fontStyle="italic">
-          You are previewing a low resolution thumbnail of the original artwork
-        </Typography>
-        <Typography
-          ml={2}
-          mr={2}
-          mb={2}
-          fontSize={12}
-          fontStyle="italic"
-        >{`The original artwork dimensions (in pixels) are: ${version.width}x${version.height}`}</Typography>
       </Box>
     </Card>
   );
 };
 
-export default ArtworkPreview;
+export default OrderPreview;

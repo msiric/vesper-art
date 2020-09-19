@@ -299,7 +299,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
         ) : state.artwork._id ? (
           <>
             <Grid item sm={12} md={8} className={classes.artworkPreviewItem}>
-              <ArtworkPreview artwork={state.artwork} height={state.height} />
+              <ArtworkPreview
+                version={state.artwork.current}
+                height={state.height}
+              />
               <br />
               <CommentSection
                 artwork={state.artwork}
@@ -313,7 +316,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
               />
             </Grid>
             <Grid item sm={12} md={4} className={classes.artistSectionItem}>
-              <ArtistSection artwork={state.artwork} />
+              <ArtistSection owner={state.artwork.owner} />
               <br />
               <ArtworkInfo
                 artwork={state.artwork}

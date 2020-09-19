@@ -5,12 +5,10 @@ import ProfileCard from '../../components/ProfileCard/ProfileCard.js';
 
 const useStyles = makeStyles((muiTheme) => ({}));
 
-const ArtistSection = ({ artwork }) => {
+const ArtistSection = ({ owner }) => {
   const classes = useStyles();
 
-  return (
-    <ProfileCard user={artwork.owner} handleModalOpen={null} height={410} />
-  );
+  return <ProfileCard user={owner} handleModalOpen={null} height={410} />;
 };
 
 export default withRouter(ArtistSection);
