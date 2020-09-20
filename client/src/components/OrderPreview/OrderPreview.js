@@ -111,7 +111,7 @@ const useStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const OrderPreview = ({ version, handleModalOpen, handleDownload }) => {
+const OrderPreview = ({ version, handleDownload }) => {
   const history = useHistory();
   const classes = useStyles();
 
@@ -137,7 +137,7 @@ const OrderPreview = ({ version, handleModalOpen, handleDownload }) => {
       </Box>
       <Divider />
       <Box p={2} display="flex" justifyContent="space-between">
-        <Button onClick={handleModalOpen}>Rate artist</Button>
+        <Typography>Download high resolution artwork:</Typography>
         <Button onClick={handleDownload}>Download</Button>
       </Box>
     </Card>

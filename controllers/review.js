@@ -12,13 +12,10 @@ import reviewValidator from '../validation/review.js';
 export const postReview = async ({
   userId,
   reviewRating,
-  reviewContent,
   orderId,
   session,
 }) => {
-  const { error } = reviewValidator(
-    sanitizeData({ reviewRating, reviewContent })
-  );
+  const { error } = reviewValidator(sanitizeData({ reviewRating }));
   if (error) throw createError(400, error);
   if (reviewRating) {
     const foundOrder = await fetchUserOrder({
@@ -32,7 +29,6 @@ export const postReview = async ({
           orderData: foundOrder,
           userId,
           reviewRating,
-          reviewContent,
           session,
         });
         const newRating =

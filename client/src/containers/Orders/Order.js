@@ -1,39 +1,21 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Context } from '../Store/Store.js';
-import _ from 'lodash';
 import {
-  Grid,
-  CircularProgress,
-  Paper,
-  Button,
-  Icon,
-  Typography,
-  Input,
-  Table,
-  TableBody,
-  TableCell,
-  TablePagination,
-  TableRow,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Tabs,
-  Tab,
   Avatar,
+  Button,
+  Tab,
+  Tabs,
   TextField,
+  Typography,
 } from '@material-ui/core';
-import * as Yup from 'yup';
 import { Rating } from '@material-ui/lab';
-import { useFormik, Formik, Form, Field } from 'formik';
-import { Link } from 'react-router-dom';
-import { withRouter, useHistory } from 'react-router-dom';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
 import { format } from 'date-fns';
+import { Field, Form, Formik } from 'formik';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory, withRouter } from 'react-router-dom';
+import { getOrder, postReview } from '../../services/orders.js';
 import Modal from '../../shared/Modal/Modal.js';
-import OrderStyles from './Order.style.js';
-import { postReview, getOrder } from '../../services/orders.js';
 import { reviewValidation } from '../../validation/review.js';
+import { Context } from '../Store/Store.js';
+import OrderStyles from './Order.style.js';
 
 const Order = ({ match }) => {
   const [store, dispatch] = useContext(Context);
@@ -56,7 +38,6 @@ const Order = ({ match }) => {
         <Formik
           initialValues={{
             rating: 0,
-            content: '',
           }}
           enableReinitialize
           validationSchema={reviewValidation}
@@ -64,7 +45,6 @@ const Order = ({ match }) => {
             await postReview({
               artworkId: state.order._id,
               reviewRating: values.rating,
-              reviewContent: values.content,
             });
             setState((prevState) => ({
               ...prevState,

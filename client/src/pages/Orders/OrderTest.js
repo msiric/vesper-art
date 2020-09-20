@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, TextField } from '@material-ui/core';
+import { Box, Button, Container, Grid } from '@material-ui/core';
 import { Rating } from '@material-ui/lab';
 import { format } from 'date-fns';
 import { Field, Form, Formik } from 'formik';
@@ -9,13 +9,13 @@ import LicenseCard from '../../components/LicenseCard/LicenseCard.js';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 import OrderPreview from '../../components/OrderPreview/OrderPreview.js';
 import ProfileCard from '../../components/ProfileCard/ProfileCard.js';
+import ReviewCard from '../../components/ReviewCard/ReviewCard.js';
 import { Context } from '../../context/Store.js';
 import { getDownload, getOrder, postReview } from '../../services/orders.js';
 import Modal from '../../shared/Modal/Modal.js';
 
 const reviewValidation = Yup.object().shape({
   rating: Yup.number().min(1).max(5).required('Rating cannot be empty'),
-  content: Yup.string().trim().required('Review cannot be empty'),
 });
 
 const Order = ({ match }) => {
@@ -38,7 +38,6 @@ const Order = ({ match }) => {
         <Formik
           initialValues={{
             rating: 0,
-            content: '',
           }}
           enableReinitialize
           validationSchema={reviewValidation}
@@ -46,7 +45,6 @@ const Order = ({ match }) => {
             await postReview({
               artworkId: state.order._id,
               reviewRating: values.rating,
-              reviewContent: values.content,
             });
             setState((prevState) => ({
               ...prevState,
@@ -57,12 +55,10 @@ const Order = ({ match }) => {
                   artwork: prevState.order.artwork._id,
                   owner: store.user.id,
                   rating: values.rating,
-                  content: values.content,
                 },
               },
             }));
             handleModalClose();
-            resetForm();
           }}
         >
           {({ values, errors, touched }) => (
@@ -74,22 +70,6 @@ const Order = ({ match }) => {
                     form: { touched, errors, setFieldValue },
                     meta,
                   }) => <Rating {...field} />}
-                </Field>
-                <Field name="content">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      onBlur={() => null}
-                      label="Write your review"
-                      type="text"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      multiline
-                      fullWidth
-                    />
-                  )}
                 </Field>
               </Box>
               <Box>
@@ -166,7 +146,6 @@ const Order = ({ match }) => {
             <Grid item xs={12} className={classes.artworkPreviewItem}>
               <OrderPreview
                 version={state.order.version}
-                handleModalOpen={handleModalOpen}
                 handleDownload={handleDownload}
               />
             </Grid>
@@ -175,6 +154,10 @@ const Order = ({ match }) => {
             </Grid>
             <Grid item xs={12} md={8} className={classes.artistSectionItem}>
               <LicenseCard license={state.order.license} />
+              <ReviewCard
+                handleModalOpen={handleModalOpen}
+                review={state.order.review}
+              />
             </Grid>
           </>
         ) : (

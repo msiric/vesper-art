@@ -44,7 +44,6 @@ const Order = ({ match }) => {
         <Formik
           initialValues={{
             rating: 0,
-            content: '',
           }}
           enableReinitialize
           validationSchema={reviewValidation}
@@ -52,7 +51,6 @@ const Order = ({ match }) => {
             await postReview({
               artworkId: state.order._id,
               reviewRating: values.rating,
-              reviewContent: values.content,
             });
             setState((prevState) => ({
               ...prevState,

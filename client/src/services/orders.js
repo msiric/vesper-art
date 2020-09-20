@@ -1,9 +1,8 @@
 import { ax } from '../containers/Interceptor/Interceptor.js';
 
-export const postReview = async ({ artworkId, reviewRating, reviewContent }) =>
+export const postReview = async ({ artworkId, reviewRating }) =>
   await ax.post(`/api/rate_artwork/${artworkId}`, {
     reviewRating,
-    reviewContent,
   });
 export const getOrder = async ({ orderId }) =>
   await ax.get(`/api/orders/${orderId}`);

@@ -48,6 +48,7 @@ export const fetchOrderDetails = async ({
     .populate('discount')
     .populate('version')
     .populate('artwork')
+    .populate('review')
     .deepPopulate('license.artwork')
     .session(session);
 };
