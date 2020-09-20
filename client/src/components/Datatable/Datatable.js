@@ -1,21 +1,11 @@
-import React, { useState } from 'react';
-import MUIDataTable from 'mui-datatables';
-import {
-  Box,
-  InputLabel,
-  MenuItem,
-  FormHelperText,
-  FormControl,
-  Select,
-  Tooltip,
-  IconButton,
-  CircularProgress,
-} from '@material-ui/core';
+import { CircularProgress, IconButton, Tooltip } from '@material-ui/core';
 import {
   Add as AddIcon,
-  Edit as EditIcon,
   Delete as DeleteIcon,
+  Edit as EditIcon,
 } from '@material-ui/icons';
+import MUIDataTable from 'mui-datatables';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 const CustomToolbar = ({ addOptions }) => {
@@ -94,6 +84,8 @@ const Datatable = ({
   loading,
   redirect,
   selectable,
+  searchable,
+  pagination,
   addOptions,
   editOptions,
   deleteOptions,
@@ -111,6 +103,8 @@ const Datatable = ({
     viewColumns: false,
     filterType: 'dropdown',
     selectableRows: selectable,
+    search: searchable,
+    pagination,
     responsive,
     tableBodyHeight,
     tableBodyMaxHeight,
@@ -123,7 +117,7 @@ const Datatable = ({
         deleteOptions={deleteOptions}
       />
     ),
-    onRowClick: (data) => history.push(`/${redirect}/${data[0]}`),
+    onRowClick: (data) => redirect && history.push(`/${redirect}/${data[0]}`),
     textLabels: {
       body: {
         noMatch: loading ? <CircularProgress /> : empty,

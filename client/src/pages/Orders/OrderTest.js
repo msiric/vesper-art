@@ -10,7 +10,8 @@ import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 import OrderPreview from '../../components/OrderPreview/OrderPreview.js';
 import ProfileCard from '../../components/ProfileCard/ProfileCard.js';
 import { Context } from '../../context/Store.js';
-import { getOrder, postReview } from '../../services/orders.js';
+import { getDownload, getOrder, postReview } from '../../services/orders.js';
+import Modal from '../../shared/Modal/Modal.js';
 
 const reviewValidation = Yup.object().shape({
   rating: Yup.number().min(1).max(5).required('Rating cannot be empty'),
@@ -117,17 +118,13 @@ const Order = ({ match }) => {
     }
   };
 
-  const handleChangeTab = (e, value) => {
-    setState((prevState) => ({ ...prevState, tab: value }));
-  };
-
-  const handleModalOpen = (id) => {
+  const handleModalOpen = () => {
     setState((prevState) => ({
       ...prevState,
       modal: {
         ...prevState.modal,
         open: true,
-        body: modalBody(id),
+        body: modalBody(),
       },
     }));
   };
@@ -141,6 +138,14 @@ const Order = ({ match }) => {
         body: ``,
       },
     }));
+  };
+
+  const handleDownload = async () => {
+    try {
+      await getDownload({ orderId: match.params.id });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const formatDate = (date, type) => {
@@ -159,7 +164,11 @@ const Order = ({ match }) => {
         ) : state.order._id ? (
           <>
             <Grid item xs={12} className={classes.artworkPreviewItem}>
-              <OrderPreview version={state.order.version} />
+              <OrderPreview
+                version={state.order.version}
+                handleModalOpen={handleModalOpen}
+                handleDownload={handleDownload}
+              />
             </Grid>
             <Grid item xs={12} md={4} className={classes.artistSectionItem}>
               <ProfileCard user={state.order.seller} />
@@ -172,6 +181,7 @@ const Order = ({ match }) => {
           history.push('/')
         )}
       </Grid>
+      <Modal {...state.modal} handleClose={handleModalClose} />
     </Container>
   );
 };

@@ -1,4 +1,4 @@
-import { Box, Card, CardMedia, Divider } from '@material-ui/core';
+import { Box, Button, Card, CardMedia, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -111,7 +111,7 @@ const useStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const OrderPreview = ({ version }) => {
+const OrderPreview = ({ version, handleModalOpen, handleDownload }) => {
   const history = useHistory();
   const classes = useStyles();
 
@@ -134,6 +134,11 @@ const OrderPreview = ({ version }) => {
         <Typography m={2} fontSize="h6.fontSize">
           {version.description}
         </Typography>
+      </Box>
+      <Divider />
+      <Box p={2} display="flex" justifyContent="space-between">
+        <Button onClick={handleModalOpen}>Rate artist</Button>
+        <Button onClick={handleDownload}>Download</Button>
       </Box>
     </Card>
   );

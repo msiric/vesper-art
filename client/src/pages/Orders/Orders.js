@@ -89,6 +89,8 @@ const Orders = () => {
             loading={state.loading}
             redirect="orders"
             selectable={false}
+            searchable={true}
+            pagination={true}
             addOptions={{ enabled: false, title: '', route: '' }}
             editOptions={{
               enabled: false,

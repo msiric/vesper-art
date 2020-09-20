@@ -79,6 +79,8 @@ function ProductsTable() {
             loading={state.loading}
             redirect="artwork"
             selectable={true}
+            searchable={true}
+            pagination={true}
             addOptions={{
               enabled: true,
               title: 'Add artwork',
