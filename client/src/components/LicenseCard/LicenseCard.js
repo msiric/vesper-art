@@ -45,7 +45,7 @@ const LicenseCard = ({ license }) => {
           license.fingerprint,
           license.type,
           license.assignee,
-          license.price,
+          license.price || 'Free',
           formatDate(license.created, 'dd/MM/yy HH:mm'),
         ],
       ]}

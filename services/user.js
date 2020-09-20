@@ -33,7 +33,7 @@ export const fetchUserByCreds = async ({ userUsername, session = null }) => {
 export const fetchUserSales = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
-  }).deepPopulate('sales.buyer sales.version sales');
+  }).deepPopulate('sales.buyer sales.version sales.review');
 };
 
 export const editUserStripe = async ({ userId, stripeId, session = null }) => {
@@ -57,7 +57,7 @@ export const editUserSale = async ({ userId, orderId, session = null }) => {
 export const fetchUserPurchases = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
-  }).deepPopulate('purchases.seller purchases.version purchases');
+  }).deepPopulate('purchases.seller purchases.version purchases.review');
 };
 
 export const fetchUserProfile = async ({

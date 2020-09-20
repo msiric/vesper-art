@@ -127,7 +127,7 @@ const routes = [
   },
   {
     path: '/orders/:id',
-    Component: lazy(() => import('../../pages/Orders/OrderTest')),
+    Component: lazy(() => import('../../pages/Orders/Order')),
     exact: true,
     type: 'protected',
   },

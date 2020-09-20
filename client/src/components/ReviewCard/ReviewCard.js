@@ -17,7 +17,7 @@ const useStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const ReviewCard = ({ review, handleModalOpen }) => {
+const ReviewCard = ({ review, handleModalOpen, shouldReview }) => {
   const history = useHistory();
   const classes = useStyles();
 
@@ -26,16 +26,36 @@ const ReviewCard = ({ review, handleModalOpen }) => {
       <Box>
         <Typography m={2}>Review</Typography>
       </Box>
-      <Box className={classes.reviewContent}>
-        <Typography m={2} fontSize="h6.fontSize">
-          {review ? 'Your rating' : 'No rating left'}
-        </Typography>
-        {review ? (
-          <Rating value={review.rating} />
+      {review ? (
+        shouldReview ? (
+          <Box className={classes.reviewContent}>
+            <Typography m={2} fontSize="h6.fontSize">
+              Your rating
+            </Typography>
+            <Rating value={review.rating} />
+          </Box>
         ) : (
+          <Box className={classes.reviewContent}>
+            <Typography m={2} fontSize="h6.fontSize">
+              Buyer's rating
+            </Typography>
+            <Rating value={review.rating} />
+          </Box>
+        )
+      ) : shouldReview ? (
+        <Box className={classes.reviewContent}>
+          <Typography m={2} fontSize="h6.fontSize">
+            No rating left
+          </Typography>
           <Button onClick={handleModalOpen}>Rate artist</Button>
-        )}
-      </Box>
+        </Box>
+      ) : (
+        <Box className={classes.reviewContent}>
+          <Typography m={2} fontSize="h6.fontSize">
+            No rating found
+          </Typography>
+        </Box>
+      )}
     </Card>
   );
 };

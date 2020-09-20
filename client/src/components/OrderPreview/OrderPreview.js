@@ -111,7 +111,7 @@ const useStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const OrderPreview = ({ version, handleDownload }) => {
+const OrderPreview = ({ version, handleDownload, shouldDownload }) => {
   const history = useHistory();
   const classes = useStyles();
 
@@ -135,11 +135,15 @@ const OrderPreview = ({ version, handleDownload }) => {
           {version.description}
         </Typography>
       </Box>
-      <Divider />
-      <Box p={2} display="flex" justifyContent="space-between">
-        <Typography>Download high resolution artwork:</Typography>
-        <Button onClick={handleDownload}>Download</Button>
-      </Box>
+      {shouldDownload && (
+        <Box>
+          <Divider />
+          <Box p={2} display="flex" justifyContent="space-between">
+            <Typography>Download high resolution artwork:</Typography>
+            <Button onClick={handleDownload}>Download</Button>
+          </Box>
+        </Box>
+      )}
     </Card>
   );
 };
