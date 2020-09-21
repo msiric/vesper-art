@@ -32,6 +32,13 @@ const EditArtworkForm = ({
   const history = useHistory();
   const classes = {};
 
+  const urlToFile = async (url) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const file = new File([blob], 'image.jpg', { type: blob.type });
+    return file;
+  };
+
   return (
     <Container fixed className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>
@@ -43,7 +50,7 @@ const EditArtworkForm = ({
           <Card p={2} width="100%">
             <Formik
               initialValues={{
-                artworkMedia: artwork.media || '',
+                artworkMedia: urlToFile(artwork.media) || '',
                 artworkTitle: artwork.title || '',
                 artworkType: artwork.type || '',
                 artworkAvailability: artwork.availability || '',
@@ -110,7 +117,7 @@ const EditArtworkForm = ({
                           setFieldTouched={setFieldTouched}
                           helperText={meta.touched && meta.error}
                           error={meta.touched && Boolean(meta.error)}
-                          preview={artwork.cover}
+                          preview={artwork.media}
                           shape="square"
                         />
                       )}

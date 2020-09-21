@@ -48,7 +48,10 @@ const EditArtwork = ({ match }) => {
   const handleDeleteArtwork = async () => {
     try {
       setState({ ...state, isDeleting: true });
-      await deleteArtwork({ artworkId: match.params.id });
+      await deleteArtwork({
+        artworkId: state.artwork._id,
+        data: state.artwork.current._id,
+      });
       history.push({
         pathname: '/',
         state: { message: 'Artwork deleted' },
@@ -75,7 +78,7 @@ const EditArtwork = ({ match }) => {
             <EditArtworkForm
               loading={state.loading}
               capabilities={state.capabilities}
-              artwork={state.artwork}
+              artwork={state.artwork.current}
               user={store.user}
               patchArtwork={patchArtwork}
               deleteEmptyValues={deleteEmptyValues}

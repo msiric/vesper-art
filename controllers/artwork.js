@@ -93,7 +93,7 @@ export const editArtwork = async ({ userId, artworkId }) => {
     artworkId,
     userId,
   });
-  if (foundArtwork) return { artwork: foundArtwork.current };
+  if (foundArtwork) return { artwork: foundArtwork };
   throw createError(400, 'Artwork not found');
 };
 
@@ -250,36 +250,41 @@ export const updateArtwork = async ({
 // $TODO
 // does it work in all cases?
 // needs testing
-export const deleteArtwork = async ({ userId, artworkId, session }) => {
+export const deleteArtwork = async ({ userId, artworkId, data, session }) => {
+  console.log('data', data);
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,
     session,
   });
   if (foundArtwork) {
-    const foundOrder = await fetchOrderByVersion({
-      artworkId: foundArtwork._id,
-      versionId: foundArtwork.current._id,
-      session,
-    });
-    if (!foundOrder.length) {
-      await deleteS3Object({
-        fileLink: foundArtwork.current.cover,
-        folderName: 'artworkCovers/',
-      });
-
-      await deleteS3Object({
-        fileLink: foundArtwork.current.media,
-        folderName: 'artworkMedia/',
-      });
-
-      await removeArtworkVersion({
+    // $TODO Check that artwork wasn't updated in the meantime (current === version)
+    if (true) {
+      const foundOrder = await fetchOrderByVersion({
+        artworkId: foundArtwork._id,
         versionId: foundArtwork.current._id,
         session,
       });
+      if (!foundOrder) {
+        await deleteS3Object({
+          fileLink: foundArtwork.current.cover,
+          folderName: 'artworkCovers/',
+        });
+
+        await deleteS3Object({
+          fileLink: foundArtwork.current.media,
+          folderName: 'artworkMedia/',
+        });
+
+        await removeArtworkVersion({
+          versionId: foundArtwork.current._id,
+          session,
+        });
+      }
+      await deactivateExistingArtwork({ artworkId, session });
+      return { redirect: 'my_artwork' };
     }
-    await deactivateExistingArtwork({ artworkId, session });
-    return { redirect: 'my_artwork' };
+    throw createError(400, 'Artwork has a newer version');
   }
   throw createError(400, 'Artwork not found');
 };

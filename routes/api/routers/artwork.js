@@ -1,26 +1,25 @@
 import express from 'express';
 import {
-  isAuthenticated,
-  checkParamsId,
-  requestHandler as handler,
-} from '../../../utils/helpers.js';
-import { finalizeMediaUpload } from '../../../utils/upload.js';
-import {
+  deleteArtwork,
+  editArtwork,
   getArtwork,
-  getArtworkDetails,
   getArtworkComments,
+  getArtworkDetails,
   getArtworkReviews,
   getLicenses,
-  saveLicense,
   getUserArtwork,
   postNewArtwork,
-  editArtwork,
-  updateArtwork,
-  deleteArtwork,
   saveArtwork,
+  saveLicense,
   unsaveArtwork,
+  updateArtwork,
 } from '../../../controllers/artwork.js';
 import multerApi from '../../../lib/multer.js';
+import {
+  checkParamsId,
+  isAuthenticated,
+  requestHandler as handler,
+} from '../../../utils/helpers.js';
 
 const router = express.Router();
 
