@@ -251,7 +251,6 @@ export const updateArtwork = async ({
 // does it work in all cases?
 // needs testing
 export const deleteArtwork = async ({ userId, artworkId, data, session }) => {
-  console.log('data', data);
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,
