@@ -1,5 +1,4 @@
 import { Container, Grid } from '@material-ui/core';
-import { parse } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
 import { formatDate } from '../../../../common/helpers.js';
@@ -68,22 +67,34 @@ const Orders = () => {
               },
               {
                 name: 'Title',
+                options: {
+                  sortCompare: (order) => {
+                    return (obj1, obj2) =>
+                      obj1.data.localeCompare(obj2.data, 'en', {
+                        numeric: true,
+                      }) * (order === 'asc' ? 1 : -1);
+                  },
+                },
               },
-              state.display === 'purchases' ? 'Seller' : 'Buyer',
+              {
+                name: state.display === 'purchases' ? 'Seller' : 'Buyer',
+                options: {
+                  sortCompare: (order) => {
+                    return (obj1, obj2) =>
+                      obj1.data.localeCompare(obj2.data, 'en', {
+                        numeric: true,
+                      }) * (order === 'asc' ? 1 : -1);
+                  },
+                },
+              },
               {
                 name: 'Amount',
                 options: {
+                  customBodyRender: (value, tableMeta, updateValue) =>
+                    value ? `$${value}` : 'Free',
                   sortCompare: (order) => {
-                    return (obj1, obj2) => {
-                      const val1 = obj1.data.split('$')[1]
-                        ? obj1.data.split('$')[1] * 100
-                        : 0;
-                      const val2 = obj2.data.split('$')[1]
-                        ? obj2.data.split('$')[1] * 100
-                        : 0;
-                      return (
-                        (val1 - val2 ? -1 : 1) * (order === 'asc' ? 1 : -1)
-                      );
+                    return ({ data: previous }, { data: next }) => {
+                      return (previous - next) * (order === 'asc' ? 1 : -1);
                     };
                   },
                 },
@@ -91,13 +102,15 @@ const Orders = () => {
               {
                 name: 'Rating',
                 options: {
+                  customBodyRender: (value) =>
+                    value ? value.rating : 'Not rated',
                   sortCompare: (order) => {
-                    return (obj1, obj2) => {
-                      const val1 =
-                        typeof obj1.data === 'string' ? 0 : obj1.data;
-                      const val2 =
-                        typeof obj2.data === 'string' ? 0 : obj2.data;
-                      return (val1 - val2) * (order === 'asc' ? 1 : -1);
+                    return ({ data: previous }, { data: next }) => {
+                      return (
+                        ((previous ? previous.rating : 0) -
+                          (next ? next.rating : 0)) *
+                        (order === 'asc' ? 1 : -1)
+                      );
                     };
                   },
                 },
@@ -105,20 +118,14 @@ const Orders = () => {
               {
                 name: 'Date',
                 options: {
+                  customBodyRender: (value) =>
+                    formatDate(value, 'dd/MM/yy HH:mm'),
                   sortCompare: (order) => {
-                    return (obj1, obj2) => {
-                      const val1 = parse(
-                        obj1.data,
-                        'dd/MM/yy HH:mm',
-                        Date.now()
-                      );
-                      const val2 = parse(
-                        obj2.data,
-                        'dd/MM/yy HH:mm',
-                        Date.now()
-                      );
+                    return ({ data: previous }, { data: next }) => {
+                      console.log(previous);
                       return (
-                        (val1.getTime() - val2.getTime()) *
+                        (new Date(previous).getTime() -
+                          new Date(next).getTime()) *
                         (order === 'asc' ? 1 : -1)
                       );
                     };
@@ -134,15 +141,9 @@ const Orders = () => {
               state.display === 'purchases'
                 ? order.seller.name
                 : order.buyer.name,
-              state.display === 'purchases'
-                ? order.spent
-                  ? `$${order.spent}`
-                  : 'Free'
-                : order.earned
-                ? `$${order.earned}`
-                : 'Free',
-              order.review ? order.review.rating : 'No rating left',
-              formatDate(order.created, 'dd/MM/yy HH:mm'),
+              state.display === 'purchases' ? order.spent : order.earned,
+              order.review,
+              order.created,
             ])}
             empty="You have no orders"
             loading={state.loading}

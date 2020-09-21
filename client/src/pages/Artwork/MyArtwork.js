@@ -1,6 +1,7 @@
 import { Container, Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
+import { formatDate } from '../../../../common/helpers.js';
 import Datatable from '../../components/Datatable/Datatable.js';
 import { getGallery } from '../../services/artwork.js';
 
@@ -58,13 +59,63 @@ function ProductsTable() {
                   customBodyRender: (value, tableMeta, updateValue) => (
                     <img style={{ width: '85%', maxWidth: 200 }} src={value} />
                   ),
+                  sort: false,
                 },
               },
-              'Title',
+              {
+                name: 'Title',
+                options: {
+                  sortCompare: (order) => {
+                    return (obj1, obj2) =>
+                      obj1.data.localeCompare(obj2.data, 'en', {
+                        numeric: true,
+                      }) * (order === 'asc' ? 1 : -1);
+                  },
+                },
+              },
               'Availability',
               'Type',
-              'Personal license',
-              'Commercial license',
+              {
+                name: 'Personal license',
+                options: {
+                  customBodyRender: (value, tableMeta, updateValue) =>
+                    value ? `$${value}` : 'Free',
+                  sortCompare: (order) => {
+                    return ({ data: previous }, { data: next }) => {
+                      return (previous - next) * (order === 'asc' ? 1 : -1);
+                    };
+                  },
+                },
+              },
+              {
+                name: 'Commercial license',
+                options: {
+                  customBodyRender: (value, tableMeta, updateValue) =>
+                    value ? `$${value}` : 'Free',
+                  sortCompare: (order) => {
+                    return ({ data: previous }, { data: next }) => {
+                      return (previous - next) * (order === 'asc' ? 1 : -1);
+                    };
+                  },
+                },
+              },
+              {
+                name: 'Date',
+                options: {
+                  customBodyRender: (value) =>
+                    formatDate(value, 'dd/MM/yy HH:mm'),
+                  sortCompare: (order) => {
+                    return ({ data: previous }, { data: next }) => {
+                      console.log(previous);
+                      return (
+                        (new Date(previous).getTime() -
+                          new Date(next).getTime()) *
+                        (order === 'asc' ? 1 : -1)
+                      );
+                    };
+                  },
+                },
+              },
             ]}
             data={state.artwork.map((artwork) => [
               artwork._id,
@@ -74,6 +125,7 @@ function ProductsTable() {
               artwork.current.type,
               artwork.current.personal,
               artwork.current.commercial,
+              artwork.current.created,
             ])}
             empty="You have no artwork"
             loading={state.loading}
