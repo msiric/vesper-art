@@ -7,7 +7,6 @@ import ModalWrapper from '../../components/ModalWrapper/ModalWrapper.js';
 import EditUserForm from '../../containers/EditUserForm/EditUserForm.js';
 import UserArtworkPanel from '../../containers/UserArtworkPanel/UserArtworkPanel.js';
 import UserProfileBanner from '../../containers/UserProfileBanner/UserProfileBanner.js';
-import UserProfilePanel from '../../containers/UserProfilePanel/UserProfilePanel.js';
 import { Context } from '../../context/Store.js';
 import { getArtwork } from '../../services/artwork.js';
 import { getSaves, getUser } from '../../services/user.js';

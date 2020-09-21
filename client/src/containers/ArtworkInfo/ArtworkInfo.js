@@ -55,7 +55,7 @@ const ArtworkInfo = ({
                     <PricingCard
                       id={artwork.current._id}
                       price={artwork.current.personal}
-                      heading="Personal use license. Use for personal projects, social media, and
+                      heading="Personal license. Use for personal projects, social media, and
                   non commercial activities"
                       list={[]}
                       license="personal"
@@ -74,7 +74,7 @@ const ArtworkInfo = ({
                     <PricingCard
                       id={artwork.current._id}
                       price={artwork.current.commercial}
-                      heading="Commercial use license. Use anywhere in the world for unlimited projects with no expiration dates"
+                      heading="Commercial license. Use anywhere in the world for unlimited projects with no expiration dates"
                       list={[]}
                       license="commercial"
                       handlePurchase={handlePurchase}
@@ -107,6 +107,7 @@ const ArtworkInfo = ({
           ]
         )}
       </CardContent>
+
       {/*       <CardActions>
         {artwork.owner._id !== store.user.id ? (
           artwork.current.availability === 'available' ? (

@@ -295,13 +295,13 @@ export const deactivateUser = async ({ userId, session }) => {
       });
       if (!foundOrder.length) {
         await deleteS3Object({
-          link: artwork.current.cover,
-          folder: 'artworkCovers/',
+          fileLink: artwork.current.cover,
+          folderName: 'artworkCovers/',
         });
 
         await deleteS3Object({
-          link: artwork.current.media,
-          folder: 'artworkMedia/',
+          fileLink: artwork.current.media,
+          folderName: 'artworkMedia/',
         });
 
         await removeArtworkVersion({
@@ -312,8 +312,8 @@ export const deactivateUser = async ({ userId, session }) => {
       await deactivateExistingArtwork({ artworkId: artwork._id, session });
     }
     await deleteS3Object({
-      link: foundUser.photo,
-      folder: 'profilePhotos/',
+      fileLink: foundUser.photo,
+      folderName: 'profilePhotos/',
     });
     await deactivateExistingUser({ userId: foundUser._id, session });
     req.logout();

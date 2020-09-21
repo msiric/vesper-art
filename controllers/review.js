@@ -31,15 +31,16 @@ export const postReview = async ({
           reviewRating,
           session,
         });
-        const newRating =
-          foundOrder.buyer.rating +
-          (
-            (savedReview.rating - foundOrder.buyer.rating) /
-            (foundOrder.buyer.reviews + 1)
-          ).toFixed(2);
+        const numerator = currency(savedReview.rating).subtract(
+          foundOrder.buyer.rating
+        );
+        const denominator = currency(foundOrder.buyer.reviews).add(1);
+        const newRating = currency(numerator)
+          .divide(denominator)
+          .add(foundOrder.buyer.rating);
         await editUserRating({
           userId: foundOrder.seller._id,
-          userRating: newRating,
+          userRating: newRating.intValue,
           session,
         });
         await addOrderReview({

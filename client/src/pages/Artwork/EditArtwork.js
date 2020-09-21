@@ -1,34 +1,16 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { Context } from '../../context/Store.js';
+import { CircularProgress, Container, Grid } from '@material-ui/core';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
+import MainHeading from '../../components/MainHeading/MainHeading.js';
+import EditArtworkForm from '../../containers/Artwork/EditArtworkForm.js';
+import { Context } from '../../context/Store.js';
 import {
-  Container,
-  Card,
-  Grid,
-  CircularProgress,
-  Typography,
-  CardContent,
-  CardActions,
-  TextField,
-  Button,
-} from '@material-ui/core';
-import UploadInput from '../../shared/UploadInput/UploadInput.js';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import PriceInput from '../../shared/PriceInput/PriceInput.js';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
-import { deleteEmptyValues } from '../../utils/helpers.js';
-import {
-  editArtwork,
   deleteArtwork,
-  postMedia,
+  editArtwork,
   patchArtwork,
 } from '../../services/artwork.js';
 import { getUser } from '../../services/stripe.js';
-import EditArtworkForm from '../../containers/Artwork/EditArtworkForm.js';
-import MainHeading from '../../components/MainHeading/MainHeading.js';
+import { deleteEmptyValues } from '../../utils/helpers.js';
 
 const EditArtwork = ({ match }) => {
   const [store, dispatch] = useContext(Context);
@@ -97,6 +79,7 @@ const EditArtwork = ({ match }) => {
               user={store.user}
               patchArtwork={patchArtwork}
               deleteEmptyValues={deleteEmptyValues}
+              handleDeleteArtwork={handleDeleteArtwork}
             />
           </Grid>
         ) : (

@@ -2,6 +2,7 @@ import createError from 'http-errors';
 import {
   addArtworkSave,
   addNewArtwork,
+  addNewLicense,
   addNewVersion,
   deactivateExistingArtwork,
   fetchActiveArtworks,
@@ -13,7 +14,6 @@ import {
   fetchUserArtworks,
   removeArtworkSave,
   removeArtworkVersion,
-  addNewLicense,
 } from '../services/artwork.js';
 import { fetchOrderByVersion } from '../services/order.js';
 import { fetchStripeAccount } from '../services/stripe.js';
@@ -223,13 +223,13 @@ export const updateArtwork = async ({
     if (!foundOrder) {
       if (artworkData.artworkCover && artworkData.artworkMedia) {
         await deleteS3Object({
-          link: foundArtwork.current.cover,
-          folder: 'artworkCovers/',
+          fileLink: foundArtwork.current.cover,
+          folderName: 'artworkCovers/',
         });
 
         await deleteS3Object({
-          link: foundArtwork.current.media,
-          folder: 'artworkMedia/',
+          fileLink: foundArtwork.current.media,
+          folderName: 'artworkMedia/',
         });
       }
       await removeArtworkVersion({
@@ -264,13 +264,13 @@ export const deleteArtwork = async ({ userId, artworkId, session }) => {
     });
     if (!foundOrder.length) {
       await deleteS3Object({
-        link: foundArtwork.current.cover,
-        folder: 'artworkCovers/',
+        fileLink: foundArtwork.current.cover,
+        folderName: 'artworkCovers/',
       });
 
       await deleteS3Object({
-        link: foundArtwork.current.media,
-        folder: 'artworkMedia/',
+        fileLink: foundArtwork.current.media,
+        folderName: 'artworkMedia/',
       });
 
       await removeArtworkVersion({

@@ -1,33 +1,22 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
 import { CircularProgress, TextField } from '@material-ui/core';
-import {
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  Button,
-  Grid,
-  Container,
-} from '../../constants/theme.js';
-import UploadInput from '../../shared/UploadInput/UploadInput.js';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import PriceInput from '../../shared/PriceInput/PriceInput.js';
-import { ax } from '../../containers/Interceptor/Interceptor.js';
-import { deleteEmptyValues } from '../../utils/helpers.js';
-import {
-  editArtwork,
-  deleteArtwork,
-  postMedia,
-  patchArtwork,
-} from '../../services/artwork.js';
-import { getUser } from '../../services/stripe.js';
-import ImageInput from '../../components/ImageInput/ImageInput.js';
-import { artworkValidation } from '../../validation/artwork.js';
+import { Field, Form, Formik } from 'formik';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
 import HelpBox from '../../components/HelpBox/HelpBox.js';
+import ImageInput from '../../components/ImageInput/ImageInput.js';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Container,
+  Grid,
+} from '../../constants/theme.js';
+import { postMedia } from '../../services/artwork.js';
+import PriceInput from '../../shared/PriceInput/PriceInput.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
+import { deleteEmptyValues } from '../../utils/helpers.js';
+import { artworkValidation } from '../../validation/artwork.js';
 
 const EditArtworkForm = ({
   loading,
@@ -51,7 +40,7 @@ const EditArtworkForm = ({
             <CircularProgress />
           </Grid>
         ) : artwork._id ? (
-          <Card p={2}>
+          <Card p={2} width="100%">
             <Formik
               initialValues={{
                 artworkMedia: artwork.media || '',

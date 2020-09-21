@@ -119,7 +119,7 @@ const CommentSection = ({
           </InfiniteScroll>
         ) : (
           <Box
-            height={70}
+            height={80}
             display="flex"
             justifyContent="center"
             alignItems="center"

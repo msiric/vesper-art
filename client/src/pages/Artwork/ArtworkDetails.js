@@ -11,7 +11,7 @@ import {
   EditRounded as EditIcon,
 } from '@material-ui/icons';
 import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { upload } from '../../../../common/constants.js';
 import { Popover } from '../../constants/theme.js';
 import ArtistSection from '../../containers/ArtistSection/ArtistSection.js';
@@ -285,6 +285,8 @@ const ArtworkDetails = ({ match, location, socket }) => {
     }
   };
 
+  const isSeller = () => store.user.id === state.artwork.owner._id;
+
   useEffect(() => {
     fetchArtwork();
   }, [location]);
@@ -327,6 +329,16 @@ const ArtworkDetails = ({ match, location, socket }) => {
                 handlePurchase={handlePurchase}
                 handleModalOpen={handleModalOpen}
               />
+              {isSeller() && (
+                <Box display="flex" flexDirection="column" mt={2}>
+                  <Button
+                    component={RouterLink}
+                    to={`/edit_artwork/${state.artwork._id}`}
+                  >
+                    Edit artwork
+                  </Button>
+                </Box>
+              )}
             </Grid>
           </>
         ) : (

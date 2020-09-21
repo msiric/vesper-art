@@ -59,7 +59,6 @@ const ArtworkPanel = ({
       body: ``,
     },
   });
-
   const classes = useStyles();
   const theme = useTheme();
 

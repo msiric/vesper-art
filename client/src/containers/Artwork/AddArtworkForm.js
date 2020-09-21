@@ -26,7 +26,7 @@ const AddArtworkForm = ({
   const classes = {};
 
   return (
-    <Card p={2}>
+    <Card p={2} width="100%">
       <Formik
         initialValues={{
           artworkMedia: '',
