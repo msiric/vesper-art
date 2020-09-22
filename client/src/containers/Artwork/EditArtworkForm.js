@@ -43,7 +43,7 @@ const EditArtworkForm = ({
           <Card p={2} width="100%">
             <Formik
               initialValues={{
-                artworkMedia: null,
+                artworkMedia: '',
                 artworkTitle: artwork.title || '',
                 artworkType: artwork.type || '',
                 artworkAvailability: artwork.availability || '',
@@ -93,7 +93,7 @@ const EditArtworkForm = ({
                     capabilities.platformPayments !== 'active' ? (
                     <HelpBox
                       type="alert"
-                      label="To make your artwork commercially available, complete your Stripe account information"
+                      label="To make your artwork commercially available, finish entering your Stripe account information"
                     />
                   ) : null}
                   <CardContent>

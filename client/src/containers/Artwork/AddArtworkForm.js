@@ -81,7 +81,7 @@ const AddArtworkForm = ({
               capabilities.platformPayments !== 'active' ? (
               <HelpBox
                 type="alert"
-                label="To make your artwork commercially available, complete your Stripe account information"
+                label="To make your artwork commercially available, finish entering your Stripe account information"
               />
             ) : null}
             <CardContent>
