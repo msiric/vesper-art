@@ -1,9 +1,13 @@
-import { Container, Grid } from '@material-ui/core';
+import { Box, Container, Grid, IconButton } from '@material-ui/core';
+import {
+  DeleteRounded as DeleteIcon,
+  EditRounded as EditIcon,
+} from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
 import { formatDate } from '../../../../common/helpers.js';
 import Datatable from '../../components/Datatable/Datatable.js';
-import { getGallery } from '../../services/artwork.js';
+import { deleteArtwork, getGallery } from '../../services/artwork.js';
 
 function ProductsTable() {
   const [state, setState] = useState({
@@ -31,6 +35,52 @@ function ProductsTable() {
       setState({ ...state, loading: false });
     }
   };
+
+  const handleEdit = (artworkId) => {
+    history.push(`/edit_artwork/${artworkId}`);
+  };
+
+  const handleDelete = async (artworkId) => {
+    setState({
+      ...state,
+      loading: true,
+    });
+    try {
+      await deleteArtwork({
+        artworkId,
+      });
+      setState({
+        ...state,
+        loading: false,
+        artwork: state.artwork.filter((item) => item._id !== artworkId),
+      });
+    } catch (err) {
+      setState({ ...state, loading: false });
+    }
+  };
+
+  const actionsColumn = (artworkId) => (
+    <Box>
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          e.persist();
+          handleEdit(artworkId);
+        }}
+      >
+        <EditIcon />
+      </IconButton>
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          e.persist();
+          handleDelete(artworkId);
+        }}
+      >
+        <DeleteIcon />
+      </IconButton>
+    </Box>
+  );
 
   useEffect(() => {
     fetchArtwork();
@@ -116,6 +166,9 @@ function ProductsTable() {
                   },
                 },
               },
+              {
+                name: 'Actions',
+              },
             ]}
             data={state.artwork.map((artwork) => [
               artwork._id,
@@ -126,11 +179,12 @@ function ProductsTable() {
               artwork.current.personal,
               artwork.current.commercial,
               artwork.current.created,
+              actionsColumn(artwork._id),
             ])}
             empty="You have no artwork"
             loading={state.loading}
             redirect="artwork"
-            selectable={true}
+            selectable={false}
             searchable={true}
             pagination={true}
             addOptions={{
