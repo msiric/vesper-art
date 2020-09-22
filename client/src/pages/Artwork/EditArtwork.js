@@ -18,6 +18,7 @@ const EditArtwork = ({ match }) => {
     loading: true,
     isDeleting: false,
     artwork: {},
+    fileInput: null,
     capabilities: {},
   });
   const history = useHistory();

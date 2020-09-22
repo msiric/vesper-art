@@ -1,72 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../../context/Store.js';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import { useFormik, Formik, Form, Field } from 'formik';
+import { CircularProgress, Container, Grid } from '@material-ui/core';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import * as Yup from 'yup';
-import {
-  Modal,
-  Container,
-  Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  IconButton,
-  ListItemSecondaryAction,
-  Avatar,
-  ListItemText,
-  Divider,
-  CircularProgress,
-  Card,
-  CardHeader,
-  CardMedia,
-  CardContent,
-  CardActions,
-  Typography,
-  TextField,
-  Paper,
-  Button,
-  FormControl,
-  MenuItem,
-  InputLabel,
-  Select,
-  Popover,
-  Chip,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
-  ListItemIcon,
-  ListSubheader,
-  Switch,
-  Link as Anchor,
-} from '@material-ui/core';
-import {
-  CheckCircleRounded as ConfirmIcon,
-  MoreVertRounded as MoreIcon,
-  DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon,
-  CancelRounded as CancelIcon,
-  ExpandLessRounded as UpIcon,
-  ExpandLessRounded as DownIcon,
-  FavoriteRounded as SaveIcon,
-  ShareRounded as ShareIcon,
-  ShoppingBasketRounded as PurchaseIcon,
-  LinkRounded as CopyIcon,
-  EmailRounded as EmailIcon,
-  DoneRounded as CheckIcon,
-  RemoveCircleRounded as DeactivateIcon,
-} from '@material-ui/icons';
-import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput.js';
-import { Link, useHistory } from 'react-router-dom';
-import {
-  getSettings,
-  deleteUser,
-  patchEmail,
-  patchPassword,
-  patchPreferences,
-  patchBilling,
-} from '../../services/user.js';
-import SettingsAccordion from '../../components/SettingsAccordion/SettingsAccordion.js';
 import MainHeading from '../../components/MainHeading/MainHeading.js';
+import SettingsSection from '../../containers/SettingsSection/SettingsSection.js';
+import { Context } from '../../context/Store.js';
+import { deleteUser, getSettings } from '../../services/user.js';
 
 const emailValidation = Yup.object().shape({
   email: Yup.string()
@@ -159,12 +98,13 @@ const Settings = () => {
         ) : state.user._id ? (
           <Grid item sm={12} className={classes.grid}>
             <MainHeading text={'Settings'} />
-            <SettingsAccordion
+            {/*             <SettingsAccordion
               expanded={state.panel.expanded}
               user={state.user}
               handlePanelChange={handlePanelChange}
               handleDeactivateUser={handleDeactivateUser}
-            />
+            /> */}
+            <SettingsSection />
           </Grid>
         ) : (
           history.push('/')

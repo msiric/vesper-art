@@ -32,13 +32,6 @@ const EditArtworkForm = ({
   const history = useHistory();
   const classes = {};
 
-  const urlToFile = async (url) => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const file = new File([blob], 'image.jpg', { type: blob.type });
-    return file;
-  };
-
   return (
     <Container fixed className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>
@@ -50,7 +43,7 @@ const EditArtworkForm = ({
           <Card p={2} width="100%">
             <Formik
               initialValues={{
-                artworkMedia: urlToFile(artwork.media) || '',
+                artworkMedia: null,
                 artworkTitle: artwork.title || '',
                 artworkType: artwork.type || '',
                 artworkAvailability: artwork.availability || '',
@@ -61,8 +54,8 @@ const EditArtworkForm = ({
                 artworkCategory: artwork.category || '',
                 artworkDescription: artwork.description || '',
               }}
-              enableReinitialize={true}
               validationSchema={artworkValidation}
+              enableReinitialize={true}
               onSubmit={async (values, { resetForm }) => {
                 const formData = new FormData();
                 formData.append('artworkMedia', values.artworkMedia[0]);
@@ -117,7 +110,7 @@ const EditArtworkForm = ({
                           setFieldTouched={setFieldTouched}
                           helperText={meta.touched && meta.error}
                           error={meta.touched && Boolean(meta.error)}
-                          preview={artwork.media}
+                          preview={artwork.cover}
                           shape="square"
                         />
                       )}

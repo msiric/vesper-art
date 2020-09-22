@@ -54,7 +54,8 @@
     "randomstring": "^1.1.5",
     "sharp": "^0.25.1",
     "socket.io": "^2.2.0",
-    "stripe": "^7.4.0"
+    "stripe": "^7.4.0",
+    "yup": "^0.29.3"
   },
   "devDependencies": {
     "dotenv": "^8.1.0",
