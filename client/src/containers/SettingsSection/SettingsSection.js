@@ -18,7 +18,7 @@ import SelectInput from '../../components/SelectInput/SelectInput.js';
 
 const useStyles = makeStyles((theme) => ({}));
 
-const SettingsSection = ({ user, artwork, type }) => {
+const SettingsSection = ({ user, handleDeactivateUser }) => {
   const classes = useStyles();
 
   return (
@@ -27,10 +27,13 @@ const SettingsSection = ({ user, artwork, type }) => {
         <Formik
           initialValues={{
             userAvatar: '',
-            userDescription: '',
-            userCountry: '',
-            userEmail: '',
-            userSaves: '',
+            userDescription: user.description,
+            userCountry: user.country || '',
+            userEmail: user.email,
+            userSaves: user.displaySaves,
+            userCurrent: '',
+            userPassword: '',
+            userRepeat: '',
           }}
           enableReinitialize
           onSubmit={async (values, { resetForm }) => {
@@ -56,7 +59,7 @@ const SettingsSection = ({ user, artwork, type }) => {
                 <Grid
                   item
                   xs={12}
-                  md={4}
+                  md={5}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -76,7 +79,7 @@ const SettingsSection = ({ user, artwork, type }) => {
                         setFieldTouched={setFieldTouched}
                         helperText={meta.touched && meta.error}
                         error={meta.touched && Boolean(meta.error)}
-                        preview={false}
+                        preview={user.photo}
                         shape="circle"
                       />
                     )}
@@ -97,7 +100,7 @@ const SettingsSection = ({ user, artwork, type }) => {
                 <Grid
                   item
                   xs={12}
-                  md={8}
+                  md={7}
                   style={{ display: 'flex', flexDirection: 'column' }}
                 >
                   <Typography>Profile details</Typography>
@@ -106,7 +109,7 @@ const SettingsSection = ({ user, artwork, type }) => {
                       <TextField
                         {...field}
                         onBlur={() => null}
-                        label="Update description"
+                        label="Description"
                         type="text"
                         helperText={meta.touched && meta.error}
                         error={meta.touched && Boolean(meta.error)}
@@ -166,7 +169,7 @@ const SettingsSection = ({ user, artwork, type }) => {
                       <TextField
                         {...field}
                         onBlur={() => null}
-                        label="Update email address"
+                        label="Email address"
                         type="email"
                         helperText={meta.touched && meta.error}
                         error={meta.touched && Boolean(meta.error)}
@@ -181,7 +184,7 @@ const SettingsSection = ({ user, artwork, type }) => {
                       <TextField
                         {...field}
                         onBlur={() => null}
-                        label="Enter current password"
+                        label="Current password"
                         type="password"
                         helperText={meta.touched && meta.error}
                         error={meta.touched && Boolean(meta.error)}
@@ -196,7 +199,7 @@ const SettingsSection = ({ user, artwork, type }) => {
                       <TextField
                         {...field}
                         onBlur={() => null}
-                        label="Enter new password"
+                        label="New password"
                         type="password"
                         helperText={meta.touched && meta.error}
                         error={meta.touched && Boolean(meta.error)}

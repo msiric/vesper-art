@@ -12,6 +12,7 @@ export const addNewUser = async ({
   newUser.name = userUsername;
   newUser.email = userEmail;
   newUser.photo = newUser.gravatar();
+  newUser.description = null;
   newUser.password = userPassword;
   newUser.customWork = true;
   newUser.displaySaves = true;

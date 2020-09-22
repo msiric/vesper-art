@@ -68,6 +68,7 @@ const Settings = () => {
           expanded: '',
         },
       });
+      console.log(data);
     } catch (err) {
       setState({ ...state, loading: false });
     }
@@ -104,7 +105,10 @@ const Settings = () => {
               handlePanelChange={handlePanelChange}
               handleDeactivateUser={handleDeactivateUser}
             /> */}
-            <SettingsSection />
+            <SettingsSection
+              user={state.user}
+              handleDeactivateUser={handleDeactivateUser}
+            />
           </Grid>
         ) : (
           history.push('/')
