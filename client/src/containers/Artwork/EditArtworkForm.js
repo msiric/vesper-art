@@ -50,7 +50,7 @@ const EditArtworkForm = ({
                 artworkLicense: version.license || '',
                 artworkUse: version.use || '',
                 artworkPersonal: version.personal || '',
-                artworkCommercial: version.commercial || '',
+                artworkCommercial: version.commercial - version.personal || '',
                 artworkCategory: version.category || '',
                 artworkDescription: version.description || '',
               }}
@@ -129,6 +129,7 @@ const EditArtworkForm = ({
                           error={meta.touched && Boolean(meta.error)}
                           preview={version.cover}
                           shape="square"
+                          noEmpty={true}
                         />
                       )}
                     </Field>

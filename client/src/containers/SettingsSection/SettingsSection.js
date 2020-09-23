@@ -81,6 +81,7 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
                         error={meta.touched && Boolean(meta.error)}
                         preview={user.photo}
                         shape="circle"
+                        noEmpty={true}
                       />
                     )}
                   </Field>

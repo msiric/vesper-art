@@ -117,6 +117,7 @@ const ImageInput = ({
   title,
   preview,
   shape,
+  noEmpty,
 }) => {
   const [state, setState] = useState({
     loading: false,
@@ -137,7 +138,7 @@ const ImageInput = ({
   }, []);
 
   const showFileUpload = (e) => {
-    if (!error && state.file) {
+    if (!error && state.file && !noEmpty) {
       setFieldValue(field.name, null);
       setState((prevState) => ({ ...prevState, file: null }));
     } else if (fileUpload) {

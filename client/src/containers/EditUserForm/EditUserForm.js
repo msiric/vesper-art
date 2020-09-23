@@ -1,20 +1,18 @@
-import React from 'react';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import { Formik, Form, Field } from 'formik';
-import UploadInput from '../../shared/UploadInput/UploadInput.js';
 import {
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  TextField,
   Button,
-  Link as Anchor,
+  Card,
+  CardActions,
+  CardContent,
+  TextField,
+  Typography,
 } from '@material-ui/core';
-import { postMedia, patchUser } from '../../services/user.js';
-import { profileValidation } from '../../validation/profile.js';
+import { Field, Form, Formik } from 'formik';
+import React from 'react';
 import { countries } from '../../../../common/constants.js';
 import ImageInput from '../../components/ImageInput/ImageInput.js';
+import { patchUser, postMedia } from '../../services/user.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
+import { profileValidation } from '../../validation/profile.js';
 import EditUserFormStyles from './EditUserForm.style';
 
 const EditUserForm = ({ match, user, handleModalClose }) => {
@@ -68,6 +66,7 @@ const EditUserForm = ({ match, user, handleModalClose }) => {
                     error={meta.touched && Boolean(meta.error)}
                     preview={false}
                     shape="rounded"
+                    noEmpty={true}
                   />
                 )}
               </Field>

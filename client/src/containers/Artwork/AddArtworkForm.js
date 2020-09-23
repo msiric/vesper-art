@@ -103,6 +103,7 @@ const AddArtworkForm = ({
                     error={meta.touched && Boolean(meta.error)}
                     preview={false}
                     shape="square"
+                    noEmpty={false}
                   />
                 )}
               </Field>

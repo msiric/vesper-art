@@ -227,10 +227,11 @@ export const addNewVersion = async ({
   newVersion.license = artworkData.artworkLicense || prevArtwork.license;
   newVersion.use = artworkData.artworkUse || prevArtwork.use;
   newVersion.personal =
-    currency(artworkData.artworkPersonal).intValue || prevArtwork.personal;
+    currency(artworkData.artworkPersonal).intValue ||
+    currency(prevArtwork.personal).intValue;
   newVersion.commercial =
     currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
-      .intValue || prevArtwork.commercial;
+      .intValue || currency(artworkData.artworkPersonal).intValue;
   newVersion.category = artworkData.artworkCategory || prevArtwork.category;
   newVersion.description =
     artworkData.artworkDescription || prevArtwork.description;
