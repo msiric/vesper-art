@@ -1,7 +1,5 @@
 import {
-  Button,
   CardContent,
-  Divider,
   FormControlLabel,
   Grid,
   Switch,
@@ -22,22 +20,27 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
   const classes = useStyles();
 
   return (
-    <Card className={classes.artworkContainer}>
-      <CardContent p={32}>
-        <Formik
-          initialValues={{
-            userAvatar: '',
-            userDescription: user.description,
-            userCountry: user.country || '',
-            userEmail: user.email,
-            userSaves: user.displaySaves,
-            userCurrent: '',
-            userPassword: '',
-            userRepeat: '',
-          }}
-          enableReinitialize
-          onSubmit={async (values, { resetForm }) => {
-            /*         await patchEmail({
+    <Grid container p={0} my={4}>
+      <Grid
+        item
+        xs={12}
+        md={4}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <Card className={classes.artworkContainer}>
+          <CardContent p={32}>
+            <Formik
+              initialValues={{
+                userAvatar: '',
+                userDescription: user.description,
+                userCountry: user.country || '',
+              }}
+              enableReinitialize
+              onSubmit={async (values, { resetForm }) => {
+                /*         await patchEmail({
           userId: store.user.id,
           data: values,
         });
@@ -51,20 +54,10 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
           },
         }));
         resetForm(); */
-          }}
-        >
-          {({ values, errors, touched }) => (
-            <Form>
-              <Grid container p={0} my={4}>
-                <Grid
-                  item
-                  xs={12}
-                  md={5}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
+              }}
+            >
+              {({ values, errors, touched }) => (
+                <Form>
                   <Field name="userAvatar">
                     {({
                       field,
@@ -85,25 +78,6 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
                       />
                     )}
                   </Field>
-                  <Typography variant="h4" mb={4}>
-                    Deactivate account
-                  </Typography>
-                  <Typography color="textSecondary" mb={4}>
-                    Deactivating your account will result in all your data being
-                    deleted, except for essential artwork information (if you
-                    have any sold artwork as a seller) and essential license
-                    information (if you have any purchased artwork as a buyer)
-                    that are parts of other users' orders. This action is
-                    irreversible.
-                  </Typography>
-                  <Button>Deactivate account</Button>
-                </Grid>
-                <Grid
-                  item
-                  xs={12}
-                  md={7}
-                  style={{ display: 'flex', flexDirection: 'column' }}
-                >
                   <Typography>Profile details</Typography>
                   <Field name="userDescription">
                     {({ field, form: { touched, errors }, meta }) => (
@@ -135,7 +109,64 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
                       />
                     )}
                   </Field>
-                  <Divider />
+                </Form>
+              )}
+            </Formik>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        md={8}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <Card className={classes.artworkContainer}>
+          <CardContent p={32}>
+            <Formik
+              initialValues={{
+                userEmail: user.email,
+                userSaves: user.displaySaves,
+              }}
+              enableReinitialize
+              onSubmit={async (values, { resetForm }) => {
+                /*         await patchEmail({
+          userId: store.user.id,
+          data: values,
+        });
+
+        setState((prevState) => ({
+          ...prevState,
+          user: {
+            ...prevState.user,
+            email: values.email,
+            verified: false,
+          },
+        }));
+        resetForm(); */
+              }}
+            >
+              {({ values, errors, touched }) => (
+                <Form>
+                  <Typography>Profile settings</Typography>
+                  <Field name="userEmail">
+                    {({ field, form: { touched, errors }, meta }) => (
+                      <TextField
+                        {...field}
+                        onBlur={() => null}
+                        label="Email address"
+                        type="email"
+                        helperText={meta.touched && meta.error}
+                        error={meta.touched && Boolean(meta.error)}
+                        margin="dense"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    )}
+                  </Field>
                   <Typography>Profile preferences</Typography>
                   <Field name="userSaves">
                     {({
@@ -160,26 +191,48 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
                         }
                         labelPlacement="start"
                         label="Display favorite artwork"
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          margin: 0,
+                        }}
                       />
                     )}
                   </Field>
-                  <Divider />
+                </Form>
+              )}
+            </Formik>
+          </CardContent>
+        </Card>
+        <Card className={classes.artworkContainer}>
+          <CardContent p={32}>
+            <Formik
+              initialValues={{
+                userCurrent: '',
+                userPassword: '',
+                userRepeat: '',
+              }}
+              enableReinitialize
+              onSubmit={async (values, { resetForm }) => {
+                /*         await patchEmail({
+          userId: store.user.id,
+          data: values,
+        });
+
+        setState((prevState) => ({
+          ...prevState,
+          user: {
+            ...prevState.user,
+            email: values.email,
+            verified: false,
+          },
+        }));
+        resetForm(); */
+              }}
+            >
+              {({ values, errors, touched }) => (
+                <Form>
                   <Typography>Profile settings</Typography>
-                  <Field name="userEmail">
-                    {({ field, form: { touched, errors }, meta }) => (
-                      <TextField
-                        {...field}
-                        onBlur={() => null}
-                        label="Email address"
-                        type="email"
-                        helperText={meta.touched && meta.error}
-                        error={meta.touched && Boolean(meta.error)}
-                        margin="dense"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    )}
-                  </Field>
                   <Field name="userCurrent">
                     {({ field, form: { touched, errors }, meta }) => (
                       <TextField
@@ -225,18 +278,25 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
                       />
                     )}
                   </Field>
-                  <div>
-                    <Button type="submit" color="primary" fullWidth>
-                      Update
-                    </Button>
-                  </div>
-                </Grid>
-              </Grid>
-            </Form>
-          )}
-        </Formik>
-      </CardContent>
-    </Card>
+                </Form>
+              )}
+            </Formik>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <Card className={classes.artworkContainer}>
+          <CardContent p={32}></CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   );
 };
 
