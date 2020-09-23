@@ -23,7 +23,7 @@ import {
 } from '../services/user.js';
 import { sendEmail } from '../utils/email.js';
 import { formatParams, sanitizeData } from '../utils/helpers.js';
-import { deleteS3Object } from '../utils/upload.js';
+import { deleteS3Object, finalizeMediaUpload } from '../utils/upload.js';
 import emailValidator from '../validation/email.js';
 import originValidator from '../validation/origin.js';
 import passwordValidator from '../validation/password.js';
@@ -100,25 +100,30 @@ export const updateUserOrigin = async ({ userId, userOrigin, session }) => {
 
 export const updateUserProfile = async ({
   userId,
-  userMedia,
-  userDescription,
-  userCountry,
-  userDimensions,
+  userData,
+  userPath,
+  userFilename,
   session,
 }) => {
-  const { error } = profileValidator(
-    sanitizeData({ userMedia, userDescription, userCountry })
-  );
+  // $TODO Validate data passed to upload
+  const avatarUpload = await finalizeMediaUpload({
+    filePath: userPath,
+    fileName: userFilename,
+    fileType: 'user',
+  });
+  const { error } = profileValidator(sanitizeData(userData));
   if (error) throw createError(400, error);
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
-    if (userMedia) foundUser.photo = userMedia;
-    if (userDescription) foundUser.description = userDescription;
-    if (userCountry) foundUser.country = userCountry;
-    if (userDimensions && userDimensions.height && userDimensions.width) {
-      foundUser.height = userDimensions.height;
-      foundUser.width = userDimensions.width;
+    console.log(avatarUpload);
+    if (avatarUpload.fileMedia) foundUser.photo = avatarUpload.fileMedia;
+    if (avatarUpload.height && avatarUpload.width) {
+      foundUser.height = avatarUpload.height;
+      foundUser.width = avatarUpload.width;
     }
+    if (userData.userDescription)
+      foundUser.description = userData.userDescription;
+    if (userData.userCountry) foundUser.country = userData.userCountry;
     await foundUser.save({ session });
     return { message: 'User details updated' };
   }

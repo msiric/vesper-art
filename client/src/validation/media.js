@@ -38,12 +38,11 @@ export const patchAvatar = Yup.object().shape({
     .test(
       'fileType',
       `File needs to be in one of the following formats: ${upload.user.mimeTypes}`,
-      (value) =>
-        !value || (value[0] && upload.user.mimeTypes.includes(value[0].type))
+      (value) => !value || (value && upload.user.mimeTypes.includes(value.type))
     )
     .test(
       'fileSize',
       `File needs to be less than ${upload.user.fileSize}MB`,
-      (value) => !value || (value[0] && value[0].size <= upload.user.fileSize)
+      (value) => !value || (value && value.size <= upload.user.fileSize)
     ),
 });

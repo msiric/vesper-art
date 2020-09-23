@@ -17,6 +17,7 @@ import {
   updateUserPreferences,
   updateUserProfile,
 } from '../../../controllers/user.js';
+import multerApi from '../../../lib/multer.js';
 import {
   checkParamsId,
   checkParamsUsername,
@@ -53,10 +54,12 @@ router.route('/user/:userId/saves').get(
 router
   .route('/user/:userId')
   .patch(
-    [isAuthenticated, checkParamsId],
+    [isAuthenticated, checkParamsId, multerApi.uploadUserLocal],
     handler(updateUserProfile, true, (req, res, next) => ({
       ...req.params,
-      ...req.body,
+      userPath: req.file ? req.file.path : '',
+      userFilename: req.file ? req.file.filename : '',
+      userData: { ...req.body },
     }))
   )
   .delete(

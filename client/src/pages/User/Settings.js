@@ -13,6 +13,7 @@ import {
   patchPreferences,
   patchUser,
 } from '../../services/user.js';
+import { deleteEmptyValues } from '../../utils/helpers.js';
 
 const emailValidation = Yup.object().shape({
   userEmail: Yup.string()
@@ -60,9 +61,14 @@ const Settings = () => {
   };
 
   const handleUpdateProfile = async (values) => {
+    const data = deleteEmptyValues(values);
+    const formData = new FormData();
+    for (let value of Object.keys(data)) {
+      formData.append(value, data[value]);
+    }
     await patchUser({
       userId: store.user.id,
-      data: values,
+      data: formData,
     });
     setState((prevState) => ({
       ...prevState,

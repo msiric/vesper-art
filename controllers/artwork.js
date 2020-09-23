@@ -112,6 +112,7 @@ export const postNewArtwork = async ({
   artworkData,
   session,
 }) => {
+  // $TODO Validate data passed to upload
   const artworkUpload = await finalizeMediaUpload({
     filePath: artworkPath,
     fileName: artworkFilename,
@@ -170,19 +171,19 @@ export const updateArtwork = async ({
   artworkFilename,
   session,
 }) => {
+  // $TODO Validate data passed to upload
   const artworkUpload = await finalizeMediaUpload({
     filePath: artworkPath,
     fileName: artworkFilename,
     fileType: 'artwork',
   });
-
+  const { error } = artworkValidator(sanitizeData(artworkData));
+  if (error) throw createError(400, error);
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,
     session,
   });
-  const { error } = artworkValidator(sanitizeData(artworkData));
-  if (error) throw createError(400, error);
   if (foundArtwork) {
     if (artworkData.artworkPersonal || artworkData.artworkCommercial) {
       const foundUser = await fetchUserById({

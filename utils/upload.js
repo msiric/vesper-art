@@ -14,11 +14,11 @@ aws.config.update({
 export const userS3Upload = async ({ filePath, fileName }) => {
   const sharpMedia = await sharp(filePath).toBuffer();
   const userMediaPath = await uploadS3Object({
-    file: sharpMedia,
-    folder: 'userMedia',
+    fileContent: sharpMedia,
+    folderName: 'userMedia',
     fileName,
   });
-  return { media: userMediaPath };
+  return { cover: '', media: userMediaPath };
 };
 
 export const artworkS3Upload = async ({ filePath, fileName }) => {
@@ -57,28 +57,31 @@ export const deleteFileLocally = async ({ filePath }) => {
 };
 
 export const finalizeMediaUpload = async ({ filePath, fileName, fileType }) => {
-  const artworkUpload = {
-    artworkCover: '',
-    artworkMedia: '',
-    artworkHeight: '',
-    artworkWidth: '',
+  const fileUpload = {
+    fileCover: '',
+    fileMedia: '',
+    fileHeight: '',
+    fileWidth: '',
   };
   // $TODO Verify that the user uploading the photo is valid and check its id
   if (filePath && fileName) {
     const verifiedInput = await verifyDimensions({ filePath, fileType });
     if (verifiedInput.valid) {
-      const { cover, media } = await artworkS3Upload({ filePath, fileName });
+      const { cover, media } =
+        fileType === 'artwork'
+          ? await artworkS3Upload({ filePath, fileName })
+          : await userS3Upload({ filePath, fileName });
       deleteFileLocally({ filePath });
-      artworkUpload.artworkCover = cover;
-      artworkUpload.artworkMedia = media;
-      artworkUpload.artworkHeight = verifiedInput.dimensions.height;
-      artworkUpload.artworkWidth = verifiedInput.dimensions.width;
-      return artworkUpload;
+      fileUpload.fileCover = cover;
+      fileUpload.fileMedia = media;
+      fileUpload.fileHeight = verifiedInput.dimensions.height;
+      fileUpload.fileWidth = verifiedInput.dimensions.width;
+      return fileUpload;
     }
     deleteFileLocally({ filePath });
     throw createError(400, 'File dimensions are not valid');
   } else {
-    return artworkUpload;
+    return fileUpload;
   }
 };
 
