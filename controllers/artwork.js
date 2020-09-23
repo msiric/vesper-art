@@ -170,11 +170,12 @@ export const updateArtwork = async ({
   artworkFilename,
   session,
 }) => {
-  const { artworkUpload } = finalizeMediaUpload({
-    path: artworkPath,
-    filename: artworkFilename,
-    type: 'artwork',
+  const artworkUpload = await finalizeMediaUpload({
+    filePath: artworkPath,
+    fileName: artworkFilename,
+    fileType: 'artwork',
   });
+
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,

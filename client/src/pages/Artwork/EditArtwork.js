@@ -79,7 +79,7 @@ const EditArtwork = ({ match }) => {
             <EditArtworkForm
               loading={state.loading}
               capabilities={state.capabilities}
-              artwork={state.artwork.current}
+              version={state.artwork.current}
               user={store.user}
               patchArtwork={patchArtwork}
               deleteEmptyValues={deleteEmptyValues}

@@ -103,7 +103,7 @@ router
       ...req.params,
       artworkPath: req.file ? req.file.path : '',
       artworkFilename: req.file ? req.file.filename : '',
-      ...req.body,
+      artworkData: { ...req.body },
     }))
   )
   .delete(

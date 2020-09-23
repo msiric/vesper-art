@@ -214,33 +214,27 @@ export const addNewVersion = async ({
   artworkUpload,
   session = null,
 }) => {
+  console.log(artworkData, prevArtwork);
   const newVersion = new Version();
-  if (artworkData.artworkCover)
-    newVersion.cover = artworkUpload.artworkCover || prevArtwork.cover;
-  if (artworkData.artworkMedia)
-    newVersion.media = artworkUpload.artworkMedia || prevArtwork.media;
-  if (artworkUpload.artworkHeight && artworkUpload.artworkWidth) {
-    newVersion.height = artworkUpload.artworkHeight || prevArtwork.height;
-    newVersion.width = artworkUpload.artworkWidth || prevArtwork.width;
-  }
-  if (artworkData.artworkTitle)
-    newVersion.title = artworkData.artworkTitle || '';
-  if (artworkData.artworkType) newVersion.type = artworkData.artworkType || '';
-  if (artworkData.artworkAvailability)
-    newVersion.availability = artworkData.artworkAvailability || '';
-  if (artworkData.artworkLicense)
-    newVersion.license = artworkData.artworkLicense || '';
-  if (artworkData.artworkUse) newVersion.use = artworkData.artworkUse || '';
-  if (artworkData.artworkPersonal)
-    newVersion.personal = currency(artworkData.artworkPersonal).intValue || '';
-  if (artworkData.artworkCommercial)
-    newVersion.commercial =
-      currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
-        .intValue || currency(artworkData.artworkPersonal).intValue;
-  if (artworkData.artworkCategory)
-    newVersion.category = artworkData.artworkCategory || '';
-  if (artworkData.artworkDescription)
-    newVersion.description = artworkData.artworkDescription || '';
+  newVersion.cover = artworkUpload.artworkCover || prevArtwork.cover;
+  newVersion.media = artworkUpload.artworkMedia || prevArtwork.media;
+  newVersion.height = artworkUpload.artworkHeight || prevArtwork.height;
+  newVersion.width = artworkUpload.artworkWidth || prevArtwork.width;
+  newVersion.title = artworkData.artworkTitle || prevArtwork.title;
+  newVersion.type = artworkData.artworkType || prevArtwork.type;
+  newVersion.availability =
+    artworkData.artworkAvailability || prevArtwork.availability;
+  newVersion.license = artworkData.artworkLicense || prevArtwork.license;
+  newVersion.use = artworkData.artworkUse || prevArtwork.use;
+  newVersion.personal =
+    currency(artworkData.artworkPersonal).intValue || prevArtwork.personal;
+  newVersion.commercial =
+    currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
+      .intValue || prevArtwork.commercial;
+  newVersion.category = artworkData.artworkCategory || prevArtwork.category;
+  newVersion.description =
+    artworkData.artworkDescription || prevArtwork.description;
+  newVersion.artwork = prevArtwork.artwork;
   return await newVersion.save({ session });
 };
 

@@ -13,6 +13,8 @@ import {
 import PriceInput from '../../shared/PriceInput/PriceInput.js';
 import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import { artworkValidation } from '../../validation/artwork.js';
+import { addArtwork } from '../../validation/media.js';
+
 /* import AddArtworkStyles from "../../components/Artwork/AddArtwork.style.js"; */
 
 const AddArtworkForm = ({
@@ -40,7 +42,7 @@ const AddArtworkForm = ({
           artworkCategory: '',
           artworkDescription: '',
         }}
-        validationSchema={artworkValidation}
+        validationSchema={artworkValidation.concat(addArtwork)}
         onSubmit={async (values, { resetForm }) => {
           const data = deleteEmptyValues(values);
           const formData = new FormData();

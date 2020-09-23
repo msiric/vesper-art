@@ -1,10 +1,9 @@
-import mongoose from 'mongoose';
-import createError from 'http-errors';
 import aws from 'aws-sdk';
-import { upload } from '../config/constants.js';
-import imageSize from 'image-size';
 import fs from 'fs';
+import createError from 'http-errors';
+import imageSize from 'image-size';
 import sharp from 'sharp';
+import { upload } from '../config/constants.js';
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,

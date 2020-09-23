@@ -12,15 +12,15 @@ import {
   Container,
   Grid,
 } from '../../constants/theme.js';
-import { postMedia } from '../../services/artwork.js';
 import PriceInput from '../../shared/PriceInput/PriceInput.js';
 import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import { deleteEmptyValues } from '../../utils/helpers.js';
 import { artworkValidation } from '../../validation/artwork.js';
+import { updateArtwork } from '../../validation/media.js';
 
 const EditArtworkForm = ({
   loading,
-  artwork,
+  version,
   user,
   capabilities,
   stripeId,
@@ -39,25 +39,25 @@ const EditArtworkForm = ({
           <Grid item xs={12} className={classes.loader}>
             <CircularProgress />
           </Grid>
-        ) : artwork._id ? (
+        ) : version._id ? (
           <Card p={2} width="100%">
             <Formik
               initialValues={{
                 artworkMedia: '',
-                artworkTitle: artwork.title || '',
-                artworkType: artwork.type || '',
-                artworkAvailability: artwork.availability || '',
-                artworkLicense: artwork.license || '',
-                artworkUse: artwork.use || '',
-                artworkPersonal: artwork.personal || '',
-                artworkCommercial: artwork.commercial || '',
-                artworkCategory: artwork.category || '',
-                artworkDescription: artwork.description || '',
+                artworkTitle: version.title || '',
+                artworkType: version.type || '',
+                artworkAvailability: version.availability || '',
+                artworkLicense: version.license || '',
+                artworkUse: version.use || '',
+                artworkPersonal: version.personal || '',
+                artworkCommercial: version.commercial || '',
+                artworkCategory: version.category || '',
+                artworkDescription: version.description || '',
               }}
-              validationSchema={artworkValidation}
+              validationSchema={artworkValidation.concat(updateArtwork)}
               enableReinitialize={true}
               onSubmit={async (values, { resetForm }) => {
-                const formData = new FormData();
+                /*  const formData = new FormData();
                 formData.append('artworkMedia', values.artworkMedia[0]);
                 try {
                   const {
@@ -70,6 +70,23 @@ const EditArtworkForm = ({
                   history.push({
                     pathname: '/',
                     state: { message: 'Artwork edited' },
+                  });
+                } catch (err) {
+                  console.log(err);
+                } */
+                const data = deleteEmptyValues(values);
+                const formData = new FormData();
+                for (let value of Object.keys(data)) {
+                  formData.append(value, data[value]);
+                }
+                try {
+                  await patchArtwork({
+                    artworkId: version.artwork,
+                    data: formData,
+                  });
+                  history.push({
+                    pathname: '/',
+                    state: { message: 'Artwork updated' },
                   });
                 } catch (err) {
                   console.log(err);
@@ -110,7 +127,7 @@ const EditArtworkForm = ({
                           setFieldTouched={setFieldTouched}
                           helperText={meta.touched && meta.error}
                           error={meta.touched && Boolean(meta.error)}
-                          preview={artwork.cover}
+                          preview={version.cover}
                           shape="square"
                         />
                       )}
