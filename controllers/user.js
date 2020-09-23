@@ -207,10 +207,10 @@ export const updateUserPassword = async ({
 };
 
 // needs transaction (done)
-export const updateUserPreferences = async ({ userId, displaySaves }) => {
-  const { error } = preferencesValidator(sanitizeData({ displaySaves }));
+export const updateUserPreferences = async ({ userId, userSaves }) => {
+  const { error } = preferencesValidator(sanitizeData({ userSaves }));
   if (error) throw createError(400, error);
-  await editUserPreferences({ userId, displaySaves });
+  await editUserPreferences({ userId, userSaves });
   return { message: 'Preferences updated successfully' };
 };
 

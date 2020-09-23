@@ -199,12 +199,12 @@ export const editUserPassword = async ({
 
 export const editUserPreferences = async ({
   userId,
-  displaySaves,
+  userSaves,
   session = null,
 }) => {
   return await User.updateOne(
     { _id: userId },
-    { displaySaves: displaySaves }
+    { displaySaves: userSaves }
   ).session(session);
 };
 

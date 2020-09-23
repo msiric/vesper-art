@@ -1,26 +1,41 @@
 import {
+  Button,
+  CardActions,
   CardContent,
-  FormControlLabel,
   Grid,
-  Switch,
   TextField,
   Typography,
 } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 import { Field, Form, Formik } from 'formik';
-import React from 'react';
+import React, { useContext } from 'react';
 import { countries } from '../../../../common/constants.js';
 import ImageInput from '../../components/ImageInput/ImageInput.js';
 import SelectInput from '../../components/SelectInput/SelectInput.js';
+import SwitchInput from '../../components/SwitchInput/SwitchInput.js';
+import { Context } from '../../context/Store.js';
+import { emailValidation } from '../../validation/email.js';
+import { patchAvatar } from '../../validation/media.js';
+import { passwordValidation } from '../../validation/password.js';
+import { preferencesValidation } from '../../validation/preferences.js';
+import { profileValidation } from '../../validation/profile.js';
 
 const useStyles = makeStyles((theme) => ({}));
 
-const SettingsSection = ({ user, handleDeactivateUser }) => {
+const SettingsSection = ({
+  user,
+  handleUpdateProfile,
+  handleUpdateEmail,
+  handleUpdatePreferences,
+  handleUpdatePassword,
+  handleDeactivateUser,
+}) => {
+  const [store, dispatch] = useContext(Context);
   const classes = useStyles();
 
   return (
-    <Grid container p={0} my={4}>
+    <Grid container p={0} my={4} spacing={2}>
       <Grid
         item
         xs={12}
@@ -31,34 +46,20 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
         }}
       >
         <Card className={classes.artworkContainer}>
-          <CardContent p={32}>
-            <Formik
-              initialValues={{
-                userAvatar: '',
-                userDescription: user.description,
-                userCountry: user.country || '',
-              }}
-              enableReinitialize
-              onSubmit={async (values, { resetForm }) => {
-                /*         await patchEmail({
-          userId: store.user.id,
-          data: values,
-        });
-
-        setState((prevState) => ({
-          ...prevState,
-          user: {
-            ...prevState.user,
-            email: values.email,
-            verified: false,
-          },
-        }));
-        resetForm(); */
-              }}
-            >
-              {({ values, errors, touched }) => (
-                <Form>
-                  <Field name="userAvatar">
+          <Formik
+            initialValues={{
+              userMedia: '',
+              userDescription: user.description,
+              userCountry: user.country || '',
+            }}
+            validationSchema={profileValidation.concat(patchAvatar)}
+            enableReinitialize
+            onSubmit={handleUpdateProfile}
+          >
+            {({ values, errors, touched }) => (
+              <Form>
+                <CardContent p={32}>
+                  <Field name="userMedia">
                     {({
                       field,
                       form: { setFieldValue, setFieldTouched },
@@ -109,10 +110,13 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
                       />
                     )}
                   </Field>
-                </Form>
-              )}
-            </Formik>
-          </CardContent>
+                </CardContent>
+                <CardActions>
+                  <Button type="submit">Save</Button>
+                </CardActions>
+              </Form>
+            )}
+          </Formik>
         </Card>
       </Grid>
       <Grid
@@ -125,32 +129,17 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
         }}
       >
         <Card className={classes.artworkContainer}>
-          <CardContent p={32}>
-            <Formik
-              initialValues={{
-                userEmail: user.email,
-                userSaves: user.displaySaves,
-              }}
-              enableReinitialize
-              onSubmit={async (values, { resetForm }) => {
-                /*         await patchEmail({
-          userId: store.user.id,
-          data: values,
-        });
-
-        setState((prevState) => ({
-          ...prevState,
-          user: {
-            ...prevState.user,
-            email: values.email,
-            verified: false,
-          },
-        }));
-        resetForm(); */
-              }}
-            >
-              {({ values, errors, touched }) => (
-                <Form>
+          <Formik
+            initialValues={{
+              userEmail: user.email,
+            }}
+            validationSchema={emailValidation}
+            enableReinitialize
+            onSubmit={handleUpdateEmail}
+          >
+            {({ values, errors, touched }) => (
+              <Form>
+                <CardContent p={32}>
                   <Typography>Profile settings</Typography>
                   <Field name="userEmail">
                     {({ field, form: { touched, errors }, meta }) => (
@@ -167,71 +156,63 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
                       />
                     )}
                   </Field>
+                </CardContent>
+                <CardActions>
+                  <Button type="submit">Save</Button>
+                </CardActions>
+              </Form>
+            )}
+          </Formik>
+        </Card>
+        <Card className={classes.artworkContainer}>
+          <Formik
+            initialValues={{
+              userSaves: user.displaySaves,
+            }}
+            validationSchema={preferencesValidation}
+            enableReinitialize
+            onSubmit={handleUpdatePreferences}
+          >
+            {({ values, errors, touched }) => (
+              <Form>
+                <CardContent p={32}>
                   <Typography>Profile preferences</Typography>
                   <Field name="userSaves">
                     {({
                       field,
-                      form: { setFieldValue, touched, errors },
+                      form: { setFieldValue, touched, errors, helperText },
                       meta,
                     }) => (
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            {...field}
-                            edge="end"
-                            label="Display saved artwork"
-                            onChange={(e) =>
-                              setFieldValue('userSaves', e.target.checked)
-                            }
-                            checked={values.userSaves}
-                            inputProps={{
-                              'aria-labelledby': 'switch-list-label-saves',
-                            }}
-                          />
-                        }
-                        labelPlacement="start"
-                        label="Display favorite artwork"
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          margin: 0,
-                        }}
+                      <SwitchInput
+                        {...field}
+                        label="Display saved artwork"
+                        helperText={meta.touched && meta.error}
+                        error={meta.touched && Boolean(meta.error)}
                       />
                     )}
                   </Field>
-                </Form>
-              )}
-            </Formik>
-          </CardContent>
+                </CardContent>
+                <CardActions>
+                  <Button type="submit">Save</Button>
+                </CardActions>
+              </Form>
+            )}
+          </Formik>
         </Card>
         <Card className={classes.artworkContainer}>
-          <CardContent p={32}>
-            <Formik
-              initialValues={{
-                userCurrent: '',
-                userPassword: '',
-                userRepeat: '',
-              }}
-              enableReinitialize
-              onSubmit={async (values, { resetForm }) => {
-                /*         await patchEmail({
-          userId: store.user.id,
-          data: values,
-        });
-
-        setState((prevState) => ({
-          ...prevState,
-          user: {
-            ...prevState.user,
-            email: values.email,
-            verified: false,
-          },
-        }));
-        resetForm(); */
-              }}
-            >
-              {({ values, errors, touched }) => (
-                <Form>
+          <Formik
+            initialValues={{
+              userCurrent: '',
+              userPassword: '',
+              userConfirm: '',
+            }}
+            validationSchema={passwordValidation}
+            enableReinitialize
+            onSubmit={handleUpdatePassword}
+          >
+            {({ values, errors, touched }) => (
+              <Form>
+                <CardContent p={32}>
                   <Typography>Profile settings</Typography>
                   <Field name="userCurrent">
                     {({ field, form: { touched, errors }, meta }) => (
@@ -278,10 +259,13 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
                       />
                     )}
                   </Field>
-                </Form>
-              )}
-            </Formik>
-          </CardContent>
+                </CardContent>
+                <CardActions>
+                  <Button type="submit">Save</Button>
+                </CardActions>
+              </Form>
+            )}
+          </Formik>
         </Card>
       </Grid>
       <Grid
@@ -293,7 +277,19 @@ const SettingsSection = ({ user, handleDeactivateUser }) => {
         }}
       >
         <Card className={classes.artworkContainer}>
-          <CardContent p={32}></CardContent>
+          <CardContent p={32}>
+            <Typography>Deactivate user</Typography>
+            <Typography>
+              Deactivating your account will result in all your data being
+              deleted, except for essential artwork information (if you have any
+              sold artwork as a seller) and essential license information (if
+              you have any purchased artwork as a buyer) that are parts of other
+              users' orders. This action is irreversible.
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Button onClick={handleDeactivateUser}>Deactivate</Button>
+          </CardActions>
         </Card>
       </Grid>
     </Grid>

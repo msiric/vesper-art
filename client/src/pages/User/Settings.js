@@ -5,43 +5,34 @@ import * as Yup from 'yup';
 import MainHeading from '../../components/MainHeading/MainHeading.js';
 import SettingsSection from '../../containers/SettingsSection/SettingsSection.js';
 import { Context } from '../../context/Store.js';
-import { deleteUser, getSettings } from '../../services/user.js';
+import {
+  deleteUser,
+  getSettings,
+  patchEmail,
+  patchPassword,
+  patchPreferences,
+  patchUser,
+} from '../../services/user.js';
 
 const emailValidation = Yup.object().shape({
-  email: Yup.string()
+  userEmail: Yup.string()
     .email('Invalid email')
     .trim()
     .required('Email cannot be empty'),
 });
 
+const preferencesValidation = Yup.object().shape({
+  userSaves: Yup.boolean().required('Saves need to have a value'),
+});
+
 const passwordValidation = Yup.object().shape({
-  current: Yup.string().required('Enter your password'),
-  password: Yup.string()
+  userCurrent: Yup.string().required('Enter your password'),
+  userPassword: Yup.string()
     .min(8, 'Password must contain at least 8 characters')
     .required('Enter new password'),
-  confirm: Yup.string()
+  userConfirm: Yup.string()
     .required('Confirm your password')
     .oneOf([Yup.ref('password')], 'Passwords do not match'),
-});
-
-const preferencesValidation = Yup.object().shape({
-  displaySaves: Yup.boolean().required('Saves need to have a value'),
-});
-
-const billingValidation = Yup.object().shape({
-  firstname: Yup.string().trim().required('First name is required'),
-  lastname: Yup.string().trim().required('Last name is required'),
-  email: Yup.string().email('Invalid email').required('Email is required'),
-  address: Yup.string().trim().required('Address is required'),
-  zip: Yup.string().trim().required('Postal code is required'),
-  city: Yup.string().trim().required('City is required'),
-  country: Yup.string().trim().required('Country is required'),
-});
-
-const licenseValidation = Yup.object().shape({
-  licenseType: Yup.string()
-    .matches(/(personal|commercial)/)
-    .required('License type is required'),
 });
 
 const Settings = () => {
@@ -49,9 +40,6 @@ const Settings = () => {
   const [state, setState] = useState({
     loading: true,
     user: {},
-    panel: {
-      expanded: '',
-    },
   });
   const history = useHistory();
 
@@ -64,9 +52,6 @@ const Settings = () => {
         ...state,
         loading: false,
         user: data.user,
-        panel: {
-          expanded: '',
-        },
       });
       console.log(data);
     } catch (err) {
@@ -74,11 +59,57 @@ const Settings = () => {
     }
   };
 
-  const handlePanelChange = (visible) => (e, isExpanded) => {
+  const handleUpdateProfile = async (values) => {
+    await patchUser({
+      userId: store.user.id,
+      data: values,
+    });
     setState((prevState) => ({
       ...prevState,
-      panel: { ...prevState.panel, expanded: isExpanded ? visible : '' },
+      user: {
+        ...prevState.user,
+        photo: values.userMedia,
+        description: values.userDescription,
+        country: values.userCountry,
+      },
     }));
+  };
+
+  const handleUpdateEmail = async (values) => {
+    await patchEmail({
+      userId: store.user.id,
+      data: values,
+    });
+    setState((prevState) => ({
+      ...prevState,
+      user: {
+        ...prevState.user,
+        email: values.email,
+        verified: false,
+      },
+    }));
+  };
+
+  const handleUpdatePreferences = async (values) => {
+    await patchPreferences({
+      userId: store.user.id,
+      data: values,
+    });
+    setState((prevState) => ({
+      ...prevState,
+      user: {
+        ...prevState.user,
+        displaySaves: values.userSaves,
+      },
+    }));
+  };
+
+  const handleUpdatePassword = async (values, actions) => {
+    await patchPassword({
+      userId: store.user.id,
+      data: values,
+    });
+    actions.resetForm();
   };
 
   const handleDeactivateUser = async () => {
@@ -99,14 +130,12 @@ const Settings = () => {
         ) : state.user._id ? (
           <Grid item sm={12} className={classes.grid}>
             <MainHeading text={'Settings'} />
-            {/*             <SettingsAccordion
-              expanded={state.panel.expanded}
-              user={state.user}
-              handlePanelChange={handlePanelChange}
-              handleDeactivateUser={handleDeactivateUser}
-            /> */}
             <SettingsSection
               user={state.user}
+              handleUpdateProfile={handleUpdateProfile}
+              handleUpdateEmail={handleUpdateEmail}
+              handleUpdatePreferences={handleUpdatePreferences}
+              handleUpdatePassword={handleUpdatePassword}
               handleDeactivateUser={handleDeactivateUser}
             />
           </Grid>
