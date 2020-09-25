@@ -11,8 +11,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Field, Form, Formik } from 'formik';
 import React, { useContext } from 'react';
 import { countries } from '../../../../common/constants.js';
+import AutocompleteInput from '../../components/AutocompleteInput/AutocompleteInput.js';
 import ImageInput from '../../components/ImageInput/ImageInput.js';
-import SelectInput from '../../components/SelectInput/SelectInput.js';
 import SwitchInput from '../../components/SwitchInput/SwitchInput.js';
 import { Context } from '../../context/Store.js';
 import { emailValidation } from '../../validation/email.js';
@@ -49,7 +49,7 @@ const SettingsSection = ({
           <Formik
             initialValues={{
               userMedia: '',
-              userDescription: user.description,
+              userDescription: user.description || '',
               userCountry: user.country || '',
             }}
             validationSchema={profileValidation.concat(patchAvatar)}
@@ -97,16 +97,22 @@ const SettingsSection = ({
                     )}
                   </Field>
                   <Field name="userCountry">
-                    {({ field, form: { touched, errors }, meta }) => (
-                      <SelectInput
+                    {({
+                      field,
+                      form: { touched, errors, setFieldValue, setFieldTouched },
+                      meta,
+                    }) => (
+                      <AutocompleteInput
                         {...field}
-                        label="Country"
+                        options={countries}
+                        handleChange={(e, item) =>
+                          setFieldValue('userCountry', item || '')
+                        }
+                        handleBlur={() => setFieldTouched('userCountry', true)}
+                        getOptionLabel={(option) => option.text}
                         helperText={meta.touched && meta.error}
                         error={meta.touched && Boolean(meta.error)}
-                        options={countries}
-                        margin="dense"
-                        variant="outlined"
-                        fullWidth
+                        label="Country"
                       />
                     )}
                   </Field>

@@ -1,9 +1,3 @@
-import React, { useContext } from 'react';
-import { Context } from '../../context/Store.js';
-import { Link } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import {
   Grow,
   List,
@@ -12,54 +6,26 @@ import {
   ListItemText,
 } from '@material-ui/core';
 import {
-  Grid,
-  Container,
+  LabelImportantRounded as LabelIcon,
+  MonetizationOnRounded as MonetizationIcon,
+} from '@material-ui/icons';
+import { Field, Form, Formik } from 'formik';
+import React, { useContext } from 'react';
+import { countries } from '../../../../common/constants.js';
+import AutocompleteInput from '../../components/AutocompleteInput/AutocompleteInput.js';
+import HelpBox from '../../components/HelpBox/HelpBox.js';
+import {
+  Button,
   Card,
   CardContent,
+  Container,
+  Grid,
   Typography,
-  Button,
 } from '../../constants/theme.js';
-import { MonetizationOnRounded as MonetizationIcon } from '@material-ui/icons';
-import { patchUser, patchOrigin } from '../../services/user.js';
+import { Context } from '../../context/Store.js';
 import { postAuthorize } from '../../services/stripe.js';
+import { patchOrigin } from '../../services/user.js';
 import { originValidation } from '../../validation/origin.js';
-import HelpBox from '../../components/HelpBox/HelpBox.js';
-import { LabelImportantRounded as LabelIcon } from '@material-ui/icons';
-import Axios from 'axios';
-
-const supportedCountries = [
-  { value: '' },
-  { value: 'AE', text: 'Australia' },
-  { value: 'AT', text: 'Austria' },
-  { value: 'BE', text: 'Belgium' },
-  { value: 'CA', text: 'Canada' },
-  { value: 'DE', text: 'Denmark' },
-  { value: 'EE', text: 'Estonia' },
-  { value: 'FI', text: 'Finland' },
-  { value: 'FR', text: 'France' },
-  { value: 'DE', text: 'Germany' },
-  { value: 'GR', text: 'Greece' },
-  { value: 'HK', text: 'Honk Kong SAR China' },
-  { value: 'IE', text: 'Ireland' },
-  { value: 'IT', text: 'Italy' },
-  { value: 'JP', text: 'Japan' },
-  { value: 'LV', text: 'Latvia' },
-  { value: 'LT', text: 'Lithuania' },
-  { value: 'LU', text: 'Luxembourg' },
-  { value: 'NL', text: 'Netherlands' },
-  { value: 'NZ', text: 'New Zealand' },
-  { value: 'NO', text: 'Norway' },
-  { value: 'PL', text: 'Poland' },
-  { value: 'PT', text: 'Portugal' },
-  { value: 'SG', text: 'Singapore' },
-  { value: 'SK', text: 'Slovakia' },
-  { value: 'SI', text: 'Slovenia' },
-  { value: 'ES', text: 'Spain' },
-  { value: 'SE', text: 'Sweden' },
-  { value: 'CH', text: 'Switzerland' },
-  { value: 'GB', text: 'United Kingdom' },
-  { value: 'US', text: 'United States' },
-];
 
 const Onboarding = () => {
   const [store, dispatch] = useContext(Context);
@@ -129,7 +95,8 @@ const Onboarding = () => {
                     </List>
                     {/* $TODO Refactor supportedCountries */}
                     {store.user.origin ? (
-                      supportedCountries[store.user.origin] ? (
+                      countries[store.user.origin] &&
+                      countries[store.user.origin].supported ? (
                         <Typography
                           color="textSecondary"
                           style={{ alignSelf: 'flex-start' }}
@@ -183,16 +150,31 @@ const Onboarding = () => {
                   {({ values, errors, touched, isSubmitting }) => (
                     <Form style={{ width: '100%' }}>
                       <Field name="userOrigin">
-                        {({ field, form: { touched, errors }, meta }) => (
-                          <SelectInput
+                        {({
+                          field,
+                          form: {
+                            touched,
+                            errors,
+                            setFieldTouched,
+                            setFieldValue,
+                          },
+                          meta,
+                        }) => (
+                          <AutocompleteInput
                             {...field}
                             label="Country"
                             helperText={meta.touched && meta.error}
                             error={meta.touched && Boolean(meta.error)}
-                            options={supportedCountries}
-                            margin="dense"
-                            variant="outlined"
-                            fullWidth
+                            options={countries.map(
+                              (country) => country.supported === true
+                            )}
+                            handleChange={(e, item) =>
+                              setFieldValue('userOrigin', item || '')
+                            }
+                            handleBlur={() =>
+                              setFieldTouched('userOrigin', true)
+                            }
+                            getOptionLabel={(option) => option.text}
                           />
                         )}
                       </Field>

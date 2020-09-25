@@ -1,56 +1,21 @@
-import React, { useContext } from 'react';
-import { Context } from '../../context/Store.js';
-import { Link } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import { Grow } from '@material-ui/core';
+import { MonetizationOnRounded as MonetizationIcon } from '@material-ui/icons';
+import { Field, Form, Formik } from 'formik';
+import React, { useContext } from 'react';
+import { countries } from '../../../../common/constants.js';
 import {
-  Grid,
-  Container,
+  Button,
   Card,
   CardContent,
+  Container,
+  Grid,
   Typography,
-  Button,
 } from '../../constants/theme.js';
-import { MonetizationOnRounded as MonetizationIcon } from '@material-ui/icons';
-import { patchUser, patchOrigin } from '../../services/user.js';
+import { Context } from '../../context/Store.js';
 import { postAuthorize } from '../../services/stripe.js';
+import { patchOrigin } from '../../services/user.js';
+import SelectInput from '../../shared/SelectInput/SelectInput.js';
 import { originValidation } from '../../validation/origin.js';
-
-const supportedCountries = [
-  { value: '' },
-  { value: 'AE', text: 'Australia' },
-  { value: 'AT', text: 'Austria' },
-  { value: 'BE', text: 'Belgium' },
-  { value: 'CA', text: 'Canada' },
-  { value: 'DE', text: 'Denmark' },
-  { value: 'EE', text: 'Estonia' },
-  { value: 'FI', text: 'Finland' },
-  { value: 'FR', text: 'France' },
-  { value: 'DE', text: 'Germany' },
-  { value: 'GR', text: 'Greece' },
-  { value: 'HK', text: 'Honk Kong SAR China' },
-  { value: 'IE', text: 'Ireland' },
-  { value: 'IT', text: 'Italy' },
-  { value: 'JP', text: 'Japan' },
-  { value: 'LV', text: 'Latvia' },
-  { value: 'LT', text: 'Lithuania' },
-  { value: 'LU', text: 'Luxembourg' },
-  { value: 'NL', text: 'Netherlands' },
-  { value: 'NZ', text: 'New Zealand' },
-  { value: 'NO', text: 'Norway' },
-  { value: 'PL', text: 'Poland' },
-  { value: 'PT', text: 'Portugal' },
-  { value: 'SG', text: 'Singapore' },
-  { value: 'SK', text: 'Slovakia' },
-  { value: 'SI', text: 'Slovenia' },
-  { value: 'ES', text: 'Spain' },
-  { value: 'SE', text: 'Sweden' },
-  { value: 'CH', text: 'Switzerland' },
-  { value: 'GB', text: 'United Kingdom' },
-  { value: 'US', text: 'United States' },
-];
 
 const Onboarding = () => {
   const [store, dispatch] = useContext(Context);
@@ -158,7 +123,9 @@ const Onboarding = () => {
                             label="Country"
                             helperText={meta.touched && meta.error}
                             error={meta.touched && Boolean(meta.error)}
-                            options={supportedCountries}
+                            options={countries.map(
+                              (country) => country.supported === true
+                            )}
                             margin="dense"
                             variant="outlined"
                             fullWidth

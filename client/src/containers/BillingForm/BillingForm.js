@@ -206,7 +206,7 @@ const BillingForm = () => {
                   setFieldValue('billingCountry', value || '')
                 }
                 handleBlur={() => setFieldTouched('country', true)}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={(option) => option.text}
                 helperText={meta.touched && meta.error}
                 error={meta.touched && Boolean(meta.error)}
                 label="Country"

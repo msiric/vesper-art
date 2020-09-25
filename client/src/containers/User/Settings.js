@@ -1,76 +1,147 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../Store/Store.js";
-import SelectInput from "../../shared/SelectInput/SelectInput.js";
-import { useFormik, Formik, Form, Field } from "formik";
-import * as Yup from "yup";
-import Gallery from "../Home/Gallery.js";
 import {
-  Modal,
-  Container,
-  Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  IconButton,
-  ListItemSecondaryAction,
-  Avatar,
-  ListItemText,
-  Divider,
-  CircularProgress,
-  Card,
-  CardHeader,
-  CardMedia,
-  CardContent,
-  CardActions,
-  Typography,
-  TextField,
-  Paper,
   Button,
-  FormControl,
-  MenuItem,
-  InputLabel,
-  Select,
-  Popover,
-  Chip,
+
+
+
+
+
+  Chip, CircularProgress, Container,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   ExpansionPanel,
   ExpansionPanelDetails,
-  ExpansionPanelSummary,
-  ListItemIcon,
-  ListSubheader,
-  Switch,
-  Link as Anchor,
+  ExpansionPanelSummary, Grid,
+  List,
+  ListItem,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ListItemIcon, ListItemSecondaryAction,
+
+  ListItemText,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ListSubheader, Paper,
+
+
+
+
+
+
+
+
+
+
+
+
+  Switch, TextField, Typography
 } from "@material-ui/core";
 import {
   CheckCircleRounded as ConfirmIcon,
-  MoreVertRounded as MoreIcon,
-  DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon,
-  CancelRounded as CancelIcon,
-  ExpandLessRounded as UpIcon,
-  ExpandLessRounded as DownIcon,
+
+
+
+
+
+
+
+
+
+
+
+  DoneRounded as CheckIcon, ExpandLessRounded as DownIcon, ExpandLessRounded as UpIcon,
+
   FavoriteRounded as SaveIcon,
-  ShareRounded as ShareIcon,
-  ShoppingBasketRounded as PurchaseIcon,
-  LinkRounded as CopyIcon,
-  EmailRounded as EmailIcon,
-  DoneRounded as CheckIcon,
-  RemoveCircleRounded as DeactivateIcon,
+
+
+
+
+
+  RemoveCircleRounded as DeactivateIcon
 } from "@material-ui/icons";
-import AutocompleteInput from "../../shared/AutocompleteInput/AutocompleteInput.js";
-import SettingsStyles from "./Settings.style.js";
+import { Field, Form, Formik } from "formik";
+import React, { useContext, useEffect, useState } from "react";
 import {
-  getSettings,
-  deleteUser,
-  patchEmail,
+  deleteUser, getSettings,
+
+
+
+
+  patchBilling, patchEmail,
   patchPassword,
-  patchPreferences,
-  patchBilling,
+  patchPreferences
 } from "../../services/user.js";
-import { licenseValidation } from "../../validation/license.js";
+import AutocompleteInput from "../../shared/AutocompleteInput/AutocompleteInput.js";
+import { billingValidation } from "../../validation/billing.js";
 import { emailValidation } from "../../validation/email.js";
 import { passwordValidation } from "../../validation/password.js";
 import { preferencesValidation } from "../../validation/preferences.js";
-import { billingValidation } from "../../validation/billing.js";
+import { Context } from "../Store/Store.js";
+import SettingsStyles from "./Settings.style.js";
 
 const Settings = () => {
   const [store, dispatch] = useContext(Context);
@@ -592,7 +663,7 @@ const Settings = () => {
                                   handleBlur={() =>
                                     setFieldTouched("country", true)
                                   }
-                                  getOptionLabel={(option) => option.name}
+                                  getOptionLabel={(option) => option.text}
                                   helperText={meta.touched && meta.error}
                                   error={meta.touched && Boolean(meta.error)}
                                   label="Country"

@@ -1,6 +1,6 @@
-import React from 'react';
 import { TextField } from '@material-ui/core';
 import { Autocomplete as SearchableSelect } from '@material-ui/lab';
+import React from 'react';
 
 const Autocomplete = ({
   label,
@@ -20,6 +20,7 @@ const Autocomplete = ({
       onChange={handleChange}
       openOnFocus
       options={options}
+      getOptionSelected={(item, current) => item.value == current}
       renderInput={(other) => (
         <TextField
           {...other}
