@@ -1,4 +1,4 @@
-import { ax } from '../containers/Interceptor/Interceptor.js';
+import { ax } from "../containers/Interceptor/Interceptor.js";
 
 export const postReview = async ({ artworkId, reviewRating }) =>
   await ax.post(`/api/rate_artwork/${artworkId}`, {

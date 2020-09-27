@@ -1,6 +1,13 @@
-import createError from 'http-errors';
-import { fetchOrderDetails } from '../services/order.js';
-import { fetchUserPurchases, fetchUserSales } from '../services/user.js';
+import createError from "http-errors";
+import { fetchOrderDetails } from "../services/order.js";
+import { fetchUserPurchases, fetchUserSales } from "../services/user.js";
+import aws from "aws-sdk";
+
+aws.config.update({
+  secretAccessKey: process.env.S3_SECRET,
+  accessKeyId: process.env.S3_ID,
+  region: process.env.S3_REGION,
+});
 
 export const getSoldOrders = async ({ userId }) => {
   const foundUser = await fetchUserSales({ userId });
@@ -49,7 +56,7 @@ export const getOrderDetails = async ({ userId, orderId }) => {
     // }
     return { order: foundOrder };
   }
-  throw createError(400, 'Order not found');
+  throw createError(400, "Order not found");
 };
 
 export const downloadOrderArtwork = async ({ userId, orderId }) => {
@@ -58,7 +65,17 @@ export const downloadOrderArtwork = async ({ userId, orderId }) => {
     orderId,
   });
   if (foundOrder) {
-    console.log('kejos');
+    const s3 = new aws.S3({ signatureVersion: "v4" });
+
+    const file = foundOrder.version.media.split("/").pop();
+    const params = {
+      Bucket: process.env.S3_BUCKET,
+      Key: `artworkMedia/${file}`,
+      Expires: 60 * 3,
+    };
+    const url = s3.getSignedUrl("getObject", params);
+
+    return { url, file };
   }
-  throw createError(400, 'Artwork not found');
+  throw createError(400, "Artwork not found");
 };

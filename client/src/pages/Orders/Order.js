@@ -1,21 +1,21 @@
-import { Box, Button, Container, Grid } from '@material-ui/core';
-import { Rating } from '@material-ui/lab';
-import { format } from 'date-fns';
-import { Field, Form, Formik } from 'formik';
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory, withRouter } from 'react-router-dom';
-import * as Yup from 'yup';
-import LicenseCard from '../../components/LicenseCard/LicenseCard.js';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
-import OrderPreview from '../../components/OrderPreview/OrderPreview.js';
-import ProfileCard from '../../components/ProfileCard/ProfileCard.js';
-import ReviewCard from '../../components/ReviewCard/ReviewCard.js';
-import { Context } from '../../context/Store.js';
-import { getDownload, getOrder, postReview } from '../../services/orders.js';
-import Modal from '../../shared/Modal/Modal.js';
+import { Box, Button, Container, Grid } from "@material-ui/core";
+import { Rating } from "@material-ui/lab";
+import { format } from "date-fns";
+import { Field, Form, Formik } from "formik";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory, withRouter } from "react-router-dom";
+import * as Yup from "yup";
+import LicenseCard from "../../components/LicenseCard/LicenseCard.js";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import OrderPreview from "../../components/OrderPreview/OrderPreview.js";
+import ProfileCard from "../../components/ProfileCard/ProfileCard.js";
+import ReviewCard from "../../components/ReviewCard/ReviewCard.js";
+import { Context } from "../../context/Store.js";
+import { getDownload, getOrder, postReview } from "../../services/orders.js";
+import Modal from "../../shared/Modal/Modal.js";
 
 const reviewValidation = Yup.object().shape({
-  rating: Yup.number().min(1).max(5).required('Rating cannot be empty'),
+  rating: Yup.number().min(1).max(5).required("Rating cannot be empty"),
 });
 
 const Order = ({ match }) => {
@@ -122,7 +122,12 @@ const Order = ({ match }) => {
 
   const handleDownload = async () => {
     try {
-      await getDownload({ orderId: match.params.id });
+      const { data } = await getDownload({ orderId: state.order._id });
+      const link = document.createElement("a");
+      link.href = data.url;
+      link.setAttribute("download", data.file);
+      document.body.appendChild(link);
+      link.click();
     } catch (err) {
       console.log(err);
     }
@@ -175,7 +180,7 @@ const Order = ({ match }) => {
             </Grid>
           </>
         ) : (
-          history.push('/')
+          history.push("/")
         )}
       </Grid>
       <Modal {...state.modal} handleClose={handleModalClose} />
