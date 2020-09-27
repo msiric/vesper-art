@@ -1,65 +1,66 @@
-import React, { lazy, Suspense, useContext } from 'react';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
-import { Context } from '../../context/Store.js';
-import AuthLayout from '../../layouts/AuthLayout.js';
-import MainLayout from '../../layouts/MainLayout.js';
+import React, { lazy, Suspense, useContext } from "react";
+import { Router, Redirect, Route, Switch } from "react-router-dom";
+import { Context } from "../../context/Store.js";
+import AuthLayout from "../../layouts/AuthLayout.js";
+import MainLayout from "../../layouts/MainLayout.js";
+import history from "../../utils/history.js";
 
 const routes = [
   // Artwork router
   {
-    path: '/my_artwork',
-    Component: lazy(() => import('../../pages/Artwork/MyArtwork')),
+    path: "/my_artwork",
+    Component: lazy(() => import("../../pages/Artwork/MyArtwork")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   {
-    path: '/add_artwork',
-    Component: lazy(() => import('../../pages/Artwork/AddArtwork')),
+    path: "/add_artwork",
+    Component: lazy(() => import("../../pages/Artwork/AddArtwork")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   {
-    path: '/artwork/:id',
-    Component: lazy(() => import('../../pages/Artwork/ArtworkDetails')),
+    path: "/artwork/:id",
+    Component: lazy(() => import("../../pages/Artwork/ArtworkDetails")),
     exact: true,
-    type: 'public',
+    type: "public",
   },
   {
-    path: '/edit_artwork/:id',
-    Component: lazy(() => import('../../pages/Artwork/EditArtwork')),
+    path: "/edit_artwork/:id",
+    Component: lazy(() => import("../../pages/Artwork/EditArtwork")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   // Auth router
   {
-    path: '/signup',
-    Component: lazy(() => import('../../pages/Auth/Signup')),
+    path: "/signup",
+    Component: lazy(() => import("../../pages/Auth/Signup")),
     exact: true,
-    type: 'auth',
+    type: "auth",
   },
   {
-    path: '/login',
-    Component: lazy(() => import('../../pages/Auth/Login')),
+    path: "/login",
+    Component: lazy(() => import("../../pages/Auth/Login")),
     exact: true,
-    type: 'auth',
+    type: "auth",
   },
   {
-    path: '/verify_token/:id',
-    Component: lazy(() => import('../../pages/Auth/VerifyToken')),
+    path: "/verify_token/:id",
+    Component: lazy(() => import("../../pages/Auth/VerifyToken")),
     exact: true,
-    type: 'auth',
+    type: "auth",
   },
   {
-    path: '/forgot_password',
-    Component: lazy(() => import('../../pages/Auth/ForgotPassword')),
+    path: "/forgot_password",
+    Component: lazy(() => import("../../pages/Auth/ForgotPassword")),
     exact: true,
-    type: 'auth',
+    type: "auth",
   },
   {
-    path: '/reset_password/:id',
-    Component: lazy(() => import('../../pages/Auth/ResetPassword')),
+    path: "/reset_password/:id",
+    Component: lazy(() => import("../../pages/Auth/ResetPassword")),
     exact: true,
-    type: 'auth',
+    type: "auth",
   },
   // Conversations router
   // {
@@ -72,22 +73,22 @@ const routes = [
   // },
   // Home router
   {
-    path: '/',
-    Component: lazy(() => import('../../pages/Home/Home')),
+    path: "/",
+    Component: lazy(() => import("../../pages/Home/Home")),
     exact: true,
-    type: 'public',
+    type: "public",
   },
   {
-    path: '/verifier',
-    Component: lazy(() => import('../../pages/Home/Verifier')),
+    path: "/verifier",
+    Component: lazy(() => import("../../pages/Home/Verifier")),
     exact: true,
-    type: 'public',
+    type: "public",
   },
   {
-    path: '/search',
-    Component: lazy(() => import('../../pages/Home/SearchResults')),
+    path: "/search",
+    Component: lazy(() => import("../../pages/Home/SearchResults")),
     exact: true,
-    type: 'public',
+    type: "public",
   },
   // Notifications router
   // {
@@ -113,48 +114,48 @@ const routes = [
   //   type: 'protected',
   // },
   {
-    path: '/checkout/:id',
-    Component: lazy(() => import('../../pages/Checkout/Checkout')),
+    path: "/checkout/:id",
+    Component: lazy(() => import("../../pages/Checkout/Checkout")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   // Orders router
   {
-    path: '/orders',
-    Component: lazy(() => import('../../pages/Orders/Orders')),
+    path: "/orders",
+    Component: lazy(() => import("../../pages/Orders/Orders")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   {
-    path: '/orders/:id',
-    Component: lazy(() => import('../../pages/Orders/Order')),
+    path: "/orders/:id",
+    Component: lazy(() => import("../../pages/Orders/Order")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   // User router
   {
-    path: '/user/:id',
-    Component: lazy(() => import('../../pages/User/Profile')),
+    path: "/user/:id",
+    Component: lazy(() => import("../../pages/User/Profile")),
     exact: true,
-    type: 'public',
+    type: "public",
   },
   {
-    path: '/dashboard',
-    Component: lazy(() => import('../../pages/User/Dashboard')),
+    path: "/dashboard",
+    Component: lazy(() => import("../../pages/User/Dashboard")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   {
-    path: '/settings',
-    Component: lazy(() => import('../../pages/User/Settings')),
+    path: "/settings",
+    Component: lazy(() => import("../../pages/User/Settings")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
   {
-    path: '/onboarding',
-    Component: lazy(() => import('../../pages/User/Onboarding')),
+    path: "/onboarding",
+    Component: lazy(() => import("../../pages/User/Onboarding")),
     exact: true,
-    type: 'protected',
+    type: "protected",
   },
 ];
 
@@ -162,7 +163,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   <Route
     {...rest}
     render={(props) => {
-      if (rest.type === 'auth') {
+      if (rest.type === "auth") {
         if (!rest.token) {
           return (
             <AuthLayout>
@@ -175,7 +176,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
           return (
             <Redirect
               to={{
-                pathname: '/',
+                pathname: "/",
                 state: {
                   from: props.location,
                 },
@@ -183,12 +184,12 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
             />
           );
         }
-      } else if (rest.type === 'protected') {
+      } else if (rest.type === "protected") {
         if (!rest.token) {
           return (
             <Redirect
               to={{
-                pathname: '/login',
+                pathname: "/login",
                 state: {
                   from: rest.location,
                 },
@@ -208,11 +209,11 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   />
 );
 
-const Router = ({ socket }) => {
+const AppRouter = ({ socket }) => {
   const [store, dispatch] = useContext(Context);
 
   return (
-    <BrowserRouter>
+    <Router history={history}>
       <Route
         render={(route) => {
           const { location } = route;
@@ -235,7 +236,7 @@ const Router = ({ socket }) => {
           );
         }}
       />
-    </BrowserRouter>
+    </Router>
   );
 };
-export default Router;
+export default AppRouter;

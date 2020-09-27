@@ -7,39 +7,39 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Typography
-} from '@material-ui/core';
+  Typography,
+} from "@material-ui/core";
 import {
   AccountBoxRounded as UserIcon,
   AccountCircleRounded as AccountIcon,
   ImageRounded as ArtworkIcon,
   MoreVertRounded as MoreIcon,
   NotificationsRounded as NotificationsIcon,
-  SearchRounded as SearchIcon
-} from '@material-ui/icons';
-import { Field, Form, Formik } from 'formik';
-import React, { useContext, useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import * as Yup from 'yup';
-import { Context } from '../../context/Store.js';
+  SearchRounded as SearchIcon,
+} from "@material-ui/icons";
+import { Field, Form, Formik } from "formik";
+import React, { useContext, useState } from "react";
+import { Link, withRouter } from "react-router-dom";
+import * as Yup from "yup";
+import { Context } from "../../context/Store.js";
 import {
   getNotifications,
   patchRead,
   patchUnread,
-  postLogout
-} from '../../services/user.js';
-import HeaderStyles from './Header.style.js';
-import NotificationsMenu from './NotificationsMenu.js';
+  postLogout,
+} from "../../services/user.js";
+import HeaderStyles from "./Header.style.js";
+import NotificationsMenu from "./NotificationsMenu.js";
 
 const searchValidation = Yup.object().shape({
-  searchInput: Yup.string().trim().required('Search input is required'),
+  searchInput: Yup.string().trim().required("Search input is required"),
 });
 
 const Header = ({ history }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     profile: { anchorEl: null, mobileAnchorEl: null },
-    type: 'artwork',
+    type: "artwork",
   });
 
   const classes = HeaderStyles();
@@ -87,16 +87,11 @@ const Header = ({ history }) => {
   const handleNotificationsMenuOpen = async (e) => {
     const target = e.currentTarget;
     if (
-      (store.user.notifications.hasMore && !store.user.notifications.items) ||
-      (store.user.notifications.hasMore &&
-        store.user.notifications.items.length === 0) ||
-      (!store.user.notifications.hasMore &&
-        store.user.notifications.count !== 0 &&
-        store.user.notifications.count !==
-          store.user.notifications.items.length)
+      store.user.notifications.hasMore &&
+      !store.user.notifications.items.length
     ) {
       dispatch({
-        type: 'updateNotifications',
+        type: "updateNotifications",
         notifications: {
           ...store.user.notifications,
           count: 0,
@@ -111,7 +106,7 @@ const Header = ({ history }) => {
           dataCeiling: store.user.notifications.dataCeiling,
         });
         dispatch({
-          type: 'updateNotifications',
+          type: "updateNotifications",
           notifications: {
             ...store.user.notifications,
             items: data.notifications,
@@ -129,7 +124,7 @@ const Header = ({ history }) => {
         });
       } catch (err) {
         dispatch({
-          type: 'updateNotifications',
+          type: "updateNotifications",
           notifications: {
             ...store.user.notifications,
             count: 0,
@@ -140,7 +135,7 @@ const Header = ({ history }) => {
       }
     } else {
       dispatch({
-        type: 'updateNotifications',
+        type: "updateNotifications",
         notifications: {
           ...store.user.notifications,
           count: 0,
@@ -152,7 +147,7 @@ const Header = ({ history }) => {
 
   const handleNotificationsMenuClose = () => {
     dispatch({
-      type: 'updateNotifications',
+      type: "updateNotifications",
       notifications: {
         ...store.user.notifications,
         count: 0,
@@ -166,12 +161,12 @@ const Header = ({ history }) => {
       await postLogout();
 
       dispatch({
-        type: 'resetUser',
+        type: "resetUser",
       });
 
       handleMenuClose();
 
-      history.push('/login');
+      history.push("/login");
     } catch (err) {
       console.log(err);
     }
@@ -179,14 +174,15 @@ const Header = ({ history }) => {
 
   const handleRedirectClick = (notification, link) => {
     history.push(link);
-    handleReadClick(notification._id);
+    if (!notification.read) handleReadClick(notification._id);
+    handleNotificationsMenuClose();
   };
 
   const handleReadClick = async (id) => {
     try {
       await patchRead({ notificationId: id });
       dispatch({
-        type: 'updateNotifications',
+        type: "updateNotifications",
         notifications: {
           ...store.user.notifications,
           items: store.user.notifications.items.map((notification) =>
@@ -206,7 +202,7 @@ const Header = ({ history }) => {
     try {
       await patchUnread({ notificationId: id });
       dispatch({
-        type: 'updateNotifications',
+        type: "updateNotifications",
         notifications: {
           ...store.user.notifications,
           items: store.user.notifications.items.map((notification) =>
@@ -225,7 +221,7 @@ const Header = ({ history }) => {
   const loadMore = async () => {
     try {
       dispatch({
-        type: 'updateNotifications',
+        type: "updateNotifications",
         notifications: {
           ...store.user.notifications,
           count: 0,
@@ -238,7 +234,7 @@ const Header = ({ history }) => {
         dataCeiling: store.user.notifications.dataCeiling,
       });
       dispatch({
-        type: 'updateNotifications',
+        type: "updateNotifications",
         notifications: {
           ...store.user.notifications,
           items: [...store.user.notifications.items].concat(data.notifications),
@@ -260,19 +256,19 @@ const Header = ({ history }) => {
 
   const handleToggle = () => {
     dispatch({
-      type: 'setSearch',
-      search: store.main.search === 'artwork' ? 'users' : 'artwork',
+      type: "setSearch",
+      search: store.main.search === "artwork" ? "users" : "artwork",
     });
   };
 
-  const menuId = 'primary-search-account-menu';
+  const menuId = "primary-search-account-menu";
   const renderProfileMenu = (
     <Menu
       anchorEl={state.profile.anchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
       id={menuId}
       keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={!!state.profile.anchorEl}
       onClose={handleMenuClose}
     >
@@ -300,14 +296,14 @@ const Header = ({ history }) => {
     </Menu>
   );
 
-  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const mobileMenuId = "primary-search-account-menu-mobile";
   const renderAuthMobileMenu = (
     <Menu
       anchorEl={state.profile.mobileAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
       id={mobileMenuId}
       keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={!!state.profile.mobileAnchorEl}
       onClose={handleMobileMenuClose}
     >
@@ -346,10 +342,10 @@ const Header = ({ history }) => {
   const renderUnauthMobileMenu = (
     <Menu
       anchorEl={state.profile.mobileAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
       id={mobileMenuId}
       keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={!!state.profile.mobileAnchorEl}
       onClose={handleMobileMenuClose}
     >
@@ -378,7 +374,7 @@ const Header = ({ history }) => {
           <div className={classes.search}>
             <Formik
               initialValues={{
-                searchInput: '',
+                searchInput: "",
               }}
               validationSchema={searchValidation}
               onSubmit={async (values, { resetForm }) => {
@@ -395,16 +391,16 @@ const Header = ({ history }) => {
                 <Form className={classes.card}>
                   <IconButton
                     title={
-                      store.main.search === 'artwork'
-                        ? 'Search artwork'
-                        : 'Search users'
+                      store.main.search === "artwork"
+                        ? "Search artwork"
+                        : "Search users"
                     }
                     onClick={handleToggle}
                     className={classes.typeIcon}
                     disableFocusRipple
                     disableRipple
                   >
-                    {store.main.search === 'artwork' ? (
+                    {store.main.search === "artwork" ? (
                       <ArtworkIcon />
                     ) : (
                       <UserIcon />
@@ -420,7 +416,7 @@ const Header = ({ history }) => {
                           root: classes.inputRoot,
                           input: classes.inputInput,
                         }}
-                        inputProps={{ 'aria-label': 'search' }}
+                        inputProps={{ "aria-label": "search" }}
                       />
                     )}
                   </Field>
