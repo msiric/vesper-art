@@ -15,63 +15,63 @@ import {
   StepLabel,
   Stepper,
   withStyles,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import {
   CardMembershipRounded as LicenseIcon,
   CheckRounded as CheckIcon,
   ContactMailRounded as BillingIcon,
   PaymentRounded as PaymentIcon,
-} from '@material-ui/icons';
+} from "@material-ui/icons";
 import {
   CardNumberElement,
   Elements,
   useElements,
-} from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import clsx from 'clsx';
-import { Form, Formik } from 'formik';
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import * as Yup from 'yup';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
-import BillingForm from '../../containers/BillingForm/BillingForm.js';
-import CheckoutSummary from '../../containers/CheckoutSummary/CheckoutSummary.js';
-import LicenseForm from '../../containers/LicenseForm/LicenseForm.js';
-import PaymentForm from '../../containers/PaymentForm/PaymentForm.js';
-import { Context } from '../../context/Store.js';
-import { getCheckout, postDiscount } from '../../services/checkout.js';
-import { postIntent } from '../../services/stripe.js';
-import { postCheckout } from '../../services/user.js';
-import { billingValidation } from '../../validation/billing.js';
-import { licenseValidation } from '../../validation/license.js';
+} from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import clsx from "clsx";
+import { Form, Formik } from "formik";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import * as Yup from "yup";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import BillingForm from "../../containers/BillingForm/BillingForm.js";
+import CheckoutSummary from "../../containers/CheckoutSummary/CheckoutSummary.js";
+import LicenseForm from "../../containers/LicenseForm/LicenseForm.js";
+import PaymentForm from "../../containers/PaymentForm/PaymentForm.js";
+import { Context } from "../../context/Store.js";
+import { getCheckout, postDiscount } from "../../services/checkout.js";
+import { postIntent } from "../../services/stripe.js";
+import { postCheckout } from "../../services/user.js";
+import { billingValidation } from "../../validation/billing.js";
+import { licenseValidation } from "../../validation/license.js";
 
 const STEPS = [
-  'License information',
-  'Billing information',
-  'Payment information',
+  "License information",
+  "Billing information",
+  "Payment information",
 ];
 
 const checkoutValidation = [licenseValidation, billingValidation, null];
 
 const validationSchema = Yup.object().shape({
-  discountCode: Yup.string().trim().required('Discount cannot be empty'),
+  discountCode: Yup.string().trim().required("Discount cannot be empty"),
 });
 
 const iconsStyle = makeStyles((theme) => ({
   root: {
-    backgroundColor: '#ccc',
+    backgroundColor: "#ccc",
     zIndex: 1,
-    color: '#fff',
+    color: "#fff",
     width: 50,
     height: 50,
-    display: 'flex',
-    borderRadius: '50%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    display: "flex",
+    borderRadius: "50%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   active: {
     background: theme.palette.primary.main,
-    boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
+    boxShadow: "0 4px 10px 0 rgba(0,0,0,.25)",
   },
   completed: {
     background: theme.palette.primary.main,
@@ -104,19 +104,19 @@ const Connector = withStyles((theme) => ({
     top: 22,
   },
   active: {
-    '& $line': {
+    "& $line": {
       background: theme.palette.primary.main,
     },
   },
   completed: {
-    '& $line': {
+    "& $line": {
       background: theme.palette.primary.main,
     },
   },
   line: {
     height: 3,
     border: 0,
-    backgroundColor: '#eaeaf0',
+    backgroundColor: "#eaeaf0",
     borderRadius: 1,
   },
 }))(StepConnector);
@@ -130,7 +130,7 @@ const Checkout = ({ match, location }) => {
   const fetchData = async () => {
     try {
       const stripe = await loadStripe(
-        'pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z'
+        "pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z"
       );
       setState({
         ...state,
@@ -160,7 +160,7 @@ const Processor = ({ match, location, stripe }) => {
   const [state, setState] = useState({
     secret: null,
     artwork: {},
-    license: location.state.license || '',
+    license: location.state.license || "",
     discount: null,
     intent: null,
     step: {
@@ -171,34 +171,34 @@ const Processor = ({ match, location, stripe }) => {
   });
 
   const licenseOptions =
-    state.license === 'personal'
+    state.license === "personal"
       ? [
           {
-            label: 'Personal blogging, websites and social media',
+            label: "Personal blogging, websites and social media",
           },
           {
             label:
-              'Home printing, art and craft projects, personal portfolios and gifts',
+              "Home printing, art and craft projects, personal portfolios and gifts",
           },
-          { label: 'Students and charities' },
+          { label: "Students and charities" },
           {
             label:
-              'The personal use license is not suitable for commercial activities',
+              "The personal use license is not suitable for commercial activities",
           },
         ]
       : [
           {
             label:
-              'Print and digital advertising, broadcasts, product packaging, presentations, websites and blogs',
+              "Print and digital advertising, broadcasts, product packaging, presentations, websites and blogs",
           },
           {
             label:
-              'Home printing, art and craft projects, personal portfolios and gifts',
+              "Home printing, art and craft projects, personal portfolios and gifts",
           },
-          { label: 'Students and charities' },
+          { label: "Students and charities" },
           {
             label:
-              'The personal use license is not suitable for commercial activities',
+              "The personal use license is not suitable for commercial activities",
           },
         ];
 
@@ -231,8 +231,8 @@ const Processor = ({ match, location, stripe }) => {
         await postIntent({
           versionId: state.version._id,
           artworkLicense: {
-            assignee: '',
-            company: '',
+            assignee: "",
+            company: "",
             type: state.license,
           },
           discountId: payload ? payload._id : null,
@@ -272,7 +272,7 @@ const Processor = ({ match, location, stripe }) => {
             },
           });
           dispatch({
-            type: 'updateIntents',
+            type: "updateIntents",
             intents: {
               [state.version._id]: data.intent.id,
             },
@@ -303,7 +303,7 @@ const Processor = ({ match, location, stripe }) => {
 
   const submitForm = async (values, actions) => {
     if (!state.secret || !stripe || !elements) {
-      console.log('nije dobro');
+      console.log("nije dobro");
       console.log(state.secret, stripe, elements);
       // $TODO Enqueue error;
     }
@@ -332,10 +332,10 @@ const Processor = ({ match, location, stripe }) => {
     );
 
     if (error) {
-      console.log('fail');
+      console.log("fail");
       console.log(error);
-    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      console.log('success');
+    } else if (paymentIntent && paymentIntent.status === "succeeded") {
+      console.log("success");
       /*         enqueueSnackbar('Payment successful', {
           variant: 'success',
           autoHideDuration: 1000,
@@ -367,6 +367,7 @@ const Processor = ({ match, location, stripe }) => {
       handleStepChange(1);
       actions.setSubmitting(false);
     }
+    actions.setTouched({});
   };
 
   const renderForm = (step) => {
@@ -392,13 +393,13 @@ const Processor = ({ match, location, stripe }) => {
   const fetchData = async () => {
     try {
       const billing = {
-        firstname: '',
-        lastname: '',
-        email: '',
-        address: '',
-        zip: '',
-        city: '',
-        country: '',
+        firstname: "",
+        lastname: "",
+        email: "",
+        address: "",
+        zip: "",
+        city: "",
+        country: "",
       };
       const { data } = await getCheckout({ versionId: match.params.id });
       /*       const license = retrieveLicenseInformation(data.artwork); */
@@ -434,16 +435,16 @@ const Processor = ({ match, location, stripe }) => {
                     <Paper elevation={5}>
                       <Formik
                         initialValues={{
-                          licenseType: location.state.license || '',
-                          licenseAssignee: '',
-                          licenseCompany: '',
-                          billingName: '',
-                          billingSurname: '',
-                          billingEmail: '',
-                          billingAddress: '',
-                          billingZip: '',
-                          billingCity: '',
-                          billingCountry: '',
+                          licenseType: location.state.license || "",
+                          licenseAssignee: "",
+                          licenseCompany: "",
+                          billingName: "",
+                          billingSurname: "",
+                          billingEmail: "",
+                          billingAddress: "",
+                          billingZip: "",
+                          billingCity: "",
+                          billingCountry: "",
                         }}
                         validationSchema={
                           checkoutValidation[state.step.current]
@@ -469,7 +470,6 @@ const Processor = ({ match, location, stripe }) => {
                                 </Stepper>
                                 <Box className={classes.mainBox}>
                                   <Grid container spacing={3}>
-                                    {console.log(values)}
                                     {renderForm(state.step.current)}
                                     {state.step.current === 0 && (
                                       <List
@@ -514,7 +514,7 @@ const Processor = ({ match, location, stripe }) => {
                                         size={24}
                                       />
                                     ) : (
-                                      'Next'
+                                      "Next"
                                     )}
                                   </Button>
                                 </Box>
@@ -539,7 +539,7 @@ const Processor = ({ match, location, stripe }) => {
             </Grid>
           </>
         ) : (
-          history.push('/')
+          history.push("/")
         )}
       </Grid>
     </Container>

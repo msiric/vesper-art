@@ -1,78 +1,79 @@
-import { Grid, TextField, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Field } from 'formik';
-import React from 'react';
-import * as Yup from 'yup';
-import { countries } from '../../../../common/constants.js';
-import AutocompleteInput from '../../shared/AutocompleteInput/AutocompleteInput.js';
+import { Grid, TextField, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Field } from "formik";
+import React from "react";
+import * as Yup from "yup";
+import { countries } from "../../../../common/constants.js";
+import AutocompleteInput from "../../shared/AutocompleteInput/AutocompleteInput.js";
 
 const BillingFormStyles = makeStyles((muiTheme) => ({
   fixed: {
-    height: '100%',
+    height: "100%",
   },
   container: {
     flex: 1,
-    height: '100%',
+    height: "100%",
   },
   artwork: {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
   },
   root: {
-    display: 'flex',
-    width: '100%',
+    display: "flex",
+    width: "100%",
   },
   loader: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     flex: 1,
   },
   details: {
-    display: 'flex',
-    width: '100%',
+    display: "flex",
+    width: "100%",
   },
   cover: {
     minWidth: 50,
     maxWidth: 200,
-    width: '100%',
+    width: "100%",
   },
   controls: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
     padding: 16,
-    width: '100%',
+    width: "100%",
   },
   playIcon: {
     height: 38,
     width: 38,
   },
   rightList: {
-    textAlign: 'right',
+    textAlign: "right",
   },
   manageLicenses: {
-    padding: '8px 16px',
+    padding: "8px 16px",
   },
   content: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
   },
 }));
 
 const validationSchema = Yup.object().shape({
-  firstname: Yup.string().trim().required('First name is required'),
-  lastname: Yup.string().trim().required('Last name is required'),
-  email: Yup.string().email('Invalid email').required('Email is required'),
-  address: Yup.string().trim().required('Address is required'),
-  zip: Yup.string().trim().required('Postal code is required'),
-  city: Yup.string().trim().required('City is required'),
-  country: Yup.string().trim().required('Country is required'),
+  firstname: Yup.string().trim().required("First name is required"),
+  lastname: Yup.string().trim().required("Last name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  address: Yup.string().trim().required("Address is required"),
+  zip: Yup.string().trim().required("Postal code is required"),
+  city: Yup.string().trim().required("City is required"),
+  country: Yup.string().trim().required("Country is required"),
 });
 
 const BillingForm = () => {
   const classes = BillingFormStyles();
+  console.log("render");
 
   return (
     <>
@@ -89,7 +90,6 @@ const BillingForm = () => {
           <Form> */}
       <Grid item xs={12}>
         <Typography variant="h6">Billing Information</Typography>
-
         <Grid item xs={12} sm={4}>
           <Field name="billingName">
             {({ field, form: { touched, errors }, meta }) => (
@@ -203,9 +203,9 @@ const BillingForm = () => {
                 {...field}
                 options={countries}
                 handleChange={(e, value) =>
-                  setFieldValue('billingCountry', value || '')
+                  setFieldValue("billingCountry", value || "")
                 }
-                handleBlur={() => setFieldTouched('country', true)}
+                handleBlur={() => setFieldTouched("country", true)}
                 getOptionLabel={(option) => option.text}
                 helperText={meta.touched && meta.error}
                 error={meta.touched && Boolean(meta.error)}
