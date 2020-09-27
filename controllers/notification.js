@@ -3,6 +3,8 @@ import {
   fetchExistingNotifications,
   editReadNotification,
   editUnreadNotification,
+  decrementUserNotification,
+  incrementUserNotification,
 } from "../services/notification.js";
 
 export const getNotifications = async ({ userId }) => {
@@ -17,6 +19,7 @@ export const readNotification = async ({ userId, notificationId }) => {
     userId,
     notificationId,
   });
+  await decrementUserNotification({ userId });
   return { message: "Notification read" };
 };
 
@@ -25,5 +28,6 @@ export const unreadNotification = async ({ userId, notificationId }) => {
     userId,
     notificationId,
   });
+  await incrementUserNotification({ userId });
   return { message: "Notification read" };
 };
