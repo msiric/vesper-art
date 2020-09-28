@@ -1,15 +1,16 @@
-import { Container, Grid } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { useHistory, withRouter } from 'react-router-dom';
-import { formatDate } from '../../../../common/helpers.js';
-import Datatable from '../../components/Datatable/Datatable.js';
-import { getOrders } from '../../services/orders.js';
+import { Container, Grid } from "@material-ui/core";
+import { Rating } from "@material-ui/lab";
+import React, { useEffect, useState } from "react";
+import { useHistory, withRouter } from "react-router-dom";
+import { formatDate } from "../../../../common/helpers.js";
+import Datatable from "../../components/Datatable/Datatable.js";
+import { getOrders } from "../../services/orders.js";
 
 const Orders = () => {
   const [state, setState] = useState({
     loading: true,
     orders: [],
-    display: 'purchases',
+    display: "purchases",
   });
   const classes = {};
 
@@ -51,82 +52,86 @@ const Orders = () => {
             title="My orders"
             columns={[
               {
-                name: 'Id',
+                name: "Id",
                 options: {
                   display: false,
                 },
               },
               {
-                name: 'Artwork',
+                name: "Artwork",
                 options: {
                   customBodyRender: (value, tableMeta, updateValue) => (
-                    <img style={{ width: '85%', maxWidth: 200 }} src={value} />
+                    <img style={{ width: "85%", maxWidth: 200 }} src={value} />
                   ),
                   sort: false,
                 },
               },
               {
-                name: 'Title',
+                name: "Title",
                 options: {
                   sortCompare: (order) => {
                     return (obj1, obj2) =>
-                      obj1.data.localeCompare(obj2.data, 'en', {
+                      obj1.data.localeCompare(obj2.data, "en", {
                         numeric: true,
-                      }) * (order === 'asc' ? 1 : -1);
+                      }) * (order === "asc" ? 1 : -1);
                   },
                 },
               },
               {
-                name: state.display === 'purchases' ? 'Seller' : 'Buyer',
+                name: state.display === "purchases" ? "Seller" : "Buyer",
                 options: {
                   sortCompare: (order) => {
                     return (obj1, obj2) =>
-                      obj1.data.localeCompare(obj2.data, 'en', {
+                      obj1.data.localeCompare(obj2.data, "en", {
                         numeric: true,
-                      }) * (order === 'asc' ? 1 : -1);
+                      }) * (order === "asc" ? 1 : -1);
                   },
                 },
               },
               {
-                name: 'Amount',
+                name: "Amount",
                 options: {
                   customBodyRender: (value, tableMeta, updateValue) =>
-                    value ? `$${value}` : 'Free',
+                    value ? `$${value}` : "Free",
                   sortCompare: (order) => {
                     return ({ data: previous }, { data: next }) => {
-                      return (previous - next) * (order === 'asc' ? 1 : -1);
+                      return (previous - next) * (order === "asc" ? 1 : -1);
                     };
                   },
                 },
               },
               {
-                name: 'Rating',
+                name: "Rating",
                 options: {
                   customBodyRender: (value) =>
-                    value ? value.rating : 'Not rated',
+                    value ? (
+                      <Rating value={value.rating} readOnly />
+                    ) : (
+                      "Not rated"
+                    ),
                   sortCompare: (order) => {
                     return ({ data: previous }, { data: next }) => {
                       return (
                         ((previous ? previous.rating : 0) -
                           (next ? next.rating : 0)) *
-                        (order === 'asc' ? 1 : -1)
+                        (order === "asc" ? 1 : -1)
                       );
                     };
                   },
                 },
               },
               {
-                name: 'Date',
+                name: "Date",
                 options: {
                   customBodyRender: (value) =>
-                    formatDate(value, 'dd/MM/yy HH:mm'),
+                    formatDate(value, "dd/MM/yy HH:mm"),
                   sortCompare: (order) => {
                     return ({ data: previous }, { data: next }) => {
                       console.log(previous);
                       return (
                         (new Date(previous).getTime() -
                           new Date(next).getTime()) *
-                        (order === 'asc' ? 1 : -1)
+                        (order === "asc" ? 1 : -1)
                       );
                     };
                   },
@@ -138,10 +143,10 @@ const Orders = () => {
               order._id,
               order.version.cover,
               order.version.title,
-              state.display === 'purchases'
+              state.display === "purchases"
                 ? order.seller.name
                 : order.buyer.name,
-              state.display === 'purchases' ? order.spent : order.earned,
+              state.display === "purchases" ? order.spent : order.earned,
               order.review,
               order.created,
             ])}
@@ -151,16 +156,16 @@ const Orders = () => {
             selectable={false}
             searchable={true}
             pagination={true}
-            addOptions={{ enabled: false, title: '', route: '' }}
+            addOptions={{ enabled: false, title: "", route: "" }}
             editOptions={{
               enabled: false,
-              title: '',
-              route: '',
+              title: "",
+              route: "",
             }}
             deleteOptions={{
               enabled: false,
-              title: '',
-              route: '',
+              title: "",
+              route: "",
             }}
           />
         </Grid>

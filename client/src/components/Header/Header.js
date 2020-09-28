@@ -93,7 +93,6 @@ const Header = ({ history }) => {
       dispatch({
         type: "updateNotifications",
         notifications: {
-          ...store.user.notifications,
           count: 0,
           anchor: target,
           loading: true,
@@ -108,7 +107,6 @@ const Header = ({ history }) => {
         dispatch({
           type: "updateNotifications",
           notifications: {
-            ...store.user.notifications,
             items: data.notifications,
             count: 0,
             hasMore:
@@ -126,7 +124,6 @@ const Header = ({ history }) => {
         dispatch({
           type: "updateNotifications",
           notifications: {
-            ...store.user.notifications,
             count: 0,
             anchor: null,
             loading: false,
@@ -137,7 +134,6 @@ const Header = ({ history }) => {
       dispatch({
         type: "updateNotifications",
         notifications: {
-          ...store.user.notifications,
           count: 0,
           anchor: target,
         },
@@ -149,7 +145,6 @@ const Header = ({ history }) => {
     dispatch({
       type: "updateNotifications",
       notifications: {
-        ...store.user.notifications,
         count: 0,
         anchor: null,
       },
@@ -172,19 +167,12 @@ const Header = ({ history }) => {
     }
   };
 
-  const handleRedirectClick = (notification, link) => {
-    history.push(link);
-    if (!notification.read) handleReadClick(notification._id);
-    handleNotificationsMenuClose();
-  };
-
   const handleReadClick = async (id) => {
     try {
       await patchRead({ notificationId: id });
       dispatch({
         type: "updateNotifications",
         notifications: {
-          ...store.user.notifications,
           items: store.user.notifications.items.map((notification) =>
             notification._id === id
               ? { ...notification, read: true }
@@ -204,7 +192,6 @@ const Header = ({ history }) => {
       dispatch({
         type: "updateNotifications",
         notifications: {
-          ...store.user.notifications,
           items: store.user.notifications.items.map((notification) =>
             notification._id === id
               ? { ...notification, read: false }
@@ -218,12 +205,17 @@ const Header = ({ history }) => {
     }
   };
 
+  const handleRedirectClick = (notification, link) => {
+    handleNotificationsMenuClose();
+    history.push(link);
+    if (!notification.read) handleReadClick(notification._id);
+  };
+
   const loadMore = async () => {
     try {
       dispatch({
         type: "updateNotifications",
         notifications: {
-          ...store.user.notifications,
           count: 0,
           loading: true,
         },
@@ -236,7 +228,6 @@ const Header = ({ history }) => {
       dispatch({
         type: "updateNotifications",
         notifications: {
-          ...store.user.notifications,
           items: [...store.user.notifications.items].concat(data.notifications),
           count: 0,
           hasMore:

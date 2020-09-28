@@ -1,13 +1,13 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useReducer } from "react";
 
 const store = {
   main: {
     loading: true,
     error: false,
-    auth: 'jwt',
-    brand: 'test',
-    theme: 'light',
-    search: 'artwork',
+    auth: "jwt",
+    brand: "test",
+    theme: "light",
+    search: "artwork",
   },
   user: {
     authenticated: false,
@@ -40,7 +40,7 @@ const store = {
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'setStore':
+    case "setStore":
       return {
         ...state,
         main: {
@@ -66,7 +66,7 @@ const reducer = (state, action) => {
           intents: action.intents,
         },
       };
-    case 'setMain':
+    case "setMain":
       return {
         ...state,
         main: {
@@ -78,7 +78,7 @@ const reducer = (state, action) => {
           search: action.search,
         },
       };
-    case 'setUser':
+    case "setUser":
       return {
         ...state,
         user: {
@@ -96,7 +96,7 @@ const reducer = (state, action) => {
           intents: action.intents,
         },
       };
-    case 'updateUser':
+    case "updateUser":
       return {
         ...state,
         user: {
@@ -115,7 +115,7 @@ const reducer = (state, action) => {
           intents: action.intents,
         },
       };
-    case 'setSearch':
+    case "setSearch":
       return {
         ...state,
         main: {
@@ -123,7 +123,7 @@ const reducer = (state, action) => {
           search: action.search,
         },
       };
-    case 'resetUser':
+    case "resetUser":
       return {
         ...state,
         user: {
@@ -154,7 +154,7 @@ const reducer = (state, action) => {
           intents: {},
         },
       };
-    case 'updateToken':
+    case "updateToken":
       return {
         ...state,
         user: {
@@ -162,7 +162,7 @@ const reducer = (state, action) => {
           token: action.token,
         },
       };
-    case 'updateSaves':
+    case "updateSaves":
       return {
         ...state,
         user: {
@@ -170,7 +170,7 @@ const reducer = (state, action) => {
           saved: { ...state.user.saved, ...action.saved },
         },
       };
-    case 'updateMessages':
+    case "updateMessages":
       return {
         ...state,
         user: {
@@ -181,24 +181,45 @@ const reducer = (state, action) => {
           },
         },
       };
-    case 'updateNotifications':
+    case "updateNotifications":
       return {
         ...state,
         user: {
           ...state.user,
           notifications: {
             ...state.notifications,
-            items: action.notifications.items,
-            count: state.user.notifications.count + action.notifications.count,
-            hasMore: action.notifications.hasMore,
-            dataCursor: action.notifications.dataCursor,
-            dataCeiling: action.notifications.dataCeiling,
-            anchor: action.notifications.anchor,
-            loading: action.notifications.loading,
+            items:
+              typeof action.notifications.items !== "undefined"
+                ? action.notifications.items
+                : state.user.notifications.items,
+            count:
+              typeof action.notifications.count !== "undefined"
+                ? state.user.notifications.count + action.notifications.count
+                : state.user.notifications.count,
+            hasMore:
+              typeof action.notifications.hasMore !== "undefined"
+                ? action.notifications.hasMore
+                : state.user.notifications.hasMore,
+            dataCursor:
+              typeof action.notifications.dataCursor !== "undefined"
+                ? action.notifications.dataCursor
+                : state.user.notifications.dataCursor,
+            dataCeiling:
+              typeof action.notifications.dataCeiling !== "undefined"
+                ? action.notifications.dataCeiling
+                : state.user.notifications.dataCeiling,
+            anchor:
+              typeof action.notifications.anchor !== "undefined"
+                ? action.notifications.anchor
+                : state.user.notifications.anchor,
+            loading:
+              typeof action.notifications.loading !== "undefined"
+                ? action.notifications.loading
+                : state.user.notifications.loading,
           },
         },
       };
-    case 'updateEvents':
+    case "updateEvents":
       return {
         ...state,
         user: {
@@ -207,7 +228,7 @@ const reducer = (state, action) => {
           notifications: action.notifications,
         },
       };
-    case 'updateIntents':
+    case "updateIntents":
       return {
         ...state,
         user: {
@@ -215,7 +236,7 @@ const reducer = (state, action) => {
           intents: { ...state.user.intents, ...action.intents },
         },
       };
-    case 'getState':
+    case "getState":
       return { ...state };
     default:
       return state;
