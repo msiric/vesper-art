@@ -1,8 +1,8 @@
-import bcrypt from 'bcrypt-nodejs';
-import crypto from 'crypto';
-import createError from 'http-errors';
-import randomString from 'randomstring';
-import { server } from '../config/secret.js';
+import bcrypt from "bcrypt-nodejs";
+import crypto from "crypto";
+import createError from "http-errors";
+import randomString from "randomstring";
+import { server } from "../config/secret.js";
 import {
   addNewUser,
   editUserResetToken,
@@ -10,19 +10,19 @@ import {
   logUserOut,
   refreshAccessToken,
   revokeAccessToken,
-} from '../services/auth.js';
-import { editUserPassword, fetchUserByCreds } from '../services/user.js';
+} from "../services/auth.js";
+import { editUserPassword, fetchUserByCreds } from "../services/user.js";
 import {
   createAccessToken,
   createRefreshToken,
   sendRefreshToken,
-} from '../utils/auth.js';
-import { sendEmail } from '../utils/email.js';
-import { sanitizeData } from '../utils/helpers.js';
-import emailValidator from '../validation/email.js';
-import loginValidator from '../validation/login.js';
-import resetValidator from '../validation/reset.js';
-import signupValidator from '../validation/signup.js';
+} from "../utils/auth.js";
+import { sendEmail } from "../utils/email.js";
+import { sanitizeData } from "../utils/helpers.js";
+import emailValidator from "../validation/email.js";
+import loginValidator from "../validation/login.js";
+import resetValidator from "../validation/reset.js";
+import signupValidator from "../validation/signup.js";
 
 // needs transaction (not tested)
 export const postSignUp = async ({
@@ -43,7 +43,7 @@ export const postSignUp = async ({
   if (error) throw createError(400, error);
   const foundUser = await fetchUserByCreds({ userUsername, session });
   if (foundUser) {
-    throw createError(400, 'Account with that email/username already exists');
+    throw createError(400, "Account with that email/username already exists");
   } else {
     const verificationToken = randomString.generate();
     const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
@@ -57,13 +57,13 @@ export const postSignUp = async ({
     await sendEmail({
       emailSender: server.appName,
       emailReceiver: userEmail,
-      emailSubject: 'Please confirm your email',
+      emailSubject: "Please confirm your email",
       emailContent: `Hello,
         Please click on the link to verify your email:
 
         <a href=${verificationLink}>Click here to verify</a>`,
     });
-    return { message: 'Verify your email address' };
+    return { message: "Verify your email address" };
   }
 };
 
@@ -79,18 +79,18 @@ export const postLogIn = async ({
   if (error) throw createError(400, error);
   const foundUser = await fetchUserByCreds({ userUsername, session });
   if (!foundUser) {
-    throw createError(400, 'Account with provided credentials does not exist');
+    throw createError(400, "Account with provided credentials does not exist");
   } else if (!foundUser.active) {
-    throw createError(400, 'This account is no longer active');
+    throw createError(400, "This account is no longer active");
   } else if (!foundUser.verified) {
-    throw createError(400, 'Please verify your account');
+    throw createError(400, "Please verify your account");
   } else {
     const valid = bcrypt.compareSync(userPassword, foundUser.password);
 
     if (!valid) {
       throw createError(
         400,
-        'Account with provided credentials does not exist'
+        "Account with provided credentials does not exist"
       );
     }
 
@@ -137,31 +137,31 @@ export const postRefreshToken = async ({ req, res, next }) => {
 
 export const postRevokeToken = async ({ userId }) => {
   await revokeAccessToken({ userId });
-  return { message: 'Token successfully revoked' };
+  return { message: "Token successfully revoked" };
 };
 
 // needs transaction (not tested)
 export const verifyRegisterToken = async ({ tokenId }) => {
   await editUserVerification({ tokenId });
-  return { message: 'Token successfully verified' };
+  return { message: "Token successfully verified" };
 };
 
 export const forgotPassword = async ({ userEmail, session }) => {
   const { error } = emailValidator(sanitizeData({ userEmail }));
   if (error) throw createError(400, error);
   crypto.randomBytes(20, async function (err, buf) {
-    const resetToken = buf.toString('hex');
+    const resetToken = buf.toString("hex");
     await editUserResetToken({ userEmail, resetToken, session });
     await sendEmail({
       emailSender: server.appName,
       emailReceiver: userEmail,
-      emailSubject: 'Reset your password',
+      emailSubject: "Reset your password",
       emailContent: `You are receiving this because you have requested to reset the password for your account.
           Please click on the following link, or paste this into your browser to complete the process:
           
           <a href="${server.clientDomain}/reset_password/${token}"</a>`,
     });
-    return { message: 'Password reset' };
+    return { message: "Password reset" };
   });
 };
 
@@ -182,10 +182,10 @@ export const resetPassword = async ({
   await sendEmail({
     emailSender: server.appName,
     emailReceiver: updatedUser.email,
-    emailSubject: 'Password change',
+    emailSubject: "Password change",
     emailContent: `You are receiving this because you just changed your password.
         
       If you did not request this, please contact us immediately.`,
   });
-  return { message: 'Password reset' };
+  return { message: "Password reset" };
 };

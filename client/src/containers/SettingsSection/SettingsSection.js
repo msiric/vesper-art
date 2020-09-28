@@ -5,21 +5,21 @@ import {
   Grid,
   TextField,
   Typography,
-} from '@material-ui/core';
-import Card from '@material-ui/core/Card';
-import { makeStyles } from '@material-ui/core/styles';
-import { Field, Form, Formik } from 'formik';
-import React, { useContext } from 'react';
-import { countries } from '../../../../common/constants.js';
-import AutocompleteInput from '../../components/AutocompleteInput/AutocompleteInput.js';
-import ImageInput from '../../components/ImageInput/ImageInput.js';
-import SwitchInput from '../../components/SwitchInput/SwitchInput.js';
-import { Context } from '../../context/Store.js';
-import { emailValidation } from '../../validation/email.js';
-import { patchAvatar } from '../../validation/media.js';
-import { passwordValidation } from '../../validation/password.js';
-import { preferencesValidation } from '../../validation/preferences.js';
-import { profileValidation } from '../../validation/profile.js';
+} from "@material-ui/core";
+import Card from "@material-ui/core/Card";
+import { makeStyles } from "@material-ui/core/styles";
+import { Field, Form, Formik } from "formik";
+import React, { useContext } from "react";
+import { countries } from "../../../../common/constants.js";
+import AutocompleteInput from "../../components/AutocompleteInput/AutocompleteInput.js";
+import ImageInput from "../../components/ImageInput/ImageInput.js";
+import SwitchInput from "../../components/SwitchInput/SwitchInput.js";
+import { Context } from "../../context/Store.js";
+import { emailValidation } from "../../validation/email.js";
+import { patchAvatar } from "../../validation/media.js";
+import { passwordValidation } from "../../validation/password.js";
+import { preferencesValidation } from "../../validation/preferences.js";
+import { profileValidation } from "../../validation/profile.js";
 
 const useStyles = makeStyles((theme) => ({}));
 
@@ -41,16 +41,18 @@ const SettingsSection = ({
         xs={12}
         md={4}
         style={{
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <Card className={classes.artworkContainer}>
           <Formik
             initialValues={{
-              userMedia: '',
-              userDescription: user.description || '',
-              userCountry: user.country || '',
+              userMedia: "",
+              userDescription: user.description || "",
+              userCountry: user.country
+                ? countries.find((country) => country.value === user.country)
+                : "",
             }}
             validationSchema={profileValidation.concat(patchAvatar)}
             enableReinitialize
@@ -106,9 +108,9 @@ const SettingsSection = ({
                         {...field}
                         options={countries}
                         handleChange={(e, item) =>
-                          setFieldValue('userCountry', item || '')
+                          setFieldValue("userCountry", item || "")
                         }
-                        handleBlur={() => setFieldTouched('userCountry', true)}
+                        handleBlur={() => setFieldTouched("userCountry", true)}
                         getOptionLabel={(option) => option.text}
                         helperText={meta.touched && meta.error}
                         error={meta.touched && Boolean(meta.error)}
@@ -130,8 +132,8 @@ const SettingsSection = ({
         xs={12}
         md={8}
         style={{
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <Card className={classes.artworkContainer}>
@@ -208,9 +210,9 @@ const SettingsSection = ({
         <Card className={classes.artworkContainer}>
           <Formik
             initialValues={{
-              userCurrent: '',
-              userPassword: '',
-              userConfirm: '',
+              userCurrent: "",
+              userPassword: "",
+              userConfirm: "",
             }}
             validationSchema={passwordValidation}
             enableReinitialize
@@ -278,8 +280,8 @@ const SettingsSection = ({
         item
         xs={12}
         style={{
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <Card className={classes.artworkContainer}>

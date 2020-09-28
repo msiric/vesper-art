@@ -1,11 +1,12 @@
-import React from 'react';
-import { TextField } from '@material-ui/core';
-import { Autocomplete as SearchableSelect } from '@material-ui/lab';
+import React from "react";
+import { TextField } from "@material-ui/core";
+import { Autocomplete as SearchableSelect } from "@material-ui/lab";
 
 const Autocomplete = ({
   label,
   handleChange,
   handleBlur,
+  getOptionSelected,
   getOptionLabel,
   helperText,
   error,
@@ -15,6 +16,7 @@ const Autocomplete = ({
   return (
     <SearchableSelect
       {...other}
+      getOptionSelected={getOptionSelected}
       getOptionLabel={getOptionLabel}
       onBlur={handleBlur}
       onChange={handleChange}

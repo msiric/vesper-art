@@ -1,139 +1,40 @@
 import {
   Button,
-
-
-
-
-
-  Chip, CircularProgress, Container,
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  Chip,
+  CircularProgress,
+  Container,
   ExpansionPanel,
   ExpansionPanelDetails,
-  ExpansionPanelSummary, Grid,
+  ExpansionPanelSummary,
+  Grid,
   List,
   ListItem,
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ListItemIcon, ListItemSecondaryAction,
-
+  ListItemIcon,
+  ListItemSecondaryAction,
   ListItemText,
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ListSubheader, Paper,
-
-
-
-
-
-
-
-
-
-
-
-
-  Switch, TextField, Typography
+  ListSubheader,
+  Paper,
+  Switch,
+  TextField,
+  Typography,
 } from "@material-ui/core";
 import {
   CheckCircleRounded as ConfirmIcon,
-
-
-
-
-
-
-
-
-
-
-
-  DoneRounded as CheckIcon, ExpandLessRounded as DownIcon, ExpandLessRounded as UpIcon,
-
+  DoneRounded as CheckIcon,
+  ExpandLessRounded as DownIcon,
+  ExpandLessRounded as UpIcon,
   FavoriteRounded as SaveIcon,
-
-
-
-
-
-  RemoveCircleRounded as DeactivateIcon
+  RemoveCircleRounded as DeactivateIcon,
 } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
 import React, { useContext, useEffect, useState } from "react";
 import {
-  deleteUser, getSettings,
-
-
-
-
-  patchBilling, patchEmail,
+  deleteUser,
+  getSettings,
+  patchBilling,
+  patchEmail,
   patchPassword,
-  patchPreferences
+  patchPreferences,
 } from "../../services/user.js";
 import AutocompleteInput from "../../shared/AutocompleteInput/AutocompleteInput.js";
 import { billingValidation } from "../../validation/billing.js";

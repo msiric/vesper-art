@@ -1,9 +1,9 @@
-import { CircularProgress, Grid } from '@material-ui/core';
-import React, { useContext, useEffect, useState } from 'react';
-import { withRouter } from 'react-router-dom';
-import ArtworkPanel from '../../containers/ArtworkPanel/ArtworkPanel.js';
-import { Context } from '../../context/Store.js';
-import { getSearch } from '../../services/home.js';
+import { CircularProgress, Grid } from "@material-ui/core";
+import React, { useContext, useEffect, useState } from "react";
+import { withRouter } from "react-router-dom";
+import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
+import { Context } from "../../context/Store.js";
+import { getSearch } from "../../services/home.js";
 
 const SearchResults = ({ match, location, history }) => {
   const [store, dispatch] = useContext(Context);
@@ -15,6 +15,8 @@ const SearchResults = ({ match, location, history }) => {
     cursor: 0,
     ceiling: 50,
   });
+
+  console.log(state);
 
   const classes = {};
 
@@ -73,7 +75,7 @@ const SearchResults = ({ match, location, history }) => {
         {state.loading ? (
           <CircularProgress />
         ) : state.results.length ? (
-          state.type === 'artwork' ? (
+          state.type === "artwork" ? (
             <ArtworkPanel
               elements={state.results}
               hasMore={state.hasMore}
@@ -90,7 +92,7 @@ const SearchResults = ({ match, location, history }) => {
             }
           )
         ) : (
-          'No results'
+          "No results"
         )}
       </Grid>
     </Grid>

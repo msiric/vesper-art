@@ -4,16 +4,16 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import {
   LabelImportantRounded as LabelIcon,
   MonetizationOnRounded as MonetizationIcon,
-} from '@material-ui/icons';
-import { Field, Form, Formik } from 'formik';
-import React, { useContext } from 'react';
-import { countries } from '../../../../common/constants.js';
-import AutocompleteInput from '../../components/AutocompleteInput/AutocompleteInput.js';
-import HelpBox from '../../components/HelpBox/HelpBox.js';
+} from "@material-ui/icons";
+import { Field, Form, Formik } from "formik";
+import React, { useContext } from "react";
+import { countries } from "../../../../common/constants.js";
+import AutocompleteInput from "../../components/AutocompleteInput/AutocompleteInput.js";
+import HelpBox from "../../components/HelpBox/HelpBox.js";
 import {
   Button,
   Card,
@@ -21,11 +21,11 @@ import {
   Container,
   Grid,
   Typography,
-} from '../../constants/theme.js';
-import { Context } from '../../context/Store.js';
-import { postAuthorize } from '../../services/stripe.js';
-import { patchOrigin } from '../../services/user.js';
-import { originValidation } from '../../validation/origin.js';
+} from "../../constants/theme.js";
+import { Context } from "../../context/Store.js";
+import { postAuthorize } from "../../services/stripe.js";
+import { patchOrigin } from "../../services/user.js";
+import { originValidation } from "../../validation/origin.js";
 
 const Onboarding = () => {
   const [store, dispatch] = useContext(Context);
@@ -37,7 +37,7 @@ const Onboarding = () => {
           <Grow in>
             <Card>
               <CardContent
-                style={{ display: 'flex' }}
+                style={{ display: "flex" }}
                 flexDirection="column"
                 justifyContent="center"
                 alignItems="center"
@@ -99,14 +99,14 @@ const Onboarding = () => {
                       countries[store.user.origin].supported ? (
                         <Typography
                           color="textSecondary"
-                          style={{ alignSelf: 'flex-start' }}
+                          style={{ alignSelf: "flex-start" }}
                         >
                           Please confirm your registered business address
                         </Typography>
                       ) : (
                         <Typography
                           color="textSecondary"
-                          style={{ alignSelf: 'flex-start' }}
+                          style={{ alignSelf: "flex-start" }}
                         >
                           Your currently saved registered business address is
                           not supported for Stripe payments
@@ -115,7 +115,7 @@ const Onboarding = () => {
                     ) : (
                       <Typography
                         color="textSecondary"
-                        style={{ alignSelf: 'flex-start' }}
+                        style={{ alignSelf: "flex-start" }}
                       >
                         Please select your registered business address
                       </Typography>
@@ -124,7 +124,7 @@ const Onboarding = () => {
                 )}
                 <Formik
                   initialValues={{
-                    userOrigin: store.user.origin || '',
+                    userOrigin: "",
                   }}
                   enableReinitialize={true}
                   validationSchema={originValidation}
@@ -133,10 +133,13 @@ const Onboarding = () => {
                       if (!store.user.stripeId) {
                         await patchOrigin({
                           userId: store.user.id,
-                          data: values,
+                          data: {
+                            ...values,
+                            userOrigin: values.userOrigin.value,
+                          },
                         });
                         const { data } = await postAuthorize({
-                          userOrigin: values.userOrigin,
+                          userOrigin: values.userOrigin.value,
                           userEmail: store.user.email,
                         });
 
@@ -148,7 +151,7 @@ const Onboarding = () => {
                   }}
                 >
                   {({ values, errors, touched, isSubmitting }) => (
-                    <Form style={{ width: '100%' }}>
+                    <Form style={{ width: "100%" }}>
                       <Field name="userOrigin">
                         {({
                           field,
@@ -163,16 +166,19 @@ const Onboarding = () => {
                           <AutocompleteInput
                             {...field}
                             label="Country"
+                            getOptionSelected={(option, value) =>
+                              option.value === value
+                            }
                             helperText={meta.touched && meta.error}
                             error={meta.touched && Boolean(meta.error)}
-                            options={countries.map(
+                            options={countries.filter(
                               (country) => country.supported === true
                             )}
                             handleChange={(e, item) =>
-                              setFieldValue('userOrigin', item || '')
+                              setFieldValue("userOrigin", item || "")
                             }
                             handleBlur={() =>
-                              setFieldTouched('userOrigin', true)
+                              setFieldTouched("userOrigin", true)
                             }
                             getOptionLabel={(option) => option.text}
                           />

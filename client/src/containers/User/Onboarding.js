@@ -1,8 +1,8 @@
-import { Grow } from '@material-ui/core';
-import { MonetizationOnRounded as MonetizationIcon } from '@material-ui/icons';
-import { Field, Form, Formik } from 'formik';
-import React, { useContext } from 'react';
-import { countries } from '../../../../common/constants.js';
+import { Grow } from "@material-ui/core";
+import { MonetizationOnRounded as MonetizationIcon } from "@material-ui/icons";
+import { Field, Form, Formik } from "formik";
+import React, { useContext } from "react";
+import { countries } from "../../../../common/constants.js";
 import {
   Button,
   Card,
@@ -10,12 +10,12 @@ import {
   Container,
   Grid,
   Typography,
-} from '../../constants/theme.js';
-import { Context } from '../../context/Store.js';
-import { postAuthorize } from '../../services/stripe.js';
-import { patchOrigin } from '../../services/user.js';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import { originValidation } from '../../validation/origin.js';
+} from "../../constants/theme.js";
+import { Context } from "../../context/Store.js";
+import { postAuthorize } from "../../services/stripe.js";
+import { patchOrigin } from "../../services/user.js";
+import SelectInput from "../../shared/SelectInput/SelectInput.js";
+import { originValidation } from "../../validation/origin.js";
 
 const Onboarding = () => {
   const [store, dispatch] = useContext(Context);
@@ -92,7 +92,7 @@ const Onboarding = () => {
                 )}
                 <Formik
                   initialValues={{
-                    userOrigin: store.user.origin || '',
+                    userOrigin: store.user.origin || "",
                   }}
                   enableReinitialize={true}
                   validationSchema={originValidation}
