@@ -7,14 +7,17 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-} from '@material-ui/core';
-import { CheckRounded as CheckIcon } from '@material-ui/icons';
-import React from 'react';
-import { Card, Typography } from '../../constants/theme.js';
+} from "@material-ui/core";
+import { CheckRounded as CheckIcon } from "@material-ui/icons";
+import React from "react";
+import { Card, Typography } from "../../constants/theme.js";
+import { Link as RouterLink } from "react-router-dom";
 
 const PricingCard = ({
-  id,
+  artworkId,
+  versionId,
   price,
+  isSeller,
   heading,
   list,
   license,
@@ -31,7 +34,7 @@ const PricingCard = ({
             </Typography>
           ) : null}
           <Box alignItems="flex-end">
-            <Typography fontSize={48}>{price || 'Free'}</Typography>
+            <Typography fontSize={48}>{price || "Free"}</Typography>
           </Box>
         </Box>
 
@@ -55,17 +58,32 @@ const PricingCard = ({
       </CardContent>
 
       <Box display="flex" justifyContent="center">
-        {price ? (
+        {!isSeller ? (
+          price ? (
+            <Button
+              onClick={() => handlePurchase(versionId, license)}
+              variant="contained"
+              color="primary"
+            >
+              Purchase
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleModalOpen}
+            >
+              Download
+            </Button>
+          )
+        ) : (
           <Button
-            onClick={() => handlePurchase(id, license)}
             variant="contained"
             color="primary"
+            component={RouterLink}
+            to={`/edit_artwork/${artworkId}`}
           >
-            Purchase
-          </Button>
-        ) : (
-          <Button variant="contained" color="primary" onClick={handleModalOpen}>
-            Download
+            Edit artwork
           </Button>
         )}
       </Box>

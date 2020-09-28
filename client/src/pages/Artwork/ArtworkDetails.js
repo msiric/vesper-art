@@ -5,34 +5,34 @@ import {
   Container,
   Grid,
   Modal,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
-} from '@material-ui/icons';
-import React, { useContext, useEffect, useState } from 'react';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { upload } from '../../../../common/constants.js';
-import { Popover } from '../../constants/theme.js';
-import ArtistSection from '../../containers/ArtistSection/ArtistSection.js';
-import ArtworkInfo from '../../containers/ArtworkInfo/ArtworkInfo.js';
-import ArtworkPreview from '../../containers/ArtworkPreview/ArtworkPreview.js';
-import CommentSection from '../../containers/CommentSection/CommentSection.js';
-import LicenseForm from '../../containers/LicenseForm/LicenseForm.js';
-import { Context } from '../../context/Store.js';
+} from "@material-ui/icons";
+import React, { useContext, useEffect, useState } from "react";
+import { Link as RouterLink, useHistory } from "react-router-dom";
+import { upload } from "../../../../common/constants.js";
+import { Popover } from "../../constants/theme.js";
+import ArtistSection from "../../containers/ArtistSection/ArtistSection.js";
+import ArtworkInfo from "../../containers/ArtworkInfo/ArtworkInfo.js";
+import ArtworkPreview from "../../containers/ArtworkPreview/ArtworkPreview.js";
+import CommentSection from "../../containers/CommentSection/CommentSection.js";
+import LicenseForm from "../../containers/LicenseForm/LicenseForm.js";
+import { Context } from "../../context/Store.js";
 import {
   deleteComment,
   getComments,
   getDetails,
-} from '../../services/artwork.js';
-import { postDownload } from '../../services/checkout.js';
+} from "../../services/artwork.js";
+import { postDownload } from "../../services/checkout.js";
 
 const ArtworkDetails = ({ match, location, socket }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
     artwork: {},
-    license: 'personal',
+    license: "personal",
     height: 400,
     modal: {
       open: false,
@@ -329,20 +329,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
                 handlePurchase={handlePurchase}
                 handleModalOpen={handleModalOpen}
               />
-              {isSeller() && (
-                <Box display="flex" flexDirection="column" mt={2}>
-                  <Button
-                    component={RouterLink}
-                    to={`/edit_artwork/${state.artwork._id}`}
-                  >
-                    Edit artwork
-                  </Button>
-                </Box>
-              )}
             </Grid>
           </>
         ) : (
-          history.push('/')
+          history.push("/")
         )}
         <Modal
           open={state.modal.open}
@@ -353,7 +343,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
             version={state.artwork.current}
             initial={{
               standalone: true,
-              value: state.tabs.value === 0 ? 'personal' : 'commercial',
+              value: state.tabs.value === 0 ? "personal" : "commercial",
               submit: handleDownload,
             }}
             handleModalClose={handleModalClose}
@@ -366,12 +356,12 @@ const ArtworkDetails = ({ match, location, socket }) => {
         anchorEl={state.popover.anchorEl}
         onClose={handlePopoverClose}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
+          vertical: "bottom",
+          horizontal: "center",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
+          vertical: "top",
+          horizontal: "center",
         }}
         width={120}
         transition

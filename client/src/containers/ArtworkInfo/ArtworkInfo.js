@@ -1,10 +1,10 @@
-import { Box, Divider } from '@material-ui/core';
-import React, { useContext } from 'react';
-import { withRouter } from 'react-router-dom';
-import PricingCard from '../../components/PricingCard/PricingCard.js';
-import SwipeCard from '../../components/SwipeCard/SwipeCard.js';
-import { Card, CardContent, Typography } from '../../constants/theme.js';
-import { Context } from '../../context/Store.js';
+import { Box, Divider } from "@material-ui/core";
+import React, { useContext } from "react";
+import { withRouter } from "react-router-dom";
+import PricingCard from "../../components/PricingCard/PricingCard.js";
+import SwipeCard from "../../components/SwipeCard/SwipeCard.js";
+import { Card, CardContent, Typography } from "../../constants/theme.js";
+import { Context } from "../../context/Store.js";
 
 const ArtworkInfo = ({
   artwork,
@@ -19,10 +19,12 @@ const ArtworkInfo = ({
   const [store, dispatch] = useContext(Context);
   const classes = {};
 
+  const isSeller = () => store.user.id === artwork.owner._id;
+
   return (
     <Card className={classes.root}>
       <CardContent pt={0} pb={0}>
-        {artwork.current.availability === 'available' ? (
+        {artwork.current.availability === "available" ? (
           /*           <>
             <Typography variant="body2" component="p" align="center">
               Artwork price:
@@ -43,8 +45,8 @@ const ArtworkInfo = ({
             tabs={{
               value: tabs.value,
               headings: [
-                { display: true, label: 'Personal license', props: {} },
-                { display: true, label: 'Commercial license', props: {} },
+                { display: true, label: "Personal license", props: {} },
+                { display: true, label: "Commercial license", props: {} },
               ],
               items: [
                 {
@@ -53,8 +55,10 @@ const ArtworkInfo = ({
                   content: null,
                   component: (
                     <PricingCard
-                      id={artwork.current._id}
+                      artworkId={artwork._id}
+                      versionId={artwork.current._id}
                       price={artwork.current.personal}
+                      isSeller={isSeller}
                       heading="Personal license. Use for personal projects, social media, and
                   non commercial activities"
                       list={[]}
@@ -72,8 +76,10 @@ const ArtworkInfo = ({
                   content: null,
                   component: (
                     <PricingCard
-                      id={artwork.current._id}
+                      artworkId={artwork._id}
+                      versionId={artwork.current._id}
                       price={artwork.current.commercial}
+                      isSeller={isSeller}
                       heading="Commercial license. Use anywhere in the world for unlimited projects with no expiration dates"
                       list={[]}
                       license="commercial"
