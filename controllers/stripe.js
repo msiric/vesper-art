@@ -1,18 +1,18 @@
-import axios from 'axios';
-import crypto from 'crypto';
-import currency from 'currency.js';
-import FormData from 'form-data';
-import createError from 'http-errors';
-import mongoose from 'mongoose';
-import querystring from 'querystring';
-import { payment } from '../config/constants.js';
-import { server, stripe as processor } from '../config/secret.js';
-import socketApi from '../lib/socket.js';
-import License from '../models/license.js';
-import { fetchVersionDetails } from '../services/artwork.js';
-import { fetchDiscountById } from '../services/discount.js';
-import { addNewNotification } from '../services/notification.js';
-import { addNewOrder } from '../services/order.js';
+import axios from "axios";
+import crypto from "crypto";
+import currency from "currency.js";
+import FormData from "form-data";
+import createError from "http-errors";
+import mongoose from "mongoose";
+import querystring from "querystring";
+import { payment } from "../config/constants.js";
+import { server, stripe as processor } from "../config/secret.js";
+import socketApi from "../lib/socket.js";
+import License from "../models/license.js";
+import { fetchVersionDetails } from "../services/artwork.js";
+import { fetchDiscountById } from "../services/discount.js";
+import { addNewNotification } from "../services/notification.js";
+import { addNewOrder } from "../services/order.js";
 import {
   constructStripeEvent,
   constructStripeIntent,
@@ -21,17 +21,17 @@ import {
   fetchStripeAccount,
   fetchStripeBalance,
   updateStripeIntent,
-} from '../services/stripe.js';
+} from "../services/stripe.js";
 import {
   editUserPurchase,
   editUserSale,
   editUserStripe,
   fetchUserById,
   removeExistingIntent,
-} from '../services/user.js';
-import { sanitizeData } from '../utils/helpers.js';
-import licenseValidator from '../validation/license.js';
-import orderValidator from '../validation/order.js';
+} from "../services/user.js";
+import { sanitizeData } from "../utils/helpers.js";
+import licenseValidator from "../validation/license.js";
+import orderValidator from "../validation/order.js";
 
 export const receiveWebhookEvent = async ({
   stripeSignature,
@@ -45,18 +45,18 @@ export const receiveWebhookEvent = async ({
     stripeSignature,
   });
 
-  console.log('stripe event', stripeEvent.type);
+  console.log("stripe event", stripeEvent.type);
 
   switch (stripeEvent.type) {
-    case 'payment_intent.succeeded':
+    case "payment_intent.succeeded":
       const paymentIntent = stripeEvent.data.object;
       await processTransaction({ stripeIntent: paymentIntent, session });
       break;
-    case 'payment_intent.failed':
-      console.log('Failed payment');
+    case "payment_intent.failed":
+      console.log("Failed payment");
       break;
     default:
-      throw createError(400, 'Invalid Stripe event');
+      throw createError(400, "Invalid Stripe event");
   }
 
   return { received: true };
@@ -95,12 +95,13 @@ export const managePaymentIntent = async ({
         if (!foundVersion.artwork.owner._id.equals(foundUser._id)) {
           // $TODO Bolje sredit validaciju licence
           const licensePrice =
-            artworkLicense.type === 'personal'
+            artworkLicense.type === "personal"
               ? foundVersion.personal
-              : artworkLicense.type === 'commercial'
+              : artworkLicense.type === "commercial"
               ? foundVersion.commercial
               : 0;
           if (licensePrice !== -1) {
+            const licenseValue = currency(licensePrice);
             const buyerFee = currency(licensePrice)
               .multiply(payment.buyerFee.multiplier)
               .add(payment.buyerFee.addend);
@@ -131,7 +132,7 @@ export const managePaymentIntent = async ({
                       licenseAssignee: artworkLicense.assignee,
                       licenseCompany: artworkLicense.company,
                       licenseType: artworkLicense.type,
-                      licensePrice: foundVersion[artworkLicense.type],
+                      licensePrice: licenseValue.intValue,
                     },
                   }
                 : {
@@ -159,7 +160,7 @@ export const managePaymentIntent = async ({
                     licenseAssignee: artworkLicense.assignee,
                     licenseCompany: artworkLicense.company,
                     licenseType: artworkLicense.type,
-                    licensePrice: foundVersion[artworkLicense.type],
+                    licensePrice: licenseValue.intValue,
                   },
                 };
             const paymentIntent = intentId
@@ -171,9 +172,9 @@ export const managePaymentIntent = async ({
                   session,
                 })
               : await constructStripeIntent({
-                  intentMethod: 'card',
+                  intentMethod: "card",
                   intentAmount: buyerTotal.intValue,
-                  intentCurrency: 'usd',
+                  intentCurrency: "usd",
                   intentFee: platformTotal.intValue,
                   sellerId: foundVersion.artwork.owner.stripeId,
                   orderData: orderData,
@@ -186,22 +187,22 @@ export const managePaymentIntent = async ({
               },
             };
           }
-          throw createError(400, 'License type is not valid');
+          throw createError(400, "License type is not valid");
         }
-        throw createError(400, 'You are the owner of this artwork');
+        throw createError(400, "You are the owner of this artwork");
       }
-      throw createError(400, 'Artwork version is obsolete');
+      throw createError(400, "Artwork version is obsolete");
     }
-    throw createError(400, 'Artwork not found');
+    throw createError(400, "Artwork not found");
   }
-  throw createError(400, 'User not found');
+  throw createError(400, "User not found");
 };
 
 export const redirectToStripe = async ({ userAccount, userOnboarded }) => {
   if (!userOnboarded)
     throw createError(
       400,
-      'You need to complete the onboarding process before accessing your Stripe dashboard'
+      "You need to complete the onboarding process before accessing your Stripe dashboard"
     );
   const loginLink = await constructStripeLink({
     userOnboarded,
@@ -226,12 +227,12 @@ export const onboardUser = async ({
     client_id: processor.clientId,
     state: sessionData.state,
     redirect_uri: `${server.serverDomain}/stripe/token`,
-    'stripe_user[business_type]': 'individual',
-    'stripe_user[business_name]': undefined,
-    'stripe_user[first_name]': undefined,
-    'stripe_user[last_name]': undefined,
-    'stripe_user[email]': userEmail || undefined,
-    'stripe_user[country]': userOrigin || undefined,
+    "stripe_user[business_type]": "individual",
+    "stripe_user[business_name]": undefined,
+    "stripe_user[first_name]": undefined,
+    "stripe_user[last_name]": undefined,
+    "stripe_user[email]": userEmail || undefined,
+    "stripe_user[country]": userOrigin || undefined,
   };
 
   // If we're suggesting this account have the `card_payments` capability,
@@ -258,13 +259,13 @@ export const assignStripeId = async ({
   session,
 }) => {
   if (sessionData.state != queryData.state)
-    throw createError(500, 'There was an error in the onboarding process');
+    throw createError(500, "There was an error in the onboarding process");
 
   const formData = new FormData();
-  formData.append('grant_type', 'authorization_code');
-  formData.append('client_id', processor.clientId);
-  formData.append('client_secret', processor.secretKey);
-  formData.append('code', queryData.code);
+  formData.append("grant_type", "authorization_code");
+  formData.append("client_id", processor.clientId);
+  formData.append("client_secret", processor.secretKey);
+  formData.append("code", queryData.code);
 
   const expressAuthorized = await axios.post(processor.tokenUri, formData, {
     headers: formData.getHeaders(),
@@ -303,10 +304,10 @@ export const createPayout = async ({ userId, session }) => {
       session,
     });
     return {
-      message: 'Payout successfully created',
+      message: "Payout successfully created",
     };
   }
-  throw createError(400, 'Cannot create payout for this user');
+  throw createError(400, "Cannot create payout for this user");
 };
 
 const processTransaction = async ({ stripeIntent, session }) => {
@@ -337,7 +338,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
   const newLicense = new License();
   newLicense.owner = buyerId;
   newLicense.artwork = artworkId;
-  newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+  newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
   newLicense.assignee = licenseAssignee;
   newLicense.company = licenseCompany;
   newLicense.type = licenseType;
@@ -371,7 +372,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
     earned: orderData.earned,
     fee: orderData.fee,
     commercial: true,
-    status: 'completed',
+    status: "completed",
     intentId: intentId,
   };
   const savedOrder = await addNewOrder({ orderData: orderObject, session });
@@ -385,7 +386,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
   // new start
   await addNewNotification({
     notificationLink: savedOrder._id,
-    notificationType: 'order',
+    notificationType: "order",
     notificationReceiver: sellerId,
     session,
   });

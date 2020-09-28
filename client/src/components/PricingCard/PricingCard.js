@@ -58,7 +58,7 @@ const PricingCard = ({
       </CardContent>
 
       <Box display="flex" justifyContent="center">
-        {!isSeller ? (
+        {!isSeller() ? (
           price ? (
             <Button
               onClick={() => handlePurchase(versionId, license)}

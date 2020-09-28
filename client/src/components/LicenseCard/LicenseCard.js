@@ -1,16 +1,16 @@
-import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
-import { formatDate } from '../../../../common/helpers.js';
-import Datatable from '../../components/Datatable/Datatable.js';
+import { makeStyles } from "@material-ui/core/styles";
+import React from "react";
+import { formatDate } from "../../../../common/helpers.js";
+import Datatable from "../../components/Datatable/Datatable.js";
 
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
   },
   bullet: {
-    display: 'inline-block',
-    margin: '0 2px',
-    transform: 'scale(0.8)',
+    display: "inline-block",
+    margin: "0 2px",
+    transform: "scale(0.8)",
   },
   title: {
     fontSize: 14,
@@ -20,7 +20,7 @@ const useStyles = makeStyles({
   },
 });
 
-const LicenseCard = ({ license }) => {
+const LicenseCard = ({ license, order, isSeller }) => {
   const classes = useStyles();
 
   return (
@@ -28,16 +28,17 @@ const LicenseCard = ({ license }) => {
       title="License information"
       columns={[
         {
-          name: 'Id',
+          name: "Id",
           options: {
             display: false,
           },
         },
-        'Fingerprint',
-        'Type',
-        'Assignee',
-        'Price',
-        'Date',
+        "Fingerprint",
+        "Type",
+        "Assignee",
+        "Value",
+        isSeller() ? "Earned" : "Spent",
+        "Date",
       ]}
       data={[
         [
@@ -45,8 +46,9 @@ const LicenseCard = ({ license }) => {
           license.fingerprint,
           license.type,
           license.assignee,
-          license.price || 'Free',
-          formatDate(license.created, 'dd/MM/yy HH:mm'),
+          license.price || "Free",
+          isSeller() ? order.earned || "Free" : order.spent || "Free",
+          formatDate(license.created, "dd/MM/yy HH:mm"),
         ],
       ]}
       empty=""
@@ -55,16 +57,16 @@ const LicenseCard = ({ license }) => {
       selectable={false}
       searchable={false}
       pagination={false}
-      addOptions={{ enabled: false, title: '', route: '' }}
+      addOptions={{ enabled: false, title: "", route: "" }}
       editOptions={{
         enabled: false,
-        title: '',
-        route: '',
+        title: "",
+        route: "",
       }}
       deleteOptions={{
         enabled: false,
-        title: '',
-        route: '',
+        title: "",
+        route: "",
       }}
     />
   );

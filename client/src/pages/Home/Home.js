@@ -113,9 +113,9 @@ const Home = ({ location, enqueueSnackbar }) => {
           label="Type"
           options={[
             { value: "" },
-            { value: "available", text: "Available for download" },
-            { value: "unavailable", text: "Only for preview" },
+            { value: "commercial", text: "Commercial artwork" },
             { value: "free", text: "Free of charge" },
+            { value: "unavailable", text: "Only for preview" },
           ]}
           margin="dense"
           variant="outlined"

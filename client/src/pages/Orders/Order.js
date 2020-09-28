@@ -171,7 +171,11 @@ const Order = ({ match }) => {
               />
             </Grid>
             <Grid item xs={12} md={8} className={classes.artistSectionItem}>
-              <LicenseCard license={state.order.license} />
+              <LicenseCard
+                order={state.order}
+                license={state.order.license}
+                isSeller={isSeller}
+              />
               <ReviewCard
                 handleModalOpen={handleModalOpen}
                 review={state.order.review}

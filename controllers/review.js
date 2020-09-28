@@ -1,12 +1,13 @@
-import createError from 'http-errors';
-import socketApi from '../lib/socket.js';
-import { addArtworkReview } from '../services/artwork.js';
-import { addNewNotification } from '../services/notification.js';
-import { addOrderReview, fetchUserOrder } from '../services/order.js';
-import { addNewReview } from '../services/review.js';
-import { editUserRating } from '../services/user.js';
-import { sanitizeData } from '../utils/helpers.js';
-import reviewValidator from '../validation/review.js';
+import createError from "http-errors";
+import socketApi from "../lib/socket.js";
+import { addArtworkReview } from "../services/artwork.js";
+import { addNewNotification } from "../services/notification.js";
+import { addOrderReview, fetchUserOrder } from "../services/order.js";
+import { addNewReview } from "../services/review.js";
+import { editUserRating } from "../services/user.js";
+import { sanitizeData } from "../utils/helpers.js";
+import reviewValidator from "../validation/review.js";
+import currency from "currency.js";
 
 // needs transaction (done)
 export const postReview = async ({
@@ -57,17 +58,17 @@ export const postReview = async ({
         // new start
         await addNewNotification({
           notificationLink: foundOrder._id,
-          notificationType: 'review',
+          notificationType: "review",
           notificationReceiver: foundOrder.seller,
           session,
         });
         socketApi.sendNotification(foundOrder.seller, foundOrder._id);
         // new end
-        return { message: 'Review successfully published' };
+        return { message: "Review successfully published" };
       }
-      throw createError(400, 'Review already exists for this artwork');
+      throw createError(400, "Review already exists for this artwork");
     }
-    throw createError(400, 'Review cannot be posted for unbought artwork');
+    throw createError(400, "Review cannot be posted for unbought artwork");
   }
-  throw createError(400, 'Rating is required');
+  throw createError(400, "Rating is required");
 };
