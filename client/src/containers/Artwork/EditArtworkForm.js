@@ -1,9 +1,9 @@
-import { CircularProgress, TextField } from '@material-ui/core';
-import { Field, Form, Formik } from 'formik';
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import HelpBox from '../../components/HelpBox/HelpBox.js';
-import ImageInput from '../../components/ImageInput/ImageInput.js';
+import { CircularProgress, TextField } from "@material-ui/core";
+import { Field, Form, Formik } from "formik";
+import React from "react";
+import { useHistory } from "react-router-dom";
+import HelpBox from "../../components/HelpBox/HelpBox.js";
+import ImageInput from "../../components/ImageInput/ImageInput.js";
 import {
   Button,
   Card,
@@ -11,12 +11,12 @@ import {
   CardContent,
   Container,
   Grid,
-} from '../../constants/theme.js';
-import PriceInput from '../../shared/PriceInput/PriceInput.js';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import { deleteEmptyValues } from '../../utils/helpers.js';
-import { artworkValidation } from '../../validation/artwork.js';
-import { updateArtwork } from '../../validation/media.js';
+} from "../../constants/theme.js";
+import PriceInput from "../../shared/PriceInput/PriceInput.js";
+import SelectInput from "../../shared/SelectInput/SelectInput.js";
+import { deleteEmptyValues } from "../../utils/helpers.js";
+import { artworkValidation } from "../../validation/artwork.js";
+import { updateArtwork } from "../../validation/media.js";
 
 const EditArtworkForm = ({
   loading,
@@ -43,16 +43,16 @@ const EditArtworkForm = ({
           <Card p={2} width="100%">
             <Formik
               initialValues={{
-                artworkMedia: '',
-                artworkTitle: version.title || '',
-                artworkType: version.type || '',
-                artworkAvailability: version.availability || '',
-                artworkLicense: version.license || '',
-                artworkUse: version.use || '',
-                artworkPersonal: version.personal || '',
-                artworkCommercial: version.commercial - version.personal || '',
-                artworkCategory: version.category || '',
-                artworkDescription: version.description || '',
+                artworkMedia: "",
+                artworkTitle: version.title || "",
+                artworkType: version.type || "",
+                artworkAvailability: version.availability || "",
+                artworkLicense: version.license || "",
+                artworkUse: version.use || "",
+                artworkPersonal: version.personal || "",
+                artworkCommercial: version.commercial - version.personal || "",
+                artworkCategory: version.category || "",
+                artworkDescription: version.description || "",
               }}
               validationSchema={artworkValidation.concat(updateArtwork)}
               enableReinitialize={true}
@@ -85,8 +85,8 @@ const EditArtworkForm = ({
                     data: formData,
                   });
                   history.push({
-                    pathname: '/',
-                    state: { message: 'Artwork updated' },
+                    pathname: "/",
+                    state: { message: "Artwork updated" },
                   });
                 } catch (err) {
                   console.log(err);
@@ -100,14 +100,14 @@ const EditArtworkForm = ({
                       type="alert"
                       label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
                     />
-                  ) : capabilities.cardPayments === 'pending' ||
-                    capabilities.platformPayments === 'pending' ? (
+                  ) : capabilities.cardPayments === "pending" ||
+                    capabilities.platformPayments === "pending" ? (
                     <HelpBox
                       type="alert"
                       label="To make your artwork commercially available, please wait for Stripe to verify the information you entered"
                     />
-                  ) : capabilities.cardPayments !== 'active' ||
-                    capabilities.platformPayments !== 'active' ? (
+                  ) : capabilities.cardPayments !== "active" ||
+                    capabilities.platformPayments !== "active" ? (
                     <HelpBox
                       type="alert"
                       label="To make your artwork commercially available, finish entering your Stripe account information"
@@ -155,14 +155,14 @@ const EditArtworkForm = ({
                           helperText={meta.touched && meta.error}
                           error={meta.touched && Boolean(meta.error)}
                           options={[
-                            { value: '' },
+                            { value: "" },
                             {
-                              value: 'available',
-                              text: 'Available for download',
+                              value: "available",
+                              text: "Available for download",
                             },
                             {
-                              value: 'unavailable',
-                              text: 'Only for preview',
+                              value: "unavailable",
+                              text: "Only for preview",
                             },
                           ]}
                           margin="dense"
@@ -171,7 +171,7 @@ const EditArtworkForm = ({
                         />
                       )}
                     </Field>
-                    {values.artworkAvailability === 'available' && (
+                    {values.artworkAvailability === "available" && (
                       <Field name="artworkType">
                         {({ field, form: { touched, errors }, meta }) => (
                           <SelectInput
@@ -180,18 +180,18 @@ const EditArtworkForm = ({
                             helperText={meta.touched && meta.error}
                             error={meta.touched && Boolean(meta.error)}
                             options={[
-                              { value: '' },
+                              { value: "" },
                               {
-                                value: 'commercial',
-                                text: 'Commercial',
+                                value: "commercial",
+                                text: "Commercial",
                                 disabled:
                                   user.stripeId &&
-                                  capabilities.cardPayments === 'active' &&
-                                  capabilities.platformPayments === 'active'
+                                  capabilities.cardPayments === "active" &&
+                                  capabilities.platformPayments === "active"
                                     ? false
                                     : true,
                               },
-                              { value: 'free', text: 'Free' },
+                              { value: "free", text: "Free" },
                             ]}
                             margin="dense"
                             variant="outlined"
@@ -200,7 +200,7 @@ const EditArtworkForm = ({
                         )}
                       </Field>
                     )}
-                    {values.artworkAvailability === 'available' && (
+                    {values.artworkAvailability === "available" && (
                       <Field name="artworkLicense">
                         {({ field, form: { touched, errors }, meta }) => (
                           <SelectInput
@@ -209,9 +209,9 @@ const EditArtworkForm = ({
                             helperText={meta.touched && meta.error}
                             error={meta.touched && Boolean(meta.error)}
                             options={[
-                              { value: '' },
-                              { value: 'commercial', text: 'Commercial' },
-                              { value: 'personal', text: 'Personal' },
+                              { value: "" },
+                              { value: "commercial", text: "Commercial" },
+                              { value: "personal", text: "Personal" },
                             ]}
                             margin="dense"
                             variant="outlined"
@@ -220,8 +220,8 @@ const EditArtworkForm = ({
                         )}
                       </Field>
                     )}
-                    {values.artworkAvailability === 'available' &&
-                      values.artworkType === 'commercial' && (
+                    {values.artworkAvailability === "available" &&
+                      values.artworkType === "commercial" && (
                         <Field name="artworkPersonal">
                           {({ field, form: { touched, errors }, meta }) => (
                             <PriceInput
@@ -236,8 +236,8 @@ const EditArtworkForm = ({
                           )}
                         </Field>
                       )}
-                    {values.artworkAvailability === 'available' &&
-                      values.artworkLicense === 'commercial' && (
+                    {values.artworkAvailability === "available" &&
+                      values.artworkLicense === "commercial" && (
                         <Field name="artworkUse">
                           {({ field, form: { touched, errors }, meta }) => (
                             <SelectInput
@@ -246,28 +246,28 @@ const EditArtworkForm = ({
                               helperText={meta.touched && meta.error}
                               error={meta.touched && Boolean(meta.error)}
                               options={[
-                                { value: '' },
+                                { value: "" },
                                 {
-                                  value: 'separate',
-                                  text: 'Charge commercial license separately',
+                                  value: "separate",
+                                  text: "Charge commercial license separately",
                                   disabled:
                                     user.stripeId &&
-                                    capabilities.cardPayments === 'active' &&
-                                    capabilities.platformPayments === 'active'
+                                    capabilities.cardPayments === "active" &&
+                                    capabilities.platformPayments === "active"
                                       ? false
                                       : true,
                                 },
-                                values.artworkAvailability === 'available' &&
-                                values.artworkType === 'commercial'
+                                values.artworkAvailability === "available" &&
+                                values.artworkType === "commercial"
                                   ? {
-                                      value: 'included',
+                                      value: "included",
                                       text:
-                                        'Include commercial license in the price',
+                                        "Include commercial license in the price",
                                     }
                                   : {
-                                      value: 'included',
+                                      value: "included",
                                       text:
-                                        'Offer commercial license free of charge',
+                                        "Offer commercial license free of charge",
                                     },
                               ]}
                               margin="dense"
@@ -277,9 +277,9 @@ const EditArtworkForm = ({
                           )}
                         </Field>
                       )}
-                    {values.artworkAvailability === 'available' &&
-                      values.artworkLicense === 'commercial' &&
-                      values.artworkUse === 'separate' && (
+                    {values.artworkAvailability === "available" &&
+                      values.artworkLicense === "commercial" &&
+                      values.artworkUse === "separate" && (
                         <Field name="artworkCommercial">
                           {({ field, form: { touched, errors }, meta }) => (
                             <PriceInput
@@ -305,6 +305,7 @@ const EditArtworkForm = ({
                           margin="dense"
                           variant="outlined"
                           fullWidth
+                          multiline
                         />
                       )}
                     </Field>
@@ -331,7 +332,7 @@ const EditArtworkForm = ({
             </Formik>
           </Card>
         ) : (
-          history.push('/')
+          history.push("/")
         )}
       </Grid>
     </Container>
