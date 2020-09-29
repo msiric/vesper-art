@@ -1,10 +1,10 @@
-import { CircularProgress, Container, Grid } from '@material-ui/core';
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import * as Yup from 'yup';
-import MainHeading from '../../components/MainHeading/MainHeading.js';
-import SettingsSection from '../../containers/SettingsSection/SettingsSection.js';
-import { Context } from '../../context/Store.js';
+import { CircularProgress, Container, Grid } from "@material-ui/core";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import * as Yup from "yup";
+import MainHeading from "../../components/MainHeading/MainHeading.js";
+import SettingsSection from "../../containers/SettingsSection/SettingsSection.js";
+import { Context } from "../../context/Store.js";
 import {
   deleteUser,
   getSettings,
@@ -12,28 +12,28 @@ import {
   patchPassword,
   patchPreferences,
   patchUser,
-} from '../../services/user.js';
-import { deleteEmptyValues } from '../../utils/helpers.js';
+} from "../../services/user.js";
+import { deleteEmptyValues } from "../../utils/helpers.js";
 
 const emailValidation = Yup.object().shape({
   userEmail: Yup.string()
-    .email('Invalid email')
+    .email("Invalid email")
     .trim()
-    .required('Email cannot be empty'),
+    .required("Email cannot be empty"),
 });
 
 const preferencesValidation = Yup.object().shape({
-  userSaves: Yup.boolean().required('Saves need to have a value'),
+  userSaves: Yup.boolean().required("Saves need to have a value"),
 });
 
 const passwordValidation = Yup.object().shape({
-  userCurrent: Yup.string().required('Enter your password'),
+  userCurrent: Yup.string().required("Enter your password"),
   userPassword: Yup.string()
-    .min(8, 'Password must contain at least 8 characters')
-    .required('Enter new password'),
+    .min(8, "Password must contain at least 8 characters")
+    .required("Enter new password"),
   userConfirm: Yup.string()
-    .required('Confirm your password')
-    .oneOf([Yup.ref('password')], 'Passwords do not match'),
+    .required("Confirm your password")
+    .oneOf([Yup.ref("password")], "Passwords do not match"),
 });
 
 const Settings = () => {
@@ -66,7 +66,7 @@ const Settings = () => {
     for (let value of Object.keys(data)) {
       formData.append(
         value,
-        value === 'userCountry' ? data[value].value : data[value]
+        value === "userCountry" ? data[value].value : data[value]
       );
     }
     await patchUser({
@@ -79,7 +79,7 @@ const Settings = () => {
         ...prevState.user,
         photo: values.userMedia,
         description: values.userDescription,
-        country: values.userCountry,
+        country: values.userCountry.value,
       },
     }));
   };
@@ -138,7 +138,7 @@ const Settings = () => {
           </Grid>
         ) : state.user._id ? (
           <Grid item sm={12} className={classes.grid}>
-            <MainHeading text={'Settings'} />
+            <MainHeading text={"Settings"} />
             <SettingsSection
               user={state.user}
               handleUpdateProfile={handleUpdateProfile}
@@ -149,7 +149,7 @@ const Settings = () => {
             />
           </Grid>
         ) : (
-          history.push('/')
+          history.push("/")
         )}
       </Grid>
     </Container>
