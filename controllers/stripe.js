@@ -49,6 +49,7 @@ export const receiveWebhookEvent = async ({
 
   switch (stripeEvent.type) {
     case "payment_intent.succeeded":
+      console.log("Payment success");
       const paymentIntent = stripeEvent.data.object;
       await processTransaction({ stripeIntent: paymentIntent, session });
       break;
@@ -58,6 +59,8 @@ export const receiveWebhookEvent = async ({
     default:
       throw createError(400, "Invalid Stripe event");
   }
+
+  console.log("done");
 
   return { received: true };
 };

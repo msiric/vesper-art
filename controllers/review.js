@@ -32,13 +32,11 @@ export const postReview = async ({
           reviewRating,
           session,
         });
-        const numerator = currency(savedReview.rating).subtract(
-          foundOrder.buyer.rating
-        );
+        const numerator = currency(foundOrder.buyer.rating)
+          .multiply(foundOrder.buyer.reviews)
+          .add(reviewRating);
         const denominator = currency(foundOrder.buyer.reviews).add(1);
-        const newRating = currency(numerator)
-          .divide(denominator)
-          .add(foundOrder.buyer.rating);
+        const newRating = currency(numerator).divide(denominator);
         await editUserRating({
           userId: foundOrder.seller._id,
           userRating: newRating.intValue,

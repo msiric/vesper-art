@@ -354,6 +354,7 @@ const Processor = ({ match, location, stripe }) => {
         }); */
     }
     actions.setSubmitting(false);
+    history.push("/orders");
   };
 
   const handleSubmit = (values, actions) => {

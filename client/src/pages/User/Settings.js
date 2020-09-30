@@ -79,7 +79,7 @@ const Settings = () => {
         ...prevState.user,
         photo: values.userMedia,
         description: values.userDescription,
-        country: values.userCountry.value,
+        country: values.userCountry ? values.userCountry.value : "",
       },
     }));
   };
