@@ -1,4 +1,11 @@
-import { Container, Grid, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import {
+  Container,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
@@ -17,6 +24,10 @@ const Orders = () => {
   const history = useHistory();
 
   const fetchOrders = async () => {
+    setState({
+      ...state,
+      loading: true,
+    });
     try {
       const { data } = await getOrders({ display: state.display });
       setState({
