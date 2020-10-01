@@ -1,4 +1,4 @@
-import { Container, Grid } from "@material-ui/core";
+import { Container, Grid, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
@@ -48,6 +48,19 @@ const Orders = () => {
     <Container fixed>
       <Grid container spacing={2}>
         <Grid item sm={12}>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel id="data-display">Displayed data</InputLabel>
+            <Select
+              labelId="data-display"
+              value={state.display}
+              onChange={handleSelectChange}
+              label="Displayed data"
+              margin="dense"
+            >
+              <MenuItem value="purchases">Purchases</MenuItem>
+              <MenuItem value="sales">Sales</MenuItem>
+            </Select>
+          </FormControl>
           <Datatable
             title="My orders"
             columns={[
