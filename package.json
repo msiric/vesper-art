@@ -9,7 +9,7 @@
     "start": "nodemon ./bin/www",
     "client": "cd client && npm start",
     "webhook": "stripe listen --forward-to localhost:5000/stripe/hooks",
-    "dev": "concurrently \"npm start\" \"npm run client\" \"npm run webhook\""
+    "dev": "npx kill-port 3000 && npx kill-port 5000 && concurrently \"npm start\" \"npm run client\" \"npm run webhook\""
   },
   "author": "",
   "license": "ISC",
