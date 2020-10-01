@@ -32,14 +32,24 @@ export const postReview = async ({
           reviewRating,
           session,
         });
-        const numerator = currency(foundOrder.buyer.rating)
-          .multiply(foundOrder.buyer.reviews)
+        console.log("buyerRating", foundOrder.buyer);
+        console.log("buyerRating", foundOrder.seller.rating);
+        console.log("buyerReviews", foundOrder.seller.reviews);
+        console.log("reviewRating", reviewRating);
+
+        const numerator = currency(foundOrder.seller.rating)
+          .multiply(foundOrder.seller.reviews)
           .add(reviewRating);
-        const denominator = currency(foundOrder.buyer.reviews).add(1);
+        console.log("numerator", numerator);
+        const denominator = currency(foundOrder.seller.reviews).add(1);
+        console.log("denominator", denominator);
+
         const newRating = currency(numerator).divide(denominator);
+        console.log("newRating", newRating);
+
         await editUserRating({
           userId: foundOrder.seller._id,
-          userRating: newRating.intValue,
+          userRating: newRating.value,
           session,
         });
         await addOrderReview({

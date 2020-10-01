@@ -1,5 +1,5 @@
-import Order from '../models/order.js';
-import User from '../models/user.js';
+import Order from "../models/order.js";
+import User from "../models/user.js";
 
 export const addNewOrder = async ({ orderData, session = null }) => {
   const newOrder = new Order();
@@ -43,13 +43,13 @@ export const fetchOrderDetails = async ({
       { _id: orderId },
     ],
   })
-    .populate('buyer')
-    .populate('seller')
-    .populate('discount')
-    .populate('version')
-    .populate('artwork')
-    .populate('review')
-    .deepPopulate('license.artwork')
+    .populate("buyer")
+    .populate("seller")
+    .populate("discount")
+    .populate("version")
+    .populate("artwork")
+    .populate("review")
+    .deepPopulate("license.artwork")
     .session(session);
 };
 
@@ -57,21 +57,22 @@ export const fetchUserOrder = async ({ orderId, userId, session = null }) => {
   return await Order.findOne({
     $and: [{ _id: orderId }, { buyer: userId }],
   })
-    .populate('buyer')
-    .deepPopulate('artwork.review')
+    .populate("buyer")
+    .populate("seller")
+    .deepPopulate("artwork.review")
     .session(session);
 };
 
 export const fetchSoldOrders = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
-  }).deepPopulate('sales.buyer sales.version sales.review');
+  }).deepPopulate("sales.buyer sales.version sales.review");
 };
 
 export const fetchBoughtOrders = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
-  }).deepPopulate('purchases.seller purchases.version purchases.review');
+  }).deepPopulate("purchases.seller purchases.version purchases.review");
 };
 
 export const addOrderReview = async ({
@@ -100,10 +101,10 @@ export const fetchOrdersBySeller = async ({
           { seller: userId },
           { created: { $gte: new Date(rangeFrom), $lt: new Date(rangeTo) } },
         ],
-      }).populate('review version license sales.review')
+      }).populate("review version license sales.review")
     : await Order.find({
         $and: [{ seller: userId }],
-      }).populate('review version license sales.review');
+      }).populate("review version license sales.review");
 };
 
 export const fetchOrdersByBuyer = async ({
@@ -118,8 +119,8 @@ export const fetchOrdersByBuyer = async ({
           { buyer: userId },
           { created: { $gte: new Date(rangeFrom), $lt: new Date(rangeTo) } },
         ],
-      }).populate('review version license sales.review')
+      }).populate("review version license sales.review")
     : await Order.find({
         $and: [{ buyer: userId }],
-      }).populate('review version license sales.review');
+      }).populate("review version license sales.review");
 };

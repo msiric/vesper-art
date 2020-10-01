@@ -1,19 +1,19 @@
-import { Box, Button, Card } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Rating } from '@material-ui/lab';
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { Typography } from '../../constants/theme.js';
+import { Box, Button, Card } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Rating } from "@material-ui/lab";
+import React from "react";
+import { useHistory } from "react-router-dom";
+import { Typography } from "../../constants/theme.js";
 
 const useStyles = makeStyles((muiTheme) => ({
   reviewContainer: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
   },
   reviewContent: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 }));
 
@@ -32,14 +32,14 @@ const ReviewCard = ({ review, handleModalOpen, shouldReview }) => {
             <Typography m={2} fontSize="h6.fontSize">
               Your rating
             </Typography>
-            <Rating value={review.rating} />
+            <Rating value={review.rating} readOnly />
           </Box>
         ) : (
           <Box className={classes.reviewContent}>
             <Typography m={2} fontSize="h6.fontSize">
               Buyer's rating
             </Typography>
-            <Rating value={review.rating} />
+            <Rating value={review.rating} readOnly />
           </Box>
         )
       ) : shouldReview ? (
