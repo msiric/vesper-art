@@ -1,96 +1,96 @@
-import { Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import { red } from '@material-ui/core/colors';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { upload } from '../../../../common/constants.js';
-import EditButton from '../EditButton/EditButton.js';
-import FavoriteButton from '../FavoriteButton/FavoriteButton.js';
-import ShareButton from '../ShareButton/ShareButton.js';
+import { Typography } from "@material-ui/core";
+import Box from "@material-ui/core/Box";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardMedia from "@material-ui/core/CardMedia";
+import { red } from "@material-ui/core/colors";
+import IconButton from "@material-ui/core/IconButton";
+import { makeStyles } from "@material-ui/core/styles";
+import React from "react";
+import { Link } from "react-router-dom";
+import { upload } from "../../../../common/constants.js";
+import EditButton from "../EditButton/EditButton.js";
+import FavoriteButton from "../FavoriteButton/FavoriteButton.js";
+import ShareButton from "../ShareButton/ShareButton.js";
 
 const useStyles = makeStyles((theme) => ({
   media: {
     height: 0,
   },
   expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
+    transform: "rotate(0deg)",
+    marginLeft: "auto",
+    transition: theme.transitions.create("transform", {
       duration: theme.transitions.duration.shortest,
     }),
   },
   expandOpen: {
-    transform: 'rotate(180deg)',
+    transform: "rotate(180deg)",
   },
   avatar: {
     backgroundColor: red[500],
   },
   artworkContainer: {
     margin: 12,
-    position: 'relative',
-    '&:hover': {
-      '& $artworkHeader': {
+    position: "relative",
+    "&:hover": {
+      "& $artworkHeader": {
         height: 60,
       },
-      '& $artworkFooter': {
+      "& $artworkFooter": {
         height: 60,
       },
     },
   },
   artworkHeader: {
-    '& div': {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      overflow: 'hidden',
+    "& div": {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      overflow: "hidden",
       padding: 12,
     },
-    width: '100%',
+    width: "100%",
     height: 0,
     padding: 0,
-    position: 'absolute',
+    position: "absolute",
     top: 0,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    transition: 'height 0.5s',
-    display: 'flex',
-    justifyContent: 'left',
-    alignItems: 'center',
-    overflow: 'hidden',
+    backgroundColor: "rgba(0,0,0,0.3)",
+    transition: "height 0.5s",
+    display: "flex",
+    justifyContent: "left",
+    alignItems: "center",
+    overflow: "hidden",
   },
   artworkFooter: {
-    '& button': {
-      color: 'white',
+    "& button": {
+      color: "white",
     },
-    width: '100%',
+    width: "100%",
     height: 0,
     padding: 0,
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    transition: 'height 0.5s',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    overflow: 'hidden',
+    backgroundColor: "rgba(0,0,0,0.3)",
+    transition: "height 0.5s",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    overflow: "hidden",
   },
   artworkTitle: {
-    color: 'white',
-    textDecoration: 'none',
-    '&:hover': {
-      textDecoration: 'underline',
+    color: "white",
+    textDecoration: "none",
+    "&:hover": {
+      textDecoration: "underline",
     },
   },
   artworkSeller: {
-    color: 'white',
-    textDecoration: 'none',
-    '&:hover': {
-      textDecoration: 'underline',
+    color: "white",
+    textDecoration: "none",
+    "&:hover": {
+      textDecoration: "underline",
     },
   },
 }));
@@ -99,7 +99,7 @@ const ArtworkCard = ({ user, artwork, type }) => {
   const classes = useStyles();
 
   const item =
-    type !== 'version'
+    type !== "version"
       ? {
           _id: artwork._id,
           data: artwork.current,
@@ -178,17 +178,19 @@ const ArtworkCard = ({ user, artwork, type }) => {
             className={classes.artworkColor}
           >
             <Typography noWrap>
-              {item.data.availability === 'available'
-                ? `${item.data.personal ? `$${item.data.personal}` : ' Free'}
+              {item.data.availability === "available"
+                ? item.data.license === "commercial"
+                  ? `${item.data.personal ? `$${item.data.personal}` : " Free"}
                   /
                     ${
                       item.data.commercial
                         ? `$${item.data.commercial}`
                         : item.data.personal
                         ? item.data.personal
-                        : ' Free'
+                        : " Free"
                     }`
-                : 'Preview only'}
+                  : `${item.data.personal ? `$${item.data.personal}` : " Free"}`
+                : "Preview only"}
             </Typography>
           </IconButton>
         </Box>

@@ -46,7 +46,11 @@ const ArtworkInfo = ({
               value: tabs.value,
               headings: [
                 { display: true, label: "Personal license", props: {} },
-                { display: true, label: "Commercial license", props: {} },
+                {
+                  display: artwork.current.commercial,
+                  label: "Commercial license",
+                  props: {},
+                },
               ],
               items: [
                 {
@@ -71,7 +75,7 @@ const ArtworkInfo = ({
                   loading: false,
                 },
                 {
-                  display: true,
+                  display: artwork.current.commercial,
                   iterable: false,
                   content: null,
                   component: (
