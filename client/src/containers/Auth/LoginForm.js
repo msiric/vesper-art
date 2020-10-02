@@ -1,15 +1,15 @@
-import { Button, Grid, Link, TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Field, Form, Formik } from 'formik';
-import React, { useContext } from 'react';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { Context } from '../../context/Store.js';
-import { postLogin } from '../../services/auth.js';
-import { loginValidation } from '../../validation/login.js';
+import { Button, Grid, Link, TextField } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Field, Form, Formik } from "formik";
+import React, { useContext } from "react";
+import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Context } from "../../context/Store.js";
+import { postLogin } from "../../services/auth.js";
+import { loginValidation } from "../../validation/login.js";
 
 const useStyles = makeStyles((theme) => ({
   form: {
-    width: '100%',
+    width: "100%",
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -26,8 +26,8 @@ const LoginForm = () => {
   return (
     <Formik
       initialValues={{
-        userUsername: '',
-        userPassword: '',
+        userUsername: "",
+        userPassword: "",
       }}
       validationSchema={loginValidation}
       onSubmit={async (values, { resetForm }) => {
@@ -35,7 +35,7 @@ const LoginForm = () => {
 
         if (data.user) {
           dispatch({
-            type: 'setUser',
+            type: "setUser",
             authenticated: true,
             token: data.accessToken,
             id: data.user.id,
@@ -49,15 +49,23 @@ const LoginForm = () => {
               ...store.user.notifications,
               items: [],
               count: data.user.notifications,
+              hasMore: true,
+              dataCursor: 0,
+              dataCeiling: 10,
             },
             saved: data.user.saved.reduce(function (object, item) {
               object[item] = true;
               return object;
             }, {}),
+            intents: data.user.intents.reduce(function (object, item) {
+              console.log(object, item);
+              object[item.artworkId] = item.intentId;
+              return object;
+            }, {}),
           });
         }
 
-        history.push('/');
+        history.push("/");
       }}
     >
       {({ values, errors, touched, isSubmitting }) => (

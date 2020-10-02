@@ -59,10 +59,6 @@ export const receiveWebhookEvent = async ({
     default:
       throw createError(400, "Invalid Stripe event");
   }
-
-  console.log("done");
-
-  return { received: true };
 };
 
 export const getStripeUser = async ({ accountId }) => {
@@ -395,5 +391,5 @@ const processTransaction = async ({ stripeIntent, session }) => {
   });
   socketApi.sendNotification(sellerId, savedOrder._id);
   // new end
-  return true;
+  console.log("Order processed successfully");
 };
