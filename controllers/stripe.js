@@ -197,17 +197,16 @@ export const managePaymentIntent = async ({
   throw createError(400, "User not found");
 };
 
-export const redirectToStripe = async ({ userAccount, userOnboarded }) => {
+export const redirectToStripe = async ({ accountId, userOnboarded }) => {
   if (!userOnboarded)
     throw createError(
       400,
       "You need to complete the onboarding process before accessing your Stripe dashboard"
     );
   const loginLink = await constructStripeLink({
-    userOnboarded,
+    accountId,
     serverDomain: server.serverDomain,
   });
-  if (userAccount) loginLink.url = `${loginLink.url}#/account`;
 
   return { url: loginLink.url };
 };

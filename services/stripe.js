@@ -1,4 +1,4 @@
-import Stripe from 'stripe';
+import Stripe from "stripe";
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
@@ -16,11 +16,11 @@ export const constructStripeEvent = async ({
 };
 
 export const constructStripeLink = async ({
-  userOnboarded,
+  accountId,
   serverDomain,
   session = null,
 }) => {
-  return await stripe.accounts.createLoginLink(userOnboarded, {
+  return await stripe.accounts.createLoginLink(accountId, {
     redirect_url: `${serverDomain}/stripe/dashboard`,
   });
 };

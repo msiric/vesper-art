@@ -1,4 +1,4 @@
-import { ax } from '../containers/Interceptor/Interceptor.js';
+import { ax } from "../containers/Interceptor/Interceptor.js";
 
 export const getUser = async ({ stripeId }) =>
   await ax.get(`/stripe/account/${stripeId}`);
@@ -14,7 +14,9 @@ export const postIntent = async ({
     discountId,
   });
 export const postAuthorize = async ({ userOrigin, userEmail }) =>
-  await ax.post('/stripe/authorize', {
+  await ax.post("/stripe/authorize", {
     userOrigin,
     userEmail,
   });
+export const getDashboard = async ({ stripeId }) =>
+  await ax.get(`/stripe/dashboard/${stripeId}`);

@@ -1,4 +1,11 @@
-import { Box, Container, Divider, Grid, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  Grid,
+  Typography,
+} from "@material-ui/core";
 import { LocalizationProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
 import { eachDayOfInterval, format, subDays } from "date-fns";
@@ -7,6 +14,7 @@ import DashboardStatistics from "../../containers/DashboardStatistics/DashboardS
 import DashboardToolbar from "../../containers/DashboardToolbar/DashboardToolbar.js";
 import DashboardVisualization from "../../containers/DashboardVisualization/DashboardVisualization.js";
 import { Context } from "../../context/Store.js";
+import { getDashboard } from "../../services/stripe.js";
 import { getSelection, getStatistics } from "../../services/user.js";
 import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
 
@@ -173,6 +181,13 @@ const Dashboard = () => {
     return format(new Date(date), type);
   };
 
+  const handleStripeRedirect = async () => {
+    const { data } = await getDashboard({
+      stripeId: store.user.stripeId,
+    });
+    window.location.href = data.url;
+  };
+
   useEffect(() => {
     fetchCurrentData();
   }, []);
@@ -197,6 +212,7 @@ const Dashboard = () => {
             display={state.display}
             handleSelectChange={handleSelectChange}
           />
+          <Button onClick={handleStripeRedirect}>Stripe dashboard</Button>
           <DashboardStatistics
             loading={state.loading}
             cards={[
