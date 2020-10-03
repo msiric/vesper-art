@@ -212,7 +212,9 @@ const Dashboard = () => {
             display={state.display}
             handleSelectChange={handleSelectChange}
           />
-          <Button onClick={handleStripeRedirect}>Stripe dashboard</Button>
+          {store.user.stripeId && (
+            <Button onClick={handleStripeRedirect}>Stripe dashboard</Button>
+          )}
           <DashboardStatistics
             loading={state.loading}
             cards={[
