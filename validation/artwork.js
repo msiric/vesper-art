@@ -1,5 +1,5 @@
-import Joi from 'joi';
-import joiObjectId from 'joi-objectid';
+import Joi from "joi";
+import joiObjectId from "joi-objectid";
 
 Joi.objectId = joiObjectId(Joi);
 
@@ -11,42 +11,41 @@ const schema = Joi.object().keys({
   }),
   artworkTitle: Joi.string().required(),
   artworkAvailability: Joi.string()
-    .valid('available', 'unavailable')
+    .valid("available", "unavailable")
     .required(),
-  artworkType: Joi.when('artworkAvailability', {
-    is: 'available',
-    then: Joi.string().valid('commercial', 'free').required(),
+  artworkType: Joi.when("artworkAvailability", {
+    is: "available",
+    then: Joi.string().valid("commercial", "free").required(),
     otherwise: Joi.forbidden(),
   }),
-  artworkLicense: Joi.when('artworkAvailability', {
-    is: 'available',
-    then: Joi.string().valid('commercial', 'personal').required(),
+  artworkLicense: Joi.when("artworkAvailability", {
+    is: "available",
+    then: Joi.string().valid("commercial", "personal").required(),
     otherwise: Joi.forbidden(),
   }),
-  artworkPersonal: Joi.when('artworkAvailability', {
-    is: 'available',
-    then: Joi.when('artworkType', {
-      is: 'commercial',
+  artworkPersonal: Joi.when("artworkAvailability", {
+    is: "available",
+    then: Joi.when("artworkType", {
+      is: "commercial",
       then: Joi.number().integer().required(),
       otherwise: Joi.forbidden(),
     }),
   }),
-  artworkUse: Joi.when('artworkAvailability', {
-    is: 'available',
-    then: Joi.when('artworkLicense', {
-      is: 'commercial',
-      then: Joi.string().valid('separate', 'included').required(),
+  artworkUse: Joi.when("artworkAvailability", {
+    is: "available",
+    then: Joi.when("artworkLicense", {
+      is: "commercial",
+      then: Joi.string().valid("separate", "included").required(),
       otherwise: Joi.forbidden(),
     }),
   }),
-  artworkCommercial: Joi.when('artworkAvailability', {
-    is: 'available',
-    then: Joi.when('artworkLicense', {
-      is: 'commercial',
-      then: Joi.when('artworkUse', {
-        is: 'separate',
+  artworkCommercial: Joi.when("artworkAvailability", {
+    is: "available",
+    then: Joi.when("artworkLicense", {
+      is: "commercial",
+      then: Joi.when("artworkUse", {
+        is: "separate",
         then: Joi.number().integer().required(),
-        otherwise: Joi.forbidden(),
       }),
     }),
   }),

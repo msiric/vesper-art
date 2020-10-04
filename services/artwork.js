@@ -189,8 +189,10 @@ export const addNewArtwork = async ({
   newVersion.use = artworkData.artworkUse || "";
   newVersion.personal = currency(artworkData.artworkPersonal).intValue || 0;
   newVersion.commercial = artworkData.artworkCommercial
-    ? currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
-        .intValue
+    ? artworkData.artworkUse !== "included"
+      ? currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
+          .intValue
+      : currency(artworkData.artworkPersonal).intValue
     : null;
   newVersion.category = artworkData.artworkCategory || "";
   newVersion.description = artworkData.artworkDescription || "";
@@ -231,8 +233,10 @@ export const addNewVersion = async ({
     currency(artworkData.artworkPersonal).intValue ||
     currency(prevArtwork.personal).intValue;
   newVersion.commercial = artworkData.artworkCommercial
-    ? currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
-        .intValue
+    ? artworkData.artworkUse !== "included"
+      ? currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
+          .intValue
+      : currency(artworkData.artworkPersonal).intValue
     : null;
   newVersion.category = artworkData.artworkCategory || prevArtwork.category;
   newVersion.description =

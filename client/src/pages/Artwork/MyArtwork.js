@@ -1,13 +1,13 @@
-import { Box, Container, Grid, IconButton } from '@material-ui/core';
+import { Box, Container, Grid, IconButton } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
-} from '@material-ui/icons';
-import React, { useEffect, useState } from 'react';
-import { useHistory, withRouter } from 'react-router-dom';
-import { formatDate } from '../../../../common/helpers.js';
-import Datatable from '../../components/Datatable/Datatable.js';
-import { deleteArtwork, getGallery } from '../../services/artwork.js';
+} from "@material-ui/icons";
+import React, { useEffect, useState } from "react";
+import { useHistory, withRouter } from "react-router-dom";
+import { formatDate } from "../../../../common/helpers.js";
+import Datatable from "../../components/Datatable/Datatable.js";
+import { deleteArtwork, getGallery } from "../../services/artwork.js";
 
 function ProductsTable() {
   const [state, setState] = useState({
@@ -98,76 +98,84 @@ function ProductsTable() {
             title="My artwork"
             columns={[
               {
-                name: 'Id',
+                name: "Id",
                 options: {
                   display: false,
                 },
               },
               {
-                name: 'Artwork',
+                name: "Artwork",
                 options: {
                   customBodyRender: (value, tableMeta, updateValue) => (
-                    <img style={{ width: '85%', maxWidth: 200 }} src={value} />
+                    <img style={{ width: "85%", maxWidth: 200 }} src={value} />
                   ),
                   sort: false,
                 },
               },
               {
-                name: 'Title',
+                name: "Title",
                 options: {
                   sortCompare: (order) => {
                     return (obj1, obj2) =>
-                      obj1.data.localeCompare(obj2.data, 'en', {
+                      obj1.data.localeCompare(obj2.data, "en", {
                         numeric: true,
-                      }) * (order === 'asc' ? 1 : -1);
+                      }) * (order === "asc" ? 1 : -1);
                   },
                 },
               },
-              'Availability',
-              'Type',
+              "Availability",
+              "Type",
               {
-                name: 'Personal license',
+                name: "Personal license",
                 options: {
                   customBodyRender: (value, tableMeta, updateValue) =>
-                    value ? `$${value}` : 'Free',
+                    value.use === "included"
+                      ? "/"
+                      : value.amount
+                      ? `$${value.amount}`
+                      : "Free",
                   sortCompare: (order) => {
                     return ({ data: previous }, { data: next }) => {
-                      return (previous - next) * (order === 'asc' ? 1 : -1);
+                      return (previous - next) * (order === "asc" ? 1 : -1);
                     };
                   },
                 },
               },
               {
-                name: 'Commercial license',
+                name: "Commercial license",
                 options: {
                   customBodyRender: (value, tableMeta, updateValue) =>
-                    value ? `$${value}` : 'Free',
+                    value.license === "personal"
+                      ? "/"
+                      : value.amount
+                      ? `$${value.amount}`
+                      : "Free",
                   sortCompare: (order) => {
                     return ({ data: previous }, { data: next }) => {
-                      return (previous - next) * (order === 'asc' ? 1 : -1);
+                      return (previous - next) * (order === "asc" ? 1 : -1);
                     };
                   },
                 },
               },
               {
-                name: 'Date',
+                name: "Date",
                 options: {
                   customBodyRender: (value) =>
-                    formatDate(value, 'dd/MM/yy HH:mm'),
+                    formatDate(value, "dd/MM/yy HH:mm"),
                   sortCompare: (order) => {
                     return ({ data: previous }, { data: next }) => {
                       console.log(previous);
                       return (
                         (new Date(previous).getTime() -
                           new Date(next).getTime()) *
-                        (order === 'asc' ? 1 : -1)
+                        (order === "asc" ? 1 : -1)
                       );
                     };
                   },
                 },
               },
               {
-                name: 'Actions',
+                name: "Actions",
               },
             ]}
             data={state.artwork.map((artwork) => [
@@ -176,8 +184,11 @@ function ProductsTable() {
               artwork.current.title,
               artwork.current.availability,
               artwork.current.type,
-              artwork.current.personal,
-              artwork.current.commercial,
+              { use: artwork.current.use, amount: artwork.current.personal },
+              {
+                license: artwork.current.license,
+                amount: artwork.current.commercial,
+              },
               artwork.current.created,
               actionsColumn(artwork._id),
             ])}
@@ -189,18 +200,18 @@ function ProductsTable() {
             pagination={true}
             addOptions={{
               enabled: true,
-              title: 'Add artwork',
-              route: 'add_artwork',
+              title: "Add artwork",
+              route: "add_artwork",
             }}
             editOptions={{
               enabled: true,
-              title: 'Edit artwork',
-              route: 'edit_artwork',
+              title: "Edit artwork",
+              route: "edit_artwork",
             }}
             deleteOptions={{
               enabled: true,
-              title: 'Delete artwork',
-              route: 'delete_artwork',
+              title: "Delete artwork",
+              route: "delete_artwork",
             }}
           />
         </Grid>
