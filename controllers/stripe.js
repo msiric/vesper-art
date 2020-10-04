@@ -93,6 +93,7 @@ export const managePaymentIntent = async ({
       if (foundVersion._id.equals(foundVersion.artwork.current)) {
         if (!foundVersion.artwork.owner._id.equals(foundUser._id)) {
           // $TODO Bolje sredit validaciju licence
+          // $TODO Sredit validnu licencu (npr, ako je "use": "included", ne moze bit odabran personal license)
           const licensePrice =
             artworkLicense.type === "personal"
               ? foundVersion.personal

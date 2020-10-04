@@ -1,63 +1,63 @@
-import { Box, Button, TextField, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Field, Form, Formik } from 'formik';
-import React, { useState } from 'react';
-import { Container, Grid } from '../../constants/theme.js';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import { licenseValidation } from '../../validation/license.js';
+import { Box, Button, TextField, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Field, Form, Formik } from "formik";
+import React, { useState } from "react";
+import { Container, Grid } from "../../constants/theme.js";
+import SelectInput from "../../shared/SelectInput/SelectInput.js";
+import { licenseValidation } from "../../validation/license.js";
 
 const LicenseFormStyles = makeStyles((muiTheme) => ({
   fixed: {
-    height: '100%',
+    height: "100%",
   },
   container: {
     flex: 1,
-    height: '100%',
+    height: "100%",
   },
   artwork: {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
   },
   root: {
-    display: 'flex',
-    width: '100%',
+    display: "flex",
+    width: "100%",
   },
   loader: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     flex: 1,
   },
   details: {
-    display: 'flex',
-    width: '100%',
+    display: "flex",
+    width: "100%",
   },
   cover: {
     minWidth: 50,
     maxWidth: 200,
-    width: '100%',
+    width: "100%",
   },
   controls: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
     padding: 16,
-    width: '100%',
+    width: "100%",
   },
   playIcon: {
     height: 38,
     width: 38,
   },
   rightList: {
-    textAlign: 'right',
+    textAlign: "right",
   },
   manageLicenses: {
-    padding: '8px 16px',
+    padding: "8px 16px",
   },
   content: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
   },
 }));
 
@@ -67,7 +67,7 @@ const changeLicense = (target, setFieldValue) =>
 const LicenseForm = ({
   version,
   handleLicenseChange = changeLicense,
-  initial = { standalone: false, value: 'personal', submit: () => null },
+  initial = { standalone: false, value: "personal", submit: () => null },
   handleModalClose = () => null,
 }) => {
   const [state, setState] = useState({ loading: false });
@@ -82,8 +82,8 @@ const LicenseForm = ({
             <Formik
               initialValues={{
                 licenseType: initial.value,
-                licenseAssignee: '',
-                licenseCompany: '',
+                licenseAssignee: "",
+                licenseCompany: "",
               }}
               enableReinitialize
               validationSchema={licenseValidation}
@@ -96,7 +96,7 @@ const LicenseForm = ({
                 touched,
                 enableReinitialize,
               }) => (
-                <Form style={{ width: '100%' }}>
+                <Form style={{ width: "100%" }}>
                   <Grid item xs={12}>
                     <Field name="licenseAssignee">
                       {({ field, form: { touched, errors }, meta }) => (
@@ -143,21 +143,28 @@ const LicenseForm = ({
                             handleLicenseChange(e.target, setFieldValue)
                           }
                           options={
-                            version && version.license === 'commercial'
+                            version.license === "personal"
                               ? [
                                   {
-                                    value: 'personal',
-                                    text: 'Personal',
+                                    value: "personal",
+                                    text: "Personal",
                                   },
+                                ]
+                              : version.use === "included"
+                              ? [
                                   {
-                                    value: 'commercial',
-                                    text: 'Commercial',
+                                    value: "commercial",
+                                    text: "Commercial",
                                   },
                                 ]
                               : [
                                   {
-                                    value: 'personal',
-                                    text: 'Personal',
+                                    value: "personal",
+                                    text: "Personal",
+                                  },
+                                  {
+                                    value: "commercial",
+                                    text: "Commercial",
                                   },
                                 ]
                           }
@@ -234,21 +241,28 @@ const LicenseForm = ({
                       handleLicenseChange(e.target, setFieldValue)
                     }
                     options={
-                      version && version.license === 'commercial'
+                      version.license === "personal"
                         ? [
                             {
-                              value: 'personal',
-                              text: 'Personal',
+                              value: "personal",
+                              text: "Personal",
                             },
+                          ]
+                        : version.use === "included"
+                        ? [
                             {
-                              value: 'commercial',
-                              text: 'Commercial',
+                              value: "commercial",
+                              text: "Commercial",
                             },
                           ]
                         : [
                             {
-                              value: 'personal',
-                              text: 'Personal',
+                              value: "personal",
+                              text: "Personal",
+                            },
+                            {
+                              value: "commercial",
+                              text: "Commercial",
                             },
                           ]
                     }
