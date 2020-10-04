@@ -180,7 +180,15 @@ const ArtworkCard = ({ user, artwork, type }) => {
             <Typography noWrap>
               {item.data.availability === "available"
                 ? item.data.license === "commercial"
-                  ? `${item.data.personal ? `$${item.data.personal}` : " Free"}
+                  ? item.data.use === "included"
+                    ? `- / ${
+                        item.data.commercial
+                          ? `$${item.data.commercial}`
+                          : " Free"
+                      }`
+                    : `${
+                        item.data.personal ? `$${item.data.personal}` : " Free"
+                      }
                   /
                     ${
                       item.data.commercial
@@ -189,7 +197,9 @@ const ArtworkCard = ({ user, artwork, type }) => {
                         ? item.data.personal
                         : " Free"
                     }`
-                  : `${item.data.personal ? `$${item.data.personal}` : " Free"}`
+                  : `${
+                      item.data.personal ? `$${item.data.personal}` : " Free"
+                    } / -`
                 : "Preview only"}
             </Typography>
           </IconButton>
