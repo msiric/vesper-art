@@ -14,7 +14,9 @@ import { withSnackbar } from "notistack";
 import { postVerifier } from "../../services/home.js";
 
 const fingerprintValidation = Yup.object().shape({
-  fingerprint: Yup.string().trim().required("Fingerprint cannot be empty"),
+  licenseFingerprint: Yup.string()
+    .trim()
+    .required("Fingerprint cannot be empty"),
 });
 
 const Verifier = () => {
@@ -35,7 +37,7 @@ const Verifier = () => {
       <Grid item xs={12} className={classes.grid}>
         <Formik
           initialValues={{
-            fingerprint: "",
+            licenseFingerprint: "",
           }}
           enableReinitialize
           validationSchema={fingerprintValidation}
@@ -56,7 +58,7 @@ const Verifier = () => {
           {({ values, errors, touched }) => (
             <Form className={classes.updateEmail}>
               <div>
-                <Field name="fingerprint">
+                <Field name="licenseFingerprint">
                   {({ field, form: { touched, errors }, meta }) => (
                     <TextField
                       {...field}
