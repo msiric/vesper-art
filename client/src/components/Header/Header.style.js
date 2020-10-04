@@ -11,12 +11,21 @@ const HeaderStyles = makeStyles((muiTheme) => ({
   menuButton: {
     marginRight: muiTheme.spacing(2),
   },
-  title: {
+  logoDesktop: {
     display: "none",
     textDecoration: "none",
     color: "#000000",
     [muiTheme.breakpoints.up("sm")]: {
       display: "block",
+    },
+  },
+  logoMobile: {
+    display: "block",
+    textDecoration: "none",
+    color: "#000000",
+    minWidth: 36,
+    [muiTheme.breakpoints.up("sm")]: {
+      display: "none",
     },
   },
   search: {
@@ -26,12 +35,15 @@ const HeaderStyles = makeStyles((muiTheme) => ({
     "&:hover": {
       backgroundColor: fade(muiTheme.palette.common.white, 0.25),
     },
-    marginRight: muiTheme.spacing(2),
+    marginRight: muiTheme.spacing(1),
     marginLeft: 0,
     width: "100%",
     [muiTheme.breakpoints.up("sm")]: {
       marginLeft: muiTheme.spacing(3),
       width: "auto",
+    },
+    [muiTheme.breakpoints.up("md")]: {
+      marginRight: muiTheme.spacing(2),
     },
   },
   typeIcon: {
@@ -82,6 +94,9 @@ const HeaderStyles = makeStyles((muiTheme) => ({
     display: "flex",
     [muiTheme.breakpoints.up("md")]: {
       display: "none",
+    },
+    "&> button": {
+      padding: 6,
     },
   },
 }));

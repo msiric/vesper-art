@@ -356,11 +356,20 @@ const Header = ({ history }) => {
           <Typography
             component={Link}
             to="/"
-            className={classes.title}
+            className={classes.logoDesktop}
             variant="h6"
             noWrap
           >
             Material-UI
+          </Typography>
+          <Typography
+            component={Link}
+            to="/"
+            className={classes.logoMobile}
+            variant="h6"
+            noWrap
+          >
+            UI
           </Typography>
           <div className={classes.search}>
             <Formik
@@ -456,14 +465,32 @@ const Header = ({ history }) => {
                 </IconButton>
               </div>
               <div className={classes.sectionMobile}>
+                {/*                 <IconButton aria-label="Show messages" color="inherit">
+                  <Badge badgeContent={store.user.messages} color="secondary">
+                    <MailIcon />
+                  </Badge>
+                </IconButton> */}
                 <IconButton
-                  aria-label="Show more"
-                  aria-controls={mobileMenuId}
-                  aria-haspopup="true"
-                  onClick={handleMobileMenuOpen}
+                  onClick={handleNotificationsMenuOpen}
+                  aria-label="Show notifications"
                   color="inherit"
                 >
-                  <MoreIcon />
+                  <Badge
+                    badgeContent={store.user.notifications.count}
+                    color="secondary"
+                  >
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="Show profile"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountIcon />
                 </IconButton>
               </div>
             </>
