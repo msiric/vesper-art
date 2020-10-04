@@ -52,15 +52,11 @@ const LicenseCard = ({ license, order, isSeller }) => {
           },
         },
         {
-          name: "Value",
-          options: {
-            sort: false,
-          },
-        },
-        {
           name: isSeller() ? "Earned" : "Spent",
           options: {
             sort: false,
+            customBodyRender: (value, tableMeta, updateValue) =>
+              value ? `$${value}` : "Free",
           },
         },
         {
@@ -76,7 +72,6 @@ const LicenseCard = ({ license, order, isSeller }) => {
           license.fingerprint,
           license.type,
           license.assignee,
-          license.price || "Free",
           isSeller() ? order.earned || "Free" : order.spent || "Free",
           formatDate(license.created, "dd/MM/yy HH:mm"),
         ],
