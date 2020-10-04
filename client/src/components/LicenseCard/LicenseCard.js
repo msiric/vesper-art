@@ -33,12 +33,42 @@ const LicenseCard = ({ license, order, isSeller }) => {
             display: false,
           },
         },
-        "Fingerprint",
-        "Type",
-        "Assignee",
-        "Value",
-        isSeller() ? "Earned" : "Spent",
-        "Date",
+        {
+          name: "Fingerprint",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Type",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Assignee",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Value",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: isSeller() ? "Earned" : "Spent",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Date",
+          options: {
+            sort: false,
+          },
+        },
       ]}
       data={[
         [
