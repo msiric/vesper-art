@@ -2,6 +2,7 @@ import { CircularProgress, Grid } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
 import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
+import UserPanel from "../../containers/UserPanel/UserPanel.js";
 import { Context } from "../../context/Store.js";
 import { getSearch } from "../../services/home.js";
 
@@ -83,13 +84,11 @@ const SearchResults = ({ match, location, history }) => {
               type="version"
             />
           ) : (
-            {
-              /* <Group
+            <UserPanel
               elements={state.results}
               hasMore={state.hasMore}
               loadMore={loadMore}
-            /> */
-            }
+            />
           )
         ) : (
           "No results"
