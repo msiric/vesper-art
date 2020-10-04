@@ -53,8 +53,12 @@ const HeaderStyles = makeStyles((muiTheme) => ({
     display: "flex",
     alignItems: "center",
     borderRadius: 4,
+    padding: 6,
     "&:hover": {
       backgroundColor: "rgba(0, 0, 0, 0.08)",
+    },
+    [muiTheme.breakpoints.up("md")]: {
+      padding: 12,
     },
   },
   searchIcon: {
@@ -66,8 +70,12 @@ const HeaderStyles = makeStyles((muiTheme) => ({
     display: "flex",
     alignItems: "center",
     borderRadius: 4,
+    padding: 6,
     "&:hover": {
       backgroundColor: "rgba(0, 0, 0, 0.08)",
+    },
+    [muiTheme.breakpoints.up("md")]: {
+      padding: 12,
     },
   },
   inputRoot: {
@@ -76,12 +84,16 @@ const HeaderStyles = makeStyles((muiTheme) => ({
   inputInput: {
     padding: muiTheme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${muiTheme.spacing(5)}px)`,
-    paddingRight: `calc(1em + ${muiTheme.spacing(5)}px)`,
+    paddingLeft: `calc(1em + ${muiTheme.spacing(3)}px)`,
+    paddingRight: `calc(1em + ${muiTheme.spacing(3)}px)`,
     transition: muiTheme.transitions.create("width"),
     width: "100%",
     [muiTheme.breakpoints.up("md")]: {
       width: "20ch",
+    },
+    [muiTheme.breakpoints.up("md")]: {
+      paddingLeft: `calc(1em + ${muiTheme.spacing(5)}px)`,
+      paddingRight: `calc(1em + ${muiTheme.spacing(5)}px)`,
     },
   },
   sectionDesktop: {
@@ -94,9 +106,6 @@ const HeaderStyles = makeStyles((muiTheme) => ({
     display: "flex",
     [muiTheme.breakpoints.up("md")]: {
       display: "none",
-    },
-    "&> button": {
-      padding: 6,
     },
   },
 }));
