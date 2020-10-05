@@ -1,6 +1,6 @@
-import { Box, Divider } from "@material-ui/core";
+import { Box, Button, Divider } from "@material-ui/core";
 import React, { useContext } from "react";
-import { withRouter } from "react-router-dom";
+import { Link as RouterLink, withRouter } from "react-router-dom";
 import PricingCard from "../../components/PricingCard/PricingCard.js";
 import SwipeCard from "../../components/SwipeCard/SwipeCard.js";
 import { Card, CardContent, Typography } from "../../constants/theme.js";
@@ -117,6 +117,14 @@ const ArtworkInfo = ({
                 This artwork cannot be purchased or downloaded since it is
                 preview only
               </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                component={RouterLink}
+                to={`/edit_artwork/${artwork._id}`}
+              >
+                Edit artwork
+              </Button>
             </Box>,
           ]
         )}
