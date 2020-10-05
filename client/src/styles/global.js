@@ -6,6 +6,9 @@ const GlobalStyles = makeStyles((muiTheme) => ({
     padding: artepunktTheme.padding.container,
     margin: artepunktTheme.margin.container,
   },
+  mainHeading: {
+    marginBottom: 24,
+  },
 }));
 
 export default GlobalStyles;

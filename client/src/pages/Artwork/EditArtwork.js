@@ -75,7 +75,10 @@ const EditArtwork = ({ match }) => {
           <LoadingSpinner />
         ) : state.artwork._id ? (
           <Grid item sm={12}>
-            <MainHeading text={"Edit artwork"} />
+            <MainHeading
+              text={"Edit artwork"}
+              className={globalClasses.mainHeading}
+            />
             <EditArtworkForm
               loading={state.loading}
               capabilities={state.capabilities}

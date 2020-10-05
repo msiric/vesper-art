@@ -1,13 +1,13 @@
-import React from 'react';
-import { styled } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
-import { compose, typography, spacing, sizing } from '@material-ui/system';
+import { Typography } from "@material-ui/core";
+import { styled } from "@material-ui/core/styles";
+import { compose, sizing, spacing, typography } from "@material-ui/system";
+import React from "react";
 
 const Heading = styled(Typography)(compose(typography, spacing, sizing));
 
-const MainHeading = ({ text }) => {
+const MainHeading = ({ text, ...rest }) => {
   return (
-    <Heading mb={6} variant="h6" width="100%">
+    <Heading variant="h6" {...rest}>
       {text}
     </Heading>
   );

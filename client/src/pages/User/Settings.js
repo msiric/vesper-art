@@ -138,7 +138,10 @@ const Settings = () => {
           <LoadingSpinner />
         ) : state.user._id ? (
           <Grid item sm={12}>
-            <MainHeading text={"Settings"} />
+            <MainHeading
+              text={"Settings"}
+              className={globalClasses.mainHeading}
+            />
             <SettingsSection
               user={state.user}
               handleUpdateProfile={handleUpdateProfile}

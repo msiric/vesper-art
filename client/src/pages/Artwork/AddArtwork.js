@@ -33,7 +33,10 @@ const AddArtwork = () => {
     <Container fixed className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
-          <MainHeading text={"Add artwork"} />
+          <MainHeading
+            text={"Add artwork"}
+            className={globalClasses.mainHeading}
+          />
           <AddArtworkForm
             capabilities={state.capabilities}
             user={store.user}
