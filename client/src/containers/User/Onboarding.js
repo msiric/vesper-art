@@ -3,6 +3,10 @@ import { MonetizationOnRounded as MonetizationIcon } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
 import React, { useContext } from "react";
 import { countries } from "../../../../common/constants.js";
+import { Context } from "../../context/Store.js";
+import { postAuthorize } from "../../services/stripe.js";
+import { patchOrigin } from "../../services/user.js";
+import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import {
   Button,
   Card,
@@ -10,11 +14,7 @@ import {
   Container,
   Grid,
   Typography,
-} from "../../constants/theme.js";
-import { Context } from "../../context/Store.js";
-import { postAuthorize } from "../../services/stripe.js";
-import { patchOrigin } from "../../services/user.js";
-import SelectInput from "../../shared/SelectInput/SelectInput.js";
+} from "../../styles/theme.js";
 import { originValidation } from "../../validation/origin.js";
 
 const Onboarding = () => {

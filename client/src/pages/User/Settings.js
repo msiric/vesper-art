@@ -1,7 +1,8 @@
-import { CircularProgress, Container, Grid } from "@material-ui/core";
+import { Container, Grid } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
 import SettingsSection from "../../containers/SettingsSection/SettingsSection.js";
 import { Context } from "../../context/Store.js";
@@ -13,6 +14,7 @@ import {
   patchPreferences,
   patchUser,
 } from "../../services/user.js";
+import globalStyles from "../../styles/global.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
 
 const emailValidation = Yup.object().shape({
@@ -44,7 +46,7 @@ const Settings = () => {
   });
   const history = useHistory();
 
-  const classes = {};
+  const globalClasses = globalStyles();
 
   const fetchSettings = async () => {
     try {
@@ -130,14 +132,12 @@ const Settings = () => {
   }, []);
 
   return (
-    <Container fixed className={classes.fixed}>
-      <Grid container className={classes.container} spacing={2}>
+    <Container fixed className={globalClasses.gridContainer}>
+      <Grid container spacing={2}>
         {state.loading ? (
-          <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
-          </Grid>
+          <LoadingSpinner />
         ) : state.user._id ? (
-          <Grid item sm={12} className={classes.grid}>
+          <Grid item sm={12}>
             <MainHeading text={"Settings"} />
             <SettingsSection
               user={state.user}

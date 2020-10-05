@@ -1,15 +1,16 @@
-import { Container, Grid } from '@material-ui/core';
-import { withSnackbar } from 'notistack';
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
-import ModalWrapper from '../../components/ModalWrapper/ModalWrapper.js';
-import EditUserForm from '../../containers/EditUserForm/EditUserForm.js';
-import UserArtworkPanel from '../../containers/UserArtworkPanel/UserArtworkPanel.js';
-import UserProfileBanner from '../../containers/UserProfileBanner/UserProfileBanner.js';
-import { Context } from '../../context/Store.js';
-import { getArtwork } from '../../services/artwork.js';
-import { getSaves, getUser } from '../../services/user.js';
+import { Container, Grid } from "@material-ui/core";
+import { withSnackbar } from "notistack";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import ModalWrapper from "../../components/ModalWrapper/ModalWrapper.js";
+import EditUserForm from "../../containers/EditUserForm/EditUserForm.js";
+import UserArtworkPanel from "../../containers/UserArtworkPanel/UserArtworkPanel.js";
+import UserProfileBanner from "../../containers/UserProfileBanner/UserProfileBanner.js";
+import { Context } from "../../context/Store.js";
+import { getArtwork } from "../../services/artwork.js";
+import { getSaves, getUser } from "../../services/user.js";
+import globalStyles from "../../styles/global.js";
 
 const Profile = ({ match, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -35,7 +36,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const title = store.main.brand;
   const history = useHistory();
 
-  const classes = {};
+  const globalClasses = globalStyles();
 
   const fetchUser = async () => {
     try {
@@ -172,7 +173,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const a11yProps = (index) => {
     return {
       id: `full-width-tab-${index}`,
-      'aria-controls': `full-width-tabpanel-${index}`,
+      "aria-controls": `full-width-tabpanel-${index}`,
     };
   };
 
@@ -219,8 +220,8 @@ const Profile = ({ match, enqueueSnackbar }) => {
   return state.loading ? (
     <LoadingSpinner />
   ) : (
-    <Container fixed className={classes.profile}>
-      <Grid container className={classes.profile__container} spacing={2}>
+    <Container fixed className={globalClasses.gridContainer}>
+      <Grid container spacing={2}>
         {state.user._id ? (
           <>
             <UserProfileBanner
@@ -241,7 +242,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
             />
           </>
         ) : (
-          history.push('/')
+          history.push("/")
         )}
         <ModalWrapper
           open={state.modal.open}

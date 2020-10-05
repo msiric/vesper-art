@@ -1,16 +1,16 @@
+import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
-import Box from "@material-ui/core/Box";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import { StarBorderRounded as StarIcon } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
-import { artepunktTheme } from "../../constants/theme.js";
-import { StarBorderRounded as StarIcon } from "@material-ui/icons";
+import { artepunktTheme } from "../../styles/theme.js";
 
 const useStyles = makeStyles({
   profileCardContainer: {

@@ -13,10 +13,10 @@ import {
   RemoveCircleRounded as DeactivateIcon,
 } from "@material-ui/icons";
 import React from "react";
-import { Card } from "../../constants/theme.js";
 import EditEmailForm from "../../containers/EditEmailForm/EditEmailForm.js";
 import EditPasswordForm from "../../containers/EditPasswordForm/EditPasswordForm.js";
 import EditPreferencesForm from "../../containers/EditPreferencesForm/EditPreferencesForm.js";
+import { Card } from "../../styles/theme.js";
 import SubHeading from "../SubHeading/SubHeading.js";
 
 const useStyles = makeStyles((theme) => ({

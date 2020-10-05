@@ -9,16 +9,16 @@ import {
   ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
-} from '@material-ui/core';
-import { MoreVertRounded as MoreIcon } from '@material-ui/icons';
-import React, { useContext } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { Link, useHistory } from 'react-router-dom';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
-import { List, Typography } from '../../constants/theme.js';
-import { Context } from '../../context/Store.js';
-import AddCommentForm from '../Comment/AddCommentForm.js';
-import EditCommentForm from '../Comment/EditCommentForm.js';
+} from "@material-ui/core";
+import { MoreVertRounded as MoreIcon } from "@material-ui/icons";
+import React, { useContext } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { Link, useHistory } from "react-router-dom";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import { Context } from "../../context/Store.js";
+import { List, Typography } from "../../styles/theme.js";
+import AddCommentForm from "../Comment/AddCommentForm.js";
+import EditCommentForm from "../Comment/EditCommentForm.js";
 
 const CommentSection = ({
   artwork,
@@ -43,7 +43,7 @@ const CommentSection = ({
         <Divider />
         {artwork.comments.length ? (
           <InfiniteScroll
-            style={{ overflow: 'hidden' }}
+            style={{ overflow: "hidden" }}
             className={classes.scroller}
             dataLength={artwork.comments.length}
             next={loadMoreComments}
@@ -71,7 +71,7 @@ const CommentSection = ({
                               <Typography
                                 component={Link}
                                 to={`/user/${comment.owner.name}`}
-                                style={{ textDecoration: 'none' }}
+                                style={{ textDecoration: "none" }}
                                 color="text.primary"
                               >
                                 {comment.owner.name}
@@ -82,7 +82,7 @@ const CommentSection = ({
                                 fontStyle="oblique"
                                 ml={1}
                               >
-                                {comment.modified ? 'edited' : null}
+                                {comment.modified ? "edited" : null}
                               </Typography>,
                             ]
                       }

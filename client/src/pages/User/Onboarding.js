@@ -14,6 +14,10 @@ import React, { useContext } from "react";
 import { countries } from "../../../../common/constants.js";
 import AutocompleteInput from "../../components/AutocompleteInput/AutocompleteInput.js";
 import HelpBox from "../../components/HelpBox/HelpBox.js";
+import { Context } from "../../context/Store.js";
+import { postAuthorize } from "../../services/stripe.js";
+import { patchOrigin } from "../../services/user.js";
+import globalStyles from "../../styles/global.js";
 import {
   Button,
   Card,
@@ -21,17 +25,16 @@ import {
   Container,
   Grid,
   Typography,
-} from "../../constants/theme.js";
-import { Context } from "../../context/Store.js";
-import { postAuthorize } from "../../services/stripe.js";
-import { patchOrigin } from "../../services/user.js";
+} from "../../styles/theme.js";
 import { originValidation } from "../../validation/origin.js";
 
 const Onboarding = () => {
   const [store, dispatch] = useContext(Context);
 
+  const globalClasses = globalStyles();
+
   return (
-    <Container fixed>
+    <Container fixed className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
           <Grow in>

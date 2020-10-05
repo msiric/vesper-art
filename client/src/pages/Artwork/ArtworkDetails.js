@@ -1,19 +1,12 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  Grid,
-  Modal,
-} from "@material-ui/core";
+import { Box, Button, Container, Grid, Modal } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
 } from "@material-ui/icons";
 import React, { useContext, useEffect, useState } from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
-import { Popover } from "../../constants/theme.js";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import ArtistSection from "../../containers/ArtistSection/ArtistSection.js";
 import ArtworkInfo from "../../containers/ArtworkInfo/ArtworkInfo.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/ArtworkPreview.js";
@@ -26,6 +19,8 @@ import {
   getDetails,
 } from "../../services/artwork.js";
 import { postDownload } from "../../services/checkout.js";
+import globalStyles from "../../styles/global.js";
+import { Popover } from "../../styles/theme.js";
 
 const ArtworkDetails = ({ match, location, socket }) => {
   const [store, dispatch] = useContext(Context);
@@ -55,7 +50,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
     },
   });
   const history = useHistory();
-  const classes = {};
+  const globalClasses = globalStyles();
 
   const fetchArtwork = async () => {
     try {
@@ -292,15 +287,13 @@ const ArtworkDetails = ({ match, location, socket }) => {
   }, [location]);
 
   return (
-    <Container fixed className={classes.fixed}>
-      <Grid container className={classes.container} spacing={2}>
+    <Container fixed className={globalClasses.gridContainer}>
+      <Grid container spacing={2}>
         {state.loading ? (
-          <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
-          </Grid>
+          <LoadingSpinner />
         ) : state.artwork._id ? (
           <>
-            <Grid item sm={12} md={8} className={classes.artworkPreviewItem}>
+            <Grid item sm={12} md={8}>
               <ArtworkPreview
                 version={state.artwork.current}
                 height={state.height}
@@ -317,7 +310,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
                 handlePopoverOpen={handlePopoverOpen}
               />
             </Grid>
-            <Grid item sm={12} md={4} className={classes.artistSectionItem}>
+            <Grid item sm={12} md={4}>
               <ArtistSection owner={state.artwork.owner} />
               <br />
               <ArtworkInfo

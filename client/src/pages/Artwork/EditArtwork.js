@@ -1,16 +1,18 @@
-import { CircularProgress, Container, Grid } from '@material-ui/core';
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import MainHeading from '../../components/MainHeading/MainHeading.js';
-import EditArtworkForm from '../../containers/Artwork/EditArtworkForm.js';
-import { Context } from '../../context/Store.js';
+import { Container, Grid } from "@material-ui/core";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import MainHeading from "../../components/MainHeading/MainHeading.js";
+import EditArtworkForm from "../../containers/Artwork/EditArtworkForm.js";
+import { Context } from "../../context/Store.js";
 import {
   deleteArtwork,
   editArtwork,
   patchArtwork,
-} from '../../services/artwork.js';
-import { getUser } from '../../services/stripe.js';
-import { deleteEmptyValues } from '../../utils/helpers.js';
+} from "../../services/artwork.js";
+import { getUser } from "../../services/stripe.js";
+import globalStyles from "../../styles/global.js";
+import { deleteEmptyValues } from "../../utils/helpers.js";
 
 const EditArtwork = ({ match }) => {
   const [store, dispatch] = useContext(Context);
@@ -23,7 +25,7 @@ const EditArtwork = ({ match }) => {
   });
   const history = useHistory();
 
-  const classes = {};
+  const globalClasses = globalStyles();
 
   const fetchData = async () => {
     try {
@@ -54,8 +56,8 @@ const EditArtwork = ({ match }) => {
         data: state.artwork.current._id,
       });
       history.push({
-        pathname: '/',
-        state: { message: 'Artwork deleted' },
+        pathname: "/",
+        state: { message: "Artwork deleted" },
       });
     } catch (err) {
       setState({ ...state, isDeleting: false });
@@ -67,15 +69,13 @@ const EditArtwork = ({ match }) => {
   }, []);
 
   return (
-    <Container fixed className={classes.fixed}>
-      <Grid container className={classes.container} spacing={2}>
+    <Container fixed className={globalClasses.gridContainer}>
+      <Grid container spacing={2}>
         {state.loading ? (
-          <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
-          </Grid>
+          <LoadingSpinner />
         ) : state.artwork._id ? (
-          <Grid item sm={12} className={classes.container}>
-            <MainHeading text={'Edit artwork'} />
+          <Grid item sm={12}>
+            <MainHeading text={"Edit artwork"} />
             <EditArtworkForm
               loading={state.loading}
               capabilities={state.capabilities}
@@ -87,7 +87,7 @@ const EditArtwork = ({ match }) => {
             />
           </Grid>
         ) : (
-          history.push('/')
+          history.push("/")
         )}
       </Grid>
     </Container>

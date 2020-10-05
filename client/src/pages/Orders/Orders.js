@@ -1,10 +1,10 @@
 import {
   Container,
-  Grid,
   FormControl,
+  Grid,
   InputLabel,
-  Select,
   MenuItem,
+  Select,
 } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import { useHistory, withRouter } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
 import Datatable from "../../components/Datatable/Datatable.js";
 import { getOrders } from "../../services/orders.js";
+import globalStyles from "../../styles/global.js";
 
 const Orders = () => {
   const [state, setState] = useState({
@@ -19,7 +20,7 @@ const Orders = () => {
     orders: [],
     display: "purchases",
   });
-  const classes = {};
+  const globalClasses = globalStyles();
 
   const history = useHistory();
 
@@ -56,10 +57,10 @@ const Orders = () => {
   }
 
   return (
-    <Container fixed>
+    <Container fixed className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
-          <FormControl variant="outlined" className={classes.formControl}>
+          <FormControl variant="outlined">
             <InputLabel id="data-display">Displayed data</InputLabel>
             <Select
               labelId="data-display"

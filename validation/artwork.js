@@ -27,8 +27,11 @@ const schema = Joi.object().keys({
     is: "available",
     then: Joi.when("artworkType", {
       is: "commercial",
-      then: Joi.number().integer().required(),
-      otherwise: Joi.forbidden(),
+      then: Joi.when("artworkUse", {
+        is: "included",
+        then: Joi.forbidden(),
+        otherwise: Joi.number().integer().required(),
+      }),
     }),
   }),
   artworkUse: Joi.when("artworkAvailability", {

@@ -42,6 +42,7 @@ import { Context } from "../../context/Store.js";
 import { getCheckout, postDiscount } from "../../services/checkout.js";
 import { postIntent } from "../../services/stripe.js";
 import { postCheckout } from "../../services/user.js";
+import globalStyles from "../../styles/global.js";
 import { billingValidation } from "../../validation/billing.js";
 import { licenseValidation } from "../../validation/license.js";
 
@@ -205,7 +206,7 @@ const Processor = ({ match, location, stripe }) => {
   const elements = useElements();
   const history = useHistory();
 
-  const classes = {};
+  const globalClasses = globalStyles();
 
   const handleLicenseChange = async (license, setFieldValue) => {
     try {
@@ -421,13 +422,13 @@ const Processor = ({ match, location, stripe }) => {
   }, []);
 
   return (
-    <Container fixed className={classes.fixed}>
-      <Grid container className={classes.container} spacing={2}>
+    <Container fixed className={globalClasses.gridContainer}>
+      <Grid container spacing={2}>
         {state.loading ? (
           <LoadingSpinner />
         ) : state.version._id ? (
           <>
-            <Grid item xs={12} md={8} className={classes.artwork}>
+            <Grid item xs={12} md={8}>
               <Box component="main">
                 <Container maxWidth="md">
                   {state.loading ? (
@@ -469,7 +470,7 @@ const Processor = ({ match, location, stripe }) => {
                                     </Step>
                                   ))}
                                 </Stepper>
-                                <Box className={classes.mainBox}>
+                                <Box>
                                   <Grid container spacing={3}>
                                     {renderForm(state.step.current)}
                                     {state.step.current === 0 && (
@@ -497,7 +498,6 @@ const Processor = ({ match, location, stripe }) => {
                                 >
                                   <Button
                                     disabled={state.step.current === 0}
-                                    className={classes.button}
                                     onClick={() => handleStepChange(-1)}
                                   >
                                     Back
@@ -505,7 +505,6 @@ const Processor = ({ match, location, stripe }) => {
                                   <Button
                                     variant="contained"
                                     color="primary"
-                                    className={classes.button}
                                     type="submit"
                                     disabled={isSubmitting}
                                   >
@@ -529,7 +528,7 @@ const Processor = ({ match, location, stripe }) => {
                 </Container>
               </Box>
             </Grid>
-            <Grid item xs={12} md={4} className={classes.actions}>
+            <Grid item xs={12} md={4}>
               <CheckoutSummary
                 version={state.version}
                 license={state.license}

@@ -2,8 +2,8 @@ import { Box, Button, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Field, Form, Formik } from "formik";
 import React, { useState } from "react";
-import { Container, Grid } from "../../constants/theme.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
+import { Container, Grid } from "../../styles/theme.js";
 import { licenseValidation } from "../../validation/license.js";
 
 const LicenseFormStyles = makeStyles((muiTheme) => ({

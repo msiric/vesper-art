@@ -13,6 +13,7 @@ import ReviewCard from "../../components/ReviewCard/ReviewCard.js";
 import { Context } from "../../context/Store.js";
 import { getDownload, getOrder, postReview } from "../../services/orders.js";
 import Modal from "../../shared/Modal/Modal.js";
+import globalStyles from "../../styles/global.js";
 
 const reviewValidation = Yup.object().shape({
   rating: Yup.number().min(1).max(5).required("Rating cannot be empty"),
@@ -28,13 +29,13 @@ const Order = ({ match }) => {
       body: ``,
     },
   });
-  const classes = {};
+  const globalClasses = globalStyles();
 
   const history = useHistory();
 
   const modalBody = () => {
     return (
-      <Box className={classes.reviewContainer}>
+      <Box>
         <Formik
           initialValues={{
             rating: 0,
@@ -62,7 +63,7 @@ const Order = ({ match }) => {
           }}
         >
           {({ values, errors, touched }) => (
-            <Form className={classes.publishReview}>
+            <Form>
               <Box>
                 <Field name="rating">
                   {({
@@ -148,20 +149,20 @@ const Order = ({ match }) => {
   }, []);
 
   return (
-    <Container fixed className={classes.fixed}>
-      <Grid container className={classes.container} spacing={2}>
+    <Container fixed className={globalClasses.gridContainer}>
+      <Grid container spacing={2}>
         {state.loading ? (
           <LoadingSpinner />
         ) : state.order._id ? (
           <>
-            <Grid item xs={12} className={classes.artworkPreviewItem}>
+            <Grid item xs={12}>
               <OrderPreview
                 version={state.order.version}
                 handleDownload={handleDownload}
                 shouldDownload={!isSeller() && isBuyer()}
               />
             </Grid>
-            <Grid item xs={12} md={4} className={classes.artistSectionItem}>
+            <Grid item xs={12} md={4}>
               <ProfileCard
                 user={
                   !isSeller() && isBuyer()
@@ -170,7 +171,7 @@ const Order = ({ match }) => {
                 }
               />
             </Grid>
-            <Grid item xs={12} md={8} className={classes.artistSectionItem}>
+            <Grid item xs={12} md={8}>
               <LicenseCard
                 order={state.order}
                 license={state.order.license}

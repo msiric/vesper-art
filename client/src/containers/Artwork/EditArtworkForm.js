@@ -4,6 +4,8 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import HelpBox from "../../components/HelpBox/HelpBox.js";
 import ImageInput from "../../components/ImageInput/ImageInput.js";
+import PriceInput from "../../shared/PriceInput/PriceInput.js";
+import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import {
   Button,
   Card,
@@ -11,9 +13,7 @@ import {
   CardContent,
   Container,
   Grid,
-} from "../../constants/theme.js";
-import PriceInput from "../../shared/PriceInput/PriceInput.js";
-import SelectInput from "../../shared/SelectInput/SelectInput.js";
+} from "../../styles/theme.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
 import { artworkValidation } from "../../validation/artwork.js";
 import { updateArtwork } from "../../validation/media.js";
@@ -31,6 +31,35 @@ const EditArtworkForm = ({
 }) => {
   const history = useHistory();
   const classes = {};
+
+  const formatValues = (data) => {
+    return {
+      ...data,
+      artworkType:
+        data.artworkAvailability === "available" ? data.artworkType : "",
+      artworkLicense:
+        data.artworkAvailability === "available" ? data.artworkLicense : "",
+      artworkPersonal:
+        data.artworkUse !== "included"
+          ? data.artworkAvailability === "available" &&
+            data.artworkLicense === "commercial"
+            ? data.artworkPersonal
+            : ""
+          : data.artworkPersonal,
+      artworkUse:
+        data.artworkAvailability === "available" &&
+        data.artworkLicense === "commercial"
+          ? data.artworkPersonal
+          : "",
+      artworkCommercial:
+        data.artworkLicense !== "personal"
+          ? data.artworkAvailability === "available" &&
+            data.artworkType === "commercial"
+            ? data.artworkPersonal
+            : ""
+          : null,
+    };
+  };
 
   return (
     <Container fixed className={classes.fixed}>
@@ -74,7 +103,7 @@ const EditArtworkForm = ({
                 } catch (err) {
                   console.log(err);
                 } */
-                const data = deleteEmptyValues(values);
+                const data = deleteEmptyValues(formatValues(values));
                 const formData = new FormData();
                 for (let value of Object.keys(data)) {
                   formData.append(value, data[value]);

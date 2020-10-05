@@ -4,12 +4,13 @@ import {
   EditRounded as EditIcon,
 } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
-import { useHistory, withRouter } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
 import Datatable from "../../components/Datatable/Datatable.js";
 import { deleteArtwork, getGallery } from "../../services/artwork.js";
+import globalStyles from "../../styles/global.js";
 
-function ProductsTable() {
+const MyArtwork = () => {
   const [state, setState] = useState({
     loading: true,
     artwork: [],
@@ -19,6 +20,7 @@ function ProductsTable() {
   });
 
   const history = useHistory();
+  const globalClasses = globalStyles();
 
   const fetchArtwork = async () => {
     try {
@@ -91,7 +93,7 @@ function ProductsTable() {
   }
 
   return (
-    <Container fixed>
+    <Container fixed className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
           <Datatable
@@ -218,6 +220,6 @@ function ProductsTable() {
       </Grid>
     </Container>
   );
-}
+};
 
-export default withRouter(ProductsTable);
+export default MyArtwork;

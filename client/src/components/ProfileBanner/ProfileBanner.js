@@ -1,11 +1,14 @@
-import React from "react";
-import { Box, Divider } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Avatar, Button, Typography, Card } from "../../constants/theme.js";
-import { Link as RouterLink } from "react-router-dom";
-import { formatDate } from "../../../../common/helpers.js";
-import { artepunktTheme } from "../../constants/theme.js";
 import { StarBorderRounded as StarIcon } from "@material-ui/icons";
+import React from "react";
+import {
+  artepunktTheme,
+  Avatar,
+  Button,
+  Card,
+  Typography,
+} from "../../styles/theme.js";
 
 const useStyles = makeStyles({
   profileCardContainer: {

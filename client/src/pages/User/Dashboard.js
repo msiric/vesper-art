@@ -17,6 +17,7 @@ import { Context } from "../../context/Store.js";
 import { getDashboard } from "../../services/stripe.js";
 import { getSelection, getStatistics } from "../../services/user.js";
 import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
+import globalStyles from "../../styles/global.js";
 
 const Dashboard = () => {
   const [store, dispatch] = useContext(Context);
@@ -41,7 +42,7 @@ const Dashboard = () => {
     visualization: false,
   });
 
-  const classes = {};
+  const globalClasses = globalStyles();
 
   const fetchCurrentData = async () => {
     try {
@@ -202,12 +203,8 @@ const Dashboard = () => {
 
   return (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
-      <Container fixed className={classes.fixed}>
-        <Grid
-          container
-          className={classes.container}
-          style={{ flexDirection: "column" }}
-        >
+      <Container fixed className={globalClasses.gridContainer}>
+        <Grid container style={{ flexDirection: "column" }}>
           <DashboardToolbar
             display={state.display}
             handleSelectChange={handleSelectChange}
@@ -240,7 +237,7 @@ const Dashboard = () => {
             ]}
             layout="row"
           />
-          <Grid item md={12} className={classes.grid}>
+          <Grid item md={12}>
             <Box
               display="flex"
               justifyContent="space-between"

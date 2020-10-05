@@ -4,14 +4,9 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import HelpBox from "../../components/HelpBox/HelpBox.js";
 import ImageInput from "../../components/ImageInput/ImageInput.js";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-} from "../../constants/theme.js";
 import PriceInput from "../../shared/PriceInput/PriceInput.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
+import { Button, Card, CardActions, CardContent } from "../../styles/theme.js";
 import { artworkValidation } from "../../validation/artwork.js";
 import { addArtwork } from "../../validation/media.js";
 

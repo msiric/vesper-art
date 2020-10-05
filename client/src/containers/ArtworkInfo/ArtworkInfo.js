@@ -3,8 +3,8 @@ import React, { useContext } from "react";
 import { Link as RouterLink, withRouter } from "react-router-dom";
 import PricingCard from "../../components/PricingCard/PricingCard.js";
 import SwipeCard from "../../components/SwipeCard/SwipeCard.js";
-import { Card, CardContent, Typography } from "../../constants/theme.js";
 import { Context } from "../../context/Store.js";
+import { Card, CardContent, Typography } from "../../styles/theme.js";
 
 const ArtworkInfo = ({
   artwork,

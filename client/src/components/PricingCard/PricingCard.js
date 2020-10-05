@@ -10,8 +10,8 @@ import {
 } from "@material-ui/core";
 import { CheckRounded as CheckIcon } from "@material-ui/icons";
 import React from "react";
-import { Card, Typography } from "../../constants/theme.js";
 import { Link as RouterLink } from "react-router-dom";
+import { Card, Typography } from "../../styles/theme.js";
 
 const PricingCard = ({
   artworkId,

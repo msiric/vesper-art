@@ -1,12 +1,12 @@
-import { Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
-import { CardHeader, CardMedia, Grid } from '../../constants/theme.js';
+import { Box } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import React from "react";
+import { CardHeader, CardMedia, Grid } from "../../styles/theme.js";
 
 const useStyles = makeStyles((theme) => ({
   media: {
     minWidth: 50,
-    width: '100%',
+    width: "100%",
   },
 }));
 
@@ -15,7 +15,7 @@ const CheckoutCard = ({ version }) => {
 
   return (
     <Grid container p={0} my={4}>
-      <Grid item xs={12} md={5} style={{ display: 'flex' }}>
+      <Grid item xs={12} md={5} style={{ display: "flex" }}>
         <Box display="flex" width="100%" py={0}>
           <CardMedia
             className={classes.media}

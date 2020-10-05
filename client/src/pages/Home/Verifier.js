@@ -1,17 +1,19 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../context/Store.js";
-import * as Yup from "yup";
-import { useFormik, Formik, Form, Field } from "formik";
 import {
-  Grid,
-  CircularProgress,
-  TextField,
   Button,
+  CircularProgress,
+  Container,
+  Grid,
+  TextField,
   Typography,
 } from "@material-ui/core";
 import { format } from "date-fns";
+import { Field, Form, Formik } from "formik";
 import { withSnackbar } from "notistack";
+import React, { useContext, useState } from "react";
+import * as Yup from "yup";
+import { Context } from "../../context/Store.js";
 import { postVerifier } from "../../services/home.js";
+import globalStyles from "../../styles/global.js";
 
 const fingerprintValidation = Yup.object().shape({
   licenseFingerprint: Yup.string()
@@ -30,108 +32,110 @@ const Verifier = () => {
     return format(new Date(date), type);
   };
 
-  const classes = {};
+  const globalClasses = globalStyles();
 
   return (
-    <Grid container className={classes.container}>
-      <Grid item xs={12} className={classes.grid}>
-        <Formik
-          initialValues={{
-            licenseFingerprint: "",
-          }}
-          enableReinitialize
-          validationSchema={fingerprintValidation}
-          onSubmit={async (values, { resetForm }) => {
-            setState((prevState) => ({
-              ...prevState,
-              loading: true,
-            }));
-            const { data } = await postVerifier({ data: values });
-            setState((prevState) => ({
-              ...prevState,
-              loading: false,
-              license: data.license,
-            }));
-            resetForm();
-          }}
-        >
-          {({ values, errors, touched }) => (
-            <Form className={classes.updateEmail}>
-              <div>
-                <Field name="licenseFingerprint">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      onBlur={() => null}
-                      label="Enter license fingerprint"
-                      type="text"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                  )}
-                </Field>
-              </div>
-              <div>
-                <Button type="submit" color="primary" fullWidth>
-                  Verify
-                </Button>
-              </div>
-            </Form>
+    <Container fixed className={globalClasses.gridContainer}>
+      <Grid container>
+        <Grid item xs={12}>
+          <Formik
+            initialValues={{
+              licenseFingerprint: "",
+            }}
+            enableReinitialize
+            validationSchema={fingerprintValidation}
+            onSubmit={async (values, { resetForm }) => {
+              setState((prevState) => ({
+                ...prevState,
+                loading: true,
+              }));
+              const { data } = await postVerifier({ data: values });
+              setState((prevState) => ({
+                ...prevState,
+                loading: false,
+                license: data.license,
+              }));
+              resetForm();
+            }}
+          >
+            {({ values, errors, touched }) => (
+              <Form>
+                <div>
+                  <Field name="licenseFingerprint">
+                    {({ field, form: { touched, errors }, meta }) => (
+                      <TextField
+                        {...field}
+                        onBlur={() => null}
+                        label="Enter license fingerprint"
+                        type="text"
+                        helperText={meta.touched && meta.error}
+                        error={meta.touched && Boolean(meta.error)}
+                        margin="dense"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    )}
+                  </Field>
+                </div>
+                <div>
+                  <Button type="submit" color="primary" fullWidth>
+                    Verify
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+          {state.loading ? (
+            <CircularProgress />
+          ) : state.license._id ? (
+            <div className="table-responsive">
+              <table className="simple">
+                <thead>
+                  <tr>
+                    <th>Fingerprint</th>
+                    <th>Type</th>
+                    <th>Buyer ID</th>
+                    <th>Seller ID</th>
+                    <th>Price</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr key={state.license._id}>
+                    <td>
+                      <Typography className="truncate">
+                        {state.license.fingerprint}
+                      </Typography>
+                    </td>
+                    <td className="w-64 text-right">
+                      <span className="truncate">{state.license.type}</span>
+                    </td>
+                    <td className="w-64 text-right">
+                      <span className="truncate">{state.license.owner}</span>
+                    </td>
+                    <td className="w-64 text-right">
+                      <span className="truncate">
+                        {state.license.artwork.owner}
+                      </span>
+                    </td>
+                    <td className="w-64 text-right">
+                      <span className="truncate">${state.license.price}</span>
+                    </td>
+                    <td className="w-64 text-right">
+                      <span className="truncate">
+                        {formatDate(state.license.created, "dd/MM/yyyy")}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            "Enter a license fingerprint"
           )}
-        </Formik>
-        {state.loading ? (
-          <CircularProgress />
-        ) : state.license._id ? (
-          <div className="table-responsive">
-            <table className="simple">
-              <thead>
-                <tr>
-                  <th>Fingerprint</th>
-                  <th>Type</th>
-                  <th>Buyer ID</th>
-                  <th>Seller ID</th>
-                  <th>Price</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr key={state.license._id}>
-                  <td>
-                    <Typography className="truncate">
-                      {state.license.fingerprint}
-                    </Typography>
-                  </td>
-                  <td className="w-64 text-right">
-                    <span className="truncate">{state.license.type}</span>
-                  </td>
-                  <td className="w-64 text-right">
-                    <span className="truncate">{state.license.owner}</span>
-                  </td>
-                  <td className="w-64 text-right">
-                    <span className="truncate">
-                      {state.license.artwork.owner}
-                    </span>
-                  </td>
-                  <td className="w-64 text-right">
-                    <span className="truncate">${state.license.price}</span>
-                  </td>
-                  <td className="w-64 text-right">
-                    <span className="truncate">
-                      {formatDate(state.license.created, "dd/MM/yyyy")}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          "Enter a license fingerprint"
-        )}
+        </Grid>
       </Grid>
-    </Grid>
+    </Container>
   );
 };
 

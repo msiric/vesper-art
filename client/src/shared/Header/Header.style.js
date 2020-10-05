@@ -1,5 +1,4 @@
-import { fade, makeStyles } from '@material-ui/core/styles';
-import { artepunktTheme } from '../../constants/theme.js';
+import { fade, makeStyles } from "@material-ui/core/styles";
 
 const HeaderStyles = makeStyles((muiTheme) => ({
   grow: {
@@ -9,76 +8,76 @@ const HeaderStyles = makeStyles((muiTheme) => ({
     marginRight: muiTheme.spacing(2),
   },
   title: {
-    display: 'none',
-    textDecoration: 'none',
-    color: '#000000',
-    [muiTheme.breakpoints.up('sm')]: {
-      display: 'block',
+    display: "none",
+    textDecoration: "none",
+    color: "#000000",
+    [muiTheme.breakpoints.up("sm")]: {
+      display: "block",
     },
   },
   search: {
-    position: 'relative',
+    position: "relative",
     borderRadius: muiTheme.shape.borderRadius,
     backgroundColor: fade(muiTheme.palette.common.white, 0.15),
-    '&:hover': {
+    "&:hover": {
       backgroundColor: fade(muiTheme.palette.common.white, 0.25),
     },
     marginRight: muiTheme.spacing(2),
     marginLeft: 0,
-    width: '100%',
-    [muiTheme.breakpoints.up('sm')]: {
+    width: "100%",
+    [muiTheme.breakpoints.up("sm")]: {
       marginLeft: muiTheme.spacing(3),
-      width: 'auto',
+      width: "auto",
     },
   },
   typeIcon: {
-    height: '100%',
-    position: 'absolute',
+    height: "100%",
+    position: "absolute",
     zIndex: 1000,
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     borderRadius: 4,
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.08)',
+    "&:hover": {
+      backgroundColor: "rgba(0, 0, 0, 0.08)",
     },
   },
   searchIcon: {
     top: 0,
     right: 0,
-    height: '100%',
-    position: 'absolute',
+    height: "100%",
+    position: "absolute",
     zIndex: 1000,
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     borderRadius: 4,
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.08)',
+    "&:hover": {
+      backgroundColor: "rgba(0, 0, 0, 0.08)",
     },
   },
   inputRoot: {
-    color: 'inherit',
+    color: "inherit",
   },
   inputInput: {
     padding: muiTheme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${muiTheme.spacing(5)}px)`,
     paddingRight: `calc(1em + ${muiTheme.spacing(5)}px)`,
-    transition: muiTheme.transitions.create('width'),
-    width: '100%',
-    [muiTheme.breakpoints.up('md')]: {
-      width: '20ch',
+    transition: muiTheme.transitions.create("width"),
+    width: "100%",
+    [muiTheme.breakpoints.up("md")]: {
+      width: "20ch",
     },
   },
   sectionDesktop: {
-    display: 'none',
-    [muiTheme.breakpoints.up('md')]: {
-      display: 'flex',
+    display: "none",
+    [muiTheme.breakpoints.up("md")]: {
+      display: "flex",
     },
   },
   sectionMobile: {
-    display: 'flex',
-    [muiTheme.breakpoints.up('md')]: {
-      display: 'none',
+    display: "flex",
+    [muiTheme.breakpoints.up("md")]: {
+      display: "none",
     },
   },
 }));

@@ -1,41 +1,20 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../../context/Store.js';
+import { Box, Grid } from "@material-ui/core";
+import { styled } from "@material-ui/core/styles";
+import { compose, typography } from "@material-ui/system";
+import React, { useContext } from "react";
 import {
-  Container,
-  Grid,
-  CircularProgress,
-  Paper,
-  Divider,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Box,
-} from '@material-ui/core';
-import DateRangePicker from '../../shared/DateRangePicker/DateRangePicker.js';
-import { LocalizationProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
-import { format, eachDayOfInterval, subDays } from 'date-fns';
-import {
-  ResponsiveContainer,
-  LineChart,
+  Legend,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  Legend,
-  Text,
-} from 'recharts';
-import NumberFormat from 'react-number-format';
-import { getStatistics, getSelection } from '../../services/user.js';
-import SelectInput from '@material-ui/core/Select/SelectInput';
-import DashboardCard from '../../components/DashboardCard/DashboardCard.js';
-import DashboardStatistics from '../DashboardStatistics/DashboardStatistics.js';
-import { styled } from '@material-ui/core/styles';
-import { compose, flexbox, typography } from '@material-ui/system';
-import { artepunktTheme, Card } from '../../constants/theme.js';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+} from "recharts";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import { Context } from "../../context/Store.js";
+import { artepunktTheme, Card } from "../../styles/theme.js";
+import DashboardStatistics from "../DashboardStatistics/DashboardStatistics.js";
 
 const GridItem = styled(Grid)(compose(typography));
 
@@ -103,12 +82,12 @@ const DashboardVisualization = ({
             },
             {
               data: selectedStats.licenses.personal,
-              label: 'Personal licenses',
+              label: "Personal licenses",
               currency: false,
             },
             {
               data: selectedStats.licenses.commercial,
-              label: 'Commercial licenses',
+              label: "Commercial licenses",
               currency: false,
             },
           ]}

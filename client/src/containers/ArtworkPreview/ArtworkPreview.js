@@ -2,7 +2,7 @@ import { Box, Card, CardMedia, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { Typography } from "../../constants/theme.js";
+import { Typography } from "../../styles/theme.js";
 
 const useStyles = makeStyles((muiTheme) => ({
   fixed: {

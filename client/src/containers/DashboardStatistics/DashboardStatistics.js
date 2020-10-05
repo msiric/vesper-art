@@ -1,29 +1,10 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../context/Store.js";
-import {
-  Container,
-  Grid,
-  CircularProgress,
-  Paper,
-  Divider,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Box,
-} from "@material-ui/core";
-import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
-import { LocalizationProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
-import { format, eachDayOfInterval, subDays } from "date-fns";
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
-import NumberFormat from "react-number-format";
-import { getStatistics, getSelection } from "../../services/user.js";
-import DashboardCard from "../../components/DashboardCard/DashboardCard.js";
+import { Grid } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
-import { compose, flexbox, typography, spacing } from "@material-ui/system";
-import { artepunktTheme } from "../../constants/theme.js";
+import { compose, flexbox, spacing } from "@material-ui/system";
+import React, { useContext } from "react";
+import DashboardCard from "../../components/DashboardCard/DashboardCard.js";
+import { Context } from "../../context/Store.js";
+import { artepunktTheme } from "../../styles/theme.js";
 
 const GridContainer = styled(Grid)(compose(spacing, flexbox));
 const GridItem = styled(Grid)(compose(flexbox));
