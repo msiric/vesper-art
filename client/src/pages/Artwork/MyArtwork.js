@@ -138,7 +138,10 @@ const MyArtwork = () => {
                       : "Free",
                   sortCompare: (order) => {
                     return ({ data: previous }, { data: next }) => {
-                      return (previous - next) * (order === "asc" ? 1 : -1);
+                      return (
+                        (previous.amount - next.amount) *
+                        (order === "asc" ? 1 : -1)
+                      );
                     };
                   },
                 },
@@ -154,7 +157,10 @@ const MyArtwork = () => {
                       : "Free",
                   sortCompare: (order) => {
                     return ({ data: previous }, { data: next }) => {
-                      return (previous - next) * (order === "asc" ? 1 : -1);
+                      return (
+                        (previous.amount - next.amount) *
+                        (order === "asc" ? 1 : -1)
+                      );
                     };
                   },
                 },
@@ -178,6 +184,9 @@ const MyArtwork = () => {
               },
               {
                 name: "Actions",
+                options: {
+                  sort: false,
+                },
               },
             ]}
             data={state.artwork.map((artwork) => [

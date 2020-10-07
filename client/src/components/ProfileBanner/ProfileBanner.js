@@ -1,7 +1,12 @@
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { StarBorderRounded as StarIcon } from "@material-ui/icons";
+import {
+  LocationOnRounded as LocationIcon,
+  MeetingRoomRounded as DoorIcon,
+  StarRounded as StarIcon,
+} from "@material-ui/icons";
 import React from "react";
+import { formatDate } from "../../../../common/helpers.js";
 import {
   artepunktTheme,
   Avatar,
@@ -56,39 +61,93 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
           display="flex"
           alignItems="center"
           justifyContent="flex-start"
-          height="50%"
+          marginTop="-70px"
         >
-          <Avatar
-            alt={user.name}
-            src={user.photo}
-            title={user.name}
-            width={130}
-            height={130}
-            border={4}
-            borderColor={artepunktTheme.palette.background.paper}
-            mt={-13}
-            mr={2}
-          />
-          <Typography variant="h4" color="inherit" mt={-8}>
-            {user.name}
-          </Typography>
+          <Box display="flex" alignItems="center">
+            <Avatar
+              alt={user.name}
+              src={user.photo}
+              title={user.name}
+              width={130}
+              height={130}
+              border={4}
+              borderColor={artepunktTheme.palette.background.paper}
+              mb={1}
+            />
+          </Box>
           <Box
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            mt={-7}
+            display="flex"
+            alignItems="flex-start"
+            justifyContent="center"
+            flexDirection="column"
+            marginTop="36px"
+            marginLeft="12px"
           >
-            <StarIcon fontSize="small" />
-            <Typography
-              variant="body1"
-              color="textSecondary"
-              component="p"
-              align="center"
-            >
-              {user.rating}
+            <Typography variant="h4" color="inherit">
+              {user.name}
             </Typography>
+            <Box
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: "-12px",
+              }}
+            >
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <StarIcon fontSize="small" />
+                <Typography
+                  variant="body1"
+                  color="textSecondary"
+                  component="p"
+                  align="center"
+                >
+                  {user.rating}
+                </Typography>
+              </Box>
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginLeft: "12px",
+                }}
+              >
+                <LocationIcon fontSize="small" />
+                <Typography
+                  variant="body1"
+                  color="textSecondary"
+                  component="p"
+                  align="center"
+                >
+                  {user.country}
+                </Typography>
+              </Box>
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginLeft: "12px",
+                }}
+              >
+                <DoorIcon fontSize="small" />
+                <Typography
+                  variant="body1"
+                  color="textSecondary"
+                  component="p"
+                  align="center"
+                >
+                  {formatDate(user.created, "MMM yy")}
+                </Typography>
+              </Box>
+            </Box>
           </Box>
         </Box>
         <Box
