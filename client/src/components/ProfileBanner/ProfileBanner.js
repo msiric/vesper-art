@@ -1,8 +1,9 @@
-import { Box } from "@material-ui/core";
+import { Box, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   LocationOnRounded as LocationIcon,
   MeetingRoomRounded as DoorIcon,
+  ShareRounded as ShareIcon,
   StarRounded as StarIcon,
 } from "@material-ui/icons";
 import React from "react";
@@ -10,7 +11,6 @@ import { formatDate } from "../../../../common/helpers.js";
 import {
   artepunktTheme,
   Avatar,
-  Button,
   Card,
   Typography,
 } from "../../styles/theme.js";
@@ -43,7 +43,7 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
   return (
     <Card>
       <Box
-        height={200}
+        height={240}
         p={3}
         display="flex"
         alignItems="center"
@@ -63,14 +63,18 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
           justifyContent="flex-start"
           marginTop="-70px"
         >
-          <Box display="flex" alignItems="center">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
             <Avatar
               alt={user.name}
               src={user.photo}
               title={user.name}
               width={130}
               height={130}
-              border={4}
+              border={6}
               borderColor={artepunktTheme.palette.background.paper}
               mb={1}
             />
@@ -83,7 +87,11 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
             marginTop="36px"
             marginLeft="12px"
           >
-            <Typography variant="h4" color="inherit">
+            <Typography
+              variant="h4"
+              color="inherit"
+              style={{ fontWeight: "bold" }}
+            >
               {user.name}
             </Typography>
             <Box
@@ -94,41 +102,45 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
                 marginTop: "-12px",
               }}
             >
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <StarIcon fontSize="small" />
-                <Typography
-                  variant="body1"
-                  color="textSecondary"
-                  component="p"
-                  align="center"
+              {user.rating && (
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  {user.rating}
-                </Typography>
-              </Box>
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginLeft: "12px",
-                }}
-              >
-                <LocationIcon fontSize="small" />
-                <Typography
-                  variant="body1"
-                  color="textSecondary"
-                  component="p"
-                  align="center"
+                  <StarIcon fontSize="small" />
+                  <Typography
+                    variant="body1"
+                    color="textSecondary"
+                    component="p"
+                    align="center"
+                  >
+                    {user.rating}
+                  </Typography>
+                </Box>
+              )}
+              {user.country && (
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginLeft: "12px",
+                  }}
                 >
-                  {user.country}
-                </Typography>
-              </Box>
+                  <LocationIcon fontSize="small" />
+                  <Typography
+                    variant="body1"
+                    color="textSecondary"
+                    component="p"
+                    align="center"
+                  >
+                    {user.country}
+                  </Typography>
+                </Box>
+              )}
               <Box
                 style={{
                   display: "flex",
@@ -149,19 +161,35 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
               </Box>
             </Box>
           </Box>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="flex-end"
+            marginTop="6px"
+            flexGrow="1"
+          >
+            <IconButton onClick={() => null}>
+              <ShareIcon />
+            </IconButton>
+          </Box>
         </Box>
         <Box
           display="flex"
-          alignItems="flex-end"
+          alignItems="flex-start"
           justifyContent="space-between"
+          flexDirection="column"
           height="50%"
         >
-          <Typography variant="body2" color="inherit">
-            {user.description || "This user provided no description"}
+          <Typography
+            variant="body1"
+            color="inherit"
+            style={{ fontWeight: "bold" }}
+          >
+            Description
           </Typography>
-          <Button variant="contained" color="primary">
-            Share artist
-          </Button>
+          <Typography variant="body2" color="inherit">
+            {user.description || "Nothing here yet"}
+          </Typography>
         </Box>
       </Box>
     </Card>
