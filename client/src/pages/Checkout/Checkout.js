@@ -34,6 +34,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import MainHeading from "../../components/MainHeading/MainHeading.js";
 import BillingForm from "../../containers/BillingForm/BillingForm.js";
 import CheckoutSummary from "../../containers/CheckoutSummary/CheckoutSummary.js";
 import LicenseForm from "../../containers/LicenseForm/LicenseForm.js";
@@ -423,109 +424,101 @@ const Processor = ({ match, location, stripe }) => {
 
   return (
     <Container fixed className={globalClasses.gridContainer}>
+      <MainHeading text={"Checkout"} className={globalClasses.mainHeading} />
       <Grid container spacing={2}>
         {state.loading ? (
           <LoadingSpinner />
         ) : state.version._id ? (
           <>
             <Grid item xs={12} md={8}>
-              <Box component="main">
-                <Container maxWidth="md">
-                  {state.loading ? (
-                    <CircularProgress />
-                  ) : (
-                    <Paper elevation={5}>
-                      <Formik
-                        initialValues={{
-                          licenseType: location.state.license || "",
-                          licenseAssignee: "",
-                          licenseCompany: "",
-                          billingName: "",
-                          billingSurname: "",
-                          billingEmail: "",
-                          billingAddress: "",
-                          billingZip: "",
-                          billingCity: "",
-                          billingCountry: "",
-                        }}
-                        validationSchema={
-                          checkoutValidation[state.step.current]
-                        }
-                        onSubmit={handleSubmit}
-                      >
-                        {({ isSubmitting, values, setFieldValue }) => (
-                          <Form>
-                            {stripe ? (
+              <Box>
+                {state.loading ? (
+                  <CircularProgress />
+                ) : (
+                  <Paper elevation={5}>
+                    <Formik
+                      initialValues={{
+                        licenseType: location.state.license || "",
+                        licenseAssignee: "",
+                        licenseCompany: "",
+                        billingName: "",
+                        billingSurname: "",
+                        billingEmail: "",
+                        billingAddress: "",
+                        billingZip: "",
+                        billingCity: "",
+                        billingCountry: "",
+                      }}
+                      validationSchema={checkoutValidation[state.step.current]}
+                      onSubmit={handleSubmit}
+                    >
+                      {({ isSubmitting, values, setFieldValue }) => (
+                        <Form style={{ padding: 16 }}>
+                          {stripe ? (
+                            <Box>
+                              <Stepper
+                                alternativeLabel
+                                connector={<Connector />}
+                                activeStep={state.step.current}
+                              >
+                                {STEPS.map((e) => (
+                                  <Step key={e}>
+                                    <StepLabel
+                                      StepIconComponent={StepperIcons}
+                                    />
+                                  </Step>
+                                ))}
+                              </Stepper>
                               <Box>
-                                <Stepper
-                                  alternativeLabel
-                                  connector={<Connector />}
-                                  activeStep={state.step.current}
-                                >
-                                  {STEPS.map((e) => (
-                                    <Step key={e}>
-                                      <StepLabel
-                                        StepIconComponent={StepperIcons}
-                                      />
-                                    </Step>
-                                  ))}
-                                </Stepper>
-                                <Box>
-                                  <Grid container spacing={3}>
-                                    {renderForm(state.step.current)}
-                                    {state.step.current === 0 && (
-                                      <List
-                                        component="nav"
-                                        aria-label="Features"
-                                      >
-                                        {licenseOptions.map((item) => (
-                                          <ListItem>
-                                            <ListItemIcon>
-                                              <CheckIcon />
-                                            </ListItemIcon>
-                                            <ListItemText
-                                              primary={item.label}
-                                            />
-                                          </ListItem>
-                                        ))}
-                                      </List>
-                                    )}
-                                  </Grid>
-                                </Box>
-                                <Box
-                                  display="flex"
-                                  justifyContent="space-between"
-                                >
-                                  <Button
-                                    disabled={state.step.current === 0}
-                                    onClick={() => handleStepChange(-1)}
-                                  >
-                                    Back
-                                  </Button>
-                                  <Button
-                                    variant="contained"
-                                    color="primary"
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                  >
-                                    {state.loading ? (
-                                      <CircularProgress
-                                        color="secondary"
-                                        size={24}
-                                      />
-                                    ) : (
-                                      "Next"
-                                    )}
-                                  </Button>
-                                </Box>
+                                <Grid container spacing={3}>
+                                  {renderForm(state.step.current)}
+                                  {state.step.current === 0 && (
+                                    <List component="nav" aria-label="Features">
+                                      {licenseOptions.map((item) => (
+                                        <ListItem>
+                                          <ListItemIcon>
+                                            <CheckIcon />
+                                          </ListItemIcon>
+                                          <ListItemText primary={item.label} />
+                                        </ListItem>
+                                      ))}
+                                    </List>
+                                  )}
+                                </Grid>
                               </Box>
-                            ) : null}
-                          </Form>
-                        )}
-                      </Formik>
-                    </Paper>
-                  )}
-                </Container>
+                              <Box
+                                display="flex"
+                                justifyContent="space-between"
+                              >
+                                <Button
+                                  disabled={state.step.current === 0}
+                                  onClick={() => handleStepChange(-1)}
+                                >
+                                  Back
+                                </Button>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  type="submit"
+                                  disabled={isSubmitting}
+                                >
+                                  {state.loading ? (
+                                    <CircularProgress
+                                      color="secondary"
+                                      size={24}
+                                    />
+                                  ) : (
+                                    "Next"
+                                  )}
+                                </Button>
+                              </Box>
+                            </Box>
+                          ) : null}
+                        </Form>
+                      )}
+                    </Formik>
+                  </Paper>
+                )}
               </Box>
             </Grid>
             <Grid item xs={12} md={4}>
