@@ -6,6 +6,7 @@ import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
 
 const useStyles = makeStyles({
   paper: {
+    minHeight: 300,
     height: "100%",
   },
   profileArtworkContainer: {
@@ -56,6 +57,7 @@ const UserArtworkPanel = ({
                       hasMore={null}
                       loadMore={loadMoreArtwork}
                       type="artwork"
+                      fixed={true}
                     />
                   ),
                   error: "You have no artwork to display",
@@ -71,6 +73,7 @@ const UserArtworkPanel = ({
                       hasMore={null}
                       loadMore={loadMoreSaves}
                       type="artwork"
+                      fixed={true}
                     />
                   ),
                   error: "You have no saved artwork",
@@ -107,6 +110,7 @@ const UserArtworkPanel = ({
                       hasMore={null}
                       loadMore={loadMoreArtwork}
                       type="artwork"
+                      fixed={true}
                     />
                   ),
                   error: "This user has no artwork to display",
@@ -122,6 +126,7 @@ const UserArtworkPanel = ({
                       hasMore={null}
                       loadMore={loadMoreSaves}
                       type="artwork"
+                      fixed={true}
                     />
                   ),
                   error: "This user has no saved artwork",

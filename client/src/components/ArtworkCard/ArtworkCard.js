@@ -10,11 +10,62 @@ import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import { Link } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
+import { artepunktTheme, Grid } from "../../styles/theme.js";
 import EditButton from "../EditButton/EditButton.js";
 import FavoriteButton from "../FavoriteButton/FavoriteButton.js";
 import ShareButton from "../ShareButton/ShareButton.js";
 
 const useStyles = makeStyles((theme) => ({
+  artworkWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    maxWidth: 500,
+  },
+  artworkCard: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    margin: 20,
+    width: "100%",
+    minWidth: 200,
+    textDecoration: "none",
+    boxShadow: "none",
+    margin: 12,
+    position: "relative",
+    "&:hover": {
+      "& $artworkHeader": {
+        height: 60,
+      },
+      "& $artworkFooter": {
+        height: 60,
+      },
+    },
+  },
+  artworkActions: {
+    width: "100%",
+    padding: "0 8px",
+  },
+  artworkContent: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    textDecoration: "none",
+    marginTop: -20,
+    width: "100%",
+  },
+  artworkMedia: {
+    display: "inline-block",
+    backgroundSize: "cover",
+    width: "100%",
+  },
+  artworkHeader: {
+    textAlign: "center",
+    width: "100%",
+    color: artepunktTheme.palette.text.primary,
+  },
   media: {
     height: 0,
   },
@@ -30,18 +81,6 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     backgroundColor: red[500],
-  },
-  artworkContainer: {
-    margin: 12,
-    position: "relative",
-    "&:hover": {
-      "& $artworkHeader": {
-        height: 60,
-      },
-      "& $artworkFooter": {
-        height: 60,
-      },
-    },
   },
   artworkHeader: {
     "& div": {
@@ -95,7 +134,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ArtworkCard = ({ user, artwork, type }) => {
+const ArtworkCard = ({ user, artwork, type, fixed }) => {
   const classes = useStyles();
 
   const item =
@@ -118,77 +157,88 @@ const ArtworkCard = ({ user, artwork, type }) => {
         };
 
   return (
-    <Card className={classes.artworkContainer}>
-      <CardHeader
-        title={
-          <Typography
-            noWrap
-            variant="h5"
-            component={Link}
-            to={`/artwork/${item._id}`}
-            className={classes.artworkTitle}
-          >
-            {item.data.title}
-          </Typography>
-        }
-        subheader={
-          <Typography
-            noWrap
-            variant="body1"
-            component={Link}
-            to={`/user/${item.owner.name}`}
-            className={classes.artworkSeller}
-          >
-            {item.owner.name}
-          </Typography>
-        }
-        className={classes.artworkHeader}
-      />
-      <CardMedia
-        component={Link}
-        to={`/artwork/${item._id}`}
-        className={classes.media}
-        style={{
-          paddingTop:
-            item.data.height /
-            (item.data.width / upload.artwork.fileTransform.width) /
-            2,
-          maxWidth: upload.artwork.fileTransform.width,
-        }}
-        image={item.data.cover}
-        title={item.title}
-      />
-      <CardActions disableSpacing className={classes.artworkFooter}>
-        <Box>
-          {item.owner._id === user.id ? (
-            <EditButton artwork={artwork} />
-          ) : (
-            [
-              <FavoriteButton
-                artwork={artwork}
-                favorited={user.saved[item._id]}
-              />,
-              <ShareButton artwork={artwork} />,
-            ]
-          )}
-        </Box>
-        <Box>
-          <IconButton
-            aria-label="Artwork price"
-            className={classes.artworkColor}
-          >
-            <Typography noWrap>
-              {item.data.availability === "available"
-                ? item.data.license === "commercial"
-                  ? item.data.use === "included"
-                    ? `- / ${
-                        item.data.commercial
-                          ? `$${item.data.commercial}`
-                          : " Free"
-                      }`
-                    : `${
-                        item.data.personal ? `$${item.data.personal}` : " Free"
-                      }
+    <Grid
+      item
+      xs={12}
+      sm={6}
+      md={4}
+      lg={3}
+      xl={fixed ? 3 : 2}
+      className={classes.artworkWrapper}
+    >
+      <Card className={classes.artworkCard}>
+        <CardHeader
+          title={
+            <Typography
+              noWrap
+              variant="h5"
+              component={Link}
+              to={`/artwork/${item._id}`}
+              className={classes.artworkTitle}
+            >
+              {item.data.title}
+            </Typography>
+          }
+          subheader={
+            <Typography
+              noWrap
+              variant="body1"
+              component={Link}
+              to={`/user/${item.owner.name}`}
+              className={classes.artworkSeller}
+            >
+              {item.owner.name}
+            </Typography>
+          }
+          className={classes.artworkHeader}
+        />
+        <CardMedia
+          component={Link}
+          to={`/artwork/${item._id}`}
+          className={classes.artworkMedia}
+          style={{
+            paddingTop:
+              item.data.height /
+              (item.data.width / upload.artwork.fileTransform.width) /
+              2,
+            maxWidth: upload.artwork.fileTransform.width,
+          }}
+          image={item.data.cover}
+          title={item.title}
+        />
+        <CardActions disableSpacing className={classes.artworkFooter}>
+          <Box>
+            {item.owner._id === user.id ? (
+              <EditButton artwork={artwork} />
+            ) : (
+              [
+                <FavoriteButton
+                  artwork={artwork}
+                  favorited={user.saved[item._id]}
+                />,
+                <ShareButton artwork={artwork} />,
+              ]
+            )}
+          </Box>
+          <Box>
+            <IconButton
+              aria-label="Artwork price"
+              className={classes.artworkColor}
+            >
+              <Typography noWrap>
+                {item.data.availability === "available"
+                  ? item.data.license === "commercial"
+                    ? item.data.use === "included"
+                      ? `- / ${
+                          item.data.commercial
+                            ? `$${item.data.commercial}`
+                            : " Free"
+                        }`
+                      : `${
+                          item.data.personal
+                            ? `$${item.data.personal}`
+                            : " Free"
+                        }
                   /
                     ${
                       item.data.commercial
@@ -197,15 +247,16 @@ const ArtworkCard = ({ user, artwork, type }) => {
                         ? item.data.personal
                         : " Free"
                     }`
-                  : `${
-                      item.data.personal ? `$${item.data.personal}` : " Free"
-                    } / -`
-                : "Preview only"}
-            </Typography>
-          </IconButton>
-        </Box>
-      </CardActions>
-    </Card>
+                    : `${
+                        item.data.personal ? `$${item.data.personal}` : " Free"
+                      } / -`
+                  : "Preview only"}
+              </Typography>
+            </IconButton>
+          </Box>
+        </CardActions>
+      </Card>
+    </Grid>
   );
 };
 

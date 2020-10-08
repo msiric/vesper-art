@@ -9,7 +9,6 @@ import {
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import Masonry from "react-masonry-css";
 import { Link } from "react-router-dom";
 import { Context } from "../../context/Store.js";
 
@@ -62,7 +61,7 @@ const UserPanel = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
           </Grid>
         }
       >
-        <Masonry>{users}</Masonry>
+        {users}
       </InfiniteScroll>
     </Paper>
   );

@@ -1,10 +1,9 @@
-import { CircularProgress, Grid, Paper } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { LinkRounded as CopyIcon } from '@material-ui/icons';
-import React, { useContext, useState } from 'react';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import Masonry from 'react-masonry-css';
+import { Box, CircularProgress, Grid } from "@material-ui/core";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { LinkRounded as CopyIcon } from "@material-ui/icons";
+import React, { useContext, useState } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import InfiniteScroll from "react-infinite-scroll-component";
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -14,36 +13,24 @@ import {
   TwitterShareButton,
   WhatsappIcon,
   WhatsappShareButton,
-} from 'react-share';
-import { upload } from '../../../../common/constants.js';
-import ArtworkCard from '../../components/ArtworkCard/ArtworkCard.js';
-import { Context } from '../../context/Store.js';
-import { deleteSave, postSave } from '../../services/artwork.js';
-import Modal from '../../shared/Modal/Modal.js';
+} from "react-share";
+import { upload } from "../../../../common/constants.js";
+import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
+import { Context } from "../../context/Store.js";
+import { deleteSave, postSave } from "../../services/artwork.js";
+import Modal from "../../shared/Modal/Modal.js";
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    minHeight: '86.5vh',
-  },
   masonryGrid: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap",
   },
   masonryGridColumn: {
     maxWidth: upload.artwork.fileTransform.width,
     minWidth: 320,
-    width: '100%',
+    width: "100%",
   },
 }));
-
-const artworkBreakpoints = {
-  default: 6,
-  [upload.artwork.fileTransform.width + 320 * 4]: 5,
-  [upload.artwork.fileTransform.width + 320 * 3]: 4,
-  [upload.artwork.fileTransform.width + 320 * 2]: 3,
-  [upload.artwork.fileTransform.width + 320]: 2,
-  [upload.artwork.fileTransform.width]: 1,
-};
 
 const ArtworkPanel = ({
   elements,
@@ -51,6 +38,7 @@ const ArtworkPanel = ({
   loadMore,
   enqueueSnackbar,
   type,
+  fixed,
 }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
@@ -72,12 +60,12 @@ const ArtworkPanel = ({
           <CopyToClipboard
             text={url}
             onCopy={() =>
-              enqueueSnackbar('Link copied', {
-                variant: 'success',
+              enqueueSnackbar("Link copied", {
+                variant: "success",
                 autoHideDuration: 1000,
                 anchorOrigin: {
-                  vertical: 'top',
-                  horizontal: 'center',
+                  vertical: "top",
+                  horizontal: "center",
                 },
               })
             }
@@ -124,17 +112,17 @@ const ArtworkPanel = ({
     try {
       await postSave({ artworkId: id });
       dispatch({
-        type: 'updateSaves',
+        type: "updateSaves",
         saved: {
           [id]: true,
         },
       });
-      enqueueSnackbar('Artwork saved', {
-        variant: 'success',
+      enqueueSnackbar("Artwork saved", {
+        variant: "success",
         autoHideDuration: 1000,
         anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
+          vertical: "top",
+          horizontal: "center",
         },
       });
     } catch (err) {
@@ -146,17 +134,17 @@ const ArtworkPanel = ({
     try {
       await deleteSave({ artworkId: id });
       dispatch({
-        type: 'updateSaves',
+        type: "updateSaves",
         saved: {
           [id]: false,
         },
       });
-      enqueueSnackbar('Artwork unsaved', {
-        variant: 'success',
+      enqueueSnackbar("Artwork unsaved", {
+        variant: "success",
         autoHideDuration: 1000,
         anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
+          vertical: "top",
+          horizontal: "center",
         },
       });
     } catch (err) {
@@ -187,7 +175,7 @@ const ArtworkPanel = ({
   };
 
   return (
-    <Paper className={classes.paper}>
+    <Box style={{ width: "100%" }}>
       <InfiniteScroll
         className={classes.scroller}
         dataLength={elements.length}
@@ -199,11 +187,12 @@ const ArtworkPanel = ({
           </Grid>
         }
       >
-        {/*         <ImageGallery
+        <Grid container className={classes.container}>
+          {/*         <ImageGallery
           photos={artwork}
           onClick={(e, item) => handleImageClick(e, item)}
         ></ImageGallery> */}
-        {/*         <div className={classes.artworkContainer}>
+          {/*         <div className={classes.artworkContainer}>
           {elements.map((artwork) => (
             <div className={classes.artworkItem}>
               <img
@@ -214,14 +203,15 @@ const ArtworkPanel = ({
           ))}
         </div> */}
 
-        {/* specify cover width */}
-        <Masonry
-          breakpointCols={artworkBreakpoints}
-          className={classes.masonryGrid}
-          columnClassName={classes.masonryGridColumn}
-        >
+          {/* specify cover width */}
+
           {elements.map((artwork) => (
-            <ArtworkCard user={store.user} artwork={artwork} type={type} />
+            <ArtworkCard
+              user={store.user}
+              artwork={artwork}
+              type={type}
+              fixed={fixed}
+            />
             /*           <div
               key={artwork._id}
               component={Link}
@@ -240,8 +230,7 @@ const ArtworkPanel = ({
               </div>
             </div> */
           ))}
-        </Masonry>
-        {/*         <StackGrid
+          {/*         <StackGrid
           columnWidth={upload.artwork.fileTransform.width}
           gutterWidth={0}
           gutterHeight={0}
@@ -267,9 +256,10 @@ const ArtworkPanel = ({
             </div> 
           ))}
         </StackGrid> */}
+        </Grid>
       </InfiniteScroll>
       <Modal {...state.modal} handleClose={handleModalClose} />
-    </Paper>
+    </Box>
   );
 };
 
