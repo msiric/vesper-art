@@ -6,7 +6,11 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import { StarBorderRounded as StarIcon } from "@material-ui/icons";
+import {
+  LocationOnRounded as LocationIcon,
+  PersonRounded as MemberIcon,
+  StarRounded as StarIcon,
+} from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
@@ -63,7 +67,54 @@ const ProfileCard = ({ user, handleModalOpen, height }) => {
         >
           {user.name}
         </Typography>
-        {user.rating && (
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginBottom: "12px",
+          }}
+        >
+          {user.rating && (
+            <Box
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginRight: "6px",
+              }}
+            >
+              <StarIcon fontSize="small" />
+              <Typography
+                variant="body1"
+                color="textSecondary"
+                component="p"
+                align="center"
+              >
+                {user.rating}
+              </Typography>
+            </Box>
+          )}
+          {user.country && (
+            <Box
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginRight: "6px",
+              }}
+            >
+              <LocationIcon fontSize="small" />
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                component="p"
+                align="center"
+              >
+                {user.country}
+              </Typography>
+            </Box>
+          )}
           <Box
             style={{
               display: "flex",
@@ -71,17 +122,17 @@ const ProfileCard = ({ user, handleModalOpen, height }) => {
               alignItems: "center",
             }}
           >
-            <StarIcon fontSize="small" />
+            <MemberIcon fontSize="small" />
             <Typography
-              variant="body1"
+              variant="body2"
               color="textSecondary"
               component="p"
               align="center"
             >
-              {user.rating}
+              {formatDate(new Date(user.created), "MMM yy")}
             </Typography>
           </Box>
-        )}
+        </Box>
         <Typography
           variant="body2"
           color="textSecondary"
@@ -89,22 +140,6 @@ const ProfileCard = ({ user, handleModalOpen, height }) => {
           align="center"
         >
           {user.description || "No description specified"}
-        </Typography>
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          component="p"
-          align="center"
-        >
-          {user.country || "No country specified"}
-        </Typography>
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          component="p"
-          align="center"
-        >
-          {`Joined ${formatDate(new Date(user.created), "MMM yyyy")}`}
         </Typography>
       </CardContent>
       {user.editable && (

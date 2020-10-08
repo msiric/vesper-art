@@ -2,7 +2,7 @@ import { Box, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   LocationOnRounded as LocationIcon,
-  PersonRounded as UserIcon,
+  PersonRounded as MemberIcon,
   ShareRounded as ShareIcon,
   StarRounded as StarIcon,
 } from "@material-ui/icons";
@@ -159,7 +159,7 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
                   marginLeft: "12px",
                 }}
               >
-                <UserIcon
+                <MemberIcon
                   fontSize="small"
                   style={{
                     marginRight: "3px",
