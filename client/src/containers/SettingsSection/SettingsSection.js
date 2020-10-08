@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   CardActions,
   CardContent,
@@ -45,7 +46,12 @@ const SettingsSection = ({
           flexDirection: "column",
         }}
       >
-        <Card className={classes.artworkContainer}>
+        <Card
+          className={classes.artworkContainer}
+          style={{
+            height: "100%",
+          }}
+        >
           <Formik
             initialValues={{
               userMedia: "",
@@ -59,67 +65,100 @@ const SettingsSection = ({
             onSubmit={handleUpdateProfile}
           >
             {({ values, errors, touched }) => (
-              <Form>
-                <CardContent p={32}>
-                  <Field name="userMedia">
-                    {({
-                      field,
-                      form: { setFieldValue, setFieldTouched },
-                      meta,
-                    }) => (
-                      <ImageInput
-                        title="Avatar"
-                        meta={meta}
-                        field={field}
-                        setFieldValue={setFieldValue}
-                        setFieldTouched={setFieldTouched}
-                        helperText={meta.touched && meta.error}
-                        error={meta.touched && Boolean(meta.error)}
-                        preview={user.photo}
-                        shape="circle"
-                        noEmpty={true}
-                      />
-                    )}
-                  </Field>
-                  <Typography>Profile details</Typography>
-                  <Field name="userDescription">
-                    {({ field, form: { touched, errors }, meta }) => (
-                      <TextField
-                        {...field}
-                        onBlur={() => null}
-                        label="Description"
-                        type="text"
-                        helperText={meta.touched && meta.error}
-                        error={meta.touched && Boolean(meta.error)}
-                        margin="dense"
-                        variant="outlined"
-                        fullWidth
-                        multiline
-                      />
-                    )}
-                  </Field>
-                  <Field name="userCountry">
-                    {({
-                      field,
-                      form: { touched, errors, setFieldValue, setFieldTouched },
-                      meta,
-                    }) => (
-                      <AutocompleteInput
-                        {...field}
-                        options={countries}
-                        handleChange={(e, item) =>
-                          setFieldValue("userCountry", item || "")
-                        }
-                        handleBlur={() => setFieldTouched("userCountry", true)}
-                        getOptionLabel={(option) => option.text}
-                        helperText={meta.touched && meta.error}
-                        error={meta.touched && Boolean(meta.error)}
-                        label="Country"
-                      />
-                    )}
-                  </Field>
+              <Form
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <CardContent
+                  p={32}
+                  style={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Box
+                    style={{
+                      marginTop: 20,
+                    }}
+                  >
+                    <Field name="userMedia">
+                      {({
+                        field,
+                        form: { setFieldValue, setFieldTouched },
+                        meta,
+                      }) => (
+                        <ImageInput
+                          title="Avatar"
+                          meta={meta}
+                          field={field}
+                          setFieldValue={setFieldValue}
+                          setFieldTouched={setFieldTouched}
+                          helperText={meta.touched && meta.error}
+                          error={meta.touched && Boolean(meta.error)}
+                          preview={user.photo}
+                          shape="circle"
+                          noEmpty={true}
+                        />
+                      )}
+                    </Field>
+                  </Box>
+                  <Box>
+                    <Typography>Profile details</Typography>
+                    <Field name="userDescription">
+                      {({ field, form: { touched, errors }, meta }) => (
+                        <TextField
+                          {...field}
+                          onBlur={() => null}
+                          label="Description"
+                          type="text"
+                          helperText={meta.touched && meta.error}
+                          error={meta.touched && Boolean(meta.error)}
+                          margin="dense"
+                          variant="outlined"
+                          fullWidth
+                          multiline
+                        />
+                      )}
+                    </Field>
+                    <Field name="userCountry">
+                      {({
+                        field,
+                        form: {
+                          touched,
+                          errors,
+                          setFieldValue,
+                          setFieldTouched,
+                        },
+                        meta,
+                      }) => (
+                        <AutocompleteInput
+                          {...field}
+                          options={countries}
+                          handleChange={(e, item) =>
+                            setFieldValue("userCountry", item || "")
+                          }
+                          handleBlur={() =>
+                            setFieldTouched("userCountry", true)
+                          }
+                          getOptionLabel={(option) => option.text}
+                          helperText={meta.touched && meta.error}
+                          error={meta.touched && Boolean(meta.error)}
+                          label="Country"
+                        />
+                      )}
+                    </Field>
+                  </Box>
                 </CardContent>
-                <CardActions>
+                <CardActions
+                  style={{ display: "flex", justifyContent: "flex-end" }}
+                >
                   <Button type="submit">Save</Button>
                 </CardActions>
               </Form>
@@ -136,7 +175,10 @@ const SettingsSection = ({
           flexDirection: "column",
         }}
       >
-        <Card className={classes.artworkContainer}>
+        <Card
+          className={classes.artworkContainer}
+          style={{ marginBottom: "16px" }}
+        >
           <Formik
             initialValues={{
               userEmail: user.email,
@@ -165,14 +207,19 @@ const SettingsSection = ({
                     )}
                   </Field>
                 </CardContent>
-                <CardActions>
+                <CardActions
+                  style={{ display: "flex", justifyContent: "flex-end" }}
+                >
                   <Button type="submit">Save</Button>
                 </CardActions>
               </Form>
             )}
           </Formik>
         </Card>
-        <Card className={classes.artworkContainer}>
+        <Card
+          className={classes.artworkContainer}
+          style={{ marginBottom: "16px" }}
+        >
           <Formik
             initialValues={{
               userSaves: user.displaySaves,
@@ -193,6 +240,7 @@ const SettingsSection = ({
                     }) => (
                       <SwitchInput
                         {...field}
+                        color="primary"
                         label="Display saved artwork"
                         helperText={meta.touched && meta.error}
                         error={meta.touched && Boolean(meta.error)}
@@ -200,7 +248,9 @@ const SettingsSection = ({
                     )}
                   </Field>
                 </CardContent>
-                <CardActions>
+                <CardActions
+                  style={{ display: "flex", justifyContent: "flex-end" }}
+                >
                   <Button type="submit">Save</Button>
                 </CardActions>
               </Form>
@@ -268,7 +318,9 @@ const SettingsSection = ({
                     )}
                   </Field>
                 </CardContent>
-                <CardActions>
+                <CardActions
+                  style={{ display: "flex", justifyContent: "flex-end" }}
+                >
                   <Button type="submit">Save</Button>
                 </CardActions>
               </Form>
@@ -295,7 +347,7 @@ const SettingsSection = ({
               users' orders. This action is irreversible.
             </Typography>
           </CardContent>
-          <CardActions>
+          <CardActions style={{ display: "flex", justifyContent: "flex-end" }}>
             <Button onClick={handleDeactivateUser}>Deactivate</Button>
           </CardActions>
         </Card>
