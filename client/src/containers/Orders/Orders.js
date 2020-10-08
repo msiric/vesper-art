@@ -1,37 +1,37 @@
-import _ from 'lodash';
 import {
-  Grid,
   CircularProgress,
-  Paper,
-  Typography,
+  FormControl,
+  Grid,
   Input,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
   Table,
   TableBody,
   TableCell,
   TablePagination,
   TableRow,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { withRouter, useHistory } from 'react-router-dom';
-import { format } from 'date-fns';
-import ProductsTableHead from './Head.js';
-import OrdersStyles from './Orders.style.js';
-import { getOrders } from '../../services/orders.js';
+  Typography,
+} from "@material-ui/core";
+import { format } from "date-fns";
+import _ from "lodash";
+import React, { useEffect, useState } from "react";
+import { useHistory, withRouter } from "react-router-dom";
+import { getOrders } from "../../services/orders.js";
+import ProductsTableHead from "./Head.js";
+import OrdersStyles from "./Orders.style.js";
 
 const Orders = () => {
   const [state, setState] = useState({
     loading: true,
     orders: [],
-    search: '',
-    display: 'purchases',
+    search: "",
+    display: "purchases",
     page: 0,
     rows: 10,
     sort: {
-      direction: 'asc',
+      direction: "asc",
       id: null,
     },
   });
@@ -75,10 +75,10 @@ const Orders = () => {
 
   function handleRequestSort(e, property) {
     const id = property;
-    let direction = 'desc';
+    let direction = "desc";
 
-    if (state.sort.id === property && state.sort.direction === 'desc') {
-      direction = 'asc';
+    if (state.sort.id === property && state.sort.direction === "desc") {
+      direction = "asc";
     }
 
     setState((prevState) => ({
@@ -137,13 +137,17 @@ const Orders = () => {
                 >
                   {state.display}
                 </Typography>
-                <FormControl variant="outlined" className={classes.formControl}>
-                  <InputLabel id="data-display">Displayed data</InputLabel>
+                <FormControl
+                  variant="outlined"
+                  className={classes.formControl}
+                  style={{ marginBottom: "12px" }}
+                >
+                  <InputLabel id="data-display">Display</InputLabel>
                   <Select
                     labelId="data-display"
                     value={state.display}
                     onChange={handleSelectChange}
-                    label="Displayed data"
+                    label="Display"
                     margin="dense"
                   >
                     <MenuItem value="purchases">Purchases</MenuItem>
@@ -164,7 +168,7 @@ const Orders = () => {
                     fullWidth
                     value={state.search}
                     inputProps={{
-                      'aria-label': 'Search',
+                      "aria-label": "Search",
                     }}
                     onChange={(e) => handleSearchChange(e)}
                   />
@@ -185,7 +189,7 @@ const Orders = () => {
                     [
                       (o) => {
                         switch (state.sort.id) {
-                          case 'categories': {
+                          case "categories": {
                             return o.categories[0];
                           }
                           default: {
@@ -223,23 +227,23 @@ const Orders = () => {
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
-                            {state.display === 'purchases'
+                            {state.display === "purchases"
                               ? n.seller.name
                               : n.buyer.name}
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
-                            {state.display === 'purchases'
+                            {state.display === "purchases"
                               ? `$${n.spent}`
                               : `$${n.earned}`}
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
-                            {format(new Date(n.created), 'dd/MM/yyyy')}
+                            {format(new Date(n.created), "dd/MM/yyyy")}
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
-                            {n.review ? n.review.rating : 'Not rated'}
+                            {n.review ? n.review.rating : "Not rated"}
                           </TableCell>
 
                           <TableCell component="th" scope="row" align="right">
@@ -257,10 +261,10 @@ const Orders = () => {
                 rowsPerPage={state.rows}
                 page={state.page}
                 backIconButtonProps={{
-                  'aria-label': 'Previous Page',
+                  "aria-label": "Previous Page",
                 }}
                 nextIconButtonProps={{
-                  'aria-label': 'Next Page',
+                  "aria-label": "Next Page",
                 }}
                 onChangePage={handleChangePage}
                 onChangeRowsPerPage={handleChangeRowsPerPage}

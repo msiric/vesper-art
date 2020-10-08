@@ -52,21 +52,17 @@ const Orders = () => {
     }));
   };
 
-  function handleRowClick(id) {
-    history.push(`/orders/${id}`);
-  }
-
   return (
     <Container fixed className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
-          <FormControl variant="outlined">
-            <InputLabel id="data-display">Displayed data</InputLabel>
+          <FormControl variant="outlined" style={{ marginBottom: "12px" }}>
+            <InputLabel id="data-display">Display</InputLabel>
             <Select
               labelId="data-display"
               value={state.display}
               onChange={handleSelectChange}
-              label="Displayed data"
+              label="Display"
               margin="dense"
             >
               <MenuItem value="purchases">Purchases</MenuItem>

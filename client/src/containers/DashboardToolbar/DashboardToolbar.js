@@ -27,13 +27,17 @@ const DashboardToolbar = ({ display, handleSelectChange }) => {
         </Typography>
       </GridItem>
       <GridItem item xs={12} md={6} textAlign="right">
-        <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel id="data-display">Displayed data</InputLabel>
+        <FormControl
+          variant="outlined"
+          className={classes.formControl}
+          style={{ marginBottom: "12px" }}
+        >
+          <InputLabel id="data-display">Display</InputLabel>
           <Select
             labelId="data-display"
             value={display.type}
             onChange={handleSelectChange}
-            label="Displayed data"
+            label="Display"
             margin="dense"
           >
             <MenuItem value="purchases">Purchases</MenuItem>

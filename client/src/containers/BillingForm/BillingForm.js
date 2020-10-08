@@ -90,130 +90,116 @@ const BillingForm = () => {
           <Form> */}
       <Grid item xs={12}>
         <Typography variant="h6">Billing Information</Typography>
-        <Grid item xs={12} sm={4}>
-          <Field name="billingName">
-            {({ field, form: { touched, errors }, meta }) => (
-              <TextField
-                {...field}
-                label="First name"
-                type="text"
-                helperText={meta.touched && meta.error}
-                error={meta.touched && Boolean(meta.error)}
-                margin="dense"
-                variant="outlined"
-                fullWidth
-                multiline
-              />
-            )}
-          </Field>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Field name="billingSurname">
-            {({ field, form: { touched, errors }, meta }) => (
-              <TextField
-                {...field}
-                label="Last name"
-                type="text"
-                helperText={meta.touched && meta.error}
-                error={meta.touched && Boolean(meta.error)}
-                margin="dense"
-                variant="outlined"
-                fullWidth
-                multiline
-              />
-            )}
-          </Field>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Field name="billingEmail">
-            {({ field, form: { touched, errors }, meta }) => (
-              <TextField
-                {...field}
-                label="Email"
-                type="text"
-                helperText={meta.touched && meta.error}
-                error={meta.touched && Boolean(meta.error)}
-                margin="dense"
-                variant="outlined"
-                fullWidth
-                multiline
-              />
-            )}
-          </Field>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Field name="billingAddress">
-            {({ field, form: { touched, errors }, meta }) => (
-              <TextField
-                {...field}
-                label="Street address"
-                type="text"
-                helperText={meta.touched && meta.error}
-                error={meta.touched && Boolean(meta.error)}
-                margin="dense"
-                variant="outlined"
-                fullWidth
-                multiline
-              />
-            )}
-          </Field>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Field name="billingZip">
-            {({ field, form: { touched, errors }, meta }) => (
-              <TextField
-                {...field}
-                label="Postal code"
-                type="text"
-                helperText={meta.touched && meta.error}
-                error={meta.touched && Boolean(meta.error)}
-                margin="dense"
-                variant="outlined"
-                fullWidth
-                multiline
-              />
-            )}
-          </Field>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Field name="billingCity">
-            {({ field, form: { touched, errors }, meta }) => (
-              <TextField
-                {...field}
-                label="City"
-                type="text"
-                helperText={meta.touched && meta.error}
-                error={meta.touched && Boolean(meta.error)}
-                margin="dense"
-                variant="outlined"
-                fullWidth
-                multiline
-              />
-            )}
-          </Field>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Field name="billingCountry">
-            {({
-              field,
-              form: { touched, errors, setFieldValue, setFieldTouched },
-              meta,
-            }) => (
-              <AutocompleteInput
-                {...field}
-                options={countries}
-                handleChange={(e, value) =>
-                  setFieldValue("billingCountry", value || "")
-                }
-                handleBlur={() => setFieldTouched("country", true)}
-                getOptionLabel={(option) => option.text}
-                helperText={meta.touched && meta.error}
-                error={meta.touched && Boolean(meta.error)}
-                label="Country"
-              />
-            )}
-          </Field>
-        </Grid>
+        <Field name="billingName">
+          {({ field, form: { touched, errors }, meta }) => (
+            <TextField
+              {...field}
+              label="First name"
+              type="text"
+              helperText={meta.touched && meta.error}
+              error={meta.touched && Boolean(meta.error)}
+              margin="dense"
+              variant="outlined"
+              fullWidth
+              multiline
+            />
+          )}
+        </Field>
+        <Field name="billingSurname">
+          {({ field, form: { touched, errors }, meta }) => (
+            <TextField
+              {...field}
+              label="Last name"
+              type="text"
+              helperText={meta.touched && meta.error}
+              error={meta.touched && Boolean(meta.error)}
+              margin="dense"
+              variant="outlined"
+              fullWidth
+              multiline
+            />
+          )}
+        </Field>
+        <Field name="billingEmail">
+          {({ field, form: { touched, errors }, meta }) => (
+            <TextField
+              {...field}
+              label="Email"
+              type="text"
+              helperText={meta.touched && meta.error}
+              error={meta.touched && Boolean(meta.error)}
+              margin="dense"
+              variant="outlined"
+              fullWidth
+              multiline
+            />
+          )}
+        </Field>
+        <Field name="billingAddress">
+          {({ field, form: { touched, errors }, meta }) => (
+            <TextField
+              {...field}
+              label="Street address"
+              type="text"
+              helperText={meta.touched && meta.error}
+              error={meta.touched && Boolean(meta.error)}
+              margin="dense"
+              variant="outlined"
+              fullWidth
+              multiline
+            />
+          )}
+        </Field>
+        <Field name="billingZip">
+          {({ field, form: { touched, errors }, meta }) => (
+            <TextField
+              {...field}
+              label="Postal code"
+              type="text"
+              helperText={meta.touched && meta.error}
+              error={meta.touched && Boolean(meta.error)}
+              margin="dense"
+              variant="outlined"
+              fullWidth
+              multiline
+            />
+          )}
+        </Field>
+        <Field name="billingCity">
+          {({ field, form: { touched, errors }, meta }) => (
+            <TextField
+              {...field}
+              label="City"
+              type="text"
+              helperText={meta.touched && meta.error}
+              error={meta.touched && Boolean(meta.error)}
+              margin="dense"
+              variant="outlined"
+              fullWidth
+              multiline
+            />
+          )}
+        </Field>
+        <Field name="billingCountry">
+          {({
+            field,
+            form: { touched, errors, setFieldValue, setFieldTouched },
+            meta,
+          }) => (
+            <AutocompleteInput
+              {...field}
+              options={countries}
+              handleChange={(e, value) =>
+                setFieldValue("billingCountry", value || "")
+              }
+              handleBlur={() => setFieldTouched("country", true)}
+              getOptionLabel={(option) => option.text}
+              helperText={meta.touched && meta.error}
+              error={meta.touched && Boolean(meta.error)}
+              label="Country"
+            />
+          )}
+        </Field>
       </Grid>
       {/*       <Grid container item justify="flex-end">
         <Button className={classes.button} onClick={() => handleStepChange(-1)}>

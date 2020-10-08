@@ -1,6 +1,9 @@
 import {
   Box,
   Button,
+  Card,
+  CardActions,
+  CardContent,
   CircularProgress,
   Container,
   Grid,
@@ -9,7 +12,6 @@ import {
   ListItemIcon,
   ListItemText,
   makeStyles,
-  Paper,
   Step,
   StepConnector,
   StepLabel,
@@ -431,29 +433,29 @@ const Processor = ({ match, location, stripe }) => {
         ) : state.version._id ? (
           <>
             <Grid item xs={12} md={8}>
-              <Box>
-                {state.loading ? (
-                  <CircularProgress />
-                ) : (
-                  <Paper elevation={5}>
-                    <Formik
-                      initialValues={{
-                        licenseType: location.state.license || "",
-                        licenseAssignee: "",
-                        licenseCompany: "",
-                        billingName: "",
-                        billingSurname: "",
-                        billingEmail: "",
-                        billingAddress: "",
-                        billingZip: "",
-                        billingCity: "",
-                        billingCountry: "",
-                      }}
-                      validationSchema={checkoutValidation[state.step.current]}
-                      onSubmit={handleSubmit}
-                    >
-                      {({ isSubmitting, values, setFieldValue }) => (
-                        <Form style={{ padding: 16 }}>
+              {state.loading ? (
+                <CircularProgress />
+              ) : (
+                <Formik
+                  initialValues={{
+                    licenseType: location.state.license || "",
+                    licenseAssignee: "",
+                    licenseCompany: "",
+                    billingName: "",
+                    billingSurname: "",
+                    billingEmail: "",
+                    billingAddress: "",
+                    billingZip: "",
+                    billingCity: "",
+                    billingCountry: "",
+                  }}
+                  validationSchema={checkoutValidation[state.step.current]}
+                  onSubmit={handleSubmit}
+                >
+                  {({ isSubmitting, values, setFieldValue }) => (
+                    <Form>
+                      <Card elevation={5}>
+                        <CardContent>
                           {stripe ? (
                             <Box>
                               <Stepper
@@ -486,40 +488,39 @@ const Processor = ({ match, location, stripe }) => {
                                   )}
                                 </Grid>
                               </Box>
-                              <Box
-                                display="flex"
-                                justifyContent="space-between"
-                              >
-                                <Button
-                                  disabled={state.step.current === 0}
-                                  onClick={() => handleStepChange(-1)}
-                                >
-                                  Back
-                                </Button>
-                                <Button
-                                  variant="contained"
-                                  color="primary"
-                                  type="submit"
-                                  disabled={isSubmitting}
-                                >
-                                  {state.loading ? (
-                                    <CircularProgress
-                                      color="secondary"
-                                      size={24}
-                                    />
-                                  ) : (
-                                    "Next"
-                                  )}
-                                </Button>
-                              </Box>
                             </Box>
                           ) : null}
-                        </Form>
-                      )}
-                    </Formik>
-                  </Paper>
-                )}
-              </Box>
+                        </CardContent>
+                        <CardActions
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Button
+                            disabled={state.step.current === 0}
+                            onClick={() => handleStepChange(-1)}
+                          >
+                            Back
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            disabled={isSubmitting}
+                          >
+                            {state.loading ? (
+                              <CircularProgress color="secondary" size={24} />
+                            ) : (
+                              "Next"
+                            )}
+                          </Button>
+                        </CardActions>
+                      </Card>
+                    </Form>
+                  )}
+                </Formik>
+              )}
             </Grid>
             <Grid item xs={12} md={4}>
               <CheckoutSummary
