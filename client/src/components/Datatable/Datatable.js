@@ -2,7 +2,7 @@ import { IconButton, Tooltip } from "@material-ui/core";
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
-  Edit as EditIcon,
+  Edit as EditIcon
 } from "@material-ui/icons";
 import MUIDataTable from "mui-datatables";
 import React, { useState } from "react";
@@ -121,7 +121,7 @@ const Datatable = ({
     onRowClick: (data) => redirect && history.push(`/${redirect}/${data[0]}`),
     textLabels: {
       body: {
-        noMatch: loading ? <LoadingSpinner /> : empty,
+        noMatch: loading ? <LoadingSpinner padding={154}/> : empty,
       },
     },
   };

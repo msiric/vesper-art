@@ -1,7 +1,8 @@
-import { Box, Container, Grid, IconButton } from "@material-ui/core";
+import { Box, Container, Grid, IconButton, Typography } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon
+  EditRounded as EditIcon,
+  HourglassEmptyRounded as EmptyIcon
 } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -203,7 +204,7 @@ const MyArtwork = () => {
               artwork.current.created,
               actionsColumn(artwork._id),
             ])}
-            empty="You have no artwork"
+            empty={<Box style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 126}}><EmptyIcon style={{ fontSize: 56, marginBottom: 20 }}/><Typography variant="body2">You have no artwork</Typography></Box>}
             loading={state.loading}
             redirect="artwork"
             selectable={false}
