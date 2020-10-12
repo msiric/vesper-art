@@ -29,29 +29,33 @@ const ReviewCard = ({ review, handleModalOpen, shouldReview, loading }) => {
           <Typography m={2}>Review</Typography>
         </SkeletonWrapper>
       </Box>
-      {review ? (
+      {loading || review ? (
         shouldReview ? (
           <Box className={classes.reviewContent}>
-            <SkeletonWrapper variant="text" loading={loading} width="100%">
+            <SkeletonWrapper variant="text" loading={loading}>
               <Typography m={2} fontSize="h6.fontSize">
                 Your rating
               </Typography>
             </SkeletonWrapper>
-            <Rating value={review.rating} readOnly />
+            <SkeletonWrapper loading={loading}>
+              <Rating value={review.rating} readOnly />
+            </SkeletonWrapper>
           </Box>
         ) : (
           <Box className={classes.reviewContent}>
-            <SkeletonWrapper variant="text" loading={loading} width="100%">
+            <SkeletonWrapper variant="text" loading={loading}>
               <Typography m={2} fontSize="h6.fontSize">
                 Buyer's rating
               </Typography>
             </SkeletonWrapper>
-            <Rating value={review.rating} readOnly />
+            <SkeletonWrapper loading={loading}>
+              <Rating value={review.rating} readOnly />
+            </SkeletonWrapper>
           </Box>
         )
       ) : shouldReview ? (
         <Box className={classes.reviewContent}>
-          <SkeletonWrapper variant="text" loading={loading} width="100%">
+          <SkeletonWrapper variant="text" loading={loading}>
             <Typography m={2} fontSize="h6.fontSize">
               No rating left
             </Typography>
@@ -60,7 +64,7 @@ const ReviewCard = ({ review, handleModalOpen, shouldReview, loading }) => {
         </Box>
       ) : (
         <Box className={classes.reviewContent}>
-          <SkeletonWrapper variant="text" loading={loading} width="100%">
+          <SkeletonWrapper variant="text" loading={loading}>
             <Typography m={2} fontSize="h6.fontSize">
               No rating found
             </Typography>

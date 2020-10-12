@@ -28,7 +28,7 @@ const AddCommentForm = ({ artwork, handleCommentAdd, loading }) => {
     >
       {({ values, errors, touched, isSubmitting }) => (
         <Form className={classes.card}>
-          <Box m={2}>
+          <Box>
             <SkeletonWrapper variant="text" loading={loading} width="100%">
               <Field name="commentContent">
                 {({ field, form: { touched, errors }, meta }) => (
@@ -47,7 +47,7 @@ const AddCommentForm = ({ artwork, handleCommentAdd, loading }) => {
               </Field>
             </SkeletonWrapper>
           </Box>
-          <Box m={2}>
+          <Box>
             <SkeletonWrapper loading={loading} width="100%">
               <Button
                 type="submit"

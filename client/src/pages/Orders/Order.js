@@ -22,7 +22,7 @@ const Order = ({ match }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
-    order: { version: {}, seller: {}, buyer: {}, license: {} },
+    order: { version: {}, seller: {}, buyer: {}, license: {}, review: {} },
     modal: {
       open: false,
       body: ``,
@@ -179,6 +179,7 @@ const Order = ({ match }) => {
                 isSeller={isSeller}
                 loading={state.loading}
               />
+              <br />
               <ReviewCard
                 handleModalOpen={handleModalOpen}
                 review={state.order.review}

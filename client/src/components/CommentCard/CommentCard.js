@@ -6,7 +6,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemSecondaryAction,
-  ListItemText,
+  ListItemText
 } from "@material-ui/core";
 import { MoreVertRounded as MoreIcon } from "@material-ui/icons";
 import React, { useContext } from "react";
@@ -31,7 +31,7 @@ const CommentCard = ({
 
   return (
     <Box key={comment._id}>
-      <ListItem alignItems="flex-start">
+      <ListItem alignItems="flex-start" disableGutters>
         <ListItemAvatar>
           <SkeletonWrapper loading={loading} variant="circle">
             <Avatar
@@ -59,7 +59,6 @@ const CommentCard = ({
                   component="span"
                   color="text.secondary"
                   fontStyle="oblique"
-                  ml={1}
                 >
                   {comment.modified ? "edited" : null}
                 </Typography>

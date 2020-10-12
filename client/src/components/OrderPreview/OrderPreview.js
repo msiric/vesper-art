@@ -34,9 +34,7 @@ const useStyles = makeStyles((muiTheme) => ({
     color: muiTheme.palette.text.secondary,
   },
   artworkPreviewMedia: {
-    height: 600,
-    backgroundSize: "contain",
-    margin: 20,
+    height: 500,
   },
   avatar: {
     width: muiTheme.spacing(10),
@@ -142,7 +140,7 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
           width="100%"
           height="60px"
         >
-          <Typography m={2} fontSize="h6.fontSize">
+          <Typography m={2} variant="body2">
             {version.description}
           </Typography>
         </SkeletonWrapper>

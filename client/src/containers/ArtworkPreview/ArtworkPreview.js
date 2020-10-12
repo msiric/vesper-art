@@ -35,7 +35,7 @@ const useStyles = makeStyles((muiTheme) => ({
   },
   artworkPreviewMedia: {
     height: "100%",
-    backgroundSize: "auto",
+    margin: '30px 0',
   },
   avatar: {
     width: muiTheme.spacing(10),
@@ -127,7 +127,6 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
         <Box>
           <SkeletonWrapper variant="text" loading={loading}>
             <Typography
-              m={2}
               fontWeight="fontWeightBold"
               fontSize="h5.fontSize"
             >{`${version.title}, ${new Date(
@@ -136,8 +135,8 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
           </SkeletonWrapper>
         </Box>
         <SkeletonWrapper
-          style={{ width: "100%", margin: "0 auto" }}
           loading={loading}
+          width="100%"
         >
           <CardMedia
             className={classes.artworkPreviewMedia}
@@ -153,22 +152,20 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
             width="100%"
             height="120px"
           >
-            <Typography m={2} variant="body2">
+            <Typography mb={2} variant="body2">
               {version.description}
             </Typography>
           </SkeletonWrapper>
           <Divider />
           <Box>
             <SkeletonWrapper variant="text" loading={loading}>
-              <Typography ml={2} mt={2} mr={2} fontSize={12} fontStyle="italic">
+              <Typography mt={2} fontSize={12} fontStyle="italic">
                 You are previewing a low resolution thumbnail of the original
                 artwork
               </Typography>
             </SkeletonWrapper>
             <SkeletonWrapper variant="text" loading={loading}>
               <Typography
-                ml={2}
-                mr={2}
                 mb={2}
                 fontSize={12}
                 fontStyle="italic"

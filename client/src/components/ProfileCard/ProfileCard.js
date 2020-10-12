@@ -44,132 +44,130 @@ const ProfileCard = ({ user, handleModalOpen, height, loading }) => {
   const classes = useStyles();
 
   return (
-    <Card
-      className={classes.profileCardContainer}
-      style={{ minHeight: height ? height : "auto" }}
-      loading={loading}
-    >
-      <SkeletonWrapper loading={loading} variant="circle">
-        <CardMedia
-          component={RouterLink}
-          to={`/user/${user.name}`}
-          alt={user.name}
-          image={user.photo}
-          title={user.name}
-          className={classes.profileCardAvatar}
-        />
-      </SkeletonWrapper>
-      <CardContent style={{width: '100%'}}>
-        <SkeletonWrapper
-          variant="text"
-          loading={loading}
-          width="100%"
-          height="40px"
-        >
-          <Typography
+      <Card
+        className={classes.profileCardContainer}
+        style={{ minHeight: height ? height : "auto" }}
+        loading={loading}
+      >
+        <SkeletonWrapper loading={loading} variant="circle">
+          <CardMedia
             component={RouterLink}
             to={`/user/${user.name}`}
-            gutterBottom
-            variant="h5"
-            align="center"
-            color="textPrimary"
-            className={classes.profileCardName}
-          >
-            {user.name}
-          </Typography>
+            alt={user.name}
+            image={user.photo}
+            title={user.name}
+            className={classes.profileCardAvatar}
+          />
         </SkeletonWrapper>
-        <SkeletonWrapper loading={loading} width="100%">
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: "12px",
-            }}
+        <CardContent style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <SkeletonWrapper
+            variant="text"
+            loading={loading}
           >
-            {user.rating && (
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginRight: "6px",
-                }}
-              >
-                <StarIcon fontSize="small" />
-                <Typography
-                  variant="body1"
-                  color="textSecondary"
-                  component="p"
-                  align="center"
+            <Typography
+              component={RouterLink}
+              to={`/user/${user.name}`}
+              gutterBottom
+              variant="h5"
+              align="center"
+              color="textPrimary"
+              className={classes.profileCardName}
+            >
+              {user.name || 'Artist name'}
+            </Typography>
+          </SkeletonWrapper>
+          <SkeletonWrapper loading={loading} width="100%">
+            <Box
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: "12px",
+              }}
+            >
+              {user.rating && (
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginRight: "6px",
+                  }}
                 >
-                  {user.rating}
-                </Typography>
-              </Box>
-            )}
-            {user.country && (
+                  <StarIcon fontSize="small" />
+                  <Typography
+                    variant="body1"
+                    color="textSecondary"
+                    component="p"
+                    align="center"
+                  >
+                    {user.rating}
+                  </Typography>
+                </Box>
+              )}
+              {user.country && (
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginRight: "6px",
+                  }}
+                >
+                  <LocationIcon fontSize="small" />
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    component="p"
+                    align="center"
+                  >
+                    {user.country}
+                  </Typography>
+                </Box>
+              )}
               <Box
                 style={{
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  marginRight: "6px",
                 }}
               >
-                <LocationIcon fontSize="small" />
+                <MemberIcon fontSize="small" />
                 <Typography
                   variant="body2"
                   color="textSecondary"
                   component="p"
                   align="center"
                 >
-                  {user.country}
+                  {user.created && formatDate(new Date(user.created), "MMM yy")}
                 </Typography>
               </Box>
-            )}
-            <Box
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <MemberIcon fontSize="small" />
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                component="p"
-                align="center"
-              >
-                {user.created && formatDate(new Date(user.created), "MMM yy")}
-              </Typography>
             </Box>
-          </Box>
-        </SkeletonWrapper>
-        <SkeletonWrapper
-          variant="text"
-          loading={loading}
-          width="100%"
-          height="140px"
-        >
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            component="p"
-            align="center"
+          </SkeletonWrapper>
+          <SkeletonWrapper
+            variant="text"
+            loading={loading}
+            width="100%"
+            height="140px"
           >
-            {user.description || "Nothing here yet"}
-          </Typography>
-        </SkeletonWrapper>
-      </CardContent>
-      {user.editable && (
-        <CardActions>
-          <Button size="small" color="primary" onClick={handleModalOpen}>
-            Edit
-          </Button>
-        </CardActions>
-      )}
-    </Card>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              align="center"
+            >
+              {user.description || "Nothing here yet"}
+            </Typography>
+          </SkeletonWrapper>
+        </CardContent>
+        {user.editable && (
+          <CardActions>
+            <Button size="small" color="primary" onClick={handleModalOpen}>
+              Edit
+            </Button>
+          </CardActions>
+        )}
+      </Card>
   );
 };
 

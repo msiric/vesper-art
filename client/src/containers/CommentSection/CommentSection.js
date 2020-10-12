@@ -28,7 +28,7 @@ const CommentSection = ({
     <Card className={classes.root}>
       <CardContent>
         <SkeletonWrapper variant="text" loading={loading}>
-          <Typography m={2} fontSize="h5.fontSize">
+          <Typography my={2} fontSize="h5.fontSize">
             Comments
           </Typography>
         </SkeletonWrapper>
