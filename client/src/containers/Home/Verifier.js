@@ -1,18 +1,19 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../Store/Store.js";
-import * as Yup from "yup";
-import { useFormik, Formik, Form, Field } from "formik";
 import {
-  Grid,
-  CircularProgress,
+  Button, Grid,
+
   TextField,
-  Button,
-  Typography,
+
+  Typography
 } from "@material-ui/core";
+import { Field, Form, Formik } from "formik";
 import { withSnackbar } from "notistack";
-import VerifierStyles from "./Verifier.style.js";
-import { postVerifier } from "../../services/home.js";
+import React, { useContext, useState } from "react";
+import * as Yup from "yup";
 import { formatDate } from "../../../../common/helpers.js";
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import { postVerifier } from "../../services/home.js";
+import { Context } from "../Store/Store.js";
+import VerifierStyles from "./Verifier.style.js";
 
 const fingerprintValidation = Yup.object().shape({
   fingerprint: Yup.string().trim().required("Fingerprint cannot be empty"),
@@ -80,7 +81,7 @@ const Verifier = () => {
           )}
         </Formik>
         {state.loading ? (
-          <CircularProgress />
+          <LoadingSpinner />
         ) : state.license._id ? (
           <div className="table-responsive">
             <table className="simple">

@@ -1,5 +1,4 @@
 import {
-  CircularProgress,
   FormControl,
   Grid,
   Input,
@@ -12,12 +11,13 @@ import {
   TableCell,
   TablePagination,
   TableRow,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { format } from "date-fns";
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 import { getOrders } from "../../services/orders.js";
 import ProductsTableHead from "./Head.js";
 import OrdersStyles from "./Orders.style.js";
@@ -126,7 +126,7 @@ const Orders = () => {
     <Grid container className={classes.container}>
       <Grid item xs={12} className={classes.grid}>
         {state.loading ? (
-          <CircularProgress />
+          <LoadingSpinner />
         ) : (
           <>
             <div className="flex flex-1 w-full items-center justify-between">

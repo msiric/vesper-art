@@ -1,5 +1,4 @@
 import {
-  CircularProgress,
   Container,
   Divider,
   FormControl,
@@ -8,7 +7,7 @@ import {
   MenuItem,
   Paper,
   Select,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { LocalizationProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
@@ -16,6 +15,7 @@ import { eachDayOfInterval, format, subDays } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
 import NumberFormat from "react-number-format";
 import { Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 import { getSelection, getStatistics } from "../../services/user.js";
 import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
 import { Context } from "../Store/Store.js";
@@ -220,7 +220,7 @@ function Dashboard() {
               <Paper className={classes.box}>
                 {state.loading ? (
                   <Grid item xs={12} className={classes.loader}>
-                    <CircularProgress />
+                    <LoadingSpinner />
                   </Grid>
                 ) : state.display.type === "purchases" ? (
                   <div className={classes.boxData}>
@@ -259,7 +259,7 @@ function Dashboard() {
               <Paper className={classes.box}>
                 {state.loading ? (
                   <Grid item xs={12} className={classes.loader}>
-                    <CircularProgress />
+                    <LoadingSpinner />
                   </Grid>
                 ) : (
                   <div className={classes.boxData}>
@@ -286,7 +286,7 @@ function Dashboard() {
               <Paper className={classes.box}>
                 {state.loading ? (
                   <Grid item xs={12} className={classes.loader}>
-                    <CircularProgress />
+                    <LoadingSpinner />
                   </Grid>
                 ) : (
                   <div className={classes.boxData}>
@@ -338,7 +338,7 @@ function Dashboard() {
                         <div className={classes.graphContainer}>
                           {state.loading ? (
                             <Grid item xs={12} className={classes.loader}>
-                              <CircularProgress />
+                              <LoadingSpinner />
                             </Grid>
                           ) : (
                             <LineChart
@@ -383,7 +383,7 @@ function Dashboard() {
                         <Paper className={classes.item}>
                           {state.loading ? (
                             <Grid item xs={12} className={classes.loader}>
-                              <CircularProgress />
+                              <LoadingSpinner />
                             </Grid>
                           ) : (
                             <div className={classes.itemData}>
@@ -412,7 +412,7 @@ function Dashboard() {
                         <Paper className={classes.item}>
                           {state.loading ? (
                             <Grid item xs={12} className={classes.loader}>
-                              <CircularProgress />
+                              <LoadingSpinner />
                             </Grid>
                           ) : (
                             <div className={classes.itemData}>
@@ -432,7 +432,7 @@ function Dashboard() {
                         <Paper className={classes.item}>
                           {state.loading ? (
                             <Grid item xs={12} className={classes.loader}>
-                              <CircularProgress />
+                              <LoadingSpinner />
                             </Grid>
                           ) : (
                             <div className={classes.itemData}>

@@ -1,44 +1,37 @@
-import React, { useState, useContext } from 'react';
-import { Context } from '../Store/Store.js';
-import StackGrid from 'react-stack-grid';
-import Modal from '../../shared/Modal/Modal.js';
 import {
-  Paper,
-  Card,
-  CardHeader,
-  CardMedia,
-  CardContent,
-  Typography,
-  CardActions,
-  IconButton,
-  Grid,
-  CircularProgress,
+  Grid, Paper
 } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import {
-  FavoriteBorderRounded as SaveIcon,
-  FavoriteRounded as SavedIcon,
-  ShareRounded as ShareIcon,
-  LinkRounded as CopyIcon,
-  EditRounded as EditIcon,
+  LinkRounded as CopyIcon
 } from '@material-ui/icons';
-import {
-  FacebookShareButton,
-  WhatsappShareButton,
-  RedditShareButton,
-  TwitterShareButton,
-  FacebookIcon,
-  WhatsappIcon,
-  RedditIcon,
-  TwitterIcon,
-} from 'react-share';
 import { withSnackbar } from 'notistack';
-import { Link } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import GalleryStyles from './Gallery.style.js';
-import { postSave, deleteSave } from '../../services/artwork.js';
-import { useTheme } from '@material-ui/core/styles';
+import {
+  FacebookIcon, FacebookShareButton,
+
+
+
+
+
+  RedditIcon, RedditShareButton,
+
+
+
+
+  TwitterIcon, TwitterShareButton,
+
+  WhatsappIcon, WhatsappShareButton
+} from 'react-share';
+import StackGrid from 'react-stack-grid';
 import ArtworkCard from '../../components/ArtworkCard/ArtworkCard.js';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import { deleteSave, postSave } from '../../services/artwork.js';
+import Modal from '../../shared/Modal/Modal.js';
+import { Context } from '../Store/Store.js';
+import GalleryStyles from './Gallery.style.js';
 
 const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
   const [store, dispatch] = useContext(Context);
@@ -212,7 +205,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
         hasMore={hasMore}
         loader={
           <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
+            <LoadingSpinner />
           </Grid>
         }
       >

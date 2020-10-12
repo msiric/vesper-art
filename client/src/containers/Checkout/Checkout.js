@@ -1,17 +1,18 @@
 import {
   Box,
-  CircularProgress,
+
   Container,
   Grid,
   Paper,
   Step,
   StepLabel,
-  Stepper,
+  Stepper
 } from "@material-ui/core";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 import { getCheckout } from "../../services/checkout.js";
 import BillingForm from "../BillingForm/BillingForm.js";
 import LicenseForm from "../LicenseForm/LicenseForm.js";
@@ -164,7 +165,7 @@ const Checkout = ({ match, location }) => {
       <Grid container className={classes.container} spacing={2}>
         {state.loading ? (
           <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
+            <LoadingSpinner />
           </Grid>
         ) : state.artwork._id ? (
           <>
@@ -172,7 +173,7 @@ const Checkout = ({ match, location }) => {
               <Box component="main">
                 <Container maxWidth="md">
                   {state.loading ? (
-                    <CircularProgress />
+                    <LoadingSpinner />
                   ) : (
                     <Paper elevation={5}>
                       <Formik

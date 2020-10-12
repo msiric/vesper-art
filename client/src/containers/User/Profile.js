@@ -6,7 +6,7 @@ import {
   CardActions,
   CardContent,
   CardMedia,
-  CircularProgress,
+
   Container,
   Grid,
   Link as Anchor,
@@ -15,11 +15,11 @@ import {
   Tab,
   Tabs,
   TextField,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import {
   EditRounded as EditIcon,
-  LinkRounded as CopyIcon,
+  LinkRounded as CopyIcon
 } from "@material-ui/icons";
 import { format } from "date-fns";
 import { useFormik } from "formik";
@@ -35,17 +35,18 @@ import {
   TwitterIcon,
   TwitterShareButton,
   WhatsappIcon,
-  WhatsappShareButton,
+  WhatsappShareButton
 } from "react-share";
 import SwipeableViews from "react-swipeable-views";
 import { countries } from "../../../../common/constants.js";
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 import { Context } from "../../context/Store.js";
 import { getArtwork } from "../../services/artwork.js";
 import {
   getSaves,
   getUser,
   patchUser,
-  postMedia,
+  postMedia
 } from "../../services/user.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import UploadInput from "../../shared/UploadInput/UploadInput.js";
@@ -286,7 +287,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
       <Grid container className={classes.profile__container} spacing={2}>
         {state.loading ? (
           <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
+            <LoadingSpinner />
           </Grid>
         ) : state.user._id ? (
           <>

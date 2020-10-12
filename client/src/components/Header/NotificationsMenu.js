@@ -1,7 +1,8 @@
-import { CircularProgress, Divider, Grid, List, Menu } from '@material-ui/core';
+import { Divider, Grid, List, Menu } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner.js';
 import NotificationItem from './NotificationItem.js';
 import NotificationsMenuStyles from './NotificationsMenu.style.js';
 
@@ -54,7 +55,7 @@ const NotificationsMenu = ({
         hasMore={notifications.hasMore}
         loader={
           <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
+            <LoadingSpinner />
           </Grid>
         }
       >

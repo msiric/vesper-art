@@ -1,6 +1,7 @@
-import { CircularProgress, Container, Grid } from "@material-ui/core";
+import { Container, Grid } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 import { getToken } from "../../services/auth.js";
 
 const VerifyTokenLoader = ({ match }) => {
@@ -31,7 +32,7 @@ const VerifyTokenLoader = ({ match }) => {
     <Container className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>
         <Grid item xs={12} className={classes.loader}>
-          <CircularProgress />
+          <LoadingSpinner />
         </Grid>
       </Grid>
     </Container>

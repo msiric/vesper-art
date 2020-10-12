@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import {
   deleteComment,
   getComments,
-  getDetails,
+  getDetails
 } from "../../services/artwork.js";
 import { Context } from "../Store/Store.js";
 import ArtworkDetailsStyles from "./ArtworkDetails.style.js";
@@ -207,7 +207,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
       <Grid container className={classes.container} spacing={2}>
         {state.loading ? (
           <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
+            <LoadingSpinner />
           </Grid>
         ) : state.artwork._id ? (
           <>
@@ -242,7 +242,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
                           hasMore={state.scroll.comments.hasMore}
                           loader={
                             <Grid item xs={12} className={classes.loader}>
-                              <CircularProgress />
+                              <LoadingSpinner />
                             </Grid>
                           }
                         >

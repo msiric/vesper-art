@@ -1,12 +1,12 @@
 import {
-  CircularProgress,
   Container,
   Grid,
   Paper,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 import { getSaves } from "../../services/artwork.js";
 import Gallery from "../Home/Gallery.js";
 import { Context } from "../Store/Store.js";
@@ -44,7 +44,7 @@ const SavedArtwork = () => {
       <Grid container className={classes.container} spacing={2}>
         {state.loading ? (
           <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
+            <LoadingSpinner />
           </Grid>
         ) : (
           <>

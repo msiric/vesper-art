@@ -1,7 +1,7 @@
 import {
   Button,
   Chip,
-  CircularProgress,
+
   Container,
   ExpansionPanel,
   ExpansionPanelDetails,
@@ -16,7 +16,7 @@ import {
   Paper,
   Switch,
   TextField,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import {
   CheckCircleRounded as ConfirmIcon,
@@ -24,17 +24,18 @@ import {
   ExpandLessRounded as DownIcon,
   ExpandLessRounded as UpIcon,
   FavoriteRounded as SaveIcon,
-  RemoveCircleRounded as DeactivateIcon,
+  RemoveCircleRounded as DeactivateIcon
 } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
 import React, { useContext, useEffect, useState } from "react";
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
 import {
   deleteUser,
   getSettings,
   patchBilling,
   patchEmail,
   patchPassword,
-  patchPreferences,
+  patchPreferences
 } from "../../services/user.js";
 import AutocompleteInput from "../../shared/AutocompleteInput/AutocompleteInput.js";
 import { billingValidation } from "../../validation/billing.js";
@@ -94,7 +95,7 @@ const Settings = () => {
       <Grid container className={classes.container} spacing={2}>
         {state.loading ? (
           <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
+            <LoadingSpinner />
           </Grid>
         ) : state.user._id ? (
           <Grid item sm={12} className={classes.grid}>
