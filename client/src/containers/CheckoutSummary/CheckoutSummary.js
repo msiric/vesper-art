@@ -9,7 +9,7 @@ import {
   ListItem,
   ListItemText,
   TextField,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -17,6 +17,7 @@ import NumberFormat from "react-number-format";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import CheckoutCard from "../../components/CheckoutCard/CheckoutCard.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
 
 const validationSchema = Yup.object().shape({
   discountCode: Yup.string().trim().required("Discount cannot be empty"),
@@ -29,6 +30,7 @@ const CheckoutSummary = ({
   license,
   discount,
   handleDiscountChange,
+  loading
 }) => {
   const [state, setState] = useState({
     summary: {
@@ -69,16 +71,18 @@ const CheckoutSummary = ({
           flexDirection: "column",
         }}
       >
-        <Typography variant="h6" gutterBottom>
-          Order summary
-        </Typography>
+        <SkeletonWrapper variant="text" loading={loading}>
+          <Typography variant="h6" gutterBottom>
+            Order summary
+          </Typography>
+        </SkeletonWrapper>
         <Grid
           item
           xs={12}
           className={classes.artwork}
           style={{ flexBasis: "auto" }}
         >
-          <CheckoutCard version={version} />
+          <CheckoutCard version={version} loading={loading} />
         </Grid>
         <List>
           <ListItem
@@ -87,36 +91,28 @@ const CheckoutSummary = ({
             disableGutters
           >
             <ListItemText
-              primary={<Typography>{version.title}</Typography>}
+              primary={<SkeletonWrapper variant="text" loading={loading}><Typography>{version.title || 'Artwork title'}</Typography></SkeletonWrapper>}
               secondary={
-                <div>
-                  {!state.summary.license ? (
-                    <div>No licenses selected</div>
-                  ) : (
-                    <div>{`1 ${license} license`}</div>
-                  )}
-                </div>
+                <SkeletonWrapper variant="text" loading={loading}>
+                  <Typography>{state.summary.license ? `1 ${license} license` : 'No licenses selected'}</Typography>
+                </SkeletonWrapper>
               }
             />
             <ListItemText
               primary={
-                <Typography className={classes.rightList}>Price</Typography>
+                <SkeletonWrapper variant="text" loading={loading}><Typography className={classes.rightList}>Price</Typography></SkeletonWrapper>
               }
               secondary={
                 <div className={classes.rightList}>
-                  <div>
-                    {state.summary.license ? (
-                      <NumberFormat
-                        value={state.summary.amount}
-                        displayType={"text"}
-                        thousandSeparator={true}
-                        decimalScale={2}
-                        prefix={"$"}
-                      />
-                    ) : (
-                      "$0"
-                    )}
-                  </div>
+                  <SkeletonWrapper variant="text" loading={loading}>
+                    <NumberFormat
+                      value={state.summary.license ? state.summary.amount : 0}
+                      displayType={"text"}
+                      thousandSeparator={true}
+                      decimalScale={2}
+                      prefix={"$"}
+                    />
+                  </SkeletonWrapper>
                 </div>
               }
               style={{
@@ -174,19 +170,19 @@ const CheckoutSummary = ({
           ) : null}
           <ListItem className={classes.listItem} disableGutters>
             <ListItemText
-              primary={<Typography>Platform fee</Typography>}
+              primary={<SkeletonWrapper variant="text" loading={loading}><Typography>Platform fee</Typography></SkeletonWrapper>}
               secondary={
-                <div>
+                <SkeletonWrapper variant="text" loading={loading}>
                   <Typography>Fixed fee</Typography>
-                </div>
+                </SkeletonWrapper>
               }
             />
             <ListItemText
               primary={
-                <Typography className={classes.rightList}>Amount</Typography>
+                <SkeletonWrapper variant="text" loading={loading}><Typography className={classes.rightList}>Amount</Typography></SkeletonWrapper>
               }
               secondary={
-                <div>
+                <SkeletonWrapper variant="text" loading={loading}>
                   <Typography className={classes.rightList}>
                     <NumberFormat
                       value={
@@ -200,7 +196,7 @@ const CheckoutSummary = ({
                       prefix={"$"}
                     />
                   </Typography>
-                </div>
+                </SkeletonWrapper>
               }
               style={{
                 display: "flex",
@@ -212,22 +208,19 @@ const CheckoutSummary = ({
           <Divider />
           <ListItem className={classes.listItem} disableGutters>
             <ListItemText
-              primary={<Typography>Order</Typography>}
+              primary={<SkeletonWrapper variant="text" loading={loading}><Typography>Order</Typography></SkeletonWrapper>}
               secondary={
-                state.summary.license ? (
-                  <Typography>
-                    {`1 ${state.summary.license} license`}
-                  </Typography>
-                ) : (
-                  "No licenses selected"
-                )
+                  <SkeletonWrapper variant="text" loading={loading}><Typography>
+                    {state.summary.license ? `1 ${state.summary.license} license` : 'No licenses selected'}
+                  </Typography></SkeletonWrapper>
               }
             />
             <ListItemText
               primary={
-                <Typography className={classes.rightList}>Total</Typography>
+                <SkeletonWrapper variant="text" loading={loading}><Typography className={classes.rightList}>Total</Typography></SkeletonWrapper>
               }
               secondary={
+                <SkeletonWrapper variant="text" loading={loading}>
                 <Typography className={classes.rightList}>
                   {state.summary.amount ? (
                     discount ? (
@@ -263,7 +256,7 @@ const CheckoutSummary = ({
                       prefix={"$"}
                     />
                   )}
-                </Typography>
+                </Typography></SkeletonWrapper>
               }
               style={{
                 display: "flex",
@@ -301,30 +294,33 @@ const CheckoutSummary = ({
               enableReinitialize,
             }) => (
               <Form style={{ width: "100%" }}>
-                <Field name="discountCode">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      onBlur={() => null}
-                      label="Discount"
-                      type="text"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                  )}
-                </Field>
-
-                <Button
-                  type="submit"
-                  color="primary"
-                  disabled={isSubmitting}
-                  fullWidth
-                >
-                  Apply
-                </Button>
+                <SkeletonWrapper variant="text" loading={loading} width="100%">
+                  <Field name="discountCode">
+                    {({ field, form: { touched, errors }, meta }) => (
+                      <TextField
+                        {...field}
+                        onBlur={() => null}
+                        label="Discount"
+                        type="text"
+                        helperText={meta.touched && meta.error}
+                        error={meta.touched && Boolean(meta.error)}
+                        margin="dense"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    )}
+                  </Field>
+                </SkeletonWrapper>
+                <SkeletonWrapper loading={loading} width="100%">
+                  <Button
+                    type="submit"
+                    color="primary"
+                    disabled={isSubmitting}
+                    fullWidth
+                  >
+                    Apply
+                  </Button>
+                </SkeletonWrapper>
               </Form>
             )}
           </Formik>

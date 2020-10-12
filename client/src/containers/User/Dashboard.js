@@ -179,7 +179,7 @@ function Dashboard() {
 
   return (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
-      <Container fixed className={classes.fixed}>
+      <Container className={classes.fixed}>
         <Grid container className={classes.container} spacing={2}>
           <>
             <Grid item xs={12} md={12} className={classes.grid}>

@@ -2,7 +2,7 @@ import {
   FormControl,
   FormControlLabel,
   FormHelperText,
-  Switch,
+  Switch
 } from '@material-ui/core';
 import React from 'react';
 

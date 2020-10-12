@@ -16,18 +16,18 @@ import {
   StepConnector,
   StepLabel,
   Stepper,
-  withStyles,
+  withStyles
 } from "@material-ui/core";
 import {
   CardMembershipRounded as LicenseIcon,
   CheckRounded as CheckIcon,
   ContactMailRounded as BillingIcon,
-  PaymentRounded as PaymentIcon,
+  PaymentRounded as PaymentIcon
 } from "@material-ui/icons";
 import {
   CardNumberElement,
   Elements,
-  useElements,
+  useElements
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import clsx from "clsx";
@@ -35,8 +35,8 @@ import { Form, Formik } from "formik";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
+import SkeletonWrapper from '../../components/SkeletonWrapper/SkeletonWrapper.js';
 import BillingForm from "../../containers/BillingForm/BillingForm.js";
 import CheckoutSummary from "../../containers/CheckoutSummary/CheckoutSummary.js";
 import LicenseForm from "../../containers/LicenseForm/LicenseForm.js";
@@ -150,20 +150,17 @@ const Checkout = ({ match, location }) => {
     fetchData();
   }, []);
 
-  return state.loading ? (
-    <LoadingSpinner />
-  ) : (
-    <Elements stripe={state.stripe}>
+  return (<Elements stripe={state.stripe}>
       <Processor match={match} location={location} stripe={state.stripe} />
-    </Elements>
-  );
+    </Elements>)
 };
 
 const Processor = ({ match, location, stripe }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     secret: null,
-    artwork: {},
+    artwork: { version: {} },
+    version: { artwork: { owner: {} } },
     license: location.state.license || "",
     discount: null,
     intent: null,
@@ -171,7 +168,7 @@ const Processor = ({ match, location, stripe }) => {
       current: 0,
       length: STEPS.length,
     },
-    loading: true,
+    loading: true
   });
 
   const licenseOptions =
@@ -382,13 +379,14 @@ const Processor = ({ match, location, stripe }) => {
           <LicenseForm
             version={state.version}
             license={state.license}
-            handleLicenseChange={handleLicenseChange}
+            handleLicenseChange={handleLicenseChange} 
+            loading={state.loading}
           />
         );
       case 1:
-        return <BillingForm />;
+        return <BillingForm loading={state.loading} />;
       case 2:
-        return <PaymentForm secret={state.secret} version={state.version} />;
+        return <PaymentForm secret={state.secret} version={state.version} loading={state.loading} />;
 
       default:
         return <div>Not Found</div>;
@@ -425,18 +423,13 @@ const Processor = ({ match, location, stripe }) => {
   }, []);
 
   return (
-    <Container fixed className={globalClasses.gridContainer}>
+    <Container className={globalClasses.gridContainer}>
       <MainHeading text={"Checkout"} className={globalClasses.mainHeading} />
       <Grid container spacing={2}>
-        {state.loading ? (
-          <LoadingSpinner />
-        ) : state.version._id ? (
+        {state.loading || (state.version._id && stripe)? (
           <>
             <Grid item xs={12} md={8}>
-              {state.loading ? (
-                <CircularProgress />
-              ) : (
-                <Formik
+              <Formik
                   initialValues={{
                     licenseType: location.state.license || "",
                     licenseAssignee: "",
@@ -456,33 +449,37 @@ const Processor = ({ match, location, stripe }) => {
                     <Form>
                       <Card elevation={5}>
                         <CardContent>
-                          {stripe ? (
+                          {state.loading || stripe ? (
                             <Box>
-                              <Stepper
-                                alternativeLabel
-                                connector={<Connector />}
-                                activeStep={state.step.current}
-                              >
-                                {STEPS.map((e) => (
-                                  <Step key={e}>
-                                    <StepLabel
-                                      StepIconComponent={StepperIcons}
-                                    />
-                                  </Step>
-                                ))}
-                              </Stepper>
+                              <SkeletonWrapper variant="text" loading={state.loading} width="100%">
+                                <Stepper
+                                  alternativeLabel
+                                  connector={<Connector />}
+                                  activeStep={state.step.current}
+                                >
+                                  {STEPS.map((e) => (
+                                    <Step key={e}>
+                                      <StepLabel
+                                        StepIconComponent={StepperIcons}
+                                      />
+                                    </Step>
+                                  ))}
+                                </Stepper>
+                              </SkeletonWrapper>
                               <Box>
                                 <Grid container spacing={3}>
                                   {renderForm(state.step.current)}
                                   {state.step.current === 0 && (
-                                    <List component="nav" aria-label="Features">
+                                    <List component="nav" aria-label="Features" style={{width: '100%'}}>
                                       {licenseOptions.map((item) => (
-                                        <ListItem>
-                                          <ListItemIcon>
-                                            <CheckIcon />
-                                          </ListItemIcon>
-                                          <ListItemText primary={item.label} />
-                                        </ListItem>
+                                        <SkeletonWrapper variant="text" loading={state.loading} width="100%">
+                                          <ListItem>
+                                            <ListItemIcon>
+                                              <CheckIcon />
+                                            </ListItemIcon>
+                                            <ListItemText primary={item.label} />
+                                          </ListItem>
+                                        </SkeletonWrapper>
                                       ))}
                                     </List>
                                   )}
@@ -497,30 +494,33 @@ const Processor = ({ match, location, stripe }) => {
                             justifyContent: "space-between",
                           }}
                         >
-                          <Button
-                            disabled={state.step.current === 0}
-                            onClick={() => handleStepChange(-1)}
-                          >
-                            Back
-                          </Button>
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            disabled={isSubmitting}
-                          >
-                            {state.loading ? (
-                              <CircularProgress color="secondary" size={24} />
-                            ) : (
-                              "Next"
-                            )}
-                          </Button>
+                          <SkeletonWrapper loading={state.loading}>
+                            <Button
+                              disabled={state.step.current === 0}
+                              onClick={() => handleStepChange(-1)}
+                            >
+                              Back
+                            </Button>
+                          </SkeletonWrapper>
+                          <SkeletonWrapper loading={state.loading}>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              type="submit"
+                              disabled={isSubmitting}
+                            >
+                              {state.loading ? (
+                                <CircularProgress color="secondary" size={24} />
+                              ) : (
+                                "Next"
+                              )}
+                            </Button>
+                          </SkeletonWrapper>
                         </CardActions>
                       </Card>
                     </Form>
                   )}
                 </Formik>
-              )}
             </Grid>
             <Grid item xs={12} md={4}>
               <CheckoutSummary
@@ -528,6 +528,7 @@ const Processor = ({ match, location, stripe }) => {
                 license={state.license}
                 discount={state.discount}
                 handleDiscountChange={handleDiscountChange}
+                loading={state.loading}
               />
               <br />
             </Grid>

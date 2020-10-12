@@ -121,7 +121,7 @@ const OrderSummary = ({ artwork, license, discount, handleDiscountChange }) => {
         ];
 
   return (
-    <Container fixed p={2}>
+    <Container p={2}>
       <Grid container>
         <Typography variant="h5">Order summary</Typography>
         <Grid item xs={12} className={classes.actions}>

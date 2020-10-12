@@ -6,7 +6,6 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import ArtistSection from "../../containers/ArtistSection/ArtistSection.js";
 import ArtworkInfo from "../../containers/ArtworkInfo/ArtworkInfo.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/ArtworkPreview.js";
@@ -26,7 +25,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
-    artwork: {},
+    artwork: { comments: [] },
     license: "personal",
     height: 400,
     modal: {
@@ -287,16 +286,15 @@ const ArtworkDetails = ({ match, location, socket }) => {
   }, [location]);
 
   return (
-    <Container fixed className={globalClasses.gridContainer}>
+    <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.loading ? (
-          <LoadingSpinner />
-        ) : state.artwork._id ? (
+        {state.loading || state.artwork._id ? (
           <>
             <Grid item sm={12} md={8}>
               <ArtworkPreview
                 version={state.artwork.current}
                 height={state.height}
+                loading={state.loading}
               />
               <br />
               <CommentSection
@@ -308,10 +306,14 @@ const ArtworkDetails = ({ match, location, socket }) => {
                 handleCommentEdit={handleCommentEdit}
                 handleCommentClose={handleCommentClose}
                 handlePopoverOpen={handlePopoverOpen}
+                loading={state.loading}
               />
             </Grid>
             <Grid item sm={12} md={4}>
-              <ArtistSection owner={state.artwork.owner} />
+              <ArtistSection
+                owner={state.artwork.owner}
+                loading={state.loading}
+              />
               <br />
               <ArtworkInfo
                 artwork={state.artwork}
@@ -321,11 +323,12 @@ const ArtworkDetails = ({ match, location, socket }) => {
                 handleChangeIndex={handleChangeIndex}
                 handlePurchase={handlePurchase}
                 handleModalOpen={handleModalOpen}
+                loading={state.loading}
               />
             </Grid>
           </>
         ) : (
-          history.push("/")
+          "$TODO Ne postoji"
         )}
         <Modal
           open={state.modal.open}

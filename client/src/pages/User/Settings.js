@@ -2,7 +2,6 @@ import { Container, Grid } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
 import SettingsSection from "../../containers/SettingsSection/SettingsSection.js";
 import { Context } from "../../context/Store.js";
@@ -132,11 +131,9 @@ const Settings = () => {
   }, []);
 
   return (
-    <Container fixed className={globalClasses.gridContainer}>
+    <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.loading ? (
-          <LoadingSpinner />
-        ) : state.user._id ? (
+        {state.loading || state.user._id ? (
           <Grid item sm={12}>
             <MainHeading
               text={"Settings"}
@@ -149,6 +146,7 @@ const Settings = () => {
               handleUpdatePreferences={handleUpdatePreferences}
               handleUpdatePassword={handleUpdatePassword}
               handleDeactivateUser={handleDeactivateUser}
+              loading={state.loading}
             />
           </Grid>
         ) : (

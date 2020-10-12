@@ -14,6 +14,7 @@ import {
   Card,
   Typography,
 } from "../../styles/theme.js";
+import SkeletonWrapper from "../SkeletonWrapper/SkeletonWrapper.js";
 
 const useStyles = makeStyles({
   profileCardContainer: {
@@ -37,7 +38,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ProfileBanner = ({ user, handleModalOpen }) => {
+const ProfileBanner = ({ user, andleModalOpen, loading }) => {
   const classes = useStyles();
 
   return (
@@ -68,16 +69,18 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Avatar
-              alt={user.name}
-              src={user.photo}
-              title={user.name}
-              width={130}
-              height={130}
-              border={6}
-              borderColor={artepunktTheme.palette.background.paper}
-              mb={1}
-            />
+            <SkeletonWrapper loading={loading} variant="circle">
+              <Avatar
+                alt={user.name}
+                src={user.photo}
+                title={user.name}
+                width={130}
+                height={130}
+                border={6}
+                borderColor={artepunktTheme.palette.background.paper}
+                mb={1}
+              />
+            </SkeletonWrapper>
           </Box>
           <Box
             display="flex"
@@ -87,46 +90,78 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
             marginTop="36px"
             marginLeft="12px"
           >
-            <Typography
-              variant="h4"
-              color="inherit"
-              style={{ fontWeight: "bold" }}
+            <SkeletonWrapper
+              variant="text"
+              loading={loading}
+              height="20px"
+              width="100px"
             >
-              {user.name}
-            </Typography>
-            <Box
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: "-12px",
-              }}
-            >
-              {user.rating && (
-                <Box
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <StarIcon
-                    fontSize="small"
+              <Typography
+                variant="h4"
+                color="inherit"
+                style={{ fontWeight: "bold" }}
+              >
+                {user.name}
+              </Typography>
+            </SkeletonWrapper>
+            <SkeletonWrapper loading={loading} height="20px" width="200px">
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: "-12px",
+                }}
+              >
+                {user.rating && (
+                  <Box
                     style={{
-                      marginRight: "3px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
-                  />
-                  <Typography
-                    variant="body1"
-                    color="textSecondary"
-                    component="p"
-                    align="center"
                   >
-                    {user.rating}
-                  </Typography>
-                </Box>
-              )}
-              {user.country && (
+                    <StarIcon
+                      fontSize="small"
+                      style={{
+                        marginRight: "3px",
+                      }}
+                    />
+                    <Typography
+                      variant="body1"
+                      color="textSecondary"
+                      component="p"
+                      align="center"
+                    >
+                      {user.rating}
+                    </Typography>
+                  </Box>
+                )}
+                {user.country && (
+                  <Box
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginLeft: "12px",
+                    }}
+                  >
+                    <LocationIcon
+                      fontSize="small"
+                      style={{
+                        marginRight: "3px",
+                      }}
+                    />
+                    <Typography
+                      variant="body1"
+                      color="textSecondary"
+                      component="p"
+                      align="center"
+                    >
+                      {user.country}
+                    </Typography>
+                  </Box>
+                )}
                 <Box
                   style={{
                     display: "flex",
@@ -135,7 +170,7 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
                     marginLeft: "12px",
                   }}
                 >
-                  <LocationIcon
+                  <MemberIcon
                     fontSize="small"
                     style={{
                       marginRight: "3px",
@@ -147,34 +182,11 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
                     component="p"
                     align="center"
                   >
-                    {user.country}
+                    {!loading && formatDate(user.created, "MMM yy")}
                   </Typography>
                 </Box>
-              )}
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginLeft: "12px",
-                }}
-              >
-                <MemberIcon
-                  fontSize="small"
-                  style={{
-                    marginRight: "3px",
-                  }}
-                />
-                <Typography
-                  variant="body1"
-                  color="textSecondary"
-                  component="p"
-                  align="center"
-                >
-                  {formatDate(user.created, "MMM yy")}
-                </Typography>
               </Box>
-            </Box>
+            </SkeletonWrapper>
           </Box>
           <Box
             display="flex"
@@ -195,16 +207,25 @@ const ProfileBanner = ({ user, handleModalOpen }) => {
           flexDirection="column"
           height="50%"
         >
-          <Typography
-            variant="body1"
-            color="inherit"
-            style={{ fontWeight: "bold" }}
+          <SkeletonWrapper variant="text" loading={loading}>
+            <Typography
+              variant="body1"
+              color="inherit"
+              style={{ fontWeight: "bold" }}
+            >
+              Description
+            </Typography>
+          </SkeletonWrapper>
+          <SkeletonWrapper
+            variant="text"
+            loading={loading}
+            width="100%"
+            height="40px"
           >
-            Description
-          </Typography>
-          <Typography variant="body2" color="inherit">
-            {user.description || "Nothing here yet"}
-          </Typography>
+            <Typography variant="body2" color="inherit">
+              {user.description || "Nothing here yet"}
+            </Typography>
+          </SkeletonWrapper>
         </Box>
       </Box>
     </Card>

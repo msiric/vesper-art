@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
 import { Context } from "../../context/Store.js";
 import { artepunktTheme, Card } from "../../styles/theme.js";
 import DashboardStatistics from "../DashboardStatistics/DashboardStatistics.js";
@@ -32,10 +32,8 @@ const DashboardVisualization = ({
       <GridItem item xs={12} md={8} mb={artepunktTheme.margin.spacing}>
         <Box className={classes.graph}>
           <Card m={1} p={2}>
-            <Box height={540}>
-              {loading ? (
-                <LoadingSpinner />
-              ) : (
+            <SkeletonWrapper loading={loading} width="100%">
+              <Box height={540}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={graphData}
@@ -66,8 +64,8 @@ const DashboardVisualization = ({
                     />
                   </LineChart>
                 </ResponsiveContainer>
-              )}
-            </Box>
+              </Box>
+            </SkeletonWrapper>
           </Card>
         </Box>
       </GridItem>

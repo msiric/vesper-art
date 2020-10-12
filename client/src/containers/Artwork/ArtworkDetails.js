@@ -1,20 +1,20 @@
-import { Container } from '@material-ui/core';
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Container } from "@material-ui/core";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import {
   deleteComment,
   getComments,
   getDetails,
-} from '../../services/artwork.js';
-import { Context } from '../Store/Store.js';
-import ArtworkDetailsStyles from './ArtworkDetails.style.js';
+} from "../../services/artwork.js";
+import { Context } from "../Store/Store.js";
+import ArtworkDetailsStyles from "./ArtworkDetails.style.js";
 
 const ArtworkDetails = ({ match, location, socket }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
     artwork: {},
-    license: 'personal',
+    license: "personal",
     modal: {
       open: false,
     },
@@ -202,7 +202,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
   }, [location]);
 
   return (
-    <Container fixed className={classes.fixed}>
+    <Container className={classes.fixed}>
       {/* 
       <Grid container className={classes.container} spacing={2}>
         {state.loading ? (

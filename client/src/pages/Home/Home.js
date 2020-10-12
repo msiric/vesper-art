@@ -1,4 +1,4 @@
-import { CircularProgress, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { withSnackbar } from "notistack";
 import React, { useContext, useEffect, useState } from "react";
 import SelectInput from "../../components/SelectInput/SelectInput.js";
@@ -11,7 +11,13 @@ const Home = ({ location, enqueueSnackbar }) => {
   const [state, setState] = useState({
     loading: true,
     alerts: [],
-    artwork: [],
+    artwork: [
+      { current: {}, owner: {} },
+      { current: {}, owner: {} },
+      { current: {}, owner: {} },
+      { current: {}, owner: {} },
+      { current: {}, owner: {} },
+    ],
     hasMore: true,
     dataCursor: 0,
     dataCeiling: 50,
@@ -122,14 +128,13 @@ const Home = ({ location, enqueueSnackbar }) => {
         />
       </Grid>
       <Grid item xs={12} className={classes.grid}>
-        {state.loading ? (
-          <CircularProgress />
-        ) : state.artwork.length ? (
+        {state.loading || state.artwork.length ? (
           <ArtworkPanel
             elements={state.artwork}
             hasMore={state.hasMore}
             loadMore={loadMore}
             type="artwork"
+            loading={state.loading}
           />
         ) : (
           "No artwork"

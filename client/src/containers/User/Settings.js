@@ -90,7 +90,7 @@ const Settings = () => {
   }, []);
 
   return (
-    <Container fixed className={classes.fixed}>
+    <Container className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>
         {state.loading ? (
           <Grid item xs={12} className={classes.loader}>

@@ -1,56 +1,55 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Context } from '../../context/Store.js';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import { useFormik } from 'formik';
-import UploadInput from '../../shared/UploadInput/UploadInput.js';
 import {
   AppBar,
-  Tab,
   Box,
-  Tabs,
-  Modal,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  CircularProgress,
   Container,
   Grid,
-  CircularProgress,
-  Card,
-  CardMedia,
-  CardContent,
-  CardActions,
-  Typography,
-  TextField,
-  Paper,
-  Button,
   Link as Anchor,
-} from '@material-ui/core';
+  Modal,
+  Paper,
+  Tab,
+  Tabs,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import {
   EditRounded as EditIcon,
   LinkRounded as CopyIcon,
-} from '@material-ui/icons';
+} from "@material-ui/icons";
+import { format } from "date-fns";
+import { useFormik } from "formik";
+import { withSnackbar } from "notistack";
+import React, { useContext, useEffect, useState } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Link, useHistory } from "react-router-dom";
 import {
-  FacebookShareButton,
-  WhatsappShareButton,
-  RedditShareButton,
-  TwitterShareButton,
   FacebookIcon,
-  WhatsappIcon,
+  FacebookShareButton,
   RedditIcon,
+  RedditShareButton,
   TwitterIcon,
-} from 'react-share';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { withSnackbar } from 'notistack';
-import { Link, useHistory } from 'react-router-dom';
-import SwipeableViews from 'react-swipeable-views';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { format } from 'date-fns';
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from "react-share";
+import SwipeableViews from "react-swipeable-views";
+import { countries } from "../../../../common/constants.js";
+import { Context } from "../../context/Store.js";
+import { getArtwork } from "../../services/artwork.js";
 import {
-  postMedia,
-  patchUser,
   getSaves,
   getUser,
-} from '../../services/user.js';
-import { getArtwork } from '../../services/artwork.js';
-import { profileValidation } from '../../validation/profile.js';
-import { countries } from '../../../../common/constants.js';
+  patchUser,
+  postMedia,
+} from "../../services/user.js";
+import SelectInput from "../../shared/SelectInput/SelectInput.js";
+import UploadInput from "../../shared/UploadInput/UploadInput.js";
+import { profileValidation } from "../../validation/profile.js";
 
 const Profile = ({ match, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
@@ -98,7 +97,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
       try {
         if (values.userMedia.length) {
           const formData = new FormData();
-          formData.append('userMedia', values.userMedia[0]);
+          formData.append("userMedia", values.userMedia[0]);
           const {
             data: { userMedia, userDimensions },
           } = await postMedia({ data: formData });
@@ -173,7 +172,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const a11yProps = (index) => {
     return {
       id: `full-width-tab-${index}`,
-      'aria-controls': `full-width-tabpanel-${index}`,
+      "aria-controls": `full-width-tabpanel-${index}`,
     };
   };
 
@@ -283,7 +282,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
   }, []);
 
   return (
-    <Container fixed className={classes.profile}>
+    <Container className={classes.profile}>
       <Grid container className={classes.profile__container} spacing={2}>
         {state.loading ? (
           <Grid item xs={12} className={classes.loader}>
@@ -334,7 +333,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                     >
                       {`Joined ${format(
                         new Date(store.user.created),
-                        'MMM yyyy'
+                        "MMM yyyy"
                       )}`}
                     </Typography>
                   </CardContent>
@@ -366,12 +365,12 @@ const Profile = ({ match, enqueueSnackbar }) => {
                           <CopyToClipboard
                             text={url}
                             onCopy={() =>
-                              enqueueSnackbar('Link copied', {
-                                variant: 'success',
+                              enqueueSnackbar("Link copied", {
+                                variant: "success",
                                 autoHideDuration: 1000,
                                 anchorOrigin: {
-                                  vertical: 'top',
-                                  horizontal: 'center',
+                                  vertical: "top",
+                                  horizontal: "center",
                                 },
                               })
                             }
@@ -453,7 +452,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                     >
                       <Box hidden={state.tabs.value !== 0}>
                         {state.user.artwork.length ? (
-                          's'
+                          "s"
                         ) : (
                           <Typography variant="h6" align="center">
                             You have no artwork to display
@@ -462,7 +461,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       </Box>
                       <Box hidden={state.tabs.value !== 1}>
                         {state.user.savedArtwork.length ? (
-                          's'
+                          "s"
                         ) : (
                           <Typography variant="h6" align="center">
                             You have no saved artwork
@@ -497,7 +496,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                     >
                       <Box hidden={state.tabs.value !== 0}>
                         {state.user.artwork.length ? (
-                          's'
+                          "s"
                         ) : (
                           <Typography variant="h6" align="center">
                             This user has no artwork to display
@@ -507,7 +506,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       {state.user.displaySaves ? (
                         <Box hidden={state.tabs.value !== 1}>
                           {state.user.savedArtwork.length ? (
-                            's'
+                            "s"
                           ) : (
                             <Typography variant="h6" align="center">
                               This user has no saved artwork
@@ -522,7 +521,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
             </Grid>
           </>
         ) : (
-          history.push('/')
+          history.push("/")
         )}
         <div>
           <Modal
@@ -550,7 +549,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       helperText={
-                        touched.userDescription ? errors.userDescription : ''
+                        touched.userDescription ? errors.userDescription : ""
                       }
                       error={
                         touched.userDescription &&
@@ -566,7 +565,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       value={values.userCountry}
                       handleChange={handleChange}
                       handleBlur={handleBlur}
-                      helperText={touched.userCountry ? errors.userCountry : ''}
+                      helperText={touched.userCountry ? errors.userCountry : ""}
                       error={touched.userCountry && Boolean(errors.userCountry)}
                       options={countries}
                     />

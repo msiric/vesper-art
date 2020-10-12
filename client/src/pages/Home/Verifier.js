@@ -35,7 +35,7 @@ const Verifier = () => {
   const globalClasses = globalStyles();
 
   return (
-    <Container fixed className={globalClasses.gridContainer}>
+    <Container className={globalClasses.gridContainer}>
       <Grid container>
         <Grid item xs={12}>
           <Formik

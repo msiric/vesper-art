@@ -1,7 +1,7 @@
-import { CircularProgress, Container, Grid } from '@material-ui/core';
-import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { getToken } from '../../services/auth.js';
+import { CircularProgress, Container, Grid } from "@material-ui/core";
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { getToken } from "../../services/auth.js";
 
 const VerifyToken = ({ match }) => {
   const history = useHistory();
@@ -11,14 +11,14 @@ const VerifyToken = ({ match }) => {
     try {
       await getToken({ tokenId: match.params.id });
       history.push({
-        pathname: '/login',
-        state: { message: 'Email successfully verified' },
+        pathname: "/login",
+        state: { message: "Email successfully verified" },
       });
     } catch (err) {
       console.log(err);
       history.push({
-        pathname: '/',
-        state: { message: 'An error occurred' },
+        pathname: "/",
+        state: { message: "An error occurred" },
       });
     }
   };
@@ -28,7 +28,7 @@ const VerifyToken = ({ match }) => {
   });
 
   return (
-    <Container fixed className={classes.fixed}>
+    <Container className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>
         <Grid item xs={12} className={classes.loader}>
           <CircularProgress />

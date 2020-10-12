@@ -1,7 +1,6 @@
 import { Container, Grid } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
 import EditArtworkForm from "../../containers/Artwork/EditArtworkForm.js";
 import { Context } from "../../context/Store.js";
@@ -69,28 +68,26 @@ const EditArtwork = ({ match }) => {
   }, []);
 
   return (
-    <Container fixed className={globalClasses.gridContainer}>
+    <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.loading ? (
-          <LoadingSpinner />
-        ) : state.artwork._id ? (
+        {state.loading || state.artwork._id ? (
           <Grid item sm={12}>
             <MainHeading
               text={"Edit artwork"}
               className={globalClasses.mainHeading}
             />
             <EditArtworkForm
-              loading={state.loading}
               capabilities={state.capabilities}
               version={state.artwork.current}
               user={store.user}
               patchArtwork={patchArtwork}
               deleteEmptyValues={deleteEmptyValues}
               handleDeleteArtwork={handleDeleteArtwork}
+              loading={state.loading}
             />
           </Grid>
         ) : (
-          history.push("/")
+          "Ne postoji"
         )}
       </Grid>
     </Container>

@@ -7,18 +7,18 @@ import {
   Step,
   StepLabel,
   Stepper,
-} from '@material-ui/core';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { getCheckout } from '../../services/checkout.js';
-import BillingForm from '../BillingForm/BillingForm.js';
-import LicenseForm from '../LicenseForm/LicenseForm.js';
-import PaymentForm from '../PaymentForm/PaymentForm.js';
-import { Context } from '../Store/Store.js';
-import CheckoutStyles from './Checkout.style.js';
-import Summary from './Summary.js';
+} from "@material-ui/core";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { getCheckout } from "../../services/checkout.js";
+import BillingForm from "../BillingForm/BillingForm.js";
+import LicenseForm from "../LicenseForm/LicenseForm.js";
+import PaymentForm from "../PaymentForm/PaymentForm.js";
+import { Context } from "../Store/Store.js";
+import CheckoutStyles from "./Checkout.style.js";
+import Summary from "./Summary.js";
 
 const Checkout = ({ match, location }) => {
   const [store, dispatch] = useContext(Context);
@@ -86,7 +86,7 @@ const Checkout = ({ match, location }) => {
         return checkoutItem.licenseList;
       } else {
         window.sessionStorage.removeItem(artwork._id);
-        console.log('$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER');
+        console.log("$TODO ENQUEUE MESSAGE, DELETE INTENT ON SERVER");
       }
     }
   };
@@ -128,17 +128,17 @@ const Checkout = ({ match, location }) => {
   const fetchData = async () => {
     try {
       const billing = {
-        firstname: '',
-        lastname: '',
-        email: '',
-        address: '',
-        zip: '',
-        city: '',
-        country: '',
+        firstname: "",
+        lastname: "",
+        email: "",
+        address: "",
+        zip: "",
+        city: "",
+        country: "",
       };
       const { data } = await getCheckout({ versionId: match.params.id });
       const stripe = await loadStripe(
-        'pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z'
+        "pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z"
       );
       const licenses = retrieveLicenseInformation(data.artwork);
       setState({
@@ -160,7 +160,7 @@ const Checkout = ({ match, location }) => {
   }, []);
 
   return (
-    <Container fixed className={classes.fixed}>
+    <Container className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>
         {state.loading ? (
           <Grid item xs={12} className={classes.loader}>
@@ -177,17 +177,17 @@ const Checkout = ({ match, location }) => {
                     <Paper elevation={5}>
                       <Formik
                         initialValues={{
-                          licenseType: '',
-                          licenseAssignee: '',
-                          licenseCompany: '',
-                          discountCode: '',
-                          billingName: '',
-                          billingSurname: '',
-                          billingEmail: '',
-                          billingAddress: '',
-                          billingZip: '',
-                          billingCity: '',
-                          billingCountry: '',
+                          licenseType: "",
+                          licenseAssignee: "",
+                          licenseCompany: "",
+                          discountCode: "",
+                          billingName: "",
+                          billingSurname: "",
+                          billingEmail: "",
+                          billingAddress: "",
+                          billingZip: "",
+                          billingCity: "",
+                          billingCountry: "",
                         }}
                         validationSchema={null}
                         onSubmit={async (values, { resetForm }) => {
@@ -235,7 +235,7 @@ const Checkout = ({ match, location }) => {
                                       direction="column"
                                       justify="space-around"
                                       alignItems="center"
-                                      style={{ height: '400px' }}
+                                      style={{ height: "400px" }}
                                     ></Grid>
                                   ) : (
                                     <Grid container spacing={3}>
@@ -266,7 +266,7 @@ const Checkout = ({ match, location }) => {
             </Grid>
           </>
         ) : (
-          history.push('/')
+          history.push("/")
         )}
       </Grid>
     </Container>

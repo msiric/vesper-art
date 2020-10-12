@@ -26,13 +26,14 @@ const UserArtworkPanel = ({
   loadMoreSaves,
   handleTabsChange,
   handleChangeIndex,
+  loading,
 }) => {
   const classes = useStyles();
 
   return (
     <Grid item xs={12} className={classes.grid}>
-      {user.editable ? (
-        <Paper className={classes.paper}>
+      <Paper className={classes.paper}>
+        {user.editable ? (
           <SwipeCard
             tabs={{
               value: tabs.value,
@@ -58,6 +59,7 @@ const UserArtworkPanel = ({
                       loadMore={loadMoreArtwork}
                       type="artwork"
                       fixed={true}
+                      loading={loading}
                     />
                   ),
                   error: "You have no artwork to display",
@@ -74,6 +76,7 @@ const UserArtworkPanel = ({
                       loadMore={loadMoreSaves}
                       type="artwork"
                       fixed={true}
+                      loading={loading}
                     />
                   ),
                   error: "You have no saved artwork",
@@ -83,10 +86,9 @@ const UserArtworkPanel = ({
             }}
             handleTabsChange={handleTabsChange}
             handleChangeIndex={handleChangeIndex}
+            loading={loading}
           />
-        </Paper>
-      ) : (
-        <Paper className={classes.artwork}>
+        ) : (
           <SwipeCard
             tabs={{
               value: tabs.value,
@@ -111,6 +113,7 @@ const UserArtworkPanel = ({
                       loadMore={loadMoreArtwork}
                       type="artwork"
                       fixed={true}
+                      loading={loading}
                     />
                   ),
                   error: "This user has no artwork to display",
@@ -127,6 +130,7 @@ const UserArtworkPanel = ({
                       loadMore={loadMoreSaves}
                       type="artwork"
                       fixed={true}
+                      loading={loading}
                     />
                   ),
                   error: "This user has no saved artwork",
@@ -136,9 +140,10 @@ const UserArtworkPanel = ({
             }}
             handleTabsChange={handleTabsChange}
             handleChangeIndex={handleChangeIndex}
+            loading={loading}
           />
-        </Paper>
-      )}
+        )}
+      </Paper>
     </Grid>
   );
 };

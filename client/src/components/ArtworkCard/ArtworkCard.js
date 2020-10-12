@@ -14,6 +14,7 @@ import { artepunktTheme, Grid } from "../../styles/theme.js";
 import EditButton from "../EditButton/EditButton.js";
 import FavoriteButton from "../FavoriteButton/FavoriteButton.js";
 import ShareButton from "../ShareButton/ShareButton.js";
+import SkeletonWrapper from "../SkeletonWrapper/SkeletonWrapper.js";
 
 const useStyles = makeStyles((theme) => ({
   artworkWrapper: {
@@ -134,7 +135,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ArtworkCard = ({ user, artwork, type, fixed }) => {
+const ArtworkCard = ({ user, artwork, type, fixed, loading }) => {
   const classes = useStyles();
 
   const item =
@@ -169,76 +170,83 @@ const ArtworkCard = ({ user, artwork, type, fixed }) => {
       <Card className={classes.artworkCard}>
         <CardHeader
           title={
-            <Typography
-              noWrap
-              variant="h5"
-              component={Link}
-              to={`/artwork/${item._id}`}
-              className={classes.artworkTitle}
-            >
-              {item.data.title}
-            </Typography>
+            <SkeletonWrapper variant="text" loading={loading}>
+              <Typography
+                noWrap
+                variant="h5"
+                component={Link}
+                to={`/artwork/${item._id}`}
+                className={classes.artworkTitle}
+              >
+                {item.data.title}
+              </Typography>
+            </SkeletonWrapper>
           }
           subheader={
-            <Typography
-              noWrap
-              variant="body1"
-              component={Link}
-              to={`/user/${item.owner.name}`}
-              className={classes.artworkSeller}
-            >
-              {item.owner.name}
-            </Typography>
+            <SkeletonWrapper variant="text" loading={loading}>
+              <Typography
+                noWrap
+                variant="body1"
+                component={Link}
+                to={`/user/${item.owner.name}`}
+                className={classes.artworkSeller}
+              >
+                {item.owner.name}
+              </Typography>
+            </SkeletonWrapper>
           }
           className={classes.artworkHeader}
         />
-        <CardMedia
-          component={Link}
-          to={`/artwork/${item._id}`}
-          className={classes.artworkMedia}
-          style={{
-            paddingTop:
-              item.data.height /
-              (item.data.width / upload.artwork.fileTransform.width) /
-              2,
-            maxWidth: upload.artwork.fileTransform.width,
-          }}
-          image={item.data.cover}
-          title={item.title}
-        />
+        <SkeletonWrapper loading={loading} height="180px">
+          <CardMedia
+            component={Link}
+            to={`/artwork/${item._id}`}
+            className={classes.artworkMedia}
+            style={{
+              paddingTop:
+                item.data.height /
+                (item.data.width / upload.artwork.fileTransform.width) /
+                2,
+              maxWidth: upload.artwork.fileTransform.width,
+            }}
+            image={item.data.cover}
+            title={item.title}
+          />
+        </SkeletonWrapper>
         <CardActions disableSpacing className={classes.artworkFooter}>
-          <Box>
-            {item.owner._id === user.id ? (
-              <EditButton artwork={artwork} />
-            ) : (
-              [
-                <FavoriteButton
-                  artwork={artwork}
-                  favorited={user.saved[item._id]}
-                />,
-                <ShareButton artwork={artwork} />,
-              ]
-            )}
-          </Box>
-          <Box>
-            <IconButton
-              aria-label="Artwork price"
-              className={classes.artworkColor}
-            >
-              <Typography noWrap>
-                {item.data.availability === "available"
-                  ? item.data.license === "commercial"
-                    ? item.data.use === "included"
-                      ? `- / ${
-                          item.data.commercial
-                            ? `$${item.data.commercial}`
-                            : " Free"
-                        }`
-                      : `${
-                          item.data.personal
-                            ? `$${item.data.personal}`
-                            : " Free"
-                        }
+          <SkeletonWrapper loading={loading}>
+            <Box>
+              {item.owner._id === user.id ? (
+                <EditButton artwork={artwork} />
+              ) : (
+                [
+                  <FavoriteButton
+                    artwork={artwork}
+                    favorited={user.saved[item._id]}
+                  />,
+                  <ShareButton artwork={artwork} />,
+                ]
+              )}
+            </Box>
+            <Box>
+              <IconButton
+                aria-label="Artwork price"
+                className={classes.artworkColor}
+              >
+                <Typography noWrap>
+                  {item.data.availability === "available"
+                    ? item.data.license === "commercial"
+                      ? item.data.use === "included"
+                        ? `- / ${
+                            item.data.commercial
+                              ? `$${item.data.commercial}`
+                              : " Free"
+                          }`
+                        : `${
+                            item.data.personal
+                              ? `$${item.data.personal}`
+                              : " Free"
+                          }
                   /
                     ${
                       item.data.commercial
@@ -247,13 +255,16 @@ const ArtworkCard = ({ user, artwork, type, fixed }) => {
                         ? item.data.personal
                         : " Free"
                     }`
-                    : `${
-                        item.data.personal ? `$${item.data.personal}` : " Free"
-                      } / -`
-                  : "Preview only"}
-              </Typography>
-            </IconButton>
-          </Box>
+                      : `${
+                          item.data.personal
+                            ? `$${item.data.personal}`
+                            : " Free"
+                        } / -`
+                    : "Preview only"}
+                </Typography>
+              </IconButton>
+            </Box>
+          </SkeletonWrapper>
         </CardActions>
       </Card>
     </Grid>

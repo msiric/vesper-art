@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Grid } from "@material-ui/core";
+import { Box, Grid } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { LinkRounded as CopyIcon } from "@material-ui/icons";
 import React, { useContext, useState } from "react";
@@ -16,6 +16,7 @@ import {
 } from "react-share";
 import { upload } from "../../../../common/constants.js";
 import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { Context } from "../../context/Store.js";
 import { deleteSave, postSave } from "../../services/artwork.js";
 import Modal from "../../shared/Modal/Modal.js";
@@ -39,6 +40,7 @@ const ArtworkPanel = ({
   enqueueSnackbar,
   type,
   fixed,
+  loading,
 }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
@@ -181,81 +183,18 @@ const ArtworkPanel = ({
         dataLength={elements.length}
         next={loadMore}
         hasMore={hasMore}
-        loader={
-          <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
-          </Grid>
-        }
+        loader={<LoadingSpinner />}
       >
         <Grid container className={classes.container}>
-          {/*         <ImageGallery
-          photos={artwork}
-          onClick={(e, item) => handleImageClick(e, item)}
-        ></ImageGallery> */}
-          {/*         <div className={classes.artworkContainer}>
-          {elements.map((artwork) => (
-            <div className={classes.artworkItem}>
-              <img
-                className={classes.artworkMedia}
-                src={artwork.current.cover}
-              />
-            </div>
-          ))}
-        </div> */}
-
-          {/* specify cover width */}
-
           {elements.map((artwork) => (
             <ArtworkCard
               user={store.user}
               artwork={artwork}
               type={type}
               fixed={fixed}
+              loading={loading}
             />
-            /*           <div
-              key={artwork._id}
-              component={Link}
-              to={`/artwork/${artwork._id}`}
-              className={classes.artworkContainer}
-            >
-              <div className={classes.artworkHeader}>
-                <p className={classes.artworkTitle}>{artwork.current.title}</p>
-              </div>
-              <img
-                className={classes.artworkMedia}
-                src={artwork.current.cover}
-              />
-              <div className={classes.artworkFooter}>
-                <p className={classes.artworkOwner}>{artwork.owner.name}</p>
-              </div>
-            </div> */
           ))}
-          {/*         <StackGrid
-          columnWidth={upload.artwork.fileTransform.width}
-          gutterWidth={0}
-          gutterHeight={0}
-        >
-          {elements.map((artwork) => (
-            <ArtworkCard artwork={artwork} />
-                     <div
-              key={artwork._id}
-              component={Link}
-              to={`/artwork/${artwork._id}`}
-              className={classes.artworkContainer}
-            >
-              <div className={classes.artworkHeader}>
-                <p className={classes.artworkTitle}>{artwork.current.title}</p>
-              </div>
-              <img
-                className={classes.artworkMedia}
-                src={artwork.current.cover}
-              />
-              <div className={classes.artworkFooter}>
-                <p className={classes.artworkOwner}>{artwork.owner.name}</p>
-              </div>
-            </div> 
-          ))}
-        </StackGrid> */}
         </Grid>
       </InfiniteScroll>
       <Modal {...state.modal} handleClose={handleModalClose} />

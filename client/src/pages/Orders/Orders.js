@@ -53,7 +53,7 @@ const Orders = () => {
   };
 
   return (
-    <Container fixed className={globalClasses.gridContainer}>
+    <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
           <FormControl variant="outlined" style={{ marginBottom: "12px" }}>

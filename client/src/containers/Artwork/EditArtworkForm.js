@@ -1,33 +1,30 @@
-import { CircularProgress, TextField } from "@material-ui/core";
+import { Card, Grid, TextField } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import HelpBox from "../../components/HelpBox/HelpBox.js";
 import ImageInput from "../../components/ImageInput/ImageInput.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
 import PriceInput from "../../shared/PriceInput/PriceInput.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import {
   Button,
-  Card,
   CardActions,
   CardContent,
   Container,
-  Grid,
 } from "../../styles/theme.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
 import { artworkValidation } from "../../validation/artwork.js";
 import { updateArtwork } from "../../validation/media.js";
 
 const EditArtworkForm = ({
-  loading,
-  version,
-  user,
+  version = {},
+  user = {},
   capabilities,
-  stripeId,
-  match,
   handleDeleteArtwork,
   patchArtwork,
   isDeleting,
+  loading,
 }) => {
   const history = useHistory();
   const classes = {};
@@ -62,69 +59,52 @@ const EditArtworkForm = ({
   };
 
   return (
-    <Container fixed className={classes.fixed}>
-      <Grid container className={classes.container} spacing={2}>
-        {loading ? (
-          <Grid item xs={12} className={classes.loader}>
-            <CircularProgress />
-          </Grid>
-        ) : version._id ? (
-          <Card p={2} width="100%">
-            <Formik
-              initialValues={{
-                artworkMedia: "",
-                artworkTitle: version.title || "",
-                artworkType: version.type || "",
-                artworkAvailability: version.availability || "",
-                artworkLicense: version.license || "",
-                artworkUse: version.use || "",
-                artworkPersonal: version.personal || "",
-                artworkCommercial: version.commercial - version.personal || "",
-                artworkCategory: version.category || "",
-                artworkDescription: version.description || "",
-              }}
-              validationSchema={artworkValidation.concat(updateArtwork)}
-              enableReinitialize={true}
-              onSubmit={async (values, { resetForm }) => {
-                /*  const formData = new FormData();
-                formData.append('artworkMedia', values.artworkMedia[0]);
-                try {
-                  const {
-                    data: { artworkCover, artworkMedia },
-                  } = await postMedia({ data: formData });
-                  values.artworkCover = artworkCover;
-                  values.artworkMedia = artworkMedia;
-                  const data = deleteEmptyValues(values);
-                  await patchArtwork({ artworkId: match.params.id, data });
-                  history.push({
-                    pathname: '/',
-                    state: { message: 'Artwork edited' },
-                  });
-                } catch (err) {
-                  console.log(err);
-                } */
-                const data = deleteEmptyValues(formatValues(values));
-                const formData = new FormData();
-                for (let value of Object.keys(data)) {
-                  formData.append(value, data[value]);
-                }
-                try {
-                  await patchArtwork({
-                    artworkId: version.artwork,
-                    data: formData,
-                  });
-                  history.push({
-                    pathname: "/",
-                    state: { message: "Artwork updated" },
-                  });
-                } catch (err) {
-                  console.log(err);
-                }
-              }}
-            >
-              {({ values, errors, touched, isSubmitting }) => (
-                <Form className={classes.card}>
-                  {!user.stripeId ? (
+    <Container className={classes.fixed} style={{ height: "100%" }}>
+      <Grid
+        container
+        className={classes.container}
+        style={{ height: "100%", width: "100%" }}
+      >
+        <Card style={{ height: "100%", width: "100%" }} loading={loading}>
+          <Formik
+            initialValues={{
+              artworkMedia: "",
+              artworkTitle: version.title || "",
+              artworkType: version.type || "",
+              artworkAvailability: version.availability || "",
+              artworkLicense: version.license || "",
+              artworkUse: version.use || "",
+              artworkPersonal: version.personal || "",
+              artworkCommercial: version.commercial - version.personal || "",
+              artworkCategory: version.category || "",
+              artworkDescription: version.description || "",
+            }}
+            validationSchema={artworkValidation.concat(updateArtwork)}
+            enableReinitialize={true}
+            onSubmit={async (values, { resetForm }) => {
+              const data = deleteEmptyValues(formatValues(values));
+              const formData = new FormData();
+              for (let value of Object.keys(data)) {
+                formData.append(value, data[value]);
+              }
+              try {
+                await patchArtwork({
+                  artworkId: version.artwork,
+                  data: formData,
+                });
+                history.push({
+                  pathname: "/",
+                  state: { message: "Artwork updated" },
+                });
+              } catch (err) {
+                console.log(err);
+              }
+            }}
+          >
+            {({ values, errors, touched, isSubmitting }) => (
+              <Form className={classes.card}>
+                {!loading ? (
+                  !user.stripeId ? (
                     <HelpBox
                       type="alert"
                       label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
@@ -141,27 +121,34 @@ const EditArtworkForm = ({
                       type="alert"
                       label="To make your artwork commercially available, finish entering your Stripe account information"
                     />
-                  ) : null}
-                  <CardContent>
-                    <Field name="artworkMedia">
-                      {({
-                        field,
-                        form: { setFieldValue, setFieldTouched },
-                        meta,
-                      }) => (
-                        <ImageInput
-                          meta={meta}
-                          field={field}
-                          setFieldValue={setFieldValue}
-                          setFieldTouched={setFieldTouched}
-                          helperText={meta.touched && meta.error}
-                          error={meta.touched && Boolean(meta.error)}
-                          preview={version.cover}
-                          shape="square"
-                          noEmpty={true}
-                        />
-                      )}
-                    </Field>
+                  ) : null
+                ) : null}
+                <CardContent>
+                  <Field name="artworkMedia">
+                    {({
+                      field,
+                      form: { setFieldValue, setFieldTouched },
+                      meta,
+                    }) => (
+                      <ImageInput
+                        meta={meta}
+                        field={field}
+                        setFieldValue={setFieldValue}
+                        setFieldTouched={setFieldTouched}
+                        helperText={meta.touched && meta.error}
+                        error={meta.touched && Boolean(meta.error)}
+                        preview={version.cover}
+                        shape="square"
+                        noEmpty={true}
+                        loading={loading}
+                      />
+                    )}
+                  </Field>
+                  <SkeletonWrapper
+                    variant="text"
+                    loading={loading}
+                    width="100%"
+                  >
                     <Field name="artworkTitle">
                       {({ field, form: { touched, errors }, meta }) => (
                         <TextField
@@ -176,6 +163,12 @@ const EditArtworkForm = ({
                         />
                       )}
                     </Field>
+                  </SkeletonWrapper>
+                  <SkeletonWrapper
+                    variant="text"
+                    loading={loading}
+                    width="100%"
+                  >
                     <Field name="artworkAvailability">
                       {({ field, form: { touched, errors }, meta }) => (
                         <SelectInput
@@ -200,19 +193,86 @@ const EditArtworkForm = ({
                         />
                       )}
                     </Field>
-                    {values.artworkAvailability === "available" && (
-                      <Field name="artworkType">
+                  </SkeletonWrapper>
+                  {values.artworkAvailability === "available" && (
+                    <Field name="artworkType">
+                      {({ field, form: { touched, errors }, meta }) => (
+                        <SelectInput
+                          {...field}
+                          label="Type"
+                          helperText={meta.touched && meta.error}
+                          error={meta.touched && Boolean(meta.error)}
+                          options={[
+                            { value: "" },
+                            {
+                              value: "commercial",
+                              text: "Commercial",
+                              disabled:
+                                user.stripeId &&
+                                capabilities.cardPayments === "active" &&
+                                capabilities.platformPayments === "active"
+                                  ? false
+                                  : true,
+                            },
+                            { value: "free", text: "Free" },
+                          ]}
+                          margin="dense"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      )}
+                    </Field>
+                  )}
+                  {values.artworkAvailability === "available" && (
+                    <Field name="artworkLicense">
+                      {({ field, form: { touched, errors }, meta }) => (
+                        <SelectInput
+                          {...field}
+                          label="License"
+                          helperText={meta.touched && meta.error}
+                          error={meta.touched && Boolean(meta.error)}
+                          options={[
+                            { value: "" },
+                            { value: "commercial", text: "Commercial" },
+                            { value: "personal", text: "Personal" },
+                          ]}
+                          margin="dense"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      )}
+                    </Field>
+                  )}
+                  {values.artworkAvailability === "available" &&
+                    values.artworkType === "commercial" && (
+                      <Field name="artworkPersonal">
+                        {({ field, form: { touched, errors }, meta }) => (
+                          <PriceInput
+                            {...field}
+                            label="Price"
+                            helperText={meta.touched && meta.error}
+                            error={meta.touched && Boolean(meta.error)}
+                            margin="dense"
+                            variant="outlined"
+                            fullWidth
+                          />
+                        )}
+                      </Field>
+                    )}
+                  {values.artworkAvailability === "available" &&
+                    values.artworkLicense === "commercial" && (
+                      <Field name="artworkUse">
                         {({ field, form: { touched, errors }, meta }) => (
                           <SelectInput
                             {...field}
-                            label="Type"
+                            label="Commercial use"
                             helperText={meta.touched && meta.error}
                             error={meta.touched && Boolean(meta.error)}
                             options={[
                               { value: "" },
                               {
-                                value: "commercial",
-                                text: "Commercial",
+                                value: "separate",
+                                text: "Charge commercial license separately",
                                 disabled:
                                   user.stripeId &&
                                   capabilities.cardPayments === "active" &&
@@ -220,7 +280,18 @@ const EditArtworkForm = ({
                                     ? false
                                     : true,
                               },
-                              { value: "free", text: "Free" },
+                              values.artworkAvailability === "available" &&
+                              values.artworkType === "commercial"
+                                ? {
+                                    value: "included",
+                                    text:
+                                      "Include commercial license in the price",
+                                  }
+                                : {
+                                    value: "included",
+                                    text:
+                                      "Offer commercial license free of charge",
+                                  },
                             ]}
                             margin="dense"
                             variant="outlined"
@@ -229,19 +300,16 @@ const EditArtworkForm = ({
                         )}
                       </Field>
                     )}
-                    {values.artworkAvailability === "available" && (
-                      <Field name="artworkLicense">
+                  {values.artworkAvailability === "available" &&
+                    values.artworkLicense === "commercial" &&
+                    values.artworkUse === "separate" && (
+                      <Field name="artworkCommercial">
                         {({ field, form: { touched, errors }, meta }) => (
-                          <SelectInput
+                          <PriceInput
                             {...field}
-                            label="License"
+                            label="Commercial license"
                             helperText={meta.touched && meta.error}
                             error={meta.touched && Boolean(meta.error)}
-                            options={[
-                              { value: "" },
-                              { value: "commercial", text: "Commercial" },
-                              { value: "personal", text: "Personal" },
-                            ]}
                             margin="dense"
                             variant="outlined"
                             fullWidth
@@ -249,80 +317,11 @@ const EditArtworkForm = ({
                         )}
                       </Field>
                     )}
-                    {values.artworkAvailability === "available" &&
-                      values.artworkType === "commercial" && (
-                        <Field name="artworkPersonal">
-                          {({ field, form: { touched, errors }, meta }) => (
-                            <PriceInput
-                              {...field}
-                              label="Price"
-                              helperText={meta.touched && meta.error}
-                              error={meta.touched && Boolean(meta.error)}
-                              margin="dense"
-                              variant="outlined"
-                              fullWidth
-                            />
-                          )}
-                        </Field>
-                      )}
-                    {values.artworkAvailability === "available" &&
-                      values.artworkLicense === "commercial" && (
-                        <Field name="artworkUse">
-                          {({ field, form: { touched, errors }, meta }) => (
-                            <SelectInput
-                              {...field}
-                              label="Commercial use"
-                              helperText={meta.touched && meta.error}
-                              error={meta.touched && Boolean(meta.error)}
-                              options={[
-                                { value: "" },
-                                {
-                                  value: "separate",
-                                  text: "Charge commercial license separately",
-                                  disabled:
-                                    user.stripeId &&
-                                    capabilities.cardPayments === "active" &&
-                                    capabilities.platformPayments === "active"
-                                      ? false
-                                      : true,
-                                },
-                                values.artworkAvailability === "available" &&
-                                values.artworkType === "commercial"
-                                  ? {
-                                      value: "included",
-                                      text:
-                                        "Include commercial license in the price",
-                                    }
-                                  : {
-                                      value: "included",
-                                      text:
-                                        "Offer commercial license free of charge",
-                                    },
-                              ]}
-                              margin="dense"
-                              variant="outlined"
-                              fullWidth
-                            />
-                          )}
-                        </Field>
-                      )}
-                    {values.artworkAvailability === "available" &&
-                      values.artworkLicense === "commercial" &&
-                      values.artworkUse === "separate" && (
-                        <Field name="artworkCommercial">
-                          {({ field, form: { touched, errors }, meta }) => (
-                            <PriceInput
-                              {...field}
-                              label="Commercial license"
-                              helperText={meta.touched && meta.error}
-                              error={meta.touched && Boolean(meta.error)}
-                              margin="dense"
-                              variant="outlined"
-                              fullWidth
-                            />
-                          )}
-                        </Field>
-                      )}
+                  <SkeletonWrapper
+                    variant="text"
+                    loading={loading}
+                    width="100%"
+                  >
                     <Field name="artworkDescription">
                       {({ field, form: { touched, errors }, meta }) => (
                         <TextField
@@ -338,8 +337,10 @@ const EditArtworkForm = ({
                         />
                       )}
                     </Field>
-                  </CardContent>
-                  <CardActions className={classes.actions}>
+                  </SkeletonWrapper>
+                </CardContent>
+                <CardActions className={classes.actions}>
+                  <SkeletonWrapper loading={loading}>
                     <Button
                       type="submit"
                       color="primary"
@@ -347,6 +348,8 @@ const EditArtworkForm = ({
                     >
                       Publish artwork
                     </Button>
+                  </SkeletonWrapper>
+                  <SkeletonWrapper loading={loading}>
                     <Button
                       type="button"
                       color="error"
@@ -355,14 +358,12 @@ const EditArtworkForm = ({
                     >
                       Delete artwork
                     </Button>
-                  </CardActions>
-                </Form>
-              )}
-            </Formik>
-          </Card>
-        ) : (
-          history.push("/")
-        )}
+                  </SkeletonWrapper>
+                </CardActions>
+              </Form>
+            )}
+          </Formik>
+        </Card>
       </Grid>
     </Container>
   );

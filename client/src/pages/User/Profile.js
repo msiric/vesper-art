@@ -2,7 +2,6 @@ import { Container, Grid } from "@material-ui/core";
 import { withSnackbar } from "notistack";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import ModalWrapper from "../../components/ModalWrapper/ModalWrapper.js";
 import EditUserForm from "../../containers/EditUserForm/EditUserForm.js";
 import UserArtworkPanel from "../../containers/UserArtworkPanel/UserArtworkPanel.js";
@@ -16,7 +15,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
-    user: {},
+    user: { artwork: {}, savedArtwork: [] },
     tabs: { value: 0, revealed: false, loading: true },
     modal: { open: false },
     scroll: {
@@ -217,33 +216,30 @@ const Profile = ({ match, enqueueSnackbar }) => {
     fetchUser();
   }, []);
 
-  return state.loading ? (
-    <LoadingSpinner />
-  ) : (
-    <Container fixed className={globalClasses.gridContainer}>
+  return state.loading || state.user._id ? (
+    <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.user._id ? (
-          <>
-            <UserProfileBanner
-              user={state.user}
-              handleModalOpen={handleModalOpen}
-            />
-            {/*             <UserProfilePanel
+        <>
+          <UserProfileBanner
+            user={state.user}
+            handleModalOpen={handleModalOpen}
+            loading={state.loading}
+          />
+          {/*             <UserProfilePanel
               user={state.user}
               handleModalOpen={handleModalOpen}
             /> */}
-            <UserArtworkPanel
-              tabs={state.tabs}
-              user={state.user}
-              loadMoreArtwork={loadMoreArtwork}
-              loadMoreSaves={loadMoreSaves}
-              handleTabsChange={handleTabsChange}
-              handleChangeIndex={handleChangeIndex}
-            />
-          </>
-        ) : (
-          history.push("/")
-        )}
+          <UserArtworkPanel
+            tabs={state.tabs}
+            user={state.user}
+            loadMoreArtwork={loadMoreArtwork}
+            loadMoreSaves={loadMoreSaves}
+            handleTabsChange={handleTabsChange}
+            handleChangeIndex={handleChangeIndex}
+            loading={state.loading}
+          />
+        </>
+
         <ModalWrapper
           open={state.modal.open}
           handleClose={handleModalClose}
@@ -253,6 +249,8 @@ const Profile = ({ match, enqueueSnackbar }) => {
         </ModalWrapper>
       </Grid>
     </Container>
+  ) : (
+    "$TODO Ne postoji"
   );
 };
 

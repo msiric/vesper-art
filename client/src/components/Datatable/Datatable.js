@@ -1,12 +1,13 @@
-import { CircularProgress, IconButton, Tooltip } from '@material-ui/core';
+import { IconButton, Tooltip } from "@material-ui/core";
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
   Edit as EditIcon,
-} from '@material-ui/icons';
-import MUIDataTable from 'mui-datatables';
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+} from "@material-ui/icons";
+import MUIDataTable from "mui-datatables";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 const CustomToolbar = ({ addOptions }) => {
   const history = useHistory();
@@ -90,9 +91,9 @@ const Datatable = ({
   editOptions,
   deleteOptions,
 }) => {
-  const [responsive, setResponsive] = useState('vertical');
-  const [tableBodyHeight, setTableBodyHeight] = useState('100%');
-  const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState('');
+  const [responsive, setResponsive] = useState("vertical");
+  const [tableBodyHeight, setTableBodyHeight] = useState("100%");
+  const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
 
   const history = useHistory();
 
@@ -101,7 +102,7 @@ const Datatable = ({
     print: false,
     download: false,
     viewColumns: false,
-    filterType: 'dropdown',
+    filterType: "dropdown",
     selectableRows: selectable,
     search: searchable,
     pagination,
@@ -120,7 +121,7 @@ const Datatable = ({
     onRowClick: (data) => redirect && history.push(`/${redirect}/${data[0]}`),
     textLabels: {
       body: {
-        noMatch: loading ? <CircularProgress /> : empty,
+        noMatch: loading ? <LoadingSpinner /> : empty,
       },
     },
   };

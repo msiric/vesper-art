@@ -2,7 +2,8 @@ import { AppBar, Box, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import SwipeableViews from "react-swipeable-views";
-import LoadingSpinner from "../LoadingSpinner/LoadingSpinner.js";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
+import SkeletonWrapper from "../SkeletonWrapper/SkeletonWrapper";
 
 const useStyles = makeStyles({
   profileArtworkContainer: {
@@ -28,52 +29,63 @@ const useStyles = makeStyles({
   },
 });
 
-const SwipeCard = ({ tabs, handleTabsChange, handleChangeIndex, margin }) => {
+const SwipeCard = ({
+  tabs,
+  handleTabsChange,
+  handleChangeIndex,
+  margin,
+  loading,
+}) => {
   const classes = useStyles();
-  console.log(tabs);
+
   return (
     <Box className={classes.profileArtworkContainer} m={margin}>
       <AppBar position="static" color="transparent">
-        <Tabs
-          value={tabs.value}
-          onChange={handleTabsChange}
-          indicatorColor="primary"
-          textColor="primary"
-          variant="fullWidth"
-          aria-label="Swipe card"
-        >
-          {tabs.headings
-            .filter((tab) => tab.display === true)
-            .map((heading) => (
-              <Tab label={heading.label} {...heading.props} />
-            ))}
-        </Tabs>
+        <SkeletonWrapper loading={loading} width="100%" height="100%">
+          <Tabs
+            value={tabs.value}
+            onChange={handleTabsChange}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
+            aria-label="Swipe card"
+          >
+            {tabs.headings
+              .filter((tab) => tab.display === true)
+              .map((heading) => (
+                <Tab label={heading.label} {...heading.props} />
+              ))}
+          </Tabs>
+        </SkeletonWrapper>
       </AppBar>
-      <SwipeableViews
-        axis="x"
-        index={tabs.value}
-        onChangeIndex={handleChangeIndex}
-      >
-        {tabs.items
-          .filter((tab) => tab.display === true)
-          .map((item, index) => (
-            <Box className={classes.swipeCardBox} hidden={tabs.value !== index}>
-              {item.loading ? (
-                <LoadingSpinner />
-              ) : item.iterable ? (
-                item.content ? (
-                  item.component
+      <SkeletonWrapper loading={loading} width="100%" height="100%">
+        <SwipeableViews
+          axis="x"
+          index={tabs.value}
+          onChangeIndex={handleChangeIndex}
+        >
+          {tabs.items
+            .filter((tab) => tab.display === true)
+            .map((item, index) => (
+              <Box
+                className={classes.swipeCardBox}
+                hidden={tabs.value !== index}
+              >
+                {item.loading ? <LoadingSpinner /> : item.iterable ? (
+                  item.content  ? (
+                    item.component
+                  ) : (
+                    <Typography variant="h6" align="center">
+                      {item.error}
+                    </Typography>
+                  )
                 ) : (
-                  <Typography variant="h6" align="center">
-                    {item.error}
-                  </Typography>
-                )
-              ) : (
-                item.component
-              )}
-            </Box>
-          ))}
-      </SwipeableViews>
+                  item.component
+                )}
+              </Box>
+            ))}
+        </SwipeableViews>
+      </SkeletonWrapper>
     </Box>
   );
 };

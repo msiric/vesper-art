@@ -2,6 +2,7 @@ import { Box, Button, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Field, Form, Formik } from "formik";
 import React, { useState } from "react";
+import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import { Container, Grid } from "../../styles/theme.js";
 import { licenseValidation } from "../../validation/license.js";
@@ -69,14 +70,17 @@ const LicenseForm = ({
   handleLicenseChange = changeLicense,
   initial = { standalone: false, value: "personal", submit: () => null },
   handleModalClose = () => null,
+  loading
 }) => {
   const [state, setState] = useState({ loading: false });
   const classes = LicenseFormStyles();
 
   return (
-    <Container fixed p={2}>
+    <Container p={2}>
       <Grid container>
-        <Typography variant="h5">License information</Typography>
+        <SkeletonWrapper variant="text" loading={loading}>
+          <Typography variant="h5">License information</Typography>
+        </SkeletonWrapper>
         <Grid item xs={12} className={classes.actions}>
           {initial.standalone ? (
             <Formik
@@ -98,180 +102,196 @@ const LicenseForm = ({
               }) => (
                 <Form style={{ width: "100%" }}>
                   <Grid item xs={12}>
-                    <Field name="licenseAssignee">
-                      {({ field, form: { touched, errors }, meta }) => (
-                        <TextField
-                          {...field}
-                          type="text"
-                          label="License assignee"
-                          error={meta.touched && meta.error}
-                          helperText={meta.touched && meta.error}
-                          margin="dense"
-                          variant="outlined"
-                          fullWidth
-                        />
-                      )}
-                    </Field>
-                    <Field name="licenseCompany">
-                      {({ field, form: { touched, errors }, meta }) => (
-                        <TextField
-                          {...field}
-                          type="text"
-                          label="License company"
-                          error={meta.touched && meta.error}
-                          helperText={meta.touched && meta.error}
-                          margin="dense"
-                          variant="outlined"
-                          fullWidth
-                        />
-                      )}
-                    </Field>
+                    <SkeletonWrapper variant="text" loading={loading} width="100%">
+                      <Field name="licenseAssignee">
+                        {({ field, form: { touched, errors }, meta }) => (
+                          <TextField
+                            {...field}
+                            type="text"
+                            label="License assignee"
+                            error={meta.touched && meta.error}
+                            helperText={meta.touched && meta.error}
+                            margin="dense"
+                            variant="outlined"
+                            fullWidth
+                          />
+                        )}
+                      </Field>
+                    </SkeletonWrapper>
+                    <SkeletonWrapper variant="text" loading={loading} width="100%">
+                      <Field name="licenseCompany">
+                        {({ field, form: { touched, errors }, meta }) => (
+                          <TextField
+                            {...field}
+                            type="text"
+                            label="License company"
+                            error={meta.touched && meta.error}
+                            helperText={meta.touched && meta.error}
+                            margin="dense"
+                            variant="outlined"
+                            fullWidth
+                          />
+                        )}
+                      </Field>
+                    </SkeletonWrapper>
                     {/*             <TextInput name="licenseAssignee" label="License assignee" />
             <TextInput name="licenseCompany" label="License company" /> */}
-                    <Field name="licenseType">
-                      {({
-                        field,
-                        form: { touched, errors, setFieldValue },
-                        meta,
-                      }) => (
-                        <SelectInput
-                          {...field}
-                          label="License type"
-                          helperText={meta.touched && meta.error}
-                          error={meta.touched && Boolean(meta.error)}
-                          onChange={(e) =>
-                            handleLicenseChange(e.target, setFieldValue)
-                          }
-                          options={
-                            version.license === "personal"
-                              ? [
-                                  {
-                                    value: "personal",
-                                    text: "Personal",
-                                  },
-                                ]
-                              : version.use === "included"
-                              ? [
-                                  {
-                                    value: "commercial",
-                                    text: "Commercial",
-                                  },
-                                ]
-                              : [
-                                  {
-                                    value: "personal",
-                                    text: "Personal",
-                                  },
-                                  {
-                                    value: "commercial",
-                                    text: "Commercial",
-                                  },
-                                ]
-                          }
-                          margin="dense"
-                          variant="outlined"
-                          fullWidth
-                        />
-                      )}
-                    </Field>
+                    <SkeletonWrapper variant="text" loading={loading} width="100%">
+                      <Field name="licenseType">
+                        {({
+                          field,
+                          form: { touched, errors, setFieldValue },
+                          meta,
+                        }) => (
+                          <SelectInput
+                            {...field}
+                            label="License type"
+                            helperText={meta.touched && meta.error}
+                            error={meta.touched && Boolean(meta.error)}
+                            onChange={(e) =>
+                              handleLicenseChange(e.target, setFieldValue)
+                            }
+                            options={
+                              version.license === "personal"
+                                ? [
+                                    {
+                                      value: "personal",
+                                      text: "Personal",
+                                    },
+                                  ]
+                                : version.use === "included"
+                                ? [
+                                    {
+                                      value: "commercial",
+                                      text: "Commercial",
+                                    },
+                                  ]
+                                : [
+                                    {
+                                      value: "personal",
+                                      text: "Personal",
+                                    },
+                                    {
+                                      value: "commercial",
+                                      text: "Commercial",
+                                    },
+                                  ]
+                            }
+                            margin="dense"
+                            variant="outlined"
+                            fullWidth
+                          />
+                        )}
+                      </Field>
+                    </SkeletonWrapper>
                   </Grid>
                   <Box display="flex" justifyContent="space-between">
-                    <Button
-                      type="submit"
-                      color="primary"
-                      disabled={isSubmitting}
-                    >
-                      Download
-                    </Button>
-                    <Button
-                      type="button"
-                      color="warning"
-                      onClick={handleModalClose}
-                    >
-                      Cancel
-                    </Button>
+                    <SkeletonWrapper loading={loading}>
+                      <Button
+                        type="submit"
+                        color="primary"
+                        disabled={isSubmitting}
+                      >
+                        Download
+                      </Button>
+                    </SkeletonWrapper>
+                    <SkeletonWrapper loading={loading}>
+                      <Button
+                        type="button"
+                        color="warning"
+                        onClick={handleModalClose}
+                      >
+                        Cancel
+                      </Button>
+                    </SkeletonWrapper>
                   </Box>
                 </Form>
               )}
             </Formik>
           ) : (
             <Grid item xs={12}>
-              <Field name="licenseAssignee">
-                {({ field, form: { touched, errors }, meta }) => (
-                  <TextField
-                    {...field}
-                    type="text"
-                    label="License assignee"
-                    error={meta.touched && meta.error}
-                    helperText={meta.touched && meta.error}
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-              </Field>
-              <Field name="licenseCompany">
-                {({ field, form: { touched, errors }, meta }) => (
-                  <TextField
-                    {...field}
-                    type="text"
-                    label="License company"
-                    error={meta.touched && meta.error}
-                    helperText={meta.touched && meta.error}
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-              </Field>
+              <SkeletonWrapper variant="text" loading={loading} width="100%">
+                <Field name="licenseAssignee">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      type="text"
+                      label="License assignee"
+                      error={meta.touched && meta.error}
+                      helperText={meta.touched && meta.error}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  )}
+                </Field>
+              </SkeletonWrapper>
+              <SkeletonWrapper variant="text" loading={loading} width="100%">
+                <Field name="licenseCompany">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      type="text"
+                      label="License company"
+                      error={meta.touched && meta.error}
+                      helperText={meta.touched && meta.error}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  )}
+                </Field>
+              </SkeletonWrapper>
               {/*             <TextInput name="licenseAssignee" label="License assignee" />
             <TextInput name="licenseCompany" label="License company" /> */}
-              <Field name="licenseType">
-                {({
-                  field,
-                  form: { touched, errors, setFieldValue },
-                  meta,
-                }) => (
-                  <SelectInput
-                    {...field}
-                    label="License type"
-                    helperText={meta.touched && meta.error}
-                    error={meta.touched && Boolean(meta.error)}
-                    onChange={(e) =>
-                      handleLicenseChange(e.target, setFieldValue)
-                    }
-                    options={
-                      version.license === "personal"
-                        ? [
-                            {
-                              value: "personal",
-                              text: "Personal",
-                            },
-                          ]
-                        : version.use === "included"
-                        ? [
-                            {
-                              value: "commercial",
-                              text: "Commercial",
-                            },
-                          ]
-                        : [
-                            {
-                              value: "personal",
-                              text: "Personal",
-                            },
-                            {
-                              value: "commercial",
-                              text: "Commercial",
-                            },
-                          ]
-                    }
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-              </Field>
+              <SkeletonWrapper variant="text" loading={loading} width="100%">
+                <Field name="licenseType">
+                  {({
+                    field,
+                    form: { touched, errors, setFieldValue },
+                    meta,
+                  }) => (
+                    <SelectInput
+                      {...field}
+                      label="License type"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      onChange={(e) =>
+                        handleLicenseChange(e.target, setFieldValue)
+                      }
+                      options={
+                        version.license === "personal"
+                          ? [
+                              {
+                                value: "personal",
+                                text: "Personal",
+                              },
+                            ]
+                          : version.use === "included"
+                          ? [
+                              {
+                                value: "commercial",
+                                text: "Commercial",
+                              },
+                            ]
+                          : [
+                              {
+                                value: "personal",
+                                text: "Personal",
+                              },
+                              {
+                                value: "commercial",
+                                text: "Commercial",
+                              },
+                            ]
+                      }
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  )}
+                </Field>
+              </SkeletonWrapper>
             </Grid>
           )}
         </Grid>

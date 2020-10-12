@@ -22,7 +22,7 @@ const Onboarding = () => {
   const classes = {};
 
   return (
-    <Container fixed className={classes.fixed}>
+    <Container className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>
         <Grid item sm={12} className={classes.grid}>
           <Grow in>

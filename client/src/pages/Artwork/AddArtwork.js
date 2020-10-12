@@ -30,7 +30,7 @@ const AddArtwork = () => {
   }, []);
 
   return (
-    <Container fixed className={globalClasses.gridContainer}>
+    <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
           <MainHeading

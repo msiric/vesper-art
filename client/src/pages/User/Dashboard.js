@@ -32,6 +32,7 @@ const Dashboard = () => {
     ],
     currentStats: {},
     selectedStats: {
+      licenses: {},
       loading: true,
     },
     display: {
@@ -203,7 +204,7 @@ const Dashboard = () => {
 
   return (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
-      <Container fixed className={globalClasses.gridContainer}>
+      <Container className={globalClasses.gridContainer}>
         <Grid container style={{ flexDirection: "column" }}>
           <DashboardToolbar
             display={state.display}
@@ -256,7 +257,7 @@ const Dashboard = () => {
               />
             </Box>
             <Divider />
-            {state.visualization && (
+            {(state.selectedStats.loading || state.visualization) && (
               <DashboardVisualization
                 display={state.display}
                 graphData={state.graphData}

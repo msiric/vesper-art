@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { Typography } from "../../styles/theme.js";
+import SkeletonWrapper from "../SkeletonWrapper/SkeletonWrapper.js";
 
 const useStyles = makeStyles((muiTheme) => ({
   fixed: {
@@ -111,36 +112,49 @@ const useStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const OrderPreview = ({ version, handleDownload, shouldDownload }) => {
+const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
   const history = useHistory();
   const classes = useStyles();
 
   return (
     <Card className={classes.artworkPreviewCard}>
-      <CardMedia
-        className={classes.artworkPreviewMedia}
-        image={version.cover}
-        title={version.title}
-      />
+      <SkeletonWrapper loading={loading} width="100%">
+        <CardMedia
+          className={classes.artworkPreviewMedia}
+          image={version.cover}
+          title={version.title}
+        />
+      </SkeletonWrapper>
       <Divider />
       <Box>
-        <Typography
-          m={2}
-          fontWeight="fontWeightBold"
-          fontSize="h5.fontSize"
-        >{`${version.title}, ${new Date(
-          version.created
-        ).getFullYear()}`}</Typography>
-        <Typography m={2} fontSize="h6.fontSize">
-          {version.description}
-        </Typography>
+        <SkeletonWrapper variant="text" loading={loading}>
+          <Typography
+            m={2}
+            fontWeight="fontWeightBold"
+            fontSize="h5.fontSize"
+          >{`${version.title}, ${new Date(
+            version.created
+          ).getFullYear()}`}</Typography>
+        </SkeletonWrapper>
+        <SkeletonWrapper
+          variant="text"
+          loading={loading}
+          width="100%"
+          height="60px"
+        >
+          <Typography m={2} fontSize="h6.fontSize">
+            {version.description}
+          </Typography>
+        </SkeletonWrapper>
       </Box>
       {shouldDownload && (
         <Box>
           <Divider />
           <Box p={2} display="flex" justifyContent="space-between">
-            <Typography>Download high resolution artwork:</Typography>
-            <Button onClick={handleDownload}>Download</Button>
+            <SkeletonWrapper variant="text" loading={loading} width="100%">
+              <Typography>Download high resolution artwork:</Typography>
+              <Button onClick={handleDownload}>Download</Button>
+            </SkeletonWrapper>
           </Box>
         </Box>
       )}

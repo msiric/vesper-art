@@ -6,7 +6,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
 import * as Yup from "yup";
 import LicenseCard from "../../components/LicenseCard/LicenseCard.js";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import OrderPreview from "../../components/OrderPreview/OrderPreview.js";
 import ProfileCard from "../../components/ProfileCard/ProfileCard.js";
 import ReviewCard from "../../components/ReviewCard/ReviewCard.js";
@@ -23,7 +22,7 @@ const Order = ({ match }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
-    order: {},
+    order: { version: {}, seller: {}, buyer: {}, license: {} },
     modal: {
       open: false,
       body: ``,
@@ -139,9 +138,11 @@ const Order = ({ match }) => {
   };
 
   const isSeller = () =>
+    state.order._id &&
     store.user.id.toString() === state.order.seller._id.toString();
 
   const isBuyer = () =>
+    state.order._id &&
     store.user.id.toString() === state.order.buyer._id.toString();
 
   useEffect(() => {
@@ -149,17 +150,16 @@ const Order = ({ match }) => {
   }, []);
 
   return (
-    <Container fixed className={globalClasses.gridContainer}>
+    <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.loading ? (
-          <LoadingSpinner />
-        ) : state.order._id ? (
+        {state.loading || state.order._id ? (
           <>
             <Grid item xs={12}>
               <OrderPreview
                 version={state.order.version}
                 handleDownload={handleDownload}
                 shouldDownload={!isSeller() && isBuyer()}
+                loading={state.loading}
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -169,6 +169,7 @@ const Order = ({ match }) => {
                     ? state.order.seller
                     : state.order.buyer
                 }
+                loading={state.loading}
               />
             </Grid>
             <Grid item xs={12} md={8}>
@@ -176,11 +177,13 @@ const Order = ({ match }) => {
                 order={state.order}
                 license={state.order.license}
                 isSeller={isSeller}
+                loading={state.loading}
               />
               <ReviewCard
                 handleModalOpen={handleModalOpen}
                 review={state.order.review}
                 shouldReview={!isSeller() && isBuyer()}
+                loading={state.loading}
               />
             </Grid>
           </>

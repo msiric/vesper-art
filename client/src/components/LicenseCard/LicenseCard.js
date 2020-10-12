@@ -20,7 +20,7 @@ const useStyles = makeStyles({
   },
 });
 
-const LicenseCard = ({ license, order, isSeller }) => {
+const LicenseCard = ({ license, order, isSeller, loading }) => {
   const classes = useStyles();
 
   return (
@@ -73,7 +73,7 @@ const LicenseCard = ({ license, order, isSeller }) => {
           license.type,
           license.assignee,
           isSeller() ? order.earned || "Free" : order.spent || "Free",
-          formatDate(license.created, "dd/MM/yy HH:mm"),
+          license.created && formatDate(license.created, "dd/MM/yy HH:mm"),
         ],
       ]}
       empty=""
