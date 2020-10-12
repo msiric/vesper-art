@@ -28,7 +28,7 @@ const LoadingSpinner = ({padding}) => {
   const classes = useStyles();
 
   return (
-    <Container className={classes.loadingSpinnerContainer} style={{padding: padding}}>
+    <Container className={classes.loadingSpinnerContainer} style={{padding: padding ? padding : 0}}>
       <Grid container className={classes.loadingSpinnerGrid} spacing={2}>
         <Grid item xs={12} className={classes.loadingSpinnerItem}>
           <CircularProgress className={classes.loadingSpinnerCircle} />

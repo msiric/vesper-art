@@ -1,7 +1,8 @@
-import { Divider, Grid, List, Menu } from '@material-ui/core';
+import { Box, Divider, Grid, List, Menu, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import React from 'react';
+import React, { useContext } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { Context } from "../../context/Store.js";
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner.js';
 import NotificationItem from './NotificationItem.js';
 import NotificationsMenuStyles from './NotificationsMenu.style.js';
@@ -38,6 +39,7 @@ const NotificationsMenu = ({
   handleUnreadClick,
   loadMore,
 }) => {
+  const [store, dispatch] = useContext(Context);
   const classes = NotificationsMenuStyles();
 
   return (
@@ -59,9 +61,8 @@ const NotificationsMenu = ({
           </Grid>
         }
       >
-        <List className={classes.root}>
-          {notifications.items && notifications.items.length
-            ? notifications.items.map((notification, index) => (
+          {store.user.notifications.loading || (notifications.items && notifications.items.length)
+            ? notifications.items.map((notification, index) => <List className={classes.root}>
                 <>
                   {index === 0 ? <Divider /> : null}
                   <NotificationItem
@@ -71,9 +72,7 @@ const NotificationsMenu = ({
                     handleUnreadClick={handleUnreadClick}
                   />
                 </>
-              ))
-            : 'No notifications'}
-        </List>
+        </List>) : <Box style={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><Typography>No notifications</Typography></Box>}
       </InfiniteScroll>
     </StyledMenu>
   );
