@@ -17,11 +17,11 @@ const MainLayout = ({ children }) => {
           <CircularProgress color="primary" />
         </Backdrop>
       ) : (
-        <>
-          <Header />
-          <Box className={classes.appContainer}>{children}</Box>
-          <Footer />
-        </>
+          [
+            <Header />,
+            <Box className={classes.appContainer}>{children}</Box>,
+            <Footer />
+          ]
       )}
     </div>
   );

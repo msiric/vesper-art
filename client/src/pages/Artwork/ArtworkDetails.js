@@ -1,7 +1,7 @@
 import { Box, Button, Container, Grid, Modal } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon,
+  EditRounded as EditIcon
 } from "@material-ui/icons";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -15,7 +15,7 @@ import { Context } from "../../context/Store.js";
 import {
   deleteComment,
   getComments,
-  getDetails,
+  getDetails
 } from "../../services/artwork.js";
 import { postDownload } from "../../services/checkout.js";
 import globalStyles from "../../styles/global.js";

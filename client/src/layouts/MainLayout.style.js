@@ -20,6 +20,7 @@ const MainLayoutStyles = makeStyles((muiTheme) => ({
   },
   appContainer: {
     width: "100%",
+    flexGrow: 1,
     marginTop: artepunktTheme.margin.container,
     marginBottom: artepunktTheme.margin.container,
   },

@@ -1,7 +1,7 @@
 import { Box, Container, Grid, IconButton } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon,
+  EditRounded as EditIcon
 } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";

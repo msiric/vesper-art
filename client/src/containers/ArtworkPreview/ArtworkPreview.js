@@ -1,4 +1,4 @@
-import { Box, Card, CardMedia, Divider } from "@material-ui/core";
+import { Box, Card, CardMedia, Divider, Grow } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -116,67 +116,68 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
   const classes = useStyles();
 
   return (
-    <Card
-      className={classes.artworkPreviewCard}
-      style={{
-        minHeight: height,
-        padding: 16,
-      }}
-    >
-      <Box>
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography
-            m={2}
-            fontWeight="fontWeightBold"
-            fontSize="h5.fontSize"
-          >{`${version.title}, ${new Date(
-            version.created
-          ).getFullYear()}`}</Typography>
-        </SkeletonWrapper>
-      </Box>
-      <SkeletonWrapper
-        style={{ width: "100%", margin: "0 auto" }}
-        loading={loading}
+    <Grow in>
+      <Card
+        className={classes.artworkPreviewCard}
+        style={{
+          minHeight: height,
+          padding: 16,
+        }}
       >
-        <CardMedia
-          className={classes.artworkPreviewMedia}
-          image={version.cover}
-          title={version.title}
-          style={loading ? { width: 500, height } : { minHeight: height }}
-        />
-      </SkeletonWrapper>
-      <Box>
-        <SkeletonWrapper
-          variant="text"
-          loading={loading}
-          width="100%"
-          height="120px"
-        >
-          <Typography m={2} variant="body2">
-            {version.description}
-          </Typography>
-        </SkeletonWrapper>
-        <Divider />
         <Box>
           <SkeletonWrapper variant="text" loading={loading}>
-            <Typography ml={2} mt={2} mr={2} fontSize={12} fontStyle="italic">
-              You are previewing a low resolution thumbnail of the original
-              artwork
-            </Typography>
-          </SkeletonWrapper>
-          <SkeletonWrapper variant="text" loading={loading}>
             <Typography
-              ml={2}
-              mr={2}
-              mb={2}
-              fontSize={12}
-              fontStyle="italic"
-            >{`The original artwork dimensions (in pixels) are: ${version.width}x${version.height}`}</Typography>
+              m={2}
+              fontWeight="fontWeightBold"
+              fontSize="h5.fontSize"
+            >{`${version.title}, ${new Date(
+              version.created
+            ).getFullYear()}`}</Typography>
           </SkeletonWrapper>
         </Box>
-      </Box>
-    </Card>
-  );
+        <SkeletonWrapper
+          style={{ width: "100%", margin: "0 auto" }}
+          loading={loading}
+        >
+          <CardMedia
+            className={classes.artworkPreviewMedia}
+            image={version.cover}
+            title={version.title}
+            style={loading ? { width: 500, height } : { minHeight: height }}
+          />
+        </SkeletonWrapper>
+        <Box>
+          <SkeletonWrapper
+            variant="text"
+            loading={loading}
+            width="100%"
+            height="120px"
+          >
+            <Typography m={2} variant="body2">
+              {version.description}
+            </Typography>
+          </SkeletonWrapper>
+          <Divider />
+          <Box>
+            <SkeletonWrapper variant="text" loading={loading}>
+              <Typography ml={2} mt={2} mr={2} fontSize={12} fontStyle="italic">
+                You are previewing a low resolution thumbnail of the original
+                artwork
+              </Typography>
+            </SkeletonWrapper>
+            <SkeletonWrapper variant="text" loading={loading}>
+              <Typography
+                ml={2}
+                mr={2}
+                mb={2}
+                fontSize={12}
+                fontStyle="italic"
+              >{`The original artwork dimensions (in pixels) are: ${version.width}x${version.height}`}</Typography>
+            </SkeletonWrapper>
+          </Box>
+        </Box>
+      </Card>
+    </Grow>);
 };
 
 export default ArtworkPreview;
