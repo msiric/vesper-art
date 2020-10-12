@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import {
   LocationOnRounded as LocationIcon,
   PersonRounded as MemberIcon,
-  StarRounded as StarIcon,
+  StarRounded as StarIcon
 } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -59,7 +59,7 @@ const ProfileCard = ({ user, handleModalOpen, height, loading }) => {
           className={classes.profileCardAvatar}
         />
       </SkeletonWrapper>
-      <CardContent>
+      <CardContent style={{width: '100%'}}>
         <SkeletonWrapper
           variant="text"
           loading={loading}

@@ -58,7 +58,7 @@ const SwipeCard = ({
           </Tabs>
         </SkeletonWrapper>
       </AppBar>
-      <SkeletonWrapper loading={loading} width="100%" height="100%">
+      <SkeletonWrapper loading={loading} width="100%" height="100%" style={{minHeight: '280px'}}>
         <SwipeableViews
           axis="x"
           index={tabs.value}
