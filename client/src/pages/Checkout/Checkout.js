@@ -472,14 +472,16 @@ const Processor = ({ match, location, stripe }) => {
                                   {state.step.current === 0 && (
                                     <List component="nav" aria-label="Features" style={{width: '100%'}}>
                                       {licenseOptions.map((item) => (
-                                        <SkeletonWrapper variant="text" loading={state.loading} width="100%">
-                                          <ListItem>
+                                        <ListItem>
+                                          <SkeletonWrapper variant="text" loading={state.loading} style={{marginRight: 10}}>
                                             <ListItemIcon>
                                               <CheckIcon />
                                             </ListItemIcon>
+                                          </SkeletonWrapper>
+                                          <SkeletonWrapper variant="text" loading={state.loading} >
                                             <ListItemText primary={item.label} />
+                                          </SkeletonWrapper>
                                           </ListItem>
-                                        </SkeletonWrapper>
                                       ))}
                                     </List>
                                   )}
