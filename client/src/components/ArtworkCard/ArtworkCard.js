@@ -26,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 200,
     textDecoration: "none",
     boxShadow: "none",
-    margin: 12,
     position: "relative",
     "&:hover": {
       "& $artworkHeader": {

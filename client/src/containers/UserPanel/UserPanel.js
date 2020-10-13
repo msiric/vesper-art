@@ -1,4 +1,4 @@
-import { Fade, Grid, Paper } from "@material-ui/core";
+import { Box, Fade, Grid } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
@@ -12,7 +12,7 @@ const UserPanel = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
   const classes = {};
 
   return (
-    <Paper className={classes.paper}>
+    <Box className={classes.paper}>
       <InfiniteScroll
         className={classes.scroller}
         dataLength={elements.length}
@@ -39,6 +39,7 @@ const UserPanel = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
                 alignItems: "center",
                 maxWidth: 300,
                 height: "100%",
+                padding: 12,
               }}
             >
               <Fade in>
@@ -48,7 +49,7 @@ const UserPanel = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
           ))}
         </Grid>
       </InfiniteScroll>
-    </Paper>
+    </Box>
   );
 };
 
