@@ -68,6 +68,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
     if (highlightRef.current)
       highlightRef.current.scrollIntoView({
         behavior: "smooth",
+        block: "center",
       });
   };
 

@@ -22,14 +22,15 @@ const useStyles = makeStyles(() => ({
     padding: "0 12px",
   },
   activeCommentContainer: {
-    border: `2px ${artepunktTheme.palette.primary.main} solid`,
+    border: "2px transparent solid",
     borderRadius: "4px",
     animation: "$blink 0.8s",
     animationIterationCount: 3,
+    backgroundColor: "#525252",
   },
   "@keyframes blink": {
     "50%": {
-      borderColor: "#fff",
+      borderColor: artepunktTheme.palette.primary.main,
     },
   },
 }));
@@ -59,14 +60,14 @@ const CommentCard = ({
   }, []);
 
   return (
-    <Box
-      ref={isHighlight() ? highlightRef : null}
-      key={comment._id}
-      className={`${classes.commentContainer} ${
-        isHighlight() ? classes.activeCommentContainer : ""
-      }`}
-    >
-      <ListItem alignItems="flex-start" disableGutters>
+    <Box ref={isHighlight() ? highlightRef : null} key={comment._id}>
+      <ListItem
+        alignItems="flex-start"
+        disableGutters
+        className={`${classes.commentContainer} ${
+          isHighlight() ? classes.activeCommentContainer : ""
+        }`}
+      >
         <ListItemAvatar>
           <SkeletonWrapper loading={loading} variant="circle">
             <Avatar

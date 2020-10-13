@@ -46,35 +46,41 @@ const CommentSection = ({
             hasMore={scroll.comments ? scroll.comments.hasMore : null}
             loader={<LoadingSpinner />}
           >
-            <List p={0}>
-              {artwork.comments.map((comment) => (
-                <CommentCard
-                  artwork={artwork}
-                  comment={comment}
-                  edits={edits}
-                  queryRef={queryRef}
-                  highlightRef={highlightRef}
-                  filterHighlight={filterHighlight}
-                  handleCommentClose={handleCommentClose}
-                  handleCommentEdit={handleCommentEdit}
-                  handlePopoverOpen={handlePopoverOpen}
-                  loading={loading}
-                />
-              ))}
-              {highlight.element && (
-                <CommentCard
-                  artwork={artwork}
-                  comment={highlight.element}
-                  edits={edits}
-                  queryRef={queryRef}
-                  highlightRef={highlightRef}
-                  filterHighlight={() => null}
-                  handleCommentClose={handleCommentClose}
-                  handleCommentEdit={handleCommentEdit}
-                  handlePopoverOpen={handlePopoverOpen}
-                  loading={highlight.loading}
-                />
-              )}
+            <List
+              p={0}
+              style={{ display: "flex", flexDirection: "column-reverse" }}
+            >
+              <Box>
+                {artwork.comments.map((comment) => (
+                  <CommentCard
+                    artwork={artwork}
+                    comment={comment}
+                    edits={edits}
+                    queryRef={queryRef}
+                    highlightRef={highlightRef}
+                    filterHighlight={filterHighlight}
+                    handleCommentClose={handleCommentClose}
+                    handleCommentEdit={handleCommentEdit}
+                    handlePopoverOpen={handlePopoverOpen}
+                    loading={loading}
+                  />
+                ))}
+              </Box>
+              {highlight.loading ||
+                (highlight.element && (
+                  <CommentCard
+                    artwork={artwork}
+                    comment={highlight.element}
+                    edits={edits}
+                    queryRef={queryRef}
+                    highlightRef={highlightRef}
+                    filterHighlight={() => null}
+                    handleCommentClose={handleCommentClose}
+                    handleCommentEdit={handleCommentEdit}
+                    handlePopoverOpen={handlePopoverOpen}
+                    loading={highlight.loading}
+                  />
+                ))}
             </List>
           </InfiniteScroll>
         ) : (
