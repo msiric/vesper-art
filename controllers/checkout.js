@@ -1,18 +1,18 @@
-import crypto from 'crypto';
-import createError from 'http-errors';
-import socketApi from '../lib/socket.js';
-import License from '../models/license.js';
-import { fetchVersionDetails } from '../services/artwork.js';
-import { addNewNotification } from '../services/notification.js';
-import { addNewOrder } from '../services/order.js';
+import crypto from "crypto";
+import createError from "http-errors";
+import socketApi from "../lib/socket.js";
+import License from "../models/license.js";
+import { fetchVersionDetails } from "../services/artwork.js";
+import { addNewNotification } from "../services/notification.js";
+import { addNewOrder } from "../services/order.js";
 import {
   editUserPurchase,
   editUserSale,
   fetchUserById,
-} from '../services/user.js';
-import { sanitizeData } from '../utils/helpers.js';
-import licenseValidator from '../validation/license.js';
-import orderValidator from '../validation/order.js';
+} from "../services/user.js";
+import { sanitizeData } from "../utils/helpers.js";
+import licenseValidator from "../validation/license.js";
+import orderValidator from "../validation/order.js";
 
 export const getCheckout = async ({ userId, versionId }) => {
   const foundVersion = await fetchVersionDetails({ versionId });
@@ -21,7 +21,7 @@ export const getCheckout = async ({ userId, versionId }) => {
       version: foundVersion,
     };
   }
-  throw createError(400, 'Artwork not found');
+  throw createError(400, "Artwork not found");
 };
 
 export const postDownload = async ({
@@ -36,9 +36,9 @@ export const postDownload = async ({
   if (foundVersion && foundVersion.artwork.active) {
     // $TODO Bolje sredit validaciju licence
     const { intValue: licensePrice } =
-      licenseType === 'personal'
+      licenseType === "personal"
         ? foundVersion.personal
-        : licenseType === 'commercial'
+        : licenseType === "commercial"
         ? foundVersion.commercial
         : -1;
     if (licensePrice !== -1) {
@@ -61,7 +61,7 @@ export const postDownload = async ({
             const newLicense = new License();
             newLicense.owner = foundUser._id;
             newLicense.artwork = foundVersion.artwork._id;
-            newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+            newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
             newLicense.assignee = licenseAssignee;
             newLicense.company = licenseCompany;
             newLicense.type = licenseType;
@@ -95,7 +95,7 @@ export const postDownload = async ({
               earned: 0,
               fee: 0,
               commercial: false,
-              status: 'completed',
+              status: "completed",
               intentId: null,
             };
             const savedOrder = await addNewOrder({
@@ -115,7 +115,8 @@ export const postDownload = async ({
             // new start
             await addNewNotification({
               notificationLink: savedOrder._id,
-              notificationType: 'order',
+              notificationRef: "",
+              notificationType: "order",
               notificationReceiver: foundVersion.artwork.owner._id,
               session,
             });
@@ -124,15 +125,15 @@ export const postDownload = async ({
               savedOrder._id
             );
             // new end
-            return { message: 'Order completed successfully' };
+            return { message: "Order completed successfully" };
           }
-          throw createError(400, 'User not found');
+          throw createError(400, "User not found");
         }
-        throw createError(400, 'You are the owner of this artwork');
+        throw createError(400, "You are the owner of this artwork");
       }
-      throw createError(400, 'This artwork is not free');
+      throw createError(400, "This artwork is not free");
     }
-    throw createError(400, 'License type is not valid');
+    throw createError(400, "License type is not valid");
   }
-  throw createError(400, 'Artwork not found');
+  throw createError(400, "Artwork not found");
 };

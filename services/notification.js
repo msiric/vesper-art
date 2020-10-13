@@ -4,12 +4,14 @@ import User from "../models/user.js";
 
 export const addNewNotification = async ({
   notificationLink,
+  notificationRef,
   notificationType,
   notificationReceiver,
   session = null,
 }) => {
   const newNotification = new Notification();
   newNotification.link = notificationLink;
+  newNotification.ref = notificationRef;
   newNotification.type = notificationType;
   newNotification.receiver = notificationReceiver;
   newNotification.read = false;

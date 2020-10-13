@@ -7,16 +7,16 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   Typography,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import {
   DraftsRounded as ReadIcon,
   MarkunreadRounded as UnreadIcon,
   NotificationsRounded as NotificationsIcon,
-} from '@material-ui/icons';
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { formatDate } from '../../../../common/helpers.js';
-import NotificationItemStyles from './NotificationItem.style.js';
+} from "@material-ui/icons";
+import React from "react";
+import { Link } from "react-router-dom";
+import { formatDate } from "../../../../common/helpers.js";
+import NotificationItemStyles from "./NotificationItem.style.js";
 
 const NotificationItem = ({
   notification,
@@ -31,18 +31,15 @@ const NotificationItem = ({
     link: null,
   };
 
-  if (notification.type === 'comment') {
-    data.label = 'A user left a comment on your artwork';
-    data.link = `/artwork/${notification.link}`;
-  } else if (notification.type === 'order') {
-    data.label = 'A user ordered your artwork';
-    data.link = `/orders/${notification.link}`;
-  } else if (notification.type === 'review') {
-    data.label = 'A user left a review on your artwork';
-    data.link = `/orders/${notification.link}`;
-  } else if (notification.type === 'user') {
-    data.label = 'A user left a comment on your artwork';
-    data.link = `/artwork/${notification.link}`;
+  if (notification.type === "comment") {
+    data.label = "A user left a comment on your artwork";
+    data.link = `/artwork/${notification.link}?notif=comment&ref=${notification.ref}`;
+  } else if (notification.type === "order") {
+    data.label = "A user ordered your artwork";
+    data.link = `/orders/${notification.link}?notif=order`;
+  } else if (notification.type === "review") {
+    data.label = "A user left a review on your artwork";
+    data.link = `/orders/${notification.link}?notif=review`;
   }
 
   return data.label && data.link ? (
@@ -66,7 +63,7 @@ const NotificationItem = ({
           }
           secondary={
             <Typography>
-              {formatDate(new Date(notification.created), 'dd/MM/yyyy HH:mm')}
+              {formatDate(new Date(notification.created), "dd/MM/yyyy HH:mm")}
             </Typography>
           }
         />
@@ -78,7 +75,7 @@ const NotificationItem = ({
                 : () => handleReadClick(notification._id)
             }
             edge="end"
-            aria-label={notification.read ? 'Mark unread' : 'Mark read'}
+            aria-label={notification.read ? "Mark unread" : "Mark read"}
           >
             {notification.read ? <ReadIcon /> : <UnreadIcon />}
           </IconButton>

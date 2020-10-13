@@ -13,6 +13,10 @@ const CommentSection = ({
   artwork = {},
   edits = {},
   scroll = {},
+  queryRef,
+  highlight,
+  highlightRef,
+  filterHighlight,
   loadMoreComments,
   handleCommentAdd,
   handleCommentEdit,
@@ -48,12 +52,29 @@ const CommentSection = ({
                   artwork={artwork}
                   comment={comment}
                   edits={edits}
+                  queryRef={queryRef}
+                  highlightRef={highlightRef}
+                  filterHighlight={filterHighlight}
                   handleCommentClose={handleCommentClose}
                   handleCommentEdit={handleCommentEdit}
                   handlePopoverOpen={handlePopoverOpen}
                   loading={loading}
                 />
               ))}
+              {highlight.element && (
+                <CommentCard
+                  artwork={artwork}
+                  comment={highlight.element}
+                  edits={edits}
+                  queryRef={queryRef}
+                  highlightRef={highlightRef}
+                  filterHighlight={() => null}
+                  handleCommentClose={handleCommentClose}
+                  handleCommentEdit={handleCommentEdit}
+                  handlePopoverOpen={handlePopoverOpen}
+                  loading={highlight.loading}
+                />
+              )}
             </List>
           </InfiniteScroll>
         ) : (

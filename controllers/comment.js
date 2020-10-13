@@ -1,19 +1,29 @@
-import createError from 'http-errors';
-import socketApi from '../lib/socket.js';
+import createError from "http-errors";
+import socketApi from "../lib/socket.js";
 import {
   addArtworkComment,
   fetchArtworkById,
   removeArtworkComment,
-} from '../services/artwork.js';
+} from "../services/artwork.js";
 import {
   addNewComment,
   editExistingComment,
+  fetchCommentById,
   removeExistingComment,
-} from '../services/comment.js';
-import { addNewNotification } from '../services/notification.js';
-import { addUserNotification } from '../services/user.js';
-import { sanitizeData } from '../utils/helpers.js';
-import commentValidator from '../validation/comment.js';
+} from "../services/comment.js";
+import { addNewNotification } from "../services/notification.js";
+import { addUserNotification } from "../services/user.js";
+import { sanitizeData } from "../utils/helpers.js";
+import commentValidator from "../validation/comment.js";
+
+export const getComment = async ({ artworkId, commentId, session }) => {
+  const foundComment = await fetchCommentById({
+    artworkId,
+    commentId,
+    session,
+  });
+  return { comment: foundComment };
+};
 
 export const postComment = async ({
   userId,
@@ -25,7 +35,7 @@ export const postComment = async ({
   if (error) throw createError(400, error);
   const foundArtwork = await fetchArtworkById({ artworkId, session });
   if (!foundArtwork) {
-    throw createError(400, 'Artwork not found');
+    throw createError(400, "Artwork not found");
   } else {
     const savedComment = await addNewComment({
       artworkId,
@@ -42,14 +52,15 @@ export const postComment = async ({
       await addUserNotification({ userId: updatedArtwork.owner, session });
       await addNewNotification({
         notificationLink: foundArtwork._id,
-        notificationType: 'comment',
+        notificationRef: savedComment._id,
+        notificationType: "comment",
         notificationReceiver: updatedArtwork.owner,
         session,
       });
       socketApi.sendNotification(updatedArtwork.owner);
     }
     return {
-      message: 'Comment posted successfully',
+      message: "Comment posted successfully",
       payload: savedComment,
     };
   }
@@ -69,7 +80,7 @@ export const patchComment = async ({
     userId,
     commentContent,
   });
-  return { message: 'Comment updated successfully' };
+  return { message: "Comment updated successfully" };
 };
 
 export const deleteComment = async ({
@@ -85,5 +96,5 @@ export const deleteComment = async ({
     userId,
     session,
   });
-  return { message: 'Comment deleted successfully' };
+  return { message: "Comment deleted successfully" };
 };

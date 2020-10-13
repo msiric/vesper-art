@@ -1,9 +1,9 @@
-import { ax } from '../containers/Interceptor/Interceptor.js';
+import { ax } from "../containers/Interceptor/Interceptor.js";
 
 export const postMedia = async ({ data }) =>
-  await ax.post('/api/artwork_media_upload', data);
+  await ax.post("/api/artwork_media_upload", data);
 export const postArtwork = async ({ data }) =>
-  await ax.post('/api/add_artwork', data);
+  await ax.post("/api/add_artwork", data);
 export const getArtwork = async ({ dataCursor = null, dataCeiling = null }) =>
   typeof dataCursor !== null && typeof dataCeiling !== null
     ? await ax.get(
@@ -20,6 +20,8 @@ export const getDetails = async ({
         `/api/artwork/${artworkId}?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
       )
     : await ax.get(`/api/artwork/${artworkId}`);
+export const getComment = async ({ artworkId, commentId }) =>
+  await ax.get(`/api/artwork/${artworkId}/comment/${commentId}`);
 export const deleteComment = async ({ artworkId, commentId }) =>
   await ax.delete(`/api/artwork/${artworkId}/comment/${commentId}`);
 export const getComments = async ({
@@ -45,7 +47,7 @@ export const getGallery = async ({ dataCursor = null, dataCeiling = null }) =>
     ? await ax.get(
         `/api/my_artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
       )
-    : await ax.get('/api/my_artwork');
+    : await ax.get("/api/my_artwork");
 export const postSave = async ({ artworkId }) =>
   await ax.post(`/api/save_artwork/${artworkId}`);
 export const deleteSave = async ({ artworkId }) =>

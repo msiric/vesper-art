@@ -1,5 +1,17 @@
-import mongoose from 'mongoose';
-import Comment from '../models/comment.js';
+import mongoose from "mongoose";
+import Comment from "../models/comment.js";
+
+export const fetchCommentById = async ({
+  artworkId,
+  commentId,
+  session = null,
+}) => {
+  return await Comment.findOne({
+    $and: [{ _id: commentId }, { artwork: artworkId }],
+  })
+    .populate("owner")
+    .session(session);
+};
 
 export const addNewComment = async ({
   artworkId,

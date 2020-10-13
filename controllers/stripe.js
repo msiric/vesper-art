@@ -385,6 +385,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
   // new start
   await addNewNotification({
     notificationLink: savedOrder._id,
+    notificationRef: "",
     notificationType: "order",
     notificationReceiver: sellerId,
     session,

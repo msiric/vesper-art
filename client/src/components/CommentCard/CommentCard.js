@@ -6,20 +6,41 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemSecondaryAction,
-  ListItemText
+  ListItemText,
+  makeStyles,
 } from "@material-ui/core";
 import { MoreVertRounded as MoreIcon } from "@material-ui/icons";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import EditCommentForm from "../../containers/Comment/EditCommentForm.js";
 import { Context } from "../../context/Store.js";
-import { Typography } from "../../styles/theme.js";
+import { artepunktTheme, Typography } from "../../styles/theme.js";
 import SkeletonWrapper from "../SkeletonWrapper/SkeletonWrapper.js";
+
+const useStyles = makeStyles(() => ({
+  commentContainer: {
+    padding: "0 12px",
+  },
+  activeCommentContainer: {
+    border: `2px ${artepunktTheme.palette.primary.main} solid`,
+    borderRadius: "4px",
+    animation: "$blink 0.8s",
+    animationIterationCount: 3,
+  },
+  "@keyframes blink": {
+    "50%": {
+      borderColor: "#fff",
+    },
+  },
+}));
 
 const CommentCard = ({
   artwork = {},
   comment = {},
   edits = {},
+  queryRef,
+  highlightRef,
+  filterHighlight,
   handleCommentEdit,
   handleCommentClose,
   handlePopoverOpen,
@@ -27,10 +48,24 @@ const CommentCard = ({
 }) => {
   const [store, dispatch] = useContext(Context);
   const history = useHistory();
-  const classes = {};
+  const classes = useStyles();
+
+  const isHighlight = () => queryRef && queryRef === comment._id;
+
+  useEffect(() => {
+    if (isHighlight()) {
+      filterHighlight();
+    }
+  }, []);
 
   return (
-    <Box key={comment._id}>
+    <Box
+      ref={isHighlight() ? highlightRef : null}
+      key={comment._id}
+      className={`${classes.commentContainer} ${
+        isHighlight() ? classes.activeCommentContainer : ""
+      }`}
+    >
       <ListItem alignItems="flex-start" disableGutters>
         <ListItemAvatar>
           <SkeletonWrapper loading={loading} variant="circle">
@@ -59,6 +94,7 @@ const CommentCard = ({
                   component="span"
                   color="text.secondary"
                   fontStyle="oblique"
+                  style={{ marginLeft: 6 }}
                 >
                   {comment.modified ? "edited" : null}
                 </Typography>

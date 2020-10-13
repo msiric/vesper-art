@@ -1,14 +1,15 @@
 import express from "express";
 import {
-  isAuthenticated,
+  deleteComment,
+  getComment,
+  patchComment,
+  postComment,
+} from "../../../controllers/comment.js";
+import {
   checkParamsId,
+  isAuthenticated,
   requestHandler as handler,
 } from "../../../utils/helpers.js";
-import {
-  postComment,
-  patchComment,
-  deleteComment,
-} from "../../../controllers/comment.js";
 
 const router = express.Router();
 
@@ -28,11 +29,19 @@ router.route("/artwork/:artworkId/comment/:commentId").patch(
   }))
 );
 
-router.route("/artwork/:artworkId/comment/:commentId").delete(
-  [isAuthenticated, checkParamsId],
-  handler(deleteComment, true, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+router
+  .route("/artwork/:artworkId/comment/:commentId")
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(getComment, true, (req, res, next) => ({
+      ...req.params,
+    }))
+  )
+  .delete(
+    [isAuthenticated, checkParamsId],
+    handler(deleteComment, true, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
 
 export default router;

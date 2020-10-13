@@ -3,7 +3,8 @@ import {
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
 } from "@material-ui/icons";
-import React, { useContext, useEffect, useState } from "react";
+import queryString from "query-string";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
 import ArtistSection from "../../containers/ArtistSection/ArtistSection.js";
@@ -14,6 +15,7 @@ import LicenseForm from "../../containers/LicenseForm/LicenseForm.js";
 import { Context } from "../../context/Store.js";
 import {
   deleteComment,
+  getComment,
   getComments,
   getDetails,
 } from "../../services/artwork.js";
@@ -42,25 +44,80 @@ const initialState = {
     comments: {
       hasMore: true,
       dataCursor: 0,
-      dataCeiling: 20,
+      dataCeiling: 10,
     },
+  },
+  highlight: {
+    found: false,
+    loading: true,
+    element: null,
   },
 };
 
 const ArtworkDetails = ({ match, location, socket }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({ ...initialState });
+
   const history = useHistory();
   const globalClasses = globalStyles();
+
+  const highlightRef = useRef(null);
+  const query = queryString.parse(location.search);
+
+  const scrollToHighlight = () => {
+    if (highlightRef.current)
+      highlightRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
+  };
+
+  const filterHighlight = () => {
+    setState((prevState) => ({
+      ...prevState,
+      highlight: { ...initialState.highlight, found: true, loading: false },
+    }));
+    scrollToHighlight();
+  };
+
+  const fetchHighlight = async (commentId) => {
+    try {
+      setState((prevState) => ({
+        ...prevState,
+        highlight: { ...prevState.highlight, found: false, loading: true },
+      }));
+      const { data } = await getComment({
+        artworkId: match.params.id,
+        commentId,
+      });
+      if (data) {
+        setState((prevState) => ({
+          ...prevState,
+          highlight: {
+            element: data.comment,
+            found: false,
+            loading: false,
+          },
+        }));
+        scrollToHighlight();
+      } else {
+        // $TODO Comment not found
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const fetchArtwork = async () => {
     try {
       setState({ ...initialState });
       const { data } = await getDetails({
         artworkId: match.params.id,
-        dataCursor: state.scroll.comments.dataCursor,
-        dataCeiling: state.scroll.comments.dataCeiling,
+        dataCursor: initialState.scroll.comments.dataCursor,
+        dataCeiling: initialState.scroll.comments.dataCeiling,
       });
+      // $TODO Check if comment and if ref is a valid ID
+      if (!state.highlight.found && query.notif === "comment" && query.ref)
+        fetchHighlight(query.ref);
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -305,6 +362,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
                 artwork={state.artwork}
                 edits={state.edits}
                 scroll={state.scroll}
+                highlight={state.highlight}
+                queryRef={query ? query.ref : null}
+                highlightRef={highlightRef}
+                filterHighlight={filterHighlight}
                 loadMoreComments={loadMoreComments}
                 handleCommentAdd={handleCommentAdd}
                 handleCommentEdit={handleCommentEdit}
