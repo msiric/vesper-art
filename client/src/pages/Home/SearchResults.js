@@ -1,7 +1,7 @@
 import { Grid } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
 import UserPanel from "../../containers/UserPanel/UserPanel.js";
 import { Context } from "../../context/Store.js";
@@ -17,8 +17,6 @@ const SearchResults = ({ match, location, history }) => {
     cursor: 0,
     ceiling: 50,
   });
-
-  console.log(state);
 
   const classes = {};
 

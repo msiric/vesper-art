@@ -1,16 +1,8 @@
-import {
-  Card,
-  CardContent,
-  CardMedia,
-
-  Grid,
-  Paper,
-  Typography
-} from "@material-ui/core";
+import { Fade, Grid, Paper } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Link } from "react-router-dom";
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import ProfileCard from "../../components/ProfileCard/ProfileCard.js";
 import { Context } from "../../context/Store.js";
 
 const UserPanel = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
@@ -19,41 +11,11 @@ const UserPanel = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
 
   const classes = {};
 
-  const users = elements.map((element, index) => {
-    const card = (
-      <Card key={index} className={classes.root}>
-        <CardMedia
-          component={Link}
-          to={`/user/${element.name}`}
-          className={classes.media}
-          image={element.photo}
-          title={element.name}
-        />
-        <CardContent>
-          <Typography
-            component={Link}
-            to={`/user/${element.name}`}
-            variant="body1"
-            color="textSecondary"
-            className={classes.link}
-          >
-            {element.name}
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            {element.country}
-          </Typography>
-        </CardContent>
-      </Card>
-    );
-
-    return card;
-  });
-
   return (
     <Paper className={classes.paper}>
       <InfiniteScroll
         className={classes.scroller}
-        dataLength={users.length}
+        dataLength={elements.length}
         next={loadMore}
         hasMore={hasMore}
         loader={
@@ -62,7 +24,29 @@ const UserPanel = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
           </Grid>
         }
       >
-        {users}
+        <Grid container className={classes.container}>
+          {elements.map((element, index) => (
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              lg={3}
+              xl={2}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                maxWidth: 300,
+                height: "100%",
+              }}
+            >
+              <Fade in>
+                <ProfileCard user={element} loading={false} />
+              </Fade>
+            </Grid>
+          ))}
+        </Grid>
       </InfiniteScroll>
     </Paper>
   );

@@ -1,4 +1,4 @@
-import { Box, Grid } from "@material-ui/core";
+import { Box, Fade, Grid } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { LinkRounded as CopyIcon } from "@material-ui/icons";
 import React, { useContext, useState } from "react";
@@ -22,6 +22,12 @@ import { deleteSave, postSave } from "../../services/artwork.js";
 import Modal from "../../shared/Modal/Modal.js";
 
 const useStyles = makeStyles((theme) => ({
+  artworkWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    maxWidth: 500,
+  },
   masonryGrid: {
     display: "flex",
     flexWrap: "wrap",
@@ -187,13 +193,25 @@ const ArtworkPanel = ({
       >
         <Grid container className={classes.container}>
           {elements.map((artwork) => (
-            <ArtworkCard
-              user={store.user}
-              artwork={artwork}
-              type={type}
-              fixed={fixed}
-              loading={loading}
-            />
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              lg={3}
+              xl={fixed ? 3 : 2}
+              className={classes.artworkWrapper}
+            >
+              <Fade in>
+                <ArtworkCard
+                  user={store.user}
+                  artwork={artwork}
+                  type={type}
+                  fixed={fixed}
+                  loading={loading}
+                />
+              </Fade>
+            </Grid>
           ))}
         </Grid>
       </InfiniteScroll>
