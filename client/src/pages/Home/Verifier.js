@@ -1,17 +1,16 @@
 import {
   Button,
-
   Container,
   Grid,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { format } from "date-fns";
 import { Field, Form, Formik } from "formik";
 import { withSnackbar } from "notistack";
 import React, { useContext, useState } from "react";
 import * as Yup from "yup";
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { Context } from "../../context/Store.js";
 import { postVerifier } from "../../services/home.js";
 import globalStyles from "../../styles/global.js";

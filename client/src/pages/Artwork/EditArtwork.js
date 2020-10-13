@@ -13,14 +13,18 @@ import { getUser } from "../../services/stripe.js";
 import globalStyles from "../../styles/global.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
 
-const EditArtwork = ({ match }) => {
+const initialState = {
+  loading: true,
+  isDeleting: false,
+  artwork: {},
+  fileInput: null,
+  capabilities: {},
+};
+
+const EditArtwork = ({ match, location }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
-    loading: true,
-    isDeleting: false,
-    artwork: {},
-    fileInput: null,
-    capabilities: {},
+    ...initialState,
   });
   const history = useHistory();
 
@@ -28,6 +32,7 @@ const EditArtwork = ({ match }) => {
 
   const fetchData = async () => {
     try {
+      setState({ ...initialState });
       const {
         data: { artwork },
       } = await editArtwork({ artworkId: match.params.id });
@@ -36,14 +41,14 @@ const EditArtwork = ({ match }) => {
       } = store.user.stripeId
         ? await getUser({ stripeId: store.user.stripeId })
         : { data: { capabilities: {} } };
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         loading: false,
         artwork: artwork,
         capabilities: capabilities,
-      });
+      }));
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
@@ -65,10 +70,10 @@ const EditArtwork = ({ match }) => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [location]);
 
   return (
-    <Container className={globalClasses.gridContainer}>
+    <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         {state.loading || state.artwork._id ? (
           <Grid item sm={12}>

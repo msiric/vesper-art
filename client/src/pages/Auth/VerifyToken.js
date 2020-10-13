@@ -1,10 +1,10 @@
 import { Container, Grid } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { getToken } from "../../services/auth.js";
 
-const VerifyToken = ({ match }) => {
+const VerifyToken = ({ match, location }) => {
   const history = useHistory();
   const classes = {};
 
@@ -26,10 +26,10 @@ const VerifyToken = ({ match }) => {
 
   useEffect(() => {
     verifyToken();
-  });
+  }, []);
 
   return (
-    <Container className={classes.fixed}>
+    <Container key={location.key} className={classes.fixed}>
       <Grid container className={classes.container} spacing={2}>
         <Grid item xs={12} className={classes.loader}>
           <LoadingSpinner />

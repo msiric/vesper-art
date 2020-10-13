@@ -16,18 +16,18 @@ import {
   StepConnector,
   StepLabel,
   Stepper,
-  withStyles
+  withStyles,
 } from "@material-ui/core";
 import {
   CardMembershipRounded as LicenseIcon,
   CheckRounded as CheckIcon,
   ContactMailRounded as BillingIcon,
-  PaymentRounded as PaymentIcon
+  PaymentRounded as PaymentIcon,
 } from "@material-ui/icons";
 import {
   CardNumberElement,
   Elements,
-  useElements
+  useElements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import clsx from "clsx";
@@ -36,7 +36,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
-import SkeletonWrapper from '../../components/SkeletonWrapper/SkeletonWrapper.js';
+import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
 import BillingForm from "../../containers/BillingForm/BillingForm.js";
 import CheckoutSummary from "../../containers/CheckoutSummary/CheckoutSummary.js";
 import LicenseForm from "../../containers/LicenseForm/LicenseForm.js";
@@ -48,6 +48,20 @@ import { postCheckout } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 import { billingValidation } from "../../validation/billing.js";
 import { licenseValidation } from "../../validation/license.js";
+
+const initialState = {
+  secret: null,
+  artwork: { version: {} },
+  version: { artwork: { owner: {} } },
+  license: "",
+  discount: null,
+  intent: null,
+  step: {
+    current: 0,
+    length: STEPS.length,
+  },
+  loading: true,
+};
 
 const STEPS = [
   "License information",
@@ -125,50 +139,42 @@ const Connector = withStyles((theme) => ({
   },
 }))(StepConnector);
 
+const checkoutState = { stripe: null, loading: true };
+
 const Checkout = ({ match, location }) => {
-  const [state, setState] = useState({
-    stripe: null,
-    loading: true,
-  });
+  const [state, setState] = useState({ ...checkoutState });
 
   const fetchData = async () => {
     try {
       const stripe = await loadStripe(
         "pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z"
       );
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         loading: false,
         stripe: stripe,
-      });
+      }));
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [location]);
 
-  return (<Elements stripe={state.stripe}>
+  return (
+    <Elements key={location.key} stripe={state.stripe}>
       <Processor match={match} location={location} stripe={state.stripe} />
-    </Elements>)
+    </Elements>
+  );
 };
 
 const Processor = ({ match, location, stripe }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
-    secret: null,
-    artwork: { version: {} },
-    version: { artwork: { owner: {} } },
-    license: location.state.license || "",
-    discount: null,
-    intent: null,
-    step: {
-      current: 0,
-      length: STEPS.length,
-    },
-    loading: true
+    ...initialState,
+    license: location.state.license || initialState.license,
   });
 
   const licenseOptions =
@@ -379,14 +385,20 @@ const Processor = ({ match, location, stripe }) => {
           <LicenseForm
             version={state.version}
             license={state.license}
-            handleLicenseChange={handleLicenseChange} 
+            handleLicenseChange={handleLicenseChange}
             loading={state.loading}
           />
         );
       case 1:
         return <BillingForm loading={state.loading} />;
       case 2:
-        return <PaymentForm secret={state.secret} version={state.version} loading={state.loading} />;
+        return (
+          <PaymentForm
+            secret={state.secret}
+            version={state.version}
+            loading={state.loading}
+          />
+        );
 
       default:
         return <div>Not Found</div>;
@@ -395,6 +407,7 @@ const Processor = ({ match, location, stripe }) => {
 
   const fetchData = async () => {
     try {
+      setState({ ...initialState });
       const billing = {
         firstname: "",
         lastname: "",
@@ -407,122 +420,137 @@ const Processor = ({ match, location, stripe }) => {
       const { data } = await getCheckout({ versionId: match.params.id });
       /*       const license = retrieveLicenseInformation(data.artwork); */
       setState((prevState) => ({
-        ...state,
+        ...prevState,
         loading: false,
         version: data.version,
         billing: billing,
         discount: data.discount,
       }));
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [location]);
 
   return (
-    <Container className={globalClasses.gridContainer}>
+    <Container key={location.key} className={globalClasses.gridContainer}>
       <MainHeading text={"Checkout"} className={globalClasses.mainHeading} />
       <Grid container spacing={2}>
-        {state.loading || (state.version._id && stripe)? (
+        {state.loading || (state.version._id && stripe) ? (
           <>
             <Grid item xs={12} md={8}>
               <Formik
-                  initialValues={{
-                    licenseType: location.state.license || "",
-                    licenseAssignee: "",
-                    licenseCompany: "",
-                    billingName: "",
-                    billingSurname: "",
-                    billingEmail: "",
-                    billingAddress: "",
-                    billingZip: "",
-                    billingCity: "",
-                    billingCountry: "",
-                  }}
-                  validationSchema={checkoutValidation[state.step.current]}
-                  onSubmit={handleSubmit}
-                >
-                  {({ isSubmitting, values, setFieldValue }) => (
-                    <Form>
-                      <Card elevation={5}>
-                        <CardContent>
-                          {state.loading || stripe ? (
+                initialValues={{
+                  licenseType: location.state.license || "",
+                  licenseAssignee: "",
+                  licenseCompany: "",
+                  billingName: "",
+                  billingSurname: "",
+                  billingEmail: "",
+                  billingAddress: "",
+                  billingZip: "",
+                  billingCity: "",
+                  billingCountry: "",
+                }}
+                validationSchema={checkoutValidation[state.step.current]}
+                onSubmit={handleSubmit}
+              >
+                {({ isSubmitting, values, setFieldValue }) => (
+                  <Form>
+                    <Card elevation={5}>
+                      <CardContent>
+                        {state.loading || stripe ? (
+                          <Box>
+                            <SkeletonWrapper
+                              variant="text"
+                              loading={state.loading}
+                              width="100%"
+                            >
+                              <Stepper
+                                alternativeLabel
+                                connector={<Connector />}
+                                activeStep={state.step.current}
+                              >
+                                {STEPS.map((e) => (
+                                  <Step key={e}>
+                                    <StepLabel
+                                      StepIconComponent={StepperIcons}
+                                    />
+                                  </Step>
+                                ))}
+                              </Stepper>
+                            </SkeletonWrapper>
                             <Box>
-                              <SkeletonWrapper variant="text" loading={state.loading} width="100%">
-                                <Stepper
-                                  alternativeLabel
-                                  connector={<Connector />}
-                                  activeStep={state.step.current}
-                                >
-                                  {STEPS.map((e) => (
-                                    <Step key={e}>
-                                      <StepLabel
-                                        StepIconComponent={StepperIcons}
-                                      />
-                                    </Step>
-                                  ))}
-                                </Stepper>
-                              </SkeletonWrapper>
-                              <Box>
-                                <Grid container spacing={3}>
-                                  {renderForm(state.step.current)}
-                                  {state.step.current === 0 && (
-                                    <List component="nav" aria-label="Features" style={{width: '100%'}}>
-                                      {licenseOptions.map((item) => (
-                                        <ListItem>
-                                          <SkeletonWrapper variant="text" loading={state.loading} style={{marginRight: 10}}>
-                                            <ListItemIcon>
-                                              <CheckIcon />
-                                            </ListItemIcon>
-                                          </SkeletonWrapper>
-                                          <SkeletonWrapper variant="text" loading={state.loading} >
-                                            <ListItemText primary={item.label} />
-                                          </SkeletonWrapper>
-                                          </ListItem>
-                                      ))}
-                                    </List>
-                                  )}
-                                </Grid>
-                              </Box>
+                              <Grid container spacing={3}>
+                                {renderForm(state.step.current)}
+                                {state.step.current === 0 && (
+                                  <List
+                                    component="nav"
+                                    aria-label="Features"
+                                    style={{ width: "100%" }}
+                                  >
+                                    {licenseOptions.map((item) => (
+                                      <ListItem>
+                                        <SkeletonWrapper
+                                          variant="text"
+                                          loading={state.loading}
+                                          style={{ marginRight: 10 }}
+                                        >
+                                          <ListItemIcon>
+                                            <CheckIcon />
+                                          </ListItemIcon>
+                                        </SkeletonWrapper>
+                                        <SkeletonWrapper
+                                          variant="text"
+                                          loading={state.loading}
+                                        >
+                                          <ListItemText primary={item.label} />
+                                        </SkeletonWrapper>
+                                      </ListItem>
+                                    ))}
+                                  </List>
+                                )}
+                              </Grid>
                             </Box>
-                          ) : null}
-                        </CardContent>
-                        <CardActions
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <SkeletonWrapper loading={state.loading}>
-                            <Button
-                              disabled={state.step.current === 0}
-                              onClick={() => handleStepChange(-1)}
-                            >
-                              Back
-                            </Button>
-                          </SkeletonWrapper>
-                          <SkeletonWrapper loading={state.loading}>
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              type="submit"
-                              disabled={isSubmitting}
-                            >
-                              {state.loading ? (
-                                <CircularProgress color="secondary" size={24} />
-                              ) : (
-                                "Next"
-                              )}
-                            </Button>
-                          </SkeletonWrapper>
-                        </CardActions>
-                      </Card>
-                    </Form>
-                  )}
-                </Formik>
+                          </Box>
+                        ) : null}
+                      </CardContent>
+                      <CardActions
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <SkeletonWrapper loading={state.loading}>
+                          <Button
+                            disabled={state.step.current === 0}
+                            onClick={() => handleStepChange(-1)}
+                          >
+                            Back
+                          </Button>
+                        </SkeletonWrapper>
+                        <SkeletonWrapper loading={state.loading}>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            disabled={isSubmitting}
+                          >
+                            {state.loading ? (
+                              <CircularProgress color="secondary" size={24} />
+                            ) : (
+                              "Next"
+                            )}
+                          </Button>
+                        </SkeletonWrapper>
+                      </CardActions>
+                    </Card>
+                  </Form>
+                )}
+              </Formik>
             </Grid>
             <Grid item xs={12} md={4}>
               <CheckoutSummary

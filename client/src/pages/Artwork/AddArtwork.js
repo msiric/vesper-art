@@ -8,20 +8,24 @@ import globalStyles from "../../styles/global.js";
 import { Container, Grid } from "../../styles/theme.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
 
+const initialState = { capabilities: {} };
+
 const AddArtwork = () => {
   const globalClasses = globalStyles();
 
   const [store, dispatch] = useContext(Context);
-  const [state, setState] = useState({
-    capabilities: {},
-  });
+  const [state, setState] = useState({ ...initialState });
 
   const fetchAccount = async () => {
     try {
       const { data } = await getUser({ stripeId: store.user.stripeId });
-      setState({ ...state, loading: false, capabilities: data.capabilities });
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        capabilities: data.capabilities,
+      }));
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 

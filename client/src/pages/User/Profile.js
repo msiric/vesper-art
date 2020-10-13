@@ -11,25 +11,29 @@ import { getArtwork } from "../../services/artwork.js";
 import { getSaves, getUser } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 
-const Profile = ({ match, enqueueSnackbar }) => {
+const initialState = {
+  loading: true,
+  user: { artwork: {}, savedArtwork: [] },
+  tabs: { value: 0, revealed: false, loading: true },
+  modal: { open: false },
+  scroll: {
+    artwork: {
+      hasMore: true,
+      dataCursor: 0,
+      dataCeiling: 20,
+    },
+    saves: {
+      hasMore: true,
+      dataCursor: 0,
+      dataCeiling: 20,
+    },
+  },
+};
+
+const Profile = ({ match, location }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
-    loading: true,
-    user: { artwork: {}, savedArtwork: [] },
-    tabs: { value: 0, revealed: false, loading: true },
-    modal: { open: false },
-    scroll: {
-      artwork: {
-        hasMore: true,
-        dataCursor: 0,
-        dataCeiling: 20,
-      },
-      saves: {
-        hasMore: true,
-        dataCursor: 0,
-        dataCeiling: 20,
-      },
-    },
+    ...initialState,
   });
   const url = window.location;
   const title = store.main.brand;
@@ -39,6 +43,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
 
   const fetchUser = async () => {
     try {
+      setState({ ...initialState });
       const { data } = await getUser({
         userUsername: match.params.id,
         dataCursor: state.scroll.artwork.dataCursor,
@@ -50,8 +55,8 @@ const Profile = ({ match, enqueueSnackbar }) => {
       //   `/api/user/${user._id}/artwork?dataCursor=${state.dataCursor}&dataCeiling=${state.dataCeiling}`
       // );
       if (store.user.id === data.user._id) {
-        setState({
-          ...state,
+        setState((prevState) => ({
+          ...prevState,
           loading: false,
           user: {
             ...data.user,
@@ -60,22 +65,22 @@ const Profile = ({ match, enqueueSnackbar }) => {
             savedArtwork: [],
           },
           scroll: {
-            ...state.scroll,
+            ...prevState.scroll,
             artwork: {
-              ...state.scroll.artwork,
+              ...prevState.scroll.artwork,
               hasMore:
-                data.artwork.length < state.scroll.artwork.dataCeiling
+                data.artwork.length < prevState.scroll.artwork.dataCeiling
                   ? false
                   : true,
               dataCursor:
-                state.scroll.artwork.dataCursor +
-                state.scroll.artwork.dataCeiling,
+                prevState.scroll.artwork.dataCursor +
+                prevState.scroll.artwork.dataCeiling,
             },
           },
-        });
+        }));
       } else {
-        setState({
-          ...state,
+        setState((prevState) => ({
+          ...prevState,
           loading: false,
           user: {
             ...data.user,
@@ -84,22 +89,22 @@ const Profile = ({ match, enqueueSnackbar }) => {
             savedArtwork: [],
           },
           scroll: {
-            ...state.scroll,
+            ...prevState.scroll,
             artwork: {
-              ...state.scroll.artwork,
+              ...prevState.scroll.artwork,
               hasMore:
-                data.artwork.length < state.scroll.artwork.dataCeiling
+                data.artwork.length < prevState.scroll.artwork.dataCeiling
                   ? false
                   : true,
               dataCursor:
-                state.scroll.artwork.dataCursor +
-                state.scroll.artwork.dataCeiling,
+                prevState.scroll.artwork.dataCursor +
+                prevState.scroll.artwork.dataCeiling,
             },
           },
-        });
+        }));
       }
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
@@ -214,10 +219,10 @@ const Profile = ({ match, enqueueSnackbar }) => {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [location]);
 
   return state.loading || state.user._id ? (
-    <Container className={globalClasses.gridContainer}>
+    <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <>
           <UserProfileBanner

@@ -18,16 +18,18 @@ const reviewValidation = Yup.object().shape({
   rating: Yup.number().min(1).max(5).required("Rating cannot be empty"),
 });
 
-const Order = ({ match }) => {
+const initialState = {
+  loading: true,
+  order: { version: {}, seller: {}, buyer: {}, license: {}, review: {} },
+  modal: {
+    open: false,
+    body: ``,
+  },
+};
+
+const Order = ({ match, location }) => {
   const [store, dispatch] = useContext(Context);
-  const [state, setState] = useState({
-    loading: true,
-    order: { version: {}, seller: {}, buyer: {}, license: {}, review: {} },
-    modal: {
-      open: false,
-      body: ``,
-    },
-  });
+  const [state, setState] = useState({ ...initialState });
   const globalClasses = globalStyles();
 
   const history = useHistory();
@@ -86,15 +88,16 @@ const Order = ({ match }) => {
 
   const fetchOrder = async () => {
     try {
+      setState({ ...initialState });
       const { data } = await getOrder({ orderId: match.params.id });
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         loading: false,
         tab: 0,
         order: data.order,
-      });
+      }));
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
@@ -147,10 +150,10 @@ const Order = ({ match }) => {
 
   useEffect(() => {
     fetchOrder();
-  }, []);
+  }, [location]);
 
   return (
-    <Container className={globalClasses.gridContainer}>
+    <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         {state.loading || state.order._id ? (
           <>

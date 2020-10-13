@@ -6,39 +6,38 @@ import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
 import { Context } from "../../context/Store.js";
 import { getArtwork } from "../../services/artwork.js";
 
-const Home = ({ location, enqueueSnackbar }) => {
+const initialState = {
+  loading: true,
+  alerts: [],
+  artwork: [],
+  hasMore: true,
+  dataCursor: 0,
+  dataCeiling: 50,
+};
+
+const Home = ({ location }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
-    loading: true,
-    alerts: [],
-    artwork: [
-      { current: {}, owner: {} },
-      { current: {}, owner: {} },
-      { current: {}, owner: {} },
-      { current: {}, owner: {} },
-      { current: {}, owner: {} },
-    ],
-    hasMore: true,
-    dataCursor: 0,
-    dataCeiling: 50,
+    ...initialState,
   });
 
   const classes = {};
 
   const fetchArtwork = async () => {
     try {
+      setState({ ...initialState });
       // DATABASE DATA
       const { data } = await getArtwork({
-        dataCursor: state.dataCursor,
-        dataCeiling: state.dataCeiling,
+        dataCursor: initialState.dataCursor,
+        dataCeiling: initialState.dataCeiling,
       });
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         loading: false,
         artwork: data.artwork,
-        hasMore: data.artwork.length < state.dataCeiling ? false : true,
-        dataCursor: state.dataCursor + state.dataCeiling,
-      });
+        hasMore: data.artwork.length < prevState.dataCeiling ? false : true,
+        dataCursor: prevState.dataCursor + prevState.dataCeiling,
+      }));
 
       // MOCK DATA
       /*       const formattedArtwork = mockArtwork.data.map((artwork) => {
@@ -76,23 +75,13 @@ const Home = ({ location, enqueueSnackbar }) => {
         dataCursor: state.dataCursor + state.dataCeiling,
       }); */
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
   useEffect(() => {
     fetchArtwork();
-    if (location.state && location.state.message) {
-      enqueueSnackbar(location.state.message, {
-        variant: "success",
-        autoHideDuration: 1000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "center",
-        },
-      });
-    }
-  }, []);
+  }, [location]);
 
   const loadMore = async () => {
     try {
@@ -112,7 +101,7 @@ const Home = ({ location, enqueueSnackbar }) => {
   };
 
   return (
-    <Grid container className={classes.container}>
+    <Grid key={location.key} container className={classes.container}>
       <Grid item xs={12} className={classes.grid}>
         <SelectInput
           name="artworkType"

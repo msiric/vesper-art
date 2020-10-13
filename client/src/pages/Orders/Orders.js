@@ -1,16 +1,14 @@
 import {
-  Box, Container,
+  Box,
+  Container,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
   Select,
-
-  Typography
+  Typography,
 } from "@material-ui/core";
-import {
-  HourglassEmptyRounded as EmptyIcon
-} from "@material-ui/icons";
+import { HourglassEmptyRounded as EmptyIcon } from "@material-ui/icons";
 import { Rating } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
@@ -30,19 +28,19 @@ const Orders = () => {
   const history = useHistory();
 
   const fetchOrders = async () => {
-    setState({
-      ...state,
+    setState((prevState) => ({
+      ...prevState,
       loading: true,
-    });
+    }));
     try {
       const { data } = await getOrders({ display: state.display });
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         loading: false,
-        orders: data[state.display],
-      });
+        orders: data[prevState.display],
+      }));
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
@@ -176,7 +174,20 @@ const Orders = () => {
               order.review,
               order.created,
             ])}
-            empty={<Box style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 126}}><EmptyIcon style={{ fontSize: 56, marginBottom: 20 }}/><Typography variant="body2">You have no orders</Typography></Box>}
+            empty={
+              <Box
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: 126,
+                }}
+              >
+                <EmptyIcon style={{ fontSize: 56, marginBottom: 20 }} />
+                <Typography variant="body2">You have no orders</Typography>
+              </Box>
+            }
             loading={state.loading}
             redirect="orders"
             selectable={false}

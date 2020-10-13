@@ -1,8 +1,14 @@
-import { Box, Container, Grid, IconButton, Typography } from "@material-ui/core";
+import {
+  Box,
+  Container,
+  Grid,
+  IconButton,
+  Typography,
+} from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
-  HourglassEmptyRounded as EmptyIcon
+  HourglassEmptyRounded as EmptyIcon,
 } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -11,7 +17,7 @@ import Datatable from "../../components/Datatable/Datatable.js";
 import { deleteArtwork, getGallery } from "../../services/artwork.js";
 import globalStyles from "../../styles/global.js";
 
-const MyArtwork = () => {
+const MyArtwork = ({ location }) => {
   const [state, setState] = useState({
     loading: true,
     artwork: [],
@@ -29,13 +35,13 @@ const MyArtwork = () => {
         dataCursor: state.dataCursor,
         dataCeiling: state.dataCeiling,
       });
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         loading: false,
         artwork: data.artwork,
-      });
+      }));
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
@@ -204,7 +210,20 @@ const MyArtwork = () => {
               artwork.current.created,
               actionsColumn(artwork._id),
             ])}
-            empty={<Box style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 126}}><EmptyIcon style={{ fontSize: 56, marginBottom: 20 }}/><Typography variant="body2">You have no artwork</Typography></Box>}
+            empty={
+              <Box
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: 126,
+                }}
+              >
+                <EmptyIcon style={{ fontSize: 56, marginBottom: 20 }} />
+                <Typography variant="body2">You have no artwork</Typography>
+              </Box>
+            }
             loading={state.loading}
             redirect="artwork"
             selectable={false}

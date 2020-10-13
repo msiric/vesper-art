@@ -1,7 +1,7 @@
 import { Box, Button, Container, Grid, Modal } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon
+  EditRounded as EditIcon,
 } from "@material-ui/icons";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -15,51 +15,54 @@ import { Context } from "../../context/Store.js";
 import {
   deleteComment,
   getComments,
-  getDetails
+  getDetails,
 } from "../../services/artwork.js";
 import { postDownload } from "../../services/checkout.js";
 import globalStyles from "../../styles/global.js";
 import { Popover } from "../../styles/theme.js";
 
+const initialState = {
+  loading: true,
+  artwork: { comments: [] },
+  license: "personal",
+  height: 400,
+  modal: {
+    open: false,
+  },
+  popover: {
+    id: null,
+    anchorEl: null,
+    open: false,
+  },
+  tabs: {
+    value: 0,
+  },
+  edits: {},
+  scroll: {
+    comments: {
+      hasMore: true,
+      dataCursor: 0,
+      dataCeiling: 20,
+    },
+  },
+};
+
 const ArtworkDetails = ({ match, location, socket }) => {
   const [store, dispatch] = useContext(Context);
-  const [state, setState] = useState({
-    loading: true,
-    artwork: { comments: [] },
-    license: "personal",
-    height: 400,
-    modal: {
-      open: false,
-    },
-    popover: {
-      id: null,
-      anchorEl: null,
-      open: false,
-    },
-    tabs: {
-      value: 0,
-    },
-    edits: {},
-    scroll: {
-      comments: {
-        hasMore: true,
-        dataCursor: 0,
-        dataCeiling: 20,
-      },
-    },
-  });
+  const [state, setState] = useState({ ...initialState });
   const history = useHistory();
   const globalClasses = globalStyles();
 
   const fetchArtwork = async () => {
     try {
+      setState({ ...initialState });
       const { data } = await getDetails({
         artworkId: match.params.id,
         dataCursor: state.scroll.comments.dataCursor,
         dataCeiling: state.scroll.comments.dataCeiling,
       });
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         loading: false,
         artwork: data.artwork,
         height:
@@ -67,21 +70,22 @@ const ArtworkDetails = ({ match, location, socket }) => {
             (data.artwork.current.width / upload.artwork.fileTransform.width) +
           70,
         scroll: {
-          ...state.scroll,
+          ...prevState.scroll,
           comments: {
-            ...state.scroll.comments,
+            ...prevState.scroll.comments,
             hasMore:
-              data.artwork.comments.length < state.scroll.comments.dataCeiling
+              data.artwork.comments.length <
+              prevState.scroll.comments.dataCeiling
                 ? false
                 : true,
             dataCursor:
-              state.scroll.comments.dataCursor +
-              state.scroll.comments.dataCeiling,
+              prevState.scroll.comments.dataCursor +
+              prevState.scroll.comments.dataCeiling,
           },
         },
-      });
+      }));
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
@@ -286,7 +290,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
   }, [location]);
 
   return (
-    <Container className={globalClasses.gridContainer}>
+    <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         {state.loading || state.artwork._id ? (
           <>

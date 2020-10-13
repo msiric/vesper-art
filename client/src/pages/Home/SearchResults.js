@@ -7,21 +7,26 @@ import UserPanel from "../../containers/UserPanel/UserPanel.js";
 import { Context } from "../../context/Store.js";
 import { getSearch } from "../../services/home.js";
 
+const initialState = {
+  loading: true,
+  results: [],
+  type: null,
+  hasMore: true,
+  cursor: 0,
+  ceiling: 50,
+};
+
 const SearchResults = ({ match, location, history }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
-    loading: true,
-    results: [],
-    type: null,
-    hasMore: true,
-    cursor: 0,
-    ceiling: 50,
+    ...initialState,
   });
 
   const classes = {};
 
   const fetchResults = async () => {
     try {
+      setState({ ...initialState });
       if (!state.loading)
         setState((prevState) => ({
           ...prevState,
@@ -31,16 +36,16 @@ const SearchResults = ({ match, location, history }) => {
         }));
       const { data } = await getSearch({
         searchQuery: location.search,
-        dataCursor: state.cursor,
-        dataCeiling: state.ceiling,
+        dataCursor: initialState.cursor,
+        dataCeiling: initialState.ceiling,
       });
       setState((prevState) => ({
         ...prevState,
         loading: false,
         results: data.searchData,
         type: data.searchDisplay,
-        hasMore: data.searchData.length < state.ceiling ? false : true,
-        cursor: state.cursor + state.ceiling,
+        hasMore: data.searchData.length < prevState.ceiling ? false : true,
+        cursor: prevState.cursor + prevState.ceiling,
       }));
     } catch (err) {
       console.log(err);
@@ -67,10 +72,10 @@ const SearchResults = ({ match, location, history }) => {
 
   useEffect(() => {
     fetchResults();
-  }, [history.location]);
+  }, [location]);
 
   return (
-    <Grid container className={classes.container}>
+    <Grid key={location.key} container className={classes.container}>
       <Grid item xs={12} className={classes.grid}>
         {state.loading ? (
           <LoadingSpinner />

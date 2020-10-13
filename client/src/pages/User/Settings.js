@@ -37,11 +37,12 @@ const passwordValidation = Yup.object().shape({
     .oneOf([Yup.ref("password")], "Passwords do not match"),
 });
 
-const Settings = () => {
+const initialState = { loading: true, user: {} };
+
+const Settings = ({ location }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
-    loading: true,
-    user: {},
+    ...initialState,
   });
   const history = useHistory();
 
@@ -49,15 +50,15 @@ const Settings = () => {
 
   const fetchSettings = async () => {
     try {
+      setState({ ...initialState });
       const { data } = await getSettings({ userId: store.user.id });
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         loading: false,
         user: data.user,
-      });
-      console.log(data);
+      }));
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
@@ -128,10 +129,10 @@ const Settings = () => {
 
   useEffect(() => {
     fetchSettings();
-  }, []);
+  }, [location]);
 
   return (
-    <Container className={globalClasses.gridContainer}>
+    <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         {state.loading || state.user._id ? (
           <Grid item sm={12}>

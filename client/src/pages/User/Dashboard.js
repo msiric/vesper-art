@@ -19,37 +19,40 @@ import { getSelection, getStatistics } from "../../services/user.js";
 import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
 import globalStyles from "../../styles/global.js";
 
-const Dashboard = () => {
+const initialState = {
+  loading: true,
+  graphData: [
+    {
+      date: null,
+      pl: 4000,
+      cl: 2400,
+    },
+  ],
+  currentStats: {},
+  selectedStats: {
+    licenses: {},
+    loading: true,
+  },
+  display: {
+    type: "purchases",
+    label: "spent",
+  },
+  dates: [new Date(subDays(new Date(), 7)), new Date()],
+  visualization: false,
+};
+
+const Dashboard = ({ location }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
-    loading: true,
-    graphData: [
-      {
-        date: null,
-        pl: 4000,
-        cl: 2400,
-      },
-    ],
-    currentStats: {},
-    selectedStats: {
-      licenses: {},
-      loading: true,
-    },
-    display: {
-      type: "purchases",
-      label: "spent",
-    },
-    dates: [new Date(subDays(new Date(), 7)), new Date()],
-    visualization: false,
+    ...initialState,
   });
 
   const globalClasses = globalStyles();
 
   const fetchCurrentData = async () => {
     try {
+      setState({ ...initialState });
       const { data } = await getStatistics({ userId: store.user.id });
-      console.log(data);
-
       const currentStats = {
         review: data.statistics.rating,
         saves: data.statistics.savedArtwork.length,
@@ -71,14 +74,14 @@ const Dashboard = () => {
         },
       }));
     } catch (err) {
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         loading: false,
         selectedStats: {
-          ...state.selectedStats,
+          ...prevState.selectedStats,
           loading: false,
         },
-      });
+      }));
     }
   };
 
@@ -192,7 +195,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchCurrentData();
-  }, []);
+  }, [location]);
 
   useEffect(() => {
     if (state.dates[0] && state.dates[1]) {
@@ -204,7 +207,7 @@ const Dashboard = () => {
 
   return (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
-      <Container className={globalClasses.gridContainer}>
+      <Container key={location.key} className={globalClasses.gridContainer}>
         <Grid container style={{ flexDirection: "column" }}>
           <DashboardToolbar
             display={state.display}
