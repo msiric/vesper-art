@@ -4,12 +4,24 @@ import { Rating } from "@material-ui/lab";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
-import { Typography } from "../../styles/theme.js";
+import { artepunktTheme, Typography } from "../../styles/theme.js";
 
 const useStyles = makeStyles((muiTheme) => ({
   reviewContainer: {
     display: "flex",
     flexDirection: "column",
+  },
+  highlightContainer: {
+    border: "2px transparent solid",
+    borderRadius: "4px",
+    animation: "$blink 0.8s",
+    animationIterationCount: 3,
+    backgroundColor: "#525252",
+  },
+  "@keyframes blink": {
+    "50%": {
+      borderColor: artepunktTheme.palette.primary.main,
+    },
   },
   reviewContent: {
     display: "flex",
@@ -18,12 +30,26 @@ const useStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const ReviewCard = ({ review, handleModalOpen, shouldReview, loading }) => {
+const ReviewCard = ({
+  review,
+  handleModalOpen,
+  shouldReview,
+  queryNotif,
+  highlightRef,
+  loading,
+}) => {
   const history = useHistory();
   const classes = useStyles();
 
+  const isHighlight = () => queryNotif && queryNotif === "review";
+
   return (
-    <Card className={classes.reviewContainer}>
+    <Card
+      ref={isHighlight() ? highlightRef : null}
+      className={`${classes.reviewContainer} ${
+        isHighlight() ? classes.highlightContainer : ""
+      }`}
+    >
       <Box>
         <SkeletonWrapper variant="text" loading={loading}>
           <Typography m={2}>Review</Typography>

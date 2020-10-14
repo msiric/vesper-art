@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
   commentContainer: {
     padding: "0 12px",
   },
-  activeCommentContainer: {
+  highlightContainer: {
     border: "2px transparent solid",
     borderRadius: "4px",
     animation: "$blink 0.8s",
@@ -58,7 +58,7 @@ const CommentCard = ({
         alignItems="flex-start"
         disableGutters
         className={`${classes.commentContainer} ${
-          isHighlight() ? classes.activeCommentContainer : ""
+          isHighlight() ? classes.highlightContainer : ""
         }`}
       >
         <ListItemAvatar>

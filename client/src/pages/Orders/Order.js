@@ -2,7 +2,8 @@ import { Box, Button, Container, Grid } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import { format } from "date-fns";
 import { Field, Form, Formik } from "formik";
-import React, { useContext, useEffect, useState } from "react";
+import queryString from "query-string";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
 import * as Yup from "yup";
 import LicenseCard from "../../components/LicenseCard/LicenseCard.js";
@@ -31,6 +32,9 @@ const Order = ({ match, location }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({ ...initialState });
   const globalClasses = globalStyles();
+
+  const highlightRef = useRef(null);
+  const query = queryString.parse(location.search);
 
   const history = useHistory();
 
@@ -86,6 +90,14 @@ const Order = ({ match, location }) => {
     );
   };
 
+  const scrollToHighlight = () => {
+    if (highlightRef.current)
+      highlightRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+  };
+
   const fetchOrder = async () => {
     try {
       setState({ ...initialState });
@@ -96,6 +108,9 @@ const Order = ({ match, location }) => {
         tab: 0,
         order: data.order,
       }));
+      if (query && query.notif === "review") {
+        scrollToHighlight();
+      }
     } catch (err) {
       setState((prevState) => ({ ...prevState, loading: false }));
     }
@@ -187,6 +202,8 @@ const Order = ({ match, location }) => {
                 handleModalOpen={handleModalOpen}
                 review={state.order.review}
                 shouldReview={!isSeller() && isBuyer()}
+                queryNotif={query ? query.notif : null}
+                highlightRef={highlightRef}
                 loading={state.loading}
               />
             </Grid>
