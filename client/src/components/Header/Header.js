@@ -7,7 +7,7 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import {
   AccountBoxRounded as UserIcon,
@@ -15,7 +15,7 @@ import {
   ImageRounded as ArtworkIcon,
   MoreVertRounded as MoreIcon,
   NotificationsRounded as NotificationsIcon,
-  SearchRounded as SearchIcon
+  SearchRounded as SearchIcon,
 } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
 import React, { useContext, useState } from "react";
@@ -26,7 +26,7 @@ import {
   getNotifications,
   patchRead,
   patchUnread,
-  postLogout
+  postLogout,
 } from "../../services/user.js";
 import HeaderStyles from "./Header.style.js";
 import NotificationsMenu from "./NotificationsMenu.js";
@@ -136,7 +136,7 @@ const Header = ({ history }) => {
         notifications: {
           count: 0,
           anchor: target,
-        }
+        },
       });
     }
   };
@@ -340,10 +340,10 @@ const Header = ({ history }) => {
       open={!!state.profile.mobileAnchorEl}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem component={Link} to="/login">
+      <MenuItem component={Link} variant="outlined" to="/login">
         <p>Log in</p>
       </MenuItem>
-      <MenuItem component={Link} to="/signup">
+      <MenuItem component={Link} variant="outlined" to="/signup">
         <p>Sign up</p>
       </MenuItem>
     </Menu>
@@ -497,10 +497,21 @@ const Header = ({ history }) => {
           ) : (
             <>
               <div className={classes.sectionDesktop}>
-                <Button component={Link} to="/login" color="default">
+                <Button
+                  component={Link}
+                  variant="outlined"
+                  to="/login"
+                  color="primary"
+                  style={{ marginRight: "6px" }}
+                >
                   Log in
                 </Button>
-                <Button component={Link} to="/signup" color="secondary">
+                <Button
+                  component={Link}
+                  variant="outlined"
+                  to="/signup"
+                  color="secondary"
+                >
                   Sign up
                 </Button>
               </div>
