@@ -1,18 +1,17 @@
 import {
   Box,
-
   Container,
   Grid,
   Paper,
   Step,
   StepLabel,
-  Stepper
+  Stepper,
 } from "@material-ui/core";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { getCheckout } from "../../services/checkout.js";
 import BillingForm from "../BillingForm/BillingForm.js";
 import LicenseForm from "../LicenseForm/LicenseForm.js";
@@ -137,7 +136,9 @@ const Checkout = ({ match, location }) => {
         city: "",
         country: "",
       };
-      const { data } = await getCheckout({ versionId: match.params.id });
+      const { data } = await getCheckout.request({
+        versionId: match.params.id,
+      });
       const stripe = await loadStripe(
         "pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z"
       );
@@ -197,11 +198,11 @@ const Checkout = ({ match, location }) => {
                           try {
                             const {
                               data: { artworkCover, artworkMedia },
-                            } = await postMedia({ data: formData });
+                            } = await postMedia.request({ data: formData });
                             values.artworkCover = artworkCover;
                             values.artworkMedia = artworkMedia;
                             const data = deleteEmptyValues(values);
-                            await patchArtwork({ artworkId: match.params.id, data });
+                            await patchArtwork.request({ artworkId: match.params.id, data });
                             history.push({
                               pathname: '/',
                               state: { message: 'Artwork edited' },

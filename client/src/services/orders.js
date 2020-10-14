@@ -13,6 +13,7 @@ export const getOrder = {
   success: { message: "Order successfully fetched", variant: "success" },
   error: { message: "Failed to fetch order", variant: "error" },
 };
+// $TODO Not used?
 export const getOrders = {
   request: async ({ display }) => await ax.get(`/api/orders/${display}`),
   success: { message: "Orders successfully fetched", variant: "success" },

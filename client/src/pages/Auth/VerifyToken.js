@@ -10,7 +10,7 @@ const VerifyToken = ({ match, location }) => {
 
   const verifyToken = async () => {
     try {
-      await getToken({ tokenId: match.params.id });
+      await getToken.request({ tokenId: match.params.id });
       history.push({
         pathname: "/login",
         state: { message: "Email successfully verified" },

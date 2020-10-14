@@ -18,7 +18,7 @@ const AddArtwork = () => {
 
   const fetchAccount = async () => {
     try {
-      const { data } = await getUser({ stripeId: store.user.stripeId });
+      const { data } = await getUser.request({ stripeId: store.user.stripeId });
       setState((prevState) => ({
         ...prevState,
         loading: false,

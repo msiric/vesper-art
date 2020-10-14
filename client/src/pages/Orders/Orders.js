@@ -31,7 +31,7 @@ const Orders = () => {
       loading: true,
     }));
     try {
-      const { data } = await getOrders({ display: state.display });
+      const { data } = await getOrders.request({ display: state.display });
       setState((prevState) => ({
         ...prevState,
         loading: false,

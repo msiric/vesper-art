@@ -1,18 +1,17 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import { Link } from 'react-router-dom';
 import {
-  Card,
-  Typography,
-  CardContent,
-  CardActions,
-  TextField,
   Button,
-} from '@material-ui/core';
-import ResetPasswordStyles from './ResetPassword.style.js';
-import { postReset } from '../../services/auth.js';
-import { resetValidation } from '../../validation/reset.js';
+  Card,
+  CardActions,
+  CardContent,
+  TextField,
+  Typography,
+} from "@material-ui/core";
+import { Field, Form, Formik } from "formik";
+import React from "react";
+import { Link, useHistory } from "react-router-dom";
+import { postReset } from "../../services/auth.js";
+import { resetValidation } from "../../validation/reset.js";
+import ResetPasswordStyles from "./ResetPassword.style.js";
 
 const ResetPasswordForm = ({ match }) => {
   const history = useHistory();
@@ -21,21 +20,21 @@ const ResetPasswordForm = ({ match }) => {
   return (
     <Formik
       initialValues={{
-        userPassword: '',
-        userConfirm: '',
+        userPassword: "",
+        userConfirm: "",
       }}
       validationSchema={resetValidation}
       onSubmit={async (values, { resetForm }) => {
         try {
-          await postReset({ userId: match.params.id, data: values });
+          await postReset.request({ userId: match.params.id, data: values });
           history.push({
-            pathname: '/login',
-            state: { message: 'Password successfully changed' },
+            pathname: "/login",
+            state: { message: "Password successfully changed" },
           });
         } catch (err) {
           history.push({
-            pathname: '/',
-            state: { message: 'An error occurred' },
+            pathname: "/",
+            state: { message: "An error occurred" },
           });
         }
       }}

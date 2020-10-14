@@ -1,15 +1,13 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import { Link as RouterLink } from 'react-router-dom';
-import { TextField, Button, Link, Grid } from '@material-ui/core';
-import { patchEmail } from '../../services/user.js';
-import { emailValidation } from '../../validation/email.js';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button, TextField } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Field, Form, Formik } from "formik";
+import React from "react";
+import { useHistory } from "react-router-dom";
+import { emailValidation } from "../../validation/email.js";
 
 const useStyles = makeStyles((theme) => ({
   form: {
-    width: '100%',
+    width: "100%",
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -25,12 +23,12 @@ const EditEmailForm = () => {
   return (
     <Formik
       initialValues={{
-        userEmail: '',
+        userEmail: "",
       }}
       enableReinitialize
       validationSchema={emailValidation}
       onSubmit={async (values, { resetForm }) => {
-        /*         await patchEmail({
+        /*         await patchEmail.request({
           userId: store.user.id,
           data: values,
         });

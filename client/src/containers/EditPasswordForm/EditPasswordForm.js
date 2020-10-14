@@ -1,15 +1,13 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import { Link as RouterLink } from 'react-router-dom';
-import { TextField, Button, Link, Grid } from '@material-ui/core';
-import { patchPassword } from '../../services/user.js';
-import { passwordValidation } from '../../validation/password.js';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button, TextField } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Field, Form, Formik } from "formik";
+import React from "react";
+import { useHistory } from "react-router-dom";
+import { passwordValidation } from "../../validation/password.js";
 
 const useStyles = makeStyles((theme) => ({
   form: {
-    width: '100%',
+    width: "100%",
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -25,14 +23,14 @@ const EditPasswordForm = () => {
   return (
     <Formik
       initialValues={{
-        userCurrent: '',
-        userPassword: '',
-        userConfirm: '',
+        userCurrent: "",
+        userPassword: "",
+        userConfirm: "",
       }}
       enableReinitialize
       validationSchema={passwordValidation}
       onSubmit={async (values, { resetForm }) => {
-        /*         await patchPassword({
+        /*         await patchPassword.request({
           userId: store.user.id,
           data: values,
         });

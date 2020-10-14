@@ -40,7 +40,7 @@ const EditPreferencesForm = ({ displaySaves }) => {
       enableReinitialize
       validationSchema={preferencesValidation}
       onSubmit={async (values, { resetForm }) => {
-        /*         await patchPreferences({
+        /*         await patchPreferences.request({
           userId: store.user.id,
           data: values,
         });

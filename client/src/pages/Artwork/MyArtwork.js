@@ -25,7 +25,7 @@ const MyArtwork = ({ location }) => {
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await getGallery({
+      const { data } = await getGallery.request({
         dataCursor: state.dataCursor,
         dataCeiling: state.dataCeiling,
       });
@@ -49,7 +49,7 @@ const MyArtwork = ({ location }) => {
       loading: true,
     });
     try {
-      await deleteArtwork({
+      await deleteArtwork.request({
         artworkId,
       });
       setState({

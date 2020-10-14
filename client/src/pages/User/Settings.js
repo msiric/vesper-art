@@ -51,7 +51,7 @@ const Settings = ({ location }) => {
   const fetchSettings = async () => {
     try {
       setState({ ...initialState });
-      const { data } = await getSettings({ userId: store.user.id });
+      const { data } = await getSettings.request({ userId: store.user.id });
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -71,7 +71,7 @@ const Settings = ({ location }) => {
         value === "userCountry" ? data[value].value : data[value]
       );
     }
-    await patchUser({
+    await patchUser.request({
       userId: store.user.id,
       data: formData,
     });
@@ -87,7 +87,7 @@ const Settings = ({ location }) => {
   };
 
   const handleUpdateEmail = async (values) => {
-    await patchEmail({
+    await patchEmail.request({
       userId: store.user.id,
       data: values,
     });
@@ -102,7 +102,7 @@ const Settings = ({ location }) => {
   };
 
   const handleUpdatePreferences = async (values) => {
-    await patchPreferences({
+    await patchPreferences.request({
       userId: store.user.id,
       data: values,
     });
@@ -116,7 +116,7 @@ const Settings = ({ location }) => {
   };
 
   const handleUpdatePassword = async (values, actions) => {
-    await patchPassword({
+    await patchPassword.request({
       userId: store.user.id,
       data: values,
     });
@@ -124,7 +124,7 @@ const Settings = ({ location }) => {
   };
 
   const handleDeactivateUser = async () => {
-    await deleteUser({ userId: store.user.id });
+    await deleteUser.request({ userId: store.user.id });
   };
 
   useEffect(() => {

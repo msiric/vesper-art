@@ -5,15 +5,15 @@ import {
   CardContent,
   TextField,
   Typography,
-} from '@material-ui/core';
-import { Field, Form, Formik } from 'formik';
-import React from 'react';
-import { countries } from '../../../../common/constants.js';
-import ImageInput from '../../components/ImageInput/ImageInput.js';
-import { patchUser, postMedia } from '../../services/user.js';
-import SelectInput from '../../shared/SelectInput/SelectInput.js';
-import { profileValidation } from '../../validation/profile.js';
-import EditUserFormStyles from './EditUserForm.style';
+} from "@material-ui/core";
+import { Field, Form, Formik } from "formik";
+import React from "react";
+import { countries } from "../../../../common/constants.js";
+import ImageInput from "../../components/ImageInput/ImageInput.js";
+import { patchUser, postMedia } from "../../services/user.js";
+import SelectInput from "../../shared/SelectInput/SelectInput.js";
+import { profileValidation } from "../../validation/profile.js";
+import EditUserFormStyles from "./EditUserForm.style";
 
 const EditUserForm = ({ match, user, handleModalClose }) => {
   const classes = EditUserFormStyles();
@@ -31,14 +31,14 @@ const EditUserForm = ({ match, user, handleModalClose }) => {
         try {
           if (values.userMedia.length) {
             const formData = new FormData();
-            formData.append('userMedia', values.userMedia[0]);
+            formData.append("userMedia", values.userMedia[0]);
             const {
               data: { userMedia, userDimensions },
-            } = await postMedia({ data: formData });
+            } = await postMedia.request({ data: formData });
             values.userMedia = userMedia;
             values.userDimensions = userDimensions;
           }
-          await patchUser({ userId: user._id, data: values });
+          await patchUser.request({ userId: user._id, data: values });
         } catch (err) {
           console.log(err);
         }

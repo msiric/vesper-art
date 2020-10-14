@@ -34,7 +34,7 @@ const SearchResults = ({ match, location, history }) => {
           hasMore: true,
           cursor: 0,
         }));
-      const { data } = await getSearch({
+      const { data } = await getSearch.request({
         searchQuery: location.search,
         dataCursor: initialState.cursor,
         dataCeiling: initialState.ceiling,
@@ -54,7 +54,7 @@ const SearchResults = ({ match, location, history }) => {
 
   const loadMore = async () => {
     try {
-      const { data } = await getSearch({
+      const { data } = await getSearch.request({
         query: location.search,
         cursor: state.cursor,
         ceiling: state.ceiling,

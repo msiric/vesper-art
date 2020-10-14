@@ -5,17 +5,17 @@ import {
   Tabs,
   TextField,
   Typography,
-} from '@material-ui/core';
-import { Rating } from '@material-ui/lab';
-import { format } from 'date-fns';
-import { Field, Form, Formik } from 'formik';
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory, withRouter } from 'react-router-dom';
-import { getOrder, postReview } from '../../services/orders.js';
-import Modal from '../../shared/Modal/Modal.js';
-import { reviewValidation } from '../../validation/review.js';
-import { Context } from '../Store/Store.js';
-import OrderStyles from './Order.style.js';
+} from "@material-ui/core";
+import { Rating } from "@material-ui/lab";
+import { format } from "date-fns";
+import { Field, Form, Formik } from "formik";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory, withRouter } from "react-router-dom";
+import { getOrder, postReview } from "../../services/orders.js";
+import Modal from "../../shared/Modal/Modal.js";
+import { reviewValidation } from "../../validation/review.js";
+import { Context } from "../Store/Store.js";
+import OrderStyles from "./Order.style.js";
 
 const Order = ({ match }) => {
   const [store, dispatch] = useContext(Context);
@@ -42,7 +42,7 @@ const Order = ({ match }) => {
           enableReinitialize
           validationSchema={reviewValidation}
           onSubmit={async (values, { resetForm }) => {
-            await postReview({
+            await postReview.request({
               artworkId: state.order._id,
               reviewRating: values.rating,
             });
@@ -104,7 +104,7 @@ const Order = ({ match }) => {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await getOrder({ orderId: match.params.id });
+      const { data } = await getOrder.request({ orderId: match.params.id });
       setState({
         ...state,
         loading: false,
@@ -168,7 +168,7 @@ const Order = ({ match }) => {
         textColor="primary"
         variant="scrollable"
         scrollButtons="auto"
-        classes={{ root: 'w-full h-64' }}
+        classes={{ root: "w-full h-64" }}
       >
         <Tab className="h-64 normal-case" label="Details" />
         <Tab className="h-64 normal-case" label="Invoice" />
@@ -266,7 +266,7 @@ const Order = ({ match }) => {
                       <td>{state.order.seller.name}</td>
                       <td>{state.order.licenses.length}</td>
                       <td>${state.order.spent}</td>
-                      <td>{formatDate(state.order.created, 'dd/MM/yyyy')}</td>
+                      <td>{formatDate(state.order.created, "dd/MM/yyyy")}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -314,7 +314,7 @@ const Order = ({ match }) => {
                         </td>
                         <td className="w-64 text-right">
                           <span className="truncate">
-                            {formatDate(license.created, 'dd/MM/yyyy')}
+                            {formatDate(license.created, "dd/MM/yyyy")}
                           </span>
                         </td>
                       </tr>

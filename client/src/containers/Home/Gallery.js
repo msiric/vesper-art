@@ -1,37 +1,27 @@
+import { Grid, Paper } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
+import { LinkRounded as CopyIcon } from "@material-ui/icons";
+import { withSnackbar } from "notistack";
+import React, { useContext, useState } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import InfiniteScroll from "react-infinite-scroll-component";
 import {
-  Grid, Paper
-} from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import {
-  LinkRounded as CopyIcon
-} from '@material-ui/icons';
-import { withSnackbar } from 'notistack';
-import React, { useContext, useState } from 'react';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import {
-  FacebookIcon, FacebookShareButton,
-
-
-
-
-
-  RedditIcon, RedditShareButton,
-
-
-
-
-  TwitterIcon, TwitterShareButton,
-
-  WhatsappIcon, WhatsappShareButton
-} from 'react-share';
-import StackGrid from 'react-stack-grid';
-import ArtworkCard from '../../components/ArtworkCard/ArtworkCard.js';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
-import { deleteSave, postSave } from '../../services/artwork.js';
-import Modal from '../../shared/Modal/Modal.js';
-import { Context } from '../Store/Store.js';
-import GalleryStyles from './Gallery.style.js';
+  FacebookIcon,
+  FacebookShareButton,
+  RedditIcon,
+  RedditShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from "react-share";
+import StackGrid from "react-stack-grid";
+import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import { deleteSave, postSave } from "../../services/artwork.js";
+import Modal from "../../shared/Modal/Modal.js";
+import { Context } from "../Store/Store.js";
+import GalleryStyles from "./Gallery.style.js";
 
 const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
   const [store, dispatch] = useContext(Context);
@@ -46,7 +36,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
   const theme = useTheme();
 
   const artwork = elements.map((element) =>
-    type !== 'version'
+    type !== "version"
       ? {
           /*           data: element.current,
           owner: element.owner, */
@@ -73,12 +63,12 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
           <CopyToClipboard
             text={url}
             onCopy={() =>
-              enqueueSnackbar('Link copied', {
-                variant: 'success',
+              enqueueSnackbar("Link copied", {
+                variant: "success",
                 autoHideDuration: 1000,
                 anchorOrigin: {
-                  vertical: 'top',
-                  horizontal: 'center',
+                  vertical: "top",
+                  horizontal: "center",
                 },
               })
             }
@@ -123,19 +113,19 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
 
   const handleSaveArtwork = async (id) => {
     try {
-      await postSave({ artworkId: id });
+      await postSave.request({ artworkId: id });
       dispatch({
-        type: 'updateSaves',
+        type: "updateSaves",
         saved: {
           [id]: true,
         },
       });
-      enqueueSnackbar('Artwork saved', {
-        variant: 'success',
+      enqueueSnackbar("Artwork saved", {
+        variant: "success",
         autoHideDuration: 1000,
         anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
+          vertical: "top",
+          horizontal: "center",
         },
       });
     } catch (err) {
@@ -145,19 +135,19 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
 
   const handleUnsaveArtwork = async (id) => {
     try {
-      await deleteSave({ artworkId: id });
+      await deleteSave.request({ artworkId: id });
       dispatch({
-        type: 'updateSaves',
+        type: "updateSaves",
         saved: {
           [id]: false,
         },
       });
-      enqueueSnackbar('Artwork unsaved', {
-        variant: 'success',
+      enqueueSnackbar("Artwork unsaved", {
+        variant: "success",
         autoHideDuration: 1000,
         anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
+          vertical: "top",
+          horizontal: "center",
         },
       });
     } catch (err) {

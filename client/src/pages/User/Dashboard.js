@@ -52,7 +52,7 @@ const Dashboard = ({ location }) => {
   const fetchCurrentData = async () => {
     try {
       setState({ ...initialState });
-      const { data } = await getStatistics({ userId: store.user.id });
+      const { data } = await getStatistics.request({ userId: store.user.id });
       const currentStats = {
         review: data.statistics.rating,
         saves: data.statistics.savedArtwork.length,
@@ -94,7 +94,7 @@ const Dashboard = ({ location }) => {
           loading: true,
         },
       });
-      const { data } = await getSelection({
+      const { data } = await getSelection.request({
         userId: store.user.id,
         displayType: state.display.type,
         rangeFrom: from,
@@ -187,7 +187,7 @@ const Dashboard = ({ location }) => {
   };
 
   const handleStripeRedirect = async () => {
-    const { data } = await getDashboard({
+    const { data } = await getDashboard.request({
       stripeId: store.user.stripeId,
     });
     window.location.href = data.url;

@@ -18,7 +18,7 @@ const AddCommentForm = ({ artwork, handleCommentAdd, loading }) => {
       enableReinitialize={true}
       validationSchema={commentValidation}
       onSubmit={async (values, { resetForm }) => {
-        const { data } = await postComment({
+        const { data } = await postComment.request({
           artworkId: artwork._id,
           data: values,
         });

@@ -123,7 +123,7 @@ const Interceptor = ({ children }) => {
           error.config.url === "/api/auth/refresh_token" ||
           error.response.message === "Forbidden"
         ) {
-          await postLogout();
+          await postLogout.request();
           dispatch({
             type: "resetUser",
           });

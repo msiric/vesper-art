@@ -19,7 +19,7 @@ const EditCommentForm = ({
       }}
       validationSchema={commentValidation}
       onSubmit={async (values, { resetForm }) => {
-        await patchComment({
+        await patchComment.request({
           artworkId: artwork._id,
           commentId: comment._id,
           data: values,

@@ -11,13 +11,13 @@ import {
   TableCell,
   TablePagination,
   TableRow,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { format } from "date-fns";
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { getOrders } from "../../services/orders.js";
 import ProductsTableHead from "./Head.js";
 import OrdersStyles from "./Orders.style.js";
@@ -41,7 +41,7 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await getOrders({ display: state.display });
+      const { data } = await getOrders.request({ display: state.display });
       setState({
         ...state,
         loading: false,

@@ -31,7 +31,7 @@ const LoginForm = () => {
       }}
       validationSchema={loginValidation}
       onSubmit={async (values, { resetForm }) => {
-        const { data } = await postLogin({ data: values });
+        const { data } = await postLogin.request({ data: values });
 
         if (data.user) {
           dispatch({

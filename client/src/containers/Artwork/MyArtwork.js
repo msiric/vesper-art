@@ -23,7 +23,7 @@ const MyArtwork = () => {
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await getGallery();
+      const { data } = await getGallery.request();
       setState({
         ...state,
         loading: false,

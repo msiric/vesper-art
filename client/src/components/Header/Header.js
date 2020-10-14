@@ -99,7 +99,7 @@ const Header = ({ history }) => {
         },
       });
       try {
-        const { data } = await getNotifications({
+        const { data } = await getNotifications.request({
           userId: store.user.id,
           dataCursor: store.user.notifications.dataCursor,
           dataCeiling: store.user.notifications.dataCeiling,
@@ -153,7 +153,7 @@ const Header = ({ history }) => {
 
   const handleLogout = async () => {
     try {
-      await postLogout();
+      await postLogout.request();
 
       dispatch({
         type: "resetUser",
@@ -169,7 +169,7 @@ const Header = ({ history }) => {
 
   const handleReadClick = async (id) => {
     try {
-      await patchRead({ notificationId: id });
+      await patchRead.request({ notificationId: id });
       dispatch({
         type: "updateNotifications",
         notifications: {
@@ -188,7 +188,7 @@ const Header = ({ history }) => {
 
   const handleUnreadClick = async (id) => {
     try {
-      await patchUnread({ notificationId: id });
+      await patchUnread.request({ notificationId: id });
       dispatch({
         type: "updateNotifications",
         notifications: {
@@ -220,7 +220,7 @@ const Header = ({ history }) => {
           loading: true,
         },
       });
-      const { data } = await getNotifications({
+      const { data } = await getNotifications.request({
         userId: store.user.id,
         dataCursor: store.user.notifications.dataCursor,
         dataCeiling: store.user.notifications.dataCeiling,

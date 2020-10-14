@@ -1,16 +1,10 @@
-import {
-  Button, Grid,
-
-  TextField,
-
-  Typography
-} from "@material-ui/core";
+import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import { withSnackbar } from "notistack";
 import React, { useContext, useState } from "react";
 import * as Yup from "yup";
 import { formatDate } from "../../../../common/helpers.js";
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { postVerifier } from "../../services/home.js";
 import { Context } from "../Store/Store.js";
 import VerifierStyles from "./Verifier.style.js";
@@ -44,7 +38,7 @@ const Verifier = () => {
               ...prevState,
               loading: true,
             }));
-            const { data } = await postVerifier({ data: values });
+            const { data } = await postVerifier.request({ data: values });
             setState((prevState) => ({
               ...prevState,
               loading: false,

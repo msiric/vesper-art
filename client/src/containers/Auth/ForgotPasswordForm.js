@@ -29,7 +29,7 @@ const ForgotPasswordForm = () => {
       validationSchema={emailValidation}
       onSubmit={async (values, { resetForm }) => {
         try {
-          await postRecover({ data: values });
+          await postRecover.request({ data: values });
           history.push({
             pathname: "/login",
             state: { message: "Link sent to your email" },

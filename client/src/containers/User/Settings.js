@@ -59,7 +59,7 @@ const Settings = () => {
 
   const fetchSettings = async () => {
     try {
-      const { data } = await getSettings({ userId: store.user.id });
+      const { data } = await getSettings.request({ userId: store.user.id });
       setState({
         ...state,
         loading: false,
@@ -82,7 +82,7 @@ const Settings = () => {
   };
 
   const handleDeactivateUser = async () => {
-    await deleteUser({ userId: store.user.id });
+    await deleteUser.request({ userId: store.user.id });
   };
 
   useEffect(() => {
@@ -149,7 +149,7 @@ const Settings = () => {
                       enableReinitialize
                       validationSchema={emailValidation}
                       onSubmit={async (values, { resetForm }) => {
-                        await patchEmail({
+                        await patchEmail.request({
                           userId: store.user.id,
                           data: values,
                         });
@@ -227,7 +227,7 @@ const Settings = () => {
                       enableReinitialize
                       validationSchema={passwordValidation}
                       onSubmit={async (values, { resetForm }) => {
-                        await patchPassword({
+                        await patchPassword.request({
                           userId: store.user.id,
                           data: values,
                         });
@@ -330,7 +330,7 @@ const Settings = () => {
                         enableReinitialize
                         validationSchema={preferencesValidation}
                         onSubmit={async (values, { resetForm }) => {
-                          await patchPreferences({
+                          await patchPreferences.request({
                             userId: store.user.id,
                             data: values,
                           });
@@ -437,7 +437,7 @@ const Settings = () => {
                       enableReinitialize
                       validationSchema={billingValidation}
                       onSubmit={async (values, { resetForm }) => {
-                        await patchBilling({
+                        await patchBilling.request({
                           userId: store.user.id,
                           data: values,
                         });

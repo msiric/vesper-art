@@ -34,7 +34,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
   const handleSaveArtwork = async (id) => {
     try {
       setState({ loading: true });
-      await postSave({ artworkId: id });
+      await postSave.request({ artworkId: id });
       dispatch({
         type: "updateSaves",
         saved: {
@@ -52,7 +52,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
   const handleUnsaveArtwork = async (id) => {
     try {
       setState({ loading: true });
-      await deleteSave({ artworkId: id });
+      await deleteSave.request({ artworkId: id });
       dispatch({
         type: "updateSaves",
         saved: {

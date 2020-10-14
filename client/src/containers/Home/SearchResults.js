@@ -1,12 +1,12 @@
-import { Grid } from '@material-ui/core';
-import React, { useContext, useEffect, useState } from 'react';
-import { withRouter } from 'react-router-dom';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
-import { getSearch } from '../../services/home.js';
-import { Context } from '../Store/Store.js';
-import Gallery from './Gallery.js';
-import Group from './Group.js';
-import SearchResultsStyles from './SearchResults.style.js';
+import { Grid } from "@material-ui/core";
+import React, { useContext, useEffect, useState } from "react";
+import { withRouter } from "react-router-dom";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import { getSearch } from "../../services/home.js";
+import { Context } from "../Store/Store.js";
+import Gallery from "./Gallery.js";
+import Group from "./Group.js";
+import SearchResultsStyles from "./SearchResults.style.js";
 
 const SearchResults = ({ match, location, history }) => {
   const [store, dispatch] = useContext(Context);
@@ -30,7 +30,7 @@ const SearchResults = ({ match, location, history }) => {
           hasMore: true,
           dataCursor: 0,
         }));
-      const { data } = await getSearch({
+      const { data } = await getSearch.request({
         query: location.search,
         dataCursor: state.dataCursor,
         dataCeiling: state.dataCeiling,
@@ -50,7 +50,7 @@ const SearchResults = ({ match, location, history }) => {
 
   const loadMore = async () => {
     try {
-      const { data } = await getSearch({
+      const { data } = await getSearch.request({
         query: location.search,
         dataCursor: state.dataCursor,
         dataCeiling: state.dataCeiling,
@@ -76,7 +76,7 @@ const SearchResults = ({ match, location, history }) => {
         {state.loading ? (
           <LoadingSpinner />
         ) : state.results.length ? (
-          state.type === 'artwork' ? (
+          state.type === "artwork" ? (
             <Gallery
               elements={state.results}
               hasMore={state.hasMore}
@@ -91,7 +91,7 @@ const SearchResults = ({ match, location, history }) => {
             />
           )
         ) : (
-          'No results'
+          "No results"
         )}
       </Grid>
     </Grid>

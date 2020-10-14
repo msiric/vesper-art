@@ -49,7 +49,7 @@ const Verifier = () => {
                 ...prevState,
                 loading: true,
               }));
-              const { data } = await postVerifier({ data: values });
+              const { data } = await postVerifier.request({ data: values });
               setState((prevState) => ({
                 ...prevState,
                 loading: false,

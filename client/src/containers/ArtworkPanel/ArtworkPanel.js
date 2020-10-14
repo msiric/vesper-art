@@ -119,7 +119,7 @@ const ArtworkPanel = ({
 
   const handleSaveArtwork = async (id) => {
     try {
-      await postSave({ artworkId: id });
+      await postSave.request({ artworkId: id });
       dispatch({
         type: "updateSaves",
         saved: {
@@ -141,7 +141,7 @@ const ArtworkPanel = ({
 
   const handleUnsaveArtwork = async (id) => {
     try {
-      await deleteSave({ artworkId: id });
+      await deleteSave.request({ artworkId: id });
       dispatch({
         type: "updateSaves",
         saved: {

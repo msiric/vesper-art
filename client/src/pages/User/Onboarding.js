@@ -134,14 +134,14 @@ const Onboarding = () => {
                   onSubmit={async (values, { resetForm }) => {
                     try {
                       if (!store.user.stripeId) {
-                        await patchOrigin({
+                        await patchOrigin.request({
                           userId: store.user.id,
                           data: {
                             ...values,
                             userOrigin: values.userOrigin.value,
                           },
                         });
-                        const { data } = await postAuthorize({
+                        const { data } = await postAuthorize.request({
                           userOrigin: values.userOrigin.value,
                           userEmail: store.user.email,
                         });

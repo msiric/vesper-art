@@ -48,11 +48,11 @@ const AddArtworkForm = ({
           try {
             /*               const {
                 data: { artworkCover, artworkMedia, artworkDimensions },
-              } = await postMedia({ data: formData });
+              } = await postMedia.request({ data: formData });
               values.artworkCover = artworkCover;
               values.artworkMedia = artworkMedia;
               values.artworkDimensions = artworkDimensions; */
-            await postArtwork({ data: formData });
+            await postArtwork.request({ data: formData });
             history.push({
               pathname: "/",
               state: { message: "Artwork published" },

@@ -232,10 +232,10 @@ const Processor = ({ match, location, stripe }) => {
       const {
         data: { payload },
       } = values
-        ? await postDiscount({ data: values })
+        ? await postDiscount.request({ data: values })
         : { data: { payload: null } };
       if (intentId) {
-        await postIntent({
+        await postIntent.request({
           versionId: state.version._id,
           artworkLicense: {
             assignee: "",
@@ -259,7 +259,7 @@ const Processor = ({ match, location, stripe }) => {
   const saveIntent = async (values, actions) => {
     try {
       const intentId = store.user.intents[state.version._id] || null;
-      const { data } = await postIntent({
+      const { data } = await postIntent.request({
         versionId: state.version._id,
         artworkLicense: {
           assignee: values.licenseAssignee,
@@ -271,7 +271,7 @@ const Processor = ({ match, location, stripe }) => {
       });
       if (!intentId) {
         try {
-          await postCheckout({
+          await postCheckout.request({
             userId: store.user.id,
             data: {
               version: state.version._id,
@@ -421,7 +421,9 @@ const Processor = ({ match, location, stripe }) => {
         city: "",
         country: "",
       };
-      const { data } = await getCheckout({ versionId: match.params.id });
+      const { data } = await getCheckout.request({
+        versionId: match.params.id,
+      });
       /*       const license = retrieveLicenseInformation(data.artwork); */
       setState((prevState) => ({
         ...prevState,

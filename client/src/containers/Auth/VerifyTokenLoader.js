@@ -1,7 +1,7 @@
 import { Container, Grid } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { getToken } from "../../services/auth.js";
 
 const VerifyTokenLoader = ({ match }) => {
@@ -10,7 +10,7 @@ const VerifyTokenLoader = ({ match }) => {
 
   const verifyToken = async () => {
     try {
-      await getToken({ tokenId: match.params.id });
+      await getToken.request({ tokenId: match.params.id });
       history.push({
         pathname: "/login",
         state: { message: "Email successfully verified" },

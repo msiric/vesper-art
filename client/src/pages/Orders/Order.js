@@ -48,7 +48,7 @@ const Order = ({ match, location }) => {
           enableReinitialize
           validationSchema={reviewValidation}
           onSubmit={async (values, { resetForm }) => {
-            await postReview({
+            await postReview.request({
               artworkId: state.order._id,
               reviewRating: values.rating,
             });
@@ -101,7 +101,7 @@ const Order = ({ match, location }) => {
   const fetchOrder = async () => {
     try {
       setState({ ...initialState });
-      const { data } = await getOrder({ orderId: match.params.id });
+      const { data } = await getOrder.request({ orderId: match.params.id });
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -140,7 +140,7 @@ const Order = ({ match, location }) => {
 
   const handleDownload = async () => {
     try {
-      const { data } = await getDownload({ orderId: state.order._id });
+      const { data } = await getDownload.request({ orderId: state.order._id });
       const link = document.createElement("a");
       link.href = data.url;
       link.setAttribute("download", data.file);

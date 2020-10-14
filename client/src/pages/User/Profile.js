@@ -44,7 +44,7 @@ const Profile = ({ match, location }) => {
   const fetchUser = async () => {
     try {
       setState({ ...initialState });
-      const { data } = await getUser({
+      const { data } = await getUser.request({
         userUsername: match.params.id,
         dataCursor: state.scroll.artwork.dataCursor,
         dataCeiling: state.scroll.artwork.dataCeiling,
@@ -110,7 +110,7 @@ const Profile = ({ match, location }) => {
 
   const loadMoreArtwork = async () => {
     try {
-      const { data } = await getArtwork({
+      const { data } = await getArtwork.request({
         userId: state.user._id,
         dataCursor: state.scroll.artwork.dataCursor,
         dataCeiling: state.scroll.artwork.dataCeiling,
@@ -146,7 +146,7 @@ const Profile = ({ match, location }) => {
         ...prevState,
         tabs: { ...prevState.tabs, value: newValue, revealed: true },
       }));
-      const { data } = await getSaves({
+      const { data } = await getSaves.request({
         userId: state.user._id,
         dataCursor: state.scroll.saves.dataCursor,
         dataCeiling: state.scroll.saves.dataCeiling,

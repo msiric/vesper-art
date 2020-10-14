@@ -27,7 +27,7 @@ const Home = ({ location }) => {
     try {
       setState({ ...initialState });
       // DATABASE DATA
-      const { data } = await getArtwork({
+      const { data } = await getArtwork.request({
         dataCursor: initialState.dataCursor,
         dataCeiling: initialState.dataCeiling,
       });
@@ -85,7 +85,7 @@ const Home = ({ location }) => {
 
   const loadMore = async () => {
     try {
-      const { data } = await getArtwork({
+      const { data } = await getArtwork.request({
         dataCursor: state.dataCursor,
         dataCeiling: state.dataCeiling,
       });

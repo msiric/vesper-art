@@ -7,7 +7,7 @@ import {
   MenuItem,
   Paper,
   Select,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { LocalizationProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
@@ -15,7 +15,7 @@ import { eachDayOfInterval, format, subDays } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
 import NumberFormat from "react-number-format";
 import { Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner.js';
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { getSelection, getStatistics } from "../../services/user.js";
 import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
 import { Context } from "../Store/Store.js";
@@ -46,7 +46,7 @@ function Dashboard() {
 
   const fetchCurrentData = async () => {
     try {
-      const { data } = await getStatistics({ userId: store.user.id });
+      const { data } = await getStatistics.request({ userId: store.user.id });
       const currentStats = {
         review: data.statistics.rating,
         licenses: data.statistics.purchases
@@ -73,7 +73,7 @@ function Dashboard() {
   const fetchSelectedData = async (from, to) => {
     try {
       setState({ ...state, loading: true });
-      const { data } = await getSelection({
+      const { data } = await getSelection.request({
         userId: store.user.id,
         displayType: state.display.type,
         rangeFrom: from,

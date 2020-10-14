@@ -35,11 +35,11 @@ const EditArtwork = ({ match, location }) => {
       setState({ ...initialState });
       const {
         data: { artwork },
-      } = await editArtwork({ artworkId: match.params.id });
+      } = await editArtwork.request({ artworkId: match.params.id });
       const {
         data: { capabilities },
       } = store.user.stripeId
-        ? await getUser({ stripeId: store.user.stripeId })
+        ? await getUser.request({ stripeId: store.user.stripeId })
         : { data: { capabilities: {} } };
       setState((prevState) => ({
         ...prevState,
@@ -55,7 +55,7 @@ const EditArtwork = ({ match, location }) => {
   const handleDeleteArtwork = async () => {
     try {
       setState({ ...state, isDeleting: true });
-      await deleteArtwork({
+      await deleteArtwork.request({
         artworkId: state.artwork._id,
         data: state.artwork.current._id,
       });

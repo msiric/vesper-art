@@ -100,11 +100,11 @@ const Profile = ({ match, enqueueSnackbar }) => {
           formData.append("userMedia", values.userMedia[0]);
           const {
             data: { userMedia, userDimensions },
-          } = await postMedia({ data: formData });
+          } = await postMedia.request({ data: formData });
           values.userMedia = userMedia;
           values.userDimensions = userDimensions;
         }
-        await patchUser({ userId: store.user.id, data: values });
+        await patchUser.request({ userId: store.user.id, data: values });
       } catch (err) {
         console.log(err);
       }
@@ -115,7 +115,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
 
   const fetchUser = async () => {
     try {
-      const { data } = await getUser({
+      const { data } = await getUser.request({
         userUsername: match.params.id,
         dataCursor: state.scroll.artwork.dataCursor,
         dataCeiling: state.scroll.artwork.dataCeiling,
@@ -215,7 +215,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
 
   const loadMoreArtwork = async () => {
     try {
-      const { data } = await getArtwork({
+      const { data } = await getArtwork.request({
         userId: state.user._id,
         dataCursor: state.scroll.artwork.dataCursor,
         dataCeiling: state.scroll.artwork.dataCeiling,
@@ -248,7 +248,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
 
   const loadMoreSaves = async (newValue) => {
     try {
-      const { data } = await getSaves({
+      const { data } = await getSaves.request({
         userId: state.user._id,
         dataCursor: state.scroll.saves.dataCursor,
         dataCeiling: state.scroll.saves.dataCeiling,

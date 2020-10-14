@@ -1,11 +1,7 @@
 import { Container } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import {
-  deleteComment,
-  getComments,
-  getDetails,
-} from "../../services/artwork.js";
+import { deleteComment, getDetails } from "../../services/artwork.js";
 import { Context } from "../Store/Store.js";
 import ArtworkDetailsStyles from "./ArtworkDetails.style.js";
 
@@ -37,7 +33,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
 
   const fetchArtwork = async () => {
     try {
-      const { data } = await getDetails({
+      const { data } = await getDetails.request({
         artworkId: match.params.id,
         dataCursor: state.scroll.comments.dataCursor,
         dataCeiling: state.scroll.comments.dataCeiling,
@@ -67,7 +63,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
 
   const handleDownload = async (id) => {
     try {
-      const { data } = await getDetails({
+      const { data } = await getDetails.request({
         artworkId: match.params.id,
       });
       if (data.artwork._id)
@@ -144,7 +140,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
   };
 
   const handleCommentDelete = async (id) => {
-    await deleteComment({
+    await deleteComment.request({
       artworkId: match.params.id,
       commentId: id,
     });
@@ -166,7 +162,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
 
   const loadMoreComments = async () => {
     try {
-      const { data } = await getComments({
+      const { data } = await getComment.requests({
         artworkId: state.artwork._id,
         dataCursor: state.scroll.comments.dataCursor,
         dataCeiling: state.scroll.comments.dataCeiling,
@@ -288,7 +284,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
                                             values,
                                             { resetForm }
                                           ) => {
-                                            await patchComment({
+                                            await patchComment.request({
                                               artworkId: state.artwork._id,
                                               commentId: comment._id,
                                               data: values,
@@ -417,7 +413,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
                         }}
                         validationSchema={commentValidation}
                         onSubmit={async (values, { resetForm }) => {
-                          const { data } = await postComment({
+                          const { data } = await postComment.request({
                             artworkId: state.artwork._id,
                             data: values,
                           });

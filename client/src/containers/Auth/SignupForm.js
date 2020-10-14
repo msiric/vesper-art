@@ -34,7 +34,7 @@ const SignupForm = () => {
       validationSchema={signupValidation}
       onSubmit={async (values, { resetForm }) => {
         try {
-          await postSignup({ data: values });
+          await postSignup.request({ data: values });
           /*         enqueueSnackbar('Verification email sent', {
             variant: 'success',
             autoHideDuration: 1000,

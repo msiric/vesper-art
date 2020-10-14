@@ -42,6 +42,7 @@ export const deleteComment = {
   success: { message: "Comment successfully deleted", variant: "success" },
   error: { message: "Failed to delete comment", variant: "error" },
 };
+// $TODO Not used?
 export const getComments = {
   request: async ({ artworkId, dataCursor = null, dataCeiling = null }) =>
     await ax.get(

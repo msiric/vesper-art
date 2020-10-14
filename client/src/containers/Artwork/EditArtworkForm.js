@@ -92,7 +92,7 @@ const EditArtworkForm = ({
                 formData.append(value, data[value]);
               }
               try {
-                await patchArtwork({
+                await patchArtwork.request({
                   artworkId: version.artwork,
                   data: formData,
                 });

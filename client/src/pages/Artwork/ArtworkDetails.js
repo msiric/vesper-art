@@ -17,7 +17,6 @@ import { Context } from "../../context/Store.js";
 import {
   deleteComment,
   getComment,
-  getComments,
   getDetails,
 } from "../../services/artwork.js";
 import { postDownload } from "../../services/checkout.js";
@@ -74,7 +73,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
 
   const fetchHighlight = async (commentId) => {
     try {
-      const { data } = await getComment({
+      const { data } = await getComment.request({
         artworkId: match.params.id,
         commentId,
       });
@@ -87,7 +86,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
   const fetchArtwork = async () => {
     try {
       setState({ ...initialState });
-      const { data } = await getDetails({
+      const { data } = await getDetails.request({
         artworkId: match.params.id,
         dataCursor: initialState.scroll.comments.dataCursor,
         dataCeiling: initialState.scroll.comments.dataCeiling,
@@ -162,7 +161,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
 
   const handleDownload = async (values) => {
     try {
-      const { data } = await postDownload({
+      const { data } = await postDownload.request({
         versionId: state.artwork.current._id,
         data: values,
       });
@@ -290,7 +289,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
   };
 
   const handleCommentDelete = async (id) => {
-    await deleteComment({
+    await deleteComment.request({
       artworkId: match.params.id,
       commentId: id,
     });
@@ -312,7 +311,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
 
   const loadMoreComments = async () => {
     try {
-      const { data } = await getComments({
+      const { data } = await getComment.requests({
         artworkId: state.artwork._id,
         dataCursor: state.scroll.comments.dataCursor,
         dataCeiling: state.scroll.comments.dataCeiling,
