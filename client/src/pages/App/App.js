@@ -29,7 +29,7 @@ const App = ({ socket }) => {
           containerAnchorOriginTopCenter: classes.alert,
         }}
         dense
-        maxSnack={3}
+        maxSnack={1}
         preventDuplicate
         ref={notistackRef}
         action={(key) => (

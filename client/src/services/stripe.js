@@ -1,22 +1,32 @@
 import { ax } from "../containers/Interceptor/Interceptor.js";
 
-export const getUser = async ({ stripeId }) =>
-  await ax.get(`/stripe/account/${stripeId}`);
-export const postIntent = async ({
-  versionId,
-  artworkLicense,
-  intentId,
-  discountId,
-}) =>
-  await ax.post(`/stripe/intent/${versionId}`, {
-    artworkLicense,
-    intentId,
-    discountId,
-  });
-export const postAuthorize = async ({ userOrigin, userEmail }) =>
-  await ax.post("/stripe/authorize", {
-    userOrigin,
-    userEmail,
-  });
-export const getDashboard = async ({ stripeId }) =>
-  await ax.get(`/stripe/dashboard/${stripeId}`);
+export const getUser = {
+  request: async ({ stripeId }) => await ax.get(`/stripe/account/${stripeId}`),
+  success: { message: "Account successfully fetched", variant: "success" },
+  error: { message: "Failed to fetch account", variant: "error" },
+};
+export const postIntent = {
+  request: async ({ versionId, artworkLicense, intentId, discountId }) =>
+    await ax.post(`/stripe/intent/${versionId}`, {
+      artworkLicense,
+      intentId,
+      discountId,
+    }),
+  success: { message: "Intent successfully saved", variant: "success" },
+  error: { message: "Failed to save intent", variant: "error" },
+};
+export const postAuthorize = {
+  request: async ({ userOrigin, userEmail }) =>
+    await ax.post("/stripe/authorize", {
+      userOrigin,
+      userEmail,
+    }),
+  success: { message: "User successfully authorized", variant: "success" },
+  error: { message: "Failed to authorize user", variant: "error" },
+};
+export const getDashboard = {
+  request: async ({ stripeId }) =>
+    await ax.get(`/stripe/dashboard/${stripeId}`),
+  success: { message: "Dashboard successfully fetched", variant: "success" },
+  error: { message: "Failed to fetch dashboard", variant: "error" },
+};

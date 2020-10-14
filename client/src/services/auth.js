@@ -1,12 +1,29 @@
-import { ax } from '../containers/Interceptor/Interceptor.js';
+import { ax } from "../containers/Interceptor/Interceptor.js";
 
-export const postRecover = async ({ data }) =>
-  await ax.post('/api/auth/forgot_password', data);
-export const postLogin = async ({ data }) =>
-  await ax.post('/api/auth/login', data);
-export const postReset = async ({ userId, data }) =>
-  await ax.post(`/api/auth/reset_password/${userId}`, data);
-export const postSignup = async ({ data }) =>
-  await ax.post('/api/auth/signup', data);
-export const getToken = async ({ tokenId }) =>
-  await ax.get(`/api/auth/verify_token/${tokenId}`);
+export const postRecover = {
+  request: async ({ data }) => await ax.post("/api/auth/forgot_password", data),
+  success: { message: "Recovery email successfully sent", variant: "success" },
+  error: { message: "Failed to send recovery email", variant: "error" },
+};
+export const postLogin = {
+  request: async ({ data }) => await ax.post("/api/auth/login", data),
+  success: { message: "User successfully logged in", variant: "success" },
+  error: { message: "Failed to log in user", variant: "error" },
+};
+export const postReset = {
+  request: async ({ userId, data }) =>
+    await ax.post(`/api/auth/reset_password/${userId}`, data),
+  success: { message: "Password successfully reset", variant: "success" },
+  error: { message: "Failed to reset password", variant: "error" },
+};
+export const postSignup = {
+  request: async ({ data }) => await ax.post("/api/auth/signup", data),
+  success: { message: "User successfully signed up", variant: "success" },
+  error: { message: "Failed to sign up user", variant: "error" },
+};
+export const getToken = {
+  request: async ({ tokenId }) =>
+    await ax.get(`/api/auth/verify_token/${tokenId}`),
+  success: { message: "Token successfully verified", variant: "success" },
+  error: { message: "Failed to verify token", variant: "error" },
+};
