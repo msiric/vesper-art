@@ -113,7 +113,7 @@ const ArtworkInfo = ({
                         is preview only
                       </Typography>
                       <Button
-                        variant="contained"
+                        variant="outlined"
                         color="primary"
                         component={RouterLink}
                         to={`/edit_artwork/${artwork._id}`}

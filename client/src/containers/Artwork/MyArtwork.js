@@ -125,7 +125,7 @@ const MyArtwork = () => {
         <Button
           component={Link}
           to="/add_artwork"
-          variant="contained"
+          variant="outlined"
           color="secondary"
         >
           Add new artwork

@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import {
   deleteComment,
   getComments,
-  getDetails
+  getDetails,
 } from "../../services/artwork.js";
 import { Context } from "../Store/Store.js";
 import ArtworkDetailsStyles from "./ArtworkDetails.style.js";
@@ -653,7 +653,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
       >
         <div className={classes.moreOptions}>
           <Button
-            variant="contained"
+            variant="outlined"
             color="error"
             className={classes.button}
             startIcon={<EditIcon />}
@@ -663,7 +663,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
             Edit
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             color="error"
             className={classes.button}
             startIcon={<DeleteIcon />}

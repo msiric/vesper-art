@@ -1,15 +1,15 @@
-import React, { useContext } from 'react';
-import { Formik, Form, Field } from 'formik';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { TextField, Button, Link, Grid } from '@material-ui/core';
-import { Context } from '../../context/Store.js';
-import { signupValidation } from '../../validation/signup.js';
-import { postSignup } from '../../services/auth.js';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button, Grid, Link, TextField } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Field, Form, Formik } from "formik";
+import React, { useContext } from "react";
+import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Context } from "../../context/Store.js";
+import { postSignup } from "../../services/auth.js";
+import { signupValidation } from "../../validation/signup.js";
 
 const useStyles = makeStyles((theme) => ({
   form: {
-    width: '100%',
+    width: "100%",
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -26,10 +26,10 @@ const SignupForm = () => {
   return (
     <Formik
       initialValues={{
-        userUsername: '',
-        userEmail: '',
-        userPassword: '',
-        userConfirm: '',
+        userUsername: "",
+        userEmail: "",
+        userPassword: "",
+        userConfirm: "",
       }}
       validationSchema={signupValidation}
       onSubmit={async (values, { resetForm }) => {
@@ -45,8 +45,8 @@ const SignupForm = () => {
           }); */
         } catch (err) {
           history.push({
-            pathname: '/login',
-            state: { message: 'An error occurred' },
+            pathname: "/login",
+            state: { message: "An error occurred" },
           });
         }
       }}
@@ -112,7 +112,7 @@ const SignupForm = () => {
           <Button
             type="submit"
             fullWidth
-            variant="contained"
+            variant="outlined"
             color="primary"
             className={classes.submit}
             disabled={isSubmitting}

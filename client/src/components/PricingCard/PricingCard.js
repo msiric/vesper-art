@@ -8,7 +8,12 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@material-ui/core";
-import { CheckRounded as CheckIcon } from "@material-ui/icons";
+import {
+  CheckRounded as CheckIcon,
+  EditRounded as EditIcon,
+  GetAppRounded as DownloadIcon,
+  ShoppingCartRounded as PurchaseIcon,
+} from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Card, Typography } from "../../styles/theme.js";
@@ -69,16 +74,18 @@ const PricingCard = ({
         {!isSeller() ? (
           price ? (
             <Button
-              onClick={() => handlePurchase(versionId, license)}
-              variant="contained"
               color="primary"
+              variant="outlined"
+              startIcon={<PurchaseIcon />}
+              onClick={() => handlePurchase(versionId, license)}
             >
               Purchase
             </Button>
           ) : (
             <Button
-              variant="contained"
               color="primary"
+              variant="outlined"
+              startIcon={<DownloadIcon />}
               onClick={handleModalOpen}
             >
               Download
@@ -86,10 +93,11 @@ const PricingCard = ({
           )
         ) : (
           <Button
-            variant="contained"
             color="primary"
+            variant="outlined"
             component={RouterLink}
             to={`/edit_artwork/${artworkId}`}
+            startIcon={<EditIcon />}
           >
             Edit artwork
           </Button>

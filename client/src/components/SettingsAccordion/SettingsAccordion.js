@@ -10,7 +10,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import {
   DoneRounded as CheckIcon,
   ExpandMoreRounded as UpIcon,
-  RemoveCircleRounded as DeactivateIcon,
+  HighlightOffRounded as DeactivateIcon,
 } from "@material-ui/icons";
 import React from "react";
 import EditEmailForm from "../../containers/EditEmailForm/EditEmailForm.js";
@@ -126,7 +126,7 @@ const SettingsAccordion = ({
             <Typography>Deactivate account</Typography>
             <Button
               type="button"
-              variant="contained"
+              variant="outlined"
               color="error"
               startIcon={<DeactivateIcon />}
               onClick={handleDeactivateUser}

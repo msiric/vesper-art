@@ -1,5 +1,6 @@
 import { Box, Button, Card } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { StarsRounded as ReviewIcon } from "@material-ui/icons";
 import { Rating } from "@material-ui/lab";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -86,7 +87,9 @@ const ReviewCard = ({
               No rating left
             </Typography>
           </SkeletonWrapper>
-          <Button onClick={handleModalOpen}>Rate artist</Button>
+          <Button startIcon={<ReviewIcon />} onClick={handleModalOpen}>
+            Rate artist
+          </Button>
         </Box>
       ) : (
         <Box className={classes.reviewContent}>

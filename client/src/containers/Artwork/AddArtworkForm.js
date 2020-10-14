@@ -1,4 +1,5 @@
 import { TextField } from "@material-ui/core";
+import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -272,7 +273,12 @@ const AddArtworkForm = ({
               </Field>
             </CardContent>
             <CardActions className={classes.actions}>
-              <Button type="submit" color="primary" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                color="primary"
+                disabled={isSubmitting}
+                startIcon={<UploadIcon />}
+              >
                 Publish artwork
               </Button>
             </CardActions>

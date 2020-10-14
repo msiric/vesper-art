@@ -206,7 +206,7 @@ const BillingForm = () => {
           Back
         </Button>
         <Button
-          variant="contained"
+          variant="outlined"
           color="primary"
           className={classes.button}
           type="submit"

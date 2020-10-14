@@ -534,7 +534,7 @@ const Processor = ({ match, location, stripe }) => {
                         </SkeletonWrapper>
                         <SkeletonWrapper loading={state.loading}>
                           <Button
-                            variant="contained"
+                            variant="outlined"
                             color="primary"
                             type="submit"
                             disabled={isSubmitting}

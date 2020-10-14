@@ -1,30 +1,25 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import { Link as RouterLink } from 'react-router-dom';
 import {
-  Switch,
-  TextField,
   Button,
-  Link,
-  Grid,
   List,
   ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
   ListItemIcon,
-} from '@material-ui/core';
+  ListItemSecondaryAction,
+  ListItemText,
+  Switch,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import {
-  FavoriteRounded as SaveIcon,
   CheckCircleRounded as ConfirmIcon,
-} from '@material-ui/icons';
-import { patchPreferences } from '../../services/user.js';
-import { preferencesValidation } from '../../validation/preferences.js';
-import { makeStyles } from '@material-ui/core/styles';
+  FavoriteRounded as SaveIcon,
+} from "@material-ui/icons";
+import { Field, Form, Formik } from "formik";
+import React from "react";
+import { useHistory } from "react-router-dom";
+import { preferencesValidation } from "../../validation/preferences.js";
 
 const useStyles = makeStyles((theme) => ({
   form: {
-    width: '100%',
+    width: "100%",
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -81,11 +76,11 @@ const EditPreferencesForm = ({ displaySaves }) => {
                       {...field}
                       edge="end"
                       onChange={(e) =>
-                        setFieldValue('displaySaves', e.target.checked)
+                        setFieldValue("displaySaves", e.target.checked)
                       }
                       checked={values.displaySaves}
                       inputProps={{
-                        'aria-labelledby': 'switch-list-label-saves',
+                        "aria-labelledby": "switch-list-label-saves",
                       }}
                     />
                   )}
@@ -95,7 +90,7 @@ const EditPreferencesForm = ({ displaySaves }) => {
           </List>
           <Button
             type="submit"
-            variant="contained"
+            variant="outlined"
             color="primary"
             className={classes.button}
             startIcon={<ConfirmIcon />}

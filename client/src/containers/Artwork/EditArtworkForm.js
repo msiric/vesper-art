@@ -1,4 +1,8 @@
 import { Card, Grid, TextField } from "@material-ui/core";
+import {
+  AddCircleRounded as UploadIcon,
+  DeleteRounded as DeleteIcon,
+} from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -345,6 +349,7 @@ const EditArtworkForm = ({
                       type="submit"
                       color="primary"
                       disabled={isSubmitting || isDeleting}
+                      startIcon={<UploadIcon />}
                     >
                       Publish artwork
                     </Button>
@@ -355,6 +360,7 @@ const EditArtworkForm = ({
                       color="error"
                       onClick={handleDeleteArtwork}
                       disabled={isSubmitting || isDeleting}
+                      startIcon={<DeleteIcon />}
                     >
                       Delete artwork
                     </Button>

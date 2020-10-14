@@ -5,7 +5,7 @@ import {
   CardContent,
   Grid,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import { makeStyles } from "@material-ui/core/styles";
@@ -179,7 +179,9 @@ const SettingsSection = ({
                   style={{ display: "flex", justifyContent: "flex-end" }}
                 >
                   <SkeletonWrapper loading={loading}>
-                    <Button type="submit">Save</Button>
+                    <Button type="submit" variant="outlined">
+                      Save
+                    </Button>
                   </SkeletonWrapper>
                 </CardActions>
               </Form>
@@ -240,7 +242,9 @@ const SettingsSection = ({
                   style={{ display: "flex", justifyContent: "flex-end" }}
                 >
                   <SkeletonWrapper loading={loading}>
-                    <Button type="submit">Save</Button>
+                    <Button type="submit" variant="outlined">
+                      Save
+                    </Button>
                   </SkeletonWrapper>
                 </CardActions>
               </Form>
@@ -292,7 +296,9 @@ const SettingsSection = ({
                   style={{ display: "flex", justifyContent: "flex-end" }}
                 >
                   <SkeletonWrapper loading={loading}>
-                    <Button type="submit">Save</Button>
+                    <Button type="submit" variant="outlined">
+                      Save
+                    </Button>
                   </SkeletonWrapper>
                 </CardActions>
               </Form>
@@ -384,7 +390,9 @@ const SettingsSection = ({
                   style={{ display: "flex", justifyContent: "flex-end" }}
                 >
                   <SkeletonWrapper loading={loading}>
-                    <Button type="submit">Save</Button>
+                    <Button type="submit" variant="outlined">
+                      Save
+                    </Button>
                   </SkeletonWrapper>
                 </CardActions>
               </Form>
@@ -417,7 +425,9 @@ const SettingsSection = ({
           </CardContent>
           <CardActions style={{ display: "flex", justifyContent: "flex-end" }}>
             <SkeletonWrapper loading={loading}>
-              <Button onClick={handleDeactivateUser}>Deactivate</Button>
+              <Button variant="outlined" onClick={handleDeactivateUser}>
+                Deactivate
+              </Button>
             </SkeletonWrapper>
           </CardActions>
         </Card>

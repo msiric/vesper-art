@@ -1,5 +1,6 @@
 import { Box, Button, Card, CardMedia, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { GetAppRounded as DownloadIcon } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { Typography } from "../../styles/theme.js";
@@ -151,7 +152,13 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
           <Box p={2} display="flex" justifyContent="space-between">
             <SkeletonWrapper variant="text" loading={loading} width="100%">
               <Typography>Download high resolution artwork:</Typography>
-              <Button onClick={handleDownload}>Download</Button>
+              <Button
+                variant="outlined"
+                startIcon={<DownloadIcon />}
+                onClick={handleDownload}
+              >
+                Download
+              </Button>
             </SkeletonWrapper>
           </Box>
         </Box>
