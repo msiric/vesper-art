@@ -21,17 +21,6 @@ const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
           alignItems: "center",
         }}
       >
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography
-            gutterBottom
-            variant="h5"
-            align="center"
-            color="textPrimary"
-            className={classes.profileCardName}
-          >
-            Artwork saves
-          </Typography>
-        </SkeletonWrapper>
         <SkeletonWrapper loading={loading} width="100%">
           <Box
             style={{
@@ -45,50 +34,44 @@ const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                marginRight: "6px",
               }}
             >
               <FavoritedIcon
-                fontSize="small"
+                fontSize="large"
                 style={{
                   marginRight: "3px",
                 }}
               />
-              <Typography
-                variant="body1"
-                color="textSecondary"
-                component="p"
-                align="center"
-              >
+              <Typography style={{ fontSize: 34 }} align="center">
                 {artwork.saves}
               </Typography>
             </Box>
           </Box>
         </SkeletonWrapper>
       </CardContent>
-      {artwork.owner &&
-        artwork.owner._id !== store.user.id && [
-          <Divider />,
-          <CardActions>
-            <SkeletonWrapper loading={loading}>
-              <Box
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <FavoriteButton
-                  artwork={artwork}
-                  favorited={store.user.saved[artwork._id]}
-                  handleCallback={handleArtworkSave}
-                />
-                <ShareButton artwork={artwork} />
-              </Box>
-            </SkeletonWrapper>
-          </CardActions>,
-        ]}
+      <Divider />
+      <CardActions style={{ padding: "14px 0" }}>
+        <SkeletonWrapper loading={loading} width="100%">
+          <Box
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-evenly",
+              alignItems: "center",
+            }}
+          >
+            {artwork.owner && artwork.owner._id !== store.user.id && (
+              <FavoriteButton
+                artwork={artwork}
+                favorited={store.user.saved[artwork._id]}
+                labeled
+                handleCallback={handleArtworkSave}
+              />
+            )}
+            <ShareButton artwork={artwork} labeled />
+          </Box>
+        </SkeletonWrapper>
+      </CardActions>
     </Card>
   );
 };

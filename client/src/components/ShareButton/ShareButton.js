@@ -1,28 +1,22 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../context/Store.js";
+import { Box, Button, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { IconButton } from "@material-ui/core";
 import {
-  FavoriteBorderRounded as SaveIcon,
-  FavoriteRounded as SavedIcon,
-  ShareRounded as ShareIcon,
   LinkRounded as CopyIcon,
-  EditRounded as EditIcon,
+  ShareRounded as ShareIcon,
 } from "@material-ui/icons";
-import {
-  FacebookShareButton,
-  WhatsappShareButton,
-  RedditShareButton,
-  TwitterShareButton,
-  FacebookIcon,
-  WhatsappIcon,
-  RedditIcon,
-  TwitterIcon,
-} from "react-share";
-import { withSnackbar } from "notistack";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { postSave, deleteSave } from "../../services/artwork.js";
+import {
+  FacebookIcon,
+  FacebookShareButton,
+  RedditIcon,
+  RedditShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from "react-share";
+import { Context } from "../../context/Store.js";
 import Modal from "../Modal/Modal.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -43,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ShareButton = ({ artwork }) => {
+const ShareButton = ({ artwork, labeled }) => {
   const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     modal: {
@@ -121,16 +115,29 @@ const ShareButton = ({ artwork }) => {
     }));
   };
 
-  return [
-    <IconButton
-      aria-label="Share artwork"
-      onClick={() => handleModalOpen(artwork._id)}
-      className={classes.artworkColor}
-    >
-      <ShareIcon />
-    </IconButton>,
-    <Modal {...state.modal} handleClose={handleModalClose} />,
-  ];
+  return (
+    <Box>
+      {labeled ? (
+        <Button
+          variant="outlined"
+          color="primary"
+          startIcon={<ShareIcon />}
+          onClick={() => handleModalOpen(artwork._id)}
+        >
+          Share
+        </Button>
+      ) : (
+        <IconButton
+          aria-label="Share artwork"
+          onClick={() => handleModalOpen(artwork._id)}
+          className={classes.artworkColor}
+        >
+          <ShareIcon />
+        </IconButton>
+      )}
+      <Modal {...state.modal} handleClose={handleModalClose} />
+    </Box>
+  );
 };
 
 export default ShareButton;

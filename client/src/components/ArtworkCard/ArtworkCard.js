@@ -198,7 +198,7 @@ const ArtworkCard = ({ user, artwork, type, fixed, loading }) => {
       </SkeletonWrapper>
       <CardActions disableSpacing className={classes.artworkFooter}>
         <SkeletonWrapper loading={loading}>
-          <Box>
+          <Box style={{ display: "flex" }}>
             {item.owner._id === user.id ? (
               <EditButton artwork={artwork} />
             ) : (

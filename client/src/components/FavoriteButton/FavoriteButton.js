@@ -1,4 +1,4 @@
-import { IconButton } from "@material-ui/core";
+import { Button, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   FavoriteBorderRounded as FavoriteIcon,
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FavoriteButton = ({ artwork, favorited, handleCallback }) => {
+const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
   const [store, dispatch] = useContext(Context);
   const classes = useStyles();
 
@@ -60,7 +60,20 @@ const FavoriteButton = ({ artwork, favorited, handleCallback }) => {
     }
   };
 
-  return (
+  return labeled ? (
+    <Button
+      variant="outlined"
+      color="primary"
+      startIcon={favorited ? <FavoritedIcon /> : <FavoriteIcon />}
+      onClick={() =>
+        favorited
+          ? handleUnsaveArtwork(artwork._id)
+          : handleSaveArtwork(artwork._id)
+      }
+    >
+      {favorited ? "Unfavorite" : "Favorite"}
+    </Button>
+  ) : (
     <IconButton
       aria-label={`${favorited ? "Unsave artwork" : "Save artwork"}`}
       onClick={() =>
