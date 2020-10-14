@@ -53,7 +53,7 @@ const CheckoutSummary = ({
         },
       }));
     }
-  }, [license]);
+  }, [version, license]);
 
   return (
     <Card

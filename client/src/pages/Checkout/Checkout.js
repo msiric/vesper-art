@@ -407,7 +407,11 @@ const Processor = ({ match, location, stripe }) => {
 
   const fetchData = async () => {
     try {
-      setState({ ...initialState });
+      console.log(location.state.license);
+      setState({
+        ...initialState,
+        license: location.state.license || initialState.license,
+      });
       const billing = {
         firstname: "",
         lastname: "",
