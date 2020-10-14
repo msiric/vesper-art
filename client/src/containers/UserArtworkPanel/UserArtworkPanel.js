@@ -1,6 +1,7 @@
 import { Grid, Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
+import EmptySection from "../../components/EmptySection/EmptySection.js";
 import SwipeCard from "../../components/SwipeCard/SwipeCard.js";
 import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
 
@@ -62,7 +63,12 @@ const UserArtworkPanel = ({
                       loading={loading}
                     />
                   ),
-                  error: "You have no artwork to display",
+                  error: (
+                    <EmptySection
+                      label="You have no artwork to display"
+                      loading={loading}
+                    />
+                  ),
                   loading: false,
                 },
                 {
@@ -79,7 +85,12 @@ const UserArtworkPanel = ({
                       loading={loading}
                     />
                   ),
-                  error: "You have no saved artwork",
+                  error: (
+                    <EmptySection
+                      label="You have no saved artwork"
+                      loading={loading}
+                    />
+                  ),
                   loading: tabs.loading,
                 },
               ],
@@ -116,7 +127,12 @@ const UserArtworkPanel = ({
                       loading={loading}
                     />
                   ),
-                  error: "This user has no artwork to display",
+                  error: (
+                    <EmptySection
+                      label="This user has no artwork to display"
+                      loading={loading}
+                    />
+                  ),
                   loading: false,
                 },
                 {
@@ -133,7 +149,12 @@ const UserArtworkPanel = ({
                       loading={loading}
                     />
                   ),
-                  error: "This user has no saved artwork",
+                  error: (
+                    <EmptySection
+                      label="This user has no saved artwork"
+                      loading={loading}
+                    />
+                  ),
                   loading: tabs.loading,
                 },
               ],

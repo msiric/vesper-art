@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useHistory } from "react-router-dom";
 import CommentCard from "../../components/CommentCard/CommentCard.js";
+import EmptySection from "../../components/EmptySection/EmptySection.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
 import { Context } from "../../context/Store.js";
@@ -81,15 +82,13 @@ const CommentSection = ({
           </InfiniteScroll>
         ) : (
           <Box
-            height={80}
+            height={180}
             display="flex"
             justifyContent="center"
             alignItems="center"
             mb={-2}
           >
-            <SkeletonWrapper variant="text" loading={loading} width="100%">
-              <Typography>No comments</Typography>
-            </SkeletonWrapper>
+            <EmptySection label="No comments so far" loading={loading} />
           </Box>
         )}
         <AddCommentForm

@@ -1,9 +1,8 @@
-import { Box, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { HourglassEmptyRounded as EmptyIcon } from '@material-ui/icons';
 import React from "react";
 import { formatDate } from "../../../../common/helpers.js";
 import Datatable from "../../components/Datatable/Datatable.js";
+import EmptySection from "../EmptySection/EmptySection.js";
 
 const useStyles = makeStyles({
   root: {
@@ -58,7 +57,11 @@ const LicenseCard = ({ license, order, isSeller, loading }) => {
           options: {
             sort: false,
             customBodyRender: (value, tableMeta, updateValue) =>
-              typeof value !== 'undefined' ? value ? `$${value}` : "Free" : null,
+              typeof value !== "undefined"
+                ? value
+                  ? `$${value}`
+                  : "Free"
+                : null,
           },
         },
         {
@@ -78,7 +81,7 @@ const LicenseCard = ({ license, order, isSeller, loading }) => {
           license.created && formatDate(license.created, "dd/MM/yy HH:mm"),
         ],
       ]}
-      empty={<Box style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 126}}><EmptyIcon style={{ fontSize: 56, marginBottom: 20 }}/><Typography variant="body2">License not found</Typography></Box>}
+      empty={<EmptySection label="License not found" loading={loading} />}
       loading={loading}
       redirect=""
       selectable={false}

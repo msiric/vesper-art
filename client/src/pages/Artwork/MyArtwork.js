@@ -1,19 +1,13 @@
-import {
-  Box,
-  Container,
-  Grid,
-  IconButton,
-  Typography,
-} from "@material-ui/core";
+import { Box, Container, Grid, IconButton } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
-  HourglassEmptyRounded as EmptyIcon,
 } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
 import Datatable from "../../components/Datatable/Datatable.js";
+import EmptySection from "../../components/EmptySection/EmptySection.js";
 import { deleteArtwork, getGallery } from "../../services/artwork.js";
 import globalStyles from "../../styles/global.js";
 
@@ -211,18 +205,10 @@ const MyArtwork = ({ location }) => {
               actionsColumn(artwork._id),
             ])}
             empty={
-              <Box
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: 126,
-                }}
-              >
-                <EmptyIcon style={{ fontSize: 56, marginBottom: 20 }} />
-                <Typography variant="body2">You have no artwork</Typography>
-              </Box>
+              <EmptySection
+                label="You have not artwork"
+                loading={state.loading}
+              />
             }
             loading={state.loading}
             redirect="artwork"

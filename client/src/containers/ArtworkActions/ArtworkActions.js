@@ -38,7 +38,6 @@ const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              marginBottom: "12px",
             }}
           >
             <Box

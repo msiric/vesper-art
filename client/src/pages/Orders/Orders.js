@@ -1,19 +1,17 @@
 import {
-  Box,
   Container,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
   Select,
-  Typography,
 } from "@material-ui/core";
-import { HourglassEmptyRounded as EmptyIcon } from "@material-ui/icons";
 import { Rating } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
 import Datatable from "../../components/Datatable/Datatable.js";
+import EmptySection from "../../components/EmptySection/EmptySection.js";
 import { getOrders } from "../../services/orders.js";
 import globalStyles from "../../styles/global.js";
 
@@ -175,18 +173,10 @@ const Orders = () => {
               order.created,
             ])}
             empty={
-              <Box
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: 126,
-                }}
-              >
-                <EmptyIcon style={{ fontSize: 56, marginBottom: 20 }} />
-                <Typography variant="body2">You have no orders</Typography>
-              </Box>
+              <EmptySection
+                label="You have no orders"
+                loading={state.loading}
+              />
             }
             loading={state.loading}
             redirect="orders"
