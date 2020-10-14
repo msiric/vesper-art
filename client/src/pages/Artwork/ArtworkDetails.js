@@ -8,6 +8,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
 import ArtistSection from "../../containers/ArtistSection/ArtistSection.js";
+import ArtworkActions from "../../containers/ArtworkActions/ArtworkActions.js";
 import ArtworkInfo from "../../containers/ArtworkInfo/ArtworkInfo.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/ArtworkPreview.js";
 import CommentSection from "../../containers/CommentSection/CommentSection.js";
@@ -71,14 +72,6 @@ const ArtworkDetails = ({ match, location, socket }) => {
       });
   };
 
-  const filterHighlight = () => {
-    setState((prevState) => ({
-      ...prevState,
-      highlight: { ...initialState.highlight, found: true },
-    }));
-    scrollToHighlight();
-  };
-
   const fetchHighlight = async (commentId) => {
     try {
       const { data } = await getComment({
@@ -86,18 +79,6 @@ const ArtworkDetails = ({ match, location, socket }) => {
         commentId,
       });
       return data;
-      if (data) {
-        setState((prevState) => ({
-          ...prevState,
-          highlight: {
-            element: data.comment,
-            found: false,
-          },
-        }));
-        scrollToHighlight();
-      } else {
-        // $TODO Comment not found
-      }
     } catch (err) {
       console.log(err);
     }
@@ -117,9 +98,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
               (comment) => comment._id === query.ref
             )[0]
           : false;
-      const fetchedHighlight = !foundHighlight
-        ? await fetchHighlight(query.ref)
-        : {};
+      const fetchedHighlight =
+        !foundHighlight && query.notif === "comment" && query.ref
+          ? await fetchHighlight(query.ref)
+          : {};
       // $TODO If highlight not found show error
       setState((prevState) => ({
         ...prevState,
@@ -157,6 +139,16 @@ const ArtworkDetails = ({ match, location, socket }) => {
     } catch (err) {
       setState((prevState) => ({ ...prevState, loading: false }));
     }
+  };
+
+  const handleArtworkSave = (increment) => {
+    setState((prevState) => ({
+      ...prevState,
+      artwork: {
+        ...prevState.artwork,
+        saves: prevState.artwork.saves + increment,
+      },
+    }));
   };
 
   const handlePurchase = async (id, license) => {
@@ -401,6 +393,12 @@ const ArtworkDetails = ({ match, location, socket }) => {
             <Grid item sm={12} md={4}>
               <ArtistSection
                 owner={state.artwork.owner}
+                loading={state.loading}
+              />
+              <br />
+              <ArtworkActions
+                artwork={state.artwork}
+                handleArtworkSave={handleArtworkSave}
                 loading={state.loading}
               />
               <br />

@@ -1,12 +1,12 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../context/Store.js";
-import { makeStyles } from "@material-ui/core/styles";
 import { IconButton } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   FavoriteBorderRounded as FavoriteIcon,
   FavoriteRounded as FavoritedIcon,
 } from "@material-ui/icons";
-import { postSave, deleteSave } from "../../services/artwork.js";
+import React, { useContext } from "react";
+import { Context } from "../../context/Store.js";
+import { deleteSave, postSave } from "../../services/artwork.js";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FavoriteButton = ({ artwork, favorited }) => {
+const FavoriteButton = ({ artwork, favorited, handleCallback }) => {
   const [store, dispatch] = useContext(Context);
   const classes = useStyles();
 
@@ -39,6 +39,7 @@ const FavoriteButton = ({ artwork, favorited }) => {
           [id]: true,
         },
       });
+      if (handleCallback) handleCallback(1);
     } catch (err) {
       console.log(err);
     }
@@ -53,6 +54,7 @@ const FavoriteButton = ({ artwork, favorited }) => {
           [id]: false,
         },
       });
+      if (handleCallback) handleCallback(-1);
     } catch (err) {
       console.log(err);
     }

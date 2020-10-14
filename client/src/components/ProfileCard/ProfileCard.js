@@ -96,7 +96,7 @@ const ProfileCard = ({ user, height, loading }) => {
                   marginRight: "6px",
                 }}
               >
-                <StarIcon fontSize="small" />
+                <StarIcon fontSize="small" style={{ marginRight: "3px" }} />
                 <Typography
                   variant="body1"
                   color="textSecondary"
@@ -116,7 +116,7 @@ const ProfileCard = ({ user, height, loading }) => {
                   marginRight: "6px",
                 }}
               >
-                <LocationIcon fontSize="small" />
+                <LocationIcon fontSize="small" style={{ marginRight: "3px" }} />
                 <Typography
                   variant="body2"
                   color="textSecondary"
@@ -134,7 +134,7 @@ const ProfileCard = ({ user, height, loading }) => {
                 alignItems: "center",
               }}
             >
-              <MemberIcon fontSize="small" />
+              <MemberIcon fontSize="small" style={{ marginRight: "3px" }} />
               <Typography
                 variant="body2"
                 color="textSecondary"
