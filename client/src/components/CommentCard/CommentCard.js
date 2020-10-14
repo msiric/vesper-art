@@ -10,7 +10,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { MoreVertRounded as MoreIcon } from "@material-ui/icons";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import EditCommentForm from "../../containers/Comment/EditCommentForm.js";
 import { Context } from "../../context/Store.js";
@@ -41,7 +41,6 @@ const CommentCard = ({
   edits = {},
   queryRef,
   highlightRef,
-  filterHighlight,
   handleCommentEdit,
   handleCommentClose,
   handlePopoverOpen,
@@ -52,12 +51,6 @@ const CommentCard = ({
   const classes = useStyles();
 
   const isHighlight = () => queryRef && queryRef === comment._id;
-
-  useEffect(() => {
-    if (isHighlight()) {
-      filterHighlight();
-    }
-  }, []);
 
   return (
     <Box ref={isHighlight() ? highlightRef : null} key={comment._id}>

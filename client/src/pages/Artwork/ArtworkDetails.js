@@ -49,7 +49,6 @@ const initialState = {
   },
   highlight: {
     found: false,
-    loading: true,
     element: null,
   },
 };
@@ -75,28 +74,24 @@ const ArtworkDetails = ({ match, location, socket }) => {
   const filterHighlight = () => {
     setState((prevState) => ({
       ...prevState,
-      highlight: { ...initialState.highlight, found: true, loading: false },
+      highlight: { ...initialState.highlight, found: true },
     }));
     scrollToHighlight();
   };
 
   const fetchHighlight = async (commentId) => {
     try {
-      setState((prevState) => ({
-        ...prevState,
-        highlight: { ...prevState.highlight, found: false, loading: true },
-      }));
       const { data } = await getComment({
         artworkId: match.params.id,
         commentId,
       });
+      return data;
       if (data) {
         setState((prevState) => ({
           ...prevState,
           highlight: {
             element: data.comment,
             found: false,
-            loading: false,
           },
         }));
         scrollToHighlight();
@@ -116,9 +111,16 @@ const ArtworkDetails = ({ match, location, socket }) => {
         dataCursor: initialState.scroll.comments.dataCursor,
         dataCeiling: initialState.scroll.comments.dataCeiling,
       });
-      // $TODO Check if comment and if ref is a valid ID
-      if (!state.highlight.found && query.notif === "comment" && query.ref)
-        fetchHighlight(query.ref);
+      const foundHighlight =
+        query.notif === "comment" && query.ref
+          ? !!data.artwork.comments.filter(
+              (comment) => comment._id === query.ref
+            )[0]
+          : false;
+      const fetchedHighlight = !foundHighlight
+        ? await fetchHighlight(query.ref)
+        : {};
+      // $TODO If highlight not found show error
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -141,7 +143,17 @@ const ArtworkDetails = ({ match, location, socket }) => {
               prevState.scroll.comments.dataCeiling,
           },
         },
+        highlight: foundHighlight
+          ? { ...initialState.highlight, found: true }
+          : fetchedHighlight && fetchedHighlight.comment
+          ? { found: false, element: fetchedHighlight.comment }
+          : { ...initialState.highlight },
       }));
+      if (!foundHighlight && !fetchedHighlight) {
+        console.log("error");
+      } else {
+        scrollToHighlight();
+      }
     } catch (err) {
       setState((prevState) => ({ ...prevState, loading: false }));
     }
@@ -313,6 +325,12 @@ const ArtworkDetails = ({ match, location, socket }) => {
         dataCursor: state.scroll.comments.dataCursor,
         dataCeiling: state.scroll.comments.dataCeiling,
       });
+      const foundHighlight =
+        !state.highlight.found && query.notif === "comment" && query.ref
+          ? !!data.artwork.comments.filter(
+              (comment) => comment._id === query.ref
+            )[0]
+          : false;
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -335,7 +353,13 @@ const ArtworkDetails = ({ match, location, socket }) => {
               state.scroll.comments.dataCeiling,
           },
         },
+        highlight: foundHighlight
+          ? { ...initialState.highlight, found: true }
+          : { ...prevState.highlight },
       }));
+      if (foundHighlight) {
+        scrollToHighlight();
+      }
     } catch (err) {
       console.log(err);
     }
@@ -366,7 +390,6 @@ const ArtworkDetails = ({ match, location, socket }) => {
                 highlight={state.highlight}
                 queryRef={query ? query.ref : null}
                 highlightRef={highlightRef}
-                filterHighlight={filterHighlight}
                 loadMoreComments={loadMoreComments}
                 handleCommentAdd={handleCommentAdd}
                 handleCommentEdit={handleCommentEdit}
