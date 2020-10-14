@@ -1,8 +1,8 @@
-import { Box, Button, TextField } from '@material-ui/core';
-import { Field, Form, Formik } from 'formik';
-import React from 'react';
-import { patchComment } from '../../services/artwork.js';
-import { commentValidation } from '../../validation/comment.js';
+import { Box, Button, TextField } from "@material-ui/core";
+import { Field, Form, Formik } from "formik";
+import React from "react";
+import { patchComment } from "../../services/artwork.js";
+import { commentValidation } from "../../validation/comment.js";
 
 const EditCommentForm = ({
   comment,
@@ -47,11 +47,17 @@ const EditCommentForm = ({
             </Field>
           </Box>
           <Box display="flex" justifyContent="space-between">
-            <Button type="submit" color="primary" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              variant="outlined"
+              color="primary"
+              disabled={isSubmitting}
+            >
               Save
             </Button>
             <Button
               type="button"
+              variant="outlined"
               color="warning"
               onClick={() => handleCommentClose(comment._id)}
             >

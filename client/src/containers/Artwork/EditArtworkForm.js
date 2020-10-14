@@ -347,6 +347,7 @@ const EditArtworkForm = ({
                   <SkeletonWrapper loading={loading}>
                     <Button
                       type="submit"
+                      variant="outlined"
                       color="primary"
                       disabled={isSubmitting || isDeleting}
                       startIcon={<UploadIcon />}
@@ -357,6 +358,7 @@ const EditArtworkForm = ({
                   <SkeletonWrapper loading={loading}>
                     <Button
                       type="button"
+                      variant="outlined"
                       color="error"
                       onClick={handleDeleteArtwork}
                       disabled={isSubmitting || isDeleting}

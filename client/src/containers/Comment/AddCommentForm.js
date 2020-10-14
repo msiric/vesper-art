@@ -51,6 +51,7 @@ const AddCommentForm = ({ artwork, handleCommentAdd, loading }) => {
             <SkeletonWrapper loading={loading} width="100%">
               <Button
                 type="submit"
+                variant="outlined"
                 color="primary"
                 fullWidth
                 disabled={isSubmitting}

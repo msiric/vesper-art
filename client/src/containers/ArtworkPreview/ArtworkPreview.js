@@ -35,7 +35,7 @@ const useStyles = makeStyles((muiTheme) => ({
   },
   artworkPreviewMedia: {
     height: "100%",
-    margin: '30px 0',
+    margin: "30px 0",
   },
   avatar: {
     width: muiTheme.spacing(10),
@@ -124,20 +124,15 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
           padding: 16,
         }}
       >
-        <Box>
+        <Box style={{ marginBottom: 12 }}>
           <SkeletonWrapper variant="text" loading={loading}>
-            <Typography
-              fontWeight="fontWeightBold"
-              fontSize="h5.fontSize"
-            >{`${version.title}, ${new Date(
-              version.created
-            ).getFullYear()}`}</Typography>
+            <Typography fontWeight="fontWeightBold" fontSize="h5.fontSize">{`${
+              version.title
+            }, ${new Date(version.created).getFullYear()}`}</Typography>
           </SkeletonWrapper>
         </Box>
-        <SkeletonWrapper
-          loading={loading}
-          width="100%"
-        >
+        <Divider />
+        <SkeletonWrapper loading={loading} width="100%">
           <CardMedia
             className={classes.artworkPreviewMedia}
             image={version.cover}
@@ -174,7 +169,8 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
           </Box>
         </Box>
       </Card>
-    </Grow>);
+    </Grow>
+  );
 };
 
 export default ArtworkPreview;
