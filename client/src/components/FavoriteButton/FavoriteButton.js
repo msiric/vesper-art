@@ -4,7 +4,7 @@ import {
   FavoriteBorderRounded as FavoriteIcon,
   FavoriteRounded as FavoritedIcon,
 } from "@material-ui/icons";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Context } from "../../context/Store.js";
 import { deleteSave, postSave } from "../../services/artwork.js";
 
@@ -27,11 +27,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
+  const [state, setState] = useState({ loading: false });
   const [store, dispatch] = useContext(Context);
   const classes = useStyles();
 
   const handleSaveArtwork = async (id) => {
     try {
+      setState({ loading: true });
       await postSave({ artworkId: id });
       dispatch({
         type: "updateSaves",
@@ -42,11 +44,14 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
       if (handleCallback) handleCallback(1);
     } catch (err) {
       console.log(err);
+    } finally {
+      setState({ loading: false });
     }
   };
 
   const handleUnsaveArtwork = async (id) => {
     try {
+      setState({ loading: true });
       await deleteSave({ artworkId: id });
       dispatch({
         type: "updateSaves",
@@ -57,6 +62,8 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
       if (handleCallback) handleCallback(-1);
     } catch (err) {
       console.log(err);
+    } finally {
+      setState({ loading: false });
     }
   };
 
@@ -65,6 +72,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
       variant="outlined"
       color="primary"
       startIcon={favorited ? <FavoritedIcon /> : <FavoriteIcon />}
+      disabled={state.loading}
       onClick={() =>
         favorited
           ? handleUnsaveArtwork(artwork._id)
@@ -75,13 +83,14 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
     </Button>
   ) : (
     <IconButton
+      className={classes.artworkColor}
       aria-label={`${favorited ? "Unsave artwork" : "Save artwork"}`}
       onClick={() =>
         favorited
           ? handleUnsaveArtwork(artwork._id)
           : handleSaveArtwork(artwork._id)
       }
-      className={classes.artworkColor}
+      disabled={state.loading}
     >
       {favorited ? <FavoritedIcon /> : <FavoriteIcon />}
     </IconButton>
