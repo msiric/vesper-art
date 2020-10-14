@@ -49,6 +49,12 @@ import globalStyles from "../../styles/global.js";
 import { billingValidation } from "../../validation/billing.js";
 import { licenseValidation } from "../../validation/license.js";
 
+const STEPS = [
+  "License information",
+  "Billing information",
+  "Payment information",
+];
+
 const initialState = {
   secret: null,
   artwork: { version: {} },
@@ -62,12 +68,6 @@ const initialState = {
   },
   loading: true,
 };
-
-const STEPS = [
-  "License information",
-  "Billing information",
-  "Payment information",
-];
 
 const checkoutValidation = [licenseValidation, billingValidation, null];
 
@@ -526,6 +526,7 @@ const Processor = ({ match, location, stripe }) => {
                       >
                         <SkeletonWrapper loading={state.loading}>
                           <Button
+                            variant="outlined"
                             disabled={state.step.current === 0}
                             onClick={() => handleStepChange(-1)}
                           >

@@ -78,7 +78,12 @@ const Verifier = () => {
                   </Field>
                 </div>
                 <div>
-                  <Button type="submit" color="primary" fullWidth>
+                  <Button
+                    type="submit"
+                    variant="outlined"
+                    color="primary"
+                    fullWidth
+                  >
                     Verify
                   </Button>
                 </div>

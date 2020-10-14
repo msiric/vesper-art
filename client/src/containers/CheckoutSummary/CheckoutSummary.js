@@ -9,7 +9,7 @@ import {
   ListItem,
   ListItemText,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -30,7 +30,7 @@ const CheckoutSummary = ({
   license,
   discount,
   handleDiscountChange,
-  loading
+  loading,
 }) => {
   const [state, setState] = useState({
     summary: {
@@ -91,16 +91,26 @@ const CheckoutSummary = ({
             disableGutters
           >
             <ListItemText
-              primary={<SkeletonWrapper variant="text" loading={loading}><Typography>{version.title || 'Artwork title'}</Typography></SkeletonWrapper>}
+              primary={
+                <SkeletonWrapper variant="text" loading={loading}>
+                  <Typography>{version.title || "Artwork title"}</Typography>
+                </SkeletonWrapper>
+              }
               secondary={
                 <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography>{state.summary.license ? `1 ${license} license` : 'No licenses selected'}</Typography>
+                  <Typography>
+                    {state.summary.license
+                      ? `1 ${license} license`
+                      : "No licenses selected"}
+                  </Typography>
                 </SkeletonWrapper>
               }
             />
             <ListItemText
               primary={
-                <SkeletonWrapper variant="text" loading={loading}><Typography className={classes.rightList}>Price</Typography></SkeletonWrapper>
+                <SkeletonWrapper variant="text" loading={loading}>
+                  <Typography className={classes.rightList}>Price</Typography>
+                </SkeletonWrapper>
               }
               secondary={
                 <div className={classes.rightList}>
@@ -170,7 +180,11 @@ const CheckoutSummary = ({
           ) : null}
           <ListItem className={classes.listItem} disableGutters>
             <ListItemText
-              primary={<SkeletonWrapper variant="text" loading={loading}><Typography>Platform fee</Typography></SkeletonWrapper>}
+              primary={
+                <SkeletonWrapper variant="text" loading={loading}>
+                  <Typography>Platform fee</Typography>
+                </SkeletonWrapper>
+              }
               secondary={
                 <SkeletonWrapper variant="text" loading={loading}>
                   <Typography>Fixed fee</Typography>
@@ -179,7 +193,9 @@ const CheckoutSummary = ({
             />
             <ListItemText
               primary={
-                <SkeletonWrapper variant="text" loading={loading}><Typography className={classes.rightList}>Amount</Typography></SkeletonWrapper>
+                <SkeletonWrapper variant="text" loading={loading}>
+                  <Typography className={classes.rightList}>Amount</Typography>
+                </SkeletonWrapper>
               }
               secondary={
                 <SkeletonWrapper variant="text" loading={loading}>
@@ -208,55 +224,66 @@ const CheckoutSummary = ({
           <Divider />
           <ListItem className={classes.listItem} disableGutters>
             <ListItemText
-              primary={<SkeletonWrapper variant="text" loading={loading}><Typography>Order</Typography></SkeletonWrapper>}
+              primary={
+                <SkeletonWrapper variant="text" loading={loading}>
+                  <Typography>Order</Typography>
+                </SkeletonWrapper>
+              }
               secondary={
-                  <SkeletonWrapper variant="text" loading={loading}><Typography>
-                    {state.summary.license ? `1 ${state.summary.license} license` : 'No licenses selected'}
-                  </Typography></SkeletonWrapper>
+                <SkeletonWrapper variant="text" loading={loading}>
+                  <Typography>
+                    {state.summary.license
+                      ? `1 ${state.summary.license} license`
+                      : "No licenses selected"}
+                  </Typography>
+                </SkeletonWrapper>
               }
             />
             <ListItemText
               primary={
-                <SkeletonWrapper variant="text" loading={loading}><Typography className={classes.rightList}>Total</Typography></SkeletonWrapper>
+                <SkeletonWrapper variant="text" loading={loading}>
+                  <Typography className={classes.rightList}>Total</Typography>
+                </SkeletonWrapper>
               }
               secondary={
                 <SkeletonWrapper variant="text" loading={loading}>
-                <Typography className={classes.rightList}>
-                  {state.summary.amount ? (
-                    discount ? (
-                      <NumberFormat
-                        value={(
-                          state.summary.amount -
-                          state.summary.amount * discount.discount +
-                          (state.summary.amount * 0.05 + 2.35)
-                        ).toFixed(2)}
-                        displayType={"text"}
-                        thousandSeparator={true}
-                        decimalScale={2}
-                        prefix={"$"}
-                      />
+                  <Typography className={classes.rightList}>
+                    {state.summary.amount ? (
+                      discount ? (
+                        <NumberFormat
+                          value={(
+                            state.summary.amount -
+                            state.summary.amount * discount.discount +
+                            (state.summary.amount * 0.05 + 2.35)
+                          ).toFixed(2)}
+                          displayType={"text"}
+                          thousandSeparator={true}
+                          decimalScale={2}
+                          prefix={"$"}
+                        />
+                      ) : (
+                        <NumberFormat
+                          value={(
+                            state.summary.amount +
+                            (state.summary.amount * 0.05 + 2.35)
+                          ).toFixed(2)}
+                          displayType={"text"}
+                          thousandSeparator={true}
+                          decimalScale={2}
+                          prefix={"$"}
+                        />
+                      )
                     ) : (
                       <NumberFormat
-                        value={(
-                          state.summary.amount +
-                          (state.summary.amount * 0.05 + 2.35)
-                        ).toFixed(2)}
+                        value={0}
                         displayType={"text"}
                         thousandSeparator={true}
                         decimalScale={2}
                         prefix={"$"}
                       />
-                    )
-                  ) : (
-                    <NumberFormat
-                      value={0}
-                      displayType={"text"}
-                      thousandSeparator={true}
-                      decimalScale={2}
-                      prefix={"$"}
-                    />
-                  )}
-                </Typography></SkeletonWrapper>
+                    )}
+                  </Typography>
+                </SkeletonWrapper>
               }
               style={{
                 display: "flex",
@@ -314,6 +341,7 @@ const CheckoutSummary = ({
                 <SkeletonWrapper loading={loading} width="100%">
                   <Button
                     type="submit"
+                    variant="outlined"
                     color="primary"
                     disabled={isSubmitting}
                     fullWidth

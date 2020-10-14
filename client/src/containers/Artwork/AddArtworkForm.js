@@ -275,6 +275,7 @@ const AddArtworkForm = ({
             <CardActions className={classes.actions}>
               <Button
                 type="submit"
+                variant="outlined"
                 color="primary"
                 disabled={isSubmitting}
                 startIcon={<UploadIcon />}
