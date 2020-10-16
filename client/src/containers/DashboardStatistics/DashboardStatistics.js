@@ -1,16 +1,14 @@
 import { Grid } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import { compose, flexbox, spacing } from "@material-ui/system";
-import React, { useContext } from "react";
+import React from "react";
 import DashboardCard from "../../components/DashboardCard/DashboardCard.js";
-import { Context } from "../../contexts/Store.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const GridContainer = styled(Grid)(compose(spacing, flexbox));
 const GridItem = styled(Grid)(compose(flexbox));
 
 const DashboardStatistics = ({ loading, cards, layout }) => {
-  const [store, dispatch] = useContext(Context);
   const classes = {};
 
   return (

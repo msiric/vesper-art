@@ -1,12 +1,11 @@
 import { Box, Card, CardContent, Divider } from "@material-ui/core";
-import React, { useContext } from "react";
+import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useHistory } from "react-router-dom";
 import CommentCard from "../../components/CommentCard/CommentCard.js";
 import EmptySection from "../../components/EmptySection/EmptySection.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
-import { Context } from "../../contexts/Store.js";
 import { List, Typography } from "../../styles/theme.js";
 import AddCommentForm from "../Comment/AddCommentForm.js";
 
@@ -24,7 +23,6 @@ const CommentSection = ({
   handlePopoverOpen,
   loading,
 }) => {
-  const [store, dispatch] = useContext(Context);
   const history = useHistory();
   const classes = {};
 

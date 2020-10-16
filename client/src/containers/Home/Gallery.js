@@ -18,13 +18,13 @@ import {
 import StackGrid from "react-stack-grid";
 import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import { AppContext } from "../../contexts/App.js";
 import { deleteSave, postSave } from "../../services/artwork.js";
 import Modal from "../../shared/Modal/Modal.js";
-import { Context } from "../Store/Store.js";
 import GalleryStyles from "./Gallery.style.js";
 
 const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
-  const [store, dispatch] = useContext(Context);
+  const [appStore, appDispatch] = useContext(AppContext);
   const [state, setState] = useState({
     modal: {
       open: false,
@@ -55,7 +55,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
 
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;
-    const title = store.main.brand;
+    const title = appStore.brand;
 
     return (
       <div className={classes.shareContainer}>
@@ -217,7 +217,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
         {/* specify cover width */}
         <StackGrid columnWidth={150} gutterWidth={0} gutterHeight={0}>
           {elements.map((artwork) => (
-            <ArtworkCard user={store.user} artwork={artwork} />
+            <ArtworkCard artwork={artwork} />
             /*           <div
               key={artwork._id}
               component={Link}

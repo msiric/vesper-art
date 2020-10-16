@@ -13,7 +13,7 @@ import React, { useContext, useEffect, useState } from "react";
 import DashboardStatistics from "../../containers/DashboardStatistics/DashboardStatistics.js";
 import DashboardToolbar from "../../containers/DashboardToolbar/DashboardToolbar.js";
 import DashboardVisualization from "../../containers/DashboardVisualization/DashboardVisualization.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import { getDashboard } from "../../services/stripe.js";
 import { getSelection, getStatistics } from "../../services/user.js";
 import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
@@ -42,7 +42,7 @@ const initialState = {
 };
 
 const Dashboard = ({ location }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const [state, setState] = useState({
     ...initialState,
   });
@@ -52,7 +52,7 @@ const Dashboard = ({ location }) => {
   const fetchCurrentData = async () => {
     try {
       setState({ ...initialState });
-      const { data } = await getStatistics.request({ userId: store.user.id });
+      const { data } = await getStatistics.request({ userId: userStore.id });
       const currentStats = {
         review: data.statistics.rating,
         saves: data.statistics.savedArtwork.length,
@@ -95,7 +95,7 @@ const Dashboard = ({ location }) => {
         },
       });
       const { data } = await getSelection.request({
-        userId: store.user.id,
+        userId: userStore.id,
         displayType: state.display.type,
         rangeFrom: from,
         rangeTo: to,
@@ -188,7 +188,7 @@ const Dashboard = ({ location }) => {
 
   const handleStripeRedirect = async () => {
     const { data } = await getDashboard.request({
-      stripeId: store.user.stripeId,
+      stripeId: userStore.stripeId,
     });
     window.location.href = data.url;
   };
@@ -213,7 +213,7 @@ const Dashboard = ({ location }) => {
             display={state.display}
             handleSelectChange={handleSelectChange}
           />
-          {store.user.stripeId && (
+          {userStore.stripeId && (
             <Button onClick={handleStripeRedirect}>Stripe dashboard</Button>
           )}
           <DashboardStatistics

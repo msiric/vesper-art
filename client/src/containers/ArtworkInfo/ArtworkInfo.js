@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import PricingCard from "../../components/PricingCard/PricingCard.js";
 import SwipeCard from "../../components/SwipeCard/SwipeCard.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import { CardContent, Typography } from "../../styles/theme.js";
 
 const ArtworkInfo = ({
@@ -17,10 +17,10 @@ const ArtworkInfo = ({
   match,
   loading,
 }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const classes = {};
 
-  const isSeller = () => store.user.id === artwork.owner._id;
+  const isSeller = () => userStore.id === artwork.owner._id;
 
   return (
     <Card className={classes.root} loading={loading}>

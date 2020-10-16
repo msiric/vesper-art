@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
 import SettingsSection from "../../containers/SettingsSection/SettingsSection.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import {
   deleteUser,
   getSettings,
@@ -40,7 +40,7 @@ const passwordValidation = Yup.object().shape({
 const initialState = { loading: true, user: {} };
 
 const Settings = ({ location }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const [state, setState] = useState({
     ...initialState,
   });
@@ -51,7 +51,7 @@ const Settings = ({ location }) => {
   const fetchSettings = async () => {
     try {
       setState({ ...initialState });
-      const { data } = await getSettings.request({ userId: store.user.id });
+      const { data } = await getSettings.request({ userId: userStore.id });
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -72,7 +72,7 @@ const Settings = ({ location }) => {
       );
     }
     await patchUser.request({
-      userId: store.user.id,
+      userId: userStore.id,
       data: formData,
     });
     setState((prevState) => ({
@@ -88,7 +88,7 @@ const Settings = ({ location }) => {
 
   const handleUpdateEmail = async (values) => {
     await patchEmail.request({
-      userId: store.user.id,
+      userId: userStore.id,
       data: values,
     });
     setState((prevState) => ({
@@ -103,7 +103,7 @@ const Settings = ({ location }) => {
 
   const handleUpdatePreferences = async (values) => {
     await patchPreferences.request({
-      userId: store.user.id,
+      userId: userStore.id,
       data: values,
     });
     setState((prevState) => ({
@@ -117,14 +117,14 @@ const Settings = ({ location }) => {
 
   const handleUpdatePassword = async (values, actions) => {
     await patchPassword.request({
-      userId: store.user.id,
+      userId: userStore.id,
       data: values,
     });
     actions.resetForm();
   };
 
   const handleDeactivateUser = async () => {
-    await deleteUser.request({ userId: store.user.id });
+    await deleteUser.request({ userId: userStore.id });
   };
 
   useEffect(() => {

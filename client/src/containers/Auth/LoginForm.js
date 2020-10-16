@@ -3,7 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Field, Form, Formik } from "formik";
 import React, { useContext } from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import { Context } from "../../contexts/Store.js";
+import { EventsContext } from "../../contexts/Events.js";
+import { UserContext } from "../../contexts/User.js";
 import { postLogin } from "../../services/auth.js";
 import { loginValidation } from "../../validation/login.js";
 
@@ -18,7 +19,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LoginForm = () => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore, userDispatch] = useContext(UserContext);
+  const [eventsStore, eventsDispatch] = useContext(EventsContext);
 
   const history = useHistory();
   const classes = useStyles();
@@ -34,7 +36,7 @@ const LoginForm = () => {
         const { data } = await postLogin.request({ data: values });
 
         if (data.user) {
-          dispatch({
+          userDispatch({
             type: "setUser",
             authenticated: true,
             token: data.accessToken,
@@ -44,24 +46,26 @@ const LoginForm = () => {
             photo: data.user.photo,
             stripeId: data.user.stripeId,
             country: data.user.country,
+            saved: data.user.saved.reduce(function (object, item) {
+              object[item] = true;
+              return object;
+            }, {}),
+            intents: data.user.intents.reduce(function (object, item) {
+              object[item.artworkId] = item.intentId;
+              return object;
+            }, {}),
+          });
+          eventsDispatch({
+            type: "setEvents",
             messages: { items: [], count: data.user.messages },
             notifications: {
-              ...store.user.notifications,
+              ...eventsStore.notifications,
               items: [],
               count: data.user.notifications,
               hasMore: true,
               dataCursor: 0,
               dataCeiling: 10,
             },
-            saved: data.user.saved.reduce(function (object, item) {
-              object[item] = true;
-              return object;
-            }, {}),
-            intents: data.user.intents.reduce(function (object, item) {
-              console.log(object, item);
-              object[item.artworkId] = item.intentId;
-              return object;
-            }, {}),
           });
         }
 

@@ -9,19 +9,17 @@ import {
 } from "@material-ui/core";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { getCheckout } from "../../services/checkout.js";
 import BillingForm from "../BillingForm/BillingForm.js";
 import LicenseForm from "../LicenseForm/LicenseForm.js";
 import PaymentForm from "../PaymentForm/PaymentForm.js";
-import { Context } from "../Store/Store.js";
 import CheckoutStyles from "./Checkout.style.js";
 import Summary from "./Summary.js";
 
 const Checkout = ({ match, location }) => {
-  const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     stripe: null,
     secret: null,

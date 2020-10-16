@@ -14,7 +14,7 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import { Context } from "../../contexts/Store.js";
+import { AppContext } from "../../contexts/App.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const useStyles = makeStyles({
@@ -61,10 +61,10 @@ const useStyles = makeStyles({
 });
 
 const ProfileShare = ({ match }) => {
-  const [store, dispatch] = useContext(Context);
+  const [appStore] = useContext(AppContext);
 
   const url = window.location;
-  const title = store.main.brand;
+  const title = appStore.brand;
   const history = useHistory();
   const classes = useStyles();
 

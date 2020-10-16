@@ -13,7 +13,7 @@ import { MoreVertRounded as MoreIcon } from "@material-ui/icons";
 import React, { useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import EditCommentForm from "../../containers/Comment/EditCommentForm.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import { artepunktTheme, Typography } from "../../styles/theme.js";
 import SkeletonWrapper from "../SkeletonWrapper/SkeletonWrapper.js";
 
@@ -46,7 +46,7 @@ const CommentCard = ({
   handlePopoverOpen,
   loading,
 }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore, userDispatch] = useContext(UserContext);
   const history = useHistory();
   const classes = useStyles();
 
@@ -112,7 +112,7 @@ const CommentCard = ({
             )
           }
         />
-        {edits[comment._id] || comment.owner._id !== store.user.id ? null : (
+        {edits[comment._id] || comment.owner._id !== userStore.id ? null : (
           <ListItemSecondaryAction>
             <IconButton
               onClick={(e) => handlePopoverOpen(e, comment._id)}

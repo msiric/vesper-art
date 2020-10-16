@@ -1,10 +1,11 @@
 import { TextField } from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
-import React from "react";
+import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import HelpBox from "../../components/HelpBox/HelpBox.js";
 import ImageInput from "../../components/ImageInput/ImageInput.js";
+import { UserContext } from "../../contexts/User.js";
 import PriceInput from "../../shared/PriceInput/PriceInput.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import { Button, Card, CardActions, CardContent } from "../../styles/theme.js";
@@ -13,12 +14,8 @@ import { addArtwork } from "../../validation/media.js";
 
 /* import AddArtworkStyles from "../../components/Artwork/AddArtwork.style.js"; */
 
-const AddArtworkForm = ({
-  capabilities,
-  user,
-  postArtwork,
-  deleteEmptyValues,
-}) => {
+const AddArtworkForm = ({ capabilities, postArtwork, deleteEmptyValues }) => {
+  const [userStore] = useContext(UserContext);
   const history = useHistory();
   /* const classes = AddArtworkStyles(); */
   const classes = {};
@@ -64,7 +61,7 @@ const AddArtworkForm = ({
       >
         {({ values, errors, touched, isSubmitting }) => (
           <Form className={classes.card}>
-            {!user.stripeId ? (
+            {!userStore.stripeId ? (
               <HelpBox
                 type="alert"
                 label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
@@ -149,7 +146,7 @@ const AddArtworkForm = ({
                           value: "commercial",
                           text: "Commercial",
                           disabled:
-                            user.stripeId &&
+                            userStore.stripeId &&
                             capabilities.cardPayments === "active" &&
                             capabilities.platformPayments === "active"
                               ? false
@@ -215,7 +212,7 @@ const AddArtworkForm = ({
                             value: "separate",
                             text: "Charge commercial license separately",
                             disabled:
-                              user.stripeId &&
+                              userStore.stripeId &&
                               capabilities.cardPayments === "active" &&
                               capabilities.platformPayments === "active"
                                 ? false

@@ -2,13 +2,13 @@ import { Container, Grid, Paper, Typography } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import { UserContext } from "../../contexts/User.js";
 import { getSaves } from "../../services/artwork.js";
 import Gallery from "../Home/Gallery.js";
-import { Context } from "../Store/Store.js";
 import SavedArtworkStyles from "./SavedArtwork.style.js";
 
 const SavedArtwork = () => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const [state, setState] = useState({
     loading: true,
     artwork: [],
@@ -19,7 +19,7 @@ const SavedArtwork = () => {
 
   const fetchUser = async () => {
     try {
-      const { data } = await getSaves.request({ userId: store.user.id });
+      const { data } = await getSaves.request({ userId: userStore.id });
       setState({
         ...state,
         loading: false,

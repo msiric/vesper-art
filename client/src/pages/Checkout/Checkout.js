@@ -41,7 +41,7 @@ import BillingForm from "../../containers/BillingForm/BillingForm.js";
 import CheckoutSummary from "../../containers/CheckoutSummary/CheckoutSummary.js";
 import LicenseForm from "../../containers/LicenseForm/LicenseForm.js";
 import PaymentForm from "../../containers/PaymentForm/PaymentForm.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import { getCheckout, postDiscount } from "../../services/checkout.js";
 import { postIntent } from "../../services/stripe.js";
 import { postCheckout } from "../../services/user.js";
@@ -171,7 +171,7 @@ const Checkout = ({ match, location }) => {
 };
 
 const Processor = ({ match, location, stripe }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore, userDispatch] = useContext(UserContext);
   const [state, setState] = useState({
     ...initialState,
     license: location.state.license || initialState.license,
@@ -228,7 +228,7 @@ const Processor = ({ match, location, stripe }) => {
 
   const handleDiscountChange = async (values, actions) => {
     try {
-      const intentId = store.user.intents[state.version._id] || null;
+      const intentId = userStore.intents[state.version._id] || null;
       const {
         data: { payload },
       } = values
@@ -258,7 +258,7 @@ const Processor = ({ match, location, stripe }) => {
 
   const saveIntent = async (values, actions) => {
     try {
-      const intentId = store.user.intents[state.version._id] || null;
+      const intentId = userStore.intents[state.version._id] || null;
       const { data } = await postIntent.request({
         versionId: state.version._id,
         artworkLicense: {
@@ -272,13 +272,13 @@ const Processor = ({ match, location, stripe }) => {
       if (!intentId) {
         try {
           await postCheckout.request({
-            userId: store.user.id,
+            userId: userStore.id,
             data: {
               version: state.version._id,
               intentId: data.intent.id,
             },
           });
-          dispatch({
+          userDispatch({
             type: "updateIntents",
             intents: {
               [state.version._id]: data.intent.id,

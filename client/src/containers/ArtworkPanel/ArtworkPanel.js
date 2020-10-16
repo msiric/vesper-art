@@ -17,8 +17,7 @@ import {
 import { upload } from "../../../../common/constants.js";
 import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
-import { Context } from "../../contexts/Store.js";
-import { deleteSave, postSave } from "../../services/artwork.js";
+import { AppContext } from "../../contexts/App.js";
 import Modal from "../../shared/Modal/Modal.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +48,7 @@ const ArtworkPanel = ({
   fixed,
   loading,
 }) => {
-  const [store, dispatch] = useContext(Context);
+  const [appStore] = useContext(AppContext);
   const [state, setState] = useState({
     modal: {
       open: false,
@@ -61,7 +60,7 @@ const ArtworkPanel = ({
 
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;
-    const title = store.main.brand;
+    const title = appStore.brand;
 
     return (
       <div className={classes.shareContainer}>
@@ -117,50 +116,6 @@ const ArtworkPanel = ({
     );
   };
 
-  const handleSaveArtwork = async (id) => {
-    try {
-      await postSave.request({ artworkId: id });
-      dispatch({
-        type: "updateSaves",
-        saved: {
-          [id]: true,
-        },
-      });
-      enqueueSnackbar("Artwork saved", {
-        variant: "success",
-        autoHideDuration: 1000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "center",
-        },
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const handleUnsaveArtwork = async (id) => {
-    try {
-      await deleteSave.request({ artworkId: id });
-      dispatch({
-        type: "updateSaves",
-        saved: {
-          [id]: false,
-        },
-      });
-      enqueueSnackbar("Artwork unsaved", {
-        variant: "success",
-        autoHideDuration: 1000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "center",
-        },
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const handleModalOpen = (id) => {
     setState((prevState) => ({
       ...prevState,
@@ -205,7 +160,6 @@ const ArtworkPanel = ({
             >
               <Fade in>
                 <ArtworkCard
-                  user={store.user}
                   artwork={artwork}
                   type={type}
                   fixed={fixed}

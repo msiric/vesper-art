@@ -1,10 +1,9 @@
 import { Grid } from "@material-ui/core";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
 import UserPanel from "../../containers/UserPanel/UserPanel.js";
-import { Context } from "../../contexts/Store.js";
 import { getSearch } from "../../services/home.js";
 
 const initialState = {
@@ -17,7 +16,6 @@ const initialState = {
 };
 
 const SearchResults = ({ match, location, history }) => {
-  const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     ...initialState,
   });

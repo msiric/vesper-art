@@ -11,14 +11,14 @@ import { format } from "date-fns";
 import { Field, Form, Formik } from "formik";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
+import { UserContext } from "../../contexts/User.js";
 import { getOrder, postReview } from "../../services/orders.js";
 import Modal from "../../shared/Modal/Modal.js";
 import { reviewValidation } from "../../validation/review.js";
-import { Context } from "../Store/Store.js";
 import OrderStyles from "./Order.style.js";
 
 const Order = ({ match }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const [state, setState] = useState({
     loading: true,
     order: {},
@@ -53,7 +53,7 @@ const Order = ({ match }) => {
                 review: {
                   order: prevState.order._id,
                   artwork: prevState.order.artwork._id,
-                  owner: store.user.id,
+                  owner: userStore.id,
                   rating: values.rating,
                   content: values.content,
                 },

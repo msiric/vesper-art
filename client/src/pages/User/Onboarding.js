@@ -14,7 +14,7 @@ import React, { useContext } from "react";
 import { countries } from "../../../../common/constants.js";
 import AutocompleteInput from "../../components/AutocompleteInput/AutocompleteInput.js";
 import HelpBox from "../../components/HelpBox/HelpBox.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import { postAuthorize } from "../../services/stripe.js";
 import { patchOrigin } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
@@ -29,7 +29,7 @@ import {
 import { originValidation } from "../../validation/origin.js";
 
 const Onboarding = () => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
 
   const globalClasses = globalStyles();
 
@@ -52,7 +52,7 @@ const Onboarding = () => {
                   margin={4}
                 />
                 <MonetizationIcon style={{ fontSize: 150 }} />
-                {store.user.stripeId ? (
+                {userStore.stripeId ? (
                   <Typography variant="subtitle1" mb={4}>
                     You already went through the onboarding process
                   </Typography>
@@ -97,9 +97,9 @@ const Onboarding = () => {
                       </ListItem>
                     </List>
                     {/* $TODO Refactor supportedCountries */}
-                    {store.user.origin ? (
-                      countries[store.user.origin] &&
-                      countries[store.user.origin].supported ? (
+                    {userStore.origin ? (
+                      countries[userStore.origin] &&
+                      countries[userStore.origin].supported ? (
                         <Typography
                           color="textSecondary"
                           style={{ alignSelf: "flex-start" }}
@@ -133,9 +133,9 @@ const Onboarding = () => {
                   validationSchema={originValidation}
                   onSubmit={async (values, { resetForm }) => {
                     try {
-                      if (!store.user.stripeId) {
+                      if (!userStore.stripeId) {
                         await patchOrigin.request({
-                          userId: store.user.id,
+                          userId: userStore.id,
                           data: {
                             ...values,
                             userOrigin: values.userOrigin.value,
@@ -143,7 +143,7 @@ const Onboarding = () => {
                         });
                         const { data } = await postAuthorize.request({
                           userOrigin: values.userOrigin.value,
-                          userEmail: store.user.email,
+                          userEmail: userStore.email,
                         });
 
                         window.location.href = data.url;

@@ -16,13 +16,13 @@ import React, { useContext, useEffect, useState } from "react";
 import NumberFormat from "react-number-format";
 import { Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import { UserContext } from "../../contexts/User.js";
 import { getSelection, getStatistics } from "../../services/user.js";
 import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
-import { Context } from "../Store/Store.js";
 import DashboardStyles from "./Dashboard.style.js";
 
 function Dashboard() {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const [state, setState] = useState({
     loading: true,
     graphData: [
@@ -46,7 +46,7 @@ function Dashboard() {
 
   const fetchCurrentData = async () => {
     try {
-      const { data } = await getStatistics.request({ userId: store.user.id });
+      const { data } = await getStatistics.request({ userId: userStore.id });
       const currentStats = {
         review: data.statistics.rating,
         licenses: data.statistics.purchases
@@ -74,7 +74,7 @@ function Dashboard() {
     try {
       setState({ ...state, loading: true });
       const { data } = await getSelection.request({
-        userId: store.user.id,
+        userId: userStore.id,
         displayType: state.display.type,
         rangeFrom: from,
         rangeTo: to,
@@ -186,7 +186,7 @@ function Dashboard() {
               <div className={classes.header}>
                 <div className={classes.headerContent}>
                   <Typography className={classes.heading} variant="h4">
-                    {store.user.name}
+                    {userStore.name}
                   </Typography>
                 </div>
               </div>

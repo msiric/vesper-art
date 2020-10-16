@@ -16,7 +16,7 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import { Context } from "../../contexts/Store.js";
+import { AppContext } from "../../contexts/App.js";
 import Modal from "../Modal/Modal.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ShareButton = ({ artwork, labeled }) => {
-  const [store, dispatch] = useContext(Context);
+  const [appStore] = useContext(AppContext);
   const [state, setState] = useState({
     modal: {
       open: false,
@@ -49,7 +49,7 @@ const ShareButton = ({ artwork, labeled }) => {
 
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;
-    const title = store.main.brand;
+    const title = appStore.brand;
 
     return (
       <div className={classes.shareContainer}>

@@ -4,11 +4,11 @@ import React, { useContext } from "react";
 import FavoriteButton from "../../components/FavoriteButton/FavoriteButton.js";
 import ShareButton from "../../components/ShareButton/ShareButton.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import { CardContent } from "../../styles/theme.js";
 
 const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const classes = {};
 
   return (
@@ -60,10 +60,10 @@ const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
               alignItems: "center",
             }}
           >
-            {artwork.owner && artwork.owner._id !== store.user.id && (
+            {artwork.owner && artwork.owner._id !== userStore.id && (
               <FavoriteButton
                 artwork={artwork}
-                favorited={store.user.saved[artwork._id]}
+                favorited={userStore.saved[artwork._id]}
                 labeled
                 handleCallback={handleArtworkSave}
               />

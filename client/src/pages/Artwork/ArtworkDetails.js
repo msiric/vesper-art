@@ -13,7 +13,7 @@ import ArtworkInfo from "../../containers/ArtworkInfo/ArtworkInfo.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/ArtworkPreview.js";
 import CommentSection from "../../containers/CommentSection/CommentSection.js";
 import LicenseForm from "../../containers/LicenseForm/LicenseForm.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import {
   deleteComment,
   getComment,
@@ -54,7 +54,7 @@ const initialState = {
 };
 
 const ArtworkDetails = ({ match, location, socket }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const [state, setState] = useState({ ...initialState });
 
   const history = useHistory();
@@ -180,9 +180,9 @@ const ArtworkDetails = ({ match, location, socket }) => {
           {
             ...comment,
             owner: {
-              _id: store.user.id,
-              name: store.user.name,
-              photo: store.user.photo,
+              _id: userStore.id,
+              name: userStore.name,
+              photo: userStore.photo,
             },
           },
         ],
@@ -356,7 +356,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
     }
   };
 
-  const isSeller = () => store.user.id === state.artwork.owner._id;
+  const isSeller = () => userStore.id === state.artwork.owner._id;
 
   useEffect(() => {
     fetchArtwork();

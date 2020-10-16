@@ -2,18 +2,18 @@ import { Backdrop, Box, CircularProgress } from "@material-ui/core";
 import React, { useContext } from "react";
 import Footer from "../components/Footer/Footer.js";
 import Header from "../components/Header/Header.js";
-import { Context } from "../contexts/Store.js";
+import { AppContext } from "../contexts/App.js";
 import MainLayoutStyles from "./MainLayout.style.js";
 
 const MainLayout = ({ children }) => {
-  const [store, dispatch] = useContext(Context);
+  const [appStore] = useContext(AppContext);
 
   const classes = MainLayoutStyles();
 
   return (
     <div className={classes.appRoot}>
-      {store.main.loading ? (
-        <Backdrop className={classes.appBackdrop} open={store.main.loading}>
+      {appStore.loading ? (
+        <Backdrop className={classes.appBackdrop} open={appStore.loading}>
           <CircularProgress color="primary" />
         </Backdrop>
       ) : (

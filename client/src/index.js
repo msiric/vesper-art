@@ -1,16 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Interceptor from "./containers/Interceptor/Interceptor.js";
-import Store from "./contexts/Store.js";
+import AppProvider from "./contexts/App.js";
+import EventsProvider from "./contexts/Events.js";
+import UserProvider from "./contexts/User.js";
 import "./index.css";
 import App from "./pages/App/App.js";
 import * as serviceWorker from "./serviceWorker.js";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Store>
-      <Interceptor>{(socket) => <App socket={socket} />}</Interceptor>
-    </Store>
+    <AppProvider>
+      <UserProvider>
+        <EventsProvider>
+          <Interceptor>{(socket) => <App socket={socket} />}</Interceptor>
+        </EventsProvider>
+      </UserProvider>
+    </AppProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

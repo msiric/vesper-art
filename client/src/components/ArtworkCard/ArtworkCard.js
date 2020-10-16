@@ -7,9 +7,10 @@ import CardMedia from "@material-ui/core/CardMedia";
 import { red } from "@material-ui/core/colors";
 import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
+import { UserContext } from "../../contexts/User.js";
 import { artepunktTheme } from "../../styles/theme.js";
 import EditButton from "../EditButton/EditButton.js";
 import FavoriteButton from "../FavoriteButton/FavoriteButton.js";
@@ -127,14 +128,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ArtworkCard = ({
-  user,
-  artwork,
-  type,
-  fixed,
-  handleArtworkSave,
-  loading,
-}) => {
+const ArtworkCard = ({ artwork, type, fixed, handleArtworkSave, loading }) => {
+  const [userStore] = useContext(UserContext);
   const classes = useStyles();
 
   const item =
@@ -209,13 +204,13 @@ const ArtworkCard = ({
       <CardActions disableSpacing className={classes.artworkFooter}>
         <SkeletonWrapper loading={loading}>
           <Box style={{ display: "flex" }}>
-            {item.owner._id === user.id ? (
+            {item.owner._id === userStore.id ? (
               <EditButton artwork={artwork} />
             ) : (
               [
                 <FavoriteButton
                   artwork={artwork}
-                  favorited={user.saved[item._id]}
+                  favorited={userStore.saved[item._id]}
                   handleCallback={handleArtworkSave}
                 />,
                 <ShareButton artwork={artwork} />,

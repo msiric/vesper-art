@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
 import EditArtworkForm from "../../containers/Artwork/EditArtworkForm.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import {
   deleteArtwork,
   editArtwork,
@@ -22,7 +22,7 @@ const initialState = {
 };
 
 const EditArtwork = ({ match, location }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const [state, setState] = useState({
     ...initialState,
   });
@@ -38,8 +38,8 @@ const EditArtwork = ({ match, location }) => {
       } = await editArtwork.request({ artworkId: match.params.id });
       const {
         data: { capabilities },
-      } = store.user.stripeId
-        ? await getUser.request({ stripeId: store.user.stripeId })
+      } = userStore.stripeId
+        ? await getUser.request({ stripeId: userStore.stripeId })
         : { data: { capabilities: {} } };
       setState((prevState) => ({
         ...prevState,
@@ -84,7 +84,6 @@ const EditArtwork = ({ match, location }) => {
             <EditArtworkForm
               capabilities={state.capabilities}
               version={state.artwork.current}
-              user={store.user}
               patchArtwork={patchArtwork}
               deleteEmptyValues={deleteEmptyValues}
               handleDeleteArtwork={handleDeleteArtwork}

@@ -28,6 +28,7 @@ import {
 import { Field, Form, Formik } from "formik";
 import React, { useContext, useEffect, useState } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import { UserContext } from "../../contexts/User.js";
 import {
   deleteUser,
   getSettings,
@@ -41,11 +42,10 @@ import { billingValidation } from "../../validation/billing.js";
 import { emailValidation } from "../../validation/email.js";
 import { passwordValidation } from "../../validation/password.js";
 import { preferencesValidation } from "../../validation/preferences.js";
-import { Context } from "../Store/Store.js";
 import SettingsStyles from "./Settings.style.js";
 
 const Settings = () => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const [state, setState] = useState({
     loading: true,
     user: {},
@@ -59,7 +59,7 @@ const Settings = () => {
 
   const fetchSettings = async () => {
     try {
-      const { data } = await getSettings.request({ userId: store.user.id });
+      const { data } = await getSettings.request({ userId: userStore.id });
       setState({
         ...state,
         loading: false,
@@ -82,7 +82,7 @@ const Settings = () => {
   };
 
   const handleDeactivateUser = async () => {
-    await deleteUser.request({ userId: store.user.id });
+    await deleteUser.request({ userId: userStore.id });
   };
 
   useEffect(() => {
@@ -150,7 +150,7 @@ const Settings = () => {
                       validationSchema={emailValidation}
                       onSubmit={async (values, { resetForm }) => {
                         await patchEmail.request({
-                          userId: store.user.id,
+                          userId: userStore.id,
                           data: values,
                         });
 
@@ -228,7 +228,7 @@ const Settings = () => {
                       validationSchema={passwordValidation}
                       onSubmit={async (values, { resetForm }) => {
                         await patchPassword.request({
-                          userId: store.user.id,
+                          userId: userStore.id,
                           data: values,
                         });
                         resetForm();
@@ -331,7 +331,7 @@ const Settings = () => {
                         validationSchema={preferencesValidation}
                         onSubmit={async (values, { resetForm }) => {
                           await patchPreferences.request({
-                            userId: store.user.id,
+                            userId: userStore.id,
                             data: values,
                           });
                           setState((prevState) => ({
@@ -438,7 +438,7 @@ const Settings = () => {
                       validationSchema={billingValidation}
                       onSubmit={async (values, { resetForm }) => {
                         await patchBilling.request({
-                          userId: store.user.id,
+                          userId: userStore.id,
                           data: values,
                         });
                         setState((prevState) => ({

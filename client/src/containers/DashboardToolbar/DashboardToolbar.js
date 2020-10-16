@@ -9,14 +9,12 @@ import {
 } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import { compose, typography } from "@material-ui/system";
-import React, { useContext } from "react";
-import { Context } from "../../contexts/Store.js";
+import React from "react";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const GridItem = styled(Grid)(compose(typography));
 
 const DashboardToolbar = ({ display, handleSelectChange }) => {
-  const [store, dispatch] = useContext(Context);
   const classes = {};
 
   return (

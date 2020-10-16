@@ -39,7 +39,7 @@ import {
 import SwipeableViews from "react-swipeable-views";
 import { countries } from "../../../../common/constants.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import { getArtwork } from "../../services/artwork.js";
 import {
   getSaves,
@@ -52,7 +52,7 @@ import UploadInput from "../../shared/UploadInput/UploadInput.js";
 import { profileValidation } from "../../validation/profile.js";
 
 const Profile = ({ match, enqueueSnackbar }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const [state, setState] = useState({
     loading: true,
     user: {},
@@ -72,7 +72,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
     },
   });
   const url = window.location;
-  const title = store.main.brand;
+  const title = "test"; // $TODO store.main.brand;
   const history = useHistory();
 
   const {
@@ -104,7 +104,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
           values.userMedia = userMedia;
           values.userDimensions = userDimensions;
         }
-        await patchUser.request({ userId: store.user.id, data: values });
+        await patchUser.request({ userId: userStore.id, data: values });
       } catch (err) {
         console.log(err);
       }
@@ -125,7 +125,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
       // } = await ax.get(
       //   `/api/user/${user._id}/artwork?dataCursor=${state.dataCursor}&dataCeiling=${state.dataCeiling}`
       // );
-      if (store.user.id === data.user._id) {
+      if (userStore.id === data.user._id) {
         setState({
           ...state,
           loading: false,
@@ -320,9 +320,9 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       color="textSecondary"
                       component="p"
                     >
-                      {store.user.country
+                      {userStore.country
                         ? countries.find(
-                            (country) => country.value === store.user.country
+                            (country) => country.value === userStore.country
                           ).text
                         : "This user doesn't want to reveal their origin"}
                     </Typography>
@@ -332,7 +332,7 @@ const Profile = ({ match, enqueueSnackbar }) => {
                       component="p"
                     >
                       {`Joined ${format(
-                        new Date(store.user.created),
+                        new Date(userStore.created),
                         "MMM yyyy"
                       )}`}
                     </Typography>

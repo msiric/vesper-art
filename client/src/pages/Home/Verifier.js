@@ -8,10 +8,9 @@ import {
 import { format } from "date-fns";
 import { Field, Form, Formik } from "formik";
 import { withSnackbar } from "notistack";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
-import { Context } from "../../contexts/Store.js";
 import { postVerifier } from "../../services/home.js";
 import globalStyles from "../../styles/global.js";
 
@@ -22,7 +21,6 @@ const fingerprintValidation = Yup.object().shape({
 });
 
 const Verifier = () => {
-  const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: false,
     license: {},

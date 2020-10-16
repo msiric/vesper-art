@@ -1,9 +1,8 @@
 import { Button, Grid, Link, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Field, Form, Formik } from "formik";
-import React, { useContext } from "react";
+import React from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import { Context } from "../../contexts/Store.js";
 import { postSignup } from "../../services/auth.js";
 import { signupValidation } from "../../validation/signup.js";
 
@@ -18,8 +17,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SignupForm = () => {
-  const [store, dispatch] = useContext(Context);
-
   const history = useHistory();
   const classes = useStyles();
 

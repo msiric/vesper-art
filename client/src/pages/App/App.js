@@ -4,11 +4,11 @@ import { CloseRounded as CloseIcon } from "@material-ui/icons";
 import { SnackbarProvider } from "notistack";
 import React, { createRef, useContext } from "react";
 import Router from "../../containers/Router/Router.js";
-import { Context } from "../../contexts/Store.js";
+import { AppContext } from "../../contexts/App.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const App = ({ socket }) => {
-  const [store, dispatch] = useContext(Context);
+  const [appStore] = useContext(AppContext);
   const notistackRef = createRef();
 
   const classes = {};
@@ -21,7 +21,7 @@ const App = ({ socket }) => {
     <ThemeProvider
       theme={{
         ...artepunktTheme,
-        palette: { ...artepunktTheme.palette, type: store.main.theme },
+        palette: { ...artepunktTheme.palette, type: appStore.theme },
       }}
     >
       <SnackbarProvider

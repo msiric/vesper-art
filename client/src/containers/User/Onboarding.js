@@ -3,7 +3,7 @@ import { MonetizationOnRounded as MonetizationIcon } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
 import React, { useContext } from "react";
 import { countries } from "../../../../common/constants.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import { postAuthorize } from "../../services/stripe.js";
 import { patchOrigin } from "../../services/user.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
@@ -18,7 +18,7 @@ import {
 import { originValidation } from "../../validation/origin.js";
 
 const Onboarding = () => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const classes = {};
 
   return (
@@ -36,7 +36,7 @@ const Onboarding = () => {
                   className={classes.media}
                   style={{ fontSize: 150 }}
                 />
-                {store.user.stripeId ? (
+                {userStore.stripeId ? (
                   <Typography variant="subtitle1" className={classes.heading}>
                     You already went through the onboarding process
                   </Typography>
@@ -60,8 +60,8 @@ const Onboarding = () => {
                       next page except the ID that Stripe returns back
                     </Typography>
                     {/* $TODO Refactor supportedCountries */}
-                    {store.user.country ? (
-                      supportedCountries[store.user.country] ? (
+                    {userStore.country ? (
+                      supportedCountries[userStore.country] ? (
                         <Typography
                           color="textSecondary"
                           className={classes.text}
@@ -92,20 +92,20 @@ const Onboarding = () => {
                 )}
                 <Formik
                   initialValues={{
-                    userOrigin: store.user.origin || "",
+                    userOrigin: userStore.origin || "",
                   }}
                   enableReinitialize={true}
                   validationSchema={originValidation}
                   onSubmit={async (values, { resetForm }) => {
                     try {
-                      if (!store.user.stripeId) {
+                      if (!userStore.stripeId) {
                         await patchOrigin.request({
-                          userId: store.user.id,
+                          userId: userStore.id,
                           data: values,
                         });
                         const { data } = await postAuthorize.request({
                           userOrigin: values.userOrigin,
-                          userEmail: store.user.email,
+                          userEmail: userStore.email,
                         });
                         window.location.href = data.url;
                       }

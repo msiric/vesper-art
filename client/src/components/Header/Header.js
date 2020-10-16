@@ -21,7 +21,8 @@ import { Field, Form, Formik } from "formik";
 import React, { useContext, useState } from "react";
 import { Link, withRouter } from "react-router-dom";
 import * as Yup from "yup";
-import { Context } from "../../contexts/Store.js";
+import { EventsContext } from "../../contexts/Events.js";
+import { UserContext } from "../../contexts/User.js";
 import {
   getNotifications,
   patchRead,
@@ -36,10 +37,11 @@ const searchValidation = Yup.object().shape({
 });
 
 const Header = ({ history }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore, userDispatch] = useContext(UserContext);
+  const [eventsStore, eventsDispatch] = useContext(EventsContext);
   const [state, setState] = useState({
     profile: { anchorEl: null, mobileAnchorEl: null },
-    type: "artwork",
+    notifications: { anchorEl: null, loading: false },
   });
 
   const classes = HeaderStyles();
@@ -87,75 +89,90 @@ const Header = ({ history }) => {
   const handleNotificationsMenuOpen = async (e) => {
     const target = e.currentTarget;
     if (
-      store.user.notifications.hasMore &&
-      !store.user.notifications.items.length
+      eventsStore.notifications.hasMore &&
+      !eventsStore.notifications.items.length
     ) {
-      dispatch({
-        type: "updateNotifications",
+      setState((prevState) => ({
+        ...prevState,
         notifications: {
-          count: 0,
-          anchor: target,
+          ...prevState.notifications,
+          anchorEl: target,
           loading: true,
         },
-      });
+      }));
       try {
         const { data } = await getNotifications.request({
-          userId: store.user.id,
-          dataCursor: store.user.notifications.dataCursor,
-          dataCeiling: store.user.notifications.dataCeiling,
+          userId: userStore.id,
+          dataCursor: eventsStore.notifications.dataCursor,
+          dataCeiling: eventsStore.notifications.dataCeiling,
         });
-        dispatch({
+        eventsDispatch({
           type: "updateNotifications",
           notifications: {
             items: data.notifications,
             count: 0,
             hasMore:
-              data.notifications.length < store.user.notifications.dataCeiling
+              data.notifications.length < eventsStore.notifications.dataCeiling
                 ? false
                 : true,
             dataCursor:
-              store.user.notifications.dataCursor +
-              store.user.notifications.dataCeiling,
-            anchor: target,
-            loading: false,
+              eventsStore.notifications.dataCursor +
+              eventsStore.notifications.dataCeiling,
           },
         });
       } catch (err) {
-        dispatch({
+        eventsDispatch({
           type: "updateNotifications",
           notifications: {
             count: 0,
-            anchor: null,
-            loading: false,
           },
         });
+      } finally {
+        setState((prevState) => ({
+          ...prevState,
+          notifications: { ...prevState.notifications, loading: false },
+        }));
       }
     } else {
-      dispatch({
+      eventsDispatch({
         type: "updateNotifications",
         notifications: {
           count: 0,
-          anchor: target,
         },
       });
+      setState((prevState) => ({
+        ...prevState,
+        notifications: {
+          ...prevState.notifications,
+          anchorEl: target,
+          loading: false,
+        },
+      }));
     }
   };
 
   const handleNotificationsMenuClose = () => {
-    dispatch({
+    eventsDispatch({
       type: "updateNotifications",
       notifications: {
         count: 0,
-        anchor: null,
       },
     });
+    setState((prevState) => ({
+      ...prevState,
+      notifications: {
+        ...prevState.notifications,
+        anchorEl: null,
+        loading: false,
+      },
+    }));
   };
 
   const handleLogout = async () => {
     try {
       await postLogout.request();
 
-      dispatch({
+      userDispatch({
         type: "resetUser",
       });
 
@@ -170,10 +187,10 @@ const Header = ({ history }) => {
   const handleReadClick = async (id) => {
     try {
       await patchRead.request({ notificationId: id });
-      dispatch({
+      eventsDispatch({
         type: "updateNotifications",
         notifications: {
-          items: store.user.notifications.items.map((notification) =>
+          items: eventsStore.notifications.items.map((notification) =>
             notification._id === id
               ? { ...notification, read: true }
               : notification
@@ -189,10 +206,10 @@ const Header = ({ history }) => {
   const handleUnreadClick = async (id) => {
     try {
       await patchUnread.request({ notificationId: id });
-      dispatch({
+      eventsDispatch({
         type: "updateNotifications",
         notifications: {
-          items: store.user.notifications.items.map((notification) =>
+          items: eventsStore.notifications.items.map((notification) =>
             notification._id === id
               ? { ...notification, read: false }
               : notification
@@ -213,31 +230,31 @@ const Header = ({ history }) => {
 
   const loadMore = async () => {
     try {
-      dispatch({
+      eventsDispatch({
         type: "updateNotifications",
         notifications: {
           count: 0,
-          loading: true,
         },
       });
       const { data } = await getNotifications.request({
-        userId: store.user.id,
-        dataCursor: store.user.notifications.dataCursor,
-        dataCeiling: store.user.notifications.dataCeiling,
+        userId: userStore.id,
+        dataCursor: eventsStore.notifications.dataCursor,
+        dataCeiling: eventsStore.notifications.dataCeiling,
       });
-      dispatch({
+      eventsDispatch({
         type: "updateNotifications",
         notifications: {
-          items: [...store.user.notifications.items].concat(data.notifications),
+          items: [...eventsStore.notifications.items].concat(
+            data.notifications
+          ),
           count: 0,
           hasMore:
-            data.notifications.length < store.user.notifications.dataCeiling
+            data.notifications.length < eventsStore.notifications.dataCeiling
               ? false
               : true,
           dataCursor:
-            store.user.notifications.dataCursor +
-            store.user.notifications.dataCeiling,
-          loading: false,
+            eventsStore.notifications.dataCursor +
+            eventsStore.notifications.dataCeiling,
         },
       });
     } catch (err) {
@@ -246,28 +263,28 @@ const Header = ({ history }) => {
   };
 
   const handleToggle = () => {
-    dispatch({
-      type: "setSearch",
-      search: store.main.search === "artwork" ? "users" : "artwork",
+    eventsDispatch({
+      type: "updateSearch",
+      search: eventsStore.search === "artwork" ? "users" : "artwork",
     });
   };
 
   const menuId = "primary-search-account-menu";
   const renderProfileMenu = (
     <Menu
+      id={menuId}
+      open={!!state.profile.anchorEl}
       anchorEl={state.profile.anchorEl}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      id={menuId}
       transformOrigin={{ vertical: "top", horizontal: "right" }}
-      open={!!state.profile.anchorEl}
       onClose={handleMenuClose}
     >
-      {!store.user.stripeId && (
+      {!userStore.stripeId && (
         <MenuItem component={Link} to="/onboarding">
           Become a seller
         </MenuItem>
       )}
-      <MenuItem component={Link} to={`/user/${store.user.name}`}>
+      <MenuItem component={Link} to={`/user/${userStore.name}`}>
         Profile
       </MenuItem>
       <MenuItem component={Link} to="/dashboard">
@@ -307,7 +324,7 @@ const Header = ({ history }) => {
       <MenuItem onClick={handleNotificationsMenuOpen}>
         <IconButton aria-label="Show notifications" color="inherit">
           <Badge
-            badgeContent={store.user.notifications.count}
+            badgeContent={eventsStore.notifications.count}
             color="secondary"
           >
             <NotificationsIcon />
@@ -377,7 +394,7 @@ const Header = ({ history }) => {
               onSubmit={async (values, { resetForm }) => {
                 try {
                   history.push(
-                    `/search?q=${values.searchInput}&t=${store.main.search}`
+                    `/search?q=${values.searchInput}&t=${eventsStore.search}`
                   );
                 } catch (err) {
                   console.log(err);
@@ -388,7 +405,7 @@ const Header = ({ history }) => {
                 <Form className={classes.card}>
                   <IconButton
                     title={
-                      store.main.search === "artwork"
+                      eventsStore.search === "artwork"
                         ? "Search artwork"
                         : "Search users"
                     }
@@ -397,7 +414,7 @@ const Header = ({ history }) => {
                     disableFocusRipple
                     disableRipple
                   >
-                    {store.main.search === "artwork" ? (
+                    {eventsStore.search === "artwork" ? (
                       <ArtworkIcon />
                     ) : (
                       <UserIcon />
@@ -430,7 +447,7 @@ const Header = ({ history }) => {
             </Formik>
           </div>
           <div className={classes.grow} />
-          {store.user.authenticated ? (
+          {userStore.authenticated ? (
             <>
               <div className={classes.sectionDesktop}>
                 {/*                 <IconButton aria-label="Show messages" color="inherit">
@@ -444,7 +461,7 @@ const Header = ({ history }) => {
                   color="inherit"
                 >
                   <Badge
-                    badgeContent={store.user.notifications.count}
+                    badgeContent={eventsStore.notifications.count}
                     color="secondary"
                   >
                     <NotificationsIcon />
@@ -473,7 +490,7 @@ const Header = ({ history }) => {
                   color="inherit"
                 >
                   <Badge
-                    badgeContent={store.user.notifications.count}
+                    badgeContent={eventsStore.notifications.count}
                     color="secondary"
                   >
                     <NotificationsIcon />
@@ -527,10 +544,11 @@ const Header = ({ history }) => {
           )}
         </Toolbar>
       </AppBar>
-      {store.user.authenticated ? renderAuthMobileMenu : renderUnauthMobileMenu}
+      {userStore.authenticated ? renderAuthMobileMenu : renderUnauthMobileMenu}
       {renderProfileMenu}
       <NotificationsMenu
-        notifications={store.user.notifications}
+        anchorEl={state.notifications.anchorEl}
+        loading={state.notifications.loading}
         handleNotificationsMenuClose={handleNotificationsMenuClose}
         handleRedirectClick={handleRedirectClick}
         handleReadClick={handleReadClick}

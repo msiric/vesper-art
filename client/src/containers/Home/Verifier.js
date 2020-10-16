@@ -1,12 +1,11 @@
 import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import { withSnackbar } from "notistack";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import { formatDate } from "../../../../common/helpers.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { postVerifier } from "../../services/home.js";
-import { Context } from "../Store/Store.js";
 import VerifierStyles from "./Verifier.style.js";
 
 const fingerprintValidation = Yup.object().shape({
@@ -14,7 +13,6 @@ const fingerprintValidation = Yup.object().shape({
 });
 
 const Verifier = () => {
-  const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: false,
     license: {},

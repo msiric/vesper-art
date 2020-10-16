@@ -4,11 +4,12 @@ import {
   DeleteRounded as DeleteIcon,
 } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
-import React from "react";
+import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import HelpBox from "../../components/HelpBox/HelpBox.js";
 import ImageInput from "../../components/ImageInput/ImageInput.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
+import { UserContext } from "../../contexts/User.js";
 import PriceInput from "../../shared/PriceInput/PriceInput.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import {
@@ -23,13 +24,13 @@ import { updateArtwork } from "../../validation/media.js";
 
 const EditArtworkForm = ({
   version = {},
-  user = {},
   capabilities,
   handleDeleteArtwork,
   patchArtwork,
   isDeleting,
   loading,
 }) => {
+  const [userStore] = useContext(UserContext);
   const history = useHistory();
   const classes = {};
 
@@ -108,7 +109,7 @@ const EditArtworkForm = ({
             {({ values, errors, touched, isSubmitting }) => (
               <Form className={classes.card}>
                 {!loading ? (
-                  !user.stripeId ? (
+                  !userStore.stripeId ? (
                     <HelpBox
                       type="alert"
                       label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
@@ -212,7 +213,7 @@ const EditArtworkForm = ({
                               value: "commercial",
                               text: "Commercial",
                               disabled:
-                                user.stripeId &&
+                                userStore.stripeId &&
                                 capabilities.cardPayments === "active" &&
                                 capabilities.platformPayments === "active"
                                   ? false
@@ -278,7 +279,7 @@ const EditArtworkForm = ({
                                 value: "separate",
                                 text: "Charge commercial license separately",
                                 disabled:
-                                  user.stripeId &&
+                                  userStore.stripeId &&
                                   capabilities.cardPayments === "active" &&
                                   capabilities.platformPayments === "active"
                                     ? false

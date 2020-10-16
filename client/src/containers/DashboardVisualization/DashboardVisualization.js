@@ -1,7 +1,7 @@
 import { Box, Grid } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import { compose, typography } from "@material-ui/system";
-import React, { useContext } from "react";
+import React from "react";
 import {
   Legend,
   Line,
@@ -12,7 +12,6 @@ import {
   YAxis,
 } from "recharts";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
-import { Context } from "../../contexts/Store.js";
 import { artepunktTheme, Card } from "../../styles/theme.js";
 import DashboardStatistics from "../DashboardStatistics/DashboardStatistics.js";
 
@@ -24,7 +23,6 @@ const DashboardVisualization = ({
   selectedStats,
   loading,
 }) => {
-  const [store, dispatch] = useContext(Context);
   const classes = {};
 
   return (

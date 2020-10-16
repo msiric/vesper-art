@@ -1,16 +1,14 @@
 import { Card, CardContent, Divider, Typography } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import { compose, flexbox, sizing, spacing } from "@material-ui/system";
-import React, { useContext } from "react";
+import React from "react";
 import NumberFormat from "react-number-format";
-import { Context } from "../../contexts/Store.js";
 import SkeletonWrapper from "../SkeletonWrapper/SkeletonWrapper.js";
 
 const CardContainer = styled(Card)(compose(spacing, flexbox, sizing));
 const CardItem = styled(CardContent)(compose(spacing, flexbox, sizing));
 
 const DashboardCard = ({ currency, data, label, loading }) => {
-  const [store, dispatch] = useContext(Context);
   const classes = {};
 
   return (

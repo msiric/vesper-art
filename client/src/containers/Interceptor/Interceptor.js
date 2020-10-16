@@ -3,15 +3,20 @@ import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
-import { Context } from "../../contexts/Store.js";
+import { AppContext } from "../../contexts/App.js";
+import { UserContext } from "../../contexts/User.js";
 import { postLogout } from "../../services/user.js";
 const ENDPOINT = "http://localhost:5000";
 
 const ax = axios.create();
 let socket = openSocket(ENDPOINT);
 
-const Interceptor = ({ children }) => {
-  const [store, dispatch] = useContext(Context);
+const Interceptor = React.memo(({ children }) => {
+  const [appStore, appDispatch] = useContext(AppContext);
+  const [userStore, userDispatch] = useContext(UserContext);
+  // const [eventsStore, eventsDispatch] = useContext(EventsContext);
+
+  const eventsDispatch = () => null;
 
   const classes = {};
 
@@ -19,15 +24,14 @@ const Interceptor = ({ children }) => {
 
   const getRefreshToken = async () => {
     try {
-      if (!store.user.token) {
-        dispatch({
-          type: "setMain",
+      if (!userStore.token) {
+        appDispatch({
+          type: "setApp",
           loading: true,
           error: false,
-          auth: store.main.auth,
-          brand: store.main.brand,
-          theme: store.main.theme,
-          search: store.main.search,
+          auth: appStore.auth,
+          brand: appStore.brand,
+          theme: appStore.theme,
         });
 
         const { data } = await axios.post("/api/auth/refresh_token", {
@@ -37,14 +41,16 @@ const Interceptor = ({ children }) => {
         });
 
         if (data.user) {
-          dispatch({
-            type: "setStore",
+          appDispatch({
+            type: "setApp",
             loading: false,
             error: false,
-            auth: store.main.auth,
-            brand: store.main.brand,
-            theme: store.main.theme,
-            search: store.main.search,
+            auth: appStore.auth,
+            brand: appStore.brand,
+            theme: appStore.theme,
+          });
+          userDispatch({
+            type: "setUser",
             authenticated: true,
             token: data.accessToken,
             id: data.user.id,
@@ -53,49 +59,48 @@ const Interceptor = ({ children }) => {
             photo: data.user.photo,
             stripeId: data.user.stripeId,
             country: data.user.country,
+            saved: data.user.saved.reduce(function (object, item) {
+              object[item] = true;
+              return object;
+            }, {}),
+            intents: data.user.intents.reduce(function (object, item) {
+              object[item.artworkId] = item.intentId;
+              return object;
+            }, {}),
+          });
+          eventsDispatch({
+            type: "setEvents",
             messages: {
               items: [],
               count: data.user.messages,
             },
             notifications: {
-              ...store.user.notifications,
               items: [],
               count: data.user.notifications,
               hasMore: true,
               dataCursor: 0,
               dataCeiling: 10,
             },
-            saved: data.user.saved.reduce(function (object, item) {
-              object[item] = true;
-              return object;
-            }, {}),
-            intents: data.user.intents.reduce(function (object, item) {
-              console.log(object, item);
-              object[item.artworkId] = item.intentId;
-              return object;
-            }, {}),
           });
         } else {
-          dispatch({
-            type: "setMain",
+          appDispatch({
+            type: "setApp",
             loading: false,
             error: false,
-            auth: store.main.auth,
-            brand: store.main.brand,
-            theme: store.main.theme,
-            search: store.main.search,
+            auth: appStore.auth,
+            brand: appStore.brand,
+            theme: appStore.theme,
           });
         }
       }
     } catch (err) {
-      dispatch({
-        type: "setMain",
+      appDispatch({
+        type: "setApp",
         loading: false,
         error: true,
-        auth: store.main.auth,
-        brand: store.main.brand,
-        theme: store.main.theme,
-        search: store.main.search,
+        auth: appStore.auth,
+        brand: appStore.brand,
+        theme: appStore.theme,
       });
     }
   };
@@ -124,7 +129,7 @@ const Interceptor = ({ children }) => {
           error.response.message === "Forbidden"
         ) {
           await postLogout.request();
-          dispatch({
+          userDispatch({
             type: "resetUser",
           });
           history.push("/login");
@@ -140,21 +145,19 @@ const Interceptor = ({ children }) => {
           },
         });
 
-        console.log(
-          store.user.notifications.items.length,
-          data.user.notifications
-        );
-
-        dispatch({
+        userDispatch({
           type: "updateUser",
           token: data.accessToken,
           email: data.user.email,
           photo: data.user.photo,
           stripeId: data.user.stripeId,
           country: data.user.country,
+          saved: data.user.saved,
+        });
+        eventsDispatch({
+          type: "updateEvents",
           messages: { items: [], count: data.user.messages },
           notifications: { count: data.user.notifications },
-          saved: data.user.saved,
         });
 
         const config = error.config;
@@ -177,15 +180,13 @@ const Interceptor = ({ children }) => {
   };
 
   const handleSocket = (token) => {
-    console.log("emit");
     socket = openSocket(ENDPOINT);
 
     socket.emit("authenticateUser", token ? `Bearer ${token}` : null);
     socket.on("sendNotification", () => {
-      dispatch({
+      eventsDispatch({
         type: "updateNotifications",
         notifications: {
-          ...store.user.notifications,
           count: 1,
         },
       });
@@ -197,20 +198,23 @@ const Interceptor = ({ children }) => {
             credentials: "include",
           },
         });
-        dispatch({
+        userDispatch({
           type: "updateUser",
           token: data.accessToken,
           email: data.user.email,
           photo: data.user.photo,
           stripeId: data.user.stripeId,
           country: data.user.country,
+          saved: data.user.saved,
+        });
+        eventsDispatch({
+          type: "updateEvents",
           messages: { items: [], count: data.user.messages },
           notifications: { count: data.user.notifications },
-          saved: data.user.saved,
         });
         socket.emit("authenticateUser", `Bearer ${data.accessToken}`);
       } catch (err) {
-        dispatch({
+        userDispatch({
           type: "resetUser",
         });
       }
@@ -222,11 +226,11 @@ const Interceptor = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (!store.main.loading) interceptTraffic(store.user.token);
-  }, [store.user.token]);
+    if (!appStore.loading) interceptTraffic(userStore.token);
+  }, [userStore.token]);
 
-  return !store.main.loading ? children(socket) : <LoadingSpinner />;
-};
+  return !appStore.loading ? children(socket) : <LoadingSpinner />;
+});
 
 export { ax };
 export default Interceptor;

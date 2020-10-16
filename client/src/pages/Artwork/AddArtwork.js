@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
 import AddArtworkForm from "../../containers/Artwork/AddArtworkForm.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import { postArtwork } from "../../services/artwork.js";
 import { getUser } from "../../services/stripe.js";
 import globalStyles from "../../styles/global.js";
@@ -13,12 +13,12 @@ const initialState = { capabilities: {} };
 const AddArtwork = () => {
   const globalClasses = globalStyles();
 
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const [state, setState] = useState({ ...initialState });
 
   const fetchAccount = async () => {
     try {
-      const { data } = await getUser.request({ stripeId: store.user.stripeId });
+      const { data } = await getUser.request({ stripeId: userStore.stripeId });
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -30,7 +30,7 @@ const AddArtwork = () => {
   };
 
   useEffect(() => {
-    if (store.user.stripeId) fetchAccount();
+    if (userStore.stripeId) fetchAccount();
   }, []);
 
   return (
@@ -43,7 +43,6 @@ const AddArtwork = () => {
           />
           <AddArtworkForm
             capabilities={state.capabilities}
-            user={store.user}
             postArtwork={postArtwork}
             deleteEmptyValues={deleteEmptyValues}
           />

@@ -1,12 +1,10 @@
 import { Box, Fade, Grid } from "@material-ui/core";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import ProfileCard from "../../components/ProfileCard/ProfileCard.js";
-import { Context } from "../../contexts/Store.js";
 
 const UserPanel = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
-  const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({});
 
   const classes = {};

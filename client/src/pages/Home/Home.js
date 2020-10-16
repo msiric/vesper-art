@@ -1,10 +1,9 @@
 import { Grid } from "@material-ui/core";
 import { withSnackbar } from "notistack";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import SelectInput from "../../components/SelectInput/SelectInput.js";
 import mockArtwork from "../../constants/mockArtwork.json";
 import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
-import { Context } from "../../contexts/Store.js";
 import { getArtwork } from "../../services/artwork.js";
 
 const initialState = {
@@ -17,7 +16,6 @@ const initialState = {
 };
 
 const Home = ({ location }) => {
-  const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     ...initialState,
   });

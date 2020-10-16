@@ -6,7 +6,7 @@ import ModalWrapper from "../../components/ModalWrapper/ModalWrapper.js";
 import EditUserForm from "../../containers/EditUserForm/EditUserForm.js";
 import UserArtworkPanel from "../../containers/UserArtworkPanel/UserArtworkPanel.js";
 import UserProfileBanner from "../../containers/UserProfileBanner/UserProfileBanner.js";
-import { Context } from "../../contexts/Store.js";
+import { UserContext } from "../../contexts/User.js";
 import { getArtwork } from "../../services/artwork.js";
 import { getSaves, getUser } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
@@ -31,12 +31,12 @@ const initialState = {
 };
 
 const Profile = ({ match, location }) => {
-  const [store, dispatch] = useContext(Context);
+  const [userStore] = useContext(UserContext);
   const [state, setState] = useState({
     ...initialState,
   });
   const url = window.location;
-  const title = store.main.brand;
+  const title = "test"; //$TODO store.main.brand;
   const history = useHistory();
 
   const globalClasses = globalStyles();
@@ -54,7 +54,7 @@ const Profile = ({ match, location }) => {
       // } = await ax.get(
       //   `/api/user/${user._id}/artwork?dataCursor=${state.dataCursor}&dataCeiling=${state.dataCeiling}`
       // );
-      if (store.user.id === data.user._id) {
+      if (userStore.id === data.user._id) {
         setState((prevState) => ({
           ...prevState,
           loading: false,

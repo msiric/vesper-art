@@ -10,13 +10,12 @@ import {
 import Card from "@material-ui/core/Card";
 import { makeStyles } from "@material-ui/core/styles";
 import { Field, Form, Formik } from "formik";
-import React, { useContext } from "react";
+import React from "react";
 import { countries } from "../../../../common/constants.js";
 import AutocompleteInput from "../../components/AutocompleteInput/AutocompleteInput.js";
 import ImageInput from "../../components/ImageInput/ImageInput.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
 import SwitchInput from "../../components/SwitchInput/SwitchInput.js";
-import { Context } from "../../contexts/Store.js";
 import { emailValidation } from "../../validation/email.js";
 import { patchAvatar } from "../../validation/media.js";
 import { passwordValidation } from "../../validation/password.js";
@@ -34,7 +33,6 @@ const SettingsSection = ({
   handleDeactivateUser,
   loading,
 }) => {
-  const [store, dispatch] = useContext(Context);
   const classes = useStyles();
 
   return (

@@ -1,13 +1,11 @@
 import { Box, Button, TextField } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
-import React, { useContext } from "react";
+import React from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
-import { Context } from "../../contexts/Store.js";
 import { postComment } from "../../services/artwork.js";
 import { commentValidation } from "../../validation/comment.js";
 
 const AddCommentForm = ({ artwork, handleCommentAdd, loading }) => {
-  const [store, dispatch] = useContext(Context);
   const classes = {};
 
   return (

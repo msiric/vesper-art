@@ -1,15 +1,13 @@
 import { Grid } from "@material-ui/core";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { getSearch } from "../../services/home.js";
-import { Context } from "../Store/Store.js";
 import Gallery from "./Gallery.js";
 import Group from "./Group.js";
 import SearchResultsStyles from "./SearchResults.style.js";
 
 const SearchResults = ({ match, location, history }) => {
-  const [store, dispatch] = useContext(Context);
   const [state, setState] = useState({
     loading: true,
     results: [],
