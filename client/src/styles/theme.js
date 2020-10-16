@@ -105,6 +105,17 @@ export const artepunktTheme = createMuiTheme({
   },
 });
 
+artepunktTheme.overrides.MuiCardHeader = {
+  title: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  subheader: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+};
+
 /* artepunktTheme.overrides.MuiTypography = {
   root: {
     '&:hover': {

@@ -2,6 +2,7 @@ import { Grid } from "@material-ui/core";
 import { withSnackbar } from "notistack";
 import React, { useContext, useEffect, useState } from "react";
 import SelectInput from "../../components/SelectInput/SelectInput.js";
+import mockArtwork from "../../constants/mockArtwork.json";
 import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
 import { Context } from "../../context/Store.js";
 import { getArtwork } from "../../services/artwork.js";
@@ -27,20 +28,20 @@ const Home = ({ location }) => {
     try {
       setState({ ...initialState });
       // DATABASE DATA
-      const { data } = await getArtwork.request({
-        dataCursor: initialState.dataCursor,
-        dataCeiling: initialState.dataCeiling,
-      });
-      setState((prevState) => ({
-        ...prevState,
-        loading: false,
-        artwork: data.artwork,
-        hasMore: data.artwork.length < prevState.dataCeiling ? false : true,
-        dataCursor: prevState.dataCursor + prevState.dataCeiling,
-      }));
+      // const { data } = await getArtwork.request({
+      //   dataCursor: initialState.dataCursor,
+      //   dataCeiling: initialState.dataCeiling,
+      // });
+      // setState((prevState) => ({
+      //   ...prevState,
+      //   loading: false,
+      //   artwork: data.artwork,
+      //   hasMore: data.artwork.length < prevState.dataCeiling ? false : true,
+      //   dataCursor: prevState.dataCursor + prevState.dataCeiling,
+      // }));
 
       // MOCK DATA
-      /*       const formattedArtwork = mockArtwork.data.map((artwork) => {
+      const formattedArtwork = mockArtwork.data.map((artwork) => {
         return {
           comments: [],
           reviews: [],
@@ -55,10 +56,10 @@ const Home = ({ location }) => {
             width: artwork.thumbnail_width,
             created: artwork.created_utc,
             title: artwork.title,
-            type: 'commercial',
-            availability: 'available',
-            license: 'commercial',
-            use: 'separate',
+            type: "commercial",
+            availability: "available",
+            license: "commercial",
+            use: "separate",
             personal: 20,
             commercial: 45,
             description: artwork.title,
@@ -67,13 +68,13 @@ const Home = ({ location }) => {
           saves: 0,
         };
       });
-      setState({
+      setState((prevState) => ({
         ...state,
         loading: false,
         artwork: formattedArtwork,
-        hasMore: formattedArtwork.length < state.dataCeiling ? false : true,
-        dataCursor: state.dataCursor + state.dataCeiling,
-      }); */
+        hasMore: formattedArtwork.length < prevState.dataCeiling ? false : true,
+        dataCursor: prevState.dataCursor + prevState.dataCeiling,
+      }));
     } catch (err) {
       setState((prevState) => ({ ...prevState, loading: false }));
     }
