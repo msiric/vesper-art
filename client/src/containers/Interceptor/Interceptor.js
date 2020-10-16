@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { AppContext } from "../../contexts/App.js";
+import { EventsContext } from "../../contexts/Events.js";
 import { UserContext } from "../../contexts/User.js";
 import { postLogout } from "../../services/user.js";
 const ENDPOINT = "http://localhost:5000";
@@ -11,12 +12,10 @@ const ENDPOINT = "http://localhost:5000";
 const ax = axios.create();
 let socket = openSocket(ENDPOINT);
 
-const Interceptor = React.memo(({ children }) => {
+const Interceptor = ({ children }) => {
   const [appStore, appDispatch] = useContext(AppContext);
   const [userStore, userDispatch] = useContext(UserContext);
-  // const [eventsStore, eventsDispatch] = useContext(EventsContext);
-
-  const eventsDispatch = () => null;
+  const [eventsStore, eventsDispatch] = useContext(EventsContext);
 
   const classes = {};
 
@@ -230,7 +229,7 @@ const Interceptor = React.memo(({ children }) => {
   }, [userStore.token]);
 
   return !appStore.loading ? children(socket) : <LoadingSpinner />;
-});
+};
 
 export { ax };
 export default Interceptor;
