@@ -6,7 +6,7 @@ import ModalWrapper from "../../components/ModalWrapper/ModalWrapper.js";
 import EditUserForm from "../../containers/EditUserForm/EditUserForm.js";
 import UserArtworkPanel from "../../containers/UserArtworkPanel/UserArtworkPanel.js";
 import UserProfileBanner from "../../containers/UserProfileBanner/UserProfileBanner.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { getArtwork } from "../../services/artwork.js";
 import { getSaves, getUser } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";

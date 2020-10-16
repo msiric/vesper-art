@@ -14,7 +14,7 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const useStyles = makeStyles({

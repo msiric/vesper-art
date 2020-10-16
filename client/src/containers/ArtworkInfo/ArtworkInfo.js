@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import PricingCard from "../../components/PricingCard/PricingCard.js";
 import SwipeCard from "../../components/SwipeCard/SwipeCard.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { CardContent, Typography } from "../../styles/theme.js";
 
 const ArtworkInfo = ({

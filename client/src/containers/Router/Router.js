@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useContext } from "react";
-import { Router, Redirect, Route, Switch } from "react-router-dom";
-import { Context } from "../../context/Store.js";
+import { Redirect, Route, Router, Switch } from "react-router-dom";
+import { Context } from "../../contexts/Store.js";
 import AuthLayout from "../../layouts/AuthLayout.js";
 import MainLayout from "../../layouts/MainLayout.js";
 import history from "../../utils/history.js";

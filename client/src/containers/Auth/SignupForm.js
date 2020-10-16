@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Field, Form, Formik } from "formik";
 import React, { useContext } from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { postSignup } from "../../services/auth.js";
 import { signupValidation } from "../../validation/signup.js";
 

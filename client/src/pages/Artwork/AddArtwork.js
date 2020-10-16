@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
 import AddArtworkForm from "../../containers/Artwork/AddArtworkForm.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { postArtwork } from "../../services/artwork.js";
 import { getUser } from "../../services/stripe.js";
 import globalStyles from "../../styles/global.js";

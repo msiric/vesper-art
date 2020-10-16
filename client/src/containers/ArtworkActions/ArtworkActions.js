@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import FavoriteButton from "../../components/FavoriteButton/FavoriteButton.js";
 import ShareButton from "../../components/ShareButton/ShareButton.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { CardContent } from "../../styles/theme.js";
 
 const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {

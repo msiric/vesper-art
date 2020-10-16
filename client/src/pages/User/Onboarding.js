@@ -14,7 +14,7 @@ import React, { useContext } from "react";
 import { countries } from "../../../../common/constants.js";
 import AutocompleteInput from "../../components/AutocompleteInput/AutocompleteInput.js";
 import HelpBox from "../../components/HelpBox/HelpBox.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { postAuthorize } from "../../services/stripe.js";
 import { patchOrigin } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";

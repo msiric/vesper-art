@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { artepunktTheme, Card } from "../../styles/theme.js";
 import DashboardStatistics from "../DashboardStatistics/DashboardStatistics.js";
 

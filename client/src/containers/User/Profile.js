@@ -39,7 +39,7 @@ import {
 import SwipeableViews from "react-swipeable-views";
 import { countries } from "../../../../common/constants.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { getArtwork } from "../../services/artwork.js";
 import {
   getSaves,

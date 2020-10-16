@@ -5,7 +5,7 @@ import {
   FavoriteRounded as FavoritedIcon,
 } from "@material-ui/icons";
 import React, { useContext, useState } from "react";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { deleteSave, postSave } from "../../services/artwork.js";
 
 const useStyles = makeStyles((theme) => ({

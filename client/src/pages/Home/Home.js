@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import SelectInput from "../../components/SelectInput/SelectInput.js";
 import mockArtwork from "../../constants/mockArtwork.json";
 import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { getArtwork } from "../../services/artwork.js";
 
 const initialState = {

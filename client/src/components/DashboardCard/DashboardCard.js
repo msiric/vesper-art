@@ -3,7 +3,7 @@ import { styled } from "@material-ui/core/styles";
 import { compose, flexbox, sizing, spacing } from "@material-ui/system";
 import React, { useContext } from "react";
 import NumberFormat from "react-number-format";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import SkeletonWrapper from "../SkeletonWrapper/SkeletonWrapper.js";
 
 const CardContainer = styled(Card)(compose(spacing, flexbox, sizing));

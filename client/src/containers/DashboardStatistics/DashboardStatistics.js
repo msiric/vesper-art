@@ -3,7 +3,7 @@ import { styled } from "@material-ui/core/styles";
 import { compose, flexbox, spacing } from "@material-ui/system";
 import React, { useContext } from "react";
 import DashboardCard from "../../components/DashboardCard/DashboardCard.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const GridContainer = styled(Grid)(compose(spacing, flexbox));

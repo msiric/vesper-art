@@ -13,7 +13,7 @@ import React, { useContext, useEffect, useState } from "react";
 import DashboardStatistics from "../../containers/DashboardStatistics/DashboardStatistics.js";
 import DashboardToolbar from "../../containers/DashboardToolbar/DashboardToolbar.js";
 import DashboardVisualization from "../../containers/DashboardVisualization/DashboardVisualization.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { getDashboard } from "../../services/stripe.js";
 import { getSelection, getStatistics } from "../../services/user.js";
 import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";

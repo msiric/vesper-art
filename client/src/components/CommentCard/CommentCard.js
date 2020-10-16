@@ -13,7 +13,7 @@ import { MoreVertRounded as MoreIcon } from "@material-ui/icons";
 import React, { useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import EditCommentForm from "../../containers/Comment/EditCommentForm.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { artepunktTheme, Typography } from "../../styles/theme.js";
 import SkeletonWrapper from "../SkeletonWrapper/SkeletonWrapper.js";
 

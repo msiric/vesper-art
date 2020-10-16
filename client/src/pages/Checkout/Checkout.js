@@ -41,7 +41,7 @@ import BillingForm from "../../containers/BillingForm/BillingForm.js";
 import CheckoutSummary from "../../containers/CheckoutSummary/CheckoutSummary.js";
 import LicenseForm from "../../containers/LicenseForm/LicenseForm.js";
 import PaymentForm from "../../containers/PaymentForm/PaymentForm.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { getCheckout, postDiscount } from "../../services/checkout.js";
 import { postIntent } from "../../services/stripe.js";
 import { postCheckout } from "../../services/user.js";

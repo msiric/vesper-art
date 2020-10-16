@@ -4,7 +4,7 @@ import { CloseRounded as CloseIcon } from "@material-ui/icons";
 import { SnackbarProvider } from "notistack";
 import React, { createRef, useContext } from "react";
 import Router from "../../containers/Router/Router.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const App = ({ socket }) => {

@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
 import SettingsSection from "../../containers/SettingsSection/SettingsSection.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import {
   deleteUser,
   getSettings,

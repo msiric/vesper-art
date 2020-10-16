@@ -21,7 +21,7 @@ import { useFormik } from "formik";
 import React, { useContext, useState } from "react";
 import { Link, withRouter } from "react-router-dom";
 import * as Yup from "yup";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import {
   getNotifications,
   patchRead,

@@ -16,7 +16,7 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import Modal from "../Modal/Modal.js";
 
 const useStyles = makeStyles((theme) => ({

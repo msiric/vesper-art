@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { postLogout } from "../../services/user.js";
 const ENDPOINT = "http://localhost:5000";
 

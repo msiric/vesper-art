@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
 import EditArtworkForm from "../../containers/Artwork/EditArtworkForm.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import {
   deleteArtwork,
   editArtwork,

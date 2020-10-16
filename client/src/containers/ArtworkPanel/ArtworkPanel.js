@@ -17,7 +17,7 @@ import {
 import { upload } from "../../../../common/constants.js";
 import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { deleteSave, postSave } from "../../services/artwork.js";
 import Modal from "../../shared/Modal/Modal.js";
 

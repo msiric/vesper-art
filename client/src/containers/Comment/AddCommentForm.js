@@ -2,7 +2,7 @@ import { Box, Button, TextField } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import React, { useContext } from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { postComment } from "../../services/artwork.js";
 import { commentValidation } from "../../validation/comment.js";
 

@@ -10,7 +10,7 @@ import LicenseCard from "../../components/LicenseCard/LicenseCard.js";
 import OrderPreview from "../../components/OrderPreview/OrderPreview.js";
 import ProfileCard from "../../components/ProfileCard/ProfileCard.js";
 import ReviewCard from "../../components/ReviewCard/ReviewCard.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { getDownload, getOrder, postReview } from "../../services/orders.js";
 import Modal from "../../shared/Modal/Modal.js";
 import globalStyles from "../../styles/global.js";

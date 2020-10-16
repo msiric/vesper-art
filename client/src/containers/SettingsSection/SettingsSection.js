@@ -16,7 +16,7 @@ import AutocompleteInput from "../../components/AutocompleteInput/AutocompleteIn
 import ImageInput from "../../components/ImageInput/ImageInput.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
 import SwitchInput from "../../components/SwitchInput/SwitchInput.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { emailValidation } from "../../validation/email.js";
 import { patchAvatar } from "../../validation/media.js";
 import { passwordValidation } from "../../validation/password.js";

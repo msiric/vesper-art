@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import ProfileCard from "../../components/ProfileCard/ProfileCard.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 
 const UserPanel = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
   const [store, dispatch] = useContext(Context);

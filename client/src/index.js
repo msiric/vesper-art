@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import Interceptor from "./containers/Interceptor/Interceptor.js";
+import Store from "./contexts/Store.js";
+import "./index.css";
 import App from "./pages/App/App.js";
-import Store from "./context/Store.js";
 import * as serviceWorker from "./serviceWorker.js";
 
 ReactDOM.render(

@@ -11,7 +11,7 @@ import { withSnackbar } from "notistack";
 import React, { useContext, useState } from "react";
 import * as Yup from "yup";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import { postVerifier } from "../../services/home.js";
 import globalStyles from "../../styles/global.js";
 

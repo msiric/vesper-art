@@ -13,7 +13,7 @@ import ArtworkInfo from "../../containers/ArtworkInfo/ArtworkInfo.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/ArtworkPreview.js";
 import CommentSection from "../../containers/CommentSection/CommentSection.js";
 import LicenseForm from "../../containers/LicenseForm/LicenseForm.js";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import {
   deleteComment,
   getComment,

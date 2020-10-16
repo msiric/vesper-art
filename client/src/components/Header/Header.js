@@ -21,7 +21,7 @@ import { Field, Form, Formik } from "formik";
 import React, { useContext, useState } from "react";
 import { Link, withRouter } from "react-router-dom";
 import * as Yup from "yup";
-import { Context } from "../../context/Store.js";
+import { Context } from "../../contexts/Store.js";
 import {
   getNotifications,
   patchRead,
@@ -258,7 +258,6 @@ const Header = ({ history }) => {
       anchorEl={state.profile.anchorEl}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       id={menuId}
-      keepMounted
       transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={!!state.profile.anchorEl}
       onClose={handleMenuClose}
@@ -293,7 +292,6 @@ const Header = ({ history }) => {
       anchorEl={state.profile.mobileAnchorEl}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       id={mobileMenuId}
-      keepMounted
       transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={!!state.profile.mobileAnchorEl}
       onClose={handleMobileMenuClose}
@@ -335,7 +333,6 @@ const Header = ({ history }) => {
       anchorEl={state.profile.mobileAnchorEl}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       id={mobileMenuId}
-      keepMounted
       transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={!!state.profile.mobileAnchorEl}
       onClose={handleMobileMenuClose}
