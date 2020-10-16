@@ -22,10 +22,12 @@ const NotificationsMenu = ({
     <Menu
       open={!!anchorEl}
       anchorEl={anchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      transformOrigin={{ vertical: "top", horizontal: "center" }}
       onClose={handleNotificationsMenuClose}
       className={classes.notificationMenu}
+      keepMounted
     >
       <InfiniteScroll
         height={400}

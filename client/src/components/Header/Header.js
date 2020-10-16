@@ -275,9 +275,11 @@ const Header = ({ history }) => {
       id={menuId}
       open={!!state.profile.anchorEl}
       anchorEl={state.profile.anchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      transformOrigin={{ vertical: "top", horizontal: "center" }}
       onClose={handleMenuClose}
+      keepMounted
     >
       {!userStore.stripeId && (
         <MenuItem component={Link} to="/onboarding">
@@ -306,16 +308,18 @@ const Header = ({ history }) => {
   const mobileMenuId = "primary-search-account-menu-mobile";
   const renderAuthMobileMenu = (
     <Menu
-      anchorEl={state.profile.mobileAnchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
       id={mobileMenuId}
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={!!state.profile.mobileAnchorEl}
+      anchorEl={state.profile.mobileAnchorEl}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      transformOrigin={{ vertical: "top", horizontal: "center" }}
       onClose={handleMobileMenuClose}
+      keepMounted
     >
       {/*       <MenuItem>
         <IconButton aria-label="Show messages" color="inherit">
-          <Badge badgeContent={store.user.messages} color="secondary">
+          <Badge badgeContent={store.user.messages} color="primary">
             <MailIcon />
           </Badge>
         </IconButton>
@@ -323,10 +327,7 @@ const Header = ({ history }) => {
       </MenuItem> */}
       <MenuItem onClick={handleNotificationsMenuOpen}>
         <IconButton aria-label="Show notifications" color="inherit">
-          <Badge
-            badgeContent={eventsStore.notifications.count}
-            color="secondary"
-          >
+          <Badge badgeContent={eventsStore.notifications.count} color="primary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -347,12 +348,14 @@ const Header = ({ history }) => {
 
   const renderUnauthMobileMenu = (
     <Menu
-      anchorEl={state.profile.mobileAnchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
       id={mobileMenuId}
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={!!state.profile.mobileAnchorEl}
+      anchorEl={state.profile.mobileAnchorEl}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      transformOrigin={{ vertical: "top", horizontal: "center" }}
       onClose={handleMobileMenuClose}
+      keepMounted
     >
       <MenuItem component={Link} variant="outlined" to="/login">
         <p>Log in</p>
@@ -451,7 +454,7 @@ const Header = ({ history }) => {
             <>
               <div className={classes.sectionDesktop}>
                 {/*                 <IconButton aria-label="Show messages" color="inherit">
-                  <Badge badgeContent={store.user.messages} color="secondary">
+                  <Badge badgeContent={store.user.messages} color="primary">
                     <MailIcon />
                   </Badge>
                 </IconButton> */}
@@ -462,7 +465,7 @@ const Header = ({ history }) => {
                 >
                   <Badge
                     badgeContent={eventsStore.notifications.count}
-                    color="secondary"
+                    color="primary"
                   >
                     <NotificationsIcon />
                   </Badge>
@@ -480,7 +483,7 @@ const Header = ({ history }) => {
               </div>
               <div className={classes.sectionMobile}>
                 {/*                 <IconButton aria-label="Show messages" color="inherit">
-                  <Badge badgeContent={store.user.messages} color="secondary">
+                  <Badge badgeContent={store.user.messages} color="primary">
                     <MailIcon />
                   </Badge>
                 </IconButton> */}
@@ -491,7 +494,7 @@ const Header = ({ history }) => {
                 >
                   <Badge
                     badgeContent={eventsStore.notifications.count}
-                    color="secondary"
+                    color="primary"
                   >
                     <NotificationsIcon />
                   </Badge>
@@ -524,7 +527,7 @@ const Header = ({ history }) => {
                   component={Link}
                   variant="outlined"
                   to="/signup"
-                  color="secondary"
+                  color="primary"
                 >
                   Sign up
                 </Button>
