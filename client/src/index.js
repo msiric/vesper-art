@@ -5,7 +5,6 @@ import AppProvider from "./contexts/App.js";
 import EventsProvider from "./contexts/Events.js";
 import UserProvider from "./contexts/User.js";
 import "./index.css";
-import App from "./pages/App/App.js";
 import * as serviceWorker from "./serviceWorker.js";
 
 ReactDOM.render(
@@ -13,7 +12,7 @@ ReactDOM.render(
     <AppProvider>
       <UserProvider>
         <EventsProvider>
-          <Interceptor>{(socket) => <App socket={socket} />}</Interceptor>
+          <Interceptor />
         </EventsProvider>
       </UserProvider>
     </AppProvider>

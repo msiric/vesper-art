@@ -7,7 +7,7 @@ import Router from "../../containers/Router/Router.js";
 import { AppContext } from "../../contexts/App.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
-const App = ({ socket }) => {
+const App = React.memo(({ socket }) => {
   const [appStore] = useContext(AppContext);
   const notistackRef = createRef();
 
@@ -48,6 +48,6 @@ const App = ({ socket }) => {
       </SnackbarProvider>
     </ThemeProvider>
   );
-};
+});
 
 export default App;
