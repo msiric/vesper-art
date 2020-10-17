@@ -166,15 +166,15 @@ artepunktTheme.overrides.MuiInputBase = {
     "& input": {
       "&:-webkit-autofill": {
         transition:
-          "background-color 50000s ease-in-out 0s, color 50000s ease-in-out 0s",
+          "background-color 50000s ease-in-out 0s, color 50000s ease-in-out 0s, box-shadow 50000s ease-in-out 0s, color 50000s ease-in-out 0s",
       },
       "&:-webkit-autofill:focus": {
         transition:
-          "background-color 50000s ease-in-out 0s, color 50000s ease-in-out 0s",
+          "background-color 50000s ease-in-out 0s, color 50000s ease-in-out 0s, box-shadow 50000s ease-in-out 0s, color 50000s ease-in-out 0s",
       },
       "&:-webkit-autofill:hover": {
         transition:
-          "background-color 50000s ease-in-out 0s, color 50000s ease-in-out 0s",
+          "background-color 50000s ease-in-out 0s, color 50000s ease-in-out 0s, box-shadow 50000s ease-in-out 0s, color 50000s ease-in-out 0s",
       },
     },
   },
