@@ -71,6 +71,7 @@ export const patchComment = async ({
   artworkId,
   commentId,
   commentContent,
+  session,
 }) => {
   const { error } = commentValidator(sanitizeData({ commentContent }));
   if (error) throw createError(400, error);
@@ -79,6 +80,7 @@ export const patchComment = async ({
     artworkId,
     userId,
     commentContent,
+    session,
   });
   return { message: "Comment updated successfully" };
 };

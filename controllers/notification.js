@@ -1,9 +1,8 @@
-import mongoose from "mongoose";
 import {
-  fetchExistingNotifications,
+  decrementUserNotification,
   editReadNotification,
   editUnreadNotification,
-  decrementUserNotification,
+  fetchExistingNotifications,
   incrementUserNotification,
 } from "../services/notification.js";
 
@@ -14,20 +13,26 @@ export const getNotifications = async ({ userId }) => {
   return { notification: foundNotifications };
 };
 
-export const readNotification = async ({ userId, notificationId }) => {
+export const readNotification = async ({ userId, notificationId, session }) => {
   await editReadNotification({
     userId,
     notificationId,
+    session,
   });
-  await decrementUserNotification({ userId });
+  await decrementUserNotification({ userId, session });
   return { message: "Notification read" };
 };
 
-export const unreadNotification = async ({ userId, notificationId }) => {
+export const unreadNotification = async ({
+  userId,
+  notificationId,
+  session,
+}) => {
   await editUnreadNotification({
     userId,
     notificationId,
+    session,
   });
-  await incrementUserNotification({ userId });
+  await incrementUserNotification({ userId, session });
   return { message: "Notification read" };
 };

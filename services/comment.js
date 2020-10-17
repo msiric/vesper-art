@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import Comment from "../models/comment.js";
 
 export const fetchCommentById = async ({
@@ -39,7 +38,7 @@ export const editExistingComment = async ({
       $and: [{ _id: commentId }, { artwork: artworkId }, { owner: userId }],
     },
     { content: commentContent, modified: true }
-  );
+  ).session(session);
 };
 
 export const removeExistingComment = async ({
