@@ -3,9 +3,7 @@ import React, { createContext, useReducer } from "react";
 const store = {
   loading: true,
   error: false,
-  auth: "jwt",
-  brand: "test",
-  theme: "light",
+  theme: "dark",
 };
 
 const reducer = (state, action) => {
@@ -15,8 +13,6 @@ const reducer = (state, action) => {
         ...state,
         loading: action.loading,
         error: action.error,
-        auth: action.auth,
-        brand: action.brand,
         theme: action.theme,
       };
     default:

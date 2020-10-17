@@ -29,8 +29,6 @@ const Interceptor = ({ children }) => {
           type: "setApp",
           loading: true,
           error: false,
-          auth: appStore.auth,
-          brand: appStore.brand,
           theme: appStore.theme,
         });
 
@@ -45,8 +43,6 @@ const Interceptor = ({ children }) => {
             type: "setApp",
             loading: false,
             error: false,
-            auth: appStore.auth,
-            brand: appStore.brand,
             theme: appStore.theme,
           });
           userDispatch({
@@ -87,8 +83,6 @@ const Interceptor = ({ children }) => {
             type: "setApp",
             loading: false,
             error: false,
-            auth: appStore.auth,
-            brand: appStore.brand,
             theme: appStore.theme,
           });
         }
@@ -98,8 +92,6 @@ const Interceptor = ({ children }) => {
         type: "setApp",
         loading: false,
         error: true,
-        auth: appStore.auth,
-        brand: appStore.brand,
         theme: appStore.theme,
       });
     }

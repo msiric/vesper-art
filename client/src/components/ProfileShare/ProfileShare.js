@@ -1,7 +1,7 @@
 import { Card, CardContent, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { LinkRounded as CopyIcon } from "@material-ui/icons";
-import React, { useContext } from "react";
+import React from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useHistory } from "react-router-dom";
 import {
@@ -14,7 +14,6 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import { AppContext } from "../../contexts/App.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const useStyles = makeStyles({
@@ -61,10 +60,8 @@ const useStyles = makeStyles({
 });
 
 const ProfileShare = ({ match }) => {
-  const [appStore] = useContext(AppContext);
-
   const url = window.location;
-  const title = appStore.brand;
+  const title = "test"; // $TODO appStore.brand;
   const history = useHistory();
   const classes = useStyles();
 

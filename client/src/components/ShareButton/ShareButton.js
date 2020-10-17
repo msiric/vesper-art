@@ -4,7 +4,7 @@ import {
   LinkRounded as CopyIcon,
   ShareRounded as ShareIcon,
 } from "@material-ui/icons";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
   FacebookIcon,
@@ -16,7 +16,6 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import { AppContext } from "../../contexts/App.js";
 import Modal from "../Modal/Modal.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ShareButton = ({ artwork, labeled }) => {
-  const [appStore] = useContext(AppContext);
   const [state, setState] = useState({
     modal: {
       open: false,
@@ -49,7 +47,7 @@ const ShareButton = ({ artwork, labeled }) => {
 
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;
-    const title = appStore.brand;
+    const title = "test"; // $TODO appStore.brand;
 
     return (
       <div className={classes.shareContainer}>

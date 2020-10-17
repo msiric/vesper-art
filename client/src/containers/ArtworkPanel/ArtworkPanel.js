@@ -1,7 +1,7 @@
 import { Box, Fade, Grid } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { LinkRounded as CopyIcon } from "@material-ui/icons";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {
@@ -17,7 +17,6 @@ import {
 import { upload } from "../../../../common/constants.js";
 import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
-import { AppContext } from "../../contexts/App.js";
 import Modal from "../../shared/Modal/Modal.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +48,6 @@ const ArtworkPanel = ({
   fixed,
   loading,
 }) => {
-  const [appStore] = useContext(AppContext);
   const [state, setState] = useState({
     modal: {
       open: false,
@@ -61,7 +59,7 @@ const ArtworkPanel = ({
 
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;
-    const title = appStore.brand;
+    const title = "test"; // $TODO appStore.brand;
 
     return (
       <div className={classes.shareContainer}>

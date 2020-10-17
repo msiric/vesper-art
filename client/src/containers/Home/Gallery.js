@@ -2,7 +2,7 @@ import { Grid, Paper } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import { LinkRounded as CopyIcon } from "@material-ui/icons";
 import { withSnackbar } from "notistack";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {
@@ -18,13 +18,11 @@ import {
 import StackGrid from "react-stack-grid";
 import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
-import { AppContext } from "../../contexts/App.js";
 import { deleteSave, postSave } from "../../services/artwork.js";
 import Modal from "../../shared/Modal/Modal.js";
 import GalleryStyles from "./Gallery.style.js";
 
 const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
-  const [appStore, appDispatch] = useContext(AppContext);
   const [state, setState] = useState({
     modal: {
       open: false,
@@ -55,7 +53,7 @@ const Gallery = ({ elements, hasMore, loadMore, enqueueSnackbar, type }) => {
 
   const modalBody = (id) => {
     const url = `${window.location}artwork/${id}`;
-    const title = appStore.brand;
+    const title = "test"; // $TODO appStore.brand;
 
     return (
       <div className={classes.shareContainer}>

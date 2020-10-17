@@ -24,13 +24,21 @@ const useStyles = makeStyles({
   },
 });
 
-const LoadingSpinner = ({padding}) => {
+const LoadingSpinner = ({ padding }) => {
   const classes = useStyles();
 
   return (
-    <Container className={classes.loadingSpinnerContainer} style={{padding: padding ? padding : 0}}>
+    <Container
+      className={classes.loadingSpinnerContainer}
+      style={{ padding: padding ? padding : 0 }}
+    >
       <Grid container className={classes.loadingSpinnerGrid} spacing={2}>
-        <Grid item xs={12} className={classes.loadingSpinnerItem}>
+        <Grid
+          item
+          xs={12}
+          className={classes.loadingSpinnerItem}
+          style={{ padding: "32px 0" }}
+        >
           <CircularProgress className={classes.loadingSpinnerCircle} />
         </Grid>
       </Grid>
