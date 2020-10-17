@@ -17,6 +17,7 @@ import { UserContext } from "../../contexts/User.js";
 import {
   deleteComment,
   getComment,
+  getComments,
   getDetails,
 } from "../../services/artwork.js";
 import { postDownload } from "../../services/checkout.js";
@@ -311,7 +312,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
 
   const loadMoreComments = async () => {
     try {
-      const { data } = await getComment.requests({
+      const { data } = await getComments.request({
         artworkId: state.artwork._id,
         dataCursor: state.scroll.comments.dataCursor,
         dataCeiling: state.scroll.comments.dataCeiling,

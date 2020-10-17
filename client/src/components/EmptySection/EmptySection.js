@@ -17,7 +17,7 @@ const EmptySection = ({ label, loading }) => {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          padding: 126,
+          padding: "126px 0",
         }}
       >
         <EmptyIcon style={{ fontSize: 56, marginBottom: 20 }} />

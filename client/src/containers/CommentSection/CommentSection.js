@@ -35,6 +35,13 @@ const CommentSection = ({
           </Typography>
         </SkeletonWrapper>
         <Divider />
+        <AddCommentForm
+          artwork={artwork}
+          handleCommentAdd={handleCommentAdd}
+          loading={loading}
+        />
+        <br />
+        <Divider />
         {loading || artwork.comments.length ? (
           <InfiniteScroll
             style={{ overflow: "hidden" }}
@@ -89,11 +96,6 @@ const CommentSection = ({
             <EmptySection label="No comments so far" loading={loading} />
           </Box>
         )}
-        <AddCommentForm
-          artwork={artwork}
-          handleCommentAdd={handleCommentAdd}
-          loading={loading}
-        />
       </CardContent>
     </Card>
   );

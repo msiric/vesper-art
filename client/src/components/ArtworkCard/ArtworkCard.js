@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
   artworkMedia: {
     display: "inline-block",
-    backgroundSize: "cover",
+    backgroundSize: "contain",
     width: "100%",
   },
   artworkHeader: {
@@ -196,6 +196,7 @@ const ArtworkCard = ({ artwork, type, fixed, handleArtworkSave, loading }) => {
               (item.data.width / upload.artwork.fileTransform.width) /
               2,
             maxWidth: upload.artwork.fileTransform.width,
+            width: "100%",
           }}
           image={item.data.cover}
           title={item.title}

@@ -18,7 +18,7 @@ import {
   SearchRounded as SearchIcon,
 } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, withRouter } from "react-router-dom";
 import * as Yup from "yup";
 import { EventsContext } from "../../contexts/Events.js";
@@ -41,7 +41,10 @@ const Header = ({ history }) => {
   const [eventsStore, eventsDispatch] = useContext(EventsContext);
   const [state, setState] = useState({
     profile: { anchorEl: null, mobileAnchorEl: null },
-    notifications: { anchorEl: null, loading: false },
+    notifications: {
+      anchorEl: null,
+      loading: false,
+    },
   });
 
   const classes = HeaderStyles();
@@ -89,57 +92,88 @@ const Header = ({ history }) => {
   const handleNotificationsMenuOpen = async (e) => {
     const target = e.currentTarget;
     if (
-      eventsStore.notifications.hasMore &&
-      !eventsStore.notifications.items.length
+      eventsStore.notifications.items.length < eventsStore.notifications.limit
     ) {
-      setState((prevState) => ({
-        ...prevState,
-        notifications: {
-          ...prevState.notifications,
-          anchorEl: target,
-          loading: true,
-        },
-      }));
-      try {
-        const { data } = await getNotifications.request({
-          userId: userStore.id,
-          dataCursor: eventsStore.notifications.dataCursor,
-          dataCeiling: eventsStore.notifications.dataCeiling,
-        });
-        eventsDispatch({
-          type: "updateNotifications",
-          notifications: {
-            items: data.notifications,
-            count: 0,
-            hasMore:
-              data.notifications.length < eventsStore.notifications.dataCeiling
-                ? false
-                : true,
-            dataCursor:
-              eventsStore.notifications.dataCursor +
-              eventsStore.notifications.dataCeiling,
-          },
-        });
-      } catch (err) {
-        eventsDispatch({
-          type: "updateNotifications",
-          notifications: {
-            count: 0,
-          },
-        });
-      } finally {
+      if (
+        eventsStore.notifications.hasMore &&
+        !eventsStore.notifications.items.length
+      ) {
         setState((prevState) => ({
           ...prevState,
-          notifications: { ...prevState.notifications, loading: false },
+          notifications: {
+            ...prevState.notifications,
+            anchorEl: target,
+            loading: true,
+          },
         }));
+        try {
+          const { data } = await getNotifications.request({
+            userId: userStore.id,
+            dataCursor: eventsStore.notifications.dataCursor,
+            dataCeiling: eventsStore.notifications.dataCeiling,
+          });
+          eventsDispatch({
+            type: "updateNotifications",
+            notifications: {
+              items: data.notifications,
+              hasMore:
+                data.notifications.length <
+                eventsStore.notifications.dataCeiling
+                  ? false
+                  : true,
+              dataCursor:
+                eventsStore.notifications.dataCursor +
+                eventsStore.notifications.dataCeiling,
+            },
+          });
+        } catch (err) {
+          console.log("error");
+        } finally {
+          setState((prevState) => ({
+            ...prevState,
+            notifications: { ...prevState.notifications, loading: false },
+          }));
+        }
+      } else {
+        if (eventsStore.notifications.new > 0) {
+          setState((prevState) => ({
+            ...prevState,
+            notifications: {
+              ...prevState.notifications,
+              anchorEl: target,
+              loading: true,
+            },
+          }));
+          const { data } = await getNotifications.request({
+            userId: userStore.id,
+            dataCursor: 0,
+            dataCeiling: eventsStore.notifications.new,
+          });
+          eventsDispatch({
+            type: "updateNotifications",
+            notifications: {
+              items: [...data.notifications].concat(
+                eventsStore.notifications.items
+              ),
+              new: 0,
+            },
+          });
+          setState((prevState) => ({
+            ...prevState,
+            notifications: { ...prevState.notifications, loading: false },
+          }));
+        } else {
+          setState((prevState) => ({
+            ...prevState,
+            notifications: {
+              ...prevState.notifications,
+              anchorEl: target,
+              loading: false,
+            },
+          }));
+        }
       }
     } else {
-      eventsDispatch({
-        type: "updateNotifications",
-        notifications: {
-          count: 0,
-        },
-      });
       setState((prevState) => ({
         ...prevState,
         notifications: {
@@ -152,12 +186,6 @@ const Header = ({ history }) => {
   };
 
   const handleNotificationsMenuClose = () => {
-    eventsDispatch({
-      type: "updateNotifications",
-      notifications: {
-        count: 0,
-      },
-    });
     setState((prevState) => ({
       ...prevState,
       notifications: {
@@ -195,7 +223,7 @@ const Header = ({ history }) => {
               ? { ...notification, read: true }
               : notification
           ),
-          count: -1,
+          count: eventsStore.notifications.count - 1,
         },
       });
     } catch (err) {
@@ -214,7 +242,7 @@ const Header = ({ history }) => {
               ? { ...notification, read: false }
               : notification
           ),
-          count: 1,
+          count: eventsStore.notifications.count + 1,
         },
       });
     } catch (err) {
@@ -230,12 +258,6 @@ const Header = ({ history }) => {
 
   const loadMore = async () => {
     try {
-      eventsDispatch({
-        type: "updateNotifications",
-        notifications: {
-          count: 0,
-        },
-      });
       const { data } = await getNotifications.request({
         userId: userStore.id,
         dataCursor: eventsStore.notifications.dataCursor,
@@ -247,7 +269,6 @@ const Header = ({ history }) => {
           items: [...eventsStore.notifications.items].concat(
             data.notifications
           ),
-          count: 0,
           hasMore:
             data.notifications.length < eventsStore.notifications.dataCeiling
               ? false
@@ -365,6 +386,8 @@ const Header = ({ history }) => {
       </MenuItem>
     </Menu>
   );
+
+  useEffect(() => {}, [eventsStore.notifications.count]);
 
   return (
     <>

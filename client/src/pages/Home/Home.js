@@ -2,7 +2,6 @@ import { Grid } from "@material-ui/core";
 import { withSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import SelectInput from "../../components/SelectInput/SelectInput.js";
-import mockArtwork from "../../constants/mockArtwork.json";
 import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
 import { getArtwork } from "../../services/artwork.js";
 
@@ -26,53 +25,53 @@ const Home = ({ location }) => {
     try {
       setState({ ...initialState });
       // DATABASE DATA
-      // const { data } = await getArtwork.request({
-      //   dataCursor: initialState.dataCursor,
-      //   dataCeiling: initialState.dataCeiling,
-      // });
-      // setState((prevState) => ({
-      //   ...prevState,
-      //   loading: false,
-      //   artwork: data.artwork,
-      //   hasMore: data.artwork.length < prevState.dataCeiling ? false : true,
-      //   dataCursor: prevState.dataCursor + prevState.dataCeiling,
-      // }));
-
-      // MOCK DATA
-      const formattedArtwork = mockArtwork.data.map((artwork) => {
-        return {
-          comments: [],
-          reviews: [],
-          _id: artwork.id,
-          created: artwork.created_utc,
-          owner: { _id: artwork.id, name: artwork.author },
-          active: true,
-          current: {
-            _id: artwork.id,
-            cover: artwork.thumbnail,
-            height: artwork.thumbnail_height,
-            width: artwork.thumbnail_width,
-            created: artwork.created_utc,
-            title: artwork.title,
-            type: "commercial",
-            availability: "available",
-            license: "commercial",
-            use: "separate",
-            personal: 20,
-            commercial: 45,
-            description: artwork.title,
-            id: artwork.id,
-          },
-          saves: 0,
-        };
+      const { data } = await getArtwork.request({
+        dataCursor: initialState.dataCursor,
+        dataCeiling: initialState.dataCeiling,
       });
       setState((prevState) => ({
-        ...state,
+        ...prevState,
         loading: false,
-        artwork: formattedArtwork,
-        hasMore: formattedArtwork.length < prevState.dataCeiling ? false : true,
+        artwork: data.artwork,
+        hasMore: data.artwork.length < prevState.dataCeiling ? false : true,
         dataCursor: prevState.dataCursor + prevState.dataCeiling,
       }));
+
+      // MOCK DATA
+      // const formattedArtwork = mockArtwork.data.map((artwork) => {
+      //   return {
+      //     comments: [],
+      //     reviews: [],
+      //     _id: artwork.id,
+      //     created: artwork.created_utc,
+      //     owner: { _id: artwork.id, name: artwork.author },
+      //     active: true,
+      //     current: {
+      //       _id: artwork.id,
+      //       cover: artwork.thumbnail,
+      //       height: artwork.thumbnail_height,
+      //       width: artwork.thumbnail_width,
+      //       created: artwork.created_utc,
+      //       title: artwork.title,
+      //       type: "commercial",
+      //       availability: "available",
+      //       license: "commercial",
+      //       use: "separate",
+      //       personal: 20,
+      //       commercial: 45,
+      //       description: artwork.title,
+      //       id: artwork.id,
+      //     },
+      //     saves: 0,
+      //   };
+      // });
+      // setState((prevState) => ({
+      //   ...state,
+      //   loading: false,
+      //   artwork: formattedArtwork,
+      //   hasMore: formattedArtwork.length < prevState.dataCeiling ? false : true,
+      //   dataCursor: prevState.dataCursor + prevState.dataCeiling,
+      // }));
     } catch (err) {
       setState((prevState) => ({ ...prevState, loading: false }));
     }

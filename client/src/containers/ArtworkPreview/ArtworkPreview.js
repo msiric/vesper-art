@@ -36,6 +36,7 @@ const useStyles = makeStyles((muiTheme) => ({
   artworkPreviewMedia: {
     height: "100%",
     margin: "30px 0",
+    backgroundSize: "contain",
   },
   avatar: {
     width: muiTheme.spacing(10),
@@ -137,7 +138,7 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
             className={classes.artworkPreviewMedia}
             image={version.cover}
             title={version.title}
-            style={loading ? { width: 500, height } : { minHeight: height }}
+            style={loading ? { width: "100%", height } : { minHeight: height }}
           />
         </SkeletonWrapper>
         <Box>

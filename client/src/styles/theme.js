@@ -155,6 +155,12 @@ artepunktTheme.overrides.MuiFormHelperText = {
 };
 */
 
+artepunktTheme.overrides.MuiPopover = {
+  paper: {
+    minWidth: 280,
+  },
+};
+
 artepunktTheme.overrides.MuiInputBase = {
   root: {
     "& input": {

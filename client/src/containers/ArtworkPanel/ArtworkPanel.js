@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     maxWidth: 500,
+    height: "fit-content",
     padding: 12,
   },
   masonryGrid: {

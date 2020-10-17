@@ -16,7 +16,7 @@ let socket = openSocket(ENDPOINT);
 const Interceptor = ({ children }) => {
   const [appStore, appDispatch] = useContext(AppContext);
   const [userStore, userDispatch] = useContext(UserContext);
-  const [_, eventsDispatch] = useContext(EventsContext);
+  const [eventsStore, eventsDispatch] = useContext(EventsContext);
 
   const classes = {};
 
@@ -179,50 +179,55 @@ const Interceptor = ({ children }) => {
     handleSocket(token);
   };
 
+  const handleSocketNotification = () => {
+    eventsDispatch({
+      type: "incrementNotifications",
+    });
+  };
+
+  const handleSocketRefresh = async () => {
+    try {
+      const { data } = await axios.post(`/api/auth/refresh_token`, {
+        headers: {
+          credentials: "include",
+        },
+      });
+      userDispatch({
+        type: "updateUser",
+        token: data.accessToken,
+        email: data.user.email,
+        photo: data.user.photo,
+        stripeId: data.user.stripeId,
+        country: data.user.country,
+        saved: data.user.saved,
+      });
+      eventsDispatch({
+        type: "updateEvents",
+        messages: { items: [], count: data.user.messages },
+        notifications: { count: data.user.notifications },
+      });
+      socket.emit("authenticateUser", `Bearer ${data.accessToken}`);
+    } catch (err) {
+      userDispatch({
+        type: "resetUser",
+      });
+    }
+  };
+
   const handleSocket = (token) => {
     socket = openSocket(ENDPOINT);
 
     socket.emit("authenticateUser", token ? `Bearer ${token}` : null);
-    socket.on("sendNotification", () => {
-      eventsDispatch({
-        type: "updateNotifications",
-        notifications: {
-          count: 1,
-        },
-      });
-    });
-    socket.on("expiredToken", async () => {
-      try {
-        const { data } = await axios.post(`/api/auth/refresh_token`, {
-          headers: {
-            credentials: "include",
-          },
-        });
-        userDispatch({
-          type: "updateUser",
-          token: data.accessToken,
-          email: data.user.email,
-          photo: data.user.photo,
-          stripeId: data.user.stripeId,
-          country: data.user.country,
-          saved: data.user.saved,
-        });
-        eventsDispatch({
-          type: "updateEvents",
-          messages: { items: [], count: data.user.messages },
-          notifications: { count: data.user.notifications },
-        });
-        socket.emit("authenticateUser", `Bearer ${data.accessToken}`);
-      } catch (err) {
-        userDispatch({
-          type: "resetUser",
-        });
-      }
-    });
+    socket.on("sendNotification", handleSocketNotification);
+    socket.on("expiredToken", handleSocketRefresh);
   };
 
   useEffect(() => {
     getRefreshToken();
+    return () => {
+      socket.off("sendNotification", handleSocketNotification);
+      socket.off("expiredToken", handleSocketRefresh);
+    };
   }, []);
 
   useEffect(() => {

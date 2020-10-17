@@ -4,10 +4,13 @@ const store = {
   messages: {
     items: [],
     count: 0,
+    new: 0,
   },
   notifications: {
     items: [],
     count: 0,
+    new: 0,
+    limit: 50,
     hasMore: true,
     dataCursor: 0,
     dataCeiling: 10,
@@ -29,6 +32,9 @@ const reducer = (state, action) => {
           count: typeof action.messages.count
             ? action.messages.count
             : state.messages.count,
+          new: typeof action.messages.new
+            ? action.messages.new
+            : state.messages.new,
         },
         notifications: {
           ...state.notifications,
@@ -38,8 +44,12 @@ const reducer = (state, action) => {
               : state.notifications.items,
           count:
             typeof action.notifications.count !== "undefined"
-              ? state.notifications.count + action.notifications.count
+              ? action.notifications.count
               : state.notifications.count,
+          new:
+            typeof action.notifications.new !== "undefined"
+              ? action.notifications.new
+              : state.notifications.new,
           hasMore:
             typeof action.notifications.hasMore !== "undefined"
               ? action.notifications.hasMore
@@ -61,10 +71,12 @@ const reducer = (state, action) => {
         messages: {
           items: [],
           count: 0,
+          new: 0,
         },
         notifications: {
           items: [],
           count: 0,
+          new: 0,
           hasMore: true,
           dataCursor: 0,
           dataCeiling: 10,
@@ -80,8 +92,11 @@ const reducer = (state, action) => {
             ? action.messages.items
             : state.messages.items,
           count: typeof action.messages.count
-            ? state.messages.count + action.messages
+            ? action.messages.new
             : state.messages.count,
+          new: typeof action.messages.new
+            ? action.messages.new
+            : state.messages.new,
         },
       };
     case "updateNotifications":
@@ -95,8 +110,12 @@ const reducer = (state, action) => {
               : state.notifications.items,
           count:
             typeof action.notifications.count !== "undefined"
-              ? state.notifications.count + action.notifications.count
+              ? action.notifications.count
               : state.notifications.count,
+          new:
+            typeof action.notifications.new !== "undefined"
+              ? action.notifications.new
+              : state.notifications.new,
           hasMore:
             typeof action.notifications.hasMore !== "undefined"
               ? action.notifications.hasMore
@@ -114,16 +133,65 @@ const reducer = (state, action) => {
     case "updateEvents":
       return {
         ...state,
-        messages:
-          typeof action.messages !== "undefined"
-            ? action.messages
-            : state.messages,
-        notifications:
-          typeof action.notifications !== "undefined"
-            ? action.notifications
-            : state.notifications,
+        messages: {
+          ...state.messages,
+          items: typeof action.messages.items
+            ? action.messages.items
+            : state.messages.items,
+          count: typeof action.messages.count
+            ? action.messages.count
+            : state.messages.count,
+          new: typeof action.messages.new
+            ? action.messages.new
+            : state.messages.new,
+        },
+        notifications: {
+          ...state.notifications,
+          items:
+            typeof action.notifications.items !== "undefined"
+              ? action.notifications.items
+              : state.notifications.items,
+          count:
+            typeof action.notifications.count !== "undefined"
+              ? action.notifications.count
+              : state.notifications.count,
+          new:
+            typeof action.notifications.new !== "undefined"
+              ? action.notifications.new
+              : state.notifications.new,
+          hasMore:
+            typeof action.notifications.hasMore !== "undefined"
+              ? action.notifications.hasMore
+              : state.notifications.hasMore,
+          dataCursor:
+            typeof action.notifications.dataCursor !== "undefined"
+              ? action.notifications.dataCursor
+              : state.notifications.dataCursor,
+          dataCeiling:
+            typeof action.notifications.dataCeiling !== "undefined"
+              ? action.notifications.dataCeiling
+              : state.notifications.dataCeiling,
+        },
         search:
           typeof action.search !== "undefined" ? action.search : state.search,
+      };
+    case "incrementNotifications":
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
+          count: state.notifications.count + 1,
+          new: state.notifications.new + 1,
+        },
+      };
+    case "decrementNotifications":
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
+          count: state.notifications.count - 1,
+          new: state.notifications.new - 1,
+        },
       };
     case "updateSearch":
       return {

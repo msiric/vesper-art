@@ -34,7 +34,11 @@ const NotificationsMenu = ({
         className={classes.scroller}
         dataLength={eventsStore.notifications.items.length}
         next={loadMore}
-        hasMore={eventsStore.notifications.hasMore}
+        hasMore={
+          eventsStore.notifications.hasMore &&
+          eventsStore.notifications.items.length <
+            eventsStore.notifications.limit
+        }
         loader={
           <Grid item xs={12} className={classes.loader}>
             <LoadingSpinner />
@@ -44,8 +48,8 @@ const NotificationsMenu = ({
         {loading ||
         (eventsStore.notifications.items &&
           eventsStore.notifications.items.length) ? (
-          eventsStore.notifications.items.map((notification, index) => (
-            <List className={classes.root}>
+          <List className={classes.root}>
+            {eventsStore.notifications.items.map((notification, index) => (
               <>
                 {index === 0 ? <Divider /> : null}
                 <NotificationItem
@@ -55,8 +59,20 @@ const NotificationsMenu = ({
                   handleUnreadClick={handleUnreadClick}
                 />
               </>
-            </List>
-          ))
+            ))}
+            {eventsStore.notifications.items.length === 50 && (
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "16px 0",
+                }}
+              >
+                <Typography>See all notifications</Typography>
+              </Box>
+            )}
+          </List>
         ) : (
           <Box
             style={{
