@@ -60,7 +60,7 @@ const NotificationsMenu = ({
                 />
               </>
             ))}
-            {eventsStore.notifications.items.length === 50 && (
+            {eventsStore.notifications.items.length >= 50 && (
               <Box
                 style={{
                   display: "flex",
