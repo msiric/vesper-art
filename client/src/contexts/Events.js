@@ -32,9 +32,6 @@ const reducer = (state, action) => {
           count: typeof action.messages.count
             ? action.messages.count
             : state.messages.count,
-          new: typeof action.messages.new
-            ? action.messages.new
-            : state.messages.new,
         },
         notifications: {
           ...state.notifications,
@@ -46,10 +43,7 @@ const reducer = (state, action) => {
             typeof action.notifications.count !== "undefined"
               ? action.notifications.count
               : state.notifications.count,
-          new:
-            typeof action.notifications.new !== "undefined"
-              ? action.notifications.new
-              : state.notifications.new,
+
           hasMore:
             typeof action.notifications.hasMore !== "undefined"
               ? action.notifications.hasMore
@@ -92,11 +86,8 @@ const reducer = (state, action) => {
             ? action.messages.items
             : state.messages.items,
           count: typeof action.messages.count
-            ? action.messages.new
+            ? action.messages.count
             : state.messages.count,
-          new: typeof action.messages.new
-            ? action.messages.new
-            : state.messages.new,
         },
       };
     case "updateNotifications":
@@ -112,10 +103,7 @@ const reducer = (state, action) => {
             typeof action.notifications.count !== "undefined"
               ? action.notifications.count
               : state.notifications.count,
-          new:
-            typeof action.notifications.new !== "undefined"
-              ? action.notifications.new
-              : state.notifications.new,
+
           hasMore:
             typeof action.notifications.hasMore !== "undefined"
               ? action.notifications.hasMore
@@ -141,9 +129,6 @@ const reducer = (state, action) => {
           count: typeof action.messages.count
             ? action.messages.count
             : state.messages.count,
-          new: typeof action.messages.new
-            ? action.messages.new
-            : state.messages.new,
         },
         notifications: {
           ...state.notifications,
@@ -155,10 +140,7 @@ const reducer = (state, action) => {
             typeof action.notifications.count !== "undefined"
               ? action.notifications.count
               : state.notifications.count,
-          new:
-            typeof action.notifications.new !== "undefined"
-              ? action.notifications.new
-              : state.notifications.new,
+
           hasMore:
             typeof action.notifications.hasMore !== "undefined"
               ? action.notifications.hasMore
@@ -175,22 +157,13 @@ const reducer = (state, action) => {
         search:
           typeof action.search !== "undefined" ? action.search : state.search,
       };
-    case "incrementNotifications":
+    case "addNotification":
       return {
         ...state,
         notifications: {
           ...state.notifications,
           count: state.notifications.count + 1,
-          new: state.notifications.new + 1,
-        },
-      };
-    case "decrementNotifications":
-      return {
-        ...state,
-        notifications: {
-          ...state.notifications,
-          count: state.notifications.count - 1,
-          new: state.notifications.new - 1,
+          items: [action.notification].concat(state.notifications.items),
         },
       };
     case "updateSearch":

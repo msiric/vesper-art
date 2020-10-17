@@ -179,9 +179,11 @@ const Interceptor = ({ children }) => {
     handleSocket(token);
   };
 
-  const handleSocketNotification = () => {
+  const handleSocketNotification = (data) => {
+    console.log("data", data);
     eventsDispatch({
-      type: "incrementNotifications",
+      type: "addNotification",
+      notification: data,
     });
   };
 

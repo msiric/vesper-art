@@ -18,7 +18,7 @@ import {
   SearchRounded as SearchIcon,
 } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, withRouter } from "react-router-dom";
 import * as Yup from "yup";
 import { EventsContext } from "../../contexts/Events.js";
@@ -135,43 +135,14 @@ const Header = ({ history }) => {
           }));
         }
       } else {
-        if (eventsStore.notifications.new > 0) {
-          setState((prevState) => ({
-            ...prevState,
-            notifications: {
-              ...prevState.notifications,
-              anchorEl: target,
-              loading: true,
-            },
-          }));
-          const { data } = await getNotifications.request({
-            userId: userStore.id,
-            dataCursor: 0,
-            dataCeiling: eventsStore.notifications.new,
-          });
-          eventsDispatch({
-            type: "updateNotifications",
-            notifications: {
-              items: [...data.notifications].concat(
-                eventsStore.notifications.items
-              ),
-              new: 0,
-            },
-          });
-          setState((prevState) => ({
-            ...prevState,
-            notifications: { ...prevState.notifications, loading: false },
-          }));
-        } else {
-          setState((prevState) => ({
-            ...prevState,
-            notifications: {
-              ...prevState.notifications,
-              anchorEl: target,
-              loading: false,
-            },
-          }));
-        }
+        setState((prevState) => ({
+          ...prevState,
+          notifications: {
+            ...prevState.notifications,
+            anchorEl: target,
+            loading: false,
+          },
+        }));
       }
     } else {
       setState((prevState) => ({
@@ -386,8 +357,6 @@ const Header = ({ history }) => {
       </MenuItem>
     </Menu>
   );
-
-  useEffect(() => {}, [eventsStore.notifications.count]);
 
   return (
     <>

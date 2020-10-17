@@ -50,14 +50,14 @@ export const postComment = async ({
     });
     if (!savedComment.owner.equals(updatedArtwork.owner)) {
       await addUserNotification({ userId: updatedArtwork.owner, session });
-      await addNewNotification({
+      const savedNotification = await addNewNotification({
         notificationLink: foundArtwork._id,
         notificationRef: savedComment._id,
         notificationType: "comment",
         notificationReceiver: updatedArtwork.owner,
         session,
       });
-      socketApi.sendNotification(updatedArtwork.owner);
+      socketApi.sendNotification(updatedArtwork.owner, savedNotification);
     }
     return {
       message: "Comment posted successfully",
