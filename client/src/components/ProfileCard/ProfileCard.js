@@ -25,7 +25,6 @@ const useStyles = makeStyles({
     padding: artepunktTheme.padding.container,
     minWidth: 200,
     textDecoration: "none",
-    boxShadow: "none",
     position: "relative",
   },
   profileCardName: {
@@ -87,7 +86,7 @@ const ProfileCard = ({ user, height, loading }) => {
               marginBottom: "12px",
             }}
           >
-            {user.rating && (
+            {user.rating > 0 && (
               <Box
                 style={{
                   display: "flex",

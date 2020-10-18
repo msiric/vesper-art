@@ -36,6 +36,7 @@ const useStyles = makeStyles((muiTheme) => ({
   },
   artworkPreviewMedia: {
     height: 500,
+    backgroundSize: "contain",
   },
   avatar: {
     width: muiTheme.spacing(10),

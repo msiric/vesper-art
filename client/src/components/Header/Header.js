@@ -36,7 +36,7 @@ const searchValidation = Yup.object().shape({
   searchInput: Yup.string().trim().required("Search input is required"),
 });
 
-const Header = ({ history }) => {
+const Header = ({ socket, history }) => {
   const [userStore, userDispatch] = useContext(UserContext);
   const [eventsStore, eventsDispatch] = useContext(EventsContext);
   const [state, setState] = useState({
@@ -172,6 +172,8 @@ const Header = ({ history }) => {
       userDispatch({
         type: "resetUser",
       });
+
+      socket.disconnect();
 
       handleMenuClose();
 

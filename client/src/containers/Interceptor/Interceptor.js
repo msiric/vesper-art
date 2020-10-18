@@ -230,12 +230,12 @@ const Interceptor = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (!appStore.loading) interceptTraffic(userStore.token);
+    interceptTraffic(userStore.token);
     return () => {
       axios.interceptors.request.eject(ax);
       axios.interceptors.response.eject(ax);
     };
-  }, [appStore.loading]);
+  }, [userStore.token]);
 
   return appStore.loading ? <LoadingSpinner /> : <App socket={socket} />;
 };

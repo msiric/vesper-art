@@ -1,9 +1,10 @@
-import { Box, Fade, Grid } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { LinkRounded as CopyIcon } from "@material-ui/icons";
 import React, { useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import InfiniteScroll from "react-infinite-scroll-component";
+import Masonry from "react-masonry-css";
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -14,7 +15,6 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import { upload } from "../../../../common/constants.js";
 import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import Modal from "../../shared/Modal/Modal.js";
@@ -28,16 +28,27 @@ const useStyles = makeStyles((theme) => ({
     height: "fit-content",
     padding: 12,
   },
-  masonryGrid: {
+  masonryContainer: {
     display: "flex",
-    flexWrap: "wrap",
+    marginLeft: -30,
+    padding: "0 30px",
+    width: "auto",
   },
-  masonryGridColumn: {
-    maxWidth: upload.artwork.fileTransform.width,
-    minWidth: 320,
-    width: "100%",
+  masonryColumn: {
+    paddingLeft: 30,
+    backgroundClip: "padding-box",
+    "&>div": {
+      marginBottom: 30,
+    },
   },
 }));
+
+const breakpointColumns = {
+  default: 4,
+  1100: 3,
+  700: 2,
+  500: 1,
+};
 
 const ArtworkPanel = ({
   elements,
@@ -138,7 +149,7 @@ const ArtworkPanel = ({
   };
 
   return (
-    <Box style={{ width: "100%" }}>
+    <Box style={{ width: "100%", padding: "16px 0" }}>
       <InfiniteScroll
         className={classes.scroller}
         dataLength={elements.length}
@@ -146,28 +157,20 @@ const ArtworkPanel = ({
         hasMore={hasMore}
         loader={<LoadingSpinner />}
       >
-        <Grid container className={classes.container}>
+        <Masonry
+          breakpointCols={breakpointColumns}
+          className={classes.masonryContainer}
+          columnClassName={classes.masonryColumn}
+        >
           {elements.map((artwork) => (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
-              xl={fixed ? 3 : 2}
-              className={classes.artworkWrapper}
-            >
-              <Fade in>
-                <ArtworkCard
-                  artwork={artwork}
-                  type={type}
-                  fixed={fixed}
-                  loading={loading}
-                />
-              </Fade>
-            </Grid>
+            <ArtworkCard
+              artwork={artwork}
+              type={type}
+              fixed={fixed}
+              loading={loading}
+            />
           ))}
-        </Grid>
+        </Masonry>
       </InfiniteScroll>
       <Modal {...state.modal} handleClose={handleModalClose} />
     </Box>

@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
     position: "absolute",
     top: 0,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: "rgba(0,0,0,0.5)",
     transition: "height 0.5s",
     display: "flex",
     justifyContent: "left",
@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
     position: "absolute",
     bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: "rgba(0,0,0,0.5)",
     transition: "height 0.5s",
     display: "flex",
     justifyContent: "space-between",
@@ -191,10 +191,7 @@ const ArtworkCard = ({ artwork, type, fixed, handleArtworkSave, loading }) => {
           to={`/artwork/${item._id}`}
           className={classes.artworkMedia}
           style={{
-            paddingTop:
-              item.data.height /
-              (item.data.width / upload.artwork.fileTransform.width) /
-              2,
+            paddingTop: `${(item.data.height / item.data.width) * 100}%`,
             maxWidth: upload.artwork.fileTransform.width,
             width: "100%",
           }}

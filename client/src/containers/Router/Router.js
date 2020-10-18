@@ -199,7 +199,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
         }
       }
       return (
-        <MainLayout>
+        <MainLayout socket={rest.socket}>
           <Suspense fallback={null}>
             <Component {...props} socket={rest.socket} />
           </Suspense>

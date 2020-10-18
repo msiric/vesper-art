@@ -60,9 +60,7 @@ const ReviewCard = ({
         shouldReview ? (
           <Box className={classes.reviewContent}>
             <SkeletonWrapper variant="text" loading={loading}>
-              <Typography m={2} fontSize="h6.fontSize">
-                Your rating
-              </Typography>
+              <Typography m={2}>Your rating</Typography>
             </SkeletonWrapper>
             <SkeletonWrapper loading={loading}>
               <Rating value={review.rating} readOnly />
@@ -71,9 +69,7 @@ const ReviewCard = ({
         ) : (
           <Box className={classes.reviewContent}>
             <SkeletonWrapper variant="text" loading={loading}>
-              <Typography m={2} fontSize="h6.fontSize">
-                Buyer's rating
-              </Typography>
+              <Typography m={2}>Buyer's rating</Typography>
             </SkeletonWrapper>
             <SkeletonWrapper loading={loading}>
               <Rating value={review.rating} readOnly />
@@ -83,9 +79,7 @@ const ReviewCard = ({
       ) : shouldReview ? (
         <Box className={classes.reviewContent}>
           <SkeletonWrapper variant="text" loading={loading}>
-            <Typography m={2} fontSize="h6.fontSize">
-              No rating left
-            </Typography>
+            <Typography m={2}>No rating left</Typography>
           </SkeletonWrapper>
           <Button startIcon={<ReviewIcon />} onClick={handleModalOpen}>
             Rate artist
@@ -94,9 +88,7 @@ const ReviewCard = ({
       ) : (
         <Box className={classes.reviewContent}>
           <SkeletonWrapper variant="text" loading={loading}>
-            <Typography m={2} fontSize="h6.fontSize">
-              No rating found
-            </Typography>
+            <Typography m={2}>No rating found</Typography>
           </SkeletonWrapper>
         </Box>
       )}
