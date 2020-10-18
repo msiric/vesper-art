@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import useSound from "use-sound";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { AppContext } from "../../contexts/App.js";
 import { EventsContext } from "../../contexts/Events.js";
 import { UserContext } from "../../contexts/User.js";
@@ -44,12 +44,6 @@ const Interceptor = ({ children }) => {
         });
 
         if (data.user) {
-          appDispatch({
-            type: "setApp",
-            loading: false,
-            error: false,
-            theme: appStore.theme,
-          });
           userDispatch({
             type: "setUser",
             authenticated: true,
@@ -83,6 +77,12 @@ const Interceptor = ({ children }) => {
               dataCeiling: 10,
             },
           });
+          appDispatch({
+            type: "setApp",
+            loading: false,
+            error: false,
+            theme: appStore.theme,
+          });
         } else {
           appDispatch({
             type: "setApp",
@@ -103,6 +103,7 @@ const Interceptor = ({ children }) => {
   };
 
   const interceptTraffic = (token) => {
+    console.log(token);
     if (token) {
       ax.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     } else {
@@ -231,9 +232,13 @@ const Interceptor = ({ children }) => {
 
   useEffect(() => {
     if (!appStore.loading) interceptTraffic(userStore.token);
-  }, [userStore.token]);
+    return () => {
+      axios.interceptors.request.eject(ax);
+      axios.interceptors.response.eject(ax);
+    };
+  }, [appStore.loading]);
 
-  return !appStore.loading ? <App socket={socket} /> : <LoadingSpinner />;
+  return appStore.loading ? <LoadingSpinner /> : <App socket={socket} />;
 };
 
 export { ax };

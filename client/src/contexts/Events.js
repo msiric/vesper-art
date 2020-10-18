@@ -4,12 +4,12 @@ const store = {
   messages: {
     items: [],
     count: 0,
-    new: 0,
+    opened: false,
   },
   notifications: {
     items: [],
     count: 0,
-    new: 0,
+    opened: false,
     limit: 50,
     hasMore: true,
     dataCursor: 0,
@@ -19,7 +19,6 @@ const store = {
 };
 
 const reducer = (state, action) => {
-  console.log(action.type);
   switch (action.type) {
     case "setEvents":
       return {
@@ -32,6 +31,9 @@ const reducer = (state, action) => {
           count: typeof action.messages.count
             ? action.messages.count
             : state.messages.count,
+          opened: typeof action.messages.opened
+            ? action.messages.opened
+            : state.messages.opened,
         },
         notifications: {
           ...state.notifications,
@@ -43,7 +45,9 @@ const reducer = (state, action) => {
             typeof action.notifications.count !== "undefined"
               ? action.notifications.count
               : state.notifications.count,
-
+          opened: typeof action.notifications.opened
+            ? action.notifications.opened
+            : state.notifications.opened,
           hasMore:
             typeof action.notifications.hasMore !== "undefined"
               ? action.notifications.hasMore
@@ -57,7 +61,8 @@ const reducer = (state, action) => {
               ? action.notifications.dataCeiling
               : state.notifications.dataCeiling,
         },
-        search: typeof action.search ? action.search : state.search,
+        search:
+          typeof action.search !== "undefined" ? action.search : state.search,
       };
     case "resetEvents":
       return {
@@ -65,12 +70,12 @@ const reducer = (state, action) => {
         messages: {
           items: [],
           count: 0,
-          new: 0,
+          opened: false,
         },
         notifications: {
           items: [],
           count: 0,
-          new: 0,
+          opened: false,
           hasMore: true,
           dataCursor: 0,
           dataCeiling: 10,
@@ -88,6 +93,9 @@ const reducer = (state, action) => {
           count: typeof action.messages.count
             ? action.messages.count
             : state.messages.count,
+          opened: typeof action.messages.opened
+            ? action.messages.opened
+            : state.messages.opened,
         },
       };
     case "updateNotifications":
@@ -103,7 +111,9 @@ const reducer = (state, action) => {
             typeof action.notifications.count !== "undefined"
               ? action.notifications.count
               : state.notifications.count,
-
+          opened: typeof action.notifications.opened
+            ? action.notifications.opened
+            : state.notifications.opened,
           hasMore:
             typeof action.notifications.hasMore !== "undefined"
               ? action.notifications.hasMore
@@ -129,6 +139,9 @@ const reducer = (state, action) => {
           count: typeof action.messages.count
             ? action.messages.count
             : state.messages.count,
+          opened: typeof action.messages.opened
+            ? action.messages.opened
+            : state.messages.opened,
         },
         notifications: {
           ...state.notifications,
@@ -140,7 +153,9 @@ const reducer = (state, action) => {
             typeof action.notifications.count !== "undefined"
               ? action.notifications.count
               : state.notifications.count,
-
+          opened: typeof action.notifications.opened
+            ? action.notifications.opened
+            : state.notifications.opened,
           hasMore:
             typeof action.notifications.hasMore !== "undefined"
               ? action.notifications.hasMore

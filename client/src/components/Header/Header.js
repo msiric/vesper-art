@@ -94,10 +94,7 @@ const Header = ({ history }) => {
     if (
       eventsStore.notifications.items.length < eventsStore.notifications.limit
     ) {
-      if (
-        eventsStore.notifications.hasMore &&
-        !eventsStore.notifications.items.length
-      ) {
+      if (!eventsStore.notifications.opened) {
         setState((prevState) => ({
           ...prevState,
           notifications: {
@@ -124,6 +121,7 @@ const Header = ({ history }) => {
               dataCursor:
                 eventsStore.notifications.dataCursor +
                 eventsStore.notifications.dataCeiling,
+              opened: true,
             },
           });
         } catch (err) {

@@ -1,17 +1,30 @@
 import { CssBaseline, IconButton } from "@material-ui/core";
-import { ThemeProvider } from "@material-ui/core/styles";
-import { CloseRounded as CloseIcon } from "@material-ui/icons";
+import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
+import {
+  CheckCircleRounded as SuccessIcon,
+  CloseRounded as CloseIcon,
+  ErrorRounded as ErrorIcon,
+  InfoRounded as InfoIcon,
+  WarningRounded as WarningIcon,
+} from "@material-ui/icons";
 import { SnackbarProvider } from "notistack";
 import React, { createRef, useContext } from "react";
 import Router from "../../containers/Router/Router.js";
 import { AppContext } from "../../contexts/App.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
+const useStyles = makeStyles(() => ({
+  notificationContainer: {
+    backgroundColor: artepunktTheme.palette.background.notification,
+    border: `1px solid ${artepunktTheme.palette.border.main}`,
+  },
+}));
+
 const App = React.memo(({ socket }) => {
   const [appStore] = useContext(AppContext);
   const notistackRef = createRef();
 
-  const classes = {};
+  const classes = useStyles();
 
   const handleAlertClose = (key) => () => {
     notistackRef.current.closeSnackbar(key);
@@ -27,6 +40,50 @@ const App = React.memo(({ socket }) => {
       <SnackbarProvider
         classes={{
           containerAnchorOriginTopCenter: classes.alert,
+        }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        iconVariant={{
+          success: (
+            <SuccessIcon
+              style={{
+                marginRight: 12,
+                color: artepunktTheme.palette.success.main,
+              }}
+            />
+          ),
+          error: (
+            <ErrorIcon
+              style={{
+                marginRight: 12,
+                color: artepunktTheme.palette.error.main,
+              }}
+            />
+          ),
+          warning: (
+            <WarningIcon
+              style={{
+                marginRight: 12,
+                color: artepunktTheme.palette.warning.main,
+              }}
+            />
+          ),
+          info: (
+            <InfoIcon
+              style={{
+                marginRight: 12,
+                color: artepunktTheme.palette.info.main,
+              }}
+            />
+          ),
+        }}
+        classes={{
+          variantSuccess: classes.notificationContainer,
+          variantError: classes.notificationContainer,
+          variantWarning: classes.notificationContainer,
+          variantInfo: classes.notificationContainer,
         }}
         dense
         maxSnack={1}

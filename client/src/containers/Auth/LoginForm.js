@@ -1,6 +1,7 @@
 import { Button, Grid, Link, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Field, Form, Formik } from "formik";
+import { useSnackbar } from "notistack";
 import React, { useContext } from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { EventsContext } from "../../contexts/Events.js";
@@ -22,8 +23,56 @@ const LoginForm = () => {
   const [userStore, userDispatch] = useContext(UserContext);
   const [eventsStore, eventsDispatch] = useContext(EventsContext);
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const history = useHistory();
   const classes = useStyles();
+
+  const handleSubmit = async (values) => {
+    try {
+      const { data } = await postLogin.request({ data: values });
+
+      if (data.user) {
+        userDispatch({
+          type: "setUser",
+          authenticated: true,
+          token: data.accessToken,
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          photo: data.user.photo,
+          stripeId: data.user.stripeId,
+          country: data.user.country,
+          saved: data.user.saved.reduce(function (object, item) {
+            object[item] = true;
+            return object;
+          }, {}),
+          intents: data.user.intents.reduce(function (object, item) {
+            object[item.artworkId] = item.intentId;
+            return object;
+          }, {}),
+        });
+        eventsDispatch({
+          type: "setEvents",
+          messages: { items: [], count: data.user.messages },
+          notifications: {
+            ...eventsStore.notifications,
+            items: [],
+            count: data.user.notifications,
+            hasMore: true,
+            dataCursor: 0,
+            dataCeiling: 10,
+          },
+        });
+      }
+      history.push("/");
+    } catch (err) {
+      console.log(err);
+      enqueueSnackbar(postLogin.error.message, {
+        variant: postLogin.error.variant,
+      });
+    }
+  };
 
   return (
     <Formik
@@ -32,45 +81,7 @@ const LoginForm = () => {
         userPassword: "",
       }}
       validationSchema={loginValidation}
-      onSubmit={async (values, { resetForm }) => {
-        const { data } = await postLogin.request({ data: values });
-
-        if (data.user) {
-          userDispatch({
-            type: "setUser",
-            authenticated: true,
-            token: data.accessToken,
-            id: data.user.id,
-            name: data.user.name,
-            email: data.user.email,
-            photo: data.user.photo,
-            stripeId: data.user.stripeId,
-            country: data.user.country,
-            saved: data.user.saved.reduce(function (object, item) {
-              object[item] = true;
-              return object;
-            }, {}),
-            intents: data.user.intents.reduce(function (object, item) {
-              object[item.artworkId] = item.intentId;
-              return object;
-            }, {}),
-          });
-          eventsDispatch({
-            type: "setEvents",
-            messages: { items: [], count: data.user.messages },
-            notifications: {
-              ...eventsStore.notifications,
-              items: [],
-              count: data.user.notifications,
-              hasMore: true,
-              dataCursor: 0,
-              dataCeiling: 10,
-            },
-          });
-        }
-
-        history.push("/");
-      }}
+      onSubmit={handleSubmit}
     >
       {({ values, errors, touched, isSubmitting }) => (
         <Form className={classes.card}>

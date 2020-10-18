@@ -256,7 +256,7 @@ const SettingsSection = ({
         >
           <Formik
             initialValues={{
-              userSaves: user.displaySaves,
+              userSaves: loading ? false : user.displaySaves,
             }}
             enableReinitialize
             validationSchema={preferencesValidation}

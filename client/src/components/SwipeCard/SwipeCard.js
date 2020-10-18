@@ -58,7 +58,11 @@ const SwipeCard = ({
           </Tabs>
         </SkeletonWrapper>
       </AppBar>
-      <SkeletonWrapper loading={loading} width="100%" height="100%" style={{minHeight: '280px'}}>
+      <SkeletonWrapper
+        loading={loading}
+        width="100%"
+        style={{ minHeight: "480px" }}
+      >
         <SwipeableViews
           axis="x"
           index={tabs.value}
@@ -71,8 +75,10 @@ const SwipeCard = ({
                 className={classes.swipeCardBox}
                 hidden={tabs.value !== index}
               >
-                {item.loading ? <LoadingSpinner /> : item.iterable ? (
-                  item.content  ? (
+                {item.loading ? (
+                  <LoadingSpinner />
+                ) : item.iterable ? (
+                  item.content ? (
                     item.component
                   ) : (
                     <Typography variant="h6" align="center">

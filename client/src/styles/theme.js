@@ -82,6 +82,10 @@ export const artepunktTheme = createMuiTheme({
     background: {
       paper: "#424242",
       default: "#303030",
+      notification: "#313131",
+    },
+    border: {
+      main: "#545454",
     },
   },
   padding: {
@@ -154,6 +158,16 @@ artepunktTheme.overrides.MuiFormHelperText = {
   },
 };
 */
+
+artepunktTheme.overrides.MuiSnackbarContent = {
+  root: {
+    minHeight: 48,
+  },
+  action: {
+    height: 25,
+  },
+  message: {},
+};
 
 artepunktTheme.overrides.MuiPopover = {
   paper: {
