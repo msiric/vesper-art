@@ -103,7 +103,6 @@ const Interceptor = ({ children }) => {
   };
 
   const interceptTraffic = (token) => {
-    console.log(token);
     if (token) {
       ax.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     } else {
