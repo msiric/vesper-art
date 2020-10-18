@@ -37,6 +37,7 @@ const useStyles = makeStyles((muiTheme) => ({
     height: "100%",
     margin: "30px 0",
     backgroundSize: "contain",
+    borderRadius: 4,
   },
   avatar: {
     width: muiTheme.spacing(10),

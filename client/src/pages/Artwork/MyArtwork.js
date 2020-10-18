@@ -127,7 +127,13 @@ const MyArtwork = ({ location }) => {
                 },
               },
               "Availability",
-              "Type",
+              {
+                name: "Type",
+                options: {
+                  customBodyRender: (value, tableMeta, updateValue) =>
+                    value || "/",
+                },
+              },
               {
                 name: "Personal license",
                 options: {

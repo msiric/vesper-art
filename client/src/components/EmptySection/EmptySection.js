@@ -18,10 +18,13 @@ const EmptySection = ({ label, loading }) => {
           justifyContent: "center",
           alignItems: "center",
           padding: "126px 0",
+          cursor: "default",
         }}
       >
         <EmptyIcon style={{ fontSize: 56, marginBottom: 20 }} />
-        <Typography variant="body2">{label}</Typography>
+        <Typography variant="body2" style={{ textTransform: "none" }}>
+          {label}
+        </Typography>
       </Box>
     </SkeletonWrapper>
   );

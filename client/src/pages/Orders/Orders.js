@@ -28,6 +28,7 @@ const Orders = () => {
   const fetchOrders = async () => {
     setState((prevState) => ({
       ...prevState,
+      orders: [],
       loading: true,
     }));
     try {

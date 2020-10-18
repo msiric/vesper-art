@@ -175,6 +175,13 @@ artepunktTheme.overrides.MuiTableBody = {
 //   },
 // };
 
+artepunktTheme.overrides.MuiTableCell = {
+  body: {
+    textTransform: "capitalize",
+    cursor: "pointer",
+  },
+};
+
 artepunktTheme.overrides.MuiSnackbarContent = {
   root: {
     minHeight: 48,
