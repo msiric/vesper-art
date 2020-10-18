@@ -2,12 +2,15 @@ import axios from "axios";
 import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
+import useSound from "use-sound";
+import notificationSound from "../../assets/sounds/notification-sound.wav";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import { AppContext } from "../../contexts/App.js";
 import { EventsContext } from "../../contexts/Events.js";
 import { UserContext } from "../../contexts/User.js";
 import App from "../../pages/App/App.js";
 import { postLogout } from "../../services/user.js";
+
 const ENDPOINT = "http://localhost:5000";
 
 const ax = axios.create();
@@ -17,6 +20,8 @@ const Interceptor = ({ children }) => {
   const [appStore, appDispatch] = useContext(AppContext);
   const [userStore, userDispatch] = useContext(UserContext);
   const [eventsStore, eventsDispatch] = useContext(EventsContext);
+
+  const [playNotification] = useSound(notificationSound);
 
   const classes = {};
 
@@ -172,11 +177,11 @@ const Interceptor = ({ children }) => {
   };
 
   const handleSocketNotification = (data) => {
-    console.log("data", data);
     eventsDispatch({
       type: "addNotification",
       notification: data,
     });
+    playNotification();
   };
 
   const handleSocketRefresh = async () => {

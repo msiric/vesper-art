@@ -36,6 +36,7 @@
     "react-swipeable-views": "^0.13.9",
     "recharts": "^1.8.5",
     "socket.io-client": "^2.3.0",
+    "use-sound": "^1.0.2",
     "velocity-animate": "^1.5.2",
     "velocity-react": "^1.4.3",
     "yup": "^0.28.3"
