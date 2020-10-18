@@ -177,8 +177,9 @@ const reducer = (state, action) => {
         ...state,
         notifications: {
           ...state.notifications,
-          count: state.notifications.count + 1,
           items: [action.notification].concat(state.notifications.items),
+          count: state.notifications.count + 1,
+          dataCursor: state.notifications.dataCursor + 1,
         },
       };
     case "updateSearch":

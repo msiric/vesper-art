@@ -162,18 +162,18 @@ artepunktTheme.overrides.MuiFormHelperText = {
 artepunktTheme.overrides.MuiTableBody = {
   root: {
     "&>tr:nth-child(odd)": {
-      backgroundColor: "rgba(255, 255, 255, 0.08)",
+      backgroundColor: "#3d3d3d",
     },
   },
 };
 
-artepunktTheme.overrides.MuiTableRow = {
-  root: {
-    "&:hover": {
-      backgroundColor: "rgba(214, 128, 36, 0.5) !important",
-    },
-  },
-};
+// artepunktTheme.overrides.MuiTableRow = {
+//   root: {
+//     "&:hover": {
+//       backgroundColor: "rgba(214, 128, 36, 0.5) !important",
+//     },
+//   },
+// };
 
 artepunktTheme.overrides.MuiSnackbarContent = {
   root: {

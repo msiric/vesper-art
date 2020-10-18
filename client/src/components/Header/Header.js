@@ -112,7 +112,9 @@ const Header = ({ socket, history }) => {
           eventsDispatch({
             type: "updateNotifications",
             notifications: {
-              items: data.notifications,
+              items: [...eventsStore.notifications.items].concat(
+                data.notifications
+              ),
               hasMore:
                 data.notifications.length <
                 eventsStore.notifications.dataCeiling
