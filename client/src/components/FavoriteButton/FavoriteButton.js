@@ -5,7 +5,7 @@ import {
   FavoriteRounded as FavoritedIcon,
 } from "@material-ui/icons";
 import React, { useContext, useState } from "react";
-import { EventsContext } from "../../contexts/Events.js";
+import { UserContext } from "../../contexts/User.js";
 import { deleteSave, postSave } from "../../services/artwork.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -28,14 +28,14 @@ const useStyles = makeStyles((theme) => ({
 
 const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
   const [state, setState] = useState({ loading: false });
-  const [eventsStore, eventsDispatch] = useContext(EventsContext);
+  const [userStore, userDispatch] = useContext(UserContext);
   const classes = useStyles();
 
   const handleSaveArtwork = async (id) => {
     try {
       setState({ loading: true });
       await postSave.request({ artworkId: id });
-      eventsDispatch({
+      userDispatch({
         type: "updateSaves",
         saved: {
           [id]: true,
@@ -53,7 +53,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
     try {
       setState({ loading: true });
       await deleteSave.request({ artworkId: id });
-      eventsDispatch({
+      userDispatch({
         type: "updateSaves",
         saved: {
           [id]: false,
