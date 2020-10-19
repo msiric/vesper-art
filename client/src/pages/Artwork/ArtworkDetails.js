@@ -107,7 +107,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
           : {};
       if (query.notif === "comment" && query.ref && !foundHighlight)
         enqueueSnackbar("Comment not found", {
-          variant: "warning",
+          variant: "error",
         });
       setState((prevState) => ({
         ...prevState,
