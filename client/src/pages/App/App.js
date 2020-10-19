@@ -89,6 +89,7 @@ const App = React.memo(({ socket }) => {
         maxSnack={1}
         preventDuplicate
         ref={notistackRef}
+        autoHideDuration={2500}
         action={(key) => (
           <IconButton
             color="inherit"

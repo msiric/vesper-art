@@ -91,6 +91,7 @@ const Header = ({ socket, history }) => {
 
   const handleNotificationsMenuOpen = async (e) => {
     const target = e.currentTarget;
+    console.log(eventsStore);
     if (
       eventsStore.notifications.items.length < eventsStore.notifications.limit
     ) {
@@ -173,6 +174,9 @@ const Header = ({ socket, history }) => {
 
       userDispatch({
         type: "resetUser",
+      });
+      eventsDispatch({
+        type: "resetEvents",
       });
 
       socket.disconnect();
@@ -371,7 +375,7 @@ const Header = ({ socket, history }) => {
             variant="h6"
             noWrap
           >
-            Material-UI
+            diagon
           </Typography>
           <Typography
             component={Link}
@@ -380,7 +384,7 @@ const Header = ({ socket, history }) => {
             variant="h6"
             noWrap
           >
-            UI
+            d
           </Typography>
           <div className={classes.search}>
             <Formik

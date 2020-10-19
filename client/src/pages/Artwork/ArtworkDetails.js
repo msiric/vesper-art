@@ -3,6 +3,7 @@ import {
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
 } from "@material-ui/icons";
+import { useSnackbar } from "notistack";
 import queryString from "query-string";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -58,6 +59,8 @@ const ArtworkDetails = ({ match, location, socket }) => {
   const [userStore] = useContext(UserContext);
   const [state, setState] = useState({ ...initialState });
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const history = useHistory();
   const globalClasses = globalStyles();
 
@@ -102,7 +105,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
         !foundHighlight && query.notif === "comment" && query.ref
           ? await fetchHighlight(query.ref)
           : {};
-      // $TODO If highlight not found show error
+      if (query.notif === "comment" && query.ref && !foundHighlight)
+        enqueueSnackbar("Comment not found", {
+          variant: "warning",
+        });
       setState((prevState) => ({
         ...prevState,
         loading: false,

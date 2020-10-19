@@ -76,6 +76,7 @@ const reducer = (state, action) => {
           items: [],
           count: 0,
           opened: false,
+          limit: 50,
           hasMore: true,
           dataCursor: 0,
           dataCeiling: 10,
