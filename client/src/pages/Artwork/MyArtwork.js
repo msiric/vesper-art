@@ -89,10 +89,6 @@ const MyArtwork = ({ location }) => {
     fetchArtwork();
   }, []);
 
-  function handleRowClick(id) {
-    history.push(`/artwork/${id}`);
-  }
-
   return (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>

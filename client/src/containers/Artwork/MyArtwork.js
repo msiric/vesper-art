@@ -1,4 +1,4 @@
-import { Button, Input, Paper } from "@material-ui/core";
+import { Box, Button, Input, Paper } from "@material-ui/core";
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import { Link, useHistory, withRouter } from "react-router-dom";
@@ -99,12 +99,12 @@ const MyArtwork = () => {
 
   return (
     <>
-      <div className="flex flex-1 w-full items-center justify-between">
-        <div className="flex items-center">
+      <Box className="flex flex-1 w-full items-center justify-between">
+        <Box className="flex items-center">
           <MainHeading text="My artwork" />
-        </div>
+        </Box>
 
-        <div className="flex flex-1 items-center justify-center px-12">
+        <Box className="flex flex-1 items-center justify-center px-12">
           <Paper
             className="flex items-center w-full max-w-512 px-8 py-4 rounded-8"
             elevation={1}
@@ -121,7 +121,7 @@ const MyArtwork = () => {
               onChange={(e) => handleSearchChange(e)}
             />
           </Paper>
-        </div>
+        </Box>
         <Button
           component={Link}
           to="/add_artwork"
@@ -130,8 +130,8 @@ const MyArtwork = () => {
         >
           Add new artwork
         </Button>
-      </div>
-      <div className="w-full flex flex-col">
+      </Box>
+      <Box className="w-full flex flex-col">
         <Datatable
           data={state.artwork}
           sort={state.sort}
@@ -148,7 +148,7 @@ const MyArtwork = () => {
           handleChangePage={handleChangePage}
           handleChangeRowsPerPage={handleChangeRowsPerPage}
         />
-      </div>
+      </Box>
     </>
   );
 };

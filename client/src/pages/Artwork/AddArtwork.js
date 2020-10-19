@@ -11,10 +11,10 @@ import { deleteEmptyValues } from "../../utils/helpers.js";
 const initialState = { capabilities: {} };
 
 const AddArtwork = () => {
-  const globalClasses = globalStyles();
-
   const [userStore] = useContext(UserContext);
   const [state, setState] = useState({ ...initialState });
+
+  const globalClasses = globalStyles();
 
   const fetchAccount = async () => {
     try {

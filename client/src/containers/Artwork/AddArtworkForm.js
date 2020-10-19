@@ -16,9 +16,28 @@ import { addArtwork } from "../../validation/media.js";
 
 const AddArtworkForm = ({ capabilities, postArtwork, deleteEmptyValues }) => {
   const [userStore] = useContext(UserContext);
+
   const history = useHistory();
+
   /* const classes = AddArtworkStyles(); */
   const classes = {};
+
+  const handleSubmit = async (values) => {
+    const data = deleteEmptyValues(values);
+    const formData = new FormData();
+    for (let value of Object.keys(data)) {
+      formData.append(value, data[value]);
+    }
+    try {
+      await postArtwork.request({ data: formData });
+      history.push({
+        pathname: "/",
+        state: { message: "Artwork published" },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <Card width="100%">
@@ -36,28 +55,7 @@ const AddArtworkForm = ({ capabilities, postArtwork, deleteEmptyValues }) => {
           artworkDescription: "",
         }}
         validationSchema={artworkValidation.concat(addArtwork)}
-        onSubmit={async (values, { resetForm }) => {
-          const data = deleteEmptyValues(values);
-          const formData = new FormData();
-          for (let value of Object.keys(data)) {
-            formData.append(value, data[value]);
-          }
-          try {
-            /*               const {
-                data: { artworkCover, artworkMedia, artworkDimensions },
-              } = await postMedia.request({ data: formData });
-              values.artworkCover = artworkCover;
-              values.artworkMedia = artworkMedia;
-              values.artworkDimensions = artworkDimensions; */
-            await postArtwork.request({ data: formData });
-            history.push({
-              pathname: "/",
-              state: { message: "Artwork published" },
-            });
-          } catch (err) {
-            console.log(err);
-          }
-        }}
+        onSubmit={handleSubmit}
       >
         {({ values, errors, touched, isSubmitting }) => (
           <Form className={classes.card}>

@@ -1,6 +1,7 @@
 import { Grid } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
+import EmptySection from "../../components/EmptySection/EmptySection.js";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
 import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
 import UserPanel from "../../containers/UserPanel/UserPanel.js";
@@ -93,7 +94,10 @@ const SearchResults = ({ match, location, history }) => {
             />
           )
         ) : (
-          "No results"
+          <EmptySection
+            label="No results matched your query"
+            loading={state.loading}
+          />
         )}
       </Grid>
     </Grid>

@@ -63,6 +63,26 @@ const EditArtworkForm = ({
     };
   };
 
+  const handleSubmit = async (values) => {
+    try {
+      const data = deleteEmptyValues(formatValues(values));
+      const formData = new FormData();
+      for (let value of Object.keys(data)) {
+        formData.append(value, data[value]);
+      }
+      await patchArtwork.request({
+        artworkId: version.artwork,
+        data: formData,
+      });
+      history.push({
+        pathname: "/",
+        state: { message: "Artwork updated" },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <Container className={classes.fixed} style={{ height: "100%" }}>
       <Grid
@@ -86,25 +106,7 @@ const EditArtworkForm = ({
             }}
             validationSchema={artworkValidation.concat(updateArtwork)}
             enableReinitialize={true}
-            onSubmit={async (values, { resetForm }) => {
-              const data = deleteEmptyValues(formatValues(values));
-              const formData = new FormData();
-              for (let value of Object.keys(data)) {
-                formData.append(value, data[value]);
-              }
-              try {
-                await patchArtwork.request({
-                  artworkId: version.artwork,
-                  data: formData,
-                });
-                history.push({
-                  pathname: "/",
-                  state: { message: "Artwork updated" },
-                });
-              } catch (err) {
-                console.log(err);
-              }
-            }}
+            onSubmit={handleSubmit}
           >
             {({ values, errors, touched, isSubmitting }) => (
               <Form className={classes.card}>
