@@ -151,6 +151,7 @@ const Interceptor = ({ children }) => {
           country: data.user.country,
           saved: data.user.saved,
         });
+
         eventsDispatch({
           type: "updateEvents",
           messages: { items: [], count: data.user.messages },
@@ -184,13 +185,14 @@ const Interceptor = ({ children }) => {
     playNotification();
   };
 
-  const handleSocketRefresh = async () => {
+  const handleSocketRefresh = async (payload) => {
     try {
       const { data } = await axios.post(`/api/auth/refresh_token`, {
         headers: {
           credentials: "include",
         },
       });
+
       userDispatch({
         type: "updateUser",
         token: data.accessToken,
@@ -200,12 +202,10 @@ const Interceptor = ({ children }) => {
         country: data.user.country,
         saved: data.user.saved,
       });
-      eventsDispatch({
-        type: "updateEvents",
-        messages: { items: [], count: data.user.messages },
-        notifications: { count: data.user.notifications },
+      socket.emit("authenticateUser", {
+        token: `Bearer ${data.accessToken}`,
+        data: payload,
       });
-      socket.emit("authenticateUser", `Bearer ${data.accessToken}`);
     } catch (err) {
       userDispatch({
         type: "resetUser",
@@ -216,7 +216,9 @@ const Interceptor = ({ children }) => {
   const handleSocket = (token) => {
     socket = openSocket(ENDPOINT);
 
-    socket.emit("authenticateUser", token ? `Bearer ${token}` : null);
+    socket.emit("authenticateUser", {
+      token: token ? `Bearer ${token}` : null,
+    });
     socket.on("sendNotification", handleSocketNotification);
     socket.on("expiredToken", handleSocketRefresh);
   };
