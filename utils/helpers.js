@@ -1,3 +1,4 @@
+import currency from "currency.js";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
@@ -35,6 +36,27 @@ export const requestHandler = (promise, transaction, params) => async (
       next(error);
     }
   }
+};
+
+export const formatArtworkValues = (data) => {
+  return {
+    ...data,
+    artworkPersonal:
+      data.artworkAvailability === "available" &&
+      data.artworkType === "commercial"
+        ? data.artworkUse === "separate" || data.artworkLicense === "personal"
+          ? currency(data.artworkPersonal).intValue
+          : null
+        : "",
+    artworkCommercial:
+      data.artworkLicense === "commercial"
+        ? data.artworkAvailability === "available" &&
+          data.artworkLicense === "commercial" &&
+          data.artworkUse === "separate"
+          ? currency(data.artworkCommercial).add(data.artworkPersonal).intValue
+          : currency(data.artworkPersonal).intValue
+        : null,
+  };
 };
 
 export const isAuthenticated = async (req, res, next) => {

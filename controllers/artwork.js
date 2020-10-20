@@ -23,7 +23,11 @@ import {
   fetchUserById,
   removeUserSave,
 } from "../services/user.js";
-import { formatParams, sanitizeData } from "../utils/helpers.js";
+import {
+  formatArtworkValues,
+  formatParams,
+  sanitizeData,
+} from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 import artworkValidator from "../validation/artwork.js";
 
@@ -118,9 +122,10 @@ export const postNewArtwork = async ({
     fileName: artworkFilename,
     fileType: "artwork",
   });
-  const { error } = artworkValidator(sanitizeData(artworkData));
+  const formattedData = formatArtworkValues(artworkData);
+  const { error } = artworkValidator(sanitizeData(formattedData));
   if (error) throw createError(400, error);
-  if (artworkData.artworkPersonal || artworkData.artworkCommercial) {
+  if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
     const foundUser = await fetchUserById({
       userId,
       session,
@@ -135,7 +140,7 @@ export const postNewArtwork = async ({
       accountId: foundUser.stripeId,
     });
     if (
-      (artworkData.artworkPersonal || artworkData.artworkCommercial) &&
+      (formattedData.artworkPersonal || formattedData.artworkCommercial) &&
       // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
       (foundAccount.capabilities.card_payments !== "active" ||
         foundAccount.capabilities.transfers !== "active")
@@ -147,7 +152,7 @@ export const postNewArtwork = async ({
     }
   }
   const savedVersion = await addNewArtwork({
-    artworkData,
+    artworkData: ormattedData,
     artworkUpload,
     userId,
     session,
@@ -177,7 +182,9 @@ export const updateArtwork = async ({
     fileName: artworkFilename,
     fileType: "artwork",
   });
-  const { error } = artworkValidator(sanitizeData(artworkData));
+  const formattedData = formatArtworkValues(artworkData);
+  console.log("ARTWORK DATA", artworkData, formattedData);
+  const { error } = artworkValidator(sanitizeData(formattedData));
   if (error) throw createError(400, error);
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
@@ -185,7 +192,7 @@ export const updateArtwork = async ({
     session,
   });
   if (foundArtwork) {
-    if (artworkData.artworkPersonal || artworkData.artworkCommercial) {
+    if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
       const foundUser = await fetchUserById({
         userId,
         session,
@@ -200,7 +207,7 @@ export const updateArtwork = async ({
         accountId: foundUser.stripeId,
       });
       if (
-        (artworkData.artworkPersonal || artworkData.artworkCommercial) &&
+        (formattedData.artworkPersonal || formattedData.artworkCommercial) &&
         // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
         (foundAccount.capabilities.card_payments !== "active" ||
           foundAccount.capabilities.transfers !== "active")
@@ -213,7 +220,7 @@ export const updateArtwork = async ({
     }
     const savedVersion = await addNewVersion({
       prevArtwork: foundArtwork.current,
-      artworkData,
+      artworkData: formattedData,
       artworkUpload,
       session,
     });
@@ -223,7 +230,7 @@ export const updateArtwork = async ({
       session,
     });
     if (!foundOrder) {
-      if (artworkData.artworkCover && artworkData.artworkMedia) {
+      if (formattedData.artworkCover && formattedData.artworkMedia) {
         await deleteS3Object({
           fileLink: foundArtwork.current.cover,
           folderName: "artworkCovers/",

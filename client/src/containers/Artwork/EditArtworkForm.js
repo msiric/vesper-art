@@ -42,24 +42,21 @@ const EditArtworkForm = ({
       artworkLicense:
         data.artworkAvailability === "available" ? data.artworkLicense : "",
       artworkPersonal:
-        data.artworkUse !== "included"
-          ? data.artworkAvailability === "available" &&
-            data.artworkLicense === "commercial"
-            ? data.artworkPersonal
-            : ""
-          : data.artworkPersonal,
+        data.artworkAvailability === "available" &&
+        data.artworkType === "commercial"
+          ? data.artworkPersonal
+          : "",
       artworkUse:
         data.artworkAvailability === "available" &&
         data.artworkLicense === "commercial"
-          ? data.artworkPersonal
+          ? data.artworkUse
           : "",
       artworkCommercial:
-        data.artworkLicense !== "personal"
-          ? data.artworkAvailability === "available" &&
-            data.artworkType === "commercial"
-            ? data.artworkPersonal
-            : ""
-          : null,
+        data.artworkAvailability === "available" &&
+        data.artworkLicense === "commercial" &&
+        data.artworkUse === "separate"
+          ? data.artworkCommercial
+          : "",
     };
   };
 
@@ -99,8 +96,14 @@ const EditArtworkForm = ({
               artworkAvailability: version.availability || "",
               artworkLicense: version.license || "",
               artworkUse: version.use || "",
-              artworkPersonal: version.personal || "",
-              artworkCommercial: version.commercial - version.personal || "",
+              artworkPersonal:
+                version.use === "included"
+                  ? version.commercial
+                  : version.personal || "",
+              artworkCommercial:
+                version.license === "commercial"
+                  ? version.commercial - version.personal || ""
+                  : "",
               artworkCategory: version.category || "",
               artworkDescription: version.description || "",
             }}

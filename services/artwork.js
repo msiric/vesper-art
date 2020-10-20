@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import currency from "currency.js";
 import Artwork from "../models/artwork.js";
 import License from "../models/license.js";
 import Version from "../models/version.js";
@@ -187,13 +186,8 @@ export const addNewArtwork = async ({
   newVersion.availability = artworkData.artworkAvailability || "";
   newVersion.license = artworkData.artworkLicense || "";
   newVersion.use = artworkData.artworkUse || "";
-  newVersion.personal = currency(artworkData.artworkPersonal).intValue || 0;
-  newVersion.commercial = artworkData.artworkCommercial
-    ? artworkData.artworkUse !== "included"
-      ? currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
-          .intValue
-      : currency(artworkData.artworkPersonal).intValue
-    : null;
+  newVersion.personal = artworkData.artworkPersonal;
+  newVersion.commercial = artworkData.artworkCommercial;
   newVersion.category = artworkData.artworkCategory || "";
   newVersion.description = artworkData.artworkDescription || "";
   const savedVersion = await newVersion.save({ session });
@@ -217,30 +211,23 @@ export const addNewVersion = async ({
   artworkUpload,
   session = null,
 }) => {
-  console.log(artworkData, prevArtwork);
   const newVersion = new Version();
   newVersion.cover = artworkUpload.fileCover || prevArtwork.cover;
   newVersion.media = artworkUpload.fileMedia || prevArtwork.media;
   newVersion.height = artworkUpload.fileHeight || prevArtwork.height;
   newVersion.width = artworkUpload.fileWidth || prevArtwork.width;
-  newVersion.title = artworkData.artworkTitle || prevArtwork.title;
-  newVersion.type = artworkData.artworkType || prevArtwork.type;
+  newVersion.title = artworkData.artworkTitle || prevArtwork.artworkTitle;
+  newVersion.type = artworkData.artworkType || prevArtwork.artworkType;
   newVersion.availability =
-    artworkData.artworkAvailability || prevArtwork.availability;
-  newVersion.license = artworkData.artworkLicense || prevArtwork.license;
-  newVersion.use = artworkData.artworkUse || prevArtwork.use;
-  newVersion.personal =
-    currency(artworkData.artworkPersonal).intValue ||
-    currency(prevArtwork.personal).intValue;
-  newVersion.commercial = artworkData.artworkCommercial
-    ? artworkData.artworkUse !== "included"
-      ? currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
-          .intValue
-      : currency(artworkData.artworkPersonal).intValue
-    : null;
-  newVersion.category = artworkData.artworkCategory || prevArtwork.category;
+    artworkData.artworkAvailability || prevArtwork.artworkAvailability;
+  newVersion.license = artworkData.artworkLicense || prevArtwork.artworkLicense;
+  newVersion.use = artworkData.artworkUse || prevArtwork.artworkUse;
+  newVersion.personal = artworkData.artworkPersonal;
+  newVersion.commercial = artworkData.artworkCommercial;
+  newVersion.category =
+    artworkData.artworkCategory || prevArtwork.artworkCategory;
   newVersion.description =
-    artworkData.artworkDescription || prevArtwork.description;
+    artworkData.artworkDescription || prevArtwork.artworkDescription;
   newVersion.artwork = prevArtwork.artwork;
   return await newVersion.save({ session });
 };
