@@ -349,7 +349,10 @@ const EditArtworkForm = ({
                     </Field>
                   </SkeletonWrapper>
                 </CardContent>
-                <CardActions className={classes.actions}>
+                <CardActions
+                  className={classes.actions}
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
                   <SkeletonWrapper loading={loading}>
                     <Button
                       type="submit"

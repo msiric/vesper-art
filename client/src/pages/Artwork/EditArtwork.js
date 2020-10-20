@@ -100,7 +100,7 @@ const EditArtwork = ({ match, location }) => {
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         {state.loading || state.artwork._id ? (
-          <Grid item sm={12}>
+          <Grid item sm={12} style={{ height: "100%" }}>
             <MainHeading
               text={"Edit artwork"}
               className={globalClasses.mainHeading}

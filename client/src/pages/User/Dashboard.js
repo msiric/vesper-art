@@ -214,7 +214,9 @@ const Dashboard = ({ location }) => {
             handleSelectChange={handleSelectChange}
           />
           {userStore.stripeId && (
-            <Button onClick={handleStripeRedirect}>Stripe dashboard</Button>
+            <Button variant="outlined" onClick={handleStripeRedirect}>
+              Stripe dashboard
+            </Button>
           )}
           <DashboardStatistics
             loading={state.loading}

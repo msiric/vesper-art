@@ -26,7 +26,7 @@ const DashboardVisualization = ({
   const classes = {};
 
   return (
-    <Grid container className={classes.graphArea} spacing={6}>
+    <Grid container className={classes.graphArea}>
       <GridItem item xs={12} md={8} mb={artepunktTheme.margin.spacing}>
         <Box className={classes.graph}>
           <Card m={1} p={2}>

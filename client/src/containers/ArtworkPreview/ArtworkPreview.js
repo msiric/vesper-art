@@ -1,4 +1,4 @@
-import { Box, Card, CardMedia, Divider, Grow } from "@material-ui/core";
+import { Box, Card, CardMedia, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -118,60 +118,58 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
   const classes = useStyles();
 
   return (
-    <Grow in>
-      <Card
-        className={classes.artworkPreviewCard}
-        style={{
-          minHeight: height,
-          padding: 16,
-        }}
-      >
-        <Box style={{ marginBottom: 12 }}>
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography fontWeight="fontWeightBold" fontSize="h5.fontSize">{`${
-              version.title
-            }, ${new Date(version.created).getFullYear()}`}</Typography>
-          </SkeletonWrapper>
-        </Box>
-        <Divider />
-        <SkeletonWrapper loading={loading} width="100%">
-          <CardMedia
-            className={classes.artworkPreviewMedia}
-            image={version.cover}
-            title={version.title}
-            style={loading ? { width: "100%", height } : { minHeight: height }}
-          />
+    <Card
+      className={classes.artworkPreviewCard}
+      style={{
+        minHeight: height,
+        padding: 16,
+      }}
+    >
+      <Box style={{ marginBottom: 12 }}>
+        <SkeletonWrapper variant="text" loading={loading}>
+          <Typography fontWeight="fontWeightBold" fontSize="h5.fontSize">{`${
+            version.title
+          }, ${new Date(version.created).getFullYear()}`}</Typography>
         </SkeletonWrapper>
+      </Box>
+      <Divider />
+      <SkeletonWrapper loading={loading} width="100%">
+        <CardMedia
+          className={classes.artworkPreviewMedia}
+          image={version.cover}
+          title={version.title}
+          style={loading ? { width: "100%", height } : { minHeight: height }}
+        />
+      </SkeletonWrapper>
+      <Box>
+        <SkeletonWrapper
+          variant="text"
+          loading={loading}
+          width="100%"
+          height="120px"
+        >
+          <Typography mb={2} variant="body2">
+            {version.description}
+          </Typography>
+        </SkeletonWrapper>
+        <Divider />
         <Box>
-          <SkeletonWrapper
-            variant="text"
-            loading={loading}
-            width="100%"
-            height="120px"
-          >
-            <Typography mb={2} variant="body2">
-              {version.description}
+          <SkeletonWrapper variant="text" loading={loading}>
+            <Typography mt={2} fontSize={12} fontStyle="italic">
+              You are previewing a low resolution thumbnail of the original
+              artwork
             </Typography>
           </SkeletonWrapper>
-          <Divider />
-          <Box>
-            <SkeletonWrapper variant="text" loading={loading}>
-              <Typography mt={2} fontSize={12} fontStyle="italic">
-                You are previewing a low resolution thumbnail of the original
-                artwork
-              </Typography>
-            </SkeletonWrapper>
-            <SkeletonWrapper variant="text" loading={loading}>
-              <Typography
-                mb={2}
-                fontSize={12}
-                fontStyle="italic"
-              >{`The original artwork dimensions (in pixels) are: ${version.width}x${version.height}`}</Typography>
-            </SkeletonWrapper>
-          </Box>
+          <SkeletonWrapper variant="text" loading={loading}>
+            <Typography
+              mb={2}
+              fontSize={12}
+              fontStyle="italic"
+            >{`The original artwork dimensions (in pixels) are: ${version.width}x${version.height}`}</Typography>
+          </SkeletonWrapper>
         </Box>
-      </Card>
-    </Grow>
+      </Box>
+    </Card>
   );
 };
 

@@ -1,4 +1,4 @@
-import { Box, Fade, Grid } from "@material-ui/core";
+import { Box, Grid } from "@material-ui/core";
 import React, { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
@@ -40,9 +40,7 @@ const UserPanel = ({ elements, hasMore, loadMore, enqueueSnackbar }) => {
                 padding: 12,
               }}
             >
-              <Fade in>
-                <ProfileCard user={element} loading={false} />
-              </Fade>
+              <ProfileCard user={element} loading={false} />
             </Grid>
           ))}
         </Grid>
