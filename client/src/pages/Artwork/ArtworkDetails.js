@@ -8,13 +8,13 @@ import queryString from "query-string";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
-import ArtistSection from "../../containers/ArtistSection/ArtistSection.js";
-import ArtworkActions from "../../containers/ArtworkActions/ArtworkActions.js";
-import ArtworkInfo from "../../containers/ArtworkInfo/ArtworkInfo.js";
-import ArtworkPreview from "../../containers/ArtworkPreview/ArtworkPreview.js";
-import CommentSection from "../../containers/CommentSection/CommentSection.js";
-import LicenseForm from "../../containers/LicenseForm/LicenseForm.js";
+import ArtistSection from "../../containers/ArtistSection/index.js";
+import ArtworkActions from "../../containers/ArtworkActions/index.js";
+import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
+import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
+import CommentSection from "../../containers/CommentSection/index.js";
 import { UserContext } from "../../contexts/User.js";
+import LicenseForm from "../../forms/LicenseForm/LicenseForm.js";
 import {
   deleteComment,
   getComment,

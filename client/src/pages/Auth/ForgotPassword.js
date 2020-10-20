@@ -1,15 +1,15 @@
-import React from 'react';
-import { Avatar, Typography, Container } from '@material-ui/core';
-import { VpnKeyRounded as RecoveryAvatar } from '@material-ui/icons';
-import ForgotPasswordForm from '../../containers/Auth/ForgotPasswordForm.js';
-import { makeStyles } from '@material-ui/core/styles';
+import { Avatar, Container, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { VpnKeyRounded as RecoveryAvatar } from "@material-ui/icons";
+import React from "react";
+import ForgotPasswordForm from "../../forms/RecoveryForm/ForgotPasswordForm.js";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),

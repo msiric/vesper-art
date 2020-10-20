@@ -12,8 +12,8 @@ import {
 import { MoreVertRounded as MoreIcon } from "@material-ui/icons";
 import React, { useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
-import EditCommentForm from "../../containers/Comment/EditCommentForm.js";
 import { UserContext } from "../../contexts/User.js";
+import EditCommentForm from "../../forms/CommentForm/EditCommentForm.js";
 import { artepunktTheme, Typography } from "../../styles/theme.js";
 import SkeletonWrapper from "../SkeletonWrapper/SkeletonWrapper.js";
 

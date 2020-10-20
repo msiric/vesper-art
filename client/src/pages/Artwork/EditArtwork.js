@@ -2,10 +2,10 @@ import { Container, Grid } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import MainHeading from "../../components/MainHeading/MainHeading.js";
+import MainHeading from "../../components/MainHeading/index.js";
 import PromptModal from "../../components/PromptModal/PromptModal.js";
-import EditArtworkForm from "../../containers/Artwork/EditArtworkForm.js";
 import { UserContext } from "../../contexts/User.js";
+import EditArtworkForm from "../../forms/ArtworkForm/EditArtworkForm.js";
 import {
   deleteArtwork,
   editArtwork,

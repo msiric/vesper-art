@@ -3,10 +3,10 @@ import { withSnackbar } from "notistack";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import ModalWrapper from "../../components/ModalWrapper/ModalWrapper.js";
-import EditUserForm from "../../containers/EditUserForm/EditUserForm.js";
-import UserArtworkPanel from "../../containers/UserArtworkPanel/UserArtworkPanel.js";
-import UserProfileBanner from "../../containers/UserProfileBanner/UserProfileBanner.js";
+import ProfileArtwork from "../../containers/ProfileArtwork/index.js";
+import ProfileInfo from "../../containers/ProfileInfo/index.js";
 import { UserContext } from "../../contexts/User.js";
+import EditUserForm from "../../forms/UserForm/EditUserForm.js";
 import { getArtwork } from "../../services/artwork.js";
 import { getSaves, getUser } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
@@ -225,16 +225,12 @@ const Profile = ({ match, location }) => {
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <>
-          <UserProfileBanner
+          <ProfileInfo
             user={state.user}
             handleModalOpen={handleModalOpen}
             loading={state.loading}
           />
-          {/*             <UserProfilePanel
-              user={state.user}
-              handleModalOpen={handleModalOpen}
-            /> */}
-          <UserArtworkPanel
+          <ProfileArtwork
             tabs={state.tabs}
             user={state.user}
             loadMoreArtwork={loadMoreArtwork}

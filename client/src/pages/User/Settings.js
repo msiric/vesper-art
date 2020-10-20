@@ -2,8 +2,8 @@ import { Container, Grid } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
-import MainHeading from "../../components/MainHeading/MainHeading.js";
-import SettingsSection from "../../containers/SettingsSection/SettingsSection.js";
+import MainHeading from "../../components/MainHeading/index.js";
+import SettingsSection from "../../containers/SettingsSection/index.js";
 import { UserContext } from "../../contexts/User.js";
 import {
   deleteUser,

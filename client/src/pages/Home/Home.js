@@ -2,7 +2,7 @@ import { Grid } from "@material-ui/core";
 import { withSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import SelectInput from "../../components/SelectInput/SelectInput.js";
-import ArtworkPanel from "../../containers/ArtworkPanel/ArtworkPanel.js";
+import ArtworkPanel from "../../containers/ArtworkPanel/index.js";
 import { getArtwork } from "../../services/artwork.js";
 
 const initialState = {

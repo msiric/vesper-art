@@ -1,15 +1,15 @@
-import React from 'react';
-import { Avatar, Typography, Container } from '@material-ui/core';
-import { LockRounded as LoginAvatar } from '@material-ui/icons';
-import LoginForm from '../../containers/Auth/LoginForm.js';
-import { makeStyles } from '@material-ui/core/styles';
+import { Avatar, Container, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { LockRounded as LoginAvatar } from "@material-ui/icons";
+import React from "react";
+import LoginForm from "../../forms/LoginForm/LoginForm.js";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
