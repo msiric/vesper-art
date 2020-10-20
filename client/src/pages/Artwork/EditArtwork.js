@@ -1,7 +1,9 @@
 import { Container, Grid } from "@material-ui/core";
+import { useSnackbar } from "notistack";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/MainHeading.js";
+import PromptModal from "../../components/PromptModal/PromptModal.js";
 import EditArtworkForm from "../../containers/Artwork/EditArtworkForm.js";
 import { UserContext } from "../../contexts/User.js";
 import {
@@ -19,6 +21,9 @@ const initialState = {
   artwork: {},
   fileInput: null,
   capabilities: {},
+  modal: {
+    open: false,
+  },
 };
 
 const EditArtwork = ({ match, location }) => {
@@ -26,6 +31,8 @@ const EditArtwork = ({ match, location }) => {
   const [state, setState] = useState({
     ...initialState,
   });
+
+  const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
 
   const globalClasses = globalStyles();
@@ -52,6 +59,20 @@ const EditArtwork = ({ match, location }) => {
     }
   };
 
+  const handleModalOpen = () => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: { ...prevState.modal, open: true },
+    }));
+  };
+
+  const handleModalClose = () => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: { ...prevState.modal, open: false },
+    }));
+  };
+
   const handleDeleteArtwork = async () => {
     try {
       setState({ ...state, isDeleting: true });
@@ -59,12 +80,15 @@ const EditArtwork = ({ match, location }) => {
         artworkId: state.artwork._id,
         data: state.artwork.current._id,
       });
-      history.push({
-        pathname: "/",
-        state: { message: "Artwork deleted" },
+      history.push("/");
+      enqueueSnackbar(deleteArtwork.success.message, {
+        variant: deleteArtwork.success.variant,
       });
     } catch (err) {
       setState({ ...state, isDeleting: false });
+      enqueueSnackbar(deleteArtwork.error.message, {
+        variant: deleteArtwork.error.variant,
+      });
     }
   };
 
@@ -86,7 +110,7 @@ const EditArtwork = ({ match, location }) => {
               version={state.artwork.current}
               patchArtwork={patchArtwork}
               deleteEmptyValues={deleteEmptyValues}
-              handleDeleteArtwork={handleDeleteArtwork}
+              handleModalOpen={handleModalOpen}
               loading={state.loading}
             />
           </Grid>
@@ -94,6 +118,15 @@ const EditArtwork = ({ match, location }) => {
           "Ne postoji"
         )}
       </Grid>
+      <PromptModal
+        open={state.modal.open}
+        handleConfirm={handleDeleteArtwork}
+        handleClose={handleModalClose}
+        ariaLabel="Delete artwork"
+        promptTitle="Are you sure you want to delete this artwork?"
+        promptConfirm="Delete"
+        promptCancel="Cancel"
+      />
     </Container>
   );
 };

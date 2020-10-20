@@ -1,13 +1,15 @@
 import { Box, Container, Grid, IconButton } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon,
+  EditRounded as EditIcon
 } from "@material-ui/icons";
+import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
 import Datatable from "../../components/Datatable/Datatable.js";
 import EmptySection from "../../components/EmptySection/EmptySection.js";
+import PromptModal from "../../components/PromptModal/PromptModal.js";
 import { deleteArtwork, getGallery } from "../../services/artwork.js";
 import globalStyles from "../../styles/global.js";
 
@@ -18,7 +20,12 @@ const MyArtwork = ({ location }) => {
     hasMore: true,
     dataCursor: 0,
     dataCeiling: 20,
+    modal: {
+      id: null,
+      open: false,
+    },
   });
+  const { enqueueSnackbar } = useSnackbar();
 
   const history = useHistory();
   const globalClasses = globalStyles();
@@ -39,11 +46,33 @@ const MyArtwork = ({ location }) => {
     }
   };
 
-  const handleEdit = (artworkId) => {
+  const handleModalOpen = (id) => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: {
+        ...prevState.modal,
+        id,
+        open: true,
+      },
+    }));
+  };
+
+  const handleModalClose = () => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: {
+        ...prevState.modal,
+        id: null,
+        open: false,
+      },
+    }));
+  };
+
+  const handleArtworkEdit = (artworkId) => {
     history.push(`/edit_artwork/${artworkId}`);
   };
 
-  const handleDelete = async (artworkId) => {
+  const handleArtworkDelete = async (artworkId) => {
     setState({
       ...state,
       loading: true,
@@ -56,9 +85,24 @@ const MyArtwork = ({ location }) => {
         ...state,
         loading: false,
         artwork: state.artwork.filter((item) => item._id !== artworkId),
+        modal: {
+          ...state.modal,
+          id: null,
+          open: false,
+        },
+      });
+      enqueueSnackbar(deleteArtwork.success.message, {
+        variant: deleteArtwork.success.variant,
       });
     } catch (err) {
-      setState({ ...state, loading: false });
+      setState({
+        ...state,
+        loading: false,
+        modal: { ...state.modal, id: null, open: false },
+      });
+      enqueueSnackbar(deleteArtwork.error.message, {
+        variant: deleteArtwork.error.variant,
+      });
     }
   };
 
@@ -68,7 +112,7 @@ const MyArtwork = ({ location }) => {
         onClick={(e) => {
           e.stopPropagation();
           e.persist();
-          handleEdit(artworkId);
+          handleArtworkEdit(artworkId);
         }}
       >
         <EditIcon />
@@ -77,7 +121,7 @@ const MyArtwork = ({ location }) => {
         onClick={(e) => {
           e.stopPropagation();
           e.persist();
-          handleDelete(artworkId);
+          handleModalOpen(artworkId);
         }}
       >
         <DeleteIcon />
@@ -235,6 +279,15 @@ const MyArtwork = ({ location }) => {
           />
         </Grid>
       </Grid>
+      <PromptModal
+        open={state.modal.open}
+        handleConfirm={handleArtworkDelete}
+        handleClose={handleModalClose}
+        ariaLabel="Delete artwork"
+        promptTitle="Are you sure you want to delete this artwork?"
+        promptConfirm="Delete"
+        promptCancel="Cancel"
+      />
     </Container>
   );
 };

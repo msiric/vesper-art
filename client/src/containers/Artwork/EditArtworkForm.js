@@ -25,7 +25,7 @@ import { updateArtwork } from "../../validation/media.js";
 const EditArtworkForm = ({
   version = {},
   capabilities,
-  handleDeleteArtwork,
+  handleModalOpen,
   patchArtwork,
   isDeleting,
   loading,
@@ -358,7 +358,7 @@ const EditArtworkForm = ({
                       disabled={isSubmitting || isDeleting}
                       startIcon={<UploadIcon />}
                     >
-                      Publish artwork
+                      Publish
                     </Button>
                   </SkeletonWrapper>
                   <SkeletonWrapper loading={loading}>
@@ -366,11 +366,11 @@ const EditArtworkForm = ({
                       type="button"
                       variant="outlined"
                       color="error"
-                      onClick={handleDeleteArtwork}
+                      onClick={handleModalOpen}
                       disabled={isSubmitting || isDeleting}
                       startIcon={<DeleteIcon />}
                     >
-                      Delete artwork
+                      Delete
                     </Button>
                   </SkeletonWrapper>
                 </CardActions>

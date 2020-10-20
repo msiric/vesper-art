@@ -275,7 +275,7 @@ const AddArtworkForm = ({ capabilities, postArtwork, deleteEmptyValues }) => {
                 disabled={isSubmitting}
                 startIcon={<UploadIcon />}
               >
-                Publish artwork
+                Publish
               </Button>
             </CardActions>
           </Form>
