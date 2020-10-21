@@ -1,14 +1,17 @@
-import { Typography } from "@material-ui/core";
-import React from "react";
-import mainHeadingStyles from "./styles.js";
+import { Typography } from '@material-ui/core';
+import React from 'react';
+import SkeletonWrapper from '../SkeletonWrapper/index.js';
+import mainHeadingStyles from './styles.js';
 
-const MainHeading = ({ text, ...rest }) => {
+const MainHeading = ({ text, loading, ...rest }) => {
   const classes = mainHeadingStyles();
 
   return (
-    <Typography variant="h6" {...rest}>
-      {text}
-    </Typography>
+    <SkeletonWrapper variant="text" loading={loading}>
+      <Typography variant="h5" {...rest}>
+        {text}
+      </Typography>
+    </SkeletonWrapper>
   );
 };
 

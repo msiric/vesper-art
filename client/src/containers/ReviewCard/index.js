@@ -1,11 +1,12 @@
-import { Box, Button, Card } from "@material-ui/core";
-import { StarsRounded as ReviewIcon } from "@material-ui/icons";
-import { Rating } from "@material-ui/lab";
-import React from "react";
-import { useHistory } from "react-router-dom";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import { Typography } from "../../styles/theme.js";
-import reviewCardStyles from "./styles.js";
+import { Box, Button, Card } from '@material-ui/core';
+import { StarsRounded as ReviewIcon } from '@material-ui/icons';
+import { Rating } from '@material-ui/lab';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import SkeletonWrapper from '../../components/SkeletonWrapper/index.js';
+import SubHeading from '../../components/SubHeading/index.js';
+import { Typography } from '../../styles/theme.js';
+import reviewCardStyles from './styles.js';
 
 const ReviewCard = ({
   review,
@@ -18,20 +19,16 @@ const ReviewCard = ({
   const history = useHistory();
   const classes = reviewCardStyles();
 
-  const isHighlight = () => queryNotif && queryNotif === "review";
+  const isHighlight = () => queryNotif && queryNotif === 'review';
 
   return (
     <Card
       ref={isHighlight() ? highlightRef : null}
       className={`${classes.reviewContainer} ${
-        isHighlight() ? classes.highlightContainer : ""
+        isHighlight() ? classes.highlightContainer : ''
       }`}
     >
-      <Box>
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography m={2}>Review</Typography>
-        </SkeletonWrapper>
-      </Box>
+      <SubHeading text="Review" loading={loading} />
       {loading || review ? (
         shouldReview ? (
           <Box className={classes.reviewContent}>

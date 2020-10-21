@@ -1,39 +1,50 @@
 import {
   AppBar,
+  Avatar,
   Badge,
   Button,
+  Divider,
   IconButton,
   InputBase,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Menu,
   MenuItem,
   Toolbar,
   Typography,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   AccountBoxRounded as UserIcon,
   AccountCircleRounded as AccountIcon,
+  AttachMoneyRounded as SellerIcon,
+  BarChartRounded as DashboardIcon,
+  ExitToAppRounded as LogoutIcon,
   ImageRounded as ArtworkIcon,
   MoreVertRounded as MoreIcon,
   NotificationsRounded as NotificationsIcon,
+  PermIdentityRounded as ProfileIcon,
   SearchRounded as SearchIcon,
-} from "@material-ui/icons";
-import { Field, Form, Formik } from "formik";
-import React, { useContext, useState } from "react";
-import { Link, withRouter } from "react-router-dom";
-import * as Yup from "yup";
-import { EventsContext } from "../../contexts/Events.js";
-import { UserContext } from "../../contexts/User.js";
+  SettingsRounded as SettingsIcon,
+  ShoppingBasketRounded as OrdersIcon,
+} from '@material-ui/icons';
+import { Field, Form, Formik } from 'formik';
+import React, { useContext, useState } from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import * as Yup from 'yup';
+import { EventsContext } from '../../contexts/Events.js';
+import { UserContext } from '../../contexts/User.js';
 import {
   getNotifications,
   patchRead,
   patchUnread,
   postLogout,
-} from "../../services/user.js";
-import HeaderStyles from "./Header.style.js";
-import NotificationsMenu from "./NotificationsMenu.js";
+} from '../../services/user.js';
+import HeaderStyles from './Header.style.js';
+import NotificationsMenu from './NotificationsMenu.js';
 
 const searchValidation = Yup.object().shape({
-  searchInput: Yup.string().trim().required("Search input is required"),
+  searchInput: Yup.string().trim().required('Search input is required'),
 });
 
 const Header = ({ socket, history }) => {
@@ -111,7 +122,7 @@ const Header = ({ socket, history }) => {
             dataCeiling: eventsStore.notifications.dataCeiling,
           });
           eventsDispatch({
-            type: "updateNotifications",
+            type: 'updateNotifications',
             notifications: {
               items: [...eventsStore.notifications.items].concat(
                 data.notifications
@@ -128,7 +139,7 @@ const Header = ({ socket, history }) => {
             },
           });
         } catch (err) {
-          console.log("error");
+          console.log('error');
         } finally {
           setState((prevState) => ({
             ...prevState,
@@ -173,17 +184,17 @@ const Header = ({ socket, history }) => {
       await postLogout.request();
 
       userDispatch({
-        type: "resetUser",
+        type: 'resetUser',
       });
       eventsDispatch({
-        type: "resetEvents",
+        type: 'resetEvents',
       });
 
       socket.disconnect();
 
       handleMenuClose();
 
-      history.push("/login");
+      history.push('/login');
     } catch (err) {
       console.log(err);
     }
@@ -193,7 +204,7 @@ const Header = ({ socket, history }) => {
     try {
       await patchRead.request({ notificationId: id });
       eventsDispatch({
-        type: "updateNotifications",
+        type: 'updateNotifications',
         notifications: {
           items: eventsStore.notifications.items.map((notification) =>
             notification._id === id
@@ -212,7 +223,7 @@ const Header = ({ socket, history }) => {
     try {
       await patchUnread.request({ notificationId: id });
       eventsDispatch({
-        type: "updateNotifications",
+        type: 'updateNotifications',
         notifications: {
           items: eventsStore.notifications.items.map((notification) =>
             notification._id === id
@@ -241,7 +252,7 @@ const Header = ({ socket, history }) => {
         dataCeiling: eventsStore.notifications.dataCeiling,
       });
       eventsDispatch({
-        type: "updateNotifications",
+        type: 'updateNotifications',
         notifications: {
           items: [...eventsStore.notifications.items].concat(
             data.notifications
@@ -262,56 +273,117 @@ const Header = ({ socket, history }) => {
 
   const handleToggle = () => {
     eventsDispatch({
-      type: "updateSearch",
-      search: eventsStore.search === "artwork" ? "users" : "artwork",
+      type: 'updateSearch',
+      search: eventsStore.search === 'artwork' ? 'users' : 'artwork',
     });
   };
 
-  const menuId = "primary-search-account-menu";
+  const menuId = 'primary-search-account-menu';
   const renderProfileMenu = (
     <Menu
       id={menuId}
       open={!!state.profile.anchorEl}
       anchorEl={state.profile.anchorEl}
       getContentAnchorEl={null}
-      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      transformOrigin={{ vertical: "top", horizontal: "center" }}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       onClose={handleMenuClose}
       keepMounted
     >
+      <Divider />
       {!userStore.stripeId && (
-        <MenuItem component={Link} to="/onboarding">
-          Become a seller
-        </MenuItem>
+        <>
+          <MenuItem component={Link} to="/onboarding">
+            <ListItem>
+              <ListItemAvatar>
+                <Avatar>
+                  <SellerIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary="Become a seller" />
+            </ListItem>
+          </MenuItem>
+          <Divider />
+        </>
       )}
       <MenuItem component={Link} to={`/user/${userStore.name}`}>
-        Profile
+        <ListItem>
+          <ListItemAvatar>
+            <Avatar>
+              <ProfileIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={userStore.name} />
+        </ListItem>
       </MenuItem>
+      <Divider />
       <MenuItem component={Link} to="/dashboard">
-        Dashboard
+        <ListItem>
+          <ListItemAvatar>
+            <Avatar>
+              <DashboardIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary="Dashboard" />
+        </ListItem>
       </MenuItem>
+      <Divider />
       <MenuItem component={Link} to="/my_artwork">
-        Artwork
+        <ListItem>
+          <ListItemAvatar>
+            <Avatar>
+              <ArtworkIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary="Artwork" />
+        </ListItem>
       </MenuItem>
+      <Divider />
       <MenuItem component={Link} to="/orders">
-        Orders
+        <ListItem>
+          <ListItemAvatar>
+            <Avatar>
+              <OrdersIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary="Orders" />
+        </ListItem>
       </MenuItem>
+      <Divider />
       <MenuItem component={Link} to="/settings">
-        Settings
+        <ListItem>
+          <ListItemAvatar>
+            <Avatar>
+              <SettingsIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary="Settings" />
+        </ListItem>
       </MenuItem>
-      <MenuItem onClick={handleLogout}>Log out</MenuItem>
+      <Divider />
+      <MenuItem onClick={handleLogout}>
+        <ListItem>
+          <ListItemAvatar>
+            <Avatar>
+              <LogoutIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary="Log out" />
+        </ListItem>
+      </MenuItem>
+      <Divider />
     </Menu>
   );
 
-  const mobileMenuId = "primary-search-account-menu-mobile";
+  const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderAuthMobileMenu = (
     <Menu
       id={mobileMenuId}
       open={!!state.profile.mobileAnchorEl}
       anchorEl={state.profile.mobileAnchorEl}
       getContentAnchorEl={null}
-      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      transformOrigin={{ vertical: "top", horizontal: "center" }}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       onClose={handleMobileMenuClose}
       keepMounted
     >
@@ -350,8 +422,8 @@ const Header = ({ socket, history }) => {
       open={!!state.profile.mobileAnchorEl}
       anchorEl={state.profile.mobileAnchorEl}
       getContentAnchorEl={null}
-      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      transformOrigin={{ vertical: "top", horizontal: "center" }}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       onClose={handleMobileMenuClose}
       keepMounted
     >
@@ -389,7 +461,7 @@ const Header = ({ socket, history }) => {
           <div className={classes.search}>
             <Formik
               initialValues={{
-                searchInput: "",
+                searchInput: '',
               }}
               validationSchema={searchValidation}
               onSubmit={async (values, { resetForm }) => {
@@ -406,16 +478,16 @@ const Header = ({ socket, history }) => {
                 <Form className={classes.card}>
                   <IconButton
                     title={
-                      eventsStore.search === "artwork"
-                        ? "Search artwork"
-                        : "Search users"
+                      eventsStore.search === 'artwork'
+                        ? 'Search artwork'
+                        : 'Search users'
                     }
                     onClick={handleToggle}
                     className={classes.typeIcon}
                     disableFocusRipple
                     disableRipple
                   >
-                    {eventsStore.search === "artwork" ? (
+                    {eventsStore.search === 'artwork' ? (
                       <ArtworkIcon />
                     ) : (
                       <UserIcon />
@@ -431,7 +503,7 @@ const Header = ({ socket, history }) => {
                           root: classes.inputRoot,
                           input: classes.inputInput,
                         }}
-                        inputProps={{ "aria-label": "search" }}
+                        inputProps={{ 'aria-label': 'search' }}
                       />
                     )}
                   </Field>
@@ -517,7 +589,7 @@ const Header = ({ socket, history }) => {
                   variant="outlined"
                   to="/login"
                   color="primary"
-                  style={{ marginRight: "6px" }}
+                  style={{ marginRight: '6px' }}
                 >
                   Log in
                 </Button>

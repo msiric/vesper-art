@@ -1,14 +1,14 @@
-import { IconButton, Tooltip } from "@material-ui/core";
+import { IconButton, Tooltip } from '@material-ui/core';
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
   Edit as EditIcon,
-} from "@material-ui/icons";
-import MUIDataTable from "mui-datatables";
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import LoadingSpinner from "../LoadingSpinner";
-import dataTableStyles from "./styles";
+} from '@material-ui/icons';
+import MUIDataTable from 'mui-datatables';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import LoadingSpinner from '../LoadingSpinner';
+import dataTableStyles from './styles';
 
 const CustomToolbar = ({ addOptions }) => {
   const history = useHistory();
@@ -91,9 +91,9 @@ const DataTable = ({
   editOptions,
   deleteOptions,
 }) => {
-  const [responsive, setResponsive] = useState("vertical");
-  const [tableBodyHeight, setTableBodyHeight] = useState("100%");
-  const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
+  const [responsive, setResponsive] = useState('vertical');
+  const [tableBodyHeight, setTableBodyHeight] = useState('100%');
+  const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState('');
 
   const history = useHistory();
 
@@ -102,7 +102,7 @@ const DataTable = ({
     print: false,
     download: false,
     viewColumns: false,
-    filterType: "dropdown",
+    filterType: 'dropdown',
     selectableRows: selectable,
     search: searchable,
     pagination,

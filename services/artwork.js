@@ -21,7 +21,7 @@ export const fetchActiveArtworks = async ({
     .populate("owner")
     .populate(
       "current",
-      "_id cover created title personal type license availability description use commercial height width"
+      "_id cover created title personal type license availability description use commercial dominant height width"
     );
 };
 
@@ -62,7 +62,7 @@ export const fetchArtworkDetails = async ({
     .populate("owner")
     .populate(
       "current",
-      "_id cover created title personal type license availability description use commercial height width"
+      "_id cover created title personal type license availability description use commercial dominant height width"
     );
 };
 
@@ -88,7 +88,7 @@ export const fetchArtworkComments = async ({
     .populate("owner")
     .populate(
       "current",
-      "_id cover created title personal type license availability description use commercial height width"
+      "_id cover created title personal type license availability description use commercial dominant height width"
     );
 };
 
@@ -114,7 +114,7 @@ export const fetchArtworkReviews = async ({
     .populate("owner")
     .populate(
       "current",
-      "_id cover created title personal type license availability description use commercial height width"
+      "_id cover created title personal type license availability description use commercial dominant height width"
     );
 };
 
@@ -135,7 +135,7 @@ export const fetchUserArtworks = async ({
     }
   ).populate(
     "current",
-    "_id cover created title personal type license availability description use commercial height width"
+    "_id cover created title personal type license availability description use commercial dominant height width"
   );
 };
 
@@ -152,6 +152,7 @@ export const fetchArtworkByOwner = async ({
   userId,
   session = null,
 }) => {
+  console.log(artworkId, userId)
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { owner: userId }, { active: true }],
   })

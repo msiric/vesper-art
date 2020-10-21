@@ -1,10 +1,10 @@
-import aws from "aws-sdk";
-import fs from "fs";
-import createError from "http-errors";
-import imageSize from "image-size";
-import sharp from "sharp";
-import { upload } from "../config/constants.js";
-import { rgbToHex } from "./helpers.js";
+import aws from 'aws-sdk';
+import fs from 'fs';
+import createError from 'http-errors';
+import imageSize from 'image-size';
+import sharp from 'sharp';
+import { rgbToHex } from '../common/helpers.js';
+import { upload } from '../config/constants.js';
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,
@@ -20,10 +20,10 @@ export const userS3Upload = async ({ filePath, fileName }) => {
   const userDominant = rgbToHex(r, g, b);
   const userMediaPath = await uploadS3Object({
     fileContent: sharpMedia,
-    folderName: "userMedia",
+    folderName: 'userMedia',
     fileName,
   });
-  return { cover: "", media: userMediaPath, dominant: userDominant };
+  return { cover: '', media: userMediaPath, dominant: userDominant };
 };
 
 export const artworkS3Upload = async ({ filePath, fileName }) => {
@@ -37,12 +37,12 @@ export const artworkS3Upload = async ({ filePath, fileName }) => {
   const artworkDominant = rgbToHex(r, g, b);
   const artworkCoverPath = await uploadS3Object({
     fileContent: sharpCover,
-    folderName: "artworkCovers",
+    folderName: 'artworkCovers',
     fileName,
   });
   const artworkMediaPath = await uploadS3Object({
     fileContent: sharpMedia,
-    folderName: "artworkMedia",
+    folderName: 'artworkMedia',
     fileName,
   });
   return {
@@ -71,17 +71,17 @@ export const deleteFileLocally = async ({ filePath }) => {
 
 export const finalizeMediaUpload = async ({ filePath, fileName, fileType }) => {
   const fileUpload = {
-    fileCover: "",
-    fileMedia: "",
-    fileHeight: "",
-    fileWidth: "",
+    fileCover: '',
+    fileMedia: '',
+    fileHeight: '',
+    fileWidth: '',
   };
   // $TODO Verify that the user uploading the photo is valid and check its id
   if (filePath && fileName) {
     const verifiedInput = await verifyDimensions({ filePath, fileType });
     if (verifiedInput.valid) {
       const { cover, media, dominant } =
-        fileType === "artwork"
+        fileType === 'artwork'
           ? await artworkS3Upload({ filePath, fileName })
           : await userS3Upload({ filePath, fileName });
       deleteFileLocally({ filePath });
@@ -93,7 +93,7 @@ export const finalizeMediaUpload = async ({ filePath, fileName, fileType }) => {
       return fileUpload;
     }
     deleteFileLocally({ filePath });
-    throw createError(400, "File dimensions are not valid");
+    throw createError(400, 'File dimensions are not valid');
   } else {
     return fileUpload;
   }
@@ -103,7 +103,7 @@ export const artworkFileFilter = (req, file, cb) => {
   if (upload.artwork.mimeTypes.includes(file.mimetype)) cb(null, true);
   else
     cb(
-      new Error("Invalid mime type, only JPEG, PNG and GIF files are allowed"),
+      new Error('Invalid mime type, only JPEG, PNG and GIF files are allowed'),
       false
     );
 };
@@ -112,7 +112,7 @@ export const userFileFilter = (req, file, cb) => {
   if (upload.user.mimeTypes.includes(file.mimetype)) cb(null, true);
   else
     cb(
-      new Error("Invalid mime type, only JPEG, PNG and GIF files are allowed"),
+      new Error('Invalid mime type, only JPEG, PNG and GIF files are allowed'),
       false
     );
 };
@@ -133,14 +133,14 @@ export const uploadS3Object = async ({ fileContent, folderName, fileName }) => {
     Bucket: process.env.S3_BUCKET,
     Key: fullPath,
     Body: fileContent,
-    ACL: "public-read",
+    ACL: 'public-read',
   };
   const uploadedFile = await s3.upload(params).promise();
   return uploadedFile.Location;
 };
 
 export const deleteS3Object = async ({ fileLink, folderName }) => {
-  const fileName = fileLink.split("/").slice(-1)[0];
+  const fileName = fileLink.split('/').slice(-1)[0];
   const filePath = folderName + fileName;
   const s3 = new aws.S3();
   const params = {

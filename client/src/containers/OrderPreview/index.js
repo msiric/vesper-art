@@ -1,10 +1,11 @@
-import { Box, Button, Card, CardMedia, Divider } from "@material-ui/core";
-import { GetAppRounded as DownloadIcon } from "@material-ui/icons";
-import React from "react";
-import { useHistory } from "react-router-dom";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import { Typography } from "../../styles/theme.js";
-import orderPreviewStyles from "./styles.js";
+import { Box, Button, Card, CardMedia, Divider } from '@material-ui/core';
+import { GetAppRounded as DownloadIcon } from '@material-ui/icons';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { hexToRgb } from '../../../../common/helpers.js';
+import SkeletonWrapper from '../../components/SkeletonWrapper/index.js';
+import { Typography } from '../../styles/theme.js';
+import orderPreviewStyles from './styles.js';
 
 const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
   const history = useHistory();
@@ -13,11 +14,21 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
   return (
     <Card className={classes.artworkPreviewCard}>
       <SkeletonWrapper loading={loading} width="100%">
-        <CardMedia
-          className={classes.artworkPreviewMedia}
-          image={version.cover}
-          title={version.title}
-        />
+        <Box
+          className={classes.artworkPreviewContainer}
+          style={{
+            background: `rgb(216,184,136)`,
+            background: `radial-gradient(circle, rgba(${hexToRgb(
+              version.dominant
+            )}, 1) 0%, rgba(0,0,0,0.7) 100%)`,
+          }}
+        >
+          <CardMedia
+            className={classes.artworkPreviewMedia}
+            image={version.cover}
+            title={version.title}
+          />
+        </Box>
       </SkeletonWrapper>
       <Divider />
       <Box>

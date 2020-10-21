@@ -1,54 +1,55 @@
-import React from "react";
-import { formatDate } from "../../../../common/helpers.js";
-import Datatable from "../../components/DataTable/index.js";
-import EmptySection from "../../components/EmptySection/index.js";
-import licenseCardStyles from "./styles.js";
+import React from 'react';
+import { formatDate } from '../../../../common/helpers.js';
+import Datatable from '../../components/DataTable/index.js';
+import EmptySection from '../../components/EmptySection/index.js';
+import SubHeading from '../../components/SubHeading/index.js';
+import licenseCardStyles from './styles.js';
 
 const LicenseCard = ({ license, order, isSeller, loading }) => {
   const classes = licenseCardStyles();
 
   return (
     <Datatable
-      title="License information"
+      title={<SubHeading text="License" loading={loading} />}
       columns={[
         {
-          name: "Id",
+          name: 'Id',
           options: {
             display: false,
           },
         },
         {
-          name: "Fingerprint",
+          name: 'Fingerprint',
           options: {
             sort: false,
           },
         },
         {
-          name: "Type",
+          name: 'Type',
           options: {
             sort: false,
           },
         },
         {
-          name: "Assignee",
+          name: 'Assignee',
           options: {
             sort: false,
           },
         },
         {
-          name: isSeller() ? "Earned" : "Spent",
+          name: isSeller() ? 'Earned' : 'Spent',
           options: {
             sort: false,
             customBodyRender: (value, tableMeta, updateValue) =>
-              typeof value !== "undefined"
+              typeof value !== 'undefined'
                 ? value
                   ? `$${value}`
-                  : "Free"
+                  : 'Free'
                 : null,
           },
         },
         {
-          name: "Date",
+          name: 'Date',
           options: {
             sort: false,
           },
@@ -61,7 +62,7 @@ const LicenseCard = ({ license, order, isSeller, loading }) => {
           license.type,
           license.assignee,
           isSeller() ? order.earned : order.spent,
-          license.created && formatDate(license.created, "dd/MM/yy HH:mm"),
+          license.created && formatDate(license.created, 'dd/MM/yy HH:mm'),
         ],
       ]}
       empty={<EmptySection label="License not found" loading={loading} />}
@@ -70,16 +71,16 @@ const LicenseCard = ({ license, order, isSeller, loading }) => {
       selectable={false}
       searchable={false}
       pagination={false}
-      addOptions={{ enabled: false, title: "", route: "" }}
+      addOptions={{ enabled: false, title: '', route: '' }}
       editOptions={{
         enabled: false,
-        title: "",
-        route: "",
+        title: '',
+        route: '',
       }}
       deleteOptions={{
         enabled: false,
-        title: "",
-        route: "",
+        title: '',
+        route: '',
       }}
     />
   );
