@@ -152,7 +152,7 @@ export const postNewArtwork = async ({
     }
   }
   const savedVersion = await addNewArtwork({
-    artworkData: ormattedData,
+    artworkData: formattedData,
     artworkUpload,
     userId,
     session,

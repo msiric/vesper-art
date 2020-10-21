@@ -1,10 +1,9 @@
-import mongoose from 'mongoose';
-import aws from 'aws-sdk';
-import imageSize from 'image-size';
-import fs from 'fs';
-import sharp from 'sharp';
-import { upload } from '../config/constants.js';
-import { dimensionsFilter, uploadS3Object } from '../utils/upload.js';
+import aws from "aws-sdk";
+import fs from "fs";
+import imageSize from "image-size";
+import sharp from "sharp";
+import { upload } from "../config/constants.js";
+import { dimensionsFilter, uploadS3Object } from "../utils/upload.js";
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,
@@ -14,12 +13,16 @@ aws.config.update({
 
 export const userS3Upload = async ({ filePath, fileName }) => {
   const sharpMedia = await sharp(filePath).toBuffer();
+  const {
+    dominant: { r, g, b },
+  } = await sharp(filePath).stats();
+  const userDominant = `${r}, ${g}, ${b}`;
   const userMediaPath = await uploadS3Object({
     fileContent: sharpMedia,
-    folderName: 'userMedia',
+    folderName: "userMedia",
     fileName,
   });
-  return { media: userMediaPath };
+  return { media: userMediaPath, dominant: userDominant };
 };
 
 export const artworkS3Upload = async ({ filePath, fileName }) => {
@@ -27,17 +30,25 @@ export const artworkS3Upload = async ({ filePath, fileName }) => {
   const sharpCover = await sharp(filePath)
     .resize(upload.artwork.fileTransform)
     .toBuffer();
+  const {
+    dominant: { r, g, b },
+  } = await sharp(filePath).stats();
+  const artworkDominant = `${r}, ${g}, ${b}`;
   const artworkCoverPath = await uploadS3Object({
     fileContent: sharpCover,
-    folderName: 'artworkCovers',
+    folderName: "artworkCovers",
     fileName,
   });
   const artworkMediaPath = await uploadS3Object({
     fileContent: sharpMedia,
-    folderName: 'artworkMedia',
+    folderName: "artworkMedia",
     fileName,
   });
-  return { cover: artworkCoverPath, media: artworkMediaPath };
+  return {
+    cover: artworkCoverPath,
+    media: artworkMediaPath,
+    dominant: artworkDominant,
+  };
 };
 
 export const verifyDimensions = async ({ filePath, fileType }) => {
