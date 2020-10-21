@@ -4,6 +4,7 @@ import createError from "http-errors";
 import imageSize from "image-size";
 import sharp from "sharp";
 import { upload } from "../config/constants.js";
+import { rgbToHex } from "./helpers.js";
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,
@@ -16,7 +17,7 @@ export const userS3Upload = async ({ filePath, fileName }) => {
   const {
     dominant: { r, g, b },
   } = await sharp(filePath).stats();
-  const userDominant = `${r}, ${g}, ${b}`;
+  const userDominant = rgbToHex(r, g, b);
   const userMediaPath = await uploadS3Object({
     fileContent: sharpMedia,
     folderName: "userMedia",
@@ -33,7 +34,7 @@ export const artworkS3Upload = async ({ filePath, fileName }) => {
   const {
     dominant: { r, g, b },
   } = await sharp(filePath).stats();
-  const artworkDominant = `${r}, ${g}, ${b}`;
+  const artworkDominant = rgbToHex(r, g, b);
   const artworkCoverPath = await uploadS3Object({
     fileContent: sharpCover,
     folderName: "artworkCovers",
