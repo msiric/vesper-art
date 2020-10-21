@@ -2,7 +2,7 @@ import { Box, Button, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Field, Form, Formik } from "formik";
 import React, { useState } from "react";
-import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import { Container, Grid } from "../../styles/theme.js";
 import { licenseValidation } from "../../validation/license.js";
@@ -70,7 +70,7 @@ const LicenseForm = ({
   handleLicenseChange = changeLicense,
   initial = { standalone: false, value: "personal", submit: () => null },
   handleModalClose = () => null,
-  loading
+  loading,
 }) => {
   const [state, setState] = useState({ loading: false });
   const classes = LicenseFormStyles();
@@ -102,7 +102,11 @@ const LicenseForm = ({
               }) => (
                 <Form style={{ width: "100%" }}>
                   <Grid item xs={12}>
-                    <SkeletonWrapper variant="text" loading={loading} width="100%">
+                    <SkeletonWrapper
+                      variant="text"
+                      loading={loading}
+                      width="100%"
+                    >
                       <Field name="licenseAssignee">
                         {({ field, form: { touched, errors }, meta }) => (
                           <TextField
@@ -118,7 +122,11 @@ const LicenseForm = ({
                         )}
                       </Field>
                     </SkeletonWrapper>
-                    <SkeletonWrapper variant="text" loading={loading} width="100%">
+                    <SkeletonWrapper
+                      variant="text"
+                      loading={loading}
+                      width="100%"
+                    >
                       <Field name="licenseCompany">
                         {({ field, form: { touched, errors }, meta }) => (
                           <TextField
@@ -136,7 +144,11 @@ const LicenseForm = ({
                     </SkeletonWrapper>
                     {/*             <TextInput name="licenseAssignee" label="License assignee" />
             <TextInput name="licenseCompany" label="License company" /> */}
-                    <SkeletonWrapper variant="text" loading={loading} width="100%">
+                    <SkeletonWrapper
+                      variant="text"
+                      loading={loading}
+                      width="100%"
+                    >
                       <Field name="licenseType">
                         {({
                           field,

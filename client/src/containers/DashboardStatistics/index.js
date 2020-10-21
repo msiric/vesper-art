@@ -2,7 +2,7 @@ import { Grid } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import { compose, flexbox, spacing } from "@material-ui/system";
 import React from "react";
-import DashboardCard from "../../components/DashboardCard/DashboardCard.js";
+import DashboardCard from "../../components/DashboardCard/index.js";
 import { artepunktTheme } from "../../styles/theme.js";
 import dashboardStatisticsStyles from "./styles.js";
 
@@ -10,7 +10,7 @@ const GridContainer = styled(Grid)(compose(spacing, flexbox));
 const GridItem = styled(Grid)(compose(flexbox));
 
 const DashboardStatistics = ({ loading, cards, layout }) => {
-  const classes = dashboardStatisticsStyles;
+  const classes = dashboardStatisticsStyles();
 
   return (
     <GridContainer

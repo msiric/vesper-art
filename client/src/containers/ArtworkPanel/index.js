@@ -14,8 +14,8 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import ArtworkCard from "../../components/ArtworkCard/ArtworkCard.js";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import ArtworkCard from "../../components/ArtworkCard/index.js";
+import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import Modal from "../../shared/Modal/Modal.js";
 import artworkPanelStyles from "./styles.js";
 

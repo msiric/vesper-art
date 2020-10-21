@@ -1,7 +1,7 @@
 import { Box, Grid } from "@material-ui/core";
 import React, { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import ProfileCard from "../../components/ProfileCard/index.js";
 import userPanelStyles from "./styles.js";
 

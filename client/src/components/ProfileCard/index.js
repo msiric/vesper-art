@@ -11,7 +11,7 @@ import {
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
-import SkeletonWrapper from "../SkeletonWrapper/SkeletonWrapper.js";
+import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import profileCardStyles from "./styles.js";
 
 const ProfileCard = ({ user, height, loading }) => {

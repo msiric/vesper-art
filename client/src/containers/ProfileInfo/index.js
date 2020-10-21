@@ -1,6 +1,6 @@
 import { Grid } from "@material-ui/core";
 import React from "react";
-import ProfileBanner from "../../components/ProfileBanner/ProfileBanner.js";
+import ProfileBanner from "../../components/ProfileBanner/index.js";
 import profileInfoStyles from "./styles.js";
 
 const ProfileInfo = ({ user, handleModalOpen, loading }) => {

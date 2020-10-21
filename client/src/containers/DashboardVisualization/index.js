@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { artepunktTheme, Card } from "../../styles/theme.js";
 import DashboardStatistics from "../DashboardStatistics/index.js";
 import dashboardVisualizationStyles from "./styles.js";

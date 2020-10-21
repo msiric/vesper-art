@@ -1,7 +1,7 @@
 import { Container, Grid } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { getToken } from "../../services/auth.js";
 
 const VerifyToken = ({ match, location }) => {

@@ -1,15 +1,15 @@
 import { Box, Container, Grid, IconButton } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon
+  EditRounded as EditIcon,
 } from "@material-ui/icons";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
-import Datatable from "../../components/Datatable/Datatable.js";
-import EmptySection from "../../components/EmptySection/EmptySection.js";
-import PromptModal from "../../components/PromptModal/PromptModal.js";
+import Datatable from "../../components/DataTable/index.js";
+import EmptySection from "../../components/EmptySection/index.js";
+import PromptModal from "../../components/PromptModal/index.js";
 import { deleteArtwork, getGallery } from "../../services/artwork.js";
 import globalStyles from "../../styles/global.js";
 

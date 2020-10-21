@@ -2,7 +2,7 @@ import { Box, Button, Card, CardMedia, Divider } from "@material-ui/core";
 import { GetAppRounded as DownloadIcon } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { Typography } from "../../styles/theme.js";
 import orderPreviewStyles from "./styles.js";
 

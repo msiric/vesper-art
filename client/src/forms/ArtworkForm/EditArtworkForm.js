@@ -6,9 +6,9 @@ import {
 import { Field, Form, Formik } from "formik";
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
-import HelpBox from "../../components/HelpBox/HelpBox.js";
-import ImageInput from "../../components/ImageInput/ImageInput.js";
-import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
+import HelpBox from "../../components/HelpBox/index.js";
+import ImageInput from "../../components/ImageInput/index.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { UserContext } from "../../contexts/User.js";
 import PriceInput from "../../shared/PriceInput/PriceInput.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";

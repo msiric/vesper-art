@@ -36,7 +36,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import MainHeading from "../../components/MainHeading/index.js";
-import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import CheckoutSummary from "../../containers/CheckoutSummary/index.js";
 import { UserContext } from "../../contexts/User.js";
 import BillingForm from "../../forms/BillingForm/BillingForm.js";

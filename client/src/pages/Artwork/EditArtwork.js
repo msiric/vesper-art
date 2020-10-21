@@ -3,7 +3,7 @@ import { useSnackbar } from "notistack";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/index.js";
-import PromptModal from "../../components/PromptModal/PromptModal.js";
+import PromptModal from "../../components/PromptModal/index.js";
 import { UserContext } from "../../contexts/User.js";
 import EditArtworkForm from "../../forms/ArtworkForm/EditArtworkForm.js";
 import {

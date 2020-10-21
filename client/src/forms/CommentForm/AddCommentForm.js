@@ -1,7 +1,7 @@
 import { Box, Button, TextField } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import React from "react";
-import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { postComment } from "../../services/artwork.js";
 import { commentValidation } from "../../validation/comment.js";
 

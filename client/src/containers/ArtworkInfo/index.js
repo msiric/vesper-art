@@ -1,8 +1,8 @@
 import { Box, Button, Card } from "@material-ui/core";
 import React, { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import PricingCard from "../../components/PricingCard/PricingCard.js";
-import SwipeCard from "../../components/SwipeCard/SwipeCard.js";
+import PricingCard from "../../components/PricingCard/index.js";
+import SwipeCard from "../../components/SwipeCard/index.js";
 import { UserContext } from "../../contexts/User.js";
 import { CardContent, Typography } from "../../styles/theme.js";
 import artworkInfoStyles from "./styles.js";

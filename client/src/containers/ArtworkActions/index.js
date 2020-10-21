@@ -1,9 +1,9 @@
 import { Box, Card, CardActions, Divider, Typography } from "@material-ui/core";
 import { FavoriteRounded as FavoritedIcon } from "@material-ui/icons";
 import React, { useContext } from "react";
-import FavoriteButton from "../../components/FavoriteButton/FavoriteButton.js";
-import ShareButton from "../../components/ShareButton/ShareButton.js";
-import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
+import FavoriteButton from "../../components/FavoriteButton/index.js";
+import ShareButton from "../../components/ShareButton/index.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { UserContext } from "../../contexts/User.js";
 import { CardContent } from "../../styles/theme.js";
 import artworkActionsStyles from "./styles.js";

@@ -16,8 +16,8 @@ import React, { useEffect, useState } from "react";
 import NumberFormat from "react-number-format";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
-import CheckoutCard from "../../components/CheckoutCard/CheckoutCard.js";
-import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
+import CheckoutCard from "../../components/CheckoutCard/index.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import checkoutSummaryStyles from "./styles.js";
 
 const validationSchema = Yup.object().shape({

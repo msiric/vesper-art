@@ -1,8 +1,8 @@
 import { Grid } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
-import EmptySection from "../../components/EmptySection/EmptySection.js";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.js";
+import EmptySection from "../../components/EmptySection/index.js";
+import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import ArtworkPanel from "../../containers/ArtworkPanel/index.js";
 import UserPanel from "../../containers/UserPanel/index.js";
 import { getSearch } from "../../services/home.js";

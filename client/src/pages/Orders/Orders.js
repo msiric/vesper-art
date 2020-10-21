@@ -10,8 +10,8 @@ import { Rating } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
-import Datatable from "../../components/Datatable/Datatable.js";
-import EmptySection from "../../components/EmptySection/EmptySection.js";
+import Datatable from "../../components/DataTable/index.js";
+import EmptySection from "../../components/EmptySection/index.js";
 import { getOrders } from "../../services/orders.js";
 import globalStyles from "../../styles/global.js";
 

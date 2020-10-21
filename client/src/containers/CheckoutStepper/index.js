@@ -19,7 +19,7 @@ import { CardNumberElement, useElements } from "@stripe/react-stripe-js";
 import { Form, Formik } from "formik";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { UserContext } from "../../contexts/User.js";
 import BillingForm from "../../forms/BillingForm/BillingForm.js";
 import LicenseForm from "../../forms/LicenseForm/LicenseForm.js";

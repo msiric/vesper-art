@@ -1,7 +1,7 @@
 import React from "react";
 import { formatDate } from "../../../../common/helpers.js";
-import Datatable from "../../components/Datatable/Datatable.js";
-import EmptySection from "../../components/EmptySection/EmptySection.js";
+import Datatable from "../../components/DataTable/index.js";
+import EmptySection from "../../components/EmptySection/index.js";
 import licenseCardStyles from "./styles.js";
 
 const LicenseCard = ({ license, order, isSeller, loading }) => {

@@ -3,7 +3,7 @@ import { StarsRounded as ReviewIcon } from "@material-ui/icons";
 import { Rating } from "@material-ui/lab";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import SkeletonWrapper from "../../components/SkeletonWrapper/SkeletonWrapper.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { Typography } from "../../styles/theme.js";
 import reviewCardStyles from "./styles.js";
 

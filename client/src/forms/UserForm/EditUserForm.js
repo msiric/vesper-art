@@ -9,7 +9,7 @@ import {
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { countries } from "../../../../common/constants.js";
-import ImageInput from "../../components/ImageInput/ImageInput.js";
+import ImageInput from "../../components/ImageInput/index.js";
 import { patchUser, postMedia } from "../../services/user.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import { profileValidation } from "../../validation/profile.js";

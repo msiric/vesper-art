@@ -1,7 +1,7 @@
 import { Grid, Paper } from "@material-ui/core";
 import React from "react";
-import EmptySection from "../../components/EmptySection/EmptySection.js";
-import SwipeCard from "../../components/SwipeCard/SwipeCard.js";
+import EmptySection from "../../components/EmptySection/index.js";
+import SwipeCard from "../../components/SwipeCard/index.js";
 import ArtworkPanel from "../ArtworkPanel/index.js";
 import profileArtworkStyles from "./styles.js";
 

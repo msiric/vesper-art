@@ -1,8 +1,7 @@
-import { Container, Grid } from "@material-ui/core";
+import { Container, Grid, Modal } from "@material-ui/core";
 import { withSnackbar } from "notistack";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import ModalWrapper from "../../components/ModalWrapper/ModalWrapper.js";
 import ProfileArtwork from "../../containers/ProfileArtwork/index.js";
 import ProfileInfo from "../../containers/ProfileInfo/index.js";
 import { UserContext } from "../../contexts/User.js";
@@ -241,13 +240,13 @@ const Profile = ({ match, location }) => {
           />
         </>
 
-        <ModalWrapper
+        <Modal
           open={state.modal.open}
           handleClose={handleModalClose}
           ariaLabel="Edit profile info"
         >
           <EditUserForm user={state.user} handleModalClose={handleModalClose} />
-        </ModalWrapper>
+        </Modal>
       </Grid>
     </Container>
   ) : (
