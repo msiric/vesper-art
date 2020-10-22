@@ -5,6 +5,7 @@ import imageSize from 'image-size';
 import sharp from 'sharp';
 import { rgbToHex } from '../common/helpers.js';
 import { upload } from '../config/constants.js';
+import { checkImageOrientation } from './helpers.js';
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,
@@ -73,8 +74,10 @@ export const finalizeMediaUpload = async ({ filePath, fileName, fileType }) => {
   const fileUpload = {
     fileCover: '',
     fileMedia: '',
+    fileDominant: '',
     fileHeight: '',
     fileWidth: '',
+    fileOrientation: '',
   };
   // $TODO Verify that the user uploading the photo is valid and check its id
   if (filePath && fileName) {
@@ -90,6 +93,10 @@ export const finalizeMediaUpload = async ({ filePath, fileName, fileType }) => {
       fileUpload.fileDominant = dominant;
       fileUpload.fileHeight = verifiedInput.dimensions.height;
       fileUpload.fileWidth = verifiedInput.dimensions.width;
+      fileUpload.fileOrientation = checkImageOrientation(
+        verifiedInput.dimensions.width,
+        verifiedInput.dimensions.height
+      );
       return fileUpload;
     }
     deleteFileLocally({ filePath });

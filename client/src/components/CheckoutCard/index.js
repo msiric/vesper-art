@@ -1,16 +1,32 @@
-import { Box, Typography } from "@material-ui/core";
-import React from "react";
-import { CardHeader, CardMedia, Grid } from "../../styles/theme.js";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
-import checkoutCardStyles from "./styles.js";
+import { Box, Typography } from '@material-ui/core';
+import React from 'react';
+import { hexToRgb } from '../../../../common/helpers.js';
+import { CardHeader, CardMedia, Grid } from '../../styles/theme.js';
+import SkeletonWrapper from '../SkeletonWrapper/index.js';
+import checkoutCardStyles from './styles.js';
 
 const CheckoutCard = ({ version, loading }) => {
   const classes = checkoutCardStyles();
 
+  const { r, g, b } = loading
+    ? { r: null, g: null, b: null }
+    : hexToRgb(version.dominant);
+
+  console.log(
+    `radial-gradient(circle, rgba(${r},${g},${b},1) 0%, rgba(66,66,66,1) 100%);`
+  );
+
   return (
     <Grid container p={0} my={2}>
-      <Grid item xs={12} md={5} style={{ display: "flex" }}>
-        <Box display="flex" width="100%" py={0}>
+      <Grid item xs={12} md={5} style={{ display: 'flex' }}>
+        <Box
+          display="flex"
+          width="100%"
+          py={0}
+          style={{
+            background: `radial-gradient(circle, rgba(${r},${g},${b},1) 0%, rgba(66,66,66,1) 100%);`,
+          }}
+        >
           <SkeletonWrapper loading={loading} height="90px" width="100%">
             <CardMedia
               className={classes.media}
@@ -25,13 +41,13 @@ const CheckoutCard = ({ version, loading }) => {
           <CardHeader
             title={
               <SkeletonWrapper variant="text" loading={loading}>
-                <Typography>{version.title || "Artwork title"}</Typography>
+                <Typography>{version.title || 'Artwork title'}</Typography>
               </SkeletonWrapper>
             }
             subheader={
               <SkeletonWrapper variant="text" loading={loading}>
                 <Typography>
-                  {version.artwork.owner.name || "Artist name"}
+                  {version.artwork.owner.name || 'Artist name'}
                 </Typography>
               </SkeletonWrapper>
             }

@@ -1,10 +1,10 @@
-import { Box, Card, Divider } from "@material-ui/core";
-import React from "react";
-import { useHistory } from "react-router-dom";
-import ImageWrapper from "../../components/ImageWrapper/index.js";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import { Typography } from "../../styles/theme.js";
-import artworkPreviewStyles from "./styles.js";
+import { Box, Card, Divider } from '@material-ui/core';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import ImageWrapper from '../../components/ImageWrapper/index.js';
+import SkeletonWrapper from '../../components/SkeletonWrapper/index.js';
+import { Typography } from '../../styles/theme.js';
+import artworkPreviewStyles from './styles.js';
 
 const ArtworkPreview = ({ version = {}, height, loading }) => {
   const history = useHistory();
@@ -15,7 +15,9 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
       className={classes.artworkPreviewCard}
       style={{
         minHeight: height,
+        maxHeight: 750,
         padding: 16,
+        height: '100%',
       }}
     >
       <Box style={{ marginBottom: 12 }}>
@@ -35,10 +37,13 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
         />
       </SkeletonWrapper> */}
       <ImageWrapper
+        height={version.height}
+        width={version.width}
         source={version.cover}
         placeholder={version.dominant}
         loading={loading}
       />
+      <br />
       <Box>
         <SkeletonWrapper
           variant="text"

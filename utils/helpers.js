@@ -133,3 +133,13 @@ export const sanitizeData = (body) =>
     }
     return obj;
   }, {});
+
+export const checkImageOrientation = (width, height) => {
+  if (width > height) {
+    return 'landscape';
+  } else if (width < height) {
+    return 'portrait';
+  } else {
+    return 'square';
+  }
+};
