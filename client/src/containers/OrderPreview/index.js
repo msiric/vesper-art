@@ -1,13 +1,19 @@
-import { Box, Button, Card, CardMedia, Divider } from '@material-ui/core';
-import { GetAppRounded as DownloadIcon } from '@material-ui/icons';
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { hexToRgb } from '../../../../common/helpers.js';
-import SkeletonWrapper from '../../components/SkeletonWrapper/index.js';
-import { Typography } from '../../styles/theme.js';
-import orderPreviewStyles from './styles.js';
+import { Box, Button, Card, CardMedia, Divider } from "@material-ui/core";
+import { GetAppRounded as DownloadIcon } from "@material-ui/icons";
+import React from "react";
+import { useHistory } from "react-router-dom";
+import { hexToRgb } from "../../../../common/helpers.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import { Typography } from "../../styles/theme.js";
+import orderPreviewStyles from "./styles.js";
 
-const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
+const OrderPreview = ({
+  banner,
+  version,
+  handleDownload,
+  shouldDownload,
+  loading,
+}) => {
   const history = useHistory();
   const classes = orderPreviewStyles();
 
@@ -25,8 +31,9 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
         >
           <CardMedia
             className={classes.artworkPreviewMedia}
-            image={version.cover}
+            image={banner}
             title={version.title}
+            style={{ paddingTop: `${(version.height / version.width) * 100}%` }}
           />
         </Box>
       </SkeletonWrapper>

@@ -13,7 +13,7 @@ import {
   MenuItem,
   Toolbar,
   Typography,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import {
   AccountBoxRounded as UserIcon,
   AccountCircleRounded as AccountIcon,
@@ -27,24 +27,25 @@ import {
   SearchRounded as SearchIcon,
   SettingsRounded as SettingsIcon,
   ShoppingBasketRounded as OrdersIcon,
-} from '@material-ui/icons';
-import { Field, Form, Formik } from 'formik';
-import React, { useContext, useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import * as Yup from 'yup';
-import { EventsContext } from '../../contexts/Events.js';
-import { UserContext } from '../../contexts/User.js';
+  ViewCarouselRounded as GalleryIcon,
+} from "@material-ui/icons";
+import { Field, Form, Formik } from "formik";
+import React, { useContext, useState } from "react";
+import { Link, withRouter } from "react-router-dom";
+import * as Yup from "yup";
+import { EventsContext } from "../../contexts/Events.js";
+import { UserContext } from "../../contexts/User.js";
 import {
   getNotifications,
   patchRead,
   patchUnread,
   postLogout,
-} from '../../services/user.js';
-import HeaderStyles from './Header.style.js';
-import NotificationsMenu from './NotificationsMenu.js';
+} from "../../services/user.js";
+import HeaderStyles from "./Header.style.js";
+import NotificationsMenu from "./NotificationsMenu.js";
 
 const searchValidation = Yup.object().shape({
-  searchInput: Yup.string().trim().required('Search input is required'),
+  searchInput: Yup.string().trim().required("Search input is required"),
 });
 
 const Header = ({ socket, history }) => {
@@ -122,7 +123,7 @@ const Header = ({ socket, history }) => {
             dataCeiling: eventsStore.notifications.dataCeiling,
           });
           eventsDispatch({
-            type: 'updateNotifications',
+            type: "updateNotifications",
             notifications: {
               items: [...eventsStore.notifications.items].concat(
                 data.notifications
@@ -139,7 +140,7 @@ const Header = ({ socket, history }) => {
             },
           });
         } catch (err) {
-          console.log('error');
+          console.log("error");
         } finally {
           setState((prevState) => ({
             ...prevState,
@@ -184,17 +185,17 @@ const Header = ({ socket, history }) => {
       await postLogout.request();
 
       userDispatch({
-        type: 'resetUser',
+        type: "resetUser",
       });
       eventsDispatch({
-        type: 'resetEvents',
+        type: "resetEvents",
       });
 
       socket.disconnect();
 
       handleMenuClose();
 
-      history.push('/login');
+      history.push("/login");
     } catch (err) {
       console.log(err);
     }
@@ -204,7 +205,7 @@ const Header = ({ socket, history }) => {
     try {
       await patchRead.request({ notificationId: id });
       eventsDispatch({
-        type: 'updateNotifications',
+        type: "updateNotifications",
         notifications: {
           items: eventsStore.notifications.items.map((notification) =>
             notification._id === id
@@ -223,7 +224,7 @@ const Header = ({ socket, history }) => {
     try {
       await patchUnread.request({ notificationId: id });
       eventsDispatch({
-        type: 'updateNotifications',
+        type: "updateNotifications",
         notifications: {
           items: eventsStore.notifications.items.map((notification) =>
             notification._id === id
@@ -252,7 +253,7 @@ const Header = ({ socket, history }) => {
         dataCeiling: eventsStore.notifications.dataCeiling,
       });
       eventsDispatch({
-        type: 'updateNotifications',
+        type: "updateNotifications",
         notifications: {
           items: [...eventsStore.notifications.items].concat(
             data.notifications
@@ -273,20 +274,20 @@ const Header = ({ socket, history }) => {
 
   const handleToggle = () => {
     eventsDispatch({
-      type: 'updateSearch',
-      search: eventsStore.search === 'artwork' ? 'users' : 'artwork',
+      type: "updateSearch",
+      search: eventsStore.search === "artwork" ? "users" : "artwork",
     });
   };
 
-  const menuId = 'primary-search-account-menu';
+  const menuId = "primary-search-account-menu";
   const renderProfileMenu = (
     <Menu
       id={menuId}
       open={!!state.profile.anchorEl}
       anchorEl={state.profile.anchorEl}
       getContentAnchorEl={null}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      transformOrigin={{ vertical: "top", horizontal: "center" }}
       onClose={handleMenuClose}
       keepMounted
     >
@@ -325,6 +326,17 @@ const Header = ({ socket, history }) => {
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary="Dashboard" />
+        </ListItem>
+      </MenuItem>
+      <Divider />
+      <MenuItem component={Link} to="/gallery">
+        <ListItem>
+          <ListItemAvatar>
+            <Avatar>
+              <GalleryIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary="Gallery" />
         </ListItem>
       </MenuItem>
       <Divider />
@@ -375,15 +387,15 @@ const Header = ({ socket, history }) => {
     </Menu>
   );
 
-  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const mobileMenuId = "primary-search-account-menu-mobile";
   const renderAuthMobileMenu = (
     <Menu
       id={mobileMenuId}
       open={!!state.profile.mobileAnchorEl}
       anchorEl={state.profile.mobileAnchorEl}
       getContentAnchorEl={null}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      transformOrigin={{ vertical: "top", horizontal: "center" }}
       onClose={handleMobileMenuClose}
       keepMounted
     >
@@ -422,8 +434,8 @@ const Header = ({ socket, history }) => {
       open={!!state.profile.mobileAnchorEl}
       anchorEl={state.profile.mobileAnchorEl}
       getContentAnchorEl={null}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      transformOrigin={{ vertical: "top", horizontal: "center" }}
       onClose={handleMobileMenuClose}
       keepMounted
     >
@@ -461,7 +473,7 @@ const Header = ({ socket, history }) => {
           <div className={classes.search}>
             <Formik
               initialValues={{
-                searchInput: '',
+                searchInput: "",
               }}
               validationSchema={searchValidation}
               onSubmit={async (values, { resetForm }) => {
@@ -478,16 +490,16 @@ const Header = ({ socket, history }) => {
                 <Form className={classes.card}>
                   <IconButton
                     title={
-                      eventsStore.search === 'artwork'
-                        ? 'Search artwork'
-                        : 'Search users'
+                      eventsStore.search === "artwork"
+                        ? "Search artwork"
+                        : "Search users"
                     }
                     onClick={handleToggle}
                     className={classes.typeIcon}
                     disableFocusRipple
                     disableRipple
                   >
-                    {eventsStore.search === 'artwork' ? (
+                    {eventsStore.search === "artwork" ? (
                       <ArtworkIcon />
                     ) : (
                       <UserIcon />
@@ -503,7 +515,7 @@ const Header = ({ socket, history }) => {
                           root: classes.inputRoot,
                           input: classes.inputInput,
                         }}
-                        inputProps={{ 'aria-label': 'search' }}
+                        inputProps={{ "aria-label": "search" }}
                       />
                     )}
                   </Field>
@@ -589,7 +601,7 @@ const Header = ({ socket, history }) => {
                   variant="outlined"
                   to="/login"
                   color="primary"
-                  style={{ marginRight: '6px' }}
+                  style={{ marginRight: "6px" }}
                 >
                   Log in
                 </Button>

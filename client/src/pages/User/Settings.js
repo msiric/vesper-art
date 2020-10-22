@@ -1,8 +1,8 @@
 import { Container, Grid } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import * as Yup from "yup";
 import MainHeading from "../../components/MainHeading/index.js";
+import PromptModal from "../../components/PromptModal/index.js";
 import SettingsSection from "../../containers/SettingsSection/index.js";
 import { UserContext } from "../../contexts/User.js";
 import {
@@ -11,33 +11,12 @@ import {
   patchEmail,
   patchPassword,
   patchPreferences,
-  patchUser,
+  patchUser
 } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
 
-const emailValidation = Yup.object().shape({
-  userEmail: Yup.string()
-    .email("Invalid email")
-    .trim()
-    .required("Email cannot be empty"),
-});
-
-const preferencesValidation = Yup.object().shape({
-  userSaves: Yup.boolean().required("Saves need to have a value"),
-});
-
-const passwordValidation = Yup.object().shape({
-  userCurrent: Yup.string().required("Enter your password"),
-  userPassword: Yup.string()
-    .min(8, "Password must contain at least 8 characters")
-    .required("Enter new password"),
-  userConfirm: Yup.string()
-    .required("Confirm your password")
-    .oneOf([Yup.ref("password")], "Passwords do not match"),
-});
-
-const initialState = { loading: true, user: {} };
+const initialState = { loading: true, user: {}, modal: { open: false } };
 
 const Settings = ({ location }) => {
   const [userStore] = useContext(UserContext);
@@ -123,6 +102,20 @@ const Settings = ({ location }) => {
     actions.resetForm();
   };
 
+  const handleModalOpen = () => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: { ...prevState.modal, open: true },
+    }));
+  };
+
+  const handleModalClose = () => {
+    setState((prevState) => ({
+      ...prevState,
+      modal: { ...prevState.modal, open: false },
+    }));
+  };
+
   const handleDeactivateUser = async () => {
     await deleteUser.request({ userId: userStore.id });
   };
@@ -142,6 +135,7 @@ const Settings = ({ location }) => {
             />
             <SettingsSection
               user={state.user}
+              handleModalOpen={handleModalOpen}
               handleUpdateProfile={handleUpdateProfile}
               handleUpdateEmail={handleUpdateEmail}
               handleUpdatePreferences={handleUpdatePreferences}
@@ -154,6 +148,15 @@ const Settings = ({ location }) => {
           history.push("/")
         )}
       </Grid>
+      <PromptModal
+        open={state.modal.open}
+        handleConfirm={handleDeactivateUser}
+        handleClose={handleModalClose}
+        ariaLabel="Deactivate account"
+        promptTitle="Are you sure you want to deactivate your account?"
+        promptConfirm="Deactivate"
+        promptCancel="Cancel"
+      />
     </Container>
   );
 };

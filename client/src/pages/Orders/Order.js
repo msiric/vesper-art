@@ -1,27 +1,28 @@
-import { Box, Button, Container, Grid } from '@material-ui/core';
-import { Rating } from '@material-ui/lab';
-import { format } from 'date-fns';
-import { Field, Form, Formik } from 'formik';
-import queryString from 'query-string';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory, withRouter } from 'react-router-dom';
-import * as Yup from 'yup';
-import ProfileCard from '../../components/ProfileCard/index.js';
-import LicenseCard from '../../containers/LicenseCard/index.js';
-import OrderPreview from '../../containers/OrderPreview/index.js';
-import ReviewCard from '../../containers/ReviewCard/index.js';
-import { UserContext } from '../../contexts/User.js';
-import { getDownload, getOrder, postReview } from '../../services/orders.js';
-import Modal from '../../shared/Modal/Modal.js';
-import globalStyles from '../../styles/global.js';
+import { Box, Button, Container, Grid } from "@material-ui/core";
+import { Rating } from "@material-ui/lab";
+import { format } from "date-fns";
+import { Field, Form, Formik } from "formik";
+import queryString from "query-string";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useHistory, withRouter } from "react-router-dom";
+import * as Yup from "yup";
+import ProfileCard from "../../components/ProfileCard/index.js";
+import LicenseCard from "../../containers/LicenseCard/index.js";
+import OrderPreview from "../../containers/OrderPreview/index.js";
+import ReviewCard from "../../containers/ReviewCard/index.js";
+import { UserContext } from "../../contexts/User.js";
+import { getDownload, getOrder, postReview } from "../../services/orders.js";
+import Modal from "../../shared/Modal/Modal.js";
+import globalStyles from "../../styles/global.js";
 
 const reviewValidation = Yup.object().shape({
-  rating: Yup.number().min(1).max(5).required('Rating cannot be empty'),
+  rating: Yup.number().min(1).max(5).required("Rating cannot be empty"),
 });
 
 const initialState = {
   loading: true,
   order: { version: {}, seller: {}, buyer: {}, license: {}, review: {} },
+  banner: null,
   modal: {
     open: false,
     body: ``,
@@ -93,8 +94,8 @@ const Order = ({ match, location }) => {
   const scrollToHighlight = () => {
     if (highlightRef.current)
       highlightRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
+        behavior: "smooth",
+        block: "center",
       });
   };
 
@@ -102,13 +103,17 @@ const Order = ({ match, location }) => {
     try {
       setState({ ...initialState });
       const { data } = await getOrder.request({ orderId: match.params.id });
+      const {
+        data: { url },
+      } = await getDownload.request({ orderId: data.order._id });
       setState((prevState) => ({
         ...prevState,
         loading: false,
         tab: 0,
         order: data.order,
+        banner: url,
       }));
-      if (query && query.notif === 'review') {
+      if (query && query.notif === "review") {
         scrollToHighlight();
       }
     } catch (err) {
@@ -141,9 +146,9 @@ const Order = ({ match, location }) => {
   const handleDownload = async () => {
     try {
       const { data } = await getDownload.request({ orderId: state.order._id });
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = data.url;
-      link.setAttribute('download', data.file);
+      link.setAttribute("download", data.file);
       document.body.appendChild(link);
       link.click();
     } catch (err) {
@@ -174,6 +179,7 @@ const Order = ({ match, location }) => {
           <>
             <Grid item xs={12}>
               <OrderPreview
+                banner={state.banner}
                 version={state.order.version}
                 handleDownload={handleDownload}
                 shouldDownload={!isSeller() && isBuyer()}
@@ -209,7 +215,7 @@ const Order = ({ match, location }) => {
             </Grid>
           </>
         ) : (
-          history.push('/')
+          history.push("/")
         )}
       </Grid>
       <Modal {...state.modal} handleClose={handleModalClose} />

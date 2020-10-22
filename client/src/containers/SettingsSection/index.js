@@ -24,6 +24,7 @@ import settingsSectionStyles from "./styles.js";
 
 const SettingsSection = ({
   user,
+  handleModalOpen,
   handleUpdateProfile,
   handleUpdateEmail,
   handleUpdatePreferences,
@@ -421,7 +422,7 @@ const SettingsSection = ({
           </CardContent>
           <CardActions style={{ display: "flex", justifyContent: "flex-end" }}>
             <SkeletonWrapper loading={loading}>
-              <Button variant="outlined" onClick={handleDeactivateUser}>
+              <Button variant="outlined" onClick={handleModalOpen}>
                 Deactivate
               </Button>
             </SkeletonWrapper>
