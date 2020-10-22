@@ -40,15 +40,15 @@ const NotificationItem = ({
   if (notification.type === "comment") {
     data.label = "A user left a comment on your artwork";
     data.link = `/artwork/${notification.link}?notif=comment&ref=${notification.ref}`;
-    data.icon = <CommentIcon />;
+    data.icon = <CommentIcon color={notification.read ? "" : "primary"} />;
   } else if (notification.type === "order") {
     data.label = "A user ordered your artwork";
     data.link = `/orders/${notification.link}?notif=order`;
-    data.icon = <OrderIcon />;
+    data.icon = <OrderIcon color={notification.read ? "" : "primary"} />;
   } else if (notification.type === "review") {
     data.label = "A user left a review on your artwork";
     data.link = `/orders/${notification.link}?notif=review`;
-    data.icon = <ReviewIcon />;
+    data.icon = <ReviewIcon color={notification.read ? "" : "primary"} />;
   }
 
   return data.label && data.link ? (
@@ -65,14 +65,7 @@ const NotificationItem = ({
         disableRipple
       >
         <ListItemAvatar>
-          <Avatar
-            style={{
-              backgroundColor:
-                !notification.read && artepunktTheme.palette.primary.main,
-            }}
-          >
-            {data.icon}
-          </Avatar>
+          <Avatar>{data.icon}</Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={

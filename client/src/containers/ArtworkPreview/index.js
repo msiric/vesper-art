@@ -1,6 +1,7 @@
-import { Box, Card, CardMedia, Divider } from "@material-ui/core";
+import { Box, Card, Divider } from "@material-ui/core";
 import React from "react";
 import { useHistory } from "react-router-dom";
+import ImageWrapper from "../../components/ImageWrapper/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { Typography } from "../../styles/theme.js";
 import artworkPreviewStyles from "./styles.js";
@@ -25,14 +26,19 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
         </SkeletonWrapper>
       </Box>
       <Divider />
-      <SkeletonWrapper loading={loading} width="100%">
+      {/* <SkeletonWrapper loading={loading} width="100%">
         <CardMedia
           className={classes.artworkPreviewMedia}
           image={version.cover}
           title={version.title}
           style={loading ? { width: "100%", height } : { minHeight: height }}
         />
-      </SkeletonWrapper>
+      </SkeletonWrapper> */}
+      <ImageWrapper
+        source={version.cover}
+        placeholder={version.dominant}
+        loading={loading}
+      />
       <Box>
         <SkeletonWrapper
           variant="text"
