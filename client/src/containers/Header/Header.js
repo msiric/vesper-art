@@ -322,80 +322,66 @@ const Header = ({ socket, history }) => {
         </>
       )}
       <MenuItem component={Link} to={`/user/${userStore.name}`} disableRipple>
-        <ListItem>
-          <ListItemAvatar>
-            <Avatar>
-              <ProfileIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={userStore.name} />
-        </ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <ProfileIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary={userStore.name} />
       </MenuItem>
       <Divider />
       <MenuItem component={Link} to="/dashboard" disableRipple>
-        <ListItem>
-          <ListItemAvatar>
-            <Avatar>
-              <DashboardIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary="Dashboard" />
-        </ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <DashboardIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Dashboard" />
       </MenuItem>
       <Divider />
       <MenuItem component={Link} to="/gallery" disableRipple>
-        <ListItem>
-          <ListItemAvatar>
-            <Avatar>
-              <GalleryIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary="Gallery" />
-        </ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <GalleryIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Gallery" />
       </MenuItem>
       <Divider />
       <MenuItem component={Link} to="/my_artwork" disableRipple>
-        <ListItem>
-          <ListItemAvatar>
-            <Avatar>
-              <ArtworkIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary="Artwork" />
-        </ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <ArtworkIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Artwork" />
       </MenuItem>
       <Divider />
       <MenuItem component={Link} to="/orders" disableRipple>
-        <ListItem>
-          <ListItemAvatar>
-            <Avatar>
-              <OrdersIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary="Orders" />
-        </ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <OrdersIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Orders" />
       </MenuItem>
       <Divider />
       <MenuItem component={Link} to="/settings" disableRipple>
-        <ListItem>
-          <ListItemAvatar>
-            <Avatar>
-              <SettingsIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary="Settings" />
-        </ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <SettingsIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Settings" />
       </MenuItem>
       <Divider />
       <MenuItem onClick={handleLogout} disableRipple>
-        <ListItem>
-          <ListItemAvatar>
-            <Avatar>
-              <LogoutIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary="Log out" />
-        </ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <LogoutIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Log out" />
       </MenuItem>
       <Divider />
     </Menu>

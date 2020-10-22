@@ -1,10 +1,10 @@
 import {
   Avatar,
   IconButton,
-  ListItem,
   ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
+  MenuItem,
   Typography,
 } from "@material-ui/core";
 import {
@@ -19,6 +19,7 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
 import { EventsContext } from "../../contexts/Events.js";
+import { artepunktTheme } from "../../styles/theme.js";
 import NotificationItemStyles from "./NotificationItem.style.js";
 
 const NotificationItem = ({
@@ -52,12 +53,26 @@ const NotificationItem = ({
 
   return data.label && data.link ? (
     <>
-      <ListItem
+      <MenuItem
         onClick={() => handleRedirectClick(notification, data.link)}
-        style={{ cursor: "pointer", width: "100%" }}
+        style={{
+          cursor: "pointer",
+          width: "100%",
+          backgroundColor:
+            !notification.read &&
+            artepunktTheme.palette.background.notification,
+        }}
+        disableRipple
       >
         <ListItemAvatar>
-          <Avatar>{data.icon}</Avatar>
+          <Avatar
+            style={{
+              backgroundColor:
+                !notification.read && artepunktTheme.palette.primary.main,
+            }}
+          >
+            {data.icon}
+          </Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={
@@ -94,7 +109,7 @@ const NotificationItem = ({
             {notification.read ? <ReadIcon /> : <UnreadIcon />}
           </IconButton>
         </ListItemSecondaryAction>
-      </ListItem>
+      </MenuItem>
     </>
   ) : null;
 };
