@@ -350,6 +350,7 @@ const CheckoutProcessor = ({ match, location, stripe }) => {
                           component="nav"
                           aria-label="Features"
                           style={{ width: "100%" }}
+                          disablePadding
                         >
                           {licenseOptions.map((item) => (
                             <ListItem>

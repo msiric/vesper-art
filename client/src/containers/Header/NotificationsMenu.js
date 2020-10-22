@@ -1,4 +1,12 @@
-import { Box, Divider, Grid, List, Menu, Typography } from "@material-ui/core";
+import {
+  Box,
+  Divider,
+  Grid,
+  List,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@material-ui/core";
 import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
@@ -48,16 +56,23 @@ const NotificationsMenu = ({
         {loading ||
         (eventsStore.notifications.items &&
           eventsStore.notifications.items.length) ? (
-          <List className={classes.root}>
+          <List
+            className={classes.root}
+            style={{ width: "100%" }}
+            disablePadding
+          >
             {eventsStore.notifications.items.map((notification, index) => (
               <>
-                {index === 0 ? <Divider /> : null}
-                <NotificationItem
-                  notification={notification}
-                  handleRedirectClick={handleRedirectClick}
-                  handleReadClick={handleReadClick}
-                  handleUnreadClick={handleUnreadClick}
-                />
+                <Divider />
+                <MenuItem style={{ width: "100%" }} disableRipple>
+                  <NotificationItem
+                    notification={notification}
+                    handleRedirectClick={handleRedirectClick}
+                    handleReadClick={handleReadClick}
+                    handleUnreadClick={handleUnreadClick}
+                  />
+                </MenuItem>
+                <Divider />
               </>
             ))}
             {eventsStore.notifications.items.length >= 50 && (

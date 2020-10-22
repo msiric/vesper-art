@@ -56,7 +56,7 @@ const EditPreferencesForm = ({ displaySaves }) => {
     >
       {({ values, errors, touched }) => (
         <Form className={classes.updatePassword}>
-          <List>
+          <List disablePadding>
             <ListItem>
               <ListItemIcon>
                 <SaveIcon />

@@ -203,6 +203,12 @@ const Header = ({ socket, history }) => {
 
   const handleReadClick = async (id) => {
     try {
+      eventsDispatch({
+        type: "notificationSubmitting",
+        notifications: {
+          isSubmitting: true,
+        },
+      });
       await patchRead.request({ notificationId: id });
       eventsDispatch({
         type: "updateNotifications",
@@ -213,6 +219,7 @@ const Header = ({ socket, history }) => {
               : notification
           ),
           count: eventsStore.notifications.count - 1,
+          isSubmitting: false,
         },
       });
     } catch (err) {
@@ -222,6 +229,12 @@ const Header = ({ socket, history }) => {
 
   const handleUnreadClick = async (id) => {
     try {
+      eventsDispatch({
+        type: "notificationSubmitting",
+        notifications: {
+          isSubmitting: true,
+        },
+      });
       await patchUnread.request({ notificationId: id });
       eventsDispatch({
         type: "updateNotifications",
@@ -232,6 +245,7 @@ const Header = ({ socket, history }) => {
               : notification
           ),
           count: eventsStore.notifications.count + 1,
+          isSubmitting: false,
         },
       });
     } catch (err) {
@@ -294,7 +308,7 @@ const Header = ({ socket, history }) => {
       <Divider />
       {!userStore.stripeId && (
         <>
-          <MenuItem component={Link} to="/onboarding">
+          <MenuItem component={Link} to="/onboarding" disableRipple>
             <ListItem>
               <ListItemAvatar>
                 <Avatar>
@@ -307,7 +321,7 @@ const Header = ({ socket, history }) => {
           <Divider />
         </>
       )}
-      <MenuItem component={Link} to={`/user/${userStore.name}`}>
+      <MenuItem component={Link} to={`/user/${userStore.name}`} disableRipple>
         <ListItem>
           <ListItemAvatar>
             <Avatar>
@@ -318,7 +332,7 @@ const Header = ({ socket, history }) => {
         </ListItem>
       </MenuItem>
       <Divider />
-      <MenuItem component={Link} to="/dashboard">
+      <MenuItem component={Link} to="/dashboard" disableRipple>
         <ListItem>
           <ListItemAvatar>
             <Avatar>
@@ -329,7 +343,7 @@ const Header = ({ socket, history }) => {
         </ListItem>
       </MenuItem>
       <Divider />
-      <MenuItem component={Link} to="/gallery">
+      <MenuItem component={Link} to="/gallery" disableRipple>
         <ListItem>
           <ListItemAvatar>
             <Avatar>
@@ -340,7 +354,7 @@ const Header = ({ socket, history }) => {
         </ListItem>
       </MenuItem>
       <Divider />
-      <MenuItem component={Link} to="/my_artwork">
+      <MenuItem component={Link} to="/my_artwork" disableRipple>
         <ListItem>
           <ListItemAvatar>
             <Avatar>
@@ -351,7 +365,7 @@ const Header = ({ socket, history }) => {
         </ListItem>
       </MenuItem>
       <Divider />
-      <MenuItem component={Link} to="/orders">
+      <MenuItem component={Link} to="/orders" disableRipple>
         <ListItem>
           <ListItemAvatar>
             <Avatar>
@@ -362,7 +376,7 @@ const Header = ({ socket, history }) => {
         </ListItem>
       </MenuItem>
       <Divider />
-      <MenuItem component={Link} to="/settings">
+      <MenuItem component={Link} to="/settings" disableRipple>
         <ListItem>
           <ListItemAvatar>
             <Avatar>
@@ -373,7 +387,7 @@ const Header = ({ socket, history }) => {
         </ListItem>
       </MenuItem>
       <Divider />
-      <MenuItem onClick={handleLogout}>
+      <MenuItem onClick={handleLogout} disableRipple>
         <ListItem>
           <ListItemAvatar>
             <Avatar>

@@ -63,6 +63,7 @@ const Onboarding = () => {
                     component="nav"
                     aria-label="Becoming a seller"
                     style={{ marginBottom: 30 }}
+                    disablePadding
                   >
                     <ListItem>
                       <ListItemIcon>

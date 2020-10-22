@@ -85,7 +85,7 @@ const CheckoutSummary = ({
         >
           <CheckoutCard version={version} loading={loading} />
         </Grid>
-        <List>
+        <List disablePadding>
           <ListItem
             className={classes.listItem}
             key={version._id}

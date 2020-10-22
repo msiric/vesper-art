@@ -198,6 +198,19 @@ artepunktTheme.overrides.MuiPopover = {
   },
 };
 
+artepunktTheme.overrides.MuiListItem = {
+  container: {
+    width: "100%",
+  },
+};
+
+artepunktTheme.overrides.MuiListItemText = {
+  multiline: {
+    display: "flex",
+    flexDirection: "column",
+  },
+};
+
 artepunktTheme.overrides.MuiInputBase = {
   root: {
     "& input": {

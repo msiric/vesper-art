@@ -58,7 +58,7 @@ const PricingCard = ({
               {heading}
             </Typography>
           </SkeletonWrapper>
-          <List component="nav" aria-label="Features">
+          <List component="nav" aria-label="Features" disablePadding>
             {list.map((item) => (
               <SkeletonWrapper loading={loading}>
                 <ListItem>

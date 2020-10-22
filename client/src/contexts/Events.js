@@ -14,6 +14,7 @@ const store = {
     hasMore: true,
     dataCursor: 0,
     dataCeiling: 10,
+    isSubmitting: false,
   },
   search: "artwork",
 };
@@ -60,6 +61,10 @@ const reducer = (state, action) => {
             typeof action.notifications.dataCeiling !== "undefined"
               ? action.notifications.dataCeiling
               : state.notifications.dataCeiling,
+          isSubmitting:
+            typeof action.notifications.isSubmitting !== "undefined"
+              ? action.notifications.isSubmitting
+              : state.notifications.isSubmitting,
         },
         search:
           typeof action.search !== "undefined" ? action.search : state.search,
@@ -80,6 +85,7 @@ const reducer = (state, action) => {
           hasMore: true,
           dataCursor: 0,
           dataCeiling: 10,
+          isSubmitting: false,
         },
         search: "artwork",
       };
@@ -127,6 +133,10 @@ const reducer = (state, action) => {
             typeof action.notifications.dataCeiling !== "undefined"
               ? action.notifications.dataCeiling
               : state.notifications.dataCeiling,
+          isSubmitting:
+            typeof action.notifications.isSubmitting !== "undefined"
+              ? action.notifications.isSubmitting
+              : state.notifications.isSubmitting,
         },
       };
     case "updateEvents":
@@ -169,6 +179,10 @@ const reducer = (state, action) => {
             typeof action.notifications.dataCeiling !== "undefined"
               ? action.notifications.dataCeiling
               : state.notifications.dataCeiling,
+          isSubmitting:
+            typeof action.notifications.isSubmitting !== "undefined"
+              ? action.notifications.isSubmitting
+              : state.notifications.isSubmitting,
         },
         search:
           typeof action.search !== "undefined" ? action.search : state.search,
@@ -187,6 +201,14 @@ const reducer = (state, action) => {
       return {
         ...state,
         search: action.search,
+      };
+    case "notificationSubmitting":
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
+          isSubmitting: action.notifications.isSubmitting,
+        },
       };
     default:
       return state;

@@ -55,6 +55,7 @@ const CommentSection = ({
             <List
               p={0}
               style={{ display: "flex", flexDirection: "column-reverse" }}
+              disablePadding
             >
               <Box>
                 {artwork.comments.map((comment) => (
