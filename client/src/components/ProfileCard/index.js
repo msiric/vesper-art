@@ -1,7 +1,7 @@
+import { Avatar } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import {
   LocationOnRounded as LocationIcon,
@@ -20,11 +20,11 @@ const ProfileCard = ({ user, height, loading }) => {
   return (
     <Card className={classes.profileCardContainer} loading={loading}>
       <SkeletonWrapper loading={loading} variant="circle">
-        <CardMedia
+        <Avatar
           component={RouterLink}
           to={`/user/${user.name}`}
           alt={user.name}
-          image={user.photo}
+          src={user.photo}
           title={user.name}
           className={classes.profileCardAvatar}
         />

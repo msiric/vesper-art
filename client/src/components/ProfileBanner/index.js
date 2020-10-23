@@ -91,12 +91,13 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
                   marginTop: "-12px",
                 }}
               >
-                {user.rating && (
+                {user.rating > 0 && (
                   <Box
                     style={{
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
+                      marginRight: 12,
                     }}
                   >
                     <StarIcon
@@ -121,7 +122,7 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      marginLeft: "12px",
+                      marginRight: 12,
                     }}
                   >
                     <LocationIcon
@@ -145,7 +146,6 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    marginLeft: "12px",
                   }}
                 >
                   <MemberIcon
