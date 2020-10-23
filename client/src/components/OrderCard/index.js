@@ -3,41 +3,43 @@ import { formatDate } from "../../../../common/helpers.js";
 import Datatable from "../../components/DataTable/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import SubHeading from "../../components/SubHeading/index.js";
-import licenseCardStyles from "./styles.js";
+import orderCardStyles from "./styles.js";
 
-const LicenseCard = ({ license, loading }) => {
-  const classes = licenseCardStyles();
+const OrderCard = ({ order, isSeller, loading }) => {
+  const classes = orderCardStyles();
 
   return (
     <Datatable
-      title={<SubHeading text="License" loading={loading} />}
+      title={<SubHeading text="Order" loading={loading} />}
       columns={[
         {
-          name: "Id",
-          options: {
-            display: false,
-          },
-        },
-        {
-          name: "Fingerprint",
+          name: "Order Id",
           options: {
             sort: false,
           },
         },
         {
-          name: "Type",
+          name: "Buyer",
           options: {
             sort: false,
           },
         },
         {
-          name: "Assignee",
+          name: "Seller",
           options: {
             sort: false,
           },
         },
         {
-          name: "Value",
+          name: "Discount",
+          options: {
+            sort: false,
+            customBodyRender: (value, tableMeta, updateValue) =>
+              value ? `${value.discount * 100}%` : "None",
+          },
+        },
+        {
+          name: isSeller() ? "Earned" : "Spent",
           options: {
             sort: false,
             customBodyRender: (value, tableMeta, updateValue) =>
@@ -57,15 +59,15 @@ const LicenseCard = ({ license, loading }) => {
       ]}
       data={[
         [
-          license._id,
-          license.fingerprint,
-          license.type,
-          license.assignee,
-          license.price,
-          license.created && formatDate(license.created, "dd/MM/yy HH:mm"),
+          order._id,
+          order.buyer.name,
+          order.seller.name,
+          order.discount,
+          isSeller() ? order.earned : order.spent,
+          order.created && formatDate(order.created, "dd/MM/yy HH:mm"),
         ],
       ]}
-      empty={<EmptySection label="License not found" loading={loading} />}
+      empty={<EmptySection label="Order not found" loading={loading} />}
       loading={loading}
       redirect=""
       selectable={false}
@@ -86,4 +88,4 @@ const LicenseCard = ({ license, loading }) => {
   );
 };
 
-export default LicenseCard;
+export default OrderCard;

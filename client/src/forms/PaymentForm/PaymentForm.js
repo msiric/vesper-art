@@ -131,6 +131,7 @@ export const StripeTextField = (props) => {
       fullWidth
       InputLabelProps={{
         ...InputLabelProps,
+        shrink: true,
       }}
       InputProps={{
         ...InputProps,
@@ -167,13 +168,14 @@ const PaymentForm = ({ secret, version }) => {
   ];
 
   const onChange = (event) => {
-    setState({
-      ...state,
+    console.log("event", event);
+    setState((prevState) => ({
+      ...prevState,
       elementError: {
-        ...state.elementError,
-        [event.elementType]: event.error.message,
+        ...prevState.elementError,
+        [event.elementType]: event.error ? event.error.message : "",
       },
-    });
+    }));
   };
 
   /*   const handlePaymentSubmit = async () => {
@@ -247,9 +249,9 @@ const PaymentForm = ({ secret, version }) => {
           ))}
         </Grid>
       </Grid>
-      <Grid item xs={12} sm={12}>
+      <Grid item xs={12}>
         <StripeTextField
-          error={Boolean(state.elementError.cardNumber)}
+          error={!!state.elementError.cardNumber}
           helperText={state.elementError.cardNumber}
           label="Card Number"
           inputProps={{
@@ -264,9 +266,9 @@ const PaymentForm = ({ secret, version }) => {
           fullWidth
         />
       </Grid>
-      <Grid item xs={6} sm={6}>
+      <Grid item xs={6}>
         <StripeTextField
-          error={Boolean(state.elementError.cardExpiry)}
+          error={!!state.elementError.cardExpiry}
           helperText={state.elementError.cardExpiry}
           label="Card expiry date"
           inputProps={{
@@ -281,9 +283,9 @@ const PaymentForm = ({ secret, version }) => {
           fullWidth
         />
       </Grid>
-      <Grid item xs={6} sm={6}>
+      <Grid item xs={6}>
         <StripeTextField
-          error={Boolean(state.elementError.cardCvc)}
+          error={!!state.elementError.cardCvc}
           helperText={state.elementError.cardCvc}
           label="Card CVC"
           inputProps={{

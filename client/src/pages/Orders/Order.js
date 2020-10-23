@@ -6,6 +6,7 @@ import queryString from "query-string";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
 import * as Yup from "yup";
+import OrderCard from "../../components/OrderCard/index.js";
 import ProfileCard from "../../components/ProfileCard/index.js";
 import LicenseCard from "../../containers/LicenseCard/index.js";
 import OrderPreview from "../../containers/OrderPreview/index.js";
@@ -22,7 +23,6 @@ const reviewValidation = Yup.object().shape({
 const initialState = {
   loading: true,
   order: { version: {}, seller: {}, buyer: {}, license: {}, review: {} },
-  banner: null,
   modal: {
     open: false,
     body: ``,
@@ -103,15 +103,11 @@ const Order = ({ match, location }) => {
     try {
       setState({ ...initialState });
       const { data } = await getOrder.request({ orderId: match.params.id });
-      const {
-        data: { url },
-      } = await getDownload.request({ orderId: data.order._id });
       setState((prevState) => ({
         ...prevState,
         loading: false,
         tab: 0,
         order: data.order,
-        banner: url,
       }));
       if (query && query.notif === "review") {
         scrollToHighlight();
@@ -179,7 +175,6 @@ const Order = ({ match, location }) => {
           <>
             <Grid item xs={12}>
               <OrderPreview
-                banner={state.banner}
                 version={state.order.version}
                 handleDownload={handleDownload}
                 shouldDownload={!isSeller() && isBuyer()}
@@ -197,10 +192,14 @@ const Order = ({ match, location }) => {
               />
             </Grid>
             <Grid item xs={12} md={8}>
-              <LicenseCard
+              <OrderCard
                 order={state.order}
-                license={state.order.license}
                 isSeller={isSeller}
+                loading={state.loading}
+              />
+              <br />
+              <LicenseCard
+                license={state.order.license}
                 loading={state.loading}
               />
               <br />

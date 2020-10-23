@@ -39,11 +39,17 @@ export const receiveWebhookEvent = async ({
   session,
 }) => {
   const stripeSecret = process.env.STRIPE_WEBHOOK;
-  const stripeEvent = await constructStripeEvent({
-    stripeBody,
-    stripeSecret,
-    stripeSignature,
-  });
+  let stripeEvent;
+
+  try {
+    stripeEvent = await constructStripeEvent({
+      stripeBody,
+      stripeSecret,
+      stripeSignature,
+    });
+  } catch (err) {
+    console.log("event error");
+  }
 
   console.log("stripe event", stripeEvent.type);
 
@@ -57,8 +63,11 @@ export const receiveWebhookEvent = async ({
       console.log("Failed payment");
       break;
     default:
-      throw createError(400, "Invalid Stripe event");
+      console.log("Invalid event");
   }
+
+  console.log("done");
+  return { message: "Event received" };
 };
 
 export const getStripeUser = async ({ accountId }) => {
@@ -392,5 +401,5 @@ const processTransaction = async ({ stripeIntent, session }) => {
   });
   socketApi.sendNotification(sellerId, savedOrder._id);
   // new end
-  console.log("Order processed successfully");
+  return { message: "Order processed successfully" };
 };

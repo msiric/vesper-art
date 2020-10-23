@@ -7,13 +7,7 @@ import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { Typography } from "../../styles/theme.js";
 import orderPreviewStyles from "./styles.js";
 
-const OrderPreview = ({
-  banner,
-  version,
-  handleDownload,
-  shouldDownload,
-  loading,
-}) => {
+const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
   const history = useHistory();
   const classes = orderPreviewStyles();
 
@@ -31,9 +25,11 @@ const OrderPreview = ({
         >
           <CardMedia
             className={classes.artworkPreviewMedia}
-            image={banner}
+            image={version.cover}
             title={version.title}
-            style={{ paddingTop: `${(version.height / version.width) * 100}%` }}
+            style={{
+              paddingTop: `${version.height / (version.width / 500)}px`,
+            }}
           />
         </Box>
       </SkeletonWrapper>
