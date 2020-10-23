@@ -70,6 +70,7 @@ const CheckoutSummary = ({
           height: "100%",
           display: "flex",
           flexDirection: "column",
+          paddingBottom: 8,
         }}
       >
         <SkeletonWrapper variant="text" loading={loading}>
