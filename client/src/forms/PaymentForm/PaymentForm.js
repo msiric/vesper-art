@@ -66,6 +66,7 @@ const PaymentFormStyles = makeStyles((muiTheme) => ({
 
 const StripeInput = ({ component: Component, inputRef, ...other }) => {
   const elementRef = useRef();
+
   useImperativeHandle(inputRef, () => ({
     focus: () => elementRef.current.focus,
   }));

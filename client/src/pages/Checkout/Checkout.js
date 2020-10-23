@@ -177,7 +177,10 @@ const Processor = ({ match, location, stripe }) => {
   const [userStore, userDispatch] = useContext(UserContext);
   const [state, setState] = useState({
     ...initialState,
-    license: location.state.license || initialState.license,
+    license:
+      location.state && location.state.license
+        ? location.state.license
+        : initialState.license,
   });
 
   const licenseOptions =
@@ -453,7 +456,10 @@ const Processor = ({ match, location, stripe }) => {
             <Grid item xs={12} md={8}>
               <Formik
                 initialValues={{
-                  licenseType: location.state.license || "",
+                  licenseType:
+                    location.state && location.state.license
+                      ? location.state.license
+                      : initialState.license,
                   licenseAssignee: "",
                   licenseCompany: "",
                   billingName: "",

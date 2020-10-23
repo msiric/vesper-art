@@ -1,6 +1,6 @@
 {
   "workbench.colorTheme": "Night Owl",
-  "editor.fontFamily": "'FiraCode', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+  "editor.fontFamily": "'Fira Code', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
   "editor.fontLigatures": true,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
