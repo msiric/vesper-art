@@ -16,7 +16,11 @@ const SwipeCard = ({
 
   return (
     <Box className={classes.profileArtworkContainer} m={margin}>
-      <AppBar position="static" color="transparent">
+      <AppBar
+        position="static"
+        color="transparent"
+        style={{ marginBottom: 10 }}
+      >
         <SkeletonWrapper loading={loading} width="100%" height="100%">
           <Tabs
             value={tabs.value}
