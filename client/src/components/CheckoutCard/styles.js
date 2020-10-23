@@ -1,12 +1,12 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 
 const checkoutCardStyles = makeStyles((muiTheme) => ({
   media: {
     minWidth: 50,
-    height: 90,
-    width: '100%',
+    height: 100,
+    width: "100%",
     borderRadius: 4,
-    backgroundSize: 'contain',
+    backgroundSize: "contain",
   },
 }));
 

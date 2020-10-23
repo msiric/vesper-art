@@ -1,67 +1,66 @@
-import { Grid, TextField, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Grid, TextField, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   CardCvcElement,
   CardExpiryElement,
   CardNumberElement,
   useStripe,
-} from '@stripe/react-stripe-js';
-import { withSnackbar } from 'notistack';
-import React, { useImperativeHandle, useRef } from 'react'; //, {useState }
-import { useHistory } from 'react-router-dom';
+} from "@stripe/react-stripe-js";
+import React, { useImperativeHandle, useRef } from "react"; //, {useState }
+import { useHistory } from "react-router-dom";
 
 const PaymentFormStyles = makeStyles((muiTheme) => ({
   fixed: {
-    height: '100%',
+    height: "100%",
   },
   container: {
     flex: 1,
-    height: '100%',
+    height: "100%",
   },
   artwork: {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
   },
   root: {
-    display: 'flex',
-    width: '100%',
+    display: "flex",
+    width: "100%",
   },
   loader: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     flex: 1,
   },
   details: {
-    display: 'flex',
-    width: '100%',
+    display: "flex",
+    width: "100%",
   },
   cover: {
     minWidth: 50,
     maxWidth: 200,
-    width: '100%',
+    width: "100%",
   },
   controls: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
     padding: 16,
-    width: '100%',
+    width: "100%",
   },
   playIcon: {
     height: 38,
     width: 38,
   },
   rightList: {
-    textAlign: 'right',
+    textAlign: "right",
   },
   manageLicenses: {
-    padding: '8px 16px',
+    padding: "8px 16px",
   },
   content: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
   },
 }));
 
@@ -86,16 +85,16 @@ const PaymentForm = ({ secret, version }) => {
   const history = useHistory();
 
   const cardsLogo = [
-    'amex',
-    'cirrus',
-    'diners',
-    'dankort',
-    'discover',
-    'jcb',
-    'maestro',
-    'mastercard',
-    'visa',
-    'visaelectron',
+    "amex",
+    "cirrus",
+    "diners",
+    "dankort",
+    "discover",
+    "jcb",
+    "maestro",
+    "mastercard",
+    "visa",
+    "visaelectron",
   ];
 
   /*   const handlePaymentSubmit = async () => {
@@ -157,14 +156,14 @@ const PaymentForm = ({ secret, version }) => {
           <Typography variant="h6">Payment Data</Typography>
         </Grid>
         <Grid container item xs={12} sm={9} justify="space-between">
-          {cardsLogo.map((e) => (
+          {cardsLogo.map((card) => (
             <img
-              key={e}
-              src={`../cards/${e}.png`}
-              alt={e}
+              key={card}
+              src={`../../../assets/images/cards/${card}.png`}
+              alt={card}
               width="50px"
               align="bottom"
-              style={{ padding: '0 5px' }}
+              style={{ padding: "0 5px" }}
             />
           ))}
         </Grid>
@@ -224,4 +223,4 @@ const PaymentForm = ({ secret, version }) => {
   );
 };
 
-export default withSnackbar(PaymentForm);
+export default PaymentForm;
