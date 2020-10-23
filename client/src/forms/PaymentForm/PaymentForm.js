@@ -1,14 +1,13 @@
 import { Grid, TextField, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
 import {
   CardCvcElement,
   CardExpiryElement,
   CardNumberElement,
   useStripe,
 } from "@stripe/react-stripe-js";
-import React, { useImperativeHandle, useRef } from "react"; //, {useState }
+import React, { useState } from "react"; //, {useState }
 import { useHistory } from "react-router-dom";
-
 const PaymentFormStyles = makeStyles((muiTheme) => ({
   fixed: {
     height: "100%",
@@ -64,22 +63,91 @@ const PaymentFormStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const StripeInput = ({ component: Component, inputRef, ...other }) => {
-  const elementRef = useRef();
+export const StripeInput = (props) => {
+  const {
+    component: Component,
+    inputRef,
+    "aria-invalid": ariaInvalid,
+    "aria-describedby": ariaDescribeBy,
+    defaultValue,
+    required,
+    onKeyDown,
+    onKeyUp,
+    readOnly,
+    autoComplete,
+    autoFocus,
+    type,
+    name,
+    rows,
+    options,
+    ...other
+  } = props;
+  const theme = useTheme();
+  const [mountNode, setMountNode] = React.useState(null);
 
-  useImperativeHandle(inputRef, () => ({
-    focus: () => elementRef.current.focus,
-  }));
+  React.useImperativeHandle(
+    inputRef,
+    () => ({
+      focus: () => mountNode.focus(),
+    }),
+    [mountNode]
+  );
 
   return (
     <Component
-      onReady={(element) => (elementRef.current = element)}
+      onReady={setMountNode}
+      options={{
+        ...options,
+        style: {
+          base: {
+            color: theme.palette.text.primary,
+            fontSize: `${theme.typography.fontSize}px`,
+            fontFamily: theme.typography.fontFamily,
+            "::placeholder": {
+              color: fade(theme.palette.text.primary, 0.42),
+            },
+          },
+          invalid: {
+            color: theme.palette.text.primary,
+          },
+        },
+      }}
+      {...other}
+    />
+  );
+};
+
+export const StripeTextField = (props) => {
+  const {
+    InputLabelProps,
+    stripeElement,
+    InputProps = {},
+    inputProps,
+    ...other
+  } = props;
+
+  return (
+    <TextField
+      fullWidth
+      InputLabelProps={{
+        ...InputLabelProps,
+      }}
+      InputProps={{
+        ...InputProps,
+        inputProps: {
+          ...inputProps,
+          ...InputProps.inputProps,
+          component: stripeElement,
+        },
+        inputComponent: StripeInput,
+      }}
       {...other}
     />
   );
 };
 
 const PaymentForm = ({ secret, version }) => {
+  const [state, setState] = useState({ elementError: {} });
   const classes = PaymentFormStyles();
 
   const stripe = useStripe();
@@ -97,6 +165,16 @@ const PaymentForm = ({ secret, version }) => {
     "visa",
     "visaelectron",
   ];
+
+  const onChange = (event) => {
+    setState({
+      ...state,
+      elementError: {
+        ...state.elementError,
+        [event.elementType]: event.error.message,
+      },
+    });
+  };
 
   /*   const handlePaymentSubmit = async () => {
     if (!secret || !stripe || !elements) {
@@ -170,54 +248,54 @@ const PaymentForm = ({ secret, version }) => {
         </Grid>
       </Grid>
       <Grid item xs={12} sm={12}>
-        <TextField
-          label="Credit card number"
-          name="ccnumber"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          InputProps={{
-            inputProps: {
-              component: CardNumberElement,
+        <StripeTextField
+          error={Boolean(state.elementError.cardNumber)}
+          helperText={state.elementError.cardNumber}
+          label="Card Number"
+          inputProps={{
+            options: {
+              showIcon: true,
             },
-            inputComponent: StripeInput,
           }}
-          InputLabelProps={{ shrink: true }}
+          onChange={onChange}
+          stripeElement={CardNumberElement}
+          variant={"outlined"}
+          margin="dense"
+          fullWidth
         />
       </Grid>
       <Grid item xs={6} sm={6}>
-        <TextField
-          label="Expiration date"
-          name="ccexp"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          InputProps={{
-            inputProps: {
-              component: CardExpiryElement,
+        <StripeTextField
+          error={Boolean(state.elementError.cardExpiry)}
+          helperText={state.elementError.cardExpiry}
+          label="Card expiry date"
+          inputProps={{
+            options: {
+              showIcon: true,
             },
-            inputComponent: StripeInput,
           }}
-          InputLabelProps={{ shrink: true }}
+          onChange={onChange}
+          stripeElement={CardExpiryElement}
+          variant={"outlined"}
+          margin="dense"
+          fullWidth
         />
       </Grid>
       <Grid item xs={6} sm={6}>
-        <TextField
-          label="CVC"
-          name="cvc"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          InputProps={{
-            inputProps: {
-              component: CardCvcElement,
+        <StripeTextField
+          error={Boolean(state.elementError.cardCvc)}
+          helperText={state.elementError.cardCvc}
+          label="Card CVC"
+          inputProps={{
+            options: {
+              showIcon: true,
             },
-            inputComponent: StripeInput,
           }}
-          InputLabelProps={{ shrink: true }}
+          onChange={onChange}
+          stripeElement={CardCvcElement}
+          variant={"outlined"}
+          margin="dense"
+          fullWidth
         />
       </Grid>
     </>
