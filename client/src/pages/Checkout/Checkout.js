@@ -35,6 +35,7 @@ import { Form, Formik } from "formik";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
+import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import CheckoutSummary from "../../containers/CheckoutSummary/index.js";
@@ -163,10 +164,12 @@ const Checkout = ({ match, location }) => {
     fetchData();
   }, [location]);
 
-  return (
+  return !state.loading ? (
     <Elements key={location.key} stripe={state.stripe}>
       <Processor match={match} location={location} stripe={state.stripe} />
     </Elements>
+  ) : (
+    <LoadingSpinner />
   );
 };
 
