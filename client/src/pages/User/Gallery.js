@@ -1,7 +1,9 @@
-import { Button, Container, Grid } from "@material-ui/core";
+import { Card, Container, Grid } from "@material-ui/core";
 import FsLightbox from "fslightbox-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { hexToRgb } from "../../../../common/helpers.js";
+import GalleryPanel from "../../containers/GalleryPanel/index.js";
 import { UserContext } from "../../contexts/User.js";
 import { getArtwork } from "../../services/artwork.js";
 import { getOwnership } from "../../services/user.js";
@@ -10,7 +12,7 @@ import globalStyles from "../../styles/global.js";
 const initialState = {
   loading: true,
   user: { artwork: [], purchases: [] },
-  open: false,
+  gallery: { open: false, id: null },
   display: "purchases",
   scroll: {
     artwork: {
@@ -24,6 +26,13 @@ const initialState = {
       dataCeiling: 10,
     },
   },
+};
+
+const breakpointColumns = {
+  default: 4,
+  1100: 3,
+  700: 2,
+  500: 1,
 };
 
 const Gallery = ({ match, location }) => {
@@ -82,7 +91,7 @@ const Gallery = ({ match, location }) => {
         },
       }));
     } catch (err) {
-      setState((prevState) => ({ ...prevState, open: false }));
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
 
@@ -118,40 +127,71 @@ const Gallery = ({ match, location }) => {
     }
   };
 
-  const fomatArtwork = (artwork) => {
+  const formatArtwork = (artwork) => {
     const artworkIds = {};
     const uniqueArt = [];
     for (let i = 0; i < artwork.length; i++) {
       if (!artworkIds[artwork[i].version._id]) {
-        uniqueArt.push(artwork[i].version.cover);
+        uniqueArt.push(artwork[i].version);
         artworkIds[artwork[i].version._id] = true;
       }
     }
     return uniqueArt;
   };
 
-  const handleGalleryToggle = () => {
-    setState((prevState) => ({ ...prevState, open: !prevState.open }));
+  const formatGallery = (artwork) => {
+    const artworkIds = {};
+    const uniqueArt = [];
+    const uniqueAttributes = [];
+    for (let i = 0; i < artwork.length; i++) {
+      if (!artworkIds[artwork[i].version._id]) {
+        const { r, g, b } = hexToRgb(artwork[i].version.dominant);
+        uniqueArt.push(artwork[i].version.cover);
+        uniqueAttributes.push({
+          style: {
+            boxShadow: `0px 0px 60px 35px rgba(${r},${g},${b},0.75)`,
+            borderRadius: 4,
+          },
+        });
+        artworkIds[artwork[i].version._id] = true;
+      }
+    }
+    return { art: uniqueArt, attributes: uniqueAttributes };
+  };
+
+  const handleGalleryToggle = (id) => {
+    setState((prevState) => ({
+      ...prevState,
+      gallery: { ...prevState.gallery, open: !prevState.gallery.open, id },
+    }));
   };
 
   useEffect(() => {
     fetchUser();
   }, [location]);
 
+  const formattedArtwork = formatArtwork(state.user[state.display]);
+  const formattedGallery = formatGallery(state.user[state.display]);
+
   return state.loading || userStore.id ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        <Button variant="outlined" onClick={handleGalleryToggle}>
-          Toggle gallery
-        </Button>
-        {state.loading ? null : (
-          <FsLightbox
-            toggler={state.open}
-            sources={fomatArtwork(state.user[state.display])}
-            type="image"
-            exitFullscreenOnClose
+        <Card>
+          <GalleryPanel
+            artwork={formattedArtwork}
+            handleGalleryToggle={handleGalleryToggle}
           />
-        )}
+          {state.loading ? null : (
+            <FsLightbox
+              source={state.gallery.id}
+              toggler={state.gallery.open}
+              sources={formattedGallery.art}
+              customAttributes={formattedGallery.attributes}
+              type="image"
+              exitFullscreenOnClose
+            />
+          )}
+        </Card>
       </Grid>
     </Container>
   ) : (
