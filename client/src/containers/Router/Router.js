@@ -140,6 +140,12 @@ const routes = [
     type: "public",
   },
   {
+    path: "/gallery",
+    Component: lazy(() => import("../../pages/User/Gallery")),
+    exact: true,
+    type: "protected",
+  },
+  {
     path: "/dashboard",
     Component: lazy(() => import("../../pages/User/Dashboard")),
     exact: true,

@@ -1,6 +1,6 @@
-import Artwork from '../models/artwork.js';
-import Notification from '../models/notification.js';
-import User from '../models/user.js';
+import Artwork from "../models/artwork.js";
+import Notification from "../models/notification.js";
+import User from "../models/user.js";
 
 export const fetchUserById = async ({ userId, session = null }) => {
   return await User.findOne({
@@ -30,10 +30,33 @@ export const fetchUserByCreds = async ({ userUsername, session = null }) => {
   }).session(session);
 };
 
-export const fetchUserSales = async ({ userId, session = null }) => {
+export const fetchUserSales = async ({
+  userId,
+  dataSkip,
+  dataLimit,
+  session = null,
+}) => {
   return await User.findOne({
-    _id: userId,
-  }).deepPopulate('sales.buyer sales.version sales.review');
+    $and: [{ _id: userId }, { active: true }],
+  }).populate(
+    dataSkip !== undefined && dataLimit !== undefined
+      ? {
+          path: "sales",
+          options: {
+            limit: dataLimit,
+            skip: dataSkip,
+          },
+          populate: {
+            path: "buyer version review",
+          },
+        }
+      : {
+          path: "sales",
+          populate: {
+            path: "buyer version review",
+          },
+        }
+  );
 };
 
 export const editUserStripe = async ({ userId, stripeId, session = null }) => {
@@ -54,10 +77,33 @@ export const editUserSale = async ({ userId, orderId, session = null }) => {
   ).session(session);
 };
 
-export const fetchUserPurchases = async ({ userId, session = null }) => {
+export const fetchUserPurchases = async ({
+  userId,
+  dataSkip,
+  dataLimit,
+  session = null,
+}) => {
   return await User.findOne({
-    _id: userId,
-  }).deepPopulate('purchases.seller purchases.version purchases.review');
+    $and: [{ _id: userId }, { active: true }],
+  }).populate(
+    dataSkip !== undefined && dataLimit !== undefined
+      ? {
+          path: "purchases",
+          options: {
+            limit: dataLimit,
+            skip: dataSkip,
+          },
+          populate: {
+            path: "seller version review",
+          },
+        }
+      : {
+          path: "purchases",
+          populate: {
+            path: "seller version review",
+          },
+        }
+  );
 };
 
 export const fetchUserProfile = async ({
@@ -71,19 +117,19 @@ export const fetchUserProfile = async ({
   }).populate(
     dataSkip !== undefined && dataLimit !== undefined
       ? {
-          path: 'artwork',
+          path: "artwork",
           options: {
             limit: dataLimit,
             skip: dataSkip,
           },
           populate: {
-            path: 'owner current',
+            path: "owner current",
           },
         }
       : {
-          path: 'artwork',
+          path: "artwork",
           populate: {
-            path: 'owner current',
+            path: "owner current",
           },
         }
   );
@@ -124,13 +170,13 @@ export const fetchUserSaves = async ({
       limit: dataLimit,
     }
   ).populate({
-    path: 'savedArtwork',
+    path: "savedArtwork",
     options: {
       skip: dataSkip,
       limit: dataLimit,
     },
     populate: {
-      path: 'current',
+      path: "current",
     },
   });
 };
@@ -139,7 +185,7 @@ export const fetchUserStatistics = async ({ userId, session = null }) => {
   return await User.findOne({
     $and: [{ _id: userId }, { active: true }],
   }).deepPopulate(
-    'purchases.version purchases.license sales.version sales.license'
+    "purchases.version purchases.license sales.version sales.license"
   );
 };
 
@@ -168,7 +214,7 @@ export const fetchUserNotifications = async ({
     skip: dataSkip,
     limit: dataLimit,
   })
-    .populate('user')
+    .populate("user")
     .sort({ created: -1 });
 };
 

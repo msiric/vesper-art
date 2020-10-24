@@ -49,6 +49,17 @@ export const getArtwork = {
   success: { message: "User artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch user artwork", variant: "error" },
 };
+export const getOwnership = {
+  request: async ({ userId, dataCursor, dataCeiling }) =>
+    await ax.get(
+      `/api/user/${userId}/ownership?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+    ),
+  success: {
+    message: "User purchases successfully fetched",
+    variant: "success",
+  },
+  error: { message: "Failed to fetch user purchases", variant: "error" },
+};
 export const getSaves = {
   request: async ({ userId, dataCursor, dataCeiling }) =>
     await ax.get(
