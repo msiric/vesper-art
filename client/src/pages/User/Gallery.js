@@ -20,11 +20,6 @@ const initialState = {
       dataCursor: 0,
       dataCeiling: 10,
     },
-    purchases: {
-      hasMore: true,
-      dataCursor: 0,
-      dataCeiling: 10,
-    },
   },
 };
 
