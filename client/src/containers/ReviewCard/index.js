@@ -1,4 +1,11 @@
-import { Box, Button, Card } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Divider,
+} from "@material-ui/core";
 import { StarsRounded as ReviewIcon } from "@material-ui/icons";
 import { Rating } from "@material-ui/lab";
 import React from "react";
@@ -28,13 +35,18 @@ const ReviewCard = ({
         isHighlight() ? classes.highlightContainer : ""
       }`}
     >
-      <SubHeading text="Review" loading={loading} />
-      {loading || review ? (
-        shouldReview ? (
+      <CardContent
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          flexGrow: 1,
+        }}
+      >
+        <SubHeading text="Review" loading={loading} />
+        {loading || review ? (
           <Box className={classes.reviewContent}>
-            <SkeletonWrapper variant="text" loading={loading}>
-              <Typography m={2}>Your rating</Typography>
-            </SkeletonWrapper>
             <SkeletonWrapper loading={loading}>
               <Rating value={review.rating} readOnly />
             </SkeletonWrapper>
@@ -42,33 +54,44 @@ const ReviewCard = ({
         ) : (
           <Box className={classes.reviewContent}>
             <SkeletonWrapper variant="text" loading={loading}>
-              <Typography m={2}>Buyer's rating</Typography>
-            </SkeletonWrapper>
-            <SkeletonWrapper loading={loading}>
-              <Rating value={review.rating} readOnly />
+              <Typography m={2}>
+                {shouldReview ? "No rating left" : "No rating found"}
+              </Typography>
             </SkeletonWrapper>
           </Box>
-        )
-      ) : shouldReview ? (
-        <Box className={classes.reviewContent}>
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography m={2}>No rating left</Typography>
-          </SkeletonWrapper>
-          <Button
-            variant="outlined"
-            startIcon={<ReviewIcon />}
-            onClick={handleModalOpen}
+        )}
+      </CardContent>
+      <Divider />
+      <CardActions style={{ padding: "16px 0" }}>
+        <SkeletonWrapper loading={loading} width="100%">
+          <Box
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-evenly",
+              alignItems: "center",
+            }}
           >
-            Rate artist
-          </Button>
-        </Box>
-      ) : (
-        <Box className={classes.reviewContent}>
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography m={2}>No rating found</Typography>
-          </SkeletonWrapper>
-        </Box>
-      )}
+            {loading || review ? (
+              <SkeletonWrapper variant="text" loading={loading}>
+                <Typography m={2}>
+                  {shouldReview ? "Your rating" : "Buyer's rating"}
+                </Typography>
+              </SkeletonWrapper>
+            ) : shouldReview ? (
+              <Button
+                variant="outlined"
+                startIcon={<ReviewIcon />}
+                onClick={handleModalOpen}
+              >
+                Rate artist
+              </Button>
+            ) : (
+              <Typography m={2}>Buyer's rating</Typography>
+            )}
+          </Box>
+        </SkeletonWrapper>
+      </CardActions>
     </Card>
   );
 };

@@ -6,6 +6,7 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
     width: "100%",
     height: "auto",
     objectFit: "contain",
+    borderRadius: 4,
   },
 }));
 

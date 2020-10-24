@@ -12,36 +12,31 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
   const history = useHistory();
   const classes = orderPreviewStyles();
 
+  const { r, g, b } = loading
+    ? { r: null, g: null, b: null }
+    : hexToRgb(version.dominant);
+
   return (
     <Card className={classes.artworkPreviewCard}>
       <SkeletonWrapper loading={loading} width="100%">
         <Box
-          className={classes.artworkPreviewContainer}
           style={{
-            background: `rgb(216,184,136)`,
-            background: `radial-gradient(circle, rgba(${hexToRgb(
-              version.dominant
-            )}, 1) 0%, rgba(0,0,0,0.7) 100%)`,
+            display: "flex",
+            justifyContent: "center",
+            maxHeight: 600,
           }}
         >
-          {/* <CardMedia
-            className={classes.artworkPreviewMedia}
-            image={version.cover}
-            title={version.title}
-            style={{
-              paddingTop: `${
-                version.orientation === "portrait"
-                  ? version.height / (version.width / 300)
-                  : version.height / (version.width / 500)
-              }px`,
-            }}
-          /> */}
           <ImageWrapper
             className={classes.artworkPreviewMedia}
             height={version.height}
             width={version.width}
             source={version.cover}
             placeholder={version.dominant}
+            styles={{
+              boxShadow: `0px 0px 40px 15px rgba(${r},${g},${b},0.75)`,
+              maxWidth: 600 / (version.height / version.width) - 54,
+              margin: 24,
+            }}
             loading={loading}
           />
         </Box>

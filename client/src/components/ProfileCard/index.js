@@ -14,11 +14,15 @@ import { formatDate } from "../../../../common/helpers.js";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import profileCardStyles from "./styles.js";
 
-const ProfileCard = ({ user, height, loading }) => {
+const ProfileCard = ({ user, styles, loading }) => {
   const classes = profileCardStyles();
 
   return (
-    <Card className={classes.profileCardContainer} loading={loading}>
+    <Card
+      className={classes.profileCardContainer}
+      style={{ ...styles }}
+      loading={loading}
+    >
       <SkeletonWrapper loading={loading} variant="circle">
         <Avatar
           component={RouterLink}

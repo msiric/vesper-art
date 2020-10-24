@@ -5,6 +5,7 @@ const reviewCardStyles = makeStyles((muiTheme) => ({
   reviewContainer: {
     display: "flex",
     flexDirection: "column",
+    height: "100%",
   },
   highlightContainer: {
     border: "2px transparent solid",
@@ -22,6 +23,7 @@ const reviewCardStyles = makeStyles((muiTheme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    height: "100%",
   },
 }));
 

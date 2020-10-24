@@ -173,7 +173,7 @@ const Order = ({ match, location }) => {
       <Grid container spacing={2}>
         {state.loading || state.order._id ? (
           <>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={8}>
               <OrderPreview
                 version={state.order.version}
                 handleDownload={handleDownload}
@@ -181,25 +181,19 @@ const Order = ({ match, location }) => {
                 loading={state.loading}
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid
+              item
+              xs={12}
+              md={4}
+              style={{ display: "flex", flexDirection: "column" }}
+            >
               <ProfileCard
                 user={
                   !isSeller() && isBuyer()
                     ? state.order.seller
                     : state.order.buyer
                 }
-                loading={state.loading}
-              />
-            </Grid>
-            <Grid item xs={12} md={8}>
-              <OrderCard
-                order={state.order}
-                isSeller={isSeller}
-                loading={state.loading}
-              />
-              <br />
-              <LicenseCard
-                license={state.order.license}
+                styles={{ height: "100%" }}
                 loading={state.loading}
               />
               <br />
@@ -209,6 +203,18 @@ const Order = ({ match, location }) => {
                 shouldReview={!isSeller() && isBuyer()}
                 queryNotif={query ? query.notif : null}
                 highlightRef={highlightRef}
+                loading={state.loading}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <OrderCard
+                order={state.order}
+                isSeller={isSeller}
+                loading={state.loading}
+              />
+              <br />
+              <LicenseCard
+                license={state.order.license}
                 loading={state.loading}
               />
             </Grid>
