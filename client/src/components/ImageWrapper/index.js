@@ -1,8 +1,8 @@
-import { Box } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import SkeletonWrapper from '../SkeletonWrapper/index.js';
-import imageWrapperStyles from './styles.js';
+import { Box } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import SkeletonWrapper from "../SkeletonWrapper/index.js";
+import imageWrapperStyles from "./styles.js";
 
 const useProgressiveImage = (source) => {
   const [state, setState] = useState({ loaded: false });
@@ -22,6 +22,7 @@ const ImageWrapper = ({
   width,
   source,
   placeholder,
+  styles,
   loading,
 }) => {
   const loaded = useProgressiveImage(source);
@@ -36,14 +37,18 @@ const ImageWrapper = ({
             <img className={classes.imageContent} src={source} />
           </Box>
         ) : (
-          <img className={classes.imageContent} src={source} />
+          <img
+            className={classes.imageContent}
+            style={{ ...styles }}
+            src={source}
+          />
         )
       ) : (
         <Box
           style={{
             height: `${height / (width / 500)}px`,
             width: `${500}px`,
-            display: 'block',
+            display: "block",
             background: placeholder,
           }}
         ></Box>

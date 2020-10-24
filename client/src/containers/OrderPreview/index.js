@@ -1,8 +1,9 @@
-import { Box, Button, Card, CardMedia, Divider } from "@material-ui/core";
+import { Box, Button, Card, Divider } from "@material-ui/core";
 import { GetAppRounded as DownloadIcon } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { hexToRgb } from "../../../../common/helpers.js";
+import ImageWrapper from "../../components/ImageWrapper/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { Typography } from "../../styles/theme.js";
 import orderPreviewStyles from "./styles.js";
@@ -23,13 +24,25 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
             )}, 1) 0%, rgba(0,0,0,0.7) 100%)`,
           }}
         >
-          <CardMedia
+          {/* <CardMedia
             className={classes.artworkPreviewMedia}
             image={version.cover}
             title={version.title}
             style={{
-              paddingTop: `${version.height / (version.width / 500)}px`,
+              paddingTop: `${
+                version.orientation === "portrait"
+                  ? version.height / (version.width / 300)
+                  : version.height / (version.width / 500)
+              }px`,
             }}
+          /> */}
+          <ImageWrapper
+            className={classes.artworkPreviewMedia}
+            height={version.height}
+            width={version.width}
+            source={version.cover}
+            placeholder={version.dominant}
+            loading={loading}
           />
         </Box>
       </SkeletonWrapper>
