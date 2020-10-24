@@ -14,7 +14,7 @@ import globalStyles from "../../styles/global.js";
 const initialState = {
   loading: true,
   user: { artwork: [], purchases: [] },
-  gallery: { open: false, id: null },
+  gallery: { open: false, id: null, key: 0 },
   display: "purchases",
   scroll: {
     artwork: {
@@ -53,8 +53,15 @@ const Gallery = ({ match, location }) => {
         ...prevState,
         loading: false,
         user: {
-          artwork: data.artwork || initialState.user.artwork,
-          purchases: data.purchases || initialState.user.purchases,
+          artwork: data.artwork
+            ? data.artwork.map((item) => ({ ...item, media: null }))
+            : initialState.user.artwork,
+          purchases: data.purchases
+            ? data.purchases.map((item) => ({
+                ...item,
+                version: { ...item.version, media: null },
+              }))
+            : initialState.user.purchases,
         },
         scroll: {
           ...prevState.scroll,
@@ -136,7 +143,11 @@ const Gallery = ({ match, location }) => {
     for (let i = 0; i < artwork.length; i++) {
       if (!artworkIds[artwork[i].version._id]) {
         const { r, g, b } = hexToRgb(artwork[i].version.dominant);
-        uniqueArt.push(artwork[i].version.cover);
+        uniqueArt.push(
+          artwork[i].version.media
+            ? artwork[i].version.media
+            : artwork[i].version.cover
+        );
         uniqueAttributes.push({
           style: {
             boxShadow: `0px 0px 60px 35px rgba(${r},${g},${b},0.75)`,
@@ -150,17 +161,80 @@ const Gallery = ({ match, location }) => {
   };
 
   const handleGalleryToggle = async (identifier, cover) => {
-    const { data } =
+    const foundMedia =
       state.display === "purchases"
-        ? await getDownload.request({ orderId: identifier })
-        : await getMedia.request({
-            userId: userStore.id,
-            versionId: identifier,
-          });
-    console.log(data);
+        ? state.user[state.display].find((item) => item._id === identifier)
+            .version.media
+        : state.user[state.display].find((item) => item._id === identifier)
+            .media;
+    if (foundMedia) {
+      setState((prevState) => ({
+        ...prevState,
+        gallery: {
+          ...prevState.gallery,
+          id: foundMedia,
+        },
+      }));
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        loading: true,
+      }));
+      const { data } =
+        state.display === "purchases"
+          ? await getDownload.request({ orderId: identifier })
+          : await getMedia.request({
+              userId: userStore.id,
+              versionId: identifier,
+            });
+      const newMedia =
+        state.display === "purchases"
+          ? state.user[state.display].map((item) => {
+              if (item.version.cover === cover)
+                return {
+                  ...item,
+                  version: { ...item.version, media: data.url },
+                };
+              return item;
+            })
+          : state.user[state.display].map((item) => {
+              if (item.cover === cover) return { ...item, media: data.url };
+              return item;
+            });
+      state.display === "purchases"
+        ? setState((prevState) => ({
+            ...prevState,
+            user: {
+              ...prevState.user,
+              purchases: newMedia,
+            },
+            gallery: {
+              ...prevState.gallery,
+              id: data.url,
+              key: prevState.gallery.key + 1,
+            },
+            loading: false,
+          }))
+        : setState((prevState) => ({
+            ...prevState,
+            user: {
+              ...prevState.user,
+              artwork: newMedia,
+            },
+            gallery: {
+              ...prevState.gallery,
+              id: data.url,
+              key: prevState.gallery.key + 1,
+            },
+            loading: false,
+          }));
+    }
     setState((prevState) => ({
       ...prevState,
-      gallery: { ...prevState.gallery, open: !prevState.gallery.open, cover },
+      gallery: {
+        ...prevState.gallery,
+        open: !prevState.gallery.open,
+      },
     }));
   };
 
@@ -196,6 +270,7 @@ const Gallery = ({ match, location }) => {
             <FsLightbox
               source={state.gallery.id}
               toggler={state.gallery.open}
+              key={state.gallery.key}
               sources={formattedGallery.art}
               customAttributes={formattedGallery.attributes}
               type="image"
