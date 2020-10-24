@@ -344,3 +344,23 @@ export const deactivateUser = async ({ userId, session }) => {
   }
   throw createError(400, "User not found");
 };
+
+export const getUserMedia = async ({ userId, artworkId }) => {
+  const foundVersion = await fetchVersionByOwner({
+    userId,
+    artworkId,
+  });
+  if (foundVersion) {
+    const s3 = new aws.S3({ signatureVersion: "v4" });
+    const file = foundVersion.media.split("/").pop();
+    const params = {
+      Bucket: process.env.S3_BUCKET,
+      Key: `artworkMedia/${file}`,
+      Expires: 60 * 3,
+    };
+    const url = s3.getSignedUrl("getObject", params);
+
+    return { url, file };
+  }
+  throw createError(400, "Artwork not found");
+};

@@ -3,10 +3,12 @@ import FsLightbox from "fslightbox-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { hexToRgb } from "../../../../common/helpers.js";
+import MainHeading from "../../components/MainHeading/index.js";
 import GalleryPanel from "../../containers/GalleryPanel/index.js";
 import { UserContext } from "../../contexts/User.js";
 import { getArtwork } from "../../services/artwork.js";
-import { getOwnership } from "../../services/user.js";
+import { getDownload } from "../../services/orders.js";
+import { getMedia, getOwnership } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 
 const initialState = {
@@ -21,13 +23,6 @@ const initialState = {
       dataCeiling: 10,
     },
   },
-};
-
-const breakpointColumns = {
-  default: 4,
-  1100: 3,
-  700: 2,
-  500: 1,
 };
 
 const Gallery = ({ match, location }) => {
@@ -127,7 +122,7 @@ const Gallery = ({ match, location }) => {
     const uniqueArt = [];
     for (let i = 0; i < artwork.length; i++) {
       if (!artworkIds[artwork[i].version._id]) {
-        uniqueArt.push(artwork[i].version);
+        uniqueArt.push(artwork[i]);
         artworkIds[artwork[i].version._id] = true;
       }
     }
@@ -154,11 +149,31 @@ const Gallery = ({ match, location }) => {
     return { art: uniqueArt, attributes: uniqueAttributes };
   };
 
-  const handleGalleryToggle = (id) => {
+  const handleGalleryToggle = async (identifier, cover) => {
+    const { data } =
+      state.display === "purchases"
+        ? await getDownload.request({ orderId: identifier })
+        : await getMedia.request({
+            userId: userStore.id,
+            versionId: identifier,
+          });
+    console.log(data);
     setState((prevState) => ({
       ...prevState,
-      gallery: { ...prevState.gallery, open: !prevState.gallery.open, id },
+      gallery: { ...prevState.gallery, open: !prevState.gallery.open, cover },
     }));
+  };
+
+  const handleMediaFetch = async (id) => {
+    try {
+      const { data } =
+        state.display === "purchases"
+          ? getDownload.request({ orderId: id })
+          : await getMedia.request({ userId: userStore.id, versionId: id });
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -172,6 +187,7 @@ const Gallery = ({ match, location }) => {
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Card>
+          <MainHeading text="Gallery" />
           <GalleryPanel
             artwork={formattedArtwork}
             handleGalleryToggle={handleGalleryToggle}

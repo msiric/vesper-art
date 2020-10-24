@@ -4,6 +4,7 @@ import {
   deactivateUser,
   deleteUserIntent,
   getUserArtwork,
+  getUserMedia,
   getUserNotifications,
   getUserOwnership,
   getUserProfile,
@@ -159,6 +160,13 @@ router.route("/user/:userId/intents").post(
 router.route("/user/:userId/intents/:intentId").delete(
   [isAuthenticated, checkParamsId],
   handler(deleteUserIntent, false, (req, res, next) => ({
+    ...req.params,
+  }))
+);
+
+router.route("/user/:userId/artwork/:artworkId/download").get(
+  [isAuthenticated, checkParamsId],
+  handler(getUserMedia, false, (req, res, next) => ({
     ...req.params,
   }))
 );

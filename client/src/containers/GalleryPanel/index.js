@@ -39,13 +39,13 @@ const GalleryPanel = ({
           {artwork.map((item) => (
             <Card
               className={classes.artworkWrapper}
-              onClick={() => handleGalleryToggle(item.cover)}
+              onClick={() => handleGalleryToggle(item._id, item.version.cover)}
             >
               <ImageWrapper
-                height={item.height}
-                width={item.width}
-                source={item.cover}
-                placeholder={item.dominant}
+                height={item.version.height}
+                width={item.version.width}
+                source={item.version.cover}
+                placeholder={item.version.dominant}
                 loading={loading}
               />
             </Card>
