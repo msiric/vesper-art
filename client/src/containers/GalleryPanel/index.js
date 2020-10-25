@@ -39,15 +39,29 @@ const GalleryPanel = ({
           {artwork.map((item) => (
             <Card
               className={classes.artworkWrapper}
-              onClick={() => handleGalleryToggle(item._id, item.version.cover)}
+              onClick={() =>
+                handleGalleryToggle(
+                  item.artwork._id,
+                  item.artwork.version.cover
+                )
+              }
             >
-              <ImageWrapper
-                height={item.version.height}
-                width={item.version.width}
-                source={item.version.cover}
-                placeholder={item.version.dominant}
-                loading={loading}
-              />
+              {loading ? (
+                <LoadingSpinner />
+              ) : (
+                <ImageWrapper
+                  height={item.artwork.version.height}
+                  width={item.artwork.version.width}
+                  source={
+                    item.artwork.version.media
+                      ? item.artwork.version.media
+                      : item.artwork.version.cover
+                  }
+                  placeholder={item.artwork.version.dominant}
+                  loading={loading}
+                  styles={{ ...item.attributes }}
+                />
+              )}
             </Card>
           ))}
         </Masonry>

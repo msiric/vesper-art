@@ -1,7 +1,7 @@
 import { Card, Container, Grid } from "@material-ui/core";
-import FsLightbox from "fslightbox-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import SimpleReactLightbox, { SRLWrapper } from "simple-react-lightbox";
 import { hexToRgb } from "../../../../common/helpers.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import GalleryPanel from "../../containers/GalleryPanel/index.js";
@@ -13,7 +13,8 @@ import globalStyles from "../../styles/global.js";
 
 const initialState = {
   loading: true,
-  user: { artwork: [], purchases: [] },
+  artwork: [],
+  purchases: [],
   gallery: { open: false, id: null, key: 0 },
   display: "purchases",
   scroll: {
@@ -52,17 +53,15 @@ const Gallery = ({ match, location }) => {
       setState((prevState) => ({
         ...prevState,
         loading: false,
-        user: {
-          artwork: data.artwork
-            ? data.artwork.map((item) => ({ ...item, media: null }))
-            : initialState.user.artwork,
-          purchases: data.purchases
-            ? data.purchases.map((item) => ({
-                ...item,
-                version: { ...item.version, media: null },
-              }))
-            : initialState.user.purchases,
-        },
+        artwork: data.artwork
+          ? data.artwork.map((item) => ({ ...item, media: null }))
+          : initialState.artwork,
+        purchases: data.purchases
+          ? data.purchases.map((item) => ({
+              ...item,
+              version: { ...item.version, media: null },
+            }))
+          : initialState.purchases,
         scroll: {
           ...prevState.scroll,
           //   artwork: {
@@ -101,10 +100,7 @@ const Gallery = ({ match, location }) => {
       });
       setState((prevState) => ({
         ...prevState,
-        user: {
-          ...prevState.user,
-          artwork: [...prevState.user.artwork].concat(data.artwork),
-        },
+        artwork: [...prevState.user.artwork].concat(data.artwork),
         scroll: {
           ...state.scroll,
           artwork: {
@@ -129,7 +125,14 @@ const Gallery = ({ match, location }) => {
     const uniqueArt = [];
     for (let i = 0; i < artwork.length; i++) {
       if (!artworkIds[artwork[i].version._id]) {
-        uniqueArt.push(artwork[i]);
+        const { r, g, b } = hexToRgb(artwork[i].version.dominant);
+        uniqueArt.push({
+          artwork: artwork[i],
+          attributes: {
+            boxShadow: `0px 0px 60px 35px rgba(${r},${g},${b},0.75)`,
+            borderRadius: 4,
+          },
+        });
         artworkIds[artwork[i].version._id] = true;
       }
     }
@@ -163,19 +166,10 @@ const Gallery = ({ match, location }) => {
   const handleGalleryToggle = async (identifier, cover) => {
     const foundMedia =
       state.display === "purchases"
-        ? state.user[state.display].find((item) => item._id === identifier)
-            .version.media
-        : state.user[state.display].find((item) => item._id === identifier)
-            .media;
-    if (foundMedia) {
-      setState((prevState) => ({
-        ...prevState,
-        gallery: {
-          ...prevState.gallery,
-          id: foundMedia,
-        },
-      }));
-    } else {
+        ? state[state.display].find((item) => item._id === identifier).version
+            .media
+        : state[state.display].find((item) => item._id === identifier).media;
+    if (!foundMedia) {
       setState((prevState) => ({
         ...prevState,
         loading: true,
@@ -189,7 +183,7 @@ const Gallery = ({ match, location }) => {
             });
       const newMedia =
         state.display === "purchases"
-          ? state.user[state.display].map((item) => {
+          ? state[state.display].map((item) => {
               if (item.version.cover === cover)
                 return {
                   ...item,
@@ -197,45 +191,22 @@ const Gallery = ({ match, location }) => {
                 };
               return item;
             })
-          : state.user[state.display].map((item) => {
+          : state[state.display].map((item) => {
               if (item.cover === cover) return { ...item, media: data.url };
               return item;
             });
       state.display === "purchases"
         ? setState((prevState) => ({
             ...prevState,
-            user: {
-              ...prevState.user,
-              purchases: newMedia,
-            },
-            gallery: {
-              ...prevState.gallery,
-              id: data.url,
-              key: prevState.gallery.key + 1,
-            },
+            purchases: newMedia,
             loading: false,
           }))
         : setState((prevState) => ({
             ...prevState,
-            user: {
-              ...prevState.user,
-              artwork: newMedia,
-            },
-            gallery: {
-              ...prevState.gallery,
-              id: data.url,
-              key: prevState.gallery.key + 1,
-            },
+            artwork: newMedia,
             loading: false,
           }));
     }
-    setState((prevState) => ({
-      ...prevState,
-      gallery: {
-        ...prevState.gallery,
-        open: !prevState.gallery.open,
-      },
-    }));
   };
 
   const handleMediaFetch = async (id) => {
@@ -254,29 +225,30 @@ const Gallery = ({ match, location }) => {
     fetchUser();
   }, [location]);
 
-  const formattedArtwork = formatArtwork(state.user[state.display]);
-  const formattedGallery = formatGallery(state.user[state.display]);
+  const formattedArtwork = formatArtwork(state[state.display]);
+  const formattedGallery = formatGallery(state[state.display]);
+
+  const callbacks = {
+    onSlideChange: (slide) => console.log(slide),
+    onLightboxOpened: (current) => console.log(current),
+    onLightboxClosed: (current) => console.log(current),
+    onCountSlides: (total) => console.log(total),
+  };
 
   return state.loading || userStore.id ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Card>
           <MainHeading text="Gallery" />
-          <GalleryPanel
-            artwork={formattedArtwork}
-            handleGalleryToggle={handleGalleryToggle}
-          />
-          {state.loading ? null : (
-            <FsLightbox
-              source={state.gallery.id}
-              toggler={state.gallery.open}
-              key={state.gallery.key}
-              sources={formattedGallery.art}
-              customAttributes={formattedGallery.attributes}
-              type="image"
-              exitFullscreenOnClose
-            />
-          )}
+          <SimpleReactLightbox>
+            <SRLWrapper callbacks={callbacks}>
+              <GalleryPanel
+                artwork={formattedArtwork}
+                handleGalleryToggle={handleGalleryToggle}
+                loading={state.loading}
+              />
+            </SRLWrapper>
+          </SimpleReactLightbox>
         </Card>
       </Grid>
     </Container>
