@@ -10,6 +10,7 @@ import { getArtwork } from "../../services/artwork.js";
 import { getDownload } from "../../services/orders.js";
 import { getMedia, getOwnership } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
+import { artepunktTheme } from "../../styles/theme.js";
 
 const initialState = {
   loading: true,
@@ -170,6 +171,7 @@ const Gallery = ({ match, location }) => {
             .media
         : state[state.display].find((item) => item._id === identifier).media;
     if (!foundMedia) {
+      let foundColor;
       setState((prevState) => ({
         ...prevState,
         loading: true,
@@ -184,15 +186,20 @@ const Gallery = ({ match, location }) => {
       const newMedia =
         state.display === "purchases"
           ? state[state.display].map((item) => {
-              if (item.version.cover === cover)
+              if (item.version.cover === cover) {
+                foundColor = item.version.dominant;
                 return {
                   ...item,
                   version: { ...item.version, media: data.url },
                 };
+              }
               return item;
             })
           : state[state.display].map((item) => {
-              if (item.cover === cover) return { ...item, media: data.url };
+              if (item.cover === cover) {
+                foundColor = item.dominant;
+                return { ...item, media: data.url };
+              }
               return item;
             });
       state.display === "purchases"
@@ -206,6 +213,13 @@ const Gallery = ({ match, location }) => {
             artwork: newMedia,
             loading: false,
           }));
+      const selectedImages = document.querySelectorAll(
+        `img[src="${data.url}"]`
+      );
+      const { r, g, b } = hexToRgb(foundColor);
+      for (const image of selectedImages) {
+        image.style.boxShadow = `0px 0px 60px 35px rgba(${r},${g},${b},0.75)`;
+      }
     }
   };
 
@@ -235,13 +249,35 @@ const Gallery = ({ match, location }) => {
     onCountSlides: (total) => console.log(total),
   };
 
+  const options = {
+    buttons: {
+      showDownloadButton: false,
+    },
+    settings: {
+      autoplaySpeed: 30000,
+      hideControlsAfter: 3000,
+      lightboxTransitionSpeed: 0.3,
+      overlayColor: "rgba(0, 0, 0, 0.99)",
+      slideAnimationType: "slide",
+      slideSpringValues: [10, 10],
+      slideTransitionTimingFunction: "easeInOut",
+    },
+    thumbnails: {
+      showThumbnails: false,
+    },
+    progressBar: {
+      backgroundColor: "#000000",
+      fillColor: artepunktTheme.palette.primary.main,
+    },
+  };
+
   return state.loading || userStore.id ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Card>
           <MainHeading text="Gallery" />
           <SimpleReactLightbox>
-            <SRLWrapper callbacks={callbacks}>
+            <SRLWrapper callbacks={callbacks} options={options}>
               <GalleryPanel
                 artwork={formattedArtwork}
                 handleGalleryToggle={handleGalleryToggle}
