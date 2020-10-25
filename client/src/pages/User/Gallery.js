@@ -1,4 +1,12 @@
-import { Card, Container, Grid } from "@material-ui/core";
+import {
+  Card,
+  Container,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SRLWrapper, useLightbox } from "simple-react-lightbox";
@@ -67,7 +75,10 @@ const Gallery = ({ match, location }) => {
 
   const fetchUser = async () => {
     try {
-      setState({ ...initialState });
+      setState((prevState) => ({
+        ...initialState,
+        display: prevState.display,
+      }));
       const { data } =
         state.display === "purchases"
           ? await getOwnership.request({
@@ -206,7 +217,7 @@ const Gallery = ({ match, location }) => {
 
   useEffect(() => {
     fetchUser();
-  }, [location]);
+  }, [location, state.display]);
 
   const callbacks = {
     onSlideChange: (slide) =>
@@ -240,6 +251,13 @@ const Gallery = ({ match, location }) => {
     },
   };
 
+  const handleSelectChange = (e) => {
+    setState((prevState) => ({
+      ...prevState,
+      display: e.target.value,
+    }));
+  };
+
   const formattedArtwork = formatArtwork(state[state.display]);
 
   return state.loading || userStore.id ? (
@@ -247,6 +265,19 @@ const Gallery = ({ match, location }) => {
       <Grid container spacing={2}>
         <Card>
           <MainHeading text="Gallery" />
+          <FormControl variant="outlined" style={{ marginBottom: "12px" }}>
+            <InputLabel id="data-display">Display</InputLabel>
+            <Select
+              labelId="data-display"
+              value={state.display}
+              onChange={handleSelectChange}
+              label="Display"
+              margin="dense"
+            >
+              <MenuItem value="purchases">Purchases</MenuItem>
+              <MenuItem value="artwork">Artwork</MenuItem>
+            </Select>
+          </FormControl>
           <GalleryPanel
             artwork={formattedArtwork}
             handleGalleryToggle={handleGalleryToggle}
