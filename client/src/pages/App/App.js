@@ -9,6 +9,7 @@ import {
 } from "@material-ui/icons";
 import { SnackbarProvider } from "notistack";
 import React, { createRef, useContext } from "react";
+import SimpleReactLightbox from "simple-react-lightbox";
 import Router from "../../containers/Router/Router.js";
 import { AppContext } from "../../contexts/App.js";
 import { artepunktTheme } from "../../styles/theme.js";
@@ -101,8 +102,10 @@ const App = React.memo(({ socket }) => {
           </IconButton>
         )}
       >
-        <CssBaseline />
-        <Router socket={socket} />
+        <SimpleReactLightbox>
+          <CssBaseline />
+          <Router socket={socket} />
+        </SimpleReactLightbox>
       </SnackbarProvider>
     </ThemeProvider>
   );

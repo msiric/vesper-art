@@ -1,8 +1,9 @@
 import { Card, Container, Grid } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import SimpleReactLightbox, { SRLWrapper } from "simple-react-lightbox";
+import { SRLWrapper, useLightbox } from "simple-react-lightbox";
 import { hexToRgb } from "../../../../common/helpers.js";
+import ImageWrapper from "../../components/ImageWrapper/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import GalleryPanel from "../../containers/GalleryPanel/index.js";
 import { UserContext } from "../../contexts/User.js";
@@ -14,10 +15,12 @@ import { artepunktTheme } from "../../styles/theme.js";
 
 const initialState = {
   loading: true,
-  artwork: [],
-  purchases: [],
+  artwork: {},
+  purchases: {},
   gallery: { open: false, id: null, key: 0 },
   display: "purchases",
+  formatted: [],
+  modified: false,
   scroll: {
     artwork: {
       hasMore: true,
@@ -36,6 +39,32 @@ const Gallery = ({ match, location }) => {
 
   const globalClasses = globalStyles();
 
+  const { openLightbox } = useLightbox();
+
+  const formatArtwork = (artwork) => {
+    const artworkIds = {};
+    const uniqueArt = [];
+    for (let item in artwork) {
+      if (!artworkIds[artwork[item].cover]) {
+        const { r, g, b } = hexToRgb(artwork[item].dominant);
+        uniqueArt.push({
+          _id: item,
+          cover: artwork[item].cover,
+          media: artwork[item].media,
+          height: artwork[item].height,
+          width: artwork[item].width,
+          attributes: {
+            boxShadow: `0px 0px 60px 35px rgba(${r},${g},${b},0.75)`,
+            borderRadius: 4,
+          },
+          dominant: artwork[item].dominant,
+        });
+        artworkIds[artwork[item].cover] = true;
+      }
+    }
+    return uniqueArt;
+  };
+
   const fetchUser = async () => {
     try {
       setState({ ...initialState });
@@ -51,18 +80,37 @@ const Gallery = ({ match, location }) => {
               dataCursor: state.scroll.artwork.dataCursor,
               dataCeiling: state.scroll.artwork.dataCeiling,
             });
+      const newArtwork = data[initialState.display].reduce((object, item) => {
+        object[
+          initialState.display === "purchases"
+            ? item.version.cover
+            : item.current.cover
+        ] = {
+          _id: item._id,
+          cover:
+            initialState.display === "purchases"
+              ? item.version.cover
+              : item.current.cover,
+          media: null,
+          dominant:
+            initialState.display === "purchases"
+              ? item.version.dominant
+              : item.current.dominant,
+          height:
+            initialState.display === "purchases"
+              ? item.version.height
+              : item.current.height,
+          width:
+            initialState.display === "purchases"
+              ? item.version.width
+              : item.current.width,
+        };
+        return object;
+      }, {});
       setState((prevState) => ({
         ...prevState,
         loading: false,
-        artwork: data.artwork
-          ? data.artwork.map((item) => ({ ...item, media: null }))
-          : initialState.artwork,
-        purchases: data.purchases
-          ? data.purchases.map((item) => ({
-              ...item,
-              version: { ...item.version, media: null },
-            }))
-          : initialState.purchases,
+        [initialState.display]: newArtwork,
         scroll: {
           ...prevState.scroll,
           //   artwork: {
@@ -121,57 +169,10 @@ const Gallery = ({ match, location }) => {
     }
   };
 
-  const formatArtwork = (artwork) => {
-    const artworkIds = {};
-    const uniqueArt = [];
-    for (let i = 0; i < artwork.length; i++) {
-      if (!artworkIds[artwork[i].version._id]) {
-        const { r, g, b } = hexToRgb(artwork[i].version.dominant);
-        uniqueArt.push({
-          artwork: artwork[i],
-          attributes: {
-            boxShadow: `0px 0px 60px 35px rgba(${r},${g},${b},0.75)`,
-            borderRadius: 4,
-          },
-        });
-        artworkIds[artwork[i].version._id] = true;
-      }
-    }
-    return uniqueArt;
-  };
-
-  const formatGallery = (artwork) => {
-    const artworkIds = {};
-    const uniqueArt = [];
-    const uniqueAttributes = [];
-    for (let i = 0; i < artwork.length; i++) {
-      if (!artworkIds[artwork[i].version._id]) {
-        const { r, g, b } = hexToRgb(artwork[i].version.dominant);
-        uniqueArt.push(
-          artwork[i].version.media
-            ? artwork[i].version.media
-            : artwork[i].version.cover
-        );
-        uniqueAttributes.push({
-          style: {
-            boxShadow: `0px 0px 60px 35px rgba(${r},${g},${b},0.75)`,
-            borderRadius: 4,
-          },
-        });
-        artworkIds[artwork[i].version._id] = true;
-      }
-    }
-    return { art: uniqueArt, attributes: uniqueAttributes };
-  };
-
-  const handleGalleryToggle = async (identifier, cover) => {
-    const foundMedia =
-      state.display === "purchases"
-        ? state[state.display].find((item) => item._id === identifier).version
-            .media
-        : state[state.display].find((item) => item._id === identifier).media;
+  const handleGalleryToggle = async (cover, index) => {
+    const foundMedia = state[state.display][cover].media;
+    const identifier = state[state.display][cover]._id;
     if (!foundMedia) {
-      let foundColor;
       setState((prevState) => ({
         ...prevState,
         loading: true,
@@ -183,55 +184,23 @@ const Gallery = ({ match, location }) => {
               userId: userStore.id,
               versionId: identifier,
             });
-      const newMedia =
-        state.display === "purchases"
-          ? state[state.display].map((item) => {
-              if (item.version.cover === cover) {
-                foundColor = item.version.dominant;
-                return {
-                  ...item,
-                  version: { ...item.version, media: data.url },
-                };
-              }
-              return item;
-            })
-          : state[state.display].map((item) => {
-              if (item.cover === cover) {
-                foundColor = item.dominant;
-                return { ...item, media: data.url };
-              }
-              return item;
-            });
-      state.display === "purchases"
-        ? setState((prevState) => ({
-            ...prevState,
-            purchases: newMedia,
-            loading: false,
-          }))
-        : setState((prevState) => ({
-            ...prevState,
-            artwork: newMedia,
-            loading: false,
-          }));
-      const selectedImages = document.querySelectorAll(
-        `img[src="${data.url}"]`
-      );
-      const { r, g, b } = hexToRgb(foundColor);
-      for (const image of selectedImages) {
-        image.style.boxShadow = `0px 0px 60px 35px rgba(${r},${g},${b},0.75)`;
-      }
-    }
-  };
-
-  const handleMediaFetch = async (id) => {
-    try {
-      const { data } =
-        state.display === "purchases"
-          ? getDownload.request({ orderId: id })
-          : await getMedia.request({ userId: userStore.id, versionId: id });
-      console.log(data);
-    } catch (err) {
-      console.log(err);
+      setState((prevState) => ({
+        ...prevState,
+        [prevState.display]: {
+          ...prevState[prevState.display],
+          [cover]: {
+            ...prevState[prevState.display][cover],
+            media: data.url,
+          },
+        },
+        loading: false,
+        modified: true,
+      }));
+      setTimeout(() => {
+        openLightbox(index);
+      }, 500);
+    } else {
+      openLightbox(index);
     }
   };
 
@@ -239,11 +208,11 @@ const Gallery = ({ match, location }) => {
     fetchUser();
   }, [location]);
 
-  const formattedArtwork = formatArtwork(state[state.display]);
-  const formattedGallery = formatGallery(state[state.display]);
-
   const callbacks = {
-    onSlideChange: (slide) => console.log(slide),
+    onSlideChange: (slide) =>
+      slide.slides.current.height && slide.slides.current.width
+        ? handleGalleryToggle(slide.slides.current.source, slide.index)
+        : console.log(slide),
     onLightboxOpened: (current) => console.log(current),
     onLightboxClosed: (current) => console.log(current),
     onCountSlides: (total) => console.log(total),
@@ -271,20 +240,33 @@ const Gallery = ({ match, location }) => {
     },
   };
 
+  const formattedArtwork = formatArtwork(state[state.display]);
+
   return state.loading || userStore.id ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Card>
           <MainHeading text="Gallery" />
-          <SimpleReactLightbox>
-            <SRLWrapper callbacks={callbacks} options={options}>
-              <GalleryPanel
-                artwork={formattedArtwork}
-                handleGalleryToggle={handleGalleryToggle}
-                loading={state.loading}
-              />
-            </SRLWrapper>
-          </SimpleReactLightbox>
+          <GalleryPanel
+            artwork={formattedArtwork}
+            handleGalleryToggle={handleGalleryToggle}
+            loading={state.loading}
+          />
+          <SRLWrapper callbacks={callbacks} options={options}>
+            {!state.loading
+              ? formattedArtwork.map((item) => (
+                  <Card style={{ display: "none" }}>
+                    <ImageWrapper
+                      height={item.height}
+                      width={item.width}
+                      source={item.media ? item.media : item.cover}
+                      placeholder={item.dominant}
+                      styles={{ ...item.attributes }}
+                    />
+                  </Card>
+                ))
+              : null}
+          </SRLWrapper>
         </Card>
       </Grid>
     </Container>
