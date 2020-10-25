@@ -1,7 +1,7 @@
 import { Box } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
+import LoadingSpinner from "../LoadingSpinner/index.js";
 import imageWrapperStyles from "./styles.js";
 
 const useProgressiveImage = (source) => {
@@ -22,6 +22,7 @@ const ImageWrapper = ({
   width,
   source,
   placeholder,
+  cover,
   styles,
   loading,
 }) => {
@@ -29,31 +30,34 @@ const ImageWrapper = ({
 
   const classes = imageWrapperStyles();
 
-  return (
-    <SkeletonWrapper loading={loading}>
-      {loaded ? (
-        redirect ? (
-          <Box component={RouterLink} to={redirect}>
-            <img className={classes.imageContent} src={source} />
-          </Box>
-        ) : (
-          <img
-            className={classes.imageContent}
-            style={{ ...styles }}
-            src={source}
-          />
-        )
-      ) : (
-        <Box
-          style={{
-            height: `${height / (width / 500)}px`,
-            width: `${500}px`,
-            display: "block",
-            background: placeholder,
-          }}
-        ></Box>
-      )}
-    </SkeletonWrapper>
+  return !loading && loaded ? (
+    redirect ? (
+      <Box component={RouterLink} to={redirect}>
+        <img className={classes.imageContent} src={source} />
+      </Box>
+    ) : (
+      <Box style={{ position: "relative" }}>
+        <img
+          className={classes.imageContent}
+          style={{ ...styles }}
+          src={source}
+        />
+      </Box>
+    )
+  ) : cover ? (
+    <Box style={{ position: "relative" }}>
+      <LoadingSpinner styles={{ position: "absolute" }} />
+      <img className={classes.imageContent} style={{ ...styles }} src={cover} />
+    </Box>
+  ) : (
+    <Box
+      style={{
+        height: `${height / (width / 500)}px`,
+        width: `${500}px`,
+        display: "block",
+        background: placeholder,
+      }}
+    ></Box>
   );
 };
 

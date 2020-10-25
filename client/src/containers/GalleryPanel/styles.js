@@ -1,6 +1,13 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const galleryPanelStyles = makeStyles((muiTheme) => ({
+  artworkWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    maxWidth: 500,
+    height: "fit-content",
+  },
   masonryContainer: {
     display: "flex",
     marginLeft: -30,

@@ -13,13 +13,7 @@ const breakpointColumns = {
   500: 1,
 };
 
-const GalleryPanel = ({
-  artwork,
-  loadMore,
-  hasMore,
-  handleGalleryToggle,
-  loading,
-}) => {
+const GalleryPanel = ({ artwork, loadMore, hasMore, handleGalleryToggle }) => {
   const classes = galleryPanelStyles();
 
   return (
@@ -41,18 +35,16 @@ const GalleryPanel = ({
               className={classes.artworkWrapper}
               onClick={() => handleGalleryToggle(item.cover, index)}
             >
-              {loading ? (
-                <LoadingSpinner />
-              ) : (
+              {
                 <ImageWrapper
                   height={item.height}
                   width={item.width}
                   source={item.media ? item.media : item.cover}
+                  cover={item.cover}
                   placeholder={item.dominant}
-                  loading={loading}
-                  styles={{ ...item.attributes }}
+                  loading={item.loading}
                 />
-              )}
+              }
             </Card>
           ))}
         </Masonry>

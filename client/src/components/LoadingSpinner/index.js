@@ -2,13 +2,13 @@ import { CircularProgress, Container, Grid } from "@material-ui/core";
 import React from "react";
 import loadingSpinnerStyles from "./styles";
 
-const LoadingSpinner = ({ padding }) => {
+const LoadingSpinner = ({ styles }) => {
   const classes = loadingSpinnerStyles();
 
   return (
     <Container
       className={classes.loadingSpinnerContainer}
-      style={{ padding: padding ? padding : 0 }}
+      style={{ ...styles }}
     >
       <Grid container className={classes.loadingSpinnerGrid} spacing={2}>
         <Grid

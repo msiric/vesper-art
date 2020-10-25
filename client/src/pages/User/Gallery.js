@@ -209,7 +209,7 @@ const Gallery = ({ match, location }) => {
       }));
       setTimeout(() => {
         openLightbox(index);
-      }, 500);
+      }, 1000);
     } else {
       openLightbox(index);
     }
@@ -284,19 +284,17 @@ const Gallery = ({ match, location }) => {
             loading={state.loading}
           />
           <SRLWrapper callbacks={callbacks} options={options}>
-            {!state.loading
-              ? formattedArtwork.map((item) => (
-                  <Card style={{ display: "none" }}>
-                    <ImageWrapper
-                      height={item.height}
-                      width={item.width}
-                      source={item.media ? item.media : item.cover}
-                      placeholder={item.dominant}
-                      styles={{ ...item.attributes }}
-                    />
-                  </Card>
-                ))
-              : null}
+            {!state.loading &&
+              formattedArtwork.map((item) => (
+                <Card style={{ display: "none" }}>
+                  <ImageWrapper
+                    height={item.height}
+                    width={item.width}
+                    source={item.media ? item.media : item.cover}
+                    placeholder={item.dominant}
+                  />
+                </Card>
+              ))}
           </SRLWrapper>
         </Card>
       </Grid>
