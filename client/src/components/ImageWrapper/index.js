@@ -37,17 +37,26 @@ const ImageWrapper = ({
       </Box>
     ) : (
       <Box style={{ position: "relative" }}>
+        <LoadingSpinner
+          styles={{ position: "absolute", display: loading ? "flex" : "none" }}
+        />
         <img
           className={classes.imageContent}
-          style={{ ...styles }}
+          style={{ ...styles, opacity: loading ? 0.5 : 1 }}
           src={source}
         />
       </Box>
     )
   ) : cover ? (
     <Box style={{ position: "relative" }}>
-      <LoadingSpinner styles={{ position: "absolute" }} />
-      <img className={classes.imageContent} style={{ ...styles }} src={cover} />
+      <LoadingSpinner
+        styles={{ position: "absolute", display: loading ? "flex" : "none" }}
+      />
+      <img
+        className={classes.imageContent}
+        style={{ ...styles, opacity: loading ? 0.5 : 1 }}
+        src={cover}
+      />
     </Box>
   ) : (
     <Box

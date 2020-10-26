@@ -13,7 +13,13 @@ const breakpointColumns = {
   500: 1,
 };
 
-const GalleryPanel = ({ artwork, loadMore, hasMore, handleGalleryToggle }) => {
+const GalleryPanel = ({
+  artwork,
+  loadMore,
+  hasMore,
+  handleGalleryToggle,
+  loading,
+}) => {
   const classes = galleryPanelStyles();
 
   return (
@@ -42,7 +48,7 @@ const GalleryPanel = ({ artwork, loadMore, hasMore, handleGalleryToggle }) => {
                   source={item.media ? item.media : item.cover}
                   cover={item.cover}
                   placeholder={item.dominant}
-                  loading={item.loading}
+                  loading={loading}
                 />
               }
             </Card>
