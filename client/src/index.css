@@ -22,5 +22,17 @@ code {
 }
 
 .SRLElementContainer {
-  height: 100vh !important;
+  height: calc(100vh - 80px) !important;
+}
+
+@media (max-width: 768px) {
+  .SRLElementContainer {
+    height: calc((var(--vh, 1vh) * 100) - 80px) !important;
+  }
+}
+
+.SRLCaptionContainer {
+  position: absolute !important;
+  bottom: 0 !important;
+  height: 40px !important;
 }

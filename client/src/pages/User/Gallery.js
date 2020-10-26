@@ -26,6 +26,7 @@ const initialState = {
   purchases: {},
   covers: [],
   media: [],
+  captions: [],
   index: null,
   display: "purchases",
   scroll: {
@@ -52,6 +53,7 @@ const Gallery = ({ match, location }) => {
     const artworkIds = {};
     const uniqueCovers = [];
     const uniqueMedia = [];
+    const uniqueCaptions = [];
     for (let item in artwork) {
       if (!artworkIds[artwork[item].cover]) {
         const { r, g, b } = hexToRgb(artwork[item].dominant);
@@ -72,10 +74,18 @@ const Gallery = ({ match, location }) => {
           height: artwork[item].height,
           width: artwork[item].width,
         });
+        uniqueCaptions.push({
+          id: uniqueCaptions.length,
+          caption: artwork[item].title,
+        });
         artworkIds[artwork[item].cover] = true;
       }
     }
-    return { covers: uniqueCovers, media: uniqueMedia };
+    return {
+      covers: uniqueCovers,
+      media: uniqueMedia,
+      captions: uniqueCaptions,
+    };
   };
 
   const fetchUser = async () => {
@@ -103,6 +113,14 @@ const Gallery = ({ match, location }) => {
             : item.current.cover
         ] = {
           _id: item._id,
+          title:
+            initialState.display === "purchases"
+              ? item.version.title
+              : item.current.title,
+          owner:
+            initialState.display === "purchases"
+              ? item.seller.name
+              : item.current.owner,
           cover:
             initialState.display === "purchases"
               ? item.version.cover
@@ -130,6 +148,7 @@ const Gallery = ({ match, location }) => {
         [initialState.display]: newArtwork,
         covers: formattedArtwork.covers,
         media: formattedArtwork.media,
+        captions: formattedArtwork.captions,
         scroll: {
           ...prevState.scroll,
           //   artwork: {
@@ -217,6 +236,7 @@ const Gallery = ({ match, location }) => {
         [prevState.display]: newArtwork,
         covers: formattedArtwork.covers,
         media: formattedArtwork.media,
+        captions: formattedArtwork.captions,
         loading: false,
         index,
       }));
@@ -252,7 +272,7 @@ const Gallery = ({ match, location }) => {
       lightboxTransitionSpeed: 0.3,
       overlayColor: "rgba(0, 0, 0, 0.99)",
       slideAnimationType: "slide",
-      slideSpringValues: [10, 10],
+      slideSpringValues: [30, 10],
       slideTransitionTimingFunction: "easeInOut",
     },
     thumbnails: {
@@ -300,6 +320,7 @@ const Gallery = ({ match, location }) => {
               images={state.media}
               callbacks={callbacks}
               options={options}
+              customCaptions={state.captions}
             ></SRLWrapper>
           )}
         </Card>
