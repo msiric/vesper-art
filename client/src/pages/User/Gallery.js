@@ -11,7 +11,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SRLWrapper, useLightbox } from "simple-react-lightbox";
 import { hexToRgb } from "../../../../common/helpers.js";
-import ImageWrapper from "../../components/ImageWrapper/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import GalleryPanel from "../../containers/GalleryPanel/index.js";
 import { UserContext } from "../../contexts/User.js";
@@ -25,10 +24,9 @@ const initialState = {
   loading: true,
   artwork: {},
   purchases: {},
-  gallery: { open: false, id: null, key: 0 },
+  covers: [],
+  media: [],
   display: "purchases",
-  formatted: [],
-  modified: false,
   scroll: {
     artwork: {
       hasMore: true,
@@ -51,11 +49,12 @@ const Gallery = ({ match, location }) => {
 
   const formatArtwork = (artwork) => {
     const artworkIds = {};
-    const uniqueArt = [];
+    const uniqueCovers = [];
+    const uniqueMedia = [];
     for (let item in artwork) {
       if (!artworkIds[artwork[item].cover]) {
         const { r, g, b } = hexToRgb(artwork[item].dominant);
-        uniqueArt.push({
+        uniqueCovers.push({
           _id: item,
           cover: artwork[item].cover,
           media: artwork[item].media,
@@ -67,10 +66,15 @@ const Gallery = ({ match, location }) => {
           },
           dominant: artwork[item].dominant,
         });
+        uniqueMedia.push({
+          src: artwork[item].media ? artwork[item].media : artwork[item].cover,
+          height: artwork[item].height,
+          width: artwork[item].width,
+        });
         artworkIds[artwork[item].cover] = true;
       }
     }
-    return uniqueArt;
+    return { covers: uniqueCovers, media: uniqueMedia };
   };
 
   const fetchUser = async () => {
@@ -118,10 +122,13 @@ const Gallery = ({ match, location }) => {
         };
         return object;
       }, {});
+      const formattedArtwork = formatArtwork(newArtwork);
       setState((prevState) => ({
         ...prevState,
         loading: false,
         [initialState.display]: newArtwork,
+        covers: formattedArtwork.covers,
+        media: formattedArtwork.media,
         scroll: {
           ...prevState.scroll,
           //   artwork: {
@@ -195,17 +202,20 @@ const Gallery = ({ match, location }) => {
               userId: userStore.id,
               versionId: identifier,
             });
+      const newArtwork = {
+        ...state[state.display],
+        [cover]: {
+          ...state[state.display][cover],
+          media: data.url,
+        },
+      };
+      const formattedArtwork = formatArtwork(newArtwork);
       setState((prevState) => ({
         ...prevState,
-        [prevState.display]: {
-          ...prevState[prevState.display],
-          [cover]: {
-            ...prevState[prevState.display][cover],
-            media: data.url,
-          },
-        },
+        [prevState.display]: newArtwork,
+        covers: formattedArtwork.covers,
+        media: formattedArtwork.media,
         loading: false,
-        modified: true,
       }));
       setTimeout(() => {
         openLightbox(index);
@@ -221,9 +231,8 @@ const Gallery = ({ match, location }) => {
 
   const callbacks = {
     onSlideChange: (slide) =>
-      slide.slides.current.height && slide.slides.current.width
-        ? handleGalleryToggle(slide.slides.current.source, slide.index)
-        : console.log(slide),
+      !slide.slides.current.source.includes("artworkMedia") &&
+      handleGalleryToggle(slide.slides.current.source, slide.index),
     onLightboxOpened: (current) => console.log(current),
     onLightboxClosed: (current) => console.log(current),
     onCountSlides: (total) => console.log(total),
@@ -258,8 +267,6 @@ const Gallery = ({ match, location }) => {
     }));
   };
 
-  const formattedArtwork = formatArtwork(state[state.display]);
-
   return state.loading || userStore.id ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
@@ -279,23 +286,17 @@ const Gallery = ({ match, location }) => {
             </Select>
           </FormControl>
           <GalleryPanel
-            artwork={formattedArtwork}
+            artwork={state.covers}
             handleGalleryToggle={handleGalleryToggle}
             loading={state.loading}
           />
-          <SRLWrapper callbacks={callbacks} options={options}>
-            {!state.loading &&
-              formattedArtwork.map((item) => (
-                <Card style={{ display: "none" }}>
-                  <ImageWrapper
-                    height={item.height}
-                    width={item.width}
-                    source={item.media ? item.media : item.cover}
-                    placeholder={item.dominant}
-                  />
-                </Card>
-              ))}
-          </SRLWrapper>
+          {!state.loading && (
+            <SRLWrapper
+              images={state.media}
+              callbacks={callbacks}
+              options={options}
+            ></SRLWrapper>
+          )}
         </Card>
       </Grid>
     </Container>
