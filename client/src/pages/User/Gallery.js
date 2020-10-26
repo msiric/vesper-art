@@ -88,6 +88,7 @@ const Gallery = ({ match, location }) => {
         });
         uniqueMedia.push({
           src: artwork[item].media ? artwork[item].media : artwork[item].cover,
+          thumbnail: artwork[item].cover,
           height: artwork[item].height,
           width: artwork[item].width,
         });
@@ -123,36 +124,37 @@ const Gallery = ({ match, location }) => {
               dataCursor: state.scroll.artwork.dataCursor,
               dataCeiling: state.scroll.artwork.dataCeiling,
             });
-      const newArtwork = data[initialState.display].reduce((object, item) => {
+      const newArtwork = data[state.display].reduce((object, item) => {
+        console.log(object, item);
         object[
-          initialState.display === "purchases"
+          state.display === "purchases"
             ? item.version.cover
             : item.current.cover
         ] = {
           _id: item._id,
           title:
-            initialState.display === "purchases"
+            state.display === "purchases"
               ? item.version.title
               : item.current.title,
           owner:
-            initialState.display === "purchases"
+            state.display === "purchases"
               ? item.seller.name
               : item.current.owner,
           cover:
-            initialState.display === "purchases"
+            state.display === "purchases"
               ? item.version.cover
               : item.current.cover,
           media: null,
           dominant:
-            initialState.display === "purchases"
+            state.display === "purchases"
               ? item.version.dominant
               : item.current.dominant,
           height:
-            initialState.display === "purchases"
+            state.display === "purchases"
               ? item.version.height
               : item.current.height,
           width:
-            initialState.display === "purchases"
+            state.display === "purchases"
               ? item.version.width
               : item.current.width,
         };
@@ -162,7 +164,7 @@ const Gallery = ({ match, location }) => {
       setState((prevState) => ({
         ...prevState,
         loading: false,
-        [initialState.display]: newArtwork,
+        [state.display]: newArtwork,
         covers: formattedArtwork.covers,
         media: formattedArtwork.media,
         captions: formattedArtwork.captions,
@@ -224,8 +226,10 @@ const Gallery = ({ match, location }) => {
     }
   };
 
-  const handleGalleryToggle = async (cover, index) => {
-    const foundMedia = state.covers[index].media === cover;
+  const handleGalleryToggle = async (item, index) => {
+    console.log(item);
+    const foundMedia = item.media && state.covers[index].media === item.media;
+    const identifier = state[state.display][item.cover]._id;
     if (foundMedia) {
       setState((prevState) => ({
         ...prevState,
@@ -233,7 +237,6 @@ const Gallery = ({ match, location }) => {
       }));
       openLightbox(index);
     } else {
-      const identifier = state[state.display][cover]._id;
       setState((prevState) => ({
         ...prevState,
         loading: true,
@@ -248,8 +251,8 @@ const Gallery = ({ match, location }) => {
             });
       const newArtwork = {
         ...state[state.display],
-        [cover]: {
-          ...state[state.display][cover],
+        [item.cover]: {
+          ...state[state.display][item.cover],
           media: data.url,
         },
       };
@@ -276,7 +279,13 @@ const Gallery = ({ match, location }) => {
 
   const callbacks = {
     onSlideChange: (slide) =>
-      handleGalleryToggle(slide.slides.current.source, slide.index),
+      handleGalleryToggle(
+        {
+          cover: slide.slides.current.thumbnail,
+          media: slide.slides.current.source,
+        },
+        slide.index
+      ),
   };
 
   const options = {

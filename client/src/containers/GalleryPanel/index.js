@@ -40,7 +40,7 @@ const GalleryPanel = ({
           {artwork.map((item, idx) => (
             <Card
               className={classes.artworkWrapper}
-              onClick={() => handleGalleryToggle(item.cover, idx)}
+              onClick={() => handleGalleryToggle(item, idx)}
             >
               {
                 <ImageWrapper
