@@ -18,6 +18,7 @@ const GalleryPanel = ({
   loadMore,
   hasMore,
   handleGalleryToggle,
+  index,
   loading,
 }) => {
   const classes = galleryPanelStyles();
@@ -36,10 +37,10 @@ const GalleryPanel = ({
           className={classes.masonryContainer}
           columnClassName={classes.masonryColumn}
         >
-          {artwork.map((item, index) => (
+          {artwork.map((item, idx) => (
             <Card
               className={classes.artworkWrapper}
-              onClick={() => handleGalleryToggle(item.cover, index)}
+              onClick={() => handleGalleryToggle(item.cover, idx)}
             >
               {
                 <ImageWrapper
@@ -48,7 +49,7 @@ const GalleryPanel = ({
                   source={item.media ? item.media : item.cover}
                   cover={item.cover}
                   placeholder={item.dominant}
-                  loading={loading}
+                  loading={idx === index && loading ? true : false}
                 />
               }
             </Card>

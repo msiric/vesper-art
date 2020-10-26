@@ -26,6 +26,7 @@ const initialState = {
   purchases: {},
   covers: [],
   media: [],
+  index: null,
   display: "purchases",
   scroll: {
     artwork: {
@@ -194,6 +195,7 @@ const Gallery = ({ match, location }) => {
       setState((prevState) => ({
         ...prevState,
         loading: true,
+        index,
       }));
       const { data } =
         state.display === "purchases"
@@ -216,10 +218,8 @@ const Gallery = ({ match, location }) => {
         covers: formattedArtwork.covers,
         media: formattedArtwork.media,
         loading: false,
+        index,
       }));
-      setTimeout(() => {
-        openLightbox(index);
-      }, 1000);
     } else {
       openLightbox(index);
     }
@@ -228,6 +228,10 @@ const Gallery = ({ match, location }) => {
   useEffect(() => {
     fetchUser();
   }, [location, state.display]);
+
+  useEffect(() => {
+    if (state.index !== null) openLightbox(state.index);
+  }, [state[state.display]]);
 
   const callbacks = {
     onSlideChange: (slide) =>
@@ -288,6 +292,7 @@ const Gallery = ({ match, location }) => {
           <GalleryPanel
             artwork={state.covers}
             handleGalleryToggle={handleGalleryToggle}
+            index={state.index}
             loading={state.loading}
           />
           {!state.loading && (

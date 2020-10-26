@@ -4,7 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 import LoadingSpinner from "../LoadingSpinner/index.js";
 import imageWrapperStyles from "./styles.js";
 
-const useProgressiveImage = (source) => {
+export const useProgressiveImage = (source) => {
   const [state, setState] = useState({ loaded: false });
 
   useEffect(() => {
