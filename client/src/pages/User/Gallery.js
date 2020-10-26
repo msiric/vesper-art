@@ -4,6 +4,7 @@ import {
   FormControl,
   Grid,
   InputLabel,
+  makeStyles,
   MenuItem,
   Select,
 } from "@material-ui/core";
@@ -38,6 +39,16 @@ const initialState = {
   },
 };
 
+const lightboxStyles = makeStyles({
+  "@global": {
+    ".SRLElementWrapper": {
+      "&>img": {
+        boxShadow: (props) => props.boxShadow,
+      },
+    },
+  },
+});
+
 const Gallery = ({ match, location }) => {
   const [userStore] = useContext(UserContext);
   const [state, setState] = useState({
@@ -46,6 +57,12 @@ const Gallery = ({ match, location }) => {
   const history = useHistory();
 
   const globalClasses = globalStyles();
+
+  const lightboxClasses = lightboxStyles({
+    boxShadow: state.covers[state.index]
+      ? state.covers[state.index].attributes.boxShadow
+      : "",
+  });
 
   const { openLightbox } = useLightbox();
 
@@ -208,9 +225,15 @@ const Gallery = ({ match, location }) => {
   };
 
   const handleGalleryToggle = async (cover, index) => {
-    const foundMedia = state[state.display][cover].media;
-    const identifier = state[state.display][cover]._id;
-    if (!foundMedia) {
+    const foundMedia = state.covers[index].media === cover;
+    if (foundMedia) {
+      setState((prevState) => ({
+        ...prevState,
+        index,
+      }));
+      openLightbox(index);
+    } else {
+      const identifier = state[state.display][cover]._id;
       setState((prevState) => ({
         ...prevState,
         loading: true,
@@ -240,8 +263,6 @@ const Gallery = ({ match, location }) => {
         loading: false,
         index,
       }));
-    } else {
-      openLightbox(index);
     }
   };
 
@@ -255,11 +276,7 @@ const Gallery = ({ match, location }) => {
 
   const callbacks = {
     onSlideChange: (slide) =>
-      !slide.slides.current.source.includes("artworkMedia") &&
       handleGalleryToggle(slide.slides.current.source, slide.index),
-    onLightboxOpened: (current) => console.log(current),
-    onLightboxClosed: (current) => console.log(current),
-    onCountSlides: (total) => console.log(total),
   };
 
   const options = {
