@@ -18,14 +18,14 @@ import MainHeading from "../../components/MainHeading/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import GalleryPanel from "../../containers/GalleryPanel/index.js";
 import { UserContext } from "../../contexts/User.js";
-import { getArtwork } from "../../services/artwork.js";
 import { getDownload } from "../../services/orders.js";
-import { getMedia, getOwnership } from "../../services/user.js";
+import { getArtwork, getMedia, getOwnership } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const initialState = {
   loading: true,
+  fetching: false,
   artwork: {},
   purchases: {},
   covers: [],
@@ -138,7 +138,6 @@ const Gallery = ({ match, location }) => {
               dataCeiling: state.scroll.artwork.dataCeiling,
             });
       const newArtwork = data[state.display].reduce((object, item) => {
-        console.log(object, item);
         object[
           state.display === "purchases"
             ? item.version.cover
@@ -240,7 +239,6 @@ const Gallery = ({ match, location }) => {
   };
 
   const handleGalleryToggle = async (item, index) => {
-    console.log(item);
     const foundMedia = item.media && state.covers[index].media === item.media;
     const identifier = state[state.display][item.cover]._id;
     if (foundMedia) {
@@ -252,7 +250,7 @@ const Gallery = ({ match, location }) => {
     } else {
       setState((prevState) => ({
         ...prevState,
-        loading: true,
+        fetching: true,
         index,
       }));
       const { data } =
@@ -276,7 +274,7 @@ const Gallery = ({ match, location }) => {
         covers: formattedArtwork.covers,
         media: formattedArtwork.media,
         captions: formattedArtwork.captions,
-        loading: false,
+        fetching: false,
         index,
       }));
     }
@@ -378,10 +376,10 @@ const Gallery = ({ match, location }) => {
                 artwork={state.covers}
                 handleGalleryToggle={handleGalleryToggle}
                 index={state.index}
-                loading={state.loading}
+                loading={state.fetching}
               />
             </SkeletonWrapper>
-            {!state.loading && (
+            {!state.fetching && !state.loading && (
               <SRLWrapper
                 images={state.media}
                 callbacks={callbacks}
