@@ -252,7 +252,7 @@ const MyArtwork = ({ location }) => {
             ])}
             empty={
               <EmptySection
-                label="You have not artwork"
+                label="You have no published artwork"
                 loading={state.loading}
               />
             }

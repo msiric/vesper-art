@@ -14,6 +14,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SRLWrapper, useLightbox } from "simple-react-lightbox";
 import { hexToRgb } from "../../../../common/helpers.js";
+import EmptySection from "../../components/EmptySection/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import GalleryPanel from "../../containers/GalleryPanel/index.js";
@@ -373,12 +374,22 @@ const Gallery = ({ match, location }) => {
           />
           <CardContent style={{ height: "100%" }}>
             <SkeletonWrapper loading={state.loading} width="100%" height="100%">
-              <GalleryPanel
-                artwork={state.covers}
-                handleGalleryToggle={handleGalleryToggle}
-                index={state.index}
-                loading={state.fetching}
-              />
+              {state.covers.length ? (
+                <GalleryPanel
+                  artwork={state.covers}
+                  handleGalleryToggle={handleGalleryToggle}
+                  index={state.index}
+                  loading={state.fetching}
+                />
+              ) : (
+                <EmptySection
+                  label={
+                    state.display === "purchases"
+                      ? "You have no purchased artwork"
+                      : "You have no published artwork"
+                  }
+                />
+              )}
             </SkeletonWrapper>
             {!state.fetching && !state.loading && (
               <SRLWrapper
