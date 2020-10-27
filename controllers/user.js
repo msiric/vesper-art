@@ -1,7 +1,9 @@
+import aws from "aws-sdk";
 import createError from "http-errors";
 import randomString from "randomstring";
 import { server } from "../config/secret.js";
 import {
+  fetchArtworkByOwner,
   fetchArtworksByOwner,
   fetchUserArtworks,
 } from "../services/artwork.js";
@@ -31,6 +33,12 @@ import passwordValidator from "../validation/password.js";
 import preferencesValidator from "../validation/preferences.js";
 import profileValidator from "../validation/profile.js";
 import rangeValidator from "../validation/range.js";
+
+aws.config.update({
+  secretAccessKey: process.env.S3_SECRET,
+  accessKeyId: process.env.S3_ID,
+  region: process.env.S3_REGION,
+});
 
 export const getUserProfile = async ({
   userUsername,
@@ -346,13 +354,13 @@ export const deactivateUser = async ({ userId, session }) => {
 };
 
 export const getUserMedia = async ({ userId, artworkId }) => {
-  const foundVersion = await fetchVersionByOwner({
+  const foundArtwork = await fetchArtworkByOwner({
     userId,
     artworkId,
   });
-  if (foundVersion) {
+  if (foundArtwork) {
     const s3 = new aws.S3({ signatureVersion: "v4" });
-    const file = foundVersion.media.split("/").pop();
+    const file = foundArtwork.current.media.split("/").pop();
     const params = {
       Bucket: process.env.S3_BUCKET,
       Key: `artworkMedia/${file}`,

@@ -31,16 +31,6 @@ export const fetchVersionDetails = async ({ versionId, session = null }) => {
   );
 };
 
-export const fetchVersionByOwner = async ({
-  versionId,
-  userId,
-  session = null,
-}) => {
-  return await Version.findOne({
-    $and: [{ _id: versionId }, { owner: userId }],
-  });
-};
-
 export const fetchArtworkDetails = async ({
   artworkId,
   dataSkip,
@@ -162,7 +152,6 @@ export const fetchArtworkByOwner = async ({
   userId,
   session = null,
 }) => {
-  console.log(artworkId, userId);
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { owner: userId }, { active: true }],
   })

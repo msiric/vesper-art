@@ -258,7 +258,7 @@ const Gallery = ({ match, location }) => {
           ? await getDownload.request({ orderId: identifier })
           : await getMedia.request({
               userId: userStore.id,
-              versionId: identifier,
+              artworkId: identifier,
             });
       const newArtwork = {
         ...state[state.display],
@@ -325,6 +325,7 @@ const Gallery = ({ match, location }) => {
     setState((prevState) => ({
       ...prevState,
       display: e.target.value,
+      index: null,
     }));
   };
 
