@@ -45,7 +45,12 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
           maxHeight: 700,
         }}
       >
-        <SkeletonWrapper loading={loading} height={300} style={{ margin: 24 }}>
+        <SkeletonWrapper
+          loading={loading}
+          height={300}
+          width="100%"
+          style={{ margin: 24 }}
+        >
           <ImageWrapper
             height={version.height}
             width={version.width}

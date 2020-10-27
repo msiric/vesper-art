@@ -5,15 +5,15 @@ import LoadingSpinner from "../LoadingSpinner/index.js";
 import imageWrapperStyles from "./styles.js";
 
 export const useProgressiveImage = (source) => {
-  const [state, setState] = useState({ loaded: false });
+  const [state, setState] = useState({ downloaded: false });
 
   useEffect(() => {
     const image = new Image();
     image.src = source;
-    image.onload = () => setState({ loaded: true });
+    image.onload = () => setState({ downloaded: true });
   }, [source]);
 
-  return state.loaded;
+  return state.downloaded;
 };
 
 const ImageWrapper = ({
@@ -26,11 +26,13 @@ const ImageWrapper = ({
   styles,
   loading,
 }) => {
-  const loaded = useProgressiveImage(source);
+  const downloaded = useProgressiveImage(source);
+
+  console.log(height, width, placeholder, cover, styles);
 
   const classes = imageWrapperStyles();
 
-  return !loading && loaded ? (
+  return !loading && downloaded ? (
     redirect ? (
       <Box component={RouterLink} to={redirect}>
         <img className={classes.imageContent} src={source} />
@@ -61,12 +63,16 @@ const ImageWrapper = ({
   ) : (
     <Box
       style={{
-        height: `${height / (width / 500)}px`,
-        width: `${500}px`,
-        display: "block",
+        ...styles,
         background: placeholder,
       }}
-    ></Box>
+    >
+      <img
+        className={classes.imageContent}
+        style={{ visibility: "hidden" }}
+        src={source}
+      />
+    </Box>
   );
 };
 
