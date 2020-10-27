@@ -45,18 +45,20 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
           maxHeight: 700,
         }}
       >
-        <ImageWrapper
-          height={version.height}
-          width={version.width}
-          source={version.cover}
-          placeholder={version.dominant}
-          styles={{
-            boxShadow: `0px 0px 40px 15px rgba(${r},${g},${b},0.75)`,
-            maxWidth: 700 / (version.height / version.width) - 54,
-            margin: "24px 0",
-          }}
-          loading={loading}
-        />
+        <SkeletonWrapper loading={loading} height={300} style={{ margin: 24 }}>
+          <ImageWrapper
+            height={version.height}
+            width={version.width}
+            source={version.cover}
+            placeholder={version.dominant}
+            styles={{
+              boxShadow: `0px 0px 40px 15px rgba(${r},${g},${b},0.75)`,
+              maxWidth: 700 / (version.height / version.width) - 54,
+              margin: "24px 0",
+            }}
+            loading={loading}
+          />
+        </SkeletonWrapper>
       </Box>
       <Box>
         <Divider />

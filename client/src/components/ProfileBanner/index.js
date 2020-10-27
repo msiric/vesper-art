@@ -47,7 +47,12 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <SkeletonWrapper loading={loading} variant="circle">
+            <SkeletonWrapper
+              loading={loading}
+              variant="circle"
+              width={130}
+              height={130}
+            >
               <Avatar
                 alt={user.name}
                 src={user.photo}

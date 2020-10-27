@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   CardContent,
   CardHeader,
@@ -9,6 +10,7 @@ import {
   makeStyles,
   MenuItem,
   Select,
+  Typography,
 } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -108,7 +110,21 @@ const Gallery = ({ match, location }) => {
         });
         uniqueCaptions.push({
           id: uniqueCaptions.length,
-          caption: artwork[item].title,
+          caption: (
+            <Box
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Typography style={{ fontWeight: "bold" }}>
+                {artwork[item].title}
+              </Typography>
+              <Typography>{`\xa0by ${artwork[item].owner}`}</Typography>
+            </Box>
+          ),
         });
         artworkIds[artwork[item].cover] = true;
       }
@@ -150,9 +166,7 @@ const Gallery = ({ match, location }) => {
               ? item.version.title
               : item.current.title,
           owner:
-            state.display === "purchases"
-              ? item.seller.name
-              : item.current.owner,
+            state.display === "purchases" ? item.seller.name : userStore.name,
           cover:
             state.display === "purchases"
               ? item.version.cover
