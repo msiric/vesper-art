@@ -149,7 +149,9 @@ const Interceptor = ({ children }) => {
           photo: data.user.photo,
           stripeId: data.user.stripeId,
           country: data.user.country,
+          // %TODO Check intents and saved are set properly
           saved: data.user.saved,
+          intents: data.user.intents,
         });
 
         eventsDispatch({
@@ -200,7 +202,9 @@ const Interceptor = ({ children }) => {
         photo: data.user.photo,
         stripeId: data.user.stripeId,
         country: data.user.country,
+        // %TODO Check intents and saved are set properly
         saved: data.user.saved,
+        intents: data.user.intents,
       });
       socket.emit("authenticateUser", {
         token: `Bearer ${data.accessToken}`,
