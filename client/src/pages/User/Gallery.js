@@ -1,5 +1,7 @@
 import {
   Card,
+  CardContent,
+  CardHeader,
   Container,
   FormControl,
   Grid,
@@ -13,6 +15,7 @@ import { useHistory } from "react-router-dom";
 import { SRLWrapper, useLightbox } from "simple-react-lightbox";
 import { hexToRgb } from "../../../../common/helpers.js";
 import MainHeading from "../../components/MainHeading/index.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import GalleryPanel from "../../containers/GalleryPanel/index.js";
 import { UserContext } from "../../contexts/User.js";
 import { getArtwork } from "../../services/artwork.js";
@@ -49,6 +52,14 @@ const lightboxStyles = makeStyles({
   },
 });
 
+const galleryStyles = makeStyles({
+  galleryHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+});
+
 const Gallery = ({ match, location }) => {
   const [userStore] = useContext(UserContext);
   const [state, setState] = useState({
@@ -63,6 +74,8 @@ const Gallery = ({ match, location }) => {
       ? state.covers[state.index].attributes.boxShadow
       : "",
   });
+
+  const classes = galleryStyles();
 
   const { openLightbox } = useLightbox();
 
@@ -320,35 +333,63 @@ const Gallery = ({ match, location }) => {
   return state.loading || userStore.id ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        <Card>
-          <MainHeading text="Gallery" />
-          <FormControl variant="outlined" style={{ marginBottom: "12px" }}>
-            <InputLabel id="data-display">Display</InputLabel>
-            <Select
-              labelId="data-display"
-              value={state.display}
-              onChange={handleSelectChange}
-              label="Display"
-              margin="dense"
-            >
-              <MenuItem value="purchases">Purchases</MenuItem>
-              <MenuItem value="artwork">Artwork</MenuItem>
-            </Select>
-          </FormControl>
-          <GalleryPanel
-            artwork={state.covers}
-            handleGalleryToggle={handleGalleryToggle}
-            index={state.index}
-            loading={state.loading}
+        <Card
+          style={{
+            width: "100%",
+            minHeight: "500px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <CardHeader
+            title={
+              <SkeletonWrapper variant="text" loading={state.loading}>
+                <MainHeading text="Gallery" />
+              </SkeletonWrapper>
+            }
+            subheader={
+              <SkeletonWrapper loading={state.loading}>
+                <FormControl
+                  variant="outlined"
+                  style={{ marginBottom: "12px" }}
+                >
+                  <InputLabel id="data-display">Display</InputLabel>
+                  <Select
+                    labelId="data-display"
+                    value={state.display}
+                    onChange={handleSelectChange}
+                    label="Display"
+                    margin="dense"
+                  >
+                    <MenuItem value="purchases">Purchases</MenuItem>
+                    <MenuItem value="artwork">Artwork</MenuItem>
+                  </Select>
+                </FormControl>
+              </SkeletonWrapper>
+            }
+            disableTypography
+            classes={{
+              content: classes.galleryHeader,
+            }}
           />
-          {!state.loading && (
-            <SRLWrapper
-              images={state.media}
-              callbacks={callbacks}
-              options={options}
-              customCaptions={state.captions}
-            ></SRLWrapper>
-          )}
+          <CardContent style={{ height: "100%" }}>
+            <SkeletonWrapper loading={state.loading} width="100%" height="100%">
+              <GalleryPanel
+                artwork={state.covers}
+                handleGalleryToggle={handleGalleryToggle}
+                index={state.index}
+                loading={state.loading}
+              />
+            </SkeletonWrapper>
+            {!state.loading && (
+              <SRLWrapper
+                images={state.media}
+                callbacks={callbacks}
+                options={options}
+                customCaptions={state.captions}
+              ></SRLWrapper>
+            )}
+          </CardContent>
         </Card>
       </Grid>
     </Container>
