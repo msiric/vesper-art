@@ -41,7 +41,7 @@ const SwipeCard = ({
       <SkeletonWrapper
         loading={loading}
         width="100%"
-        style={{ minHeight: "480px" }}
+        style={{ minHeight: "280px" }}
       >
         <SwipeableViews
           axis="x"
