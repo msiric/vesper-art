@@ -18,7 +18,7 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
 
   return (
     <Card className={classes.artworkPreviewCard}>
-      <SkeletonWrapper loading={loading} width="100%">
+      <SkeletonWrapper loading={loading} height="100%" width="100%">
         <Box
           style={{
             display: "flex",
@@ -48,24 +48,15 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
         </Box>
       </SkeletonWrapper>
       <Divider />
-      <Box>
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography
-            m={2}
-            fontWeight="fontWeightBold"
-            fontSize="h5.fontSize"
-          >{`${version.title}, ${new Date(
-            version.created
-          ).getFullYear()}`}</Typography>
+      <Box p={2}>
+        <SkeletonWrapper variant="text" loading={loading} height="60px">
+          <Typography fontWeight="fontWeightBold" fontSize="h5.fontSize">{`${
+            version.title
+          }, ${new Date(version.created).getFullYear()}`}</Typography>
         </SkeletonWrapper>
-        <SkeletonWrapper
-          variant="text"
-          loading={loading}
-          width="100%"
-          height="60px"
-        >
-          <Typography m={2} variant="body2">
-            {version.description}
+        <SkeletonWrapper variant="text" loading={loading} height="60px">
+          <Typography variant="body2">
+            {version.description || "Loading..."}
           </Typography>
         </SkeletonWrapper>
       </Box>
@@ -73,8 +64,10 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
         <Box>
           <Divider />
           <Box p={2} display="flex" justifyContent="space-between">
-            <SkeletonWrapper variant="text" loading={loading} width="100%">
+            <SkeletonWrapper variant="text" loading={loading}>
               <Typography>Download high resolution artwork:</Typography>
+            </SkeletonWrapper>
+            <SkeletonWrapper loading={loading}>
               <Button
                 variant="outlined"
                 startIcon={<DownloadIcon />}
