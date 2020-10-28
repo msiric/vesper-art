@@ -6,6 +6,7 @@ import queryString from "query-string";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
 import * as Yup from "yup";
+import EmptySection from "../../components/EmptySection/index.js";
 import OrderCard from "../../components/OrderCard/index.js";
 import ProfileCard from "../../components/ProfileCard/index.js";
 import LicenseCard from "../../containers/LicenseCard/index.js";
@@ -220,7 +221,7 @@ const Order = ({ match, location }) => {
             </Grid>
           </>
         ) : (
-          history.push("/")
+          <EmptySection label="Order not found" page />
         )}
       </Grid>
       <Modal {...state.modal} handleClose={handleModalClose} />

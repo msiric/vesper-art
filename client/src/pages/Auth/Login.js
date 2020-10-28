@@ -1,4 +1,4 @@
-import { Avatar, Container, Typography } from "@material-ui/core";
+import { Avatar, Box, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { LockRounded as LoginAvatar } from "@material-ui/icons";
 import React from "react";
@@ -22,7 +22,7 @@ const Login = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <div className={classes.paper}>
+      <Box className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LoginAvatar />
         </Avatar>
@@ -30,7 +30,7 @@ const Login = () => {
           Sign in
         </Typography>
         <LoginForm />
-      </div>
+      </Box>
     </Container>
   );
 };

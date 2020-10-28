@@ -19,8 +19,6 @@ const Home = ({ location }) => {
     ...initialState,
   });
 
-  const classes = {};
-
   const fetchArtwork = async () => {
     try {
       setState({ ...initialState });
@@ -99,8 +97,8 @@ const Home = ({ location }) => {
   };
 
   return (
-    <Grid key={location.key} container className={classes.container}>
-      <Grid item xs={12} className={classes.grid}>
+    <Grid key={location.key} container>
+      <Grid item xs={12}>
         <SelectInput
           name="artworkType"
           label="Type"
@@ -114,7 +112,7 @@ const Home = ({ location }) => {
           variant="outlined"
         />
       </Grid>
-      <Grid item xs={12} className={classes.grid}>
+      <Grid item xs={12}>
         {state.loading || state.artwork.length ? (
           <ArtworkPanel
             elements={state.artwork}

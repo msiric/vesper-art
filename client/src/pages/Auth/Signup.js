@@ -1,4 +1,4 @@
-import { Avatar, Container, Typography } from "@material-ui/core";
+import { Avatar, Box, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { MeetingRoomRounded as SignupAvatar } from "@material-ui/icons";
 import React from "react";
@@ -22,7 +22,7 @@ const Signup = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <div className={classes.paper}>
+      <Box className={classes.paper}>
         <Avatar className={classes.avatar}>
           <SignupAvatar />
         </Avatar>
@@ -30,7 +30,7 @@ const Signup = () => {
           Sign up
         </Typography>
         <SignupForm />
-      </div>
+      </Box>
     </Container>
   );
 };

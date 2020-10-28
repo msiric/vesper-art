@@ -115,6 +115,7 @@ const EditArtwork = ({ match, location }) => {
             />
           </Grid>
         ) : (
+          // $TODO push to home and display error notification
           "Ne postoji"
         )}
       </Grid>

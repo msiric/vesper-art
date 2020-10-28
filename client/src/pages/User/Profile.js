@@ -2,6 +2,7 @@ import { Container, Grid, Modal } from "@material-ui/core";
 import { withSnackbar } from "notistack";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import EmptySection from "../../components/EmptySection/index.js";
 import ProfileArtwork from "../../containers/ProfileArtwork/index.js";
 import ProfileInfo from "../../containers/ProfileInfo/index.js";
 import { UserContext } from "../../contexts/User.js";
@@ -239,7 +240,6 @@ const Profile = ({ match, location }) => {
             loading={state.loading}
           />
         </>
-
         <Modal
           open={state.modal.open}
           handleClose={handleModalClose}
@@ -250,7 +250,7 @@ const Profile = ({ match, location }) => {
       </Grid>
     </Container>
   ) : (
-    "$TODO Ne postoji"
+    <EmptySection label="User not found" page />
   );
 };
 

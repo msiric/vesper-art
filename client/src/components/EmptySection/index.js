@@ -1,4 +1,4 @@
-import { Box, Typography } from "@material-ui/core";
+import { Box, Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { HourglassEmptyRounded as EmptyIcon } from "@material-ui/icons";
 import React from "react";
@@ -7,10 +7,10 @@ import emptySectionStyles from "./styles";
 
 const useStyles = makeStyles({});
 
-const EmptySection = ({ label, loading }) => {
+const EmptySection = ({ label, page, loading }) => {
   const classes = emptySectionStyles();
 
-  return (
+  const content = (
     <SkeletonWrapper loading={loading}>
       <Box
         style={{
@@ -28,6 +28,23 @@ const EmptySection = ({ label, loading }) => {
         </Typography>
       </Box>
     </SkeletonWrapper>
+  );
+
+  return page ? (
+    <Grid
+      item
+      sm={12}
+      style={{
+        height: 500,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      {content}
+    </Grid>
+  ) : (
+    content
   );
 };
 

@@ -1,4 +1,4 @@
-import { Avatar, Container, Typography } from "@material-ui/core";
+import { Avatar, Box, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { VpnKeyRounded as RecoveryAvatar } from "@material-ui/icons";
 import React from "react";
@@ -22,7 +22,7 @@ const ForgotPassword = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <div className={classes.paper}>
+      <Box className={classes.paper}>
         <Avatar className={classes.avatar}>
           <RecoveryAvatar />
         </Avatar>
@@ -30,7 +30,7 @@ const ForgotPassword = () => {
           Recover your password
         </Typography>
         <ForgotPasswordForm />
-      </div>
+      </Box>
     </Container>
   );
 };

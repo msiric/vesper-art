@@ -5,6 +5,7 @@ import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import HelpBox from "../../components/HelpBox/index.js";
 import ImageInput from "../../components/ImageInput/index.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { UserContext } from "../../contexts/User.js";
 import PriceInput from "../../shared/PriceInput/PriceInput.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
@@ -14,7 +15,12 @@ import { addArtwork } from "../../validation/media.js";
 
 /* import AddArtworkStyles from "../../components/Artwork/AddArtwork.style.js"; */
 
-const AddArtworkForm = ({ capabilities, postArtwork, deleteEmptyValues }) => {
+const AddArtworkForm = ({
+  capabilities,
+  postArtwork,
+  deleteEmptyValues,
+  loading,
+}) => {
   const [userStore] = useContext(UserContext);
 
   const history = useHistory();
@@ -95,41 +101,46 @@ const AddArtworkForm = ({ capabilities, postArtwork, deleteEmptyValues }) => {
                     preview={false}
                     shape="square"
                     noEmpty={false}
+                    loading={loading}
                   />
                 )}
               </Field>
-              <Field name="artworkTitle">
-                {({ field, form: { touched, errors }, meta }) => (
-                  <TextField
-                    {...field}
-                    type="text"
-                    label="Title"
-                    helperText={meta.touched && meta.error}
-                    error={meta.touched && Boolean(meta.error)}
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-              </Field>
-              <Field name="artworkAvailability">
-                {({ field, form: { touched, errors }, meta }) => (
-                  <SelectInput
-                    {...field}
-                    label="Availability"
-                    helperText={meta.touched && meta.error}
-                    error={meta.touched && Boolean(meta.error)}
-                    options={[
-                      { value: "" },
-                      { value: "available", text: "Available for download" },
-                      { value: "unavailable", text: "Only for preview" },
-                    ]}
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-              </Field>
+              <SkeletonWrapper variant="text" loading={loading} width="100%">
+                <Field name="artworkTitle">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      type="text"
+                      label="Title"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  )}
+                </Field>
+              </SkeletonWrapper>
+              <SkeletonWrapper variant="text" loading={loading} width="100%">
+                <Field name="artworkAvailability">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <SelectInput
+                      {...field}
+                      label="Availability"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      options={[
+                        { value: "" },
+                        { value: "available", text: "Available for download" },
+                        { value: "unavailable", text: "Only for preview" },
+                      ]}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  )}
+                </Field>
+              </SkeletonWrapper>
               {values.artworkAvailability === "available" && (
                 <Field name="artworkType">
                   {({ field, form: { touched, errors }, meta }) => (
@@ -251,32 +262,36 @@ const AddArtworkForm = ({ capabilities, postArtwork, deleteEmptyValues }) => {
                     )}
                   </Field>
                 )}
-              <Field name="artworkDescription">
-                {({ field, form: { touched, errors }, meta }) => (
-                  <TextField
-                    {...field}
-                    type="text"
-                    label="Description"
-                    helperText={meta.touched && meta.error}
-                    error={meta.touched && Boolean(meta.error)}
-                    margin="dense"
-                    variant="outlined"
-                    fullWidth
-                    multiline
-                  />
-                )}
-              </Field>
+              <SkeletonWrapper variant="text" loading={loading} width="100%">
+                <Field name="artworkDescription">
+                  {({ field, form: { touched, errors }, meta }) => (
+                    <TextField
+                      {...field}
+                      type="text"
+                      label="Description"
+                      helperText={meta.touched && meta.error}
+                      error={meta.touched && Boolean(meta.error)}
+                      margin="dense"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                    />
+                  )}
+                </Field>
+              </SkeletonWrapper>
             </CardContent>
             <CardActions className={classes.actions}>
-              <Button
-                type="submit"
-                variant="outlined"
-                color="primary"
-                disabled={isSubmitting}
-                startIcon={<UploadIcon />}
-              >
-                Publish
-              </Button>
+              <SkeletonWrapper loading={loading}>
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  color="primary"
+                  disabled={isSubmitting}
+                  startIcon={<UploadIcon />}
+                >
+                  Publish
+                </Button>
+              </SkeletonWrapper>
             </CardActions>
           </Form>
         )}

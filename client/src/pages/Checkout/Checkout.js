@@ -583,6 +583,7 @@ const Processor = ({ match, location, stripe }) => {
             </Grid>
           </>
         ) : (
+          // $TODO push to home and display error notification
           history.push("/")
         )}
       </Grid>

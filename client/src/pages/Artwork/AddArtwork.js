@@ -8,7 +8,7 @@ import globalStyles from "../../styles/global.js";
 import { Container, Grid } from "../../styles/theme.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
 
-const initialState = { capabilities: {} };
+const initialState = { loading: false, capabilities: {} };
 
 const AddArtwork = () => {
   const [userStore] = useContext(UserContext);
@@ -18,6 +18,7 @@ const AddArtwork = () => {
 
   const fetchAccount = async () => {
     try {
+      setState({ ...initialState, loading: true });
       const { data } = await getUser.request({ stripeId: userStore.stripeId });
       setState((prevState) => ({
         ...prevState,
@@ -38,13 +39,14 @@ const AddArtwork = () => {
       <Grid container spacing={2}>
         <Grid item sm={12}>
           <MainHeading
-            text={"Add artwork"}
+            text="Add artwork"
             className={globalClasses.mainHeading}
           />
           <AddArtworkForm
             capabilities={state.capabilities}
             postArtwork={postArtwork}
             deleteEmptyValues={deleteEmptyValues}
+            loading={state.loading}
           />
         </Grid>
       </Grid>

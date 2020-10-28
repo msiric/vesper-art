@@ -8,6 +8,7 @@ import queryString from "query-string";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
+import EmptySection from "../../components/EmptySection/index.js";
 import ArtistSection from "../../containers/ArtistSection/index.js";
 import ArtworkActions from "../../containers/ArtworkActions/index.js";
 import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
@@ -421,7 +422,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
             </Grid>
           </>
         ) : (
-          "$TODO Ne postoji"
+          <EmptySection label="Artwork not found" page />
         )}
         <Modal
           open={state.modal.open}

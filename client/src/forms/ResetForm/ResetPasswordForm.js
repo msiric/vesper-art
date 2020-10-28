@@ -11,11 +11,10 @@ import React from "react";
 import { Link, useHistory } from "react-router-dom";
 import { postReset } from "../../services/auth.js";
 import { resetValidation } from "../../validation/reset.js";
-import ResetPasswordStyles from "./ResetPassword.style.js";
 
 const ResetPasswordForm = ({ match }) => {
   const history = useHistory();
-  const classes = ResetPasswordStyles();
+  const classes = {};
 
   return (
     <Formik

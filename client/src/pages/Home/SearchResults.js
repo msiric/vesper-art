@@ -21,8 +21,6 @@ const SearchResults = ({ match, location, history }) => {
     ...initialState,
   });
 
-  const classes = {};
-
   const fetchResults = async () => {
     try {
       setState({ ...initialState });
@@ -74,8 +72,8 @@ const SearchResults = ({ match, location, history }) => {
   }, [location]);
 
   return (
-    <Grid key={location.key} container className={classes.container}>
-      <Grid item xs={12} className={classes.grid}>
+    <Grid key={location.key} container>
+      <Grid item xs={12}>
         {state.loading ? (
           <LoadingSpinner />
         ) : state.results.length ? (
