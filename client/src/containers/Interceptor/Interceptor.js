@@ -149,9 +149,14 @@ const Interceptor = ({ children }) => {
           photo: data.user.photo,
           stripeId: data.user.stripeId,
           country: data.user.country,
-          // %TODO Check intents and saved are set properly
-          saved: data.user.saved,
-          intents: data.user.intents,
+          saved: data.user.saved.reduce(function (object, item) {
+            object[item] = true;
+            return object;
+          }, {}),
+          intents: data.user.intents.reduce(function (object, item) {
+            object[item.artworkId] = item.intentId;
+            return object;
+          }, {}),
         });
 
         eventsDispatch({
@@ -202,9 +207,14 @@ const Interceptor = ({ children }) => {
         photo: data.user.photo,
         stripeId: data.user.stripeId,
         country: data.user.country,
-        // %TODO Check intents and saved are set properly
-        saved: data.user.saved,
-        intents: data.user.intents,
+        saved: data.user.saved.reduce(function (object, item) {
+          object[item] = true;
+          return object;
+        }, {}),
+        intents: data.user.intents.reduce(function (object, item) {
+          object[item.artworkId] = item.intentId;
+          return object;
+        }, {}),
       });
       socket.emit("authenticateUser", {
         token: `Bearer ${data.accessToken}`,
