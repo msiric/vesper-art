@@ -100,10 +100,10 @@ const CheckoutSummary = ({
               }
               secondary={
                 <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography>
+                  <Typography className={classes.listContent}>
                     {state.summary.license
-                      ? `1 ${license} license`
-                      : "No licenses selected"}
+                      ? `${license} license`
+                      : "No license selected"}
                   </Typography>
                 </SkeletonWrapper>
               }
@@ -233,10 +233,10 @@ const CheckoutSummary = ({
               }
               secondary={
                 <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography>
+                  <Typography className={classes.listContent}>
                     {state.summary.license
-                      ? `1 ${state.summary.license} license`
-                      : "No licenses selected"}
+                      ? `${state.summary.license} license`
+                      : "No license selected"}
                   </Typography>
                 </SkeletonWrapper>
               }
