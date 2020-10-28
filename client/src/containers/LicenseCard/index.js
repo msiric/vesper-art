@@ -72,16 +72,6 @@ const LicenseCard = ({ license, loading }) => {
       searchable={false}
       pagination={false}
       addOptions={{ enabled: false, title: "", route: "" }}
-      editOptions={{
-        enabled: false,
-        title: "",
-        route: "",
-      }}
-      deleteOptions={{
-        enabled: false,
-        title: "",
-        route: "",
-      }}
     />
   );
 };

@@ -185,16 +185,6 @@ const Orders = () => {
             searchable={true}
             pagination={true}
             addOptions={{ enabled: false, title: "", route: "" }}
-            editOptions={{
-              enabled: false,
-              title: "",
-              route: "",
-            }}
-            deleteOptions={{
-              enabled: false,
-              title: "",
-              route: "",
-            }}
           />
         </Grid>
       </Grid>

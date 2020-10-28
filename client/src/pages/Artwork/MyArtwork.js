@@ -266,16 +266,6 @@ const MyArtwork = ({ location }) => {
               title: "Add artwork",
               route: "add_artwork",
             }}
-            editOptions={{
-              enabled: true,
-              title: "Edit artwork",
-              route: "edit_artwork",
-            }}
-            deleteOptions={{
-              enabled: true,
-              title: "Delete artwork",
-              route: "delete_artwork",
-            }}
           />
         </Grid>
       </Grid>
