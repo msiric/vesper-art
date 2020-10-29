@@ -51,6 +51,9 @@ const shareModalStyles = makeStyles((muiTheme) => ({
       },
     },
   },
+  modalPopper: {
+    zIndex: 10000,
+  },
 }));
 
 export default shareModalStyles;
