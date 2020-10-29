@@ -1,5 +1,5 @@
-import User from '../models/user.js';
-import { sendRefreshToken, updateAccessToken } from '../utils/auth.js';
+import User from "../models/user.js";
+import { sendRefreshToken, updateAccessToken } from "../utils/auth.js";
 
 export const addNewUser = async ({
   userEmail,
@@ -29,13 +29,14 @@ export const addNewUser = async ({
   newUser.country = null;
   newUser.origin = null;
   newUser.stripeId = null;
+  newUser.generated = false;
   newUser.active = true;
   return await newUser.save({ session });
 };
 
 export const logUserOut = (res) => {
-  sendRefreshToken(res, '');
-  return { accessToken: '', user: '' };
+  sendRefreshToken(res, "");
+  return { accessToken: "", user: "" };
 };
 
 export const refreshAccessToken = async (req, res, next) => {

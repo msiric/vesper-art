@@ -368,6 +368,7 @@ export const deactivateExistingUser = async ({ userId, session = null }) => {
         sales: null,
         stripeId: null,
         intents: null,
+        generated: false,
         active: false,
       },
     }

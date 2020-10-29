@@ -195,6 +195,7 @@ export const addNewArtwork = async ({
   const savedVersion = await newVersion.save({ session });
   const newArtwork = new Artwork();
   newArtwork.owner = userId;
+  newArtwork.generated = false;
   newArtwork.active = true;
   newArtwork.comments = [];
   newArtwork.current = savedVersion._id;
