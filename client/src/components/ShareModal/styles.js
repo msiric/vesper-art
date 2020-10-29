@@ -1,20 +1,55 @@
 import { makeStyles } from "@material-ui/core/styles";
+import { artepunktTheme } from "../../styles/theme";
 
 const shareModalStyles = makeStyles((muiTheme) => ({
-  root: {
-    width: "100%",
+  modalWrapper: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  accordion: {
-    minHeight: 80,
+  modalContent: {
+    backgroundColor: muiTheme.palette.background.paper,
+    boxShadow: muiTheme.shadows[5],
+    padding: muiTheme.spacing(2),
+    borderRadius: muiTheme.spacing(0.5),
   },
-  heading: {
-    fontSize: muiTheme.typography.pxToRem(15),
-    flexBasis: "33.33%",
-    flexShrink: 0,
+  modalTitle: {
+    paddingBottom: muiTheme.spacing(2),
   },
-  secondaryHeading: {
-    fontSize: muiTheme.typography.pxToRem(15),
-    color: muiTheme.palette.text.secondary,
+  modalActions: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexDirection: "column",
+    marginTop: muiTheme.spacing(4),
+  },
+  shareContainer: {
+    display: "flex",
+  },
+  socialButton: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    border: "1px solid !important",
+    borderRadius: "50%",
+    width: 48,
+    height: 48,
+    margin: 6,
+    cursor: "pointer",
+    boxSizing: "border-box",
+    "& > svg": {
+      "& > circle": {
+        fill: "transparent",
+      },
+    },
+    "&:hover": {
+      color: `${artepunktTheme.palette.primary.main} !important`,
+      "& > svg": {
+        "& > path": {
+          fill: `${artepunktTheme.palette.primary.main} !important`,
+        },
+      },
+    },
   },
 }));
 

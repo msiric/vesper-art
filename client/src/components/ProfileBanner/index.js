@@ -1,8 +1,7 @@
-import { Box, IconButton } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import {
   LocationOnRounded as LocationIcon,
   PersonRounded as MemberIcon,
-  ShareRounded as ShareIcon,
   StarRounded as StarIcon,
 } from "@material-ui/icons";
 import React from "react";
@@ -13,6 +12,7 @@ import {
   Card,
   Typography,
 } from "../../styles/theme.js";
+import ShareButton from "../ShareButton/index.js";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import profileBannerStyles from "./styles.js";
 
@@ -178,9 +178,7 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
             marginTop="6px"
             flexGrow="1"
           >
-            <IconButton onClick={() => null}>
-              <ShareIcon />
-            </IconButton>
+            <ShareButton link="" type="user" />
           </Box>
         </Box>
         <Box

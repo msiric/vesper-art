@@ -1,18 +1,18 @@
-import { Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
-import IconButton from '@material-ui/core/IconButton';
-import { EditRounded as EditIcon } from '@material-ui/icons';
-import React, { useContext } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { UserContext } from '../../contexts/User.js';
-import FavoriteButton from '../FavoriteButton/index.js';
-import ImageWrapper from '../ImageWrapper/index.js';
-import ShareButton from '../ShareButton/index.js';
-import SkeletonWrapper from '../SkeletonWrapper/index.js';
-import artworkCardStyles from './styles.js';
+import { Typography } from "@material-ui/core";
+import Box from "@material-ui/core/Box";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardHeader from "@material-ui/core/CardHeader";
+import IconButton from "@material-ui/core/IconButton";
+import { EditRounded as EditIcon } from "@material-ui/icons";
+import React, { useContext } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import { UserContext } from "../../contexts/User.js";
+import FavoriteButton from "../FavoriteButton/index.js";
+import ImageWrapper from "../ImageWrapper/index.js";
+import ShareButton from "../ShareButton/index.js";
+import SkeletonWrapper from "../SkeletonWrapper/index.js";
+import artworkCardStyles from "./styles.js";
 
 const ArtworkCard = ({ artwork, type, fixed, handleArtworkSave, loading }) => {
   const [userStore] = useContext(UserContext);
@@ -20,7 +20,7 @@ const ArtworkCard = ({ artwork, type, fixed, handleArtworkSave, loading }) => {
   const classes = artworkCardStyles();
 
   const item =
-    type !== 'version'
+    type !== "version"
       ? {
           _id: artwork._id,
           data: artwork.current,
@@ -96,10 +96,10 @@ const ArtworkCard = ({ artwork, type, fixed, handleArtworkSave, loading }) => {
       />
       <CardActions disableSpacing className={classes.artworkFooter}>
         <SkeletonWrapper loading={loading}>
-          <Box style={{ display: 'flex' }}>
+          <Box style={{ display: "flex" }}>
             {item.owner._id === userStore.id ? (
               <IconButton
-                aria-label={'Edit artwork'}
+                aria-label={"Edit artwork"}
                 component={RouterLink}
                 to={`/edit_artwork/${artwork._id}`}
                 className={classes.buttonColor}
@@ -113,7 +113,7 @@ const ArtworkCard = ({ artwork, type, fixed, handleArtworkSave, loading }) => {
                   favorited={userStore.saved[item._id]}
                   handleCallback={handleArtworkSave}
                 />,
-                <ShareButton artwork={artwork} />,
+                <ShareButton link={`artwork/${artwork._id}`} type="artwork" />,
               ]
             )}
           </Box>
@@ -123,18 +123,18 @@ const ArtworkCard = ({ artwork, type, fixed, handleArtworkSave, loading }) => {
               className={classes.artworkColor}
             >
               <Typography noWrap>
-                {item.data.availability === 'available'
-                  ? item.data.license === 'commercial'
-                    ? item.data.use === 'included'
+                {item.data.availability === "available"
+                  ? item.data.license === "commercial"
+                    ? item.data.use === "included"
                       ? `- / ${
                           item.data.commercial
                             ? `$${item.data.commercial}`
-                            : ' Free'
+                            : " Free"
                         }`
                       : `${
                           item.data.personal
                             ? `$${item.data.personal}`
-                            : ' Free'
+                            : " Free"
                         }
                     /
                       ${
@@ -142,12 +142,12 @@ const ArtworkCard = ({ artwork, type, fixed, handleArtworkSave, loading }) => {
                           ? `$${item.data.commercial}`
                           : item.data.personal
                           ? item.data.personal
-                          : ' Free'
+                          : " Free"
                       }`
                     : `${
-                        item.data.personal ? `$${item.data.personal}` : ' Free'
+                        item.data.personal ? `$${item.data.personal}` : " Free"
                       } / -`
-                  : 'Preview only'}
+                  : "Preview only"}
               </Typography>
             </IconButton>
           </Box>

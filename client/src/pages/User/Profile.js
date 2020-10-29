@@ -1,4 +1,4 @@
-import { Container, Grid, Modal } from "@material-ui/core";
+import { Container, Grid } from "@material-ui/core";
 import { withSnackbar } from "notistack";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -6,7 +6,6 @@ import EmptySection from "../../components/EmptySection/index.js";
 import ProfileArtwork from "../../containers/ProfileArtwork/index.js";
 import ProfileInfo from "../../containers/ProfileInfo/index.js";
 import { UserContext } from "../../contexts/User.js";
-import EditUserForm from "../../forms/UserForm/EditUserForm.js";
 import { getArtwork } from "../../services/artwork.js";
 import { getSaves, getUser } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
@@ -15,7 +14,6 @@ const initialState = {
   loading: true,
   user: { artwork: {}, savedArtwork: [] },
   tabs: { value: 0, revealed: false, loading: true },
-  modal: { open: false },
   scroll: {
     artwork: {
       hasMore: true,
@@ -240,13 +238,6 @@ const Profile = ({ match, location }) => {
             loading={state.loading}
           />
         </>
-        <Modal
-          open={state.modal.open}
-          handleClose={handleModalClose}
-          ariaLabel="Edit profile info"
-        >
-          <EditUserForm user={state.user} handleModalClose={handleModalClose} />
-        </Modal>
       </Grid>
     </Container>
   ) : (

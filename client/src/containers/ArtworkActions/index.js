@@ -69,7 +69,7 @@ const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
                 handleCallback={handleArtworkSave}
               />
             )}
-            <ShareButton artwork={artwork} labeled />
+            <ShareButton link="" type="artwork" labeled />
           </Box>
         </SkeletonWrapper>
       </CardActions>
