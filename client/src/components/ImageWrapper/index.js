@@ -38,7 +38,14 @@ const ImageWrapper = ({
         <img className={classes.imageContent} src={source} />
       </Box>
     ) : (
-      <Box style={{ position: "relative" }}>
+      <Box
+        style={{
+          position: "relative",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         <LoadingSpinner
           styles={{ position: "absolute", display: loading ? "flex" : "none" }}
         />

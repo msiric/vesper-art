@@ -59,7 +59,7 @@ const ArtworkPreview = ({ version = {}, height, loading }) => {
             styles={{
               boxShadow: `0px 0px 40px 15px rgba(${r},${g},${b},0.75)`,
               maxWidth: 700 / (version.height / version.width) - 54,
-              margin: "24px 0",
+              margin: "24px",
             }}
             loading={loading}
           />
