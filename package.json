@@ -9,7 +9,8 @@
     "start": "nodemon ./bin/www",
     "client": "cd client && npm start",
     "webhook": "stripe listen --forward-to localhost:5000/stripe/hooks",
-    "dev": "npx kill-port 3000 && npx kill-port 5000 && concurrently \"npm start\" \"npm run client\" \"npm run webhook\""
+    "dev": "npx kill-port 3000 && npx kill-port 5000 && set NODE_ENV=development&& concurrently \"npm start\" \"npm run client\" \"npm run webhook\"",
+    "prod": "set NODE_ENV=production&& node ./bin/www"
   },
   "author": "",
   "license": "ISC",
