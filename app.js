@@ -1,9 +1,11 @@
 import bodyParser from "body-parser";
+import compression from "compression";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
 import cors from "cors";
 import "dotenv/config.js";
 import express from "express";
+import helmet from "helmet";
 import createError from "http-errors";
 import mongoose from "mongoose";
 import morgan from "morgan";
@@ -15,6 +17,9 @@ import { rateLimiter } from "./utils/limiter.js";
 
 const app = express();
 const __dirname = path.resolve();
+
+app.use(compression());
+app.use(helmet());
 
 app.use(
   cors({
