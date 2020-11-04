@@ -38,6 +38,10 @@ const footerStyles = makeStyles((muiTheme) => ({
       },
     },
   },
+  logoDesktop: {
+    width: 100,
+    cursor: "pointer",
+  },
   footerDisclosures: {
     display: "flex",
     justifyContent: "flex-end",

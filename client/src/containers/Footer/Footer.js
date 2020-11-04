@@ -10,10 +10,14 @@ import {
   Typography,
 } from "@material-ui/core";
 import React from "react";
+import { useHistory } from "react-router-dom";
+import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import footerStyles from "./styles.js";
 
 const Footer = () => {
   const classes = footerStyles();
+
+  const history = useHistory();
 
   return (
     // old
@@ -91,7 +95,12 @@ const Footer = () => {
           <Divider />
           <Grid container className={classes.footerDisclaimers}>
             <Grid item xs={12} sm={6} className={classes.footerCopyright}>
-              <Typography>diagon</Typography>
+              <img
+                src={LogoDesktop}
+                alt="Logo"
+                onClick={() => history.push("/")}
+                className={classes.logoDesktop}
+              />
               <Typography>
                 Copyright &copy; {new Date().getFullYear()}
               </Typography>

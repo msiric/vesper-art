@@ -11,7 +11,6 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Typography,
 } from "@material-ui/core";
 import {
   AccountBoxRounded as UserIcon,
@@ -32,6 +31,8 @@ import { Field, Form, Formik } from "formik";
 import React, { useContext, useState } from "react";
 import { Link, withRouter } from "react-router-dom";
 import * as Yup from "yup";
+import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
+import LogoMobile from "../../assets/images/logo/logo-mobile.svg";
 import { EventsContext } from "../../contexts/Events.js";
 import { UserContext } from "../../contexts/User.js";
 import {
@@ -449,24 +450,18 @@ const Header = ({ socket, history }) => {
     <>
       <AppBar position="static" className={classes.headerContainer}>
         <Toolbar>
-          <Typography
-            component={Link}
-            to="/"
+          <img
+            src={LogoDesktop}
+            alt="Logo"
+            onClick={() => history.push("/")}
             className={classes.logoDesktop}
-            variant="h6"
-            noWrap
-          >
-            test
-          </Typography>
-          <Typography
-            component={Link}
-            to="/"
+          />
+          <img
+            src={LogoMobile}
+            alt="Logo"
+            onClick={() => history.push("/")}
             className={classes.logoMobile}
-            variant="h6"
-            noWrap
-          >
-            t
-          </Typography>
+          />
           <div className={classes.search}>
             <Formik
               initialValues={{

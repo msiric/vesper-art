@@ -42,14 +42,14 @@ code {
 }
 
 .SRLContainer:after {
-  content: "diagon";
-  width: 30px;
-  height: 30px;
-  /* background: red
-    url("http://www.gentleface.com/i/free_toolbar_icons_16x16_black.png")
-    no-repeat -30px -50px fixed; */
+  content: "";
+  display: block;
+  background-image: url("./assets/images/logo/logo-desktop.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 70px;
+  height: 20px;
   top: 5px;
   left: 5px;
   position: absolute;
-  display: inline-block;
 }

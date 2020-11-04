@@ -12,18 +12,18 @@ const HeaderStyles = makeStyles((muiTheme) => ({
     marginRight: muiTheme.spacing(2),
   },
   logoDesktop: {
+    width: 100,
     display: "none",
-    textDecoration: "none",
-    color: "#000000",
+    cursor: "pointer",
     [muiTheme.breakpoints.up("sm")]: {
       display: "block",
     },
   },
   logoMobile: {
     display: "block",
-    textDecoration: "none",
-    color: "#000000",
-    minWidth: 36,
+    width: 18,
+    marginRight: 16,
+    cursor: "pointer",
     [muiTheme.breakpoints.up("sm")]: {
       display: "none",
     },
