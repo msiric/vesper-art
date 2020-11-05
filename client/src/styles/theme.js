@@ -23,6 +23,7 @@ import {
   spacing,
   typography,
 } from "@material-ui/system";
+import Undraw from "react-undraw";
 
 export const Container = styled(MuiContainer)(compose(spacing, flexbox));
 export const Grid = styled(MuiGrid)(compose(spacing, flexbox));
@@ -108,6 +109,8 @@ export const artepunktTheme = createMuiTheme({
     },
   },
 });
+
+Undraw.defaultProps.primaryColor = artepunktTheme.palette.primary.main;
 
 artepunktTheme.overrides.MuiCardHeader = {
   title: {

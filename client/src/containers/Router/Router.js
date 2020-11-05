@@ -90,6 +90,31 @@ const routes = [
     exact: true,
     type: "public",
   },
+  {
+    path: "/how_it_works",
+    Component: lazy(() => import("../../pages/Home/HowItWorks")),
+    exact: true,
+    type: "public",
+  },
+  // Community router
+  {
+    path: "/selling",
+    Component: lazy(() => import("../../pages/Community/Selling")),
+    exact: true,
+    type: "public",
+  },
+  {
+    path: "/buying",
+    Component: lazy(() => import("../../pages/Community/Buying")),
+    exact: true,
+    type: "public",
+  },
+  {
+    path: "/safety",
+    Component: lazy(() => import("../../pages/Community/Safety")),
+    exact: true,
+    type: "public",
+  },
   // Notifications router
   // {
   //   path: "/notifications",
