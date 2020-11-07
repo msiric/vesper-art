@@ -28,17 +28,19 @@ const SELLER_ILLUSTRATIONS = [
   },
   {
     heading: "You're in charge",
-    paragraph: "",
+    paragraph:
+      "Fill out the information about your artwork and the licenses you will be offering. It's all up to you.",
     illustration: <MakeAdjustments />,
   },
   {
     heading: "Stay up to date",
-    paragraph: "",
+    paragraph:
+      "Every time someone comments, downloads, purchases or leaves a rating on your artwork, you will be notified",
     illustration: <ReceiveUpdates />,
   },
   {
     heading: "Track your progress",
-    paragraph: "",
+    paragraph: "Visit your dashboard to  ",
     illustration: <MonitorDashboard />,
   },
   {

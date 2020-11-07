@@ -7,13 +7,15 @@ const IllustrationCard = ({ heading, paragraph, illustration }) => {
   const classes = illustrationCardStyles();
 
   return (
-    <Card className={classes.illustrationContainer}>
-      <Typography fontWeight="bold" ml={2}>
-        {heading}
-      </Typography>
-      <Typography ml={2}>{paragraph}</Typography>
-      <Box className={classes.illustrationWrapper}>{illustration}</Box>
-    </Card>
+    <Box className={classes.illustrationContainer}>
+      <Box>
+        <Typography fontWeight="bold" ml={2} fontSize={24}>
+          {heading}
+        </Typography>
+        <Typography ml={2}>{paragraph}</Typography>
+      </Box>
+      <Card className={classes.illustrationWrapper}>{illustration}</Card>
+    </Box>
   );
 };
 
