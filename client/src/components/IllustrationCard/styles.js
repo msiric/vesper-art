@@ -9,6 +9,11 @@ const illustrationCardStyles = makeStyles((muiTheme) => ({
     alignItems: "center",
     margin: "128px 0",
   },
+  illustrationLabel: {
+    textAlign: "center",
+    width: "70%",
+    marginBottom: 36,
+  },
   illustrationWrapper: {
     width: "70%",
     paddingBottom: "70%",

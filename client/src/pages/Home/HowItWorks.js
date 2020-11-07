@@ -19,7 +19,7 @@ const SELLER_ILLUSTRATIONS = [
   {
     heading: "Unleash your creativity",
     paragraph:
-      "Set up your profile and work at your own pace. If and when you're ready, go through the onboarding process and you can start earning money from your art. It's that simple.",
+      "Set up your profile and work at your own pace. If and when you're ready, go through the onboarding process and you can start earning money from your art.",
     illustration: <WorkingArtist />,
   },
   {

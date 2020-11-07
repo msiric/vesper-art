@@ -8,7 +8,7 @@ const IllustrationCard = ({ heading, paragraph, illustration }) => {
 
   return (
     <Box className={classes.illustrationContainer}>
-      <Box>
+      <Box className={classes.illustrationLabel}>
         <Typography fontWeight="bold" ml={2} fontSize={24}>
           {heading}
         </Typography>
