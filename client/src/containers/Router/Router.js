@@ -98,19 +98,19 @@ const routes = [
   },
   // Community router
   {
-    path: "/selling",
+    path: "/start_selling",
     Component: lazy(() => import("../../pages/Community/Selling")),
     exact: true,
     type: "public",
   },
   {
-    path: "/buying",
+    path: "/start_buying",
     Component: lazy(() => import("../../pages/Community/Buying")),
     exact: true,
     type: "public",
   },
   {
-    path: "/safety",
+    path: "/community_guidelines",
     Component: lazy(() => import("../../pages/Community/Safety")),
     exact: true,
     type: "public",
