@@ -1,4 +1,4 @@
-import { Container, Grid, Typography } from "@material-ui/core";
+import { Button, Card, Container, Grid, Typography } from "@material-ui/core";
 import React from "react";
 import { ReactComponent as ArtworkGallery } from "../../assets/illustrations/artwork_gallery.svg";
 import { ReactComponent as BrowseArtwork } from "../../assets/illustrations/browse_artwork.svg";
@@ -13,6 +13,7 @@ import { ReactComponent as StripePayment } from "../../assets/illustrations/stri
 import { ReactComponent as UploadArtwork } from "../../assets/illustrations/upload_artwork.svg";
 import { ReactComponent as WorkingArtist } from "../../assets/illustrations/working_artist.svg";
 import IllustrationCard from "../../components/IllustrationCard";
+import MainHeading from "../../components/MainHeading";
 import globalStyles from "../../styles/global.js";
 
 const SELLER_ILLUSTRATIONS = [
@@ -98,27 +99,46 @@ const HowItWorks = () => {
 
   return (
     <Container className={globalClasses.gridContainer}>
-      <Grid container>
+      <Grid container spacing={2}>
         <Grid item sm={12}>
-          <Typography>How it works</Typography>
+          <MainHeading text="How it works" />
+          <Typography>
+            Get up to speed with how Diagon works in six steps from both the
+            seller's and buyer's perspective.
+          </Typography>
         </Grid>
         <Grid item sm={12} md={6}>
-          {SELLER_ILLUSTRATIONS.map((item) => (
-            <IllustrationCard
-              heading={item.heading}
-              paragraph={item.paragraph}
-              illustration={item.illustration}
-            />
-          ))}
+          <Card>
+            <MainHeading text="Sellers" style={{ textAlign: "center" }} />
+            {SELLER_ILLUSTRATIONS.map((item) => (
+              <IllustrationCard
+                heading={item.heading}
+                paragraph={item.paragraph}
+                illustration={item.illustration}
+              />
+            ))}
+          </Card>
         </Grid>
         <Grid item sm={12} md={6}>
-          {BUYER_ILLUSTRATIONS.map((item) => (
-            <IllustrationCard
-              heading={item.heading}
-              paragraph={item.paragraph}
-              illustration={item.illustration}
-            />
-          ))}
+          <Card>
+            <MainHeading text="Buyers" style={{ textAlign: "center" }} />
+            {BUYER_ILLUSTRATIONS.map((item) => (
+              <IllustrationCard
+                heading={item.heading}
+                paragraph={item.paragraph}
+                illustration={item.illustration}
+              />
+            ))}
+          </Card>
+        </Grid>
+        <Grid item sm={12}>
+          <Typography>Join the platform and get started</Typography>
+          <Button variant="outlined">Sign up</Button>
+          <Typography>
+            Want to learn more? Click on one of the pages below
+          </Typography>
+          <Button variant="outlined">Selling on Diagon</Button>
+          <Button variant="outlined">Buying on Diagon</Button>
         </Grid>
       </Grid>
     </Container>
