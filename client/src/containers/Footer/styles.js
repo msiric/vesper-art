@@ -20,6 +20,10 @@ const footerStyles = makeStyles((muiTheme) => ({
       },
     },
   },
+  footerLink: {
+    textDecoration: "initial",
+    color: "#fff",
+  },
   footerDisclaimers: {
     display: "flex",
     justifyContent: "space-between",

@@ -1,5 +1,6 @@
 import { Button, Card, Container, Grid, Typography } from "@material-ui/core";
 import React from "react";
+import { app } from "../../../../common/constants.js";
 import { ReactComponent as ArtworkGallery } from "../../assets/illustrations/artwork_gallery.svg";
 import { ReactComponent as BrowseArtwork } from "../../assets/illustrations/browse_artwork.svg";
 import { ReactComponent as DisplayCollection } from "../../assets/illustrations/display_collection.svg";
@@ -103,8 +104,8 @@ const HowItWorks = () => {
         <Grid item sm={12}>
           <MainHeading text="How it works" />
           <Typography>
-            Get up to speed with how Diagon works in six steps from both the
-            seller's and buyer's perspective.
+            {`Get up to speed with how ${app.name} works in six steps from both the
+            seller's and buyer's perspective.`}
           </Typography>
         </Grid>
         <Grid item sm={12} md={6}>
@@ -137,8 +138,8 @@ const HowItWorks = () => {
           <Typography>
             Want to learn more? Click on one of the pages below
           </Typography>
-          <Button variant="outlined">Selling on Diagon</Button>
-          <Button variant="outlined">Buying on Diagon</Button>
+          <Button variant="outlined">{`Selling on ${app.name}`}</Button>
+          <Button variant="outlined">{`Buying on ${app.name}`}</Button>
         </Grid>
       </Grid>
     </Container>

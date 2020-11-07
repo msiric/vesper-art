@@ -5,12 +5,12 @@ import {
   Link,
   List,
   ListItem,
-  ListItemText,
   Toolbar,
   Typography,
 } from "@material-ui/core";
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
+import { app } from "../../../../common/constants.js";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import footerStyles from "./styles.js";
 
@@ -43,13 +43,31 @@ const Footer = () => {
               </Typography>
               <List>
                 <ListItem disableGutters>
-                  <ListItemText primary="Home" />
+                  <Typography
+                    className={classes.footerLink}
+                    component={RouterLink}
+                    to="/"
+                  >
+                    Home
+                  </Typography>
                 </ListItem>
                 <ListItem disableGutters>
-                  <ListItemText primary="About us" />
+                  <Typography
+                    className={classes.footerLink}
+                    component={RouterLink}
+                    to="/about"
+                  >
+                    About
+                  </Typography>
                 </ListItem>
                 <ListItem disableGutters>
-                  <ListItemText primary="How it works" />
+                  <Typography
+                    className={classes.footerLink}
+                    component={RouterLink}
+                    to="/how_it_works"
+                  >
+                    How it works
+                  </Typography>
                 </ListItem>
               </List>
             </Grid>
@@ -59,13 +77,27 @@ const Footer = () => {
               </Typography>
               <List>
                 <ListItem disableGutters>
-                  <ListItemText primary="Selling on test" />
+                  <Typography
+                    className={classes.footerLink}
+                    component={RouterLink}
+                    to="/start_selling"
+                  >{`Selling on ${app.name}`}</Typography>
                 </ListItem>
                 <ListItem disableGutters>
-                  <ListItemText primary="Buying on test" />
+                  <Typography
+                    className={classes.footerLink}
+                    component={RouterLink}
+                    to="/start_buying"
+                  >{`Buying on ${app.name}`}</Typography>
                 </ListItem>
                 <ListItem disableGutters>
-                  <ListItemText primary="Trust &amp; safety" />
+                  <Typography
+                    className={classes.footerLink}
+                    component={RouterLink}
+                    to="/community_guidelines"
+                  >
+                    Trust &amp; safety
+                  </Typography>
                 </ListItem>
               </List>
             </Grid>
@@ -75,10 +107,22 @@ const Footer = () => {
               </Typography>
               <List>
                 <ListItem disableGutters>
-                  <ListItemText primary="FAQ &amp; support" />
+                  <Typography
+                    className={classes.footerLink}
+                    component={RouterLink}
+                    to="/support"
+                  >
+                    FAQ &amp; support
+                  </Typography>
                 </ListItem>
                 <ListItem disableGutters>
-                  <ListItemText primary="Contact us" />
+                  <Typography
+                    className={classes.footerLink}
+                    component={RouterLink}
+                    to="/contact"
+                  >
+                    Contact us
+                  </Typography>
                 </ListItem>
               </List>
             </Grid>
@@ -87,8 +131,16 @@ const Footer = () => {
                 Connect
               </Typography>
               <List>
-                <ListItem disableGutters></ListItem>
-                <ListItem disableGutters></ListItem>
+                <Typography
+                  className={classes.footerLink}
+                  component={RouterLink}
+                  to=""
+                ></Typography>
+                <Typography
+                  className={classes.footerLink}
+                  component={RouterLink}
+                  to=""
+                ></Typography>
               </List>
             </Grid>
           </Grid>
@@ -101,7 +153,11 @@ const Footer = () => {
                 onClick={() => history.push("/")}
                 className={classes.logoDesktop}
               />
-              <Typography>
+              <Typography
+                className={classes.footerLink}
+                component={RouterLink}
+                to=""
+              >
                 Copyright &copy; {new Date().getFullYear()}
               </Typography>
             </Grid>
