@@ -104,8 +104,9 @@ const HowItWorks = () => {
         <Grid item sm={12}>
           <MainHeading text="How it works" />
           <Typography>
-            {`Get up to speed with how ${app.name} works in six steps from both the
-            seller's and buyer's perspective.`}
+            {`${app.name} is a digital art marketplace that allows art lovers to view, download and purchase art from other artists while protecting both sides 
+            by utilizing a system based on licenses as a means of transparency and non-repudiation while maintaining user anonymity.
+            Get up to speed with how ${app.name} works in six simple steps from the perspective of both parties involved`}
           </Typography>
         </Grid>
         <Grid item sm={12} md={6}>

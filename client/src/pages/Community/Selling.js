@@ -14,7 +14,7 @@ const Selling = () => {
           <MainHeading text={`Selling on ${app.name}`} />
           <Typography>Signing Up</Typography>
           <Typography>
-            {`Signing up is free and required for users to start selling on 
+            {`Signing up is free and required for users to start selling art on 
             ${app.name}. When you sign up, you will be able to download, 
             purchase and upload your own artwork. 
             Your art can be published as preview only, which allows users to only view your 
