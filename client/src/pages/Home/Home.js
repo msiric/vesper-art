@@ -1,7 +1,7 @@
-import { Grid } from "@material-ui/core";
+import { Box, Card, Grid } from "@material-ui/core";
 import { withSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
-import SelectInput from "../../components/SelectInput/index.js";
+import Banner from "../../assets/images/banner/banner.jpg";
 import ArtworkPanel from "../../containers/ArtworkPanel/index.js";
 import { getArtwork } from "../../services/artwork.js";
 
@@ -98,21 +98,35 @@ const Home = ({ location }) => {
 
   return (
     <Grid key={location.key} container>
-      <Grid item xs={12}>
-        <SelectInput
-          name="artworkType"
-          label="Type"
-          options={[
-            { value: "" },
-            { value: "commercial", text: "Commercial artwork" },
-            { value: "free", text: "Free of charge" },
-            { value: "unavailable", text: "Only for preview" },
-          ]}
-          margin="dense"
-          variant="outlined"
-        />
+      <Grid item xs={12} md={9}>
+        <Box
+          style={{
+            height: 360,
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            backgroundSize: "cover",
+            backgroundPosition: "center center",
+            backgroundRepeat: "no-repeat",
+            backgroundImage: `url(${Banner})`,
+            opacity: 0.3,
+          }}
+        ></Box>
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} md={3}>
+        <Card
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "100%",
+          }}
+        ></Card>
+      </Grid>
+      <Grid item xs={12} style={{ marginTop: 32 }}>
         {state.loading || state.artwork.length ? (
           <ArtworkPanel
             elements={state.artwork}
