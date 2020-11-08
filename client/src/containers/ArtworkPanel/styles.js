@@ -17,6 +17,9 @@ const artworkPanelStyles = makeStyles((muiTheme) => ({
   },
   masonryColumn: {
     paddingLeft: 30,
+    "&:first-child": {
+      paddingLeft: 0,
+    },
     backgroundClip: "padding-box",
     "&>div": {
       marginBottom: 30,
