@@ -11,8 +11,6 @@ const artworkPanelStyles = makeStyles((muiTheme) => ({
   },
   masonryContainer: {
     display: "flex",
-    marginLeft: -30,
-    padding: "0 30px",
     width: "auto",
   },
   masonryColumn: {

@@ -10,8 +10,6 @@ const galleryPanelStyles = makeStyles((muiTheme) => ({
   },
   masonryContainer: {
     display: "flex",
-    marginLeft: -30,
-    padding: 24,
     width: "auto",
   },
   masonryColumn: {
