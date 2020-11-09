@@ -11,6 +11,8 @@ import { UserContext } from "../../contexts/User.js";
 import PriceInput from "../../shared/PriceInput/PriceInput.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import { Button, Card, CardActions, CardContent } from "../../styles/theme.js";
+import { artworkValidation } from "../../validation/artwork.js";
+import { updateArtwork } from "../../validation/media.js";
 
 /* import AddArtworkStyles from "../../components/Artwork/AddArtwork.style.js"; */
 
@@ -28,21 +30,20 @@ const AddArtworkForm = ({
   const classes = {};
 
   const handleSubmit = async (values) => {
-    console.log(values);
-    // const data = deleteEmptyValues(values);
-    // const formData = new FormData();
-    // for (let value of Object.keys(data)) {
-    //   formData.append(value, data[value]);
-    // }
-    // try {
-    //   await postArtwork.request({ data: formData });
-    //   history.push({
-    //     pathname: "/",
-    //     state: { message: "Artwork published" },
-    //   });
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    const data = deleteEmptyValues(values);
+    const formData = new FormData();
+    for (let value of Object.keys(data)) {
+      formData.append(value, data[value]);
+    }
+    try {
+      await postArtwork.request({ data: formData });
+      history.push({
+        pathname: "/",
+        state: { message: "Artwork published" },
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -61,6 +62,7 @@ const AddArtworkForm = ({
           artworkDescription: "",
           artworkTags: [],
         }}
+        validationSchema={artworkValidation.concat(updateArtwork)}
         onSubmit={handleSubmit}
       >
         {({ values, errors, touched, isSubmitting }) => (

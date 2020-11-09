@@ -50,6 +50,7 @@ const TagInput = ({
       getOptionLabel={(option) => option.title || option}
       getOptionSelected={(value1, value2) => console.log(value1, value2)}
       onChange={(e, values) => setState({ tags: values })}
+      onBlur={handleBlur}
       filterSelectedOptions
       renderInput={(params) => {
         params.inputProps.onKeyDown = handleKeyDown;
