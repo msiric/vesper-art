@@ -66,7 +66,11 @@ const EditArtworkForm = ({
       const data = deleteEmptyValues(formatValues(values));
       const formData = new FormData();
       for (let value of Object.keys(data)) {
-        formData.append(value, data[value]);
+        if (Array.isArray(data[value])) {
+          formData.append(value, JSON.stringify(data[value]));
+        } else {
+          formData.append(value, data[value]);
+        }
       }
       await patchArtwork.request({
         artworkId: version.artwork,

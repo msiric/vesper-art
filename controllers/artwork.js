@@ -183,7 +183,6 @@ export const updateArtwork = async ({
     fileType: "artwork",
   });
   const formattedData = formatArtworkValues(artworkData);
-  console.log("ARTWORK DATA", artworkData, formattedData);
   const { error } = artworkValidator(sanitizeData(formattedData));
   if (error) throw createError(400, error);
   const foundArtwork = await fetchArtworkByOwner({

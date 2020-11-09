@@ -53,6 +53,7 @@ const schema = Joi.object().keys({
     }),
   }),
   artworkDescription: Joi.string().required(),
+  artworkTags: Joi.array().items(Joi.string()).min(1).max(5).required(),
   /*   artworkMedia: Joi.string().required(),
   artworkCover: Joi.string().required(), */
   // artworkCategory: Joi.string().required(),

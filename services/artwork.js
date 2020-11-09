@@ -192,6 +192,7 @@ export const addNewArtwork = async ({
   newVersion.commercial = artworkData.artworkCommercial;
   newVersion.category = artworkData.artworkCategory || "";
   newVersion.description = artworkData.artworkDescription || "";
+  newVersion.tags = artworkData.artworkTags || [];
   const savedVersion = await newVersion.save({ session });
   const newArtwork = new Artwork();
   newArtwork.owner = userId;
@@ -233,6 +234,7 @@ export const addNewVersion = async ({
     artworkData.artworkCategory || prevArtwork.artworkCategory;
   newVersion.description =
     artworkData.artworkDescription || prevArtwork.artworkDescription;
+  newVersion.tags = artworkData.artworkTags || prevArtwork.artworkTags;
   newVersion.artwork = prevArtwork.artwork;
   return await newVersion.save({ session });
 };

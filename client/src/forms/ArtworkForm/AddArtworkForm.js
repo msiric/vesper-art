@@ -33,7 +33,11 @@ const AddArtworkForm = ({
     const data = deleteEmptyValues(values);
     const formData = new FormData();
     for (let value of Object.keys(data)) {
-      formData.append(value, data[value]);
+      if (Array.isArray(data[value])) {
+        formData.append(value, JSON.stringify(data[value]));
+      } else {
+        formData.append(value, data[value]);
+      }
     }
     try {
       await postArtwork.request({ data: formData });
