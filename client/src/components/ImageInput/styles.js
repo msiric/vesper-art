@@ -18,6 +18,12 @@ const imageInputStyles = makeStyles((muiTheme) => ({
   },
   imageInputAvatar: {
     cursor: "pointer",
+    width: "100%",
+    height: "100%",
+    height: 400,
+    maxWidth: 600,
+    position: "relative",
+    backgroundColor: "transparent",
     "&:hover": {
       "& $overlayRemove": {
         opacity: 1,
@@ -25,9 +31,9 @@ const imageInputStyles = makeStyles((muiTheme) => ({
     },
   },
   imageInputPreview: {
-    height: "100%",
-    width: "100%",
-    objectFit: "cover",
+    maxWidth: "100%",
+    maxHeight: "100%",
+    position: "absolute",
   },
   imageInputLoading: {
     position: "absolute",
