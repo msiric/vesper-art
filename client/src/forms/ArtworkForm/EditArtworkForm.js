@@ -9,6 +9,7 @@ import { useHistory } from "react-router-dom";
 import HelpBox from "../../components/HelpBox/index.js";
 import ImageInput from "../../components/ImageInput/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import TagInput from "../../components/TagInput/index.js";
 import { UserContext } from "../../contexts/User.js";
 import PriceInput from "../../shared/PriceInput/PriceInput.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
@@ -340,6 +341,42 @@ const EditArtworkForm = ({
                           label="Description"
                           helperText={meta.touched && meta.error}
                           error={meta.touched && Boolean(meta.error)}
+                          margin="dense"
+                          variant="outlined"
+                          fullWidth
+                          multiline
+                        />
+                      )}
+                    </Field>
+                  </SkeletonWrapper>
+                  <SkeletonWrapper
+                    variant="text"
+                    loading={loading}
+                    width="100%"
+                  >
+                    <Field name="artworkTags">
+                      {({
+                        field,
+                        form: {
+                          touched,
+                          errors,
+                          setFieldValue,
+                          setFieldTouched,
+                        },
+                        meta,
+                      }) => (
+                        <TagInput
+                          {...field}
+                          label="Tags"
+                          helperText={meta.touched && meta.error}
+                          error={meta.touched && Boolean(meta.error)}
+                          handleChange={(e, item) =>
+                            setFieldValue("artworkTags", item || [])
+                          }
+                          handleBlur={() =>
+                            setFieldTouched("artworkTags", true)
+                          }
+                          limit={5}
                           margin="dense"
                           variant="outlined"
                           fullWidth
