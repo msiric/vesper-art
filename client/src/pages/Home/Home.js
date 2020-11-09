@@ -96,14 +96,21 @@ const Home = ({ location }) => {
     }
   };
 
-  return (
+  return [
     <Grid
       key={location.key}
       container
-      style={{ padding: 32, width: "100%", margin: 0 }}
+      style={{ width: "100%", margin: 0, padding: "0 32px" }}
       spacing={3}
     >
       <HomeBanner />
+    </Grid>,
+    <Grid
+      key={location.key}
+      container
+      style={{ width: "100%", margin: 0 }}
+      spacing={3}
+    >
       <Grid item xs={12} style={{ marginTop: 32 }}>
         {state.loading || state.artwork.length ? (
           <ArtworkPanel
@@ -117,8 +124,8 @@ const Home = ({ location }) => {
           "No artwork"
         )}
       </Grid>
-    </Grid>
-  );
+    </Grid>,
+  ];
 };
 
 export default withSnackbar(Home);
