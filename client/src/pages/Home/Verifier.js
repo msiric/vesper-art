@@ -32,6 +32,25 @@ const Verifier = () => {
 
   const globalClasses = globalStyles();
 
+  const handleSubmit = async (values, { resetForm }) => {
+    try {
+      setState((prevState) => ({
+        ...prevState,
+        loading: true,
+      }));
+      const { data } = await postVerifier.request({ data: values });
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        license: data.license,
+      }));
+      resetForm();
+    } catch (err) {
+    } finally {
+      setState((prevState) => ({ ...prevState, loading: false }));
+    }
+  };
+
   return (
     <Container className={globalClasses.gridContainer}>
       <Grid container>
@@ -42,19 +61,7 @@ const Verifier = () => {
             }}
             enableReinitialize
             validationSchema={fingerprintValidation}
-            onSubmit={async (values, { resetForm }) => {
-              setState((prevState) => ({
-                ...prevState,
-                loading: true,
-              }));
-              const { data } = await postVerifier.request({ data: values });
-              setState((prevState) => ({
-                ...prevState,
-                loading: false,
-                license: data.license,
-              }));
-              resetForm();
-            }}
+            onSubmit={handleSubmit}
           >
             {({ values, errors, touched }) => (
               <Form>
