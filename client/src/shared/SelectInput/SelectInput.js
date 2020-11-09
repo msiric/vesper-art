@@ -1,11 +1,11 @@
-import React from 'react';
 import {
   FormControl,
   FormHelperText,
-  Select,
-  MenuItem,
   InputLabel,
-} from '@material-ui/core';
+  MenuItem,
+  Select,
+} from "@material-ui/core";
+import React from "react";
 
 const SelectInput = ({
   name,
@@ -34,7 +34,7 @@ const SelectInput = ({
         }}
       >
         {options.map((item, index) =>
-          item.value === '' ? (
+          item.value === "" ? (
             <MenuItem key={index} value={item.value}>
               <em>None</em>
             </MenuItem>
