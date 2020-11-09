@@ -53,17 +53,26 @@ const HomeBanner = () => {
           <Box
             style={{
               display: "flex",
-              justifyContent: "space-evenly",
+              justifyContent: "center",
               alignItems: "center",
               width: "100%",
             }}
           >
             {!userStore.authenticated && (
-              <Button component={RouterLink} to="/signup">
+              <Button
+                component={RouterLink}
+                to="/signup"
+                style={{ margin: "0 6px" }}
+              >
                 Sign up
               </Button>
             )}
-            <Button component={RouterLink} to="/how_it_works">
+            <Button
+              component={RouterLink}
+              to="/how_it_works"
+              color="default"
+              style={{ margin: "0 6px" }}
+            >
               How it works
             </Button>
           </Box>
