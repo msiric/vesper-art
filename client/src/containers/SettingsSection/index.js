@@ -105,6 +105,8 @@ const SettingsSection = ({
                           error={meta.touched && Boolean(meta.error)}
                           preview={user.photo}
                           shape="circle"
+                          height={150}
+                          width={150}
                           noEmpty={true}
                           loading={loading}
                         />

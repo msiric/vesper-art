@@ -106,6 +106,8 @@ const AddArtworkForm = ({
                     error={meta.touched && Boolean(meta.error)}
                     preview={false}
                     shape="square"
+                    height={400}
+                    width="100%"
                     noEmpty={false}
                     loading={loading}
                   />

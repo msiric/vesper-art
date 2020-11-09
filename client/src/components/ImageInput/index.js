@@ -18,6 +18,8 @@ const ImageInput = ({
   title,
   preview,
   shape,
+  height,
+  width,
   noEmpty,
   loading,
 }) => {
@@ -91,13 +93,11 @@ const ImageInput = ({
       <SkeletonWrapper loading={loading} variant={shape}>
         <Avatar
           m="auto"
-          width={shape === "square" ? 400 : 160}
-          height={shape === "square" ? "100%" : 160}
-          minHeight={shape === "square" ? 400 : "auto"}
           borderColor={artepunktTheme.palette.primary.main}
           className={classes.imageInputAvatar}
           onClick={showFileUpload}
           variant={shape}
+          style={{ height, width }}
         >
           {state.loading ? (
             <Box className={classes.imageInputLoading}>

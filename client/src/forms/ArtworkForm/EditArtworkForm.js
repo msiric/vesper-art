@@ -154,6 +154,8 @@ const EditArtworkForm = ({
                         error={meta.touched && Boolean(meta.error)}
                         preview={version.cover}
                         shape="square"
+                        height={400}
+                        width="100%"
                         noEmpty={true}
                         loading={loading}
                       />

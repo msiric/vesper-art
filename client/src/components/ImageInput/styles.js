@@ -18,9 +18,7 @@ const imageInputStyles = makeStyles((muiTheme) => ({
   },
   imageInputAvatar: {
     cursor: "pointer",
-    width: "100%",
     height: "100%",
-    height: 400,
     maxWidth: 600,
     position: "relative",
     backgroundColor: "transparent",
@@ -32,7 +30,8 @@ const imageInputStyles = makeStyles((muiTheme) => ({
   },
   imageInputPreview: {
     maxWidth: "100%",
-    maxHeight: "100%",
+    height: "100%",
+    objectFit: "cover",
     position: "absolute",
   },
   imageInputLoading: {
