@@ -1,7 +1,7 @@
 import { Card, Grid, TextField } from "@material-ui/core";
 import {
   AddCircleRounded as UploadIcon,
-  DeleteRounded as DeleteIcon,
+  DeleteRounded as DeleteIcon
 } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
 import React, { useContext } from "react";
@@ -17,9 +17,9 @@ import {
   Button,
   CardActions,
   CardContent,
-  Container,
+  Container
 } from "../../styles/theme.js";
-import { deleteEmptyValues } from "../../utils/helpers.js";
+import { deleteEmptyValues, formatValues } from "../../utils/helpers.js";
 import { artworkValidation } from "../../validation/artwork.js";
 import { updateArtwork } from "../../validation/media.js";
 
@@ -35,31 +35,7 @@ const EditArtworkForm = ({
   const history = useHistory();
   const classes = {};
 
-  const formatValues = (data) => {
-    return {
-      ...data,
-      artworkType:
-        data.artworkAvailability === "available" ? data.artworkType : "",
-      artworkLicense:
-        data.artworkAvailability === "available" ? data.artworkLicense : "",
-      artworkPersonal:
-        data.artworkAvailability === "available" &&
-        data.artworkType === "commercial"
-          ? data.artworkPersonal
-          : "",
-      artworkUse:
-        data.artworkAvailability === "available" &&
-        data.artworkLicense === "commercial"
-          ? data.artworkUse
-          : "",
-      artworkCommercial:
-        data.artworkAvailability === "available" &&
-        data.artworkLicense === "commercial" &&
-        data.artworkUse === "separate"
-          ? data.artworkCommercial
-          : "",
-    };
-  };
+
 
   const handleSubmit = async (values) => {
     try {

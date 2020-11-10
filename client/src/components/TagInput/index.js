@@ -40,6 +40,10 @@ const TagInput = ({
     handleChange(null, state.tags);
   }, [state.tags]);
 
+  useEffect(() => {
+    setState({ tags: value });
+  }, [value]);
+
   return (
     <Autocomplete
       {...other}

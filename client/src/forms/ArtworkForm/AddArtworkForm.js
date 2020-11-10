@@ -8,20 +8,17 @@ import ImageInput from "../../components/ImageInput/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import TagInput from "../../components/TagInput/index.js";
 import { UserContext } from "../../contexts/User.js";
+import { postArtwork } from "../../services/artwork.js";
 import PriceInput from "../../shared/PriceInput/PriceInput.js";
 import SelectInput from "../../shared/SelectInput/SelectInput.js";
 import { Button, Card, CardActions, CardContent } from "../../styles/theme.js";
+import { deleteEmptyValues, formatValues } from "../../utils/helpers.js";
 import { artworkValidation } from "../../validation/artwork.js";
-import { updateArtwork } from "../../validation/media.js";
+import { addArtwork } from "../../validation/media.js";
 
 /* import AddArtworkStyles from "../../components/Artwork/AddArtwork.style.js"; */
 
-const AddArtworkForm = ({
-  capabilities,
-  postArtwork,
-  deleteEmptyValues,
-  loading,
-}) => {
+const AddArtworkForm = ({ capabilities, loading }) => {
   const [userStore] = useContext(UserContext);
 
   const history = useHistory();
@@ -30,7 +27,7 @@ const AddArtworkForm = ({
   const classes = {};
 
   const handleSubmit = async (values) => {
-    const data = deleteEmptyValues(values);
+    const data = deleteEmptyValues(formatValues(values));
     const formData = new FormData();
     for (let value of Object.keys(data)) {
       if (Array.isArray(data[value])) {
@@ -66,7 +63,7 @@ const AddArtworkForm = ({
           artworkDescription: "",
           artworkTags: [],
         }}
-        validationSchema={artworkValidation.concat(updateArtwork)}
+        validationSchema={artworkValidation.concat(addArtwork)}
         onSubmit={handleSubmit}
       >
         {({ values, errors, touched, isSubmitting }) => (

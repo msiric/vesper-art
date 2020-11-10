@@ -2,11 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import MainHeading from "../../components/MainHeading/index.js";
 import { UserContext } from "../../contexts/User.js";
 import AddArtworkForm from "../../forms/ArtworkForm/AddArtworkForm.js";
-import { postArtwork } from "../../services/artwork.js";
 import { getUser } from "../../services/stripe.js";
 import globalStyles from "../../styles/global.js";
 import { Container, Grid } from "../../styles/theme.js";
-import { deleteEmptyValues } from "../../utils/helpers.js";
 
 const initialState = { loading: false, capabilities: {} };
 
@@ -44,8 +42,6 @@ const AddArtwork = () => {
           />
           <AddArtworkForm
             capabilities={state.capabilities}
-            postArtwork={postArtwork}
-            deleteEmptyValues={deleteEmptyValues}
             loading={state.loading}
           />
         </Grid>

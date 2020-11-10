@@ -122,47 +122,57 @@ export const postNewArtwork = async ({
     fileName: artworkFilename,
     fileType: "artwork",
   });
-  const formattedData = formatArtworkValues(artworkData);
-  const { error } = artworkValidator(sanitizeData(formattedData));
-  if (error) throw createError(400, error);
-  if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
-    const foundUser = await fetchUserById({
+  if (
+    artworkUpload.fileCover &&
+    artworkUpload.fileMedia &&
+    artworkUpload.fileHeight &&
+    artworkUpload.fileWidth &&
+    artworkUpload.fileDominant &&
+    artworkUpload.fileOrientation
+  ) {
+    const formattedData = formatArtworkValues(artworkData);
+    const { error } = artworkValidator(sanitizeData(formattedData));
+    if (error) throw createError(400, error);
+    if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
+      const foundUser = await fetchUserById({
+        userId,
+        session,
+      });
+      if (!foundUser) throw createError(400, "User not found");
+      if (!foundUser.stripeId)
+        throw createError(
+          400,
+          "Please complete the Stripe onboarding process before making your artwork commercially available"
+        );
+      const foundAccount = await fetchStripeAccount({
+        accountId: foundUser.stripeId,
+      });
+      if (
+        (formattedData.artworkPersonal || formattedData.artworkCommercial) &&
+        // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
+        (foundAccount.capabilities.card_payments !== "active" ||
+          foundAccount.capabilities.transfers !== "active")
+      ) {
+        throw createError(
+          400,
+          "Please complete your Stripe account before making your artwork commercially available"
+        );
+      }
+    }
+    const savedVersion = await addNewArtwork({
+      artworkData: formattedData,
+      artworkUpload,
       userId,
       session,
     });
-    if (!foundUser) throw createError(400, "User not found");
-    if (!foundUser.stripeId)
-      throw createError(
-        400,
-        "Please complete the Stripe onboarding process before making your artwork commercially available"
-      );
-    const foundAccount = await fetchStripeAccount({
-      accountId: foundUser.stripeId,
+    await addUserArtwork({
+      artworkId: savedVersion.artwork,
+      userId,
+      session,
     });
-    if (
-      (formattedData.artworkPersonal || formattedData.artworkCommercial) &&
-      // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
-      (foundAccount.capabilities.card_payments !== "active" ||
-        foundAccount.capabilities.transfers !== "active")
-    ) {
-      throw createError(
-        400,
-        "Please complete your Stripe account before making your artwork commercially available"
-      );
-    }
+    return { redirect: "/my_artwork" };
   }
-  const savedVersion = await addNewArtwork({
-    artworkData: formattedData,
-    artworkUpload,
-    userId,
-    session,
-  });
-  await addUserArtwork({
-    artworkId: savedVersion.artwork,
-    userId,
-    session,
-  });
-  return { redirect: "/my_artwork" };
+  throw createError(400, "Please attach an artwork media before submitting");
 };
 
 // $TODO

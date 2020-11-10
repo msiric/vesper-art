@@ -90,7 +90,12 @@ const ImageInput = ({
           </Typography>
         </SkeletonWrapper>
       )}
-      <SkeletonWrapper loading={loading} variant={shape}>
+      <SkeletonWrapper
+        loading={loading}
+        variant={shape}
+        height="100%"
+        width="100%"
+      >
         <Avatar
           m="auto"
           borderColor={artepunktTheme.palette.primary.main}
