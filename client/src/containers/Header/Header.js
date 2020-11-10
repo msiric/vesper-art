@@ -10,7 +10,7 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  Toolbar,
+  Toolbar
 } from "@material-ui/core";
 import {
   AccountBoxRounded as UserIcon,
@@ -25,7 +25,7 @@ import {
   SearchRounded as SearchIcon,
   SettingsRounded as SettingsIcon,
   ShoppingBasketRounded as OrdersIcon,
-  ViewCarouselRounded as GalleryIcon,
+  ViewCarouselRounded as GalleryIcon
 } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
 import React, { useContext, useState } from "react";
@@ -39,7 +39,7 @@ import {
   getNotifications,
   patchRead,
   patchUnread,
-  postLogout,
+  postLogout
 } from "../../services/user.js";
 import HeaderStyles from "./Header.style.js";
 import NotificationsMenu from "./NotificationsMenu.js";

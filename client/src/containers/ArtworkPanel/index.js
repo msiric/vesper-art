@@ -124,7 +124,7 @@ const ArtworkPanel = ({
   };
 
   return (
-    <Box style={{ width: "100%", height: "100%", padding: "16px 32px" }}>
+    <Box style={{ width: "100%", height: "100%", padding: "16px 0" }}>
       <InfiniteScroll
         className={classes.scroller}
         dataLength={elements.length}

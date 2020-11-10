@@ -1,7 +1,7 @@
-import createError from 'http-errors';
-import { fetchArtworkResults, fetchUserResults } from '../services/search.js';
-import { formatParams, sanitizeData } from '../utils/helpers.js';
-import searchValidator from '../validation/search.js';
+import createError from "http-errors";
+import { fetchArtworkResults, fetchUserResults } from "../services/search.js";
+import { formatParams, sanitizeData } from "../utils/helpers.js";
+import searchValidator from "../validation/search.js";
 
 export const getResults = async ({
   searchQuery,
@@ -14,16 +14,16 @@ export const getResults = async ({
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   let foundResults = [];
   let foundType = null;
-  if (searchType === 'artwork') {
+  if (searchType === "artwork") {
     foundResults = await fetchArtworkResults({
       searchQuery,
       dataSkip,
       dataLimit,
     });
-    foundType = 'artwork';
-  } else if (searchType === 'users') {
+    foundType = "artwork";
+  } else if (searchType === "users") {
     foundResults = await fetchUserResults({ searchQuery, dataSkip, dataLimit });
-    foundType = 'users';
+    foundType = "users";
   }
   return {
     searchData: foundResults,

@@ -1,4 +1,4 @@
-import { Grid, Paper } from "@material-ui/core";
+import { Box, Grid, Paper } from "@material-ui/core";
 import React from "react";
 import EmptySection from "../../components/EmptySection/index.js";
 import SwipeCard from "../../components/SwipeCard/index.js";
@@ -39,14 +39,22 @@ const ProfileArtwork = ({
                   iterable: true,
                   content: user.artwork.length,
                   component: (
-                    <ArtworkPanel
-                      elements={user.artwork}
-                      hasMore={null}
-                      loadMore={loadMoreArtwork}
-                      type="artwork"
-                      fixed={true}
-                      loading={loading}
-                    />
+                    <Box
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        padding: "0 32px",
+                      }}
+                    >
+                      <ArtworkPanel
+                        elements={user.artwork}
+                        hasMore={null}
+                        loadMore={loadMoreArtwork}
+                        type="artwork"
+                        fixed={true}
+                        loading={loading}
+                      />
+                    </Box>
                   ),
                   error: (
                     <EmptySection
@@ -61,14 +69,22 @@ const ProfileArtwork = ({
                   iterable: true,
                   content: user.savedArtwork.length,
                   component: (
-                    <ArtworkPanel
-                      elements={user.savedArtwork}
-                      hasMore={null}
-                      loadMore={loadMoreSaves}
-                      type="artwork"
-                      fixed={true}
-                      loading={loading}
-                    />
+                    <Box
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        padding: "0 32px",
+                      }}
+                    >
+                      <ArtworkPanel
+                        elements={user.savedArtwork}
+                        hasMore={null}
+                        loadMore={loadMoreSaves}
+                        type="artwork"
+                        fixed={true}
+                        loading={loading}
+                      />
+                    </Box>
                   ),
                   error: (
                     <EmptySection
@@ -103,14 +119,22 @@ const ProfileArtwork = ({
                   iterable: true,
                   content: user.artwork.length,
                   component: (
-                    <ArtworkPanel
-                      elements={user.artwork}
-                      hasMore={null}
-                      loadMore={loadMoreArtwork}
-                      type="artwork"
-                      fixed={true}
-                      loading={loading}
-                    />
+                    <Box
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        padding: "0 32px",
+                      }}
+                    >
+                      <ArtworkPanel
+                        elements={user.artwork}
+                        hasMore={null}
+                        loadMore={loadMoreArtwork}
+                        type="artwork"
+                        fixed={true}
+                        loading={loading}
+                      />
+                    </Box>
                   ),
                   error: (
                     <EmptySection
@@ -125,14 +149,22 @@ const ProfileArtwork = ({
                   iterable: true,
                   content: user.savedArtwork.length,
                   component: (
-                    <ArtworkPanel
-                      elements={user.savedArtwork}
-                      hasMore={null}
-                      loadMore={loadMoreSaves}
-                      type="artwork"
-                      fixed={true}
-                      loading={loading}
-                    />
+                    <Box
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        padding: "0 32px",
+                      }}
+                    >
+                      <ArtworkPanel
+                        elements={user.savedArtwork}
+                        hasMore={null}
+                        loadMore={loadMoreSaves}
+                        type="artwork"
+                        fixed={true}
+                        loading={loading}
+                      />
+                    </Box>
                   ),
                   error: (
                     <EmptySection

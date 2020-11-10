@@ -73,7 +73,7 @@ const SearchResults = ({ match, location, history }) => {
 
   return (
     <Grid key={location.key} container>
-      <Grid item xs={12}>
+      <Grid item xs={12} style={{ padding: "0 32px" }}>
         {state.loading ? (
           <LoadingSpinner />
         ) : state.results.length ? (
