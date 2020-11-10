@@ -57,7 +57,7 @@ const DataTable = ({
     onRowClick: (data) => redirect && history.push(`/${redirect}/${data[0]}`),
     textLabels: {
       body: {
-        noMatch: loading ? <LoadingSpinner padding={154} /> : empty,
+        noMatch: loading ? <LoadingSpinner styles={{ padding: 154 }} /> : empty,
       },
     },
   };

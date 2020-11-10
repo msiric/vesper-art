@@ -72,19 +72,19 @@ const MyArtwork = ({ location }) => {
     history.push(`/edit_artwork/${artworkId}`);
   };
 
-  const handleArtworkDelete = async (artworkId) => {
+  const handleArtworkDelete = async () => {
     setState({
       ...state,
       loading: true,
     });
     try {
       await deleteArtwork.request({
-        artworkId,
+        artworkId: state.modal.id,
       });
       setState({
         ...state,
         loading: false,
-        artwork: state.artwork.filter((item) => item._id !== artworkId),
+        artwork: state.artwork.filter((item) => item._id !== state.modal.id),
         modal: {
           ...state.modal,
           id: null,

@@ -14,7 +14,23 @@ import ShareButton from "../ShareButton/index.js";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import artworkCardStyles from "./styles.js";
 
-const ArtworkCard = ({ artwork, type, fixed, handleArtworkSave, loading }) => {
+const initialProps = {
+  artwork: {
+    _id: null,
+    current: { cover: null, height: null, width: null },
+    owner: {},
+    saves: null,
+  },
+  type: null,
+};
+
+const ArtworkCard = ({
+  artwork = initialProps.artwork,
+  type = initialProps.type,
+  fixed,
+  handleArtworkSave,
+  loading,
+}) => {
   const [userStore] = useContext(UserContext);
 
   const classes = artworkCardStyles();

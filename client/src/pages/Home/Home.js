@@ -77,7 +77,7 @@ const Home = ({ location }) => {
 
   useEffect(() => {
     fetchArtwork();
-  }, [location]);
+  }, [location.key]);
 
   const loadMore = async () => {
     try {
