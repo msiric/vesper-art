@@ -111,6 +111,7 @@ const EditArtworkForm = ({
                   : "",
               artworkCategory: version.category || "",
               artworkDescription: version.description || "",
+              artworkTags: version.tags || [],
             }}
             validationSchema={artworkValidation.concat(updateArtwork)}
             enableReinitialize={true}
