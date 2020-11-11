@@ -1,4 +1,4 @@
-import { TextField } from "@material-ui/core";
+import { FormControl, FormHelperText, TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
 import tagInputStyles from "./styles";
@@ -45,41 +45,45 @@ const TagInput = ({
   }, [value]);
 
   return (
-    <Autocomplete
-      {...other}
-      multiple
-      freeSolo
-      options={[]}
-      value={state.tags}
-      getOptionLabel={(option) => option.title || option}
-      getOptionSelected={(value1, value2) => console.log(value1, value2)}
-      onChange={(e, values) => setState({ tags: values })}
-      onBlur={handleBlur}
-      filterSelectedOptions
-      renderInput={(params) => {
-        params.inputProps.onKeyDown = handleKeyDown;
-        return (
-          <TextField
-            {...params}
-            variant="outlined"
-            label="Tags"
-            placeholder={
-              !state.tags.length
-                ? ""
-                : state.tags.length >= limit
-                ? `You already selected ${limit} tags`
-                : "Add a new tag"
-            }
-            margin="dense"
-            inputProps={{
-              ...params.inputProps,
-              disabled: state.tags.length >= limit,
-            }}
-            fullWidth
-          />
-        );
-      }}
-    />
+    <FormControl variant="outlined" margin="dense" fullWidth>
+      <Autocomplete
+        {...other}
+        multiple
+        freeSolo
+        options={[]}
+        value={state.tags}
+        getOptionLabel={(option) => option.title || option}
+        getOptionSelected={(value1, value2) => console.log(value1, value2)}
+        onChange={(e, values) => setState({ tags: values })}
+        onBlur={handleBlur}
+        filterSelectedOptions
+        renderInput={(params) => {
+          params.inputProps.onKeyDown = handleKeyDown;
+          return (
+            <TextField
+              {...params}
+              variant="outlined"
+              label="Tags"
+              placeholder={
+                !state.tags.length
+                  ? ""
+                  : state.tags.length >= limit
+                  ? `You already selected ${limit} tags`
+                  : "Add a new tag"
+              }
+              margin="dense"
+              inputProps={{
+                ...params.inputProps,
+                disabled: state.tags.length >= limit,
+              }}
+              error={error}
+              fullWidth
+            />
+          );
+        }}
+      />
+      <FormHelperText error>{helperText}</FormHelperText>
+    </FormControl>
   );
 };
 

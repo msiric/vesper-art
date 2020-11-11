@@ -46,7 +46,6 @@ const AddArtworkForm = ({ capabilities, loading }) => {
       console.log(err);
     }
   };
-
   return (
     <Card width="100%">
       <Formik
@@ -66,142 +65,60 @@ const AddArtworkForm = ({ capabilities, loading }) => {
         validationSchema={artworkValidation.concat(addArtwork)}
         onSubmit={handleSubmit}
       >
-        {({ values, errors, touched, isSubmitting }) => (
-          <Form className={classes.card}>
-            {!userStore.stripeId ? (
-              <HelpBox
-                type="alert"
-                label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
-              />
-            ) : capabilities.cardPayments === "pending" ||
-              capabilities.platformPayments === "pending" ? (
-              <HelpBox
-                type="alert"
-                label="To make your artwork commercially available, please wait for Stripe to verify the information you entered"
-              />
-            ) : capabilities.cardPayments !== "active" ||
-              capabilities.platformPayments !== "active" ? (
-              <HelpBox
-                type="alert"
-                label="To make your artwork commercially available, finish entering your Stripe account information"
-              />
-            ) : null}
-            <CardContent>
-              <Field name="artworkMedia">
-                {({
-                  field,
-                  form: { setFieldValue, setFieldTouched },
-                  meta,
-                }) => (
-                  <ImageInput
-                    title="Media"
-                    meta={meta}
-                    field={field}
-                    setFieldValue={setFieldValue}
-                    setFieldTouched={setFieldTouched}
-                    helperText={meta.touched && meta.error}
-                    error={meta.touched && Boolean(meta.error)}
-                    preview={false}
-                    shape="square"
-                    height={400}
-                    width="100%"
-                    noEmpty={false}
-                    loading={loading}
-                  />
-                )}
-              </Field>
-              <SkeletonWrapper variant="text" loading={loading} width="100%">
-                <Field name="artworkTitle">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      type="text"
-                      label="Title"
+        {({ values, errors, touched, isSubmitting }) => {
+          console.log(values);
+
+          return (
+            <Form className={classes.card}>
+              {!userStore.stripeId ? (
+                <HelpBox
+                  type="alert"
+                  label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
+                />
+              ) : capabilities.cardPayments === "pending" ||
+                capabilities.platformPayments === "pending" ? (
+                <HelpBox
+                  type="alert"
+                  label="To make your artwork commercially available, please wait for Stripe to verify the information you entered"
+                />
+              ) : capabilities.cardPayments !== "active" ||
+                capabilities.platformPayments !== "active" ? (
+                <HelpBox
+                  type="alert"
+                  label="To make your artwork commercially available, finish entering your Stripe account information"
+                />
+              ) : null}
+              <CardContent>
+                <Field name="artworkMedia">
+                  {({
+                    field,
+                    form: { setFieldValue, setFieldTouched },
+                    meta,
+                  }) => (
+                    <ImageInput
+                      title="Media"
+                      meta={meta}
+                      field={field}
+                      setFieldValue={setFieldValue}
+                      setFieldTouched={setFieldTouched}
                       helperText={meta.touched && meta.error}
                       error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
+                      preview={false}
+                      shape="square"
+                      height={400}
+                      width="100%"
+                      noEmpty={false}
+                      loading={loading}
                     />
                   )}
                 </Field>
-              </SkeletonWrapper>
-              <SkeletonWrapper variant="text" loading={loading} width="100%">
-                <Field name="artworkAvailability">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <SelectInput
-                      {...field}
-                      label="Availability"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      options={[
-                        { value: "" },
-                        { value: "available", text: "Available for download" },
-                        { value: "unavailable", text: "Only for preview" },
-                      ]}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                  )}
-                </Field>
-              </SkeletonWrapper>
-              {values.artworkAvailability === "available" && (
-                <Field name="artworkType">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <SelectInput
-                      {...field}
-                      label="Type"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      options={[
-                        { value: "" },
-                        {
-                          value: "commercial",
-                          text: "Commercial",
-                          disabled:
-                            userStore.stripeId &&
-                            capabilities.cardPayments === "active" &&
-                            capabilities.platformPayments === "active"
-                              ? false
-                              : true,
-                        },
-                        { value: "free", text: "Free" },
-                      ]}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                  )}
-                </Field>
-              )}
-              {values.artworkAvailability === "available" && (
-                <Field name="artworkLicense">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <SelectInput
-                      {...field}
-                      label="License"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      options={[
-                        { value: "" },
-                        { value: "commercial", text: "Commercial" },
-                        { value: "personal", text: "Personal" },
-                      ]}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                    />
-                  )}
-                </Field>
-              )}
-              {values.artworkAvailability === "available" &&
-                values.artworkType === "commercial" && (
-                  <Field name="artworkPersonal">
+                <SkeletonWrapper variant="text" loading={loading} width="100%">
+                  <Field name="artworkTitle">
                     {({ field, form: { touched, errors }, meta }) => (
-                      <PriceInput
+                      <TextField
                         {...field}
-                        label="Price"
+                        type="text"
+                        label="Title"
                         helperText={meta.touched && meta.error}
                         error={meta.touched && Boolean(meta.error)}
                         margin="dense"
@@ -210,21 +127,43 @@ const AddArtworkForm = ({ capabilities, loading }) => {
                       />
                     )}
                   </Field>
-                )}
-              {values.artworkAvailability === "available" &&
-                values.artworkLicense === "commercial" && (
-                  <Field name="artworkUse">
+                </SkeletonWrapper>
+                <SkeletonWrapper variant="text" loading={loading} width="100%">
+                  <Field name="artworkAvailability">
                     {({ field, form: { touched, errors }, meta }) => (
                       <SelectInput
                         {...field}
-                        label="Commercial use"
+                        label="Availability"
                         helperText={meta.touched && meta.error}
                         error={meta.touched && Boolean(meta.error)}
                         options={[
                           { value: "" },
                           {
-                            value: "separate",
-                            text: "Charge commercial license separately",
+                            value: "available",
+                            text: "Available for download",
+                          },
+                          { value: "unavailable", text: "Only for preview" },
+                        ]}
+                        margin="dense"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    )}
+                  </Field>
+                </SkeletonWrapper>
+                {values.artworkAvailability === "available" && (
+                  <Field name="artworkType">
+                    {({ field, form: { touched, errors }, meta }) => (
+                      <SelectInput
+                        {...field}
+                        label="Type"
+                        helperText={meta.touched && meta.error}
+                        error={meta.touched && Boolean(meta.error)}
+                        options={[
+                          { value: "" },
+                          {
+                            value: "commercial",
+                            text: "Commercial",
                             disabled:
                               userStore.stripeId &&
                               capabilities.cardPayments === "active" &&
@@ -232,16 +171,7 @@ const AddArtworkForm = ({ capabilities, loading }) => {
                                 ? false
                                 : true,
                           },
-                          values.artworkAvailability === "available" &&
-                          values.artworkType === "commercial"
-                            ? {
-                                value: "included",
-                                text: "Include commercial license in the price",
-                              }
-                            : {
-                                value: "included",
-                                text: "Offer commercial license free of charge",
-                              },
+                          { value: "free", text: "Free" },
                         ]}
                         margin="dense"
                         variant="outlined"
@@ -250,16 +180,19 @@ const AddArtworkForm = ({ capabilities, loading }) => {
                     )}
                   </Field>
                 )}
-              {values.artworkAvailability === "available" &&
-                values.artworkLicense === "commercial" &&
-                values.artworkUse === "separate" && (
-                  <Field name="artworkCommercial">
+                {values.artworkAvailability === "available" && (
+                  <Field name="artworkLicense">
                     {({ field, form: { touched, errors }, meta }) => (
-                      <PriceInput
+                      <SelectInput
                         {...field}
-                        label="Commercial license"
+                        label="License"
                         helperText={meta.touched && meta.error}
                         error={meta.touched && Boolean(meta.error)}
+                        options={[
+                          { value: "" },
+                          { value: "commercial", text: "Commercial" },
+                          { value: "personal", text: "Personal" },
+                        ]}
                         margin="dense"
                         variant="outlined"
                         fullWidth
@@ -267,64 +200,139 @@ const AddArtworkForm = ({ capabilities, loading }) => {
                     )}
                   </Field>
                 )}
-              <SkeletonWrapper variant="text" loading={loading} width="100%">
-                <Field name="artworkDescription">
-                  {({ field, form: { touched, errors }, meta }) => (
-                    <TextField
-                      {...field}
-                      type="text"
-                      label="Description"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                    />
+                {values.artworkAvailability === "available" &&
+                  values.artworkType === "commercial" && (
+                    <Field name="artworkPersonal">
+                      {({ field, form: { touched, errors }, meta }) => (
+                        <PriceInput
+                          {...field}
+                          label="Price"
+                          helperText={meta.touched && meta.error}
+                          error={meta.touched && Boolean(meta.error)}
+                          margin="dense"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      )}
+                    </Field>
                   )}
-                </Field>
-              </SkeletonWrapper>
-              <SkeletonWrapper variant="text" loading={loading} width="100%">
-                <Field name="artworkTags">
-                  {({
-                    field,
-                    form: { touched, errors, setFieldValue, setFieldTouched },
-                    meta,
-                  }) => (
-                    <TagInput
-                      {...field}
-                      label="Tags"
-                      helperText={meta.touched && meta.error}
-                      error={meta.touched && Boolean(meta.error)}
-                      handleChange={(e, item) =>
-                        setFieldValue("artworkTags", item || [])
-                      }
-                      handleBlur={() => setFieldTouched("artworkTags", true)}
-                      limit={5}
-                      margin="dense"
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                    />
+                {values.artworkAvailability === "available" &&
+                  values.artworkLicense === "commercial" && (
+                    <Field name="artworkUse">
+                      {({ field, form: { touched, errors }, meta }) => (
+                        <SelectInput
+                          {...field}
+                          label="Commercial use"
+                          helperText={meta.touched && meta.error}
+                          error={meta.touched && Boolean(meta.error)}
+                          options={[
+                            { value: "" },
+                            {
+                              value: "separate",
+                              text: "Charge commercial license separately",
+                              disabled:
+                                userStore.stripeId &&
+                                capabilities.cardPayments === "active" &&
+                                capabilities.platformPayments === "active"
+                                  ? false
+                                  : true,
+                            },
+                            values.artworkAvailability === "available" &&
+                            values.artworkType === "commercial"
+                              ? {
+                                  value: "included",
+                                  text:
+                                    "Include commercial license in the price",
+                                }
+                              : {
+                                  value: "included",
+                                  text:
+                                    "Offer commercial license free of charge",
+                                },
+                          ]}
+                          margin="dense"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      )}
+                    </Field>
                   )}
-                </Field>
-              </SkeletonWrapper>
-            </CardContent>
-            <CardActions className={classes.actions}>
-              <SkeletonWrapper loading={loading}>
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  color="primary"
-                  disabled={isSubmitting}
-                  startIcon={<UploadIcon />}
-                >
-                  Publish
-                </Button>
-              </SkeletonWrapper>
-            </CardActions>
-          </Form>
-        )}
+                {values.artworkAvailability === "available" &&
+                  values.artworkLicense === "commercial" &&
+                  values.artworkUse === "separate" && (
+                    <Field name="artworkCommercial">
+                      {({ field, form: { touched, errors }, meta }) => (
+                        <PriceInput
+                          {...field}
+                          label="Commercial license"
+                          helperText={meta.touched && meta.error}
+                          error={meta.touched && Boolean(meta.error)}
+                          margin="dense"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      )}
+                    </Field>
+                  )}
+                <SkeletonWrapper variant="text" loading={loading} width="100%">
+                  <Field name="artworkDescription">
+                    {({ field, form: { touched, errors }, meta }) => (
+                      <TextField
+                        {...field}
+                        type="text"
+                        label="Description"
+                        helperText={meta.touched && meta.error}
+                        error={meta.touched && Boolean(meta.error)}
+                        margin="dense"
+                        variant="outlined"
+                        fullWidth
+                        multiline
+                      />
+                    )}
+                  </Field>
+                </SkeletonWrapper>
+                <SkeletonWrapper variant="text" loading={loading} width="100%">
+                  <Field name="artworkTags">
+                    {({
+                      field,
+                      form: { touched, errors, setFieldValue, setFieldTouched },
+                      meta,
+                    }) => (
+                      <TagInput
+                        {...field}
+                        label="Tags"
+                        helperText={meta.touched && meta.error}
+                        error={meta.touched && Boolean(meta.error)}
+                        handleChange={(e, item) =>
+                          setFieldValue("artworkTags", item || [])
+                        }
+                        handleBlur={() => setFieldTouched("artworkTags", true)}
+                        limit={5}
+                        margin="dense"
+                        variant="outlined"
+                        fullWidth
+                        multiline
+                      />
+                    )}
+                  </Field>
+                </SkeletonWrapper>
+              </CardContent>
+              <CardActions className={classes.actions}>
+                <SkeletonWrapper loading={loading}>
+                  <Button
+                    type="submit"
+                    variant="outlined"
+                    color="primary"
+                    disabled={isSubmitting}
+                    startIcon={<UploadIcon />}
+                  >
+                    Publish
+                  </Button>
+                </SkeletonWrapper>
+              </CardActions>
+            </Form>
+          );
+        }}
       </Formik>
     </Card>
   );
