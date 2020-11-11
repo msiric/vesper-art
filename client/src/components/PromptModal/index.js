@@ -18,6 +18,7 @@ const PromptModal = ({
   promptTitle,
   promptConfirm,
   promptCancel,
+  children,
 }) => {
   const classes = promptModalStyles();
 
@@ -38,6 +39,7 @@ const PromptModal = ({
         <Box className={classes.modalContent}>
           <Typography className={classes.modalTitle}>{promptTitle}</Typography>
           <Divider />
+          {children && <Box>{children}</Box>}
           <Box className={classes.modalActions}>
             <Button
               type="button"

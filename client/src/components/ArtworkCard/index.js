@@ -38,22 +38,22 @@ const ArtworkCard = ({
   const item =
     type !== "version"
       ? {
-          _id: artwork._id,
-          data: artwork.current,
-          owner: artwork.owner,
-          saves: artwork.saves,
-          src: artwork.current.cover,
-          height: artwork.current.height,
-          width: artwork.current.width,
+          _id: artwork._id ? artwork._id : "",
+          data: artwork._id ? artwork.current : {},
+          owner: artwork._id ? artwork.owner : {},
+          saves: artwork._id ? artwork.saves : [],
+          src: artwork._id ? artwork.current.cover : "",
+          height: artwork._id ? artwork.current.height : "",
+          width: artwork._id ? artwork.current.width : "",
         }
       : {
-          _id: artwork.artwork._id,
-          data: artwork,
-          owner: artwork.artwork.owner,
-          saves: artwork.artwork.saves,
-          src: artwork.cover,
-          height: artwork.height,
-          width: artwork.width,
+          _id: artwork._id ? artwork.artwork._id : "",
+          data: artwork._id ? artwork : {},
+          owner: artwork._id ? artwork.artwork.owner : {},
+          saves: artwork._id ? artwork.artwork.saves : [],
+          src: artwork._id ? artwork.cover : "",
+          height: artwork._id ? artwork.height : "",
+          width: artwork._id ? artwork.width : "",
         };
 
   return (

@@ -119,15 +119,17 @@ export const updateUserOrigin = async ({ userId, userOrigin, session }) => {
 
 export const updateUserProfile = async ({
   userId,
-  userData,
   userPath,
   userFilename,
+  userMimetype,
+  userData,
   session,
 }) => {
   // $TODO Validate data passed to upload
   const avatarUpload = await finalizeMediaUpload({
     filePath: userPath,
     fileName: userFilename,
+    fileMimetype: userMimetype,
     fileType: "user",
   });
   const { error } = profileValidator(sanitizeData(userData));

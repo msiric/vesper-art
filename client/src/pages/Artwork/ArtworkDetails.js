@@ -9,6 +9,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
 import EmptySection from "../../components/EmptySection/index.js";
+import PromptModal from "../../components/PromptModal/index.js";
 import ArtistSection from "../../containers/ArtistSection/index.js";
 import ArtworkActions from "../../containers/ArtworkActions/index.js";
 import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
@@ -439,6 +440,16 @@ const ArtworkDetails = ({ match, location, socket }) => {
             handleModalClose={handleModalClose}
           />
         </Modal>
+        {/* Needs to be integrated with the license form */}
+        <PromptModal
+          open={state.modal.open}
+          handleConfirm={handleDownload}
+          handleClose={handleModalClose}
+          ariaLabel="License information"
+          promptTitle="License information"
+          promptConfirm="Download"
+          promptCancel="Close"
+        />
       </Grid>
       {/* $TODO Separate component */}
       <Popover

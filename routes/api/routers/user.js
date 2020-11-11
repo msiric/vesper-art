@@ -69,6 +69,7 @@ router
       ...req.params,
       userPath: req.file ? req.file.path : "",
       userFilename: req.file ? req.file.filename : "",
+      userMimetype: req.file ? req.file.mimetype : "",
       userData: { ...req.body },
     }))
   )

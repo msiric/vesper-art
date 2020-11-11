@@ -113,6 +113,7 @@ export const postNewArtwork = async ({
   userId,
   artworkPath,
   artworkFilename,
+  artworkMimetype,
   artworkData,
   session,
 }) => {
@@ -120,6 +121,7 @@ export const postNewArtwork = async ({
   const artworkUpload = await finalizeMediaUpload({
     filePath: artworkPath,
     fileName: artworkFilename,
+    mimeType: artworkMimetype,
     fileType: "artwork",
   });
   if (
@@ -181,15 +183,17 @@ export const postNewArtwork = async ({
 export const updateArtwork = async ({
   userId,
   artworkId,
-  artworkData,
+  artworkMimetype,
   artworkPath,
   artworkFilename,
+  artworkData,
   session,
 }) => {
   // $TODO Validate data passed to upload
   const artworkUpload = await finalizeMediaUpload({
     filePath: artworkPath,
     fileName: artworkFilename,
+    mimeType: artworkMimetype,
     fileType: "artwork",
   });
   const formattedData = formatArtworkValues(artworkData);
