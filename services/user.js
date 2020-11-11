@@ -118,6 +118,7 @@ export const fetchUserProfile = async ({
     dataSkip !== undefined && dataLimit !== undefined
       ? {
           path: "artwork",
+          match: { active: true },
           options: {
             limit: dataLimit,
             skip: dataSkip,
@@ -128,6 +129,7 @@ export const fetchUserProfile = async ({
         }
       : {
           path: "artwork",
+          match: { active: true },
           populate: {
             path: "owner current",
           },

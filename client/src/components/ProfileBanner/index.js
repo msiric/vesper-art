@@ -50,8 +50,7 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
             <SkeletonWrapper
               loading={loading}
               variant="circle"
-              width={130}
-              height={130}
+              styles={{ paddingTop: 130, width: 130 }}
             >
               <Avatar
                 alt={user.name}

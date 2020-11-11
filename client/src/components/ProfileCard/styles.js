@@ -19,11 +19,16 @@ const profileCardStyles = makeStyles((muiTheme) => ({
     textAlign: "center",
     textDecoration: "none",
   },
-  profileCardAvatar: {
-    textAlign: "center",
+  profileCardWrapper: {
     width: "100px",
     height: "100px",
     borderRadius: "50%",
+    overflow: "hidden",
+  },
+  profileCardAvatar: {
+    textAlign: "center",
+    width: "100%",
+    height: "100%",
   },
 }));
 

@@ -44,7 +44,11 @@ const CommentCard = ({
         }`}
       >
         <ListItemAvatar>
-          <SkeletonWrapper loading={loading} variant="circle">
+          <SkeletonWrapper
+            loading={loading}
+            variant="circle"
+            styles={{ paddingTop: 40, width: 40 }}
+          >
             <Avatar
               alt={comment.owner.name}
               src={comment.owner.photo}
@@ -86,7 +90,7 @@ const CommentCard = ({
                 handleCommentClose={handleCommentClose}
               />
             ) : (
-              <SkeletonWrapper variant="text" loading={loading} width="100%">
+              <SkeletonWrapper variant="text" loading={loading} width="90%">
                 <Typography>
                   {comment.content || "Could not load content"}
                 </Typography>

@@ -59,7 +59,7 @@ const Profile = ({ match, location }) => {
           user: {
             ...data.user,
             editable: true,
-            artwork: data.artwork,
+            artwork: data.artwork.filter((item) => item.current !== null),
             savedArtwork: [],
           },
           scroll: {
@@ -83,7 +83,7 @@ const Profile = ({ match, location }) => {
           user: {
             ...data.user,
             editable: false,
-            artwork: data.artwork,
+            artwork: data.artwork.filter((item) => item.current !== null),
             savedArtwork: [],
           },
           scroll: {

@@ -23,15 +23,22 @@ const ProfileCard = ({ user, styles, loading }) => {
       style={{ ...styles }}
       loading={loading}
     >
-      <SkeletonWrapper loading={loading} variant="circle">
-        <Avatar
-          component={RouterLink}
-          to={`/user/${user.name}`}
-          alt={user.name}
-          src={user.photo}
-          title={user.name}
-          className={classes.profileCardAvatar}
-        />
+      <SkeletonWrapper
+        loading={loading}
+        variant="circle"
+        className={classes.profileCardWrapper}
+        styles={{ paddingTop: 100, width: 100 }}
+      >
+        <Box className={classes.profileCardWrapper}>
+          <Avatar
+            component={RouterLink}
+            to={`/user/${user.name}`}
+            alt={user.name}
+            src={user.photo}
+            title={user.name}
+            className={classes.profileCardAvatar}
+          />
+        </Box>
       </SkeletonWrapper>
       <CardContent
         style={{
