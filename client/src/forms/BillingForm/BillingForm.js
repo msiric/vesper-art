@@ -222,3 +222,53 @@ const BillingForm = () => {
 };
 
 export default BillingForm;
+
+<Box>
+  <TextInput
+    name="billingName"
+    type="text"
+    label="First name"
+    errors={errors}
+  />
+  <TextInput
+    name="billingSurname"
+    type="text"
+    label="Last name"
+    errors={errors}
+  />
+  <TextInput
+    name="billingEmail"
+    type="text"
+    label="Email address"
+    errors={errors}
+  />
+  <TextInput
+    name="billingAddress"
+    type="text"
+    label="Street address"
+    errors={errors}
+  />
+  <TextInput
+    name="billingZip"
+    type="text"
+    label="Email address"
+    errors={errors}
+  />
+  <TextInput name="billingCity" type="text" label="City" errors={errors} />
+  <TextInput
+    name="billingCountry"
+    type="text"
+    label="Country"
+    errors={errors}
+  />
+  <AsyncButton
+    type="submit"
+    fullWidth
+    variant="outlined"
+    color="primary"
+    padding
+    loading={formState.isSubmitting}
+  >
+    Update
+  </AsyncButton>
+</Box>;
