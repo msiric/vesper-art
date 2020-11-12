@@ -10,7 +10,7 @@ const __rootdir = path.resolve();
 dotenv.config({
   path: path.resolve(
     __rootdir,
-    `.env.${process.env.NODE_ENV || ".env.development"}`
+    `.env.${process.env.NODE_ENV || "development"}`
   ),
 });
 
