@@ -1,7 +1,7 @@
 import { Card, Grid, TextField } from "@material-ui/core";
 import {
   AddCircleRounded as UploadIcon,
-  DeleteRounded as DeleteIcon
+  DeleteRounded as DeleteIcon,
 } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
 import React, { useContext } from "react";
@@ -17,7 +17,7 @@ import {
   Button,
   CardActions,
   CardContent,
-  Container
+  Container,
 } from "../../styles/theme.js";
 import { deleteEmptyValues, formatValues } from "../../utils/helpers.js";
 import { artworkValidation } from "../../validation/artwork.js";
@@ -34,8 +34,6 @@ const EditArtworkForm = ({
   const [userStore] = useContext(UserContext);
   const history = useHistory();
   const classes = {};
-
-
 
   const handleSubmit = async (values) => {
     try {
