@@ -49,7 +49,7 @@ const lightboxStyles = makeStyles({
   "@global": {
     ".SRLElementWrapper": {
       "&>img": {
-        boxShadow: (props) => props.boxShadow,
+        boxShadow: ({ boxShadow }) => boxShadow,
       },
     },
   },

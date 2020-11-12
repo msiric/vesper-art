@@ -7,6 +7,7 @@ const AuthLayoutStyles = makeStyles((muiTheme) => ({
     flexFlow: "column",
     minHeight: "100vh",
     height: "100%",
+    justifyContent: "space-between",
   },
   appBackdrop: {
     display: "flex",

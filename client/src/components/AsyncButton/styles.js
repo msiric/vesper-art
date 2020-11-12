@@ -1,19 +1,18 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme";
 
-const submitButtonStyles = makeStyles((muiTheme) => ({
+const asyncButtonStyles = makeStyles((muiTheme) => ({
   buttonContainer: {
-    margin: muiTheme.spacing(1),
     position: "relative",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: ({ padding }) => `${padding}px 0`,
   },
   buttonProgress: {
     color: artepunktTheme.palette.primary.main,
     position: "absolute",
-    top: "50%",
-    left: "50%",
-    marginTop: -12,
-    marginLeft: -12,
   },
 }));
 
-export default submitButtonStyles;
+export default asyncButtonStyles;

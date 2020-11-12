@@ -120,6 +120,13 @@ artepunktTheme.overrides.MuiCardHeader = {
   },
 };
 
+artepunktTheme.overrides.MuiFormHelperText = {
+  contained: {
+    marginLeft: 0,
+    marginRight: 0,
+  },
+};
+
 /* artepunktTheme.overrides.MuiTypography = {
   root: {
     '&:hover': {

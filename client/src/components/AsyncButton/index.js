@@ -1,16 +1,17 @@
 import { Box, Button, CircularProgress } from "@material-ui/core";
 import React from "react";
-import submitButtonStyles from "./styles";
+import asyncButtonStyles from "./styles";
 
-const SubmitButton = ({
-  text,
+const AsyncButton = ({
   loading,
   variant = "outlined",
   color = "primary",
   handleClick,
+  padding,
+  children,
   ...rest
 }) => {
-  const classes = submitButtonStyles();
+  const classes = asyncButtonStyles({ padding: padding ? 16 : "" });
 
   return (
     <Box className={classes.buttonContainer}>
@@ -22,7 +23,7 @@ const SubmitButton = ({
         className={classes.buttonItem}
         {...rest}
       >
-        {text}
+        {children}
       </Button>
       {loading && (
         <CircularProgress size={24} className={classes.buttonProgress} />
@@ -31,4 +32,4 @@ const SubmitButton = ({
   );
 };
 
-export default SubmitButton;
+export default AsyncButton;

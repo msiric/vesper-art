@@ -10,9 +10,6 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     marginTop: theme.spacing(1),
   },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
 }));
 
 const EditPasswordForm = () => {
