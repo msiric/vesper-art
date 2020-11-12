@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useContext } from "react";
 import { Redirect, Route, Router, Switch } from "react-router-dom";
+import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { UserContext } from "../../contexts/User.js";
 import AuthLayout from "../../layouts/AuthLayout.js";
 import MainLayout from "../../layouts/MainLayout.js";
@@ -198,7 +199,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
         if (!rest.token) {
           return (
             <AuthLayout>
-              <Suspense fallback={null}>
+              <Suspense fallback={<LoadingSpinner />}>
                 <Component {...props} />
               </Suspense>
             </AuthLayout>
@@ -231,7 +232,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
       }
       return (
         <MainLayout socket={rest.socket}>
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingSpinner />}>
             <Component {...props} socket={rest.socket} />
           </Suspense>
         </MainLayout>

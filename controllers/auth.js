@@ -55,7 +55,6 @@ export const postSignUp = async ({
       session,
     });
     await sendEmail({
-      emailSender: server.appName,
       emailReceiver: userEmail,
       emailSubject: "Please confirm your email",
       emailContent: `Hello,
@@ -153,7 +152,6 @@ export const forgotPassword = async ({ userEmail, session }) => {
     const resetToken = buf.toString("hex");
     await editUserResetToken({ userEmail, resetToken, session });
     await sendEmail({
-      emailSender: server.appName,
       emailReceiver: userEmail,
       emailSubject: "Reset your password",
       emailContent: `You are receiving this because you have requested to reset the password for your account.
@@ -180,7 +178,6 @@ export const resetPassword = async ({
     session,
   });
   await sendEmail({
-    emailSender: server.appName,
     emailReceiver: updatedUser.email,
     emailSubject: "Password change",
     emailContent: `You are receiving this because you just changed your password.

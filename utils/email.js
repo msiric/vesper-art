@@ -1,16 +1,18 @@
-import nodemailer from 'nodemailer';
-import { mailer } from '../config/secret.js';
-import createError from 'http-errors';
+import createError from "http-errors";
+import nodemailer from "nodemailer";
+import { mailer } from "../config/secret.js";
 
 export const sendEmail = async ({
-  emailSender,
+  emailSender = mailer.sender,
   emailReceiver,
   emailSubject,
   emailContent,
 }) => {
   try {
     const smtpTransport = nodemailer.createTransport({
-      service: 'Gmail',
+      // smtp.zoho.com or smtp.zoho.eu for eu data server
+      host: "smtp.zoho.eu",
+      secure: true,
       auth: {
         user: mailer.email,
         pass: mailer.password,
@@ -25,6 +27,6 @@ export const sendEmail = async ({
     await smtpTransport.sendMail(mailOptions);
   } catch (err) {
     console.log(err);
-    throw createError(400, 'Email failed to send');
+    throw createError(400, "Email failed to send");
   }
 };

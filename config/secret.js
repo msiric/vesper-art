@@ -35,6 +35,7 @@ export const stripe = {
 };
 
 export const mailer = {
+  sender: process.env.MAILER_SENDER,
   email: process.env.MAILER_MAIL,
   password: process.env.MAILER_PASS,
 };

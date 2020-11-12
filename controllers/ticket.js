@@ -1,10 +1,8 @@
-import mongoose from 'mongoose';
-import { server } from '../config/secret.js';
-import { sendEmail } from '../utils/email.js';
-import { addNewTicket } from '../services/ticket.js';
-import ticketValidator from '../validation/ticket.js';
-import { sanitizeData } from '../utils/helpers.js';
-import createError from 'http-errors';
+import createError from "http-errors";
+import { addNewTicket } from "../services/ticket.js";
+import { sendEmail } from "../utils/email.js";
+import { sanitizeData } from "../utils/helpers.js";
+import ticketValidator from "../validation/ticket.js";
 
 // how to handle transactions?
 // treba sredit
@@ -23,10 +21,9 @@ export const postTicket = async ({
   });
   const ticketId = savedTicket._id;
   await sendEmail({
-    emailSender: server.appName,
     emailReceiver: userEmail,
     emailSubject: `Support ticket (#${ticketId}): ${ticketTitle}`,
     emailContent: ticketBody,
   });
-  return { message: 'Ticket successfully sent' };
+  return { message: "Ticket successfully sent" };
 };
