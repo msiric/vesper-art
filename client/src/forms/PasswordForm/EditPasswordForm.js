@@ -1,9 +1,12 @@
-import { Button, TextField } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { Field, Form, Formik } from "formik";
-import React from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useContext } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { passwordValidation } from "../../validation/password.js";
+import AsyncButton from "../../components/AsyncButton/index.js";
+import { UserContext } from "../../contexts/User.js";
+import TextInput from "../../controls/TextInput/index.js";
+import { patchPassword } from "../../services/user.js";
+import { resetValidation } from "../../validation/reset.js";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -13,84 +16,55 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EditPasswordForm = () => {
+  const [userStore, userDispatch] = useContext(UserContext);
   const history = useHistory();
 
   const classes = useStyles();
 
+  const { handleSubmit, formState, errors, control } = useForm({
+    resolver: yupResolver(resetValidation),
+  });
+
+  const onSubmit = async (values) => {
+    await patchPassword.request({
+      userId: userStore.id,
+      data: values,
+    });
+  };
+
   return (
-    <Formik
-      initialValues={{
-        userCurrent: "",
-        userPassword: "",
-        userConfirm: "",
-      }}
-      enableReinitialize
-      validationSchema={passwordValidation}
-      onSubmit={async (values, { resetForm }) => {
-        /*         await patchPassword.request({
-          userId: store.user.id,
-          data: values,
-        });
-        resetForm(); */
-      }}
-    >
-      {({ values, errors, touched }) => (
-        <Form className={classes.updatePassword}>
-          <div>
-            <Field name="userCurrent">
-              {({ field, form: { touched, errors }, meta }) => (
-                <TextField
-                  {...field}
-                  onBlur={() => null}
-                  label="Enter current password"
-                  type="password"
-                  helperText={meta.touched && meta.error}
-                  error={meta.touched && Boolean(meta.error)}
-                  margin="dense"
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
-            </Field>
-            <Field name="userPassword">
-              {({ field, form: { touched, errors }, meta }) => (
-                <TextField
-                  {...field}
-                  onBlur={() => null}
-                  label="Enter new password"
-                  type="password"
-                  helperText={meta.touched && meta.error}
-                  error={meta.touched && Boolean(meta.error)}
-                  margin="dense"
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
-            </Field>
-            <Field name="userConfirm">
-              {({ field, form: { touched, errors }, meta }) => (
-                <TextField
-                  {...field}
-                  onBlur={() => null}
-                  label="Confirm password"
-                  type="password"
-                  helperText={meta.touched && meta.error}
-                  error={meta.touched && Boolean(meta.error)}
-                  margin="dense"
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
-            </Field>
-          </div>
-          <div>
-            <Button type="submit" color="primary" fullWidth>
-              Update
-            </Button>
-          </div>
-        </Form>
-      )}
-    </Formik>
+    <FormProvider control={control}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <TextInput
+          name="userCurrent"
+          type="password"
+          label="Enter current password"
+          errors={errors}
+        />
+        <TextInput
+          name="userPassword"
+          type="password"
+          label="Enter new password"
+          errors={errors}
+        />
+        <TextInput
+          name="userConfirm"
+          type="password"
+          label="Confirm password"
+          errors={errors}
+        />
+        <AsyncButton
+          type="submit"
+          fullWidth
+          variant="outlined"
+          color="primary"
+          padding
+          loading={formState.isSubmitting}
+        >
+          Update
+        </AsyncButton>
+      </form>
+    </FormProvider>
   );
 };
 

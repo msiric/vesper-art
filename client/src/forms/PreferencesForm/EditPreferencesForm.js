@@ -13,8 +13,10 @@ import {
   FavoriteRounded as SaveIcon,
 } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
-import React from "react";
+import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
+import { UserContext } from "../../contexts/User.js";
+import { patchPreferences } from "../../services/user.js";
 import { preferencesValidation } from "../../validation/preferences.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,9 +27,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EditPreferencesForm = ({ displaySaves }) => {
+  const [userStore, userDispatch] = useContext(UserContext);
   const history = useHistory();
 
   const classes = useStyles();
+
+  const onSubmit = async (values) => {
+    await patchPreferences.request({
+      userId: userStore.id,
+      data: values,
+    });
+    setState((prevState) => ({
+      ...prevState,
+      user: {
+        ...prevState.user,
+        displaySaves: values.displaySaves,
+      },
+    }));
+  };
 
   return (
     <Formik
