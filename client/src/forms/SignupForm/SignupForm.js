@@ -1,8 +1,11 @@
-import { Button, Grid, Link, TextField } from "@material-ui/core";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Box, Grid, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Field, Form, Formik } from "formik";
 import React from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import AsyncButton from "../../components/AsyncButton/index.js";
+import TextInput from "../../controls/TextInput/index.js";
 import { postSignup } from "../../services/auth.js";
 import { signupValidation } from "../../validation/signup.js";
 
@@ -17,112 +20,77 @@ const SignupForm = () => {
   const history = useHistory();
   const classes = useStyles();
 
+  const { handleSubmit, formState, errors, control } = useForm({
+    resolver: yupResolver(signupValidation),
+  });
+
+  const onSubmit = async (values) => {
+    try {
+      await postSignup.request({ data: values });
+      /*         enqueueSnackbar('Verification email sent', {
+          variant: 'success',
+          autoHideDuration: 1000,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center',
+          },
+        }); */
+    } catch (err) {
+      history.push({
+        pathname: "/login",
+        state: { message: "An error occurred" },
+      });
+    }
+  };
+
   return (
-    <Formik
-      initialValues={{
-        userUsername: "",
-        userEmail: "",
-        userPassword: "",
-        userConfirm: "",
-      }}
-      validationSchema={signupValidation}
-      onSubmit={async (values, { resetForm }) => {
-        try {
-          await postSignup.request({ data: values });
-          /*         enqueueSnackbar('Verification email sent', {
-            variant: 'success',
-            autoHideDuration: 1000,
-            anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
-            },
-          }); */
-        } catch (err) {
-          history.push({
-            pathname: "/login",
-            state: { message: "An error occurred" },
-          });
-        }
-      }}
-    >
-      {({ values, errors, touched, isSubmitting }) => (
-        <Form className={classes.card}>
-          <Field name="userUsername">
-            {({ field, form: { touched, errors }, meta }) => (
-              <TextField
-                {...field}
-                type="text"
-                label="Username"
-                helperText={meta.touched && meta.error}
-                error={meta.touched && Boolean(meta.error)}
-                margin="dense"
-                variant="outlined"
-                fullWidth
-              />
-            )}
-          </Field>
-          <Field name="userEmail">
-            {({ field, form: { touched, errors }, meta }) => (
-              <TextField
-                {...field}
-                type="email"
-                label="Email"
-                helperText={meta.touched && meta.error}
-                error={meta.touched && Boolean(meta.error)}
-                margin="dense"
-                variant="outlined"
-                fullWidth
-              />
-            )}
-          </Field>
-          <Field name="userPassword">
-            {({ field, form: { touched, errors }, meta }) => (
-              <TextField
-                {...field}
-                type="password"
-                label="Password"
-                helperText={meta.touched && meta.error}
-                error={meta.touched && Boolean(meta.error)}
-                margin="dense"
-                variant="outlined"
-                fullWidth
-              />
-            )}
-          </Field>
-          <Field name="userConfirm">
-            {({ field, form: { touched, errors }, meta }) => (
-              <TextField
-                {...field}
-                type="password"
-                label="Confirm Password"
-                helperText={meta.touched && meta.error}
-                error={meta.touched && Boolean(meta.error)}
-                margin="dense"
-                variant="outlined"
-                fullWidth
-              />
-            )}
-          </Field>
-          <Button
+    <Box>
+      <FormProvider control={control}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <TextInput
+            name="userUsername"
+            type="text"
+            label="Username"
+            errors={errors}
+          />
+          <TextInput
+            name="userEmail"
+            type="text"
+            label="Email"
+            errors={errors}
+          />
+          <TextInput
+            name="userPassword"
+            type="password"
+            label="Password"
+            errors={errors}
+          />
+          <TextInput
+            name="userConfirm"
+            type="password"
+            label="Confirm password"
+            errors={errors}
+          />
+          <AsyncButton
             type="submit"
             fullWidth
             variant="outlined"
             color="primary"
-            className={classes.submit}
-            disabled={isSubmitting}
+            padding
+            loading={formState.isSubmitting}
           >
             Sign up
-          </Button>
-          <Grid container>
-            <Grid item>
-              <Link component={RouterLink} to="/login" variant="body2">
-                Already have an account? Log in
-              </Link>
-            </Grid>
-          </Grid>
-        </Form>
-      )}
-    </Formik>
+          </AsyncButton>
+        </form>
+      </FormProvider>
+      <Grid container>
+        <Grid item>
+          <Link component={RouterLink} to="/login" variant="body2">
+            Already have an account? Log in
+          </Link>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 
