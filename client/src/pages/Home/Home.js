@@ -98,7 +98,6 @@ const Home = ({ location }) => {
 
   return [
     <Grid
-      key={location.key}
       container
       style={{ width: "100%", margin: 0, padding: "0 32px" }}
       spacing={3}
@@ -106,7 +105,6 @@ const Home = ({ location }) => {
       <HomeBanner />
     </Grid>,
     <Grid
-      key={location.key}
       container
       style={{ width: "100%", margin: 0, padding: "0 32px" }}
       spacing={3}
