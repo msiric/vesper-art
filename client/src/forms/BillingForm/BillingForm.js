@@ -1,18 +1,9 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { useSnackbar } from "notistack";
-import React, { useContext } from "react";
-import { useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
-import * as Yup from "yup";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import { EventsContext } from "../../contexts/Events.js";
-import { UserContext } from "../../contexts/User.js";
+import React from "react";
+import { countries } from "../../../../common/constants.js";
 import AutocompleteInput from "../../controls/AutocompleteInput/index.js";
 import TextInput from "../../controls/TextInput/index.js";
-import { postLogin } from "../../services/auth.js";
-import { loginValidation } from "../../validation/login.js";
 
 const BillingFormStyles = makeStyles((muiTheme) => ({
   fixed: {
@@ -69,75 +60,7 @@ const BillingFormStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const validationSchema = Yup.object().shape({
-  firstname: Yup.string().trim().required("First name is required"),
-  lastname: Yup.string().trim().required("Last name is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  address: Yup.string().trim().required("Address is required"),
-  zip: Yup.string().trim().required("Postal code is required"),
-  city: Yup.string().trim().required("City is required"),
-  country: Yup.string().trim().required("Country is required"),
-});
-
-const BillingForm = () => {
-  const [userStore, userDispatch] = useContext(UserContext);
-  const [eventsStore, eventsDispatch] = useContext(EventsContext);
-
-  const { enqueueSnackbar } = useSnackbar();
-
-  const { handleSubmit, formState, errors, control } = useForm({
-    resolver: yupResolver(loginValidation),
-  });
-
-  const history = useHistory();
-  const classes = BillingFormStyles();
-
-  const onSubmit = async (values) => {
-    try {
-      const { data } = await postLogin.request({ data: values });
-
-      if (data.user) {
-        userDispatch({
-          type: "setUser",
-          authenticated: true,
-          token: data.accessToken,
-          id: data.user.id,
-          name: data.user.name,
-          email: data.user.email,
-          photo: data.user.photo,
-          stripeId: data.user.stripeId,
-          country: data.user.country,
-          saved: data.user.saved.reduce(function (object, item) {
-            object[item] = true;
-            return object;
-          }, {}),
-          intents: data.user.intents.reduce(function (object, item) {
-            object[item.artworkId] = item.intentId;
-            return object;
-          }, {}),
-        });
-        eventsDispatch({
-          type: "setEvents",
-          messages: { items: [], count: data.user.messages },
-          notifications: {
-            ...eventsStore.notifications,
-            items: [],
-            count: data.user.notifications,
-            hasMore: true,
-            dataCursor: 0,
-            dataCeiling: 10,
-          },
-        });
-      }
-      history.push("/");
-    } catch (err) {
-      console.log(err);
-      enqueueSnackbar(postLogin.error.message, {
-        variant: postLogin.error.variant,
-      });
-    }
-  };
-
+const BillingForm = ({ errors, setValue, getValues }) => {
   return (
     <Box>
       <TextInput
@@ -167,26 +90,18 @@ const BillingForm = () => {
       <TextInput
         name="billingZip"
         type="text"
-        label="Email address"
+        label="Zip code"
         errors={errors}
       />
       <TextInput name="billingCity" type="text" label="City" errors={errors} />
       <AutocompleteInput
+        value={getValues("billingCountry")}
+        setValue={setValue}
         name="billingCountry"
-        type="text"
         label="Country"
         errors={errors}
+        options={countries}
       />
-      <AsyncButton
-        type="submit"
-        fullWidth
-        variant="outlined"
-        color="primary"
-        padding
-        loading={formState.isSubmitting}
-      >
-        Update
-      </AsyncButton>
     </Box>
   );
 };
