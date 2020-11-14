@@ -5,11 +5,14 @@ import {
   Switch,
 } from "@material-ui/core";
 import React from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import switchInputStyles from "./styles";
 
-const SwitchInput = ({
+const Input = ({
+  value,
   name,
   label,
+  setValue,
   helperText = null,
   error = null,
   labelPlacement = "start",
@@ -22,13 +25,14 @@ const SwitchInput = ({
       <FormControlLabel
         control={
           <Switch
-            {...other}
             edge="end"
-            checked={other.value}
+            checked={value}
+            onChange={(e, value) => setValue(name, value)}
             inputProps={{
               name: name,
               id: name,
             }}
+            color="primary"
           />
         }
         label={label}
@@ -41,6 +45,25 @@ const SwitchInput = ({
       />
       {helperText && <FormHelperText error>{helperText}</FormHelperText>}
     </FormControl>
+  );
+};
+
+const SwitchInput = (props) => {
+  const { control } = useFormContext();
+  const error = { invalid: false, message: "" };
+  if (props.errors && props.errors.hasOwnProperty(props.name)) {
+    error.invalid = true;
+    error.message = props.errors[props.name].message;
+  }
+
+  return (
+    <Controller
+      as={Input}
+      control={control}
+      error={error.invalid}
+      helperText={error.message}
+      {...props}
+    />
   );
 };
 

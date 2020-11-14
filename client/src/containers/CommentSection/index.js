@@ -1,13 +1,19 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Card, CardContent, Divider } from "@material-ui/core";
+import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useHistory } from "react-router-dom";
+import AsyncButton from "../../components/AsyncButton/index.js";
 import CommentCard from "../../components/CommentCard/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import AddCommentForm from "../../forms/CommentForm/AddCommentForm.js";
+import AddCommentForm from "../../forms/CommentForm/index.js";
+import { postComment } from "../../services/artwork.js";
 import { List, Typography } from "../../styles/theme.js";
+import { commentValidation } from "../../validation/comment.js";
 import commentSectionStyles from "./styles.js";
 
 const CommentSection = ({
@@ -27,6 +33,22 @@ const CommentSection = ({
   const history = useHistory();
   const classes = commentSectionStyles();
 
+  const { handleSubmit, formState, errors, control, reset } = useForm({
+    defaultValues: {
+      commentContent: "",
+    },
+    resolver: yupResolver(commentValidation),
+  });
+
+  const onSubmit = async (values) => {
+    const { data } = await postComment.request({
+      artworkId: artwork._id,
+      data: values,
+    });
+    handleCommentAdd(data.payload);
+    reset();
+  };
+
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -36,11 +58,23 @@ const CommentSection = ({
           </Typography>
         </SkeletonWrapper>
         <Divider />
-        <AddCommentForm
-          artwork={artwork}
-          handleCommentAdd={handleCommentAdd}
-          loading={loading}
-        />
+        <FormProvider control={control}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <AddCommentForm errors={errors} loading={loading} />
+            <AsyncButton
+              type="submit"
+              fullWidth
+              variant="outlined"
+              color="primary"
+              padding
+              loading={formState.isSubmitting}
+              startIcon={<UploadIcon />}
+            >
+              Post
+            </AsyncButton>
+          </form>
+        </FormProvider>
+
         <br />
         <Divider />
         {loading || artwork.comments.length ? (

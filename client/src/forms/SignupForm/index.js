@@ -1,35 +1,31 @@
 import { Box } from "@material-ui/core";
 import React from "react";
-import AsyncButton from "../../components/AsyncButton/index.js";
 import TextInput from "../../controls/TextInput/index.js";
 
-const LoginForm = ({ formState, errors }) => {
+const SignupForm = ({ errors }) => {
   return (
     <Box>
       <TextInput
         name="userUsername"
         type="text"
-        label="Username or email"
+        label="Username"
         errors={errors}
       />
+      <TextInput name="userEmail" type="text" label="Email" errors={errors} />
       <TextInput
         name="userPassword"
         type="password"
         label="Password"
         errors={errors}
       />
-      <AsyncButton
-        type="submit"
-        fullWidth
-        variant="outlined"
-        color="primary"
-        padding
-        loading={formState.isSubmitting}
-      >
-        Sign In
-      </AsyncButton>
+      <TextInput
+        name="userConfirm"
+        type="password"
+        label="Confirm password"
+        errors={errors}
+      />
     </Box>
   );
 };
 
-export default LoginForm;
+export default SignupForm;

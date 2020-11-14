@@ -13,9 +13,10 @@ import { useSnackbar } from "notistack";
 import React, { useContext } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import AsyncButton from "../../components/AsyncButton/index.js";
 import { EventsContext } from "../../contexts/Events.js";
 import { UserContext } from "../../contexts/User.js";
-import LoginForm from "../../forms/LoginForm/LoginForm.js";
+import LoginForm from "../../forms/LoginForm/index.js";
 import { postLogin } from "../../services/auth.js";
 import { loginValidation } from "../../validation/login.js";
 
@@ -102,7 +103,17 @@ const Login = () => {
         </Typography>
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <LoginForm formState={formState} errors={errors} />
+            <LoginForm errors={errors} />
+            <AsyncButton
+              type="submit"
+              fullWidth
+              variant="outlined"
+              color="primary"
+              padding
+              loading={formState.isSubmitting}
+            >
+              Sign in
+            </AsyncButton>
             <Grid container>
               <Grid item xs>
                 <Link

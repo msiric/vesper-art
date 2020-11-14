@@ -1,20 +1,21 @@
 import { FormControl, FormHelperText, TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import tagInputStyles from "./styles";
 
-const TagInput = ({
+const Input = ({
   value,
   name,
+  trigger,
   label,
   handleChange,
-  handleBlur,
   helperText,
   error,
   limit,
   ...other
 }) => {
-  const [state, setState] = useState({ tags: value });
+  const [state, setState] = useState({ tags: value, changed: false });
   const classes = tagInputStyles();
 
   const handleKeyDown = (e) => {
@@ -29,16 +30,21 @@ const TagInput = ({
           state.tags.length < limit &&
           state.tags.indexOf(e.target.value) === -1
         )
-          setState({ tags: [...state.tags, e.target.value] });
+          setState({ tags: [...state.tags, e.target.value], changed: true });
         break;
       }
       default:
     }
   };
 
-  useEffect(() => {
+  const handleEdit = async () => {
     handleChange(null, state.tags);
-  }, [state.tags]);
+    state.changed && (await trigger(name));
+  };
+
+  useEffect(() => {
+    handleEdit();
+  }, [state.tags, state.changed]);
 
   useEffect(() => {
     setState({ tags: value });
@@ -54,8 +60,7 @@ const TagInput = ({
         value={state.tags}
         getOptionLabel={(option) => option.title || option}
         getOptionSelected={(value1, value2) => console.log(value1, value2)}
-        onChange={(e, values) => setState({ tags: values })}
-        onBlur={handleBlur}
+        onChange={(e, values) => setState({ tags: values, changed: true })}
         filterSelectedOptions
         renderInput={(params) => {
           params.inputProps.onKeyDown = handleKeyDown;
@@ -84,6 +89,26 @@ const TagInput = ({
       />
       <FormHelperText error>{helperText}</FormHelperText>
     </FormControl>
+  );
+};
+
+const TagInput = (props) => {
+  console.log(props);
+  const { control } = useFormContext();
+  const error = { invalid: false, message: "" };
+  if (props.errors && props.errors.hasOwnProperty(props.name)) {
+    error.invalid = true;
+    error.message = props.errors[props.name].message;
+  }
+
+  return (
+    <Controller
+      as={Input}
+      control={control}
+      error={error.invalid}
+      helperText={error.message}
+      {...props}
+    />
   );
 };
 

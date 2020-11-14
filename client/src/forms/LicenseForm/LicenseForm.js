@@ -313,3 +313,62 @@ const LicenseForm = ({
 };
 
 export default LicenseForm;
+
+{
+  /* <Box>
+  <TextInput
+    name="licenseAssignee"
+    type="text"
+    label="License assignee"
+    errors={errors}
+  />
+  <TextInput
+    name="licenseCompany"
+    type="text"
+    label="License company"
+    errors={errors}
+  />
+  <SelectInput
+    name="licenseType"
+    label="License type"
+    errors={errors}
+    options={
+      version.license === "personal"
+        ? [
+            {
+              value: "personal",
+              text: "Personal",
+            },
+          ]
+        : version.use === "included"
+        ? [
+            {
+              value: "commercial",
+              text: "Commercial",
+            },
+          ]
+        : [
+            {
+              value: "personal",
+              text: "Personal",
+            },
+            {
+              value: "commercial",
+              text: "Commercial",
+            },
+          ]
+    }
+  />
+  <AsyncButton
+    type="submit"
+    fullWidth
+    variant="outlined"
+    color="primary"
+    padding
+    loading={formState.isSubmitting}
+  >
+    Update
+  </AsyncButton>
+</Box>;
+ */
+}

@@ -6,9 +6,9 @@ import {
 import { Field, Form, Formik } from "formik";
 import React, { useContext } from "react";
 import { countries } from "../../../../common/constants.js";
-import AutocompleteInput from "../../components/AutocompleteInput/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import { UserContext } from "../../contexts/User.js";
+import AutocompleteInput from "../../controls/AutocompleteInput/index.js";
 import { postAuthorize } from "../../services/stripe.js";
 import { patchOrigin } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";

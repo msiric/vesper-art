@@ -1,9 +1,10 @@
 import { TextField } from "@material-ui/core";
 import { Autocomplete as SearchableSelect } from "@material-ui/lab";
 import React from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import autocompleteInputStyles from "./styles";
 
-const AutocompleteInput = ({
+const Input = ({
   label,
   handleChange,
   handleBlur,
@@ -19,6 +20,7 @@ const AutocompleteInput = ({
   return (
     <SearchableSelect
       {...other}
+      getOptionSelected={getOptionSelected}
       getOptionLabel={getOptionLabel}
       onBlur={handleBlur}
       onChange={handleChange}
@@ -35,6 +37,25 @@ const AutocompleteInput = ({
           fullWidth
         />
       )}
+    />
+  );
+};
+
+const AutocompleteInput = (props) => {
+  const { control } = useFormContext();
+  const error = { invalid: false, message: "" };
+  if (props.errors && props.errors.hasOwnProperty(props.name)) {
+    error.invalid = true;
+    error.message = props.errors[props.name].message;
+  }
+
+  return (
+    <Controller
+      as={Input}
+      control={control}
+      error={error.invalid}
+      helperText={error.message}
+      {...props}
     />
   );
 };

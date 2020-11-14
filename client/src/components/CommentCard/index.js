@@ -1,6 +1,8 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Avatar,
   Box,
+  Button,
   Divider,
   IconButton,
   ListItem,
@@ -8,18 +10,25 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from "@material-ui/core";
-import { MoreVertRounded as MoreIcon } from "@material-ui/icons";
-import React, { useContext } from "react";
+import {
+  AddCircleRounded as UploadIcon,
+  MoreVertRounded as MoreIcon,
+} from "@material-ui/icons";
+import React, { useContext, useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
+import AsyncButton from "../../components/AsyncButton/index.js";
 import { UserContext } from "../../contexts/User.js";
-import EditCommentForm from "../../forms/CommentForm/EditCommentForm.js";
+import AddCommentForm from "../../forms/CommentForm/index.js";
+import { patchComment } from "../../services/artwork.js";
 import { Typography } from "../../styles/theme.js";
+import { commentValidation } from "../../validation/comment.js";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import commentCardStyles from "./styles.js";
 
 const CommentCard = ({
   artwork = {},
-  comment = {},
+  comment = { content: "" },
   edits = {},
   queryRef,
   highlightRef,
@@ -29,10 +38,33 @@ const CommentCard = ({
   loading,
 }) => {
   const [userStore, userDispatch] = useContext(UserContext);
+
+  const setDefaultValues = () => ({
+    commentContent: comment.content,
+  });
+
+  const { handleSubmit, formState, errors, control, reset } = useForm({
+    defaultValues: setDefaultValues(),
+    resolver: yupResolver(commentValidation),
+  });
+
+  const onSubmit = async (values) => {
+    await patchComment.request({
+      artworkId: artwork._id,
+      commentId: comment._id,
+      data: values,
+    });
+    handleCommentEdit(comment._id, values.commentContent);
+  };
+
   const history = useHistory();
   const classes = commentCardStyles();
 
   const isHighlight = () => queryRef && queryRef === comment._id;
+
+  useEffect(() => {
+    reset(setDefaultValues());
+  }, [comment.content]);
 
   return (
     <Box ref={isHighlight() ? highlightRef : null} key={comment._id}>
@@ -83,12 +115,30 @@ const CommentCard = ({
           }
           secondary={
             edits[comment._id] ? (
-              <EditCommentForm
-                comment={comment}
-                artwork={artwork}
-                handleCommentEdit={handleCommentEdit}
-                handleCommentClose={handleCommentClose}
-              />
+              <FormProvider control={control}>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <AddCommentForm errors={errors} loading={loading} />
+                  <AsyncButton
+                    type="submit"
+                    fullWidth
+                    variant="outlined"
+                    color="primary"
+                    padding
+                    loading={formState.isSubmitting}
+                    startIcon={<UploadIcon />}
+                  >
+                    Publish
+                  </AsyncButton>
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    color="warning"
+                    onClick={() => handleCommentClose(comment._id)}
+                  >
+                    Cancel
+                  </Button>
+                </form>
+              </FormProvider>
             ) : (
               <SkeletonWrapper variant="text" loading={loading} width="90%">
                 <Typography>

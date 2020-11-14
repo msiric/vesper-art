@@ -12,7 +12,8 @@ import { MeetingRoomRounded as SignupAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import SignupForm from "../../forms/SignupForm/SignupForm.js";
+import AsyncButton from "../../components/AsyncButton/index.js";
+import SignupForm from "../../forms/SignupForm/index.js";
 import { postSignup } from "../../services/auth.js";
 import { signupValidation } from "../../validation/signup.js";
 
@@ -67,7 +68,17 @@ const Signup = () => {
         </Typography>
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <SignupForm formState={formState} errors={errors} />
+            <SignupForm errors={errors} />
+            <AsyncButton
+              type="submit"
+              fullWidth
+              variant="outlined"
+              color="primary"
+              padding
+              loading={formState.isSubmitting}
+            >
+              Sign up
+            </AsyncButton>
             <Grid container>
               <Grid item>
                 <Link component={RouterLink} to="/login" variant="body2">

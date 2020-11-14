@@ -6,20 +6,9 @@ import {
   Select,
 } from "@material-ui/core";
 import React from "react";
-import selectInputStyles from "./styles";
+import { Controller, useFormContext } from "react-hook-form";
 
-const SelectInput = ({
-  name,
-  label,
-  handleChange,
-  options,
-  handleBlur = null,
-  helperText = null,
-  error = null,
-  ...other
-}) => {
-  const classes = selectInputStyles();
-
+const Input = ({ name, label, options, helperText, error, ...other }) => {
   return (
     <FormControl variant="outlined" margin="dense" fullWidth>
       <InputLabel error={error} htmlFor={name}>
@@ -29,8 +18,6 @@ const SelectInput = ({
         {...other}
         error={error}
         label={label}
-        onChange={handleChange}
-        onBlur={handleBlur}
         inputProps={{
           name: name,
           id: name,
@@ -50,6 +37,25 @@ const SelectInput = ({
       </Select>
       {helperText && <FormHelperText error>{helperText}</FormHelperText>}
     </FormControl>
+  );
+};
+
+const SelectInput = (props) => {
+  const { control } = useFormContext();
+  const error = { invalid: false, message: "" };
+  if (props.errors && props.errors.hasOwnProperty(props.name)) {
+    error.invalid = true;
+    error.message = props.errors[props.name].message;
+  }
+
+  return (
+    <Controller
+      as={Input}
+      control={control}
+      error={error.invalid}
+      helperText={error.message}
+      {...props}
+    />
   );
 };
 

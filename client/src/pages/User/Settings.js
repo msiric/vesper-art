@@ -3,7 +3,11 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
-import SettingsSection from "../../containers/SettingsSection/index.js";
+import SettingsAccount from "../../containers/SettingsAccount/index.js";
+import SettingsActions from "../../containers/SettingsActions/index.js";
+import SettingsPreferences from "../../containers/SettingsPreferences/index.js";
+import SettingsProfile from "../../containers/SettingsProfile/index.js";
+import SettingsSecurity from "../../containers/SettingsSecurity/index.js";
 import { UserContext } from "../../contexts/User.js";
 import {
   deleteUser,
@@ -11,7 +15,7 @@ import {
   patchEmail,
   patchPassword,
   patchPreferences,
-  patchUser
+  patchUser,
 } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
@@ -130,19 +134,64 @@ const Settings = ({ location }) => {
         {state.loading || state.user._id ? (
           <Grid item sm={12}>
             <MainHeading
-              text={"Settings"}
+              text="Settings"
               className={globalClasses.mainHeading}
             />
-            <SettingsSection
-              user={state.user}
-              handleModalOpen={handleModalOpen}
-              handleUpdateProfile={handleUpdateProfile}
-              handleUpdateEmail={handleUpdateEmail}
-              handleUpdatePreferences={handleUpdatePreferences}
-              handleUpdatePassword={handleUpdatePassword}
-              handleDeactivateUser={handleDeactivateUser}
-              loading={state.loading}
-            />
+
+            <Grid container p={0} my={4} spacing={2}>
+              <Grid
+                item
+                xs={12}
+                md={4}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <SettingsProfile
+                  user={state.user}
+                  handleUpdateProfile={handleUpdateProfile}
+                  loading={state.loading}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                md={8}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <SettingsAccount
+                  user={state.user}
+                  handleUpdateEmail={handleUpdateEmail}
+                  loading={state.loading}
+                />
+                <SettingsPreferences
+                  user={state.user}
+                  handleUpdatePreferences={handleUpdatePreferences}
+                  loading={state.loading}
+                />
+                <SettingsSecurity
+                  handleUpdatePassword={handleUpdatePassword}
+                  loading={state.loading}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <SettingsActions
+                  handleModalOpen={handleModalOpen}
+                  loading={state.loading}
+                />
+              </Grid>
+            </Grid>
           </Grid>
         ) : (
           history.push("/")

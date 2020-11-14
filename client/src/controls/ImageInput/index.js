@@ -5,14 +5,15 @@ import {
   Publish as UploadIcon,
 } from "@material-ui/icons";
 import React, { createRef, useEffect, useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { artepunktTheme, Avatar, Typography } from "../../styles/theme.js";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import imageInputStyles from "./styles.js";
 
-const ImageInput = ({
-  field,
-  setFieldValue,
-  setFieldTouched,
+const Input = ({
+  name,
+  setValue,
+  trigger,
   error,
   helperText,
   title,
@@ -41,10 +42,11 @@ const ImageInput = ({
       }));
   }, [preview]);
 
-  const showFileUpload = (e) => {
+  const showFileUpload = async (e) => {
     if (!error && state.file && !noEmpty) {
-      setFieldValue(field.name, null);
+      setValue(name, null);
       setState((prevState) => ({ ...prevState, file: null }));
+      await trigger(name);
     } else if (fileUpload) {
       fileUpload.current.value = null;
       fileUpload.current.click();
@@ -61,14 +63,14 @@ const ImageInput = ({
         loading: true,
       }));
       reader.readAsDataURL(file);
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         setState({
           loading: false,
           file: file,
           imagePreviewUrl: reader.result,
         });
-        setFieldValue(field.name, file);
-        setFieldTouched(field.name, true);
+        setValue(name, file);
+        await trigger(name);
       };
     }
   };
@@ -77,8 +79,8 @@ const ImageInput = ({
     <Box className={classes.imageInputContainer}>
       <input
         className={classes.imageInputFile}
-        id={field.name}
-        name={field.name}
+        id={name}
+        name={name}
         type="file"
         onChange={handleImageChange}
         ref={fileUpload}
@@ -148,6 +150,25 @@ const ImageInput = ({
         </Typography>
       ) : null}
     </Box>
+  );
+};
+
+const ImageInput = (props) => {
+  const { control } = useFormContext();
+  const error = { invalid: false, message: "" };
+  if (props.errors && props.errors.hasOwnProperty(props.name)) {
+    error.invalid = true;
+    error.message = props.errors[props.name].message;
+  }
+
+  return (
+    <Controller
+      as={Input}
+      control={control}
+      error={error.invalid}
+      helperText={error.message}
+      {...props}
+    />
   );
 };
 
