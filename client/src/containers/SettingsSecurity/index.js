@@ -38,7 +38,6 @@ const SettingsSecurity = ({ handleUpdatePassword, loading }) => {
               fullWidth
               variant="outlined"
               color="primary"
-              padding
               loading={formState.isSubmitting}
               startIcon={<UploadIcon />}
             >

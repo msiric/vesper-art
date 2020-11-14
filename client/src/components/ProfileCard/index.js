@@ -27,7 +27,6 @@ const ProfileCard = ({ user, styles, loading }) => {
         loading={loading}
         variant="circle"
         className={classes.profileCardWrapper}
-        styles={{ paddingTop: 100, width: 100 }}
       >
         <Box className={classes.profileCardWrapper}>
           <Avatar

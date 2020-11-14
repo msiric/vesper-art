@@ -4,7 +4,6 @@ import { artepunktTheme } from "../../styles/theme.js";
 const imageInputStyles = makeStyles((muiTheme) => ({
   imageInputFile: { display: "none" },
   imageInputContainer: {
-    margin: "auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",

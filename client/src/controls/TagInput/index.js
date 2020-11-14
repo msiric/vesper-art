@@ -51,7 +51,7 @@ const Input = ({
   }, [value]);
 
   return (
-    <FormControl variant="outlined" margin="dense" fullWidth>
+    <FormControl variant="outlined" fullWidth>
       <Autocomplete
         {...other}
         multiple

@@ -54,7 +54,6 @@ const SettingsPreferences = ({ user, handleUpdatePreferences, loading }) => {
               fullWidth
               variant="outlined"
               color="primary"
-              padding
               loading={formState.isSubmitting}
               startIcon={<UploadIcon />}
             >

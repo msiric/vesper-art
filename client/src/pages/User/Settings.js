@@ -15,7 +15,7 @@ import {
   patchEmail,
   patchPassword,
   patchPreferences,
-  patchUser,
+  patchUser
 } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
@@ -49,10 +49,7 @@ const Settings = ({ location }) => {
     const data = deleteEmptyValues(values);
     const formData = new FormData();
     for (let value of Object.keys(data)) {
-      formData.append(
-        value,
-        value === "userCountry" ? data[value].value : data[value]
-      );
+      formData.append(value, data[value]);
     }
     await patchUser.request({
       userId: userStore.id,
@@ -64,7 +61,7 @@ const Settings = ({ location }) => {
         ...prevState.user,
         photo: values.userMedia,
         description: values.userDescription,
-        country: values.userCountry ? values.userCountry.value : "",
+        country: values.userCountry 
       },
     }));
   };

@@ -152,7 +152,7 @@ const Order = ({ match, location }) => {
                     ? state.order.seller
                     : state.order.buyer
                 }
-                styles={{ height: "65%" }}
+                styles={{ flexGrow: 1 }}
                 loading={state.loading}
               />
               <br />

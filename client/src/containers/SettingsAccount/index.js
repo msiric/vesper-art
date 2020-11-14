@@ -11,7 +11,7 @@ import settingsAccountStyles from "./styles.js";
 
 const SettingsAccount = ({ user, handleUpdateEmail, loading }) => {
   const setDefaultValues = () => ({
-    userEmail: user.email,
+    userEmail: loading ? "" : user.email,
   });
 
   const { handleSubmit, formState, errors, control, reset } = useForm({
@@ -42,7 +42,6 @@ const SettingsAccount = ({ user, handleUpdateEmail, loading }) => {
               fullWidth
               variant="outlined"
               color="primary"
-              padding
               loading={formState.isSubmitting}
               startIcon={<UploadIcon />}
             >

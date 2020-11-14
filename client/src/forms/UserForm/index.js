@@ -5,7 +5,14 @@ import AutocompleteInput from "../../controls/AutocompleteInput/index.js";
 import ImageInput from "../../controls/ImageInput/index.js";
 import TextInput from "../../controls/TextInput/index.js";
 
-const EditUserForm = ({ preview, errors, setValue, trigger, loading }) => {
+const EditUserForm = ({
+  preview,
+  errors,
+  getValues,
+  setValue,
+  trigger,
+  loading,
+}) => {
   const classes = {};
 
   return (
@@ -17,25 +24,29 @@ const EditUserForm = ({ preview, errors, setValue, trigger, loading }) => {
         trigger={trigger}
         errors={errors}
         preview={preview}
-        shape="square"
-        height={400}
-        width="100%"
+        shape="circle"
+        height={150}
+        width={150}
         noEmpty={false}
         loading={loading}
       />
-      <TextInput
-        name="userDescription"
-        type="text"
-        label="About"
-        errors={errors}
-      />
-      {/* $TODO Fix autocomplete input to work properly */}
-      <AutocompleteInput
-        name="userCountry"
-        label="Country"
-        errors={errors}
-        options={countries}
-      />
+      <Box>
+        <TextInput
+          name="userDescription"
+          type="text"
+          label="About"
+          multiline
+          errors={errors}
+        />
+        <AutocompleteInput
+          value={getValues("userCountry")}
+          setValue={setValue}
+          name="userCountry"
+          label="Country"
+          errors={errors}
+          options={countries}
+        />
+      </Box>
     </Box>
   );
 };

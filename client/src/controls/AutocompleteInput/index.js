@@ -5,10 +5,10 @@ import { Controller, useFormContext } from "react-hook-form";
 import autocompleteInputStyles from "./styles";
 
 const Input = ({
+  value,
+  name,
   label,
-  handleChange,
-  handleBlur,
-  getOptionSelected,
+  setValue,
   getOptionLabel,
   helperText,
   error,
@@ -20,15 +20,14 @@ const Input = ({
   return (
     <SearchableSelect
       {...other}
-      getOptionSelected={getOptionSelected}
-      getOptionLabel={getOptionLabel}
-      onBlur={handleBlur}
-      onChange={handleChange}
+      value={value ? options.find((item) => item.value === value) : ""}
+      getOptionLabel={(option) => option.text}
+      onChange={(e, item) => setValue(name, item ? item.value : "")}
       openOnFocus
       options={options}
-      renderInput={(other) => (
+      renderInput={(params) => (
         <TextField
-          {...other}
+          {...params}
           label={label}
           helperText={helperText}
           error={error}

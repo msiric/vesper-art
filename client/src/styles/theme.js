@@ -127,6 +127,18 @@ artepunktTheme.overrides.MuiFormHelperText = {
   },
 };
 
+artepunktTheme.overrides.MuiCardContent = {
+  root: {
+    padding: 12,
+  },
+};
+
+artepunktTheme.overrides.MuiCardActions = {
+  root: {
+    padding: 12,
+  },
+};
+
 /* artepunktTheme.overrides.MuiTypography = {
   root: {
     '&:hover': {

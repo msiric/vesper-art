@@ -4,7 +4,6 @@ import Card from "@material-ui/core/Card";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { countries } from "../../../../common/constants.js";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import EditUserForm from "../../forms/UserForm/index.js";
 import { patchAvatar } from "../../validation/media.js";
@@ -14,10 +13,8 @@ import settingsProfileStyles from "./styles.js";
 const SettingsProfile = ({ user, handleUpdateProfile, loading }) => {
   const setDefaultValues = () => ({
     userMedia: "",
-    userDescription: user.description || "",
-    userCountry: user.country
-      ? countries.find((country) => country.value === user.country)
-      : "",
+    userDescription: loading ? "" : user.description || "",
+    userCountry: loading ? "" : user.country || "",
   });
 
   const {
@@ -25,6 +22,7 @@ const SettingsProfile = ({ user, handleUpdateProfile, loading }) => {
     formState,
     errors,
     control,
+    getValues,
     setValue,
     trigger,
     reset,
@@ -49,25 +47,26 @@ const SettingsProfile = ({ user, handleUpdateProfile, loading }) => {
       }}
     >
       <FormProvider control={control}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className={classes.settingsProfileForm}
+        >
+          <CardContent className={classes.settingsProfileContent}>
             <EditUserForm
               preview={user.photo}
               errors={errors}
+              getValues={getValues}
               setValue={setValue}
               trigger={trigger}
               loading={loading}
             />
           </CardContent>
-          <CardActions
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
+          <CardActions className={classes.settingsProfileActions}>
             <AsyncButton
               type="submit"
               fullWidth
               variant="outlined"
               color="primary"
-              padding
               loading={formState.isSubmitting}
               startIcon={<UploadIcon />}
             >
