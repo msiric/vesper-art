@@ -1,3 +1,4 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Button,
   Card,
@@ -8,16 +9,18 @@ import {
   List,
   ListItem,
   ListItemText,
-  TextField,
   Typography,
 } from "@material-ui/core";
-import { Field, Form, Formik } from "formik";
+import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import NumberFormat from "react-number-format";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
+import AsyncButton from "../../components/AsyncButton/index.js";
 import CheckoutCard from "../../components/CheckoutCard/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import DiscountForm from "../../forms/DiscountForm/index.js";
 import checkoutSummaryStyles from "./styles.js";
 
 const validationSchema = Yup.object().shape({
@@ -39,6 +42,24 @@ const CheckoutSummary = ({
       amount: 0,
     },
   });
+
+  const {
+    handleSubmit,
+    formState,
+    errors,
+    control,
+    setValue,
+    trigger,
+    getValues,
+    watch,
+  } = useForm({
+    defaultValues: {
+      discountCode: "",
+    },
+    resolver: yupResolver(validationSchema),
+  });
+
+  const onSubmit = async (values) => await handleDiscountChange(values);
 
   const history = useHistory();
 
@@ -308,52 +329,28 @@ const CheckoutSummary = ({
             Remove discount
           </Button>
         ) : (
-          <Formik
-            initialValues={{
-              discountCode: "",
-            }}
-            validationSchema={validationSchema}
-            onSubmit={handleDiscountChange}
-          >
-            {({
-              isSubmitting,
-              values,
-              errors,
-              touched,
-              enableReinitialize,
-            }) => (
-              <Form style={{ width: "100%" }}>
-                <SkeletonWrapper variant="text" loading={loading} width="100%">
-                  <Field name="discountCode">
-                    {({ field, form: { touched, errors }, meta }) => (
-                      <TextField
-                        {...field}
-                        onBlur={() => null}
-                        label="Discount"
-                        type="text"
-                        helperText={meta.touched && meta.error}
-                        error={meta.touched && Boolean(meta.error)}
-                        margin="dense"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    )}
-                  </Field>
-                </SkeletonWrapper>
-                <SkeletonWrapper loading={loading} width="100%">
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    color="primary"
-                    disabled={isSubmitting}
-                    fullWidth
-                  >
-                    Apply
-                  </Button>
-                </SkeletonWrapper>
-              </Form>
-            )}
-          </Formik>
+          <FormProvider control={control}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <CardContent>
+                <DiscountForm errors={errors} loading={state.loading} />
+              </CardContent>
+              <CardActions
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
+                <AsyncButton
+                  type="submit"
+                  fullWidth
+                  variant="outlined"
+                  color="primary"
+                  padding
+                  loading={formState.isSubmitting}
+                  startIcon={<UploadIcon />}
+                >
+                  Apply
+                </AsyncButton>
+              </CardActions>
+            </form>
+          </FormProvider>
         )}
       </CardActions>
     </Card>

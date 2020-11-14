@@ -94,7 +94,7 @@ const Order = ({ match, location }) => {
   const handleRatingSubmit = async (values) => {
     await postReview.request({
       artworkId: state.order._id,
-      reviewRating: values.rating,
+      reviewRating: values.artistRating,
     });
     setState((prevState) => ({
       ...prevState,
@@ -104,7 +104,7 @@ const Order = ({ match, location }) => {
           order: prevState.order._id,
           artwork: prevState.order.artwork._id,
           owner: userStore.id,
-          rating: values.rating,
+          rating: values.artistRating,
         },
       },
     }));

@@ -1,19 +1,27 @@
-import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
+  CardActions,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core";
+import {
+  AddCircleRounded as UploadIcon,
   LabelImportantRounded as LabelIcon,
   MonetizationOnRounded as MonetizationIcon,
 } from "@material-ui/icons";
-import { Field, Form, Formik } from "formik";
 import React, { useContext } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { countries } from "../../../../common/constants.js";
+import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import { UserContext } from "../../contexts/User.js";
-import AutocompleteInput from "../../controls/AutocompleteInput/index.js";
+import OnboardingForm from "../../forms/OnboardingForm/index.js";
 import { postAuthorize } from "../../services/stripe.js";
 import { patchOrigin } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 import {
-  Button,
   Card,
   CardContent,
   Container,
@@ -24,6 +32,42 @@ import { originValidation } from "../../validation/origin.js";
 
 const Onboarding = () => {
   const [userStore] = useContext(UserContext);
+
+  const {
+    handleSubmit,
+    formState,
+    errors,
+    control,
+    setValue,
+    getValues,
+  } = useForm({
+    defaultValues: {
+      userOrigin: "",
+    },
+    resolver: yupResolver(originValidation),
+  });
+
+  const onSubmit = async (values) => {
+    try {
+      if (!userStore.stripeId) {
+        await patchOrigin.request({
+          userId: userStore.id,
+          data: {
+            ...values,
+            userOrigin: values.userOrigin,
+          },
+        });
+        const { data } = await postAuthorize.request({
+          userOrigin: values.userOrigin,
+          userEmail: userStore.email,
+        });
+
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const globalClasses = globalStyles();
 
@@ -119,77 +163,32 @@ const Onboarding = () => {
                   )}
                 </>
               )}
-              <Formik
-                initialValues={{
-                  userOrigin: "",
-                }}
-                enableReinitialize={true}
-                validationSchema={originValidation}
-                onSubmit={async (values, { resetForm }) => {
-                  try {
-                    if (!userStore.stripeId) {
-                      await patchOrigin.request({
-                        userId: userStore.id,
-                        data: {
-                          ...values,
-                          userOrigin: values.userOrigin.value,
-                        },
-                      });
-                      const { data } = await postAuthorize.request({
-                        userOrigin: values.userOrigin.value,
-                        userEmail: userStore.email,
-                      });
-
-                      window.location.href = data.url;
-                    }
-                  } catch (err) {
-                    console.log(err);
-                  }
-                }}
-              >
-                {({ values, errors, touched, isSubmitting }) => (
-                  <Form style={{ width: "100%" }}>
-                    <Field name="userOrigin">
-                      {({
-                        field,
-                        form: {
-                          touched,
-                          errors,
-                          setFieldTouched,
-                          setFieldValue,
-                        },
-                        meta,
-                      }) => (
-                        <AutocompleteInput
-                          {...field}
-                          label="Country"
-                          getOptionSelected={(option, value) =>
-                            option.value === value
-                          }
-                          helperText={meta.touched && meta.error}
-                          error={meta.touched && Boolean(meta.error)}
-                          options={countries.filter(
-                            (country) => country.supported === true
-                          )}
-                          handleChange={(e, item) =>
-                            setFieldValue("userOrigin", item || "")
-                          }
-                          handleBlur={() => setFieldTouched("userOrigin", true)}
-                          getOptionLabel={(option) => option.text}
-                        />
-                      )}
-                    </Field>
-                    <Button
+              <FormProvider control={control}>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <CardContent>
+                    <OnboardingForm
+                      errors={errors}
+                      getValues={getValues}
+                      setValue={setValue}
+                    />
+                  </CardContent>
+                  <CardActions
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <AsyncButton
                       type="submit"
+                      fullWidth
                       variant="outlined"
                       color="primary"
-                      fullWidth
+                      padding
+                      loading={formState.isSubmitting}
+                      startIcon={<UploadIcon />}
                     >
                       Continue
-                    </Button>
-                  </Form>
-                )}
-              </Formik>
+                    </AsyncButton>
+                  </CardActions>
+                </form>
+              </FormProvider>
             </CardContent>
           </Card>
         </Grid>

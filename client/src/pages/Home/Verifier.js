@@ -1,16 +1,20 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  Button,
+  CardActions,
+  CardContent,
   Container,
   Grid,
-  TextField,
   Typography,
 } from "@material-ui/core";
+import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import { format } from "date-fns";
-import { Field, Form, Formik } from "formik";
 import { withSnackbar } from "notistack";
 import React, { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import * as Yup from "yup";
+import AsyncButton from "../../components/AsyncButton/index.js";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
+import VerifierForm from "../../forms/VerifierForm/index.js";
 import { postVerifier } from "../../services/home.js";
 import globalStyles from "../../styles/global.js";
 
@@ -26,13 +30,30 @@ const Verifier = () => {
     license: {},
   });
 
+  const {
+    handleSubmit,
+    formState,
+    errors,
+    control,
+    setValue,
+    trigger,
+    getValues,
+    watch,
+    reset,
+  } = useForm({
+    defaultValues: {
+      licenseFingerprint: "",
+    },
+    resolver: yupResolver(fingerprintValidation),
+  });
+
   const formatDate = (date, type) => {
     return format(new Date(date), type);
   };
 
   const globalClasses = globalStyles();
 
-  const handleSubmit = async (values, { resetForm }) => {
+  const onSubmit = async (values) => {
     try {
       setState((prevState) => ({
         ...prevState,
@@ -44,7 +65,7 @@ const Verifier = () => {
         loading: false,
         license: data.license,
       }));
-      resetForm();
+      reset();
     } catch (err) {
     } finally {
       setState((prevState) => ({ ...prevState, loading: false }));
@@ -55,46 +76,28 @@ const Verifier = () => {
     <Container className={globalClasses.gridContainer}>
       <Grid container>
         <Grid item xs={12}>
-          <Formik
-            initialValues={{
-              licenseFingerprint: "",
-            }}
-            enableReinitialize
-            validationSchema={fingerprintValidation}
-            onSubmit={handleSubmit}
-          >
-            {({ values, errors, touched }) => (
-              <Form>
-                <div>
-                  <Field name="licenseFingerprint">
-                    {({ field, form: { touched, errors }, meta }) => (
-                      <TextField
-                        {...field}
-                        onBlur={() => null}
-                        label="Enter license fingerprint"
-                        type="text"
-                        helperText={meta.touched && meta.error}
-                        error={meta.touched && Boolean(meta.error)}
-                        margin="dense"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    )}
-                  </Field>
-                </div>
-                <div>
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    color="primary"
-                    fullWidth
-                  >
-                    Verify
-                  </Button>
-                </div>
-              </Form>
-            )}
-          </Formik>
+          <FormProvider control={control}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <CardContent>
+                <VerifierForm errors={errors} loading={state.loading} />
+              </CardContent>
+              <CardActions
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
+                <AsyncButton
+                  type="submit"
+                  fullWidth
+                  variant="outlined"
+                  color="primary"
+                  padding
+                  loading={formState.isSubmitting}
+                  startIcon={<UploadIcon />}
+                >
+                  Verify
+                </AsyncButton>
+              </CardActions>
+            </form>
+          </FormProvider>
           {state.loading ? (
             <LoadingSpinner />
           ) : state.license._id ? (

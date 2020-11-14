@@ -1,3 +1,4 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   AppBar,
   Avatar,
@@ -5,15 +6,13 @@ import {
   Button,
   Divider,
   IconButton,
-  InputBase,
   ListItemAvatar,
   ListItemText,
   Menu,
   MenuItem,
-  Toolbar
+  Toolbar,
 } from "@material-ui/core";
 import {
-  AccountBoxRounded as UserIcon,
   AccountCircleRounded as AccountIcon,
   AttachMoneyRounded as SellerIcon,
   BarChartRounded as DashboardIcon,
@@ -22,24 +21,24 @@ import {
   MoreVertRounded as MoreIcon,
   NotificationsRounded as NotificationsIcon,
   PermIdentityRounded as ProfileIcon,
-  SearchRounded as SearchIcon,
   SettingsRounded as SettingsIcon,
   ShoppingBasketRounded as OrdersIcon,
-  ViewCarouselRounded as GalleryIcon
+  ViewCarouselRounded as GalleryIcon,
 } from "@material-ui/icons";
-import { Field, Form, Formik } from "formik";
 import React, { useContext, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { Link, withRouter } from "react-router-dom";
 import * as Yup from "yup";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import LogoMobile from "../../assets/images/logo/logo-mobile.svg";
 import { EventsContext } from "../../contexts/Events.js";
 import { UserContext } from "../../contexts/User.js";
+import SearchForm from "../../forms/SearchForm";
 import {
   getNotifications,
   patchRead,
   patchUnread,
-  postLogout
+  postLogout,
 } from "../../services/user.js";
 import HeaderStyles from "./Header.style.js";
 import NotificationsMenu from "./NotificationsMenu.js";
@@ -57,6 +56,20 @@ const Header = ({ socket, history }) => {
       anchorEl: null,
       loading: false,
     },
+  });
+
+  const {
+    handleSubmit,
+    formState,
+    errors,
+    control,
+    setValue,
+    getValues,
+  } = useForm({
+    defaultValues: {
+      searchInput: "",
+    },
+    resolver: yupResolver(searchValidation),
   });
 
   const classes = HeaderStyles();
@@ -293,6 +306,14 @@ const Header = ({ socket, history }) => {
     });
   };
 
+  const onSubmit = async (values) => {
+    try {
+      history.push(`/search?q=${values.searchInput}&t=${eventsStore.search}`);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const menuId = "primary-search-account-menu";
   const renderProfileMenu = (
     <Menu
@@ -463,65 +484,17 @@ const Header = ({ socket, history }) => {
             className={classes.logoMobile}
           />
           <div className={classes.search}>
-            <Formik
-              initialValues={{
-                searchInput: "",
-              }}
-              validationSchema={searchValidation}
-              onSubmit={async (values, { resetForm }) => {
-                try {
-                  history.push(
-                    `/search?q=${values.searchInput}&t=${eventsStore.search}`
-                  );
-                } catch (err) {
-                  console.log(err);
-                }
-              }}
-            >
-              {({ values, errors, touched, isSubmitting, handleSubmit }) => (
-                <Form className={classes.card}>
-                  <IconButton
-                    title={
-                      eventsStore.search === "artwork"
-                        ? "Search artwork"
-                        : "Search users"
-                    }
-                    onClick={handleToggle}
-                    className={classes.typeIcon}
-                    disableFocusRipple
-                    disableRipple
-                  >
-                    {eventsStore.search === "artwork" ? (
-                      <ArtworkIcon />
-                    ) : (
-                      <UserIcon />
-                    )}
-                  </IconButton>
-                  <Field name="searchInput">
-                    {({ field, form, meta }) => (
-                      <InputBase
-                        {...field}
-                        type="text"
-                        placeholder="Search…"
-                        classes={{
-                          root: classes.inputRoot,
-                          input: classes.inputInput,
-                        }}
-                        inputProps={{ "aria-label": "search" }}
-                      />
-                    )}
-                  </Field>
-                  <IconButton
-                    onClick={handleSubmit}
-                    className={classes.searchIcon}
-                    disableFocusRipple
-                    disableRipple
-                  >
-                    <SearchIcon />
-                  </IconButton>
-                </Form>
-              )}
-            </Formik>
+            <FormProvider control={control}>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <SearchForm
+                  handleToggle={handleToggle}
+                  handleSubmit={handleSubmit}
+                  getValues={getValues}
+                  setValue={setValue}
+                  errors={errors}
+                />
+              </form>
+            </FormProvider>
           </div>
           <div className={classes.grow} />
           {userStore.authenticated ? (
