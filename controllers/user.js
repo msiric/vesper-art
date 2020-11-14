@@ -129,7 +129,7 @@ export const updateUserProfile = async ({
   const avatarUpload = await finalizeMediaUpload({
     filePath: userPath,
     fileName: userFilename,
-    fileMimetype: userMimetype,
+    mimeType: userMimetype,
     fileType: "user",
   });
   const { error } = profileValidator(sanitizeData(userData));
