@@ -18,7 +18,7 @@ import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
 import CommentSection from "../../containers/CommentSection/index.js";
 import { UserContext } from "../../contexts/User.js";
-import LicenseForm from "../../forms/LicenseForm/LicenseForm.js";
+import LicenseForm from "../../forms/LicenseForm/index.js";
 import {
   deleteComment,
   getComment,
