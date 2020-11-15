@@ -15,12 +15,17 @@ import {
   patchEmail,
   patchPassword,
   patchPreferences,
-  patchUser
+  patchUser,
 } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
 
-const initialState = { loading: true, user: {}, modal: { open: false } };
+const initialState = {
+  loading: true,
+  user: {},
+  modal: { open: false },
+  isDeactivating: false,
+};
 
 const Settings = ({ location }) => {
   const [userStore] = useContext(UserContext);
@@ -61,7 +66,7 @@ const Settings = ({ location }) => {
         ...prevState.user,
         photo: values.userMedia,
         description: values.userDescription,
-        country: values.userCountry 
+        country: values.userCountry,
       },
     }));
   };
@@ -118,7 +123,13 @@ const Settings = ({ location }) => {
   };
 
   const handleDeactivateUser = async () => {
-    await deleteUser.request({ userId: userStore.id });
+    try {
+      setState((prevState) => ({ ...prevState, isDeactivating: true }));
+      await deleteUser.request({ userId: userStore.id });
+    } catch (err) {
+    } finally {
+      setState((prevState) => ({ ...prevState, isDeactivating: false }));
+    }
   };
 
   useEffect(() => {
@@ -202,6 +213,7 @@ const Settings = ({ location }) => {
         promptTitle="Are you sure you want to deactivate your account?"
         promptConfirm="Deactivate"
         promptCancel="Cancel"
+        isSubmitting={state.isDeactivating}
       />
     </Container>
   );

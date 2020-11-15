@@ -201,10 +201,17 @@ const ArtworkDetails = ({ match, location, socket }) => {
 
   const handleDownload = async (values) => {
     try {
-      const { data } = await postDownload.request({
+      await postDownload.request({
         versionId: state.artwork.current._id,
         data: values,
       });
+      setState((prevState) => ({
+        ...prevState,
+        modal: {
+          ...prevState.modal,
+          open: false,
+        },
+      }));
     } catch (err) {
       console.log(err);
     }
@@ -469,6 +476,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
           promptTitle="License information"
           promptConfirm="Download"
           promptCancel="Close"
+          isSubmitting={formState.isSubmitting}
         >
           <FormProvider control={control}>
             <form onSubmit={handleSubmit(handleDownload)}>

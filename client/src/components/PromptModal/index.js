@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import React from "react";
+import AsyncButton from "../AsyncButton";
 import promptModalStyles from "./styles";
 
 const PromptModal = ({
@@ -18,6 +19,7 @@ const PromptModal = ({
   promptTitle,
   promptConfirm,
   promptCancel,
+  isSubmitting,
   children,
 }) => {
   const classes = promptModalStyles();
@@ -41,14 +43,16 @@ const PromptModal = ({
           <Divider />
           {children && <Box>{children}</Box>}
           <Box className={classes.modalActions}>
-            <Button
+            <AsyncButton
               type="submit"
               variant="outlined"
               color="primary"
+              loading={isSubmitting}
               onClick={handleConfirm}
+              fullWidth
             >
               {promptConfirm}
-            </Button>
+            </AsyncButton>
             <Button
               type="button"
               variant="outlined"

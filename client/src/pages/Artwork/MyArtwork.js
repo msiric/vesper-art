@@ -15,6 +15,7 @@ import globalStyles from "../../styles/global.js";
 
 const MyArtwork = ({ location }) => {
   const [state, setState] = useState({
+    isDeleting: false,
     loading: true,
     artwork: [],
     hasMore: true,
@@ -73,33 +74,35 @@ const MyArtwork = ({ location }) => {
   };
 
   const handleArtworkDelete = async () => {
-    setState({
-      ...state,
-      loading: true,
-    });
     try {
+      setState((prevState) => ({
+        ...prevState,
+        isDeleting: true,
+      }));
       await deleteArtwork.request({
         artworkId: state.modal.id,
       });
-      setState({
-        ...state,
-        loading: false,
-        artwork: state.artwork.filter((item) => item._id !== state.modal.id),
+      setState((prevState) => ({
+        ...prevState,
+        isDeleting: false,
+        artwork: prevState.artwork.filter(
+          (item) => item._id !== prevState.modal.id
+        ),
         modal: {
-          ...state.modal,
+          ...prevState.modal,
           id: null,
           open: false,
         },
-      });
+      }));
       enqueueSnackbar(deleteArtwork.success.message, {
         variant: deleteArtwork.success.variant,
       });
     } catch (err) {
-      setState({
-        ...state,
-        loading: false,
-        modal: { ...state.modal, id: null, open: false },
-      });
+      setState((prevState) => ({
+        ...prevState,
+        isDeleting: false,
+        modal: { ...prevState.modal, id: null, open: false },
+      }));
       enqueueSnackbar(deleteArtwork.error.message, {
         variant: deleteArtwork.error.variant,
       });
@@ -277,6 +280,7 @@ const MyArtwork = ({ location }) => {
         promptTitle="Are you sure you want to delete this artwork?"
         promptConfirm="Delete"
         promptCancel="Cancel"
+        isSubmitting={state.isDeleting}
       />
     </Container>
   );

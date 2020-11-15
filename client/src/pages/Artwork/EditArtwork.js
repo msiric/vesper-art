@@ -174,10 +174,11 @@ const EditArtwork = ({ match, location }) => {
         variant: deleteArtwork.success.variant,
       });
     } catch (err) {
-      setState({ ...state, isDeleting: false });
       enqueueSnackbar(deleteArtwork.error.message, {
         variant: deleteArtwork.error.variant,
       });
+    } finally {
+      setState({ ...state, isDeleting: false });
     }
   };
 
@@ -273,6 +274,7 @@ const EditArtwork = ({ match, location }) => {
         promptTitle="Are you sure you want to delete this artwork?"
         promptConfirm="Delete"
         promptCancel="Cancel"
+        isSubmitting={state.isDeleting}
       />
     </Container>
   );
