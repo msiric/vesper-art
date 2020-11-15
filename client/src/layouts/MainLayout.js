@@ -1,12 +1,12 @@
 import { Backdrop, Box, CircularProgress } from "@material-ui/core";
-import React, { useContext } from "react";
+import React from "react";
 import Footer from "../containers/Footer/Footer.js";
 import Header from "../containers/Header/Header.js";
-import { AppContext } from "../contexts/App.js";
+import { useTracked as useAppContext } from "../contexts/App.js";
 import MainLayoutStyles from "./MainLayout.style.js";
 
 const MainLayout = ({ socket, children }) => {
-  const [appStore] = useContext(AppContext);
+  const [appStore, appDispatch] = useAppContext();
 
   const classes = MainLayoutStyles();
 

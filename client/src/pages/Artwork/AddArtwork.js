@@ -1,13 +1,13 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CardActions, CardContent, Container, Grid } from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import ArtworkForm from "../../forms/ArtworkForm/index.js";
 import { postArtwork } from "../../services/artwork.js";
 import { getUser } from "../../services/stripe.js";
@@ -20,7 +20,7 @@ import { addArtwork } from "../../validation/media.js";
 const initialState = { loading: false, capabilities: {} };
 
 const AddArtwork = () => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
   const [state, setState] = useState({ ...initialState });
 
   const {

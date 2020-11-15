@@ -1,6 +1,7 @@
-import React, { createContext, useReducer } from "react";
+import { useReducer } from "react";
+import { createContainer } from "react-tracked";
 
-const store = {
+export const userStore = {
   authenticated: false,
   token: null,
   id: null,
@@ -15,7 +16,7 @@ const store = {
   intents: {},
 };
 
-const reducer = (state, action) => {
+export const userReducer = (state, action) => {
   switch (action.type) {
     case "setUser":
       return {
@@ -73,22 +74,25 @@ const reducer = (state, action) => {
   }
 };
 
-const User = ({ children, definedState }) => {
-  const [state, dispatch] = useReducer(
-    reducer,
-    definedState ? definedState : store
-  );
+const useValue = ({ reducer, store }) => useReducer(reducer, store);
+export const { Provider, useTracked } = createContainer(useValue);
 
-  return (
-    <UserContext.Provider value={[state, dispatch]}>
-      {children}
-    </UserContext.Provider>
-  );
-};
+// const User = ({ children, definedState }) => {
+//   const [state, dispatch] = useReducer(
+//     reducer,
+//     definedState ? definedState : store
+//   );
 
-export const UserContext = createContext({
-  userStore: store,
-  userDispatch: reducer,
-});
+//   return (
+//     <UserContext.Provider value={[state, dispatch]}>
+//       {children}
+//     </UserContext.Provider>
+//   );
+// };
 
-export default User;
+// export const UserContext = createContext({
+//   userStore: store,
+//   userDispatch: reducer,
+// });
+
+// export default User;

@@ -14,11 +14,11 @@ import {
   AddCircleRounded as UploadIcon,
   MoreVertRounded as MoreIcon,
 } from "@material-ui/icons";
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/index.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import AddCommentForm from "../../forms/CommentForm/index.js";
 import { patchComment } from "../../services/artwork.js";
 import { Typography } from "../../styles/theme.js";
@@ -37,7 +37,7 @@ const CommentCard = ({
   handlePopoverOpen,
   loading,
 }) => {
-  const [userStore, userDispatch] = useContext(UserContext);
+  const [userStore, userDispatch] = useUserContext();
 
   const setDefaultValues = () => ({
     commentContent: comment.content,

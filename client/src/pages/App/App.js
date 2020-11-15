@@ -8,10 +8,10 @@ import {
   WarningRounded as WarningIcon,
 } from "@material-ui/icons";
 import { SnackbarProvider } from "notistack";
-import React, { createRef, useContext } from "react";
+import React, { createRef } from "react";
 import SimpleReactLightbox from "simple-react-lightbox";
 import Router from "../../containers/Router/Router.js";
-import { AppContext } from "../../contexts/App.js";
+import { useTracked as useAppContext } from "../../contexts/App.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const useStyles = makeStyles(() => ({
@@ -22,7 +22,8 @@ const useStyles = makeStyles(() => ({
 }));
 
 const App = React.memo(({ socket }) => {
-  const [appStore] = useContext(AppContext);
+  const [appStore, appDispatch] = useAppContext();
+
   const notistackRef = createRef();
 
   const classes = useStyles();

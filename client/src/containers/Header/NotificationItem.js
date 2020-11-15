@@ -15,10 +15,10 @@ import {
   RateReviewRounded as ReviewIcon,
   ShoppingBasket as OrderIcon,
 } from "@material-ui/icons";
-import React, { useContext } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
-import { EventsContext } from "../../contexts/Events.js";
+import { useTracked as useEventsContext } from "../../contexts/Events.js";
 import { artepunktTheme } from "../../styles/theme.js";
 import NotificationItemStyles from "./NotificationItem.style.js";
 
@@ -28,7 +28,7 @@ const NotificationItem = ({
   handleReadClick,
   handleUnreadClick,
 }) => {
-  const [eventsStore] = useContext(EventsContext);
+  const [eventsStore] = useEventsContext();
   const classes = NotificationItemStyles();
 
   const data = {

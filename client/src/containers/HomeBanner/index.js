@@ -6,13 +6,13 @@ import {
   Grid,
   Typography,
 } from "@material-ui/core";
-import React, { useContext } from "react";
+import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import homeBannerStyles from "./styles";
 
 const HomeBanner = () => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
 
   const classes = homeBannerStyles();
 

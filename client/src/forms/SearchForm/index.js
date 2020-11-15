@@ -4,8 +4,8 @@ import {
   ImageRounded as ArtworkIcon,
   SearchRounded as SearchIcon,
 } from "@material-ui/icons";
-import React, { useContext } from "react";
-import { EventsContext } from "../../contexts/Events";
+import React from "react";
+import { useTracked as useEventsContext } from "../../contexts/Events.js";
 import InputBase from "../../controls/InputBase";
 
 const SearchForm = ({
@@ -16,7 +16,7 @@ const SearchForm = ({
   errors,
   other,
 }) => {
-  const [eventsStore, eventsDispatch] = useContext(EventsContext);
+  const [eventsStore, eventsDispatch] = useEventsContext();
   /* const classes = AddArtworkStyles(); */
   const classes = {};
 

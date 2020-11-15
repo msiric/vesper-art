@@ -25,14 +25,14 @@ import {
   ShoppingBasketRounded as OrdersIcon,
   ViewCarouselRounded as GalleryIcon,
 } from "@material-ui/icons";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, withRouter } from "react-router-dom";
 import * as Yup from "yup";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import LogoMobile from "../../assets/images/logo/logo-mobile.svg";
-import { EventsContext } from "../../contexts/Events.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useEventsContext } from "../../contexts/Events.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import SearchForm from "../../forms/SearchForm";
 import {
   getNotifications,
@@ -48,8 +48,8 @@ const searchValidation = Yup.object().shape({
 });
 
 const Header = ({ socket, history }) => {
-  const [userStore, userDispatch] = useContext(UserContext);
-  const [eventsStore, eventsDispatch] = useContext(EventsContext);
+  const [userStore, userDispatch] = useUserContext();
+  const [eventsStore, eventsDispatch] = useEventsContext();
   const [state, setState] = useState({
     profile: { anchorEl: null, mobileAnchorEl: null },
     notifications: {

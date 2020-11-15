@@ -1,12 +1,13 @@
-import React, { createContext, useReducer } from "react";
+import { useReducer } from "react";
+import { createContainer } from "react-tracked";
 
-const store = {
+export const appStore = {
   loading: true,
   error: false,
   theme: "dark",
 };
 
-const reducer = (state, action) => {
+export const appReducer = (state, action) => {
   switch (action.type) {
     case "setApp":
       return {
@@ -20,22 +21,25 @@ const reducer = (state, action) => {
   }
 };
 
-const App = ({ children, definedState }) => {
-  const [state, dispatch] = useReducer(
-    reducer,
-    definedState ? definedState : store
-  );
+const useValue = ({ reducer, store }) => useReducer(reducer, store);
+export const { Provider, useTracked } = createContainer(useValue);
 
-  return (
-    <AppContext.Provider value={[state, dispatch]}>
-      {children}
-    </AppContext.Provider>
-  );
-};
+// const App = ({ children, definedState }) => {
+//   const [state, dispatch] = useReducer(
+//     reducer,
+//     definedState ? definedState : store
+//   );
 
-export const AppContext = createContext({
-  appStore: store,
-  appDispatch: reducer,
-});
+//   return (
+//     <AppContext.Provider value={[state, dispatch]}>
+//       {children}
+//     </AppContext.Provider>
+//   );
+// };
 
-export default App;
+// export const AppContext = createContext({
+//   appStore: store,
+//   appDispatch: reducer,
+// });
+
+// export default App;

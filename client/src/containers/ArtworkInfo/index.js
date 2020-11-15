@@ -1,11 +1,11 @@
-import { Box, Button, Card } from '@material-ui/core';
-import React, { useContext } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import PricingCard from '../../components/PricingCard/index.js';
-import SwipeCard from '../../components/SwipeCard/index.js';
-import { UserContext } from '../../contexts/User.js';
-import { CardContent, Typography } from '../../styles/theme.js';
-import artworkInfoStyles from './styles.js';
+import { Box, Button, Card } from "@material-ui/core";
+import React from "react";
+import { Link as RouterLink } from "react-router-dom";
+import PricingCard from "../../components/PricingCard/index.js";
+import SwipeCard from "../../components/SwipeCard/index.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
+import { CardContent, Typography } from "../../styles/theme.js";
+import artworkInfoStyles from "./styles.js";
 
 const ArtworkInfo = ({
   artwork = {},
@@ -18,7 +18,7 @@ const ArtworkInfo = ({
   match,
   loading,
 }) => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
   const classes = artworkInfoStyles();
 
   const isSeller = () => userStore.id === artwork.owner._id;
@@ -26,27 +26,27 @@ const ArtworkInfo = ({
   return (
     <Card className={classes.root} loading={loading}>
       <CardContent pt={0} pb={0}>
-        {artwork.current && artwork.current.availability === 'available' ? (
+        {artwork.current && artwork.current.availability === "available" ? (
           <SwipeCard
             tabs={{
               value: tabs.value,
               headings: [
                 {
-                  display: artwork.current.use !== 'included',
-                  label: 'Personal license',
+                  display: artwork.current.use !== "included",
+                  label: "Personal license",
                   props: {},
                 },
                 {
                   display:
                     artwork.current.commercial !== null &&
-                    artwork.current.license === 'commercial',
-                  label: 'Commercial license',
+                    artwork.current.license === "commercial",
+                  label: "Commercial license",
                   props: {},
                 },
               ],
               items: [
                 {
-                  display: artwork.current.use !== 'included',
+                  display: artwork.current.use !== "included",
                   iterable: false,
                   content: null,
                   component: (
@@ -69,7 +69,7 @@ const ArtworkInfo = ({
                 {
                   display:
                     artwork.current.commercial !== null &&
-                    artwork.current.license === 'commercial',
+                    artwork.current.license === "commercial",
                   iterable: false,
                   content: null,
                   component: (
@@ -102,7 +102,7 @@ const ArtworkInfo = ({
               headings: [
                 {
                   display: true,
-                  label: 'Preview only',
+                  label: "Preview only",
                   props: {},
                 },
               ],
@@ -115,7 +115,7 @@ const ArtworkInfo = ({
                     <Box
                       display="flex"
                       flexDirection="column"
-                      style={{ justifyContent: 'center', alignItems: 'center' }}
+                      style={{ justifyContent: "center", alignItems: "center" }}
                     >
                       <Typography variant="subtitle1" m={2}>
                         This artwork cannot be purchased or downloaded since it

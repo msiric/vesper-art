@@ -36,6 +36,7 @@
     "react-share": "^4.1.0",
     "react-stack-grid": "^0.7.1",
     "react-swipeable-views": "^0.13.9",
+    "react-tracked": "^1.4.2",
     "react-undraw": "^2.0.2",
     "recharts": "^1.8.5",
     "simple-react-lightbox": "^3.3.4-1",

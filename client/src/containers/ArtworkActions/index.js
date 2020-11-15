@@ -1,15 +1,15 @@
 import { Box, Card, CardActions, Divider, Typography } from "@material-ui/core";
 import { FavoriteRounded as FavoritedIcon } from "@material-ui/icons";
-import React, { useContext } from "react";
+import React from "react";
 import FavoriteButton from "../../components/FavoriteButton/index.js";
 import ShareButton from "../../components/ShareButton/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import { CardContent } from "../../styles/theme.js";
 import artworkActionsStyles from "./styles.js";
 
 const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
   const classes = artworkActionsStyles();
 
   return (

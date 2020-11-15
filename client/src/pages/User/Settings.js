@@ -1,5 +1,5 @@
 import { Container, Grid } from "@material-ui/core";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
@@ -8,7 +8,7 @@ import SettingsActions from "../../containers/SettingsActions/index.js";
 import SettingsPreferences from "../../containers/SettingsPreferences/index.js";
 import SettingsProfile from "../../containers/SettingsProfile/index.js";
 import SettingsSecurity from "../../containers/SettingsSecurity/index.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import {
   deleteUser,
   getSettings,
@@ -28,7 +28,7 @@ const initialState = {
 };
 
 const Settings = ({ location }) => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
   const [state, setState] = useState({
     ...initialState,
   });

@@ -10,12 +10,12 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { LockRounded as LoginAvatar } from "@material-ui/icons";
 import { useSnackbar } from "notistack";
-import React, { useContext } from "react";
+import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/index.js";
-import { EventsContext } from "../../contexts/Events.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useEventsContext } from "../../contexts/Events.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import LoginForm from "../../forms/LoginForm/index.js";
 import { postLogin } from "../../services/auth.js";
 import { loginValidation } from "../../validation/login.js";
@@ -34,8 +34,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = () => {
-  const [userStore, userDispatch] = useContext(UserContext);
-  const [eventsStore, eventsDispatch] = useContext(EventsContext);
+  const [userStore, userDispatch] = useUserContext();
+  const [eventsStore, eventsDispatch] = useEventsContext();
 
   const { enqueueSnackbar } = useSnackbar();
 

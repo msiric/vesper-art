@@ -1,6 +1,7 @@
-import React, { createContext, useReducer } from "react";
+import { useReducer } from "react";
+import { createContainer } from "react-tracked";
 
-const store = {
+export const eventsStore = {
   messages: {
     items: [],
     count: 0,
@@ -19,7 +20,7 @@ const store = {
   search: "artwork",
 };
 
-const reducer = (state, action) => {
+export const eventsReducer = (state, action) => {
   switch (action.type) {
     case "setEvents":
       return {
@@ -215,22 +216,25 @@ const reducer = (state, action) => {
   }
 };
 
-const Events = ({ children, definedState }) => {
-  const [state, dispatch] = useReducer(
-    reducer,
-    definedState ? definedState : store
-  );
+const useValue = ({ reducer, store }) => useReducer(reducer, store);
+export const { Provider, useTracked } = createContainer(useValue);
 
-  return (
-    <EventsContext.Provider value={[state, dispatch]}>
-      {children}
-    </EventsContext.Provider>
-  );
-};
+// const Events = ({ children, definedState }) => {
+//   const [state, dispatch] = useReducer(
+//     reducer,
+//     definedState ? definedState : store
+//   );
 
-export const EventsContext = createContext({
-  eventsStore: store,
-  eventsDispatch: reducer,
-});
+//   return (
+//     <EventsContext.Provider value={[state, dispatch]}>
+//       {children}
+//     </EventsContext.Provider>
+//   );
+// };
 
-export default Events;
+// export const EventsContext = createContext({
+//   eventsStore: store,
+//   eventsDispatch: reducer,
+// });
+
+// export default Events;

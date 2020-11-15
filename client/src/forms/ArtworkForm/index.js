@@ -1,7 +1,7 @@
 import { Box } from "@material-ui/core";
-import React, { useContext } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import ImageInput from "../../controls/ImageInput/index.js";
 import PriceInput from "../../controls/PriceInput/index.js";
 import SelectInput from "../../controls/SelectInput/index.js";
@@ -20,7 +20,7 @@ const ArtworkForm = ({
   watch,
   loading,
 }) => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
 
   const artworkAvailability = watch("artworkAvailability");
   const artworkType = watch("artworkType");

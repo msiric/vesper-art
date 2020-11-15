@@ -32,7 +32,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import clsx from "clsx";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
@@ -40,7 +40,7 @@ import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import CheckoutSummary from "../../containers/CheckoutSummary/index.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import BillingForm from "../../forms/BillingForm/index.js";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import PaymentForm from "../../forms/PaymentForm/index.js";
@@ -175,7 +175,7 @@ const Checkout = ({ match, location }) => {
 };
 
 const Processor = ({ match, location, stripe }) => {
-  const [userStore, userDispatch] = useContext(UserContext);
+  const [userStore, userDispatch] = useUserContext();
   const [state, setState] = useState({
     ...initialState,
     license:

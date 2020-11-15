@@ -3,14 +3,14 @@ import {
   FavoriteBorderRounded as FavoriteIcon,
   FavoriteRounded as FavoritedIcon,
 } from "@material-ui/icons";
-import React, { useContext, useState } from "react";
-import { UserContext } from "../../contexts/User.js";
+import React, { useState } from "react";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import { deleteSave, postSave } from "../../services/artwork.js";
 import favoriteButtonStyles from "./styles.js";
 
 const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
   const [state, setState] = useState({ loading: false });
-  const [userStore, userDispatch] = useContext(UserContext);
+  const [userStore, userDispatch] = useUserContext();
 
   const classes = favoriteButtonStyles();
 

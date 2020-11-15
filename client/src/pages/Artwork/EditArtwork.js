@@ -11,14 +11,14 @@ import {
   DeleteRounded as DeleteIcon,
 } from "@material-ui/icons";
 import { useSnackbar } from "notistack";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import ArtworkForm from "../../forms/ArtworkForm/index.js";
 import {
   deleteArtwork,
@@ -57,7 +57,7 @@ const initialState = {
 };
 
 const EditArtwork = ({ match, location }) => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
   const [state, setState] = useState({
     ...initialState,
   });

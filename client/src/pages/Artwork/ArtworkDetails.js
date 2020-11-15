@@ -6,7 +6,7 @@ import {
 } from "@material-ui/icons";
 import { useSnackbar } from "notistack";
 import queryString from "query-string";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
@@ -17,7 +17,7 @@ import ArtworkActions from "../../containers/ArtworkActions/index.js";
 import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
 import CommentSection from "../../containers/CommentSection/index.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import {
   deleteComment,
@@ -61,7 +61,7 @@ const initialState = {
 };
 
 const ArtworkDetails = ({ match, location, socket }) => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
   const [state, setState] = useState({ ...initialState });
 
   const setDefaultValues = () => ({

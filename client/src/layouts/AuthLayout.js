@@ -1,11 +1,11 @@
 import { Backdrop, Box, CircularProgress } from "@material-ui/core";
-import React, { useContext } from "react";
+import React from "react";
 import Footer from "../containers/Footer/Footer.js";
-import { AppContext } from "../contexts/App.js";
+import { useTracked as useAppContext } from "../contexts/App.js";
 import AuthLayoutStyles from "./AuthLayout.style.js";
 
 const AuthLayout = ({ children }) => {
-  const [appStore] = useContext(AppContext);
+  const [appStore, appDispatch] = useAppContext();
 
   const classes = AuthLayoutStyles();
 

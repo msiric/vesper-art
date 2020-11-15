@@ -9,11 +9,11 @@ import {
 import { LocalizationProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
 import { eachDayOfInterval, format, subDays } from "date-fns";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardStatistics from "../../containers/DashboardStatistics/index.js";
 import DashboardToolbar from "../../containers/DashboardToolbar/index.js";
 import DashboardVisualization from "../../containers/DashboardVisualization/index.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import { getDashboard } from "../../services/stripe.js";
 import { getSelection, getStatistics } from "../../services/user.js";
 import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
@@ -42,7 +42,7 @@ const initialState = {
 };
 
 const Dashboard = ({ location }) => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
   const [state, setState] = useState({
     ...initialState,
   });

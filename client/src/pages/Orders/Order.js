@@ -1,7 +1,7 @@
 import { Container, Grid } from "@material-ui/core";
 import { format } from "date-fns";
 import queryString from "query-string";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
 import EmptySection from "../../components/EmptySection/index.js";
 import OrderCard from "../../components/OrderCard/index.js";
@@ -10,7 +10,7 @@ import RatingModal from "../../components/RatingModal/index.js";
 import LicenseCard from "../../containers/LicenseCard/index.js";
 import OrderPreview from "../../containers/OrderPreview/index.js";
 import ReviewCard from "../../containers/ReviewCard/index.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import { getDownload, getOrder, postReview } from "../../services/orders.js";
 import globalStyles from "../../styles/global.js";
 
@@ -23,7 +23,7 @@ const initialState = {
 };
 
 const Order = ({ match, location }) => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
   const [state, setState] = useState({ ...initialState });
   const globalClasses = globalStyles();
 

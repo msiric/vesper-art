@@ -11,12 +11,12 @@ import {
   LabelImportantRounded as LabelIcon,
   MonetizationOnRounded as MonetizationIcon,
 } from "@material-ui/icons";
-import React, { useContext } from "react";
+import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { countries } from "../../../../common/constants.js";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import OnboardingForm from "../../forms/OnboardingForm/index.js";
 import { postAuthorize } from "../../services/stripe.js";
 import { patchOrigin } from "../../services/user.js";
@@ -31,7 +31,7 @@ import {
 import { originValidation } from "../../validation/origin.js";
 
 const Onboarding = () => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
 
   const {
     handleSubmit,

@@ -1,11 +1,11 @@
 import { Container, Grid } from "@material-ui/core";
 import { withSnackbar } from "notistack";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import EmptySection from "../../components/EmptySection/index.js";
 import ProfileArtwork from "../../containers/ProfileArtwork/index.js";
 import ProfileInfo from "../../containers/ProfileInfo/index.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import { getArtwork } from "../../services/artwork.js";
 import { getSaves, getUser } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
@@ -29,7 +29,7 @@ const initialState = {
 };
 
 const Profile = ({ match, location }) => {
-  const [userStore] = useContext(UserContext);
+  const [userStore] = useUserContext();
   const [state, setState] = useState({
     ...initialState,
   });

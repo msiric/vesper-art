@@ -1,8 +1,8 @@
 import { Box, Divider, Grid, List, Menu, Typography } from "@material-ui/core";
-import React, { useContext } from "react";
+import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
-import { EventsContext } from "../../contexts/Events.js";
+import { useTracked as useEventsContext } from "../../contexts/Events.js";
 import NotificationItem from "./NotificationItem.js";
 import NotificationsMenuStyles from "./NotificationsMenu.style.js";
 
@@ -15,7 +15,7 @@ const NotificationsMenu = ({
   handleUnreadClick,
   loadMore,
 }) => {
-  const [eventsStore] = useContext(EventsContext);
+  const [eventsStore] = useEventsContext();
   const classes = NotificationsMenuStyles();
 
   return (

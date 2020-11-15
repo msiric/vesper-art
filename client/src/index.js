@@ -1,17 +1,30 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Interceptor from "./containers/Interceptor/Interceptor.js";
-import AppProvider from "./contexts/App.js";
-import EventsProvider from "./contexts/Events.js";
-import UserProvider from "./contexts/User.js";
+// import AppProvider from "./contexts/App.js";
+import {
+  appReducer,
+  appStore,
+  Provider as AppProvider,
+} from "./contexts/App.js";
+import {
+  eventsReducer,
+  eventsStore,
+  Provider as EventsProvider,
+} from "./contexts/Events.js";
+import {
+  Provider as UserProvider,
+  userReducer,
+  userStore,
+} from "./contexts/User.js";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker.js";
 
 ReactDOM.render(
   <React.StrictMode>
-    <AppProvider>
-      <UserProvider>
-        <EventsProvider>
+    <AppProvider reducer={appReducer} store={appStore}>
+      <UserProvider reducer={userReducer} store={userStore}>
+        <EventsProvider reducer={eventsReducer} store={eventsStore}>
           <Interceptor />
         </EventsProvider>
       </UserProvider>

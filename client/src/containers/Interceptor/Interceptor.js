@@ -1,13 +1,13 @@
 import axios from "axios";
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import useSound from "use-sound";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { AppContext } from "../../contexts/App.js";
-import { EventsContext } from "../../contexts/Events.js";
-import { UserContext } from "../../contexts/User.js";
+import { useTracked as useAppContext } from "../../contexts/App.js";
+import { useTracked as useEventsContext } from "../../contexts/Events.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import App from "../../pages/App/App.js";
 import { postLogout } from "../../services/user.js";
 
@@ -17,9 +17,9 @@ const ax = axios.create();
 let socket = openSocket(ENDPOINT);
 
 const Interceptor = ({ children }) => {
-  const [appStore, appDispatch] = useContext(AppContext);
-  const [userStore, userDispatch] = useContext(UserContext);
-  const [eventsStore, eventsDispatch] = useContext(EventsContext);
+  const [appStore, appDispatch] = useAppContext();
+  const [userStore, userDispatch] = useUserContext();
+  const [eventsStore, eventsDispatch] = useEventsContext();
 
   const [playNotification] = useSound(notificationSound);
 
