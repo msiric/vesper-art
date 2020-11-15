@@ -42,7 +42,7 @@ const PromptModal = ({
           {children && <Box>{children}</Box>}
           <Box className={classes.modalActions}>
             <Button
-              type="button"
+              type="submit"
               variant="outlined"
               color="primary"
               onClick={handleConfirm}

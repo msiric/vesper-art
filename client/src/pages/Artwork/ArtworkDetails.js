@@ -1,4 +1,5 @@
-import { Box, Button, Container, Grid, Modal } from "@material-ui/core";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Box, Button, Container, Grid } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
@@ -6,6 +7,7 @@ import {
 import { useSnackbar } from "notistack";
 import queryString from "query-string";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
 import EmptySection from "../../components/EmptySection/index.js";
@@ -26,11 +28,12 @@ import {
 import { postDownload } from "../../services/checkout.js";
 import globalStyles from "../../styles/global.js";
 import { Popover } from "../../styles/theme.js";
+import { licenseValidation } from "../../validation/license.js";
 
 const initialState = {
   loading: true,
   artwork: { comments: [] },
-  license: "personal",
+  license: null,
   height: 400,
   modal: {
     open: false,
@@ -60,6 +63,27 @@ const initialState = {
 const ArtworkDetails = ({ match, location, socket }) => {
   const [userStore] = useContext(UserContext);
   const [state, setState] = useState({ ...initialState });
+
+  const setDefaultValues = () => ({
+    licenseType: state.license,
+    licenseAssignee: "",
+    licenseCompany: "",
+  });
+
+  const {
+    handleSubmit,
+    formState,
+    errors,
+    control,
+    setValue,
+    trigger,
+    getValues,
+    watch,
+    reset,
+  } = useForm({
+    defaultValues: setDefaultValues(),
+    resolver: yupResolver(licenseValidation),
+  });
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -114,6 +138,13 @@ const ArtworkDetails = ({ match, location, socket }) => {
       setState((prevState) => ({
         ...prevState,
         loading: false,
+        license:
+          data.artwork.current.use !== "included"
+            ? "personal"
+            : data.artwork.current.commercial !== null &&
+              data.artwork.current.license === "commercial"
+            ? "commercial"
+            : null,
         artwork: data.artwork,
         height:
           data.artwork.current.height /
@@ -371,6 +402,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
     fetchArtwork();
   }, [location]);
 
+  useEffect(() => {
+    reset(setDefaultValues());
+  }, [state.license]);
+
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
@@ -425,31 +460,26 @@ const ArtworkDetails = ({ match, location, socket }) => {
         ) : (
           <EmptySection label="Artwork not found" page />
         )}
-        <Modal
-          open={state.modal.open}
-          handleClose={handleModalClose}
-          ariaLabel="License modal"
-        >
-          <LicenseForm
-            version={state.artwork.current}
-            initial={{
-              standalone: true,
-              value: state.tabs.value === 0 ? "personal" : "commercial",
-              submit: handleDownload,
-            }}
-            handleModalClose={handleModalClose}
-          />
-        </Modal>
         {/* Needs to be integrated with the license form */}
         <PromptModal
           open={state.modal.open}
-          handleConfirm={handleDownload}
+          handleConfirm={handleSubmit(handleDownload)}
           handleClose={handleModalClose}
           ariaLabel="License information"
           promptTitle="License information"
           promptConfirm="Download"
           promptCancel="Close"
-        />
+        >
+          <FormProvider control={control}>
+            <form onSubmit={handleSubmit(handleDownload)}>
+              <LicenseForm
+                version={state.artwork.current}
+                errors={errors}
+                loading={state.loading}
+              />
+            </form>
+          </FormProvider>
+        </PromptModal>
       </Grid>
       {/* $TODO Separate component */}
       <Popover
