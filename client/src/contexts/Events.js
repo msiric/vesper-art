@@ -22,7 +22,7 @@ export const eventsStore = {
 
 export const eventsReducer = (state, action) => {
   switch (action.type) {
-    case "setEvents":
+    case "SET_EVENTS":
       return {
         ...state,
         messages: {
@@ -70,7 +70,7 @@ export const eventsReducer = (state, action) => {
         search:
           typeof action.search !== "undefined" ? action.search : state.search,
       };
-    case "resetEvents":
+    case "RESET_EVENTS":
       return {
         ...state,
         messages: {
@@ -90,7 +90,7 @@ export const eventsReducer = (state, action) => {
         },
         search: "artwork",
       };
-    case "updateMessages":
+    case "UPDATE_MESSAGES":
       return {
         ...state,
         messages: {
@@ -106,7 +106,7 @@ export const eventsReducer = (state, action) => {
             : state.messages.opened,
         },
       };
-    case "updateNotifications":
+    case "UPDATE_NOTIFICATIONS":
       return {
         ...state,
         notifications: {
@@ -140,7 +140,7 @@ export const eventsReducer = (state, action) => {
               : state.notifications.isSubmitting,
         },
       };
-    case "updateEvents":
+    case "UPDATE_EVENTS":
       return {
         ...state,
         messages: {
@@ -188,7 +188,7 @@ export const eventsReducer = (state, action) => {
         search:
           typeof action.search !== "undefined" ? action.search : state.search,
       };
-    case "addNotification":
+    case "ADD_NOTIFICATION":
       return {
         ...state,
         notifications: {
@@ -198,12 +198,12 @@ export const eventsReducer = (state, action) => {
           dataCursor: state.notifications.dataCursor + 1,
         },
       };
-    case "updateSearch":
+    case "UPDATE_SEARCH":
       return {
         ...state,
         search: action.search,
       };
-    case "notificationSubmitting":
+    case "NOTIFICATION_SUBMITTING":
       return {
         ...state,
         notifications: {

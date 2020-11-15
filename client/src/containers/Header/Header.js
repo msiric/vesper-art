@@ -136,7 +136,7 @@ const Header = ({ socket, history }) => {
             dataCeiling: eventsStore.notifications.dataCeiling,
           });
           eventsDispatch({
-            type: "updateNotifications",
+            type: "UPDATE_NOTIFICATIONS",
             notifications: {
               items: [...eventsStore.notifications.items].concat(
                 data.notifications
@@ -198,10 +198,10 @@ const Header = ({ socket, history }) => {
       await postLogout.request();
 
       userDispatch({
-        type: "resetUser",
+        type: "RESET_USER",
       });
       eventsDispatch({
-        type: "resetEvents",
+        type: "RESET_EVENTS",
       });
 
       socket.disconnect();
@@ -217,14 +217,14 @@ const Header = ({ socket, history }) => {
   const handleReadClick = async (id) => {
     try {
       eventsDispatch({
-        type: "notificationSubmitting",
+        type: "NOTIFICATION_SUBMITTING",
         notifications: {
           isSubmitting: true,
         },
       });
       await patchRead.request({ notificationId: id });
       eventsDispatch({
-        type: "updateNotifications",
+        type: "UPDATE_NOTIFICATIONS",
         notifications: {
           items: eventsStore.notifications.items.map((notification) =>
             notification._id === id
@@ -243,14 +243,14 @@ const Header = ({ socket, history }) => {
   const handleUnreadClick = async (id) => {
     try {
       eventsDispatch({
-        type: "notificationSubmitting",
+        type: "NOTIFICATION_SUBMITTING",
         notifications: {
           isSubmitting: true,
         },
       });
       await patchUnread.request({ notificationId: id });
       eventsDispatch({
-        type: "updateNotifications",
+        type: "UPDATE_NOTIFICATIONS",
         notifications: {
           items: eventsStore.notifications.items.map((notification) =>
             notification._id === id
@@ -280,7 +280,7 @@ const Header = ({ socket, history }) => {
         dataCeiling: eventsStore.notifications.dataCeiling,
       });
       eventsDispatch({
-        type: "updateNotifications",
+        type: "UPDATE_NOTIFICATIONS",
         notifications: {
           items: [...eventsStore.notifications.items].concat(
             data.notifications
@@ -301,7 +301,7 @@ const Header = ({ socket, history }) => {
 
   const handleToggle = () => {
     eventsDispatch({
-      type: "updateSearch",
+      type: "UPDATE_SEARCH",
       search: eventsStore.search === "artwork" ? "users" : "artwork",
     });
   };

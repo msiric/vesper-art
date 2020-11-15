@@ -19,7 +19,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
       setState({ loading: true });
       await postSave.request({ artworkId: id });
       userDispatch({
-        type: "updateSaves",
+        type: "UPDATE_SAVES",
         saved: {
           [id]: true,
         },
@@ -37,7 +37,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
       setState({ loading: true });
       await deleteSave.request({ artworkId: id });
       userDispatch({
-        type: "updateSaves",
+        type: "UPDATE_SAVES",
         saved: {
           [id]: false,
         },

@@ -31,7 +31,7 @@ const Interceptor = ({ children }) => {
     try {
       if (!userStore.token) {
         appDispatch({
-          type: "setApp",
+          type: "SET_APP",
           loading: true,
           error: false,
           theme: appStore.theme,
@@ -45,7 +45,7 @@ const Interceptor = ({ children }) => {
 
         if (data.user) {
           userDispatch({
-            type: "setUser",
+            type: "SET_USER",
             authenticated: true,
             token: data.accessToken,
             id: data.user.id,
@@ -64,7 +64,7 @@ const Interceptor = ({ children }) => {
             }, {}),
           });
           eventsDispatch({
-            type: "setEvents",
+            type: "SET_EVENTS",
             messages: {
               items: [],
               count: data.user.messages,
@@ -78,14 +78,14 @@ const Interceptor = ({ children }) => {
             },
           });
           appDispatch({
-            type: "setApp",
+            type: "SET_APP",
             loading: false,
             error: false,
             theme: appStore.theme,
           });
         } else {
           appDispatch({
-            type: "setApp",
+            type: "SET_APP",
             loading: false,
             error: false,
             theme: appStore.theme,
@@ -94,7 +94,7 @@ const Interceptor = ({ children }) => {
       }
     } catch (err) {
       appDispatch({
-        type: "setApp",
+        type: "SET_APP",
         loading: false,
         error: true,
         theme: appStore.theme,
@@ -127,7 +127,7 @@ const Interceptor = ({ children }) => {
         ) {
           await postLogout.request();
           userDispatch({
-            type: "resetUser",
+            type: "RESET_USER",
           });
           history.push("/login");
 
@@ -143,7 +143,7 @@ const Interceptor = ({ children }) => {
         });
 
         userDispatch({
-          type: "updateUser",
+          type: "UPDATE_USER",
           token: data.accessToken,
           email: data.user.email,
           photo: data.user.photo,
@@ -160,7 +160,7 @@ const Interceptor = ({ children }) => {
         });
 
         eventsDispatch({
-          type: "updateEvents",
+          type: "UPDATE_EVENTS",
           messages: { items: [], count: data.user.messages },
           notifications: { count: data.user.notifications },
         });
@@ -186,7 +186,7 @@ const Interceptor = ({ children }) => {
 
   const handleSocketNotification = (data) => {
     eventsDispatch({
-      type: "addNotification",
+      type: "ADD_NOTIFICATION",
       notification: data,
     });
     playNotification();
@@ -201,7 +201,7 @@ const Interceptor = ({ children }) => {
       });
 
       userDispatch({
-        type: "updateUser",
+        type: "UPDATE_USER",
         token: data.accessToken,
         email: data.user.email,
         photo: data.user.photo,
@@ -222,7 +222,7 @@ const Interceptor = ({ children }) => {
       });
     } catch (err) {
       userDispatch({
-        type: "resetUser",
+        type: "RESET_USER",
       });
     }
   };

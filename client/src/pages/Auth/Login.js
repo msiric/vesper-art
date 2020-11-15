@@ -52,7 +52,7 @@ const Login = () => {
 
       if (data.user) {
         userDispatch({
-          type: "setUser",
+          type: "SET_USER",
           authenticated: true,
           token: data.accessToken,
           id: data.user.id,
@@ -71,7 +71,7 @@ const Login = () => {
           }, {}),
         });
         eventsDispatch({
-          type: "setEvents",
+          type: "SET_EVENTS",
           messages: { items: [], count: data.user.messages },
           notifications: {
             ...eventsStore.notifications,

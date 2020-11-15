@@ -9,7 +9,7 @@ export const appStore = {
 
 export const appReducer = (state, action) => {
   switch (action.type) {
-    case "setApp":
+    case "SET_APP":
       return {
         ...state,
         loading: action.loading,

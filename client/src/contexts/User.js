@@ -18,7 +18,7 @@ export const userStore = {
 
 export const userReducer = (state, action) => {
   switch (action.type) {
-    case "setUser":
+    case "SET_USER":
       return {
         ...state,
         authenticated: action.authenticated,
@@ -32,7 +32,7 @@ export const userReducer = (state, action) => {
         country: action.country,
         intents: action.intents,
       };
-    case "updateUser":
+    case "UPDATE_USER":
       return {
         ...state,
         token: action.token,
@@ -43,7 +43,7 @@ export const userReducer = (state, action) => {
         saved: action.saved,
         intents: action.intents,
       };
-    case "resetUser":
+    case "RESET_USER":
       return {
         ...state,
         authenticated: false,
@@ -59,12 +59,12 @@ export const userReducer = (state, action) => {
         saved: {},
         intents: {},
       };
-    case "updateToken":
+    case "UPDATE_TOKEN":
       return {
         ...state,
         token: action.token,
       };
-    case "updateSaves":
+    case "UPDATE_SAVES":
       return {
         ...state,
         saved: { ...state.saved, ...action.saved },
