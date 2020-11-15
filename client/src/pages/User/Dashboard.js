@@ -4,7 +4,7 @@ import {
   Container,
   Divider,
   Grid,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { LocalizationProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
@@ -14,9 +14,9 @@ import DashboardStatistics from "../../containers/DashboardStatistics/index.js";
 import DashboardToolbar from "../../containers/DashboardToolbar/index.js";
 import DashboardVisualization from "../../containers/DashboardVisualization/index.js";
 import { useTracked as useUserContext } from "../../contexts/User.js";
+import RangeInput from "../../controls/RangeInput/index.js";
 import { getDashboard } from "../../services/stripe.js";
 import { getSelection, getStatistics } from "../../services/user.js";
-import DateRangePicker from "../../shared/DateRangePicker/DateRangePicker.js";
 import globalStyles from "../../styles/global.js";
 
 const initialState = {
@@ -254,7 +254,7 @@ const Dashboard = ({ location }) => {
                   ? "Visualization"
                   : "Select date range"}
               </Typography>
-              <DateRangePicker
+              <RangeInput
                 fromLabel="From"
                 toLabel="To"
                 selectedDate={state.dates}
