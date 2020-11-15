@@ -1,16 +1,12 @@
-import * as React from "react";
 import { TextField } from "@material-ui/core";
 import {
-  DateRangePicker as RangePicker,
   DateRangeDelimiter,
+  DateRangePicker as RangePicker,
 } from "@material-ui/pickers";
+import * as React from "react";
 
-const DateRangePicker = ({
-  fromLabel,
-  toLabel,
-  selectedDate,
-  handleChange,
-}) => {
+// $TODO Treba sredit
+const RangeInput = ({ fromLabel, toLabel, selectedDate, handleChange }) => {
   return (
     <RangePicker
       startText={fromLabel}
@@ -29,4 +25,4 @@ const DateRangePicker = ({
   );
 };
 
-export default DateRangePicker;
+export default RangeInput;
