@@ -22,7 +22,7 @@ export const postSignup = {
   error: { message: "Failed to sign up user", variant: "error" },
 };
 export const getToken = {
-  request: async ({ tokenId }) =>
+  request: async (_, { tokenId }) =>
     await ax.get(`/api/auth/verify_token/${tokenId}`),
   success: { message: "Token successfully verified", variant: "success" },
   error: { message: "Failed to verify token", variant: "error" },

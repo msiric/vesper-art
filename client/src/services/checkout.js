@@ -1,7 +1,8 @@
 import { ax } from "../containers/Interceptor/Interceptor.js";
 
 export const getCheckout = {
-  request: async ({ versionId }) => await ax.get(`/api/checkout/${versionId}`),
+  request: async (_, { versionId }) =>
+    await ax.get(`/api/checkout/${versionId}`),
   success: { message: "Checkout successfully fetched", variant: "success" },
   error: { message: "Failed to fetch checkout", variant: "error" },
 };

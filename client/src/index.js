@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { ReactQueryCacheProvider } from "react-query";
 import Interceptor from "./containers/Interceptor/Interceptor.js";
-// import AppProvider from "./contexts/App.js";
 import {
   appReducer,
   appStore,
@@ -19,13 +19,16 @@ import {
 } from "./contexts/User.js";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker.js";
+import queryCache from "./utils/cache.js";
 
 ReactDOM.render(
   <React.StrictMode>
     <AppProvider reducer={appReducer} store={appStore}>
       <UserProvider reducer={userReducer} store={userStore}>
         <EventsProvider reducer={eventsReducer} store={eventsStore}>
-          <Interceptor />
+          <ReactQueryCacheProvider queryCache={queryCache}>
+            <Interceptor />
+          </ReactQueryCacheProvider>
         </EventsProvider>
       </UserProvider>
     </AppProvider>

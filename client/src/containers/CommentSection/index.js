@@ -4,6 +4,7 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useMutation, useQueryCache } from "react-query";
 import { useHistory } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import CommentCard from "../../components/CommentCard/index.js";
@@ -30,6 +31,8 @@ const CommentSection = ({
   handlePopoverOpen,
   loading,
 }) => {
+  const cache = useQueryCache();
+
   const history = useHistory();
   const classes = commentSectionStyles();
 
@@ -40,13 +43,20 @@ const CommentSection = ({
     resolver: yupResolver(commentValidation),
   });
 
+  const [initPostComment, { status: postCommentStatus }] = useMutation(
+    postComment.request,
+    {
+      onSuccess: (response, values) => {
+        // Query Invalidations
+        /*       cache.invalidateQueries("$TODO"); */
+        handleCommentAdd(response.data.payload);
+        reset();
+      },
+    }
+  );
+
   const onSubmit = async (values) => {
-    const { data } = await postComment.request({
-      artworkId: artwork._id,
-      data: values,
-    });
-    handleCommentAdd(data.payload);
-    reset();
+    await initPostComment({ artworkId: artwork._id, data: values });
   };
 
   return (

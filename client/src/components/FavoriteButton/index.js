@@ -3,51 +3,55 @@ import {
   FavoriteBorderRounded as FavoriteIcon,
   FavoriteRounded as FavoritedIcon,
 } from "@material-ui/icons";
-import React, { useState } from "react";
+import React from "react";
+import { useMutation, useQueryCache } from "react-query";
 import { useTracked as useUserContext } from "../../contexts/User.js";
 import { deleteSave, postSave } from "../../services/artwork.js";
 import favoriteButtonStyles from "./styles.js";
 
 const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
-  const [state, setState] = useState({ loading: false });
   const [userStore, userDispatch] = useUserContext();
+
+  const cache = useQueryCache();
+
+  const [initPostSave, { status: postSaveStatus }] = useMutation(
+    postSave.request,
+    {
+      onSuccess: (response, values) => {
+        userDispatch({
+          type: "UPDATE_SAVES",
+          saved: {
+            [values.artworkId]: true,
+          },
+        });
+        if (handleCallback) handleCallback(1);
+      },
+    }
+  );
+
+  const [initDeleteSave, { status: deleteSaveStatus }] = useMutation(
+    deleteSave.request,
+    {
+      onSuccess: (response, values) => {
+        userDispatch({
+          type: "UPDATE_SAVES",
+          saved: {
+            [values.artworkId]: false,
+          },
+        });
+        if (handleCallback) handleCallback(-1);
+      },
+    }
+  );
 
   const classes = favoriteButtonStyles();
 
   const handleSaveArtwork = async (id) => {
-    try {
-      setState({ loading: true });
-      await postSave.request({ artworkId: id });
-      userDispatch({
-        type: "UPDATE_SAVES",
-        saved: {
-          [id]: true,
-        },
-      });
-      if (handleCallback) handleCallback(1);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setState({ loading: false });
-    }
+    await initPostSave({ artworkId: id });
   };
 
   const handleUnsaveArtwork = async (id) => {
-    try {
-      setState({ loading: true });
-      await deleteSave.request({ artworkId: id });
-      userDispatch({
-        type: "UPDATE_SAVES",
-        saved: {
-          [id]: false,
-        },
-      });
-      if (handleCallback) handleCallback(-1);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setState({ loading: false });
-    }
+    await initDeleteSave({ artworkId: id });
   };
 
   return labeled ? (
@@ -55,7 +59,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
       variant="outlined"
       color="primary"
       startIcon={favorited ? <FavoritedIcon /> : <FavoriteIcon />}
-      disabled={state.loading}
+      disabled={postSaveStatus === "loading" || deleteSaveStatus === "loading"}
       onClick={() =>
         favorited
           ? handleUnsaveArtwork(artwork._id)
@@ -73,7 +77,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
           ? handleUnsaveArtwork(artwork._id)
           : handleSaveArtwork(artwork._id)
       }
-      disabled={state.loading}
+      disabled={postSaveStatus === "loading" || deleteSaveStatus === "loading"}
     >
       {favorited ? <FavoritedIcon /> : <FavoriteIcon />}
     </IconButton>

@@ -9,18 +9,18 @@ export const postReview = {
   error: { message: "Failed to publish review", variant: "error" },
 };
 export const getOrder = {
-  request: async ({ orderId }) => await ax.get(`/api/orders/${orderId}`),
+  request: async (_, { orderId }) => await ax.get(`/api/orders/${orderId}`),
   success: { message: "Order successfully fetched", variant: "success" },
   error: { message: "Failed to fetch order", variant: "error" },
 };
 // $TODO Not used?
 export const getOrders = {
-  request: async ({ display }) => await ax.get(`/api/orders/${display}`),
+  request: async (_, { display }) => await ax.get(`/api/orders/${display}`),
   success: { message: "Orders successfully fetched", variant: "success" },
   error: { message: "Failed to fetch orders", variant: "error" },
 };
 export const getDownload = {
-  request: async ({ orderId }) =>
+  request: async (_, { orderId }) =>
     await ax.get(`/api/orders/${orderId}/download`),
   success: { message: "Artwork successfully downloaded", variant: "success" },
   error: { message: "Failed to download artwork", variant: "error" },

@@ -6,7 +6,7 @@ export const postVerifier = {
   error: { message: "Failed to verify license", variant: "error" },
 };
 export const getSearch = {
-  request: async ({ searchQuery, dataCursor, dataCeiling }) =>
+  request: async (_, { searchQuery, dataCursor, dataCeiling }) =>
     await ax.get(
       `/api/search${searchQuery}&dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
     ),

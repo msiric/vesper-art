@@ -1,8 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CardActions, CardContent, Container, Grid } from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryCache } from "react-query";
 import { useHistory } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
@@ -17,11 +18,20 @@ import { deleteEmptyValues, formatValues } from "../../utils/helpers.js";
 import { artworkValidation } from "../../validation/artwork.js";
 import { addArtwork } from "../../validation/media.js";
 
-const initialState = { loading: false, capabilities: {} };
-
 const AddArtwork = () => {
   const [userStore] = useUserContext();
-  const [state, setState] = useState({ ...initialState });
+
+  const cache = useQueryCache();
+
+  const { data: fetchUserResponse, status: fetchUserStatus } = useQuery(
+    ["fetchUser", { stripeId: userStore.stripeId }],
+    getUser.request,
+    { enabled: userStore.stripeId }
+  );
+
+  const [initPostArtwork, { status: postArtworkStatus }] = useMutation(
+    postArtwork.request
+  );
 
   const {
     handleSubmit,
@@ -53,20 +63,6 @@ const AddArtwork = () => {
 
   const globalClasses = globalStyles();
 
-  const fetchAccount = async () => {
-    try {
-      setState({ ...initialState, loading: true });
-      const { data } = await getUser.request({ stripeId: userStore.stripeId });
-      setState((prevState) => ({
-        ...prevState,
-        loading: false,
-        capabilities: data.capabilities,
-      }));
-    } catch (err) {
-      setState((prevState) => ({ ...prevState, loading: false }));
-    }
-  };
-
   const onSubmit = async (values) => {
     const data = deleteEmptyValues(formatValues(values));
     const formData = new FormData();
@@ -78,7 +74,7 @@ const AddArtwork = () => {
       }
     }
     try {
-      await postArtwork.request({ data: formData });
+      await initPostArtwork({ data: formData });
       history.push({
         pathname: "/",
         state: { message: "Artwork published" },
@@ -88,9 +84,7 @@ const AddArtwork = () => {
     }
   };
 
-  useEffect(() => {
-    if (userStore.stripeId) fetchAccount();
-  }, []);
+  const isLoading = () => fetchUserStatus === "loading";
 
   return (
     <Container className={globalClasses.gridContainer}>
@@ -101,36 +95,43 @@ const AddArtwork = () => {
             className={globalClasses.mainHeading}
           />
           <Card width="100%">
-            {!userStore.stripeId ? (
-              <HelpBox
-                type="alert"
-                label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
-              />
-            ) : state.capabilities.cardPayments === "pending" ||
-              state.capabilities.platformPayments === "pending" ? (
-              <HelpBox
-                type="alert"
-                label="To make your artwork commercially available, please wait for Stripe to verify the information you entered"
-              />
-            ) : state.capabilities.cardPayments !== "active" ||
-              state.capabilities.platformPayments !== "active" ? (
-              <HelpBox
-                type="alert"
-                label="To make your artwork commercially available, finish entering your Stripe account information"
-              />
-            ) : null}
+            {!isLoading() &&
+              (!userStore.stripeId ? (
+                <HelpBox
+                  type="alert"
+                  label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
+                />
+              ) : fetchUserResponse.data.capabilities.cardPayments ===
+                  "pending" ||
+                fetchUserResponse.data.capabilities.platformPayments ===
+                  "pending" ? (
+                <HelpBox
+                  type="alert"
+                  label="To make your artwork commercially available, please wait for Stripe to verify the information you entered"
+                />
+              ) : fetchUserResponse.data.capabilities.cardPayments !==
+                  "active" ||
+                fetchUserResponse.data.capabilities.platformPayments !==
+                  "active" ? (
+                <HelpBox
+                  type="alert"
+                  label="To make your artwork commercially available, finish entering your Stripe account information"
+                />
+              ) : null)}
             <FormProvider control={control}>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <CardContent>
                   <ArtworkForm
-                    capabilities={state.capabilities}
+                    capabilities={
+                      fetchUserResponse && fetchUserResponse.data.capabilities
+                    }
                     preview={false}
                     errors={errors}
                     setValue={setValue}
                     trigger={trigger}
                     getValues={getValues}
                     watch={watch}
-                    loading={state.loading}
+                    loading={isLoading()}
                   />
                 </CardContent>
                 <CardActions

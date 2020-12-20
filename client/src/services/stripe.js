@@ -1,7 +1,8 @@
 import { ax } from "../containers/Interceptor/Interceptor.js";
 
 export const getUser = {
-  request: async ({ stripeId }) => await ax.get(`/stripe/account/${stripeId}`),
+  request: async (_, { stripeId }) =>
+    await ax.get(`/stripe/account/${stripeId}`),
   success: { message: "Account successfully fetched", variant: "success" },
   error: { message: "Failed to fetch account", variant: "error" },
 };
@@ -25,7 +26,7 @@ export const postAuthorize = {
   error: { message: "Failed to authorize user", variant: "error" },
 };
 export const getDashboard = {
-  request: async ({ stripeId }) =>
+  request: async (_, { stripeId }) =>
     await ax.get(`/stripe/dashboard/${stripeId}`),
   success: { message: "Dashboard successfully fetched", variant: "success" },
   error: { message: "Failed to fetch dashboard", variant: "error" },

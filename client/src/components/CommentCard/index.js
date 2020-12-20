@@ -16,6 +16,7 @@ import {
 } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useMutation, useQueryCache } from "react-query";
 import { Link, useHistory } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import { useTracked as useUserContext } from "../../contexts/User.js";
@@ -39,6 +40,8 @@ const CommentCard = ({
 }) => {
   const [userStore, userDispatch] = useUserContext();
 
+  const cache = useQueryCache();
+
   const setDefaultValues = () => ({
     commentContent: comment.content,
   });
@@ -48,13 +51,24 @@ const CommentCard = ({
     resolver: yupResolver(commentValidation),
   });
 
+  const [initPatchComment, { status: patchCommentStatus }] = useMutation(
+    patchComment.request,
+    {
+      onSuccess: (response, values) => {
+        // Query Invalidations
+        /*       cache.invalidateQueries("$TODO"); */
+        /* cache.setQueryData(['todo', { id: 5 }], data) */
+        handleCommentEdit(comment._id, values.data.commentContent);
+      },
+    }
+  );
+
   const onSubmit = async (values) => {
-    await patchComment.request({
+    await initPatchComment({
       artworkId: artwork._id,
       commentId: comment._id,
       data: values,
     });
-    handleCommentEdit(comment._id, values.commentContent);
   };
 
   const history = useHistory();
