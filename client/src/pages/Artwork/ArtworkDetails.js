@@ -9,7 +9,6 @@ import queryString from "query-string";
 import React, { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { upload } from "../../../../common/constants.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
 import ArtistSection from "../../containers/ArtistSection/index.js";
@@ -23,7 +22,6 @@ import {
   deleteComment,
   getComment,
   getComments,
-  getDetails,
 } from "../../services/artwork.js";
 import { postDownload } from "../../services/checkout.js";
 import globalStyles from "../../styles/global.js";
@@ -34,7 +32,6 @@ const initialState = {
   loading: true,
   artwork: { comments: [] },
   license: null,
-  height: 400,
   modal: {
     open: false,
   },
@@ -113,15 +110,26 @@ const ArtworkDetails = ({ match, location, socket }) => {
     }
   };
 
-  const fetchArtwork = async () => {
-    try {
-      setState({ ...initialState });
-      const { data } = await getDetails.request({
-        artworkId: match.params.id,
-        dataCursor: initialState.scroll.comments.dataCursor,
-        dataCeiling: initialState.scroll.comments.dataCeiling,
+  const resolveHighlight = async (comments) => {
+    let foundHighlight = false;
+    let fetchedHighlight = {};
+    if (query.notif === "comment" && query.ref) {
+      foundHighlight =
+        !!comments.filter((comment) => comment._id === query.ref)[0] || false;
+      fetchedHighlight = !foundHighlight ? await fetchHighlight(query.ref) : {};
+    }
+    if (!foundHighlight)
+      enqueueSnackbar("Comment not found", {
+        variant: "error",
       });
-      const foundHighlight =
+    return { foundHighlight, fetchedHighlight };
+  };
+
+  const handleFetchSuccess = (artwork) => {
+    const { foundHighlight, fetchedHighlight } = resolveHighlight(
+      artwork.comments
+    );
+    /*       const foundHighlight =
         query.notif === "comment" && query.ref
           ? !!data.artwork.comments.filter(
               (comment) => comment._id === query.ref
@@ -134,50 +142,37 @@ const ArtworkDetails = ({ match, location, socket }) => {
       if (query.notif === "comment" && query.ref && !foundHighlight)
         enqueueSnackbar("Comment not found", {
           variant: "error",
-        });
-      setState((prevState) => ({
-        ...prevState,
-        loading: false,
-        license:
-          data.artwork.current.use !== "included"
-            ? "personal"
-            : data.artwork.current.commercial !== null &&
-              data.artwork.current.license === "commercial"
-            ? "commercial"
-            : null,
-        artwork: data.artwork,
-        height:
-          data.artwork.current.height /
-            (data.artwork.current.width / upload.artwork.fileTransform.width) +
-          70,
-        scroll: {
-          ...prevState.scroll,
-          comments: {
-            ...prevState.scroll.comments,
-            hasMore:
-              data.artwork.comments.length <
-              prevState.scroll.comments.dataCeiling
-                ? false
-                : true,
-            dataCursor:
-              prevState.scroll.comments.dataCursor +
-              prevState.scroll.comments.dataCeiling,
-          },
+        }); */
+    setState((prevState) => ({
+      ...prevState,
+      license:
+        artwork.current.use !== "included"
+          ? "personal"
+          : artwork.current.commercial !== null &&
+            artwork.current.license === "commercial"
+          ? "commercial"
+          : null,
+      artwork: artwork,
+      scroll: {
+        ...prevState.scroll,
+        comments: {
+          ...prevState.scroll.comments,
+          hasMore:
+            artwork.comments.length < prevState.scroll.comments.dataCeiling
+              ? false
+              : true,
+          dataCursor:
+            prevState.scroll.comments.dataCursor +
+            prevState.scroll.comments.dataCeiling,
         },
-        highlight: foundHighlight
-          ? { ...initialState.highlight, found: true }
-          : fetchedHighlight && fetchedHighlight.comment
-          ? { found: false, element: fetchedHighlight.comment }
-          : { ...initialState.highlight },
-      }));
-      if (!foundHighlight && !fetchedHighlight) {
-        console.log("error");
-      } else {
-        scrollToHighlight();
-      }
-    } catch (err) {
-      setState((prevState) => ({ ...prevState, loading: false }));
-    }
+      },
+      highlight: foundHighlight
+        ? { ...initialState.highlight, found: true }
+        : fetchedHighlight && fetchedHighlight.comment
+        ? { found: false, element: fetchedHighlight.comment }
+        : { ...initialState.highlight },
+    }));
+    if (foundHighlight || fetchedHighlight) scrollToHighlight();
   };
 
   const handleArtworkSave = (increment) => {
@@ -421,7 +416,6 @@ const ArtworkDetails = ({ match, location, socket }) => {
             <Grid item sm={12} md={8}>
               <ArtworkPreview
                 version={state.artwork.current}
-                height={state.height}
                 loading={state.loading}
               />
               <br />

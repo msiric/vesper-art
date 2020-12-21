@@ -7,7 +7,7 @@ import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { Typography } from "../../styles/theme.js";
 import artworkPreviewStyles from "./styles.js";
 
-const ArtworkPreview = ({ version = {}, height, loading }) => {
+const ArtworkPreview = ({ version = {}, loading }) => {
   const history = useHistory();
   const classes = artworkPreviewStyles();
 

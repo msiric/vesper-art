@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Interceptor from "./containers/Interceptor/Interceptor.js";
-// import AppProvider from "./contexts/App.js";
 import {
   appReducer,
   appStore,
