@@ -1,14 +1,14 @@
-import User from "../models/user.js";
 import jwt from "jsonwebtoken";
+import User from "../models/user.js";
 
-export const createAccessToken = (user) => {
+export const createAccessToken = ({ userData }) => {
   return jwt.sign(
     {
-      id: user.id,
-      name: user.name,
-      onboarded: user.onboarded,
-      jwtVersion: user.jwtVersion,
-      active: user.active,
+      id: userData.id,
+      name: userData.name,
+      onboarded: userData.onboarded,
+      jwtVersion: userData.jwtVersion,
+      active: userData.active,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -54,26 +54,27 @@ export const updateAccessToken = async (req, res, next) => {
     photo: foundUser.photo,
     messages: foundUser.inbox,
     notifications: foundUser.notifications,
-    cart: foundUser.cart,
     saved: foundUser.savedArtwork,
     active: foundUser.active,
     stripeId: foundUser.stripeId,
+    intents: foundUser.intents,
     country: foundUser.country,
+    origin: foundUser.origin,
     jwtVersion: foundUser.jwtVersion,
   };
 
-  sendRefreshToken(res, createRefreshToken(tokenPayload));
+  sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
 
   return {
     ok: true,
-    accessToken: createAccessToken(tokenPayload),
+    accessToken: createAccessToken({ userData: tokenPayload }),
     user: userInfo,
   };
 };
 
-export const createRefreshToken = (user) => {
+export const createRefreshToken = ({ userData }) => {
   return jwt.sign(
-    { userId: user.id, jwtVersion: user.jwtVersion },
+    { userId: userData.id, jwtVersion: userData.jwtVersion },
     process.env.REFRESH_TOKEN_SECRET,
     {
       expiresIn: "7d",
@@ -81,8 +82,8 @@ export const createRefreshToken = (user) => {
   );
 };
 
-export const sendRefreshToken = (res, token) => {
-  res.cookie("jid", token, {
+export const sendRefreshToken = (res, refreshToken) => {
+  res.cookie("jid", refreshToken, {
     httpOnly: true,
     path: "api/auth/refresh_token",
   });

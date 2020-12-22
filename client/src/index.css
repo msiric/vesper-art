@@ -1,19 +1,55 @@
-html,
-body,
-#root {
+html {
   height: 100%;
 }
 
 body {
+  min-height: 100%;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  min-height: 100%;
+}
+
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.SRLElementContainer {
+  height: calc(100vh - 80px) !important;
+}
+
+@media (max-width: 768px) {
+  .SRLElementContainer {
+    height: calc((var(--vh, 1vh) * 100) - 80px) !important;
+  }
+}
+
+.SRLCaptionContainer {
+  position: absolute !important;
+  bottom: 0 !important;
+  height: 40px !important;
+}
+
+.SRLCaptionContainer p {
+  padding: 0 !important;
+}
+
+.SRLContainer:after {
+  content: "";
+  display: block;
+  background-image: url("./assets/images/logo/logo-desktop.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 70px;
+  height: 20px;
+  top: 5px;
+  left: 5px;
+  position: absolute;
 }

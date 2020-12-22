@@ -1,137 +1,174 @@
 import express from "express";
 import {
-  isAuthenticated,
+  createUserIntent,
+  deactivateUser,
+  deleteUserIntent,
+  getUserArtwork,
+  getUserMedia,
+  getUserNotifications,
+  getUserOwnership,
+  getUserProfile,
+  getUserPurchases,
+  getUserSales,
+  getUserSaves,
+  getUserSettings,
+  getUserStatistics,
+  updateUserEmail,
+  updateUserOrigin,
+  updateUserPassword,
+  updateUserPreferences,
+  updateUserProfile,
+} from "../../../controllers/user.js";
+import multerApi from "../../../lib/multer.js";
+import {
   checkParamsId,
   checkParamsUsername,
+  isAuthenticated,
   requestHandler as handler,
 } from "../../../utils/helpers.js";
-import {
-  getUserProfile,
-  getUserArtwork,
-  updateUserProfile,
-  deactivateUser,
-  getUserSaves,
-  getUserSales,
-  getUserPurchases,
-  getUserSettings,
-  updateUserPreferences,
-  getUserNotifications,
-  updateUserEmail,
-  updateUserPassword,
-} from "../../../controllers/user.js";
 
 const router = express.Router();
 
-router.route("/user/:username").get(
+router.route("/user/:userUsername").get(
   checkParamsUsername,
   handler(getUserProfile, false, (req, res, next) => ({
-    username: req.params.username,
-    cursor: req.query.cursor,
-    ceiling: req.query.ceiling,
+    ...req.params,
+    ...req.query,
   }))
 );
 
 router.route("/user/:userId/artwork").get(
   checkParamsId,
   handler(getUserArtwork, false, (req, res, next) => ({
-    userId: req.params.userId,
-    cursor: req.query.cursor,
-    ceiling: req.query.ceiling,
+    ...req.params,
+    ...req.query,
+  }))
+);
+
+router.route("/user/:userId/ownership").get(
+  checkParamsId,
+  handler(getUserOwnership, false, (req, res, next) => ({
+    ...req.params,
+    ...req.query,
   }))
 );
 
 router.route("/user/:userId/saves").get(
   checkParamsId,
   handler(getUserSaves, false, (req, res, next) => ({
-    userId: req.params.userId,
-    cursor: req.query.cursor,
-    ceiling: req.query.ceiling,
+    ...req.params,
+    ...req.query,
   }))
 );
 
 router
   .route("/user/:userId")
   .patch(
-    [isAuthenticated, checkParamsId],
+    [isAuthenticated, checkParamsId, multerApi.uploadUserLocal],
     handler(updateUserProfile, true, (req, res, next) => ({
-      userId: req.params.userId,
-      userMedia: req.body.userMedia,
-      userDescription: req.body.userDescription,
-      userCountry: req.body.userCountry,
-      userDimensions: req.body.userDimensions,
+      ...req.params,
+      userPath: req.file ? req.file.path : "",
+      userFilename: req.file ? req.file.filename : "",
+      userMimetype: req.file ? req.file.mimetype : "",
+      userData: { ...req.body },
     }))
   )
   .delete(
     [isAuthenticated, checkParamsId],
     handler(deactivateUser, true, (req, res, next) => ({
-      userId: req.params.userId,
+      ...req.params,
     }))
   );
 
+router.route("/user/:userId/origin").patch(
+  [isAuthenticated, checkParamsId],
+  handler(updateUserOrigin, false, (req, res, next) => ({
+    ...req.params,
+    ...req.body,
+  }))
+);
+
 router.route("/user/:userId/statistics").get(
   [isAuthenticated, checkParamsId],
-  handler(getUserSaves, false, (req, res, next) => ({
-    userId: req.params.userId,
+  handler(getUserStatistics, false, (req, res, next) => ({
+    ...req.params,
   }))
 );
 
 router.route("/user/:userId/sales").get(
   [isAuthenticated, checkParamsId],
   handler(getUserSales, false, (req, res, next) => ({
-    userId: req.params.userId,
-    from: req.query.from,
-    to: req.query.to,
+    ...req.params,
+    ...req.query,
   }))
 );
 
 router.route("/user/:userId/purchases").get(
   [isAuthenticated, checkParamsId],
   handler(getUserPurchases, false, (req, res, next) => ({
-    userId: req.params.userId,
-    from: req.query.from,
-    to: req.query.to,
+    ...req.params,
+    ...req.query,
   }))
 );
 
 router.route("/user/:userId/settings").get(
   [isAuthenticated, checkParamsId],
   handler(getUserSettings, false, (req, res, next) => ({
-    userId: req.params.userId,
+    ...req.params,
   }))
 );
 
 router.route("/user/:userId/preferences").patch(
   [isAuthenticated, checkParamsId],
   handler(updateUserPreferences, false, (req, res, next) => ({
-    userId: req.params.userId,
-    displaySaves: req.body.displaySaves,
+    ...req.params,
+    ...req.body,
   }))
 );
 
 router.route("/user/:userId/notifications").get(
   [isAuthenticated, checkParamsId],
   handler(getUserNotifications, false, (req, res, next) => ({
-    userId: req.params.userId,
-    cursor: req.query.cursor,
-    ceiling: req.query.ceiling,
+    ...req.params,
+    ...req.query,
   }))
 );
 
 router.route("/user/:userId/update_email").patch(
   [isAuthenticated, checkParamsId],
   handler(updateUserEmail, true, (req, res, next) => ({
-    userId: req.params.userId,
-    email: req.body.email,
+    ...req.params,
+    ...req.body,
   }))
 );
 
 router.route("/user/:userId/update_password").patch(
   [isAuthenticated, checkParamsId],
   handler(updateUserPassword, false, (req, res, next) => ({
-    userId: req.params.userId,
-    current: req.body.current,
-    password: req.body.password,
-    confirm: req.body.confirm,
+    ...req.params,
+    ...req.body,
+  }))
+);
+
+router.route("/user/:userId/intents").post(
+  [isAuthenticated, checkParamsId],
+  handler(createUserIntent, false, (req, res, next) => ({
+    ...req.params,
+    ...req.body,
+  }))
+);
+
+router.route("/user/:userId/intents/:intentId").delete(
+  [isAuthenticated, checkParamsId],
+  handler(deleteUserIntent, false, (req, res, next) => ({
+    ...req.params,
+  }))
+);
+
+router.route("/user/:userId/artwork/:artworkId/download").get(
+  [isAuthenticated, checkParamsId],
+  handler(getUserMedia, false, (req, res, next) => ({
+    ...req.params,
   }))
 );
 

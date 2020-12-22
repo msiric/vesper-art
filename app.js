@@ -1,25 +1,29 @@
-import 'dotenv/config.js';
-import express from 'express';
-import bodyParser from 'body-parser';
-import cookieSession from 'cookie-session';
-import morgan from 'morgan';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import createError from 'http-errors';
-import { mongo } from './config/secret.js';
-import cookieParser from 'cookie-parser';
-import path from 'path';
-import http from 'http';
-import api from './routes/api/index.js';
-import stripe from './routes/stripe/index.js';
+import bodyParser from "body-parser";
+import compression from "compression";
+import cookieParser from "cookie-parser";
+import cookieSession from "cookie-session";
+import cors from "cors";
+import "dotenv/config.js";
+import express from "express";
+import helmet from "helmet";
+import createError from "http-errors";
+import mongoose from "mongoose";
+import morgan from "morgan";
+import path from "path";
+import { mongo } from "./config/secret.js";
+import api from "./routes/api/index.js";
+import stripe from "./routes/stripe/index.js";
+import { rateLimiter } from "./utils/limiter.js";
 
 const app = express();
 const __dirname = path.resolve();
-http.Server(app);
+
+app.use(compression());
+app.use(helmet());
 
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
@@ -27,37 +31,39 @@ app.use(
 app.use(
   bodyParser.json({
     verify: (req, res, buf) => {
-      if (req.originalUrl.startsWith('/stripe')) req.rawBody = buf.toString();
+      if (req.originalUrl.startsWith("/stripe")) req.rawBody = buf.toString();
     },
   })
 );
 
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(
   cookieSession({
-    name: 'session',
+    name: "session",
     maxAge: 24 * 60 * 60 * 1000,
     secret: mongo.secret,
-    keys: ['key1', 'key2'],
+    keys: ["key1", "key2"],
   })
 );
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 mongoose.connect(
   mongo.database,
   { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
   (err) => {
     if (err) console.log(err);
-    console.log('Connected to the database');
+    console.log("Connected to the database");
   }
 );
 
-mongoose.set('useCreateIndex', true);
+mongoose.set("useCreateIndex", true);
 
-app.use('/api', api);
-app.use('/stripe', stripe);
+app.use(rateLimiter);
+
+app.use("/api", api);
+app.use("/stripe", stripe);
 
 app.use((req, res, next) => {
   createError(404);

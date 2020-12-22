@@ -1,14 +1,17 @@
-import mongoose from 'mongoose';
-import Notification from '../models/notification.js';
+import mongoose from "mongoose";
+import Notification from "../models/notification.js";
+import User from "../models/user.js";
 
 export const addNewNotification = async ({
   notificationLink,
+  notificationRef,
   notificationType,
   notificationReceiver,
   session = null,
 }) => {
   const newNotification = new Notification();
   newNotification.link = notificationLink;
+  newNotification.ref = notificationRef;
   newNotification.type = notificationType;
   newNotification.receiver = notificationReceiver;
   newNotification.read = false;
@@ -57,5 +60,19 @@ export const editUnreadNotification = async ({
       ],
     },
     { read: false }
+  ).session(session);
+};
+
+export const decrementUserNotification = async ({ userId, session = null }) => {
+  return await User.updateOne(
+    { _id: userId },
+    { $inc: { notifications: -1 } }
+  ).session(session);
+};
+
+export const incrementUserNotification = async ({ userId, session = null }) => {
+  return await User.updateOne(
+    { _id: userId },
+    { $inc: { notifications: 1 } }
   ).session(session);
 };

@@ -1,8 +1,9 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const NotificationSchema = new Schema({
   link: String,
+  ref: String,
   type: String,
   // receivers: [
   //   {
@@ -10,12 +11,12 @@ const NotificationSchema = new Schema({
   //     read: Boolean
   //   }
   // ],
-  receiver: { type: Schema.Types.ObjectId, ref: 'User' },
+  receiver: { type: Schema.Types.ObjectId, ref: "User" },
   read: Boolean,
   created: { type: Date, default: Date.now },
 });
 
-const Notification = mongoose.model('Notification', NotificationSchema);
+const Notification = mongoose.model("Notification", NotificationSchema);
 
 Notification.createCollection();
 

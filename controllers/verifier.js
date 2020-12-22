@@ -1,35 +1,33 @@
-import mongoose from "mongoose";
-import createError from "http-errors";
-import { fetchLicenseByFingerprint } from "../services/license.js";
-import verifierValidator from "../validation/verifier.js";
-import { sanitizeData } from "../utils/helpers.js";
+import mongoose from 'mongoose';
+import createError from 'http-errors';
+import { fetchLicenseByFingerprint } from '../services/license.js';
+import verifierValidator from '../validation/verifier.js';
+import { sanitizeData } from '../utils/helpers.js';
 
-export const verifyLicense = async ({ fingerprint }) => {
-  const { error } = verifierValidator(
-    sanitizeData({ licenseFingerprint: fingerprint })
-  );
+export const verifyLicense = async ({ licenseFingerprint }) => {
+  const { error } = verifierValidator(sanitizeData({ licenseFingerprint }));
   if (error) throw createError(400, error);
-  const foundLicense = await fetchLicenseByFingerprint({ fingerprint });
+  const foundLicense = await fetchLicenseByFingerprint({ licenseFingerprint });
   if (foundLicense) {
     return { license: foundLicense };
   }
-  throw createError(400, "License not found");
+  throw createError(400, 'License not found');
 };
 
 export const displayLicense = async (req, res, next) => {
   try {
     const doc = new PDFDocument();
 
-    let finalString = "";
+    let finalString = '';
     const stream = doc.pipe(new Base64Encode());
 
     doc.end();
 
-    stream.on("data", function (chunk) {
+    stream.on('data', function (chunk) {
       finalString += chunk;
     });
 
-    stream.on("end", function () {
+    stream.on('end', function () {
       res.json({ pdf: finalString });
     });
   } catch (err) {

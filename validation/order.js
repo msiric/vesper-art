@@ -9,7 +9,7 @@ const schema = Joi.object().keys({
   orderArtwork: Joi.objectId().required(),
   orderVersion: Joi.objectId().required(),
   orderDiscount: Joi.objectId().required(),
-  orderLicenses: Joi.array().items(Joi.objectId()).required(),
+  orderLicense: Joi.objectId().required(),
   orderSpent: Joi.number().integer().required(),
   orderEarned: Joi.number().integer().required(),
   orderFee: Joi.number().integer().required(),

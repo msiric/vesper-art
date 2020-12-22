@@ -4,10 +4,10 @@ import joiObjectId from 'joi-objectid';
 Joi.objectId = joiObjectId(Joi);
 
 const schema = Joi.object().keys({
-  newPassword: Joi.string()
+  userPassword: Joi.string()
     .regex(/^(?=.*[A-Za-z])(?=.*d)(?=.*[@$!%*#?&])[A-Za-zd@$!%*#?&]{8,}$/)
     .required(),
-  confirmedPassword: Joi.ref('password'),
+  userConfirm: Joi.ref('password'),
 });
 
 export default (data) => Joi.validate(data, schema);

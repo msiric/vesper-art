@@ -1,21 +1,25 @@
-import React, { useContext } from 'react';
-import { Context } from '../components/Store/Store.js';
-import { Backdrop, CircularProgress } from '@material-ui/core';
-import AuthLayoutStyles from './AuthLayout.style.js';
+import { Backdrop, Box, CircularProgress } from "@material-ui/core";
+import React from "react";
+import Footer from "../containers/Footer/Footer.js";
+import { useTracked as useAppContext } from "../contexts/App.js";
+import AuthLayoutStyles from "./AuthLayout.style.js";
 
 const AuthLayout = ({ children }) => {
-  const [store, dispatch] = useContext(Context);
+  const [appStore, appDispatch] = useAppContext();
 
   const classes = AuthLayoutStyles();
 
   return (
-    <div className={classes.root}>
-      {store.main.loading ? (
-        <Backdrop className={classes.backdrop}>
+    <div className={classes.appRoot}>
+      {appStore.loading ? (
+        <Backdrop className={classes.appBackdrop}>
           <CircularProgress color="inherit" />
         </Backdrop>
       ) : (
-        <div className={classes.root}>{children}</div>
+        <>
+          <Box className={classes.appContainer}>{children}</Box>
+          <Footer />
+        </>
       )}
     </div>
   );

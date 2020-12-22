@@ -1,24 +1,22 @@
-import mongoose from "mongoose";
 import createError from "http-errors";
 import socketApi from "../lib/socket.js";
-import { fetchUserOrder, addOrderReview } from "../services/order.js";
 import { addArtworkReview } from "../services/artwork.js";
 import { addNewNotification } from "../services/notification.js";
+import { addOrderReview, fetchUserOrder } from "../services/order.js";
+import { addNewReview } from "../services/review.js";
 import { editUserRating } from "../services/user.js";
-import reviewValidator from "../validation/review.js";
 import { sanitizeData } from "../utils/helpers.js";
+import reviewValidator from "../validation/review.js";
+import currency from "currency.js";
 
 // needs transaction (done)
 export const postReview = async ({
   userId,
   reviewRating,
-  reviewContent,
   orderId,
   session,
 }) => {
-  const { error } = reviewValidator(
-    sanitizeData({ reviewRating, reviewContent })
-  );
+  const { error } = reviewValidator(sanitizeData({ reviewRating }));
   if (error) throw createError(400, error);
   if (reviewRating) {
     const foundOrder = await fetchUserOrder({
@@ -28,22 +26,30 @@ export const postReview = async ({
     });
     if (foundOrder) {
       if (!foundOrder.artwork.review) {
-        const savedReview = await postNewReview({
+        const savedReview = await addNewReview({
           orderData: foundOrder,
           userId,
           reviewRating,
-          reviewContent,
           session,
         });
-        const newRating =
-          foundOrder.buyer.rating +
-          (
-            (newReview.rating - foundOrder.buyer.rating) /
-            (foundOrder.buyer.reviews + 1)
-          ).toFixed(2);
+        console.log("buyerRating", foundOrder.buyer);
+        console.log("buyerRating", foundOrder.seller.rating);
+        console.log("buyerReviews", foundOrder.seller.reviews);
+        console.log("reviewRating", reviewRating);
+
+        const numerator = currency(foundOrder.seller.rating)
+          .multiply(foundOrder.seller.reviews)
+          .add(reviewRating);
+        console.log("numerator", numerator);
+        const denominator = currency(foundOrder.seller.reviews).add(1);
+        console.log("denominator", denominator);
+
+        const newRating = currency(numerator).divide(denominator);
+        console.log("newRating", newRating);
+
         await editUserRating({
           userId: foundOrder.seller._id,
-          userRating: newRating,
+          userRating: newRating.value,
           session,
         });
         await addOrderReview({
@@ -60,6 +66,7 @@ export const postReview = async ({
         // new start
         await addNewNotification({
           notificationLink: foundOrder._id,
+          notificationRef: savedReview._id,
           notificationType: "review",
           notificationReceiver: foundOrder.seller,
           session,

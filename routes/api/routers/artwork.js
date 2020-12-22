@@ -1,58 +1,55 @@
 import express from "express";
 import {
-  isAuthenticated,
-  checkParamsId,
-  requestHandler as handler,
-} from "../../../utils/helpers.js";
-import {
+  deleteArtwork,
+  editArtwork,
   getArtwork,
-  getArtworkDetails,
   getArtworkComments,
+  getArtworkDetails,
   getArtworkReviews,
   getLicenses,
-  saveLicenses,
   getUserArtwork,
   postNewArtwork,
-  editArtwork,
-  updateArtwork,
-  deleteArtwork,
   saveArtwork,
+  saveLicense,
   unsaveArtwork,
+  updateArtwork,
 } from "../../../controllers/artwork.js";
+import multerApi from "../../../lib/multer.js";
+import {
+  checkParamsId,
+  isAuthenticated,
+  requestHandler as handler,
+} from "../../../utils/helpers.js";
 
 const router = express.Router();
 
 router.route("/artwork").get(
   handler(getArtwork, false, (req, res, next) => ({
-    cursor: req.query.cursor,
-    ceiling: req.query.ceiling,
+    ...req.query,
   }))
 );
 
 router.route("/artwork/:artworkId").get(
   checkParamsId,
   handler(getArtworkDetails, false, (req, res, next) => ({
-    artworkId: req.params.artworkId,
-    cursor: req.query.cursor,
-    ceiling: req.query.ceiling,
+    ...req.params,
+    ...req.query,
   }))
 );
 
 router.route("/artwork/:artworkId/comments").get(
   checkParamsId,
   handler(getArtworkComments, false, (req, res, next) => ({
-    artworkId: req.params.artworkId,
-    cursor: req.query.cursor,
-    ceiling: req.query.ceiling,
+    ...req.params,
+    ...req.query,
   }))
 );
 
 router.route("/artwork/:artworkId/reviews").get(
   checkParamsId,
   handler(getArtworkReviews, false, (req, res, next) => ({
-    artworkId: req.params.artworkId,
-    cursor: req.query.cursor,
-    ceiling: req.query.ceiling,
+    ...req.params,
+    ...req.query,
   }))
 );
 
@@ -61,14 +58,14 @@ router
   .get(
     [isAuthenticated, checkParamsId],
     handler(getLicenses, false, (req, res, next) => ({
-      artworkId: req.params.artworkId,
+      ...req.params,
     }))
   )
   .post(
     [isAuthenticated, checkParamsId],
-    handler(saveLicenses, true, (req, res, next) => ({
-      artworkId: req.params.artworkId,
-      licenses: req.body.licenses,
+    handler(saveLicense, true, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
     }))
   );
 
@@ -79,15 +76,17 @@ router
 router.route("/my_artwork").get(
   isAuthenticated,
   handler(getUserArtwork, false, (req, res, next) => ({
-    cursor: req.query.cursor,
-    ceiling: req.query.ceiling,
+    ...req.query,
   }))
 );
 
 router.route("/add_artwork").post(
-  isAuthenticated,
+  [isAuthenticated, multerApi.uploadArtworkLocal],
   handler(postNewArtwork, true, (req, res, next) => ({
-    artworkData: req.body,
+    artworkPath: req.file ? req.file.path : "",
+    artworkFilename: req.file ? req.file.filename : "",
+    artworkMimetype: req.file ? req.file.mimetype : "",
+    artworkData: { ...req.body },
   }))
 );
 
@@ -96,20 +95,23 @@ router
   .get(
     [isAuthenticated, checkParamsId],
     handler(editArtwork, false, (req, res, next) => ({
-      artworkId: req.params.artworkId,
+      ...req.params,
     }))
   )
   .patch(
-    [isAuthenticated, checkParamsId],
+    [isAuthenticated, checkParamsId, multerApi.uploadArtworkLocal],
     handler(updateArtwork, true, (req, res, next) => ({
-      artworkId: req.params.artworkId,
-      artworkData: req.body,
+      ...req.params,
+      artworkPath: req.file ? req.file.path : "",
+      artworkFilename: req.file ? req.file.filename : "",
+      artworkMimetype: req.file ? req.file.mimetype : "",
+      artworkData: { ...req.body },
     }))
   )
   .delete(
     [isAuthenticated, checkParamsId],
     handler(deleteArtwork, true, (req, res, next) => ({
-      artworkId: req.params.artworkId,
+      ...req.params,
     }))
   );
 
@@ -118,15 +120,14 @@ router
   .post(
     [isAuthenticated, checkParamsId],
     handler(saveArtwork, true, (req, res, next) => ({
-      artworkId: req.params.artworkId,
+      ...req.params,
     }))
   )
   .delete(
     [isAuthenticated, checkParamsId],
     handler(unsaveArtwork, true, (req, res, next) => ({
-      artworkId: req.params.artworkId,
-      cursor: req.query.cursor,
-      ceiling: req.query.ceiling,
+      ...req.params,
+      ...req.query,
     }))
   );
 

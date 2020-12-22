@@ -1,10 +1,10 @@
-import bcrypt from 'bcrypt-nodejs';
-import mongoose from 'mongoose';
-import crypto from 'crypto';
-import mongooseDeepPopulate from 'mongoose-deep-populate';
+import bcrypt from "bcrypt-nodejs";
+import crypto from "crypto";
+import mongoose from "mongoose";
+import mongooseDeepPopulate from "mongoose-deep-populate";
+import fuzzySearch from "mongoose-fuzzy-searching";
 
 const deepPopulate = mongooseDeepPopulate(mongoose);
-import fuzzySearch from 'mongoose-fuzzy-searching';
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -26,10 +26,13 @@ const UserSchema = new Schema({
   },
   password: String,
   photo: String,
+  orientation: String,
+  dominant: String,
   height: String,
   width: String,
   description: String,
   country: String,
+  origin: String,
   customWork: Boolean,
   displaySaves: Boolean,
   verificationToken: String,
@@ -37,29 +40,29 @@ const UserSchema = new Schema({
   resetToken: String,
   resetExpiry: Date,
   jwtVersion: { type: Number, default: 0 },
-  cart: [
-    {
-      artwork: { type: Schema.Types.ObjectId, ref: 'Artwork' },
-      licenses: [{ type: Schema.Types.ObjectId, ref: 'License' }],
-    },
-  ],
-  discount: { type: Schema.Types.ObjectId, ref: 'Discount' },
   inbox: Number,
   notifications: Number,
   rating: Number,
   reviews: Number,
-  artwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }], // nesting
-  savedArtwork: [{ type: Schema.Types.ObjectId, ref: 'Artwork' }], // nesting
-  purchases: [{ type: Schema.Types.ObjectId, ref: 'Order' }], // nesting
-  sales: [{ type: Schema.Types.ObjectId, ref: 'Order' }], // nesting
+  artwork: [{ type: Schema.Types.ObjectId, ref: "Artwork" }], // nesting
+  savedArtwork: [{ type: Schema.Types.ObjectId, ref: "Artwork" }], // nesting
+  purchases: [{ type: Schema.Types.ObjectId, ref: "Order" }], // nesting
+  sales: [{ type: Schema.Types.ObjectId, ref: "Order" }], // nesting
   stripeId: String,
+  intents: [
+    {
+      intentId: String,
+      versionId: { type: Schema.Types.ObjectId, ref: "Version" },
+    },
+  ],
+  generated: Boolean,
   active: Boolean,
   created: { type: Date, default: Date.now },
 });
 
-UserSchema.pre('save', function (next) {
+UserSchema.pre("save", function (next) {
   var user = this;
-  if (!user.isModified('password')) return next();
+  if (!user.isModified("password")) return next();
   if (user.password) {
     bcrypt.genSalt(10, function (err, salt) {
       if (err) return next(err);
@@ -76,8 +79,8 @@ UserSchema.plugin(deepPopulate);
 
 UserSchema.plugin(fuzzySearch, {
   fields: [
-    { name: 'name', weight: 3 },
-    { name: 'email', weight: 2 },
+    { name: "name", weight: 3 },
+    { name: "email", weight: 2 },
   ],
 });
 
@@ -87,12 +90,12 @@ UserSchema.methods.comparePassword = function (password) {
 
 UserSchema.methods.gravatar = function (size) {
   if (!size) size = 200;
-  if (!this.email) return 'https://gravatar.com/avatar/?s=' + size + '&d=retro';
-  var md5 = crypto.createHash('md5').update(this.email).digest('hex');
-  return 'https://gravatar.com/avatar/' + md5 + '?s=' + size + '&d=retro';
+  if (!this.email) return "https://gravatar.com/avatar/?s=" + size + "&d=retro";
+  var md5 = crypto.createHash("md5").update(this.email).digest("hex");
+  return "https://gravatar.com/avatar/" + md5 + "?s=" + size + "&d=retro";
 };
 
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.model("User", UserSchema);
 
 User.createCollection();
 

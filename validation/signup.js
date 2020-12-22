@@ -9,7 +9,7 @@ const schema = Joi.object().keys({
   userPassword: Joi.string()
     .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/)
     .required(),
-  confirmedPassword: Joi.ref('userPassword'),
+  userConfirm: Joi.ref('userPassword'),
 });
 
 export default (data) => Joi.validate(data, schema);

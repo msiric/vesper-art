@@ -1,39 +1,42 @@
-import mongoose from 'mongoose';
-import Stripe from 'stripe';
+import Stripe from "stripe";
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
 export const constructStripeEvent = async ({
-  body,
-  signature,
-  secret,
+  stripeBody,
+  stripeSignature,
+  stripeSecret,
   session = null,
 }) => {
-  return await stripe.webhooks.constructEvent(body, signature, secret);
+  return await stripe.webhooks.constructEvent(
+    stripeBody,
+    stripeSignature,
+    stripeSecret
+  );
 };
 
 export const constructStripeLink = async ({
-  onboarded,
-  domain,
+  accountId,
+  serverDomain,
   session = null,
 }) => {
-  return await stripe.accounts.createLoginLink(onboarded, {
-    redirect_url: `${domain}/stripe/dashboard`,
+  return await stripe.accounts.createLoginLink(accountId, {
+    redirect_url: `${serverDomain}/stripe/dashboard`,
   });
 };
 
 export const constructStripePayout = async ({
-  amount,
-  currency,
-  descriptor,
+  payoutAmount,
+  payoutCurrency,
+  payoutDescriptor,
   stripeId,
   session = null,
 }) => {
   return await stripe.payouts.create(
     {
-      amount: amount,
-      currency: currency,
-      statement_descriptor: descriptor,
+      amount: payoutAmount,
+      currency: payoutCurrency,
+      statement_descriptor: payoutDescriptor,
     },
     {
       stripe_account: stripeId,
@@ -42,38 +45,47 @@ export const constructStripePayout = async ({
 };
 
 export const constructStripeIntent = async ({
-  method,
-  amount,
-  currency,
-  fee,
-  seller,
-  order,
+  intentMethod,
+  intentAmount,
+  intentCurrency,
+  intentFee,
+  sellerId,
+  orderData,
   session = null,
 }) => {
   return await stripe.paymentIntents.create({
-    payment_method_types: [method],
-    amount: amount,
-    currency: currency,
-    application_fee_amount: fee,
-    on_behalf_of: seller,
+    payment_method_types: [intentMethod],
+    amount: intentAmount,
+    currency: intentCurrency,
+    application_fee_amount: intentFee,
+    on_behalf_of: sellerId,
     transfer_data: {
-      destination: seller,
+      destination: sellerId,
     },
     metadata: {
-      orderData: JSON.stringify(order),
+      orderData: JSON.stringify(orderData),
     },
   });
 };
 
 export const updateStripeIntent = async ({
   intentId,
-  amount,
-  fee,
+  intentAmount,
+  intentFee,
+  orderData,
   session = null,
 }) => {
+  const foundIntent = await stripe.paymentIntents.retrieve(intentId);
+  const foundOrder = JSON.parse(foundIntent.metadata.orderData);
+  for (let item in orderData) {
+    foundOrder[item] = orderData[item];
+  }
   return await stripe.paymentIntents.update(intentId, {
-    amount: amount,
-    application_fee_amount: fee,
+    amount: intentAmount,
+    application_fee_amount: intentFee,
+    metadata: {
+      orderData: JSON.stringify(foundOrder),
+    },
   });
 };
 

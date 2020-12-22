@@ -1,49 +1,48 @@
+import bodyParser from "body-parser";
 import express from "express";
+import {
+  assignStripeId,
+  createPayout,
+  getStripeUser,
+  managePaymentIntent,
+  onboardUser,
+  receiveWebhookEvent,
+  redirectToStripe,
+} from "../../../controllers/stripe.js";
 import {
   isAuthenticated,
   requestHandler as handler,
 } from "../../../utils/helpers.js";
-import bodyParser from "body-parser";
-import {
-  receiveWebhookEvent,
-  getStripeUser,
-  managePaymentIntent,
-  redirectToStripe,
-  onboardUser,
-  assignStripeId,
-  createPayout,
-} from "../../../controllers/stripe.js";
 
 const router = express.Router();
 
 // $TODO Bolje to treba
 router.route("/hooks", bodyParser.raw({ type: "application/json" })).post(
   handler(receiveWebhookEvent, true, (req, res, next) => ({
-    signature: req.headers["stripe-signature"],
-    body: req.rawBody,
+    stripeSignature: req.headers["stripe-signature"],
+    stripeBody: req.rawBody,
   }))
 );
 
 router.route("/account/:accountId").get(
   isAuthenticated,
   handler(getStripeUser, false, (req, res, next) => ({
-    accountId: req.params.accountId,
+    ...req.params,
   }))
 );
 
-router.route("/intent/:artworkId").post(
+router.route("/intent/:versionId").post(
   isAuthenticated,
   handler(managePaymentIntent, true, (req, res, next) => ({
-    artworkId: req.params.artworkId,
-    licenses: req.body.licenses,
-    intentId: req.body.intentId,
+    ...req.params,
+    ...req.body,
   }))
 );
 
-router.route("/dashboard").get(
+router.route("/dashboard/:accountId").get(
   isAuthenticated,
   handler(redirectToStripe, false, (req, res, next) => ({
-    userAccount: req.query.account,
+    ...req.params,
     userOnboarded: res.locals.user ? res.locals.user.onboarded : null,
   }))
 );
@@ -52,16 +51,17 @@ router.route("/dashboard").get(
 router.route("/authorize").post(
   isAuthenticated,
   handler(onboardUser, false, (req, res, next) => ({
-    country: req.body.country,
-    email: req.body.email,
-    username: res.locals.user ? res.locals.user.name : null,
+    sessionData: req.session,
+    responseData: res.locals,
+    ...req.body,
   }))
 );
 
 router.route("/token").get(
-  handler(assignStripeId, true, (req, res, next) => ({
-    sessionState: req.session.state,
-    queryState: req.query.state,
+  handler(assignStripeId, false, (req, res, next) => ({
+    responseObject: res,
+    sessionData: req.session,
+    queryData: req.query,
   }))
 );
 

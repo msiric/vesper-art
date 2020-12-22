@@ -1,7 +1,5 @@
-import mongoose from 'mongoose';
-import Artwork from '../models/artwork.js';
-import User from '../models/user.js';
 import createError from 'http-errors';
+import Artwork from '../models/artwork.js';
 
 export const fetchCheckoutArtwork = async ({
   userId,
@@ -12,15 +10,11 @@ export const fetchCheckoutArtwork = async ({
     $and: [{ _id: artworkId }, { active: true }],
   }).populate(
     'current',
-    '_id cover created title personal type license availability description use commercial'
+    '_id cover created title personal type license availability description use commercial height width'
   );
   if (foundArtwork) {
-    const foundUser = await User.findOne({
-      $and: [{ _id: userId }, { active: true }],
-    }).populate('discount');
     res.json({
       artwork: foundArtwork,
-      discount: foundUser.discount,
     });
   } else {
     throw createError(400, 'Artwork not found');

@@ -1,9 +1,7 @@
-import mongoose from 'mongoose';
-import Artwork from '../models/artwork.js';
-import Version from '../models/version.js';
-import License from '../models/license.js';
-import crypto from 'crypto';
-import currency from 'currency.js';
+import crypto from "crypto";
+import Artwork from "../models/artwork.js";
+import License from "../models/license.js";
+import Version from "../models/version.js";
 
 export const fetchArtworkById = async ({ artworkId, session = null }) => {
   return await Artwork.findOne({
@@ -11,109 +9,119 @@ export const fetchArtworkById = async ({ artworkId, session = null }) => {
   }).session(session);
 };
 
-export const fetchActiveArtworks = async ({ skip, limit, session = null }) => {
+export const fetchActiveArtworks = async ({
+  dataSkip,
+  dataLimit,
+  session = null,
+}) => {
   return await Artwork.find({ active: true }, undefined, {
-    skip,
-    limit,
+    skip: dataSkip,
+    limit: dataLimit,
   })
-    .populate('owner')
+    .populate("owner")
     .populate(
-      'current',
-      '_id cover created title personal type license availability description use commercial'
+      "current",
+      "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
     );
+};
+
+export const fetchVersionDetails = async ({ versionId, session = null }) => {
+  return await Version.findOne({ _id: versionId }).deepPopulate(
+    "artwork.owner"
+  );
 };
 
 export const fetchArtworkDetails = async ({
   artworkId,
-  skip,
-  limit,
+  dataSkip,
+  dataLimit,
   session = null,
 }) => {
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { active: true }],
   })
     .populate(
-      skip && limit
+      dataSkip !== undefined && dataLimit !== undefined
         ? {
-            path: 'comments',
+            path: "comments",
             options: {
-              limit,
-              skip,
+              skip: dataSkip,
+              limit: dataLimit,
             },
             populate: {
-              path: 'owner',
+              path: "owner",
             },
           }
         : {
-            path: 'comments',
+            path: "comments",
             populate: {
-              path: 'owner',
+              path: "owner",
             },
           }
     )
-    .populate('owner')
+    .populate("owner")
     .populate(
-      'current',
-      '_id cover created title personal type license availability description use commercial'
+      "current",
+      "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
     );
 };
 
 export const fetchArtworkComments = async ({
   artworkId,
-  skip,
-  limit,
+  dataSkip,
+  dataLimit,
   session = null,
 }) => {
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { active: true }],
   })
     .populate({
-      path: 'comments',
+      path: "comments",
       options: {
-        limit,
-        skip,
+        skip: dataSkip,
+        limit: dataLimit,
       },
       populate: {
-        path: 'owner',
+        path: "owner",
       },
     })
-    .populate('owner')
+    .populate("owner")
     .populate(
-      'current',
-      '_id cover created title personal type license availability description use commercial'
+      "current",
+      "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
     );
 };
 
 export const fetchArtworkReviews = async ({
   artworkId,
-  skip,
-  limit,
+  dataSkip,
+  dataLimit,
   session = null,
 }) => {
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { active: true }],
   })
     .populate({
-      path: 'reviews',
+      path: "reviews",
       options: {
-        limit,
-        skip,
+        skip: dataSkip,
+        limit: dataLimit,
       },
       populate: {
-        path: 'owner',
+        path: "owner",
       },
     })
-    .populate('owner')
+    .populate("owner")
     .populate(
-      'current',
-      '_id cover created title personal type license availability description use commercial'
+      "current",
+      "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
     );
 };
 
 export const fetchUserArtworks = async ({
   userId,
-  skip,
-  limit,
+  dataSkip,
+  dataLimit,
   session = null,
 }) => {
   return await Artwork.find(
@@ -122,12 +130,12 @@ export const fetchUserArtworks = async ({
     },
     undefined,
     {
-      skip,
-      limit,
+      skip: dataSkip,
+      limit: dataLimit,
     }
   ).populate(
-    'current',
-    '_id cover created title personal type license availability description use commercial'
+    "current",
+    "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
   );
 };
 
@@ -135,8 +143,8 @@ export const fetchArtworksByOwner = async ({ userId, session = null }) => {
   return await Artwork.find({
     $and: [{ owner: userId }, { active: true }],
   })
-    .populate('current')
-    .populate('versions');
+    .populate("current")
+    .populate("versions");
 };
 
 export const fetchArtworkByOwner = async ({
@@ -147,8 +155,8 @@ export const fetchArtworkByOwner = async ({
   return await Artwork.findOne({
     $and: [{ _id: artworkId }, { owner: userId }, { active: true }],
   })
-    .populate('current')
-    .populate('versions');
+    .populate("current")
+    .populate("versions");
 };
 
 export const fetchArtworkLicenses = async ({
@@ -164,28 +172,31 @@ export const fetchArtworkLicenses = async ({
 // needs transaction (done)
 export const addNewArtwork = async ({
   artworkData,
+  artworkUpload,
   userId,
   session = null,
 }) => {
   const newVersion = new Version();
-  newVersion.cover = artworkData.artworkCover || '';
-  newVersion.media = artworkData.artworkMedia || '';
-  newVersion.height = artworkData.artworkDimensions.height;
-  newVersion.width = artworkData.artworkDimensions.width;
-  newVersion.title = artworkData.artworkTitle || '';
-  newVersion.type = artworkData.artworkType || '';
-  newVersion.availability = artworkData.artworkAvailability || '';
-  newVersion.license = artworkData.artworkLicense || '';
-  newVersion.use = artworkData.artworkUse || '';
-  newVersion.personal = currency(artworkData.artworkPersonal).intValue || 0;
-  newVersion.commercial =
-    currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
-      .intValue || currency(artworkData.artworkPersonal).intValue;
-  newVersion.category = artworkData.artworkCategory || '';
-  newVersion.description = artworkData.artworkDescription || '';
+  newVersion.cover = artworkUpload.fileCover || "";
+  newVersion.media = artworkUpload.fileMedia || "";
+  newVersion.dominant = artworkUpload.fileDominant || "";
+  newVersion.orientation = artworkUpload.fileOrientation || "";
+  newVersion.height = artworkUpload.fileHeight || "";
+  newVersion.width = artworkUpload.fileWidth || "";
+  newVersion.title = artworkData.artworkTitle || "";
+  newVersion.type = artworkData.artworkType || "";
+  newVersion.availability = artworkData.artworkAvailability || "";
+  newVersion.license = artworkData.artworkLicense || "";
+  newVersion.use = artworkData.artworkUse || "";
+  newVersion.personal = artworkData.artworkPersonal;
+  newVersion.commercial = artworkData.artworkCommercial;
+  newVersion.category = artworkData.artworkCategory || "";
+  newVersion.description = artworkData.artworkDescription || "";
+  newVersion.tags = artworkData.artworkTags || [];
   const savedVersion = await newVersion.save({ session });
   const newArtwork = new Artwork();
   newArtwork.owner = userId;
+  newArtwork.generated = false;
   newArtwork.active = true;
   newArtwork.comments = [];
   newArtwork.current = savedVersion._id;
@@ -197,37 +208,34 @@ export const addNewArtwork = async ({
 
 // needs transaction (done)
 // needs testing
-export const addNewVersion = async ({ artworkData, session = null }) => {
+// $TODO Assign prev version values or empty values?
+export const addNewVersion = async ({
+  prevArtwork,
+  artworkData,
+  artworkUpload,
+  session = null,
+}) => {
   const newVersion = new Version();
-  if (artworkData.artworkCover)
-    newVersion.cover = artworkData.artworkCover || '';
-  if (artworkData.artworkMedia)
-    newVersion.media = artworkData.artworkMedia || '';
-  if (
-    artworkData.artworkDimensions.height &&
-    artworkData.artworkDimensions.width
-  ) {
-    newVersion.height = artworkData.artworkDimensions.height;
-    newVersion.width = artworkData.artworkDimensions.width;
-  }
-  if (artworkData.artworkTitle)
-    newVersion.title = artworkData.artworkTitle || '';
-  if (artworkData.artworkType) newVersion.type = artworkData.artworkType || '';
-  if (artworkData.artworkAvailability)
-    newVersion.availability = artworkData.artworkAvailability || '';
-  if (artworkData.artworkLicense)
-    newVersion.license = artworkData.artworkLicense || '';
-  if (artworkData.artworkUse) newVersion.use = artworkData.artworkUse || '';
-  if (artworkData.artworkPersonal)
-    newVersion.personal = currency(artworkData.artworkPersonal).intValue || 0;
-  if (artworkData.artworkCommercial)
-    newVersion.commercial =
-      currency(artworkData.artworkCommercial).add(artworkData.artworkPersonal)
-        .intValue || currency(artworkData.artworkPersonal).intValue;
-  if (artworkData.artworkCategory)
-    newVersion.category = artworkData.artworkCategory || '';
-  if (artworkData.artworkDescription)
-    newVersion.description = artworkData.artworkDescription || '';
+  newVersion.cover = artworkUpload.fileCover || prevArtwork.cover;
+  newVersion.media = artworkUpload.fileMedia || prevArtwork.media;
+  newVersion.dominant = artworkUpload.fileDominant || prevArtwork.dominant;
+  newVersion.orientation = artworkUpload.fileOrientation || "";
+  newVersion.height = artworkUpload.fileHeight || prevArtwork.height;
+  newVersion.width = artworkUpload.fileWidth || prevArtwork.width;
+  newVersion.title = artworkData.artworkTitle || prevArtwork.artworkTitle;
+  newVersion.type = artworkData.artworkType || prevArtwork.artworkType;
+  newVersion.availability =
+    artworkData.artworkAvailability || prevArtwork.artworkAvailability;
+  newVersion.license = artworkData.artworkLicense || prevArtwork.artworkLicense;
+  newVersion.use = artworkData.artworkUse || prevArtwork.artworkUse;
+  newVersion.personal = artworkData.artworkPersonal;
+  newVersion.commercial = artworkData.artworkCommercial;
+  newVersion.category =
+    artworkData.artworkCategory || prevArtwork.artworkCategory;
+  newVersion.description =
+    artworkData.artworkDescription || prevArtwork.artworkDescription;
+  newVersion.tags = artworkData.artworkTags || prevArtwork.artworkTags;
+  newVersion.artwork = prevArtwork.artwork;
   return await newVersion.save({ session });
 };
 
@@ -285,26 +293,22 @@ export const removeArtworkComment = async ({
 };
 
 // needs transaction (done)
-export const saveLicenseSet = async ({
+export const addNewLicense = async ({
   userId,
   artworkData,
-  licensesData,
+  licenseData,
   session = null,
 }) => {
-  const licenseSet = licensesData.map((license) => {
-    const newLicense = new License();
-    newLicense.owner = userId;
-    newLicense.artwork = artworkData._id;
-    newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
-    newLicense.type = license.licenseType;
-    newLicense.active = false;
-    newLicense.price =
-      license.licenseType == 'commercial'
-        ? artworkData.current.commercial
-        : artworkData.current.personal;
-    return newLicense;
-  });
-  return await License.insertMany(licenseSet, { session });
+  const newLicense = new License();
+  newLicense.owner = userId;
+  newLicense.artwork = artworkData._id;
+  newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
+  newLicense.assignee = licenseData.licenseAssignee;
+  newLicense.company = licenseData.licenseCompany;
+  newLicense.type = licenseData.licenseType;
+  newLicense.active = false;
+  newLicense.price = artworkData.current[licenseData.licenseType];
+  return await newLicense.save({ session });
 };
 
 export const deactivateExistingArtwork = async ({

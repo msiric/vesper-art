@@ -1,25 +1,27 @@
-import React, { useContext } from 'react';
-import { Context } from '../components/Store/Store.js';
-import { Backdrop, CircularProgress } from '@material-ui/core';
-import Header from '../shared/Header/Header.js';
-import MainLayoutStyles from './MainLayout.style.js';
+import { Backdrop, Box, CircularProgress } from "@material-ui/core";
+import React from "react";
+import Footer from "../containers/Footer/Footer.js";
+import Header from "../containers/Header/Header.js";
+import { useTracked as useAppContext } from "../contexts/App.js";
+import MainLayoutStyles from "./MainLayout.style.js";
 
-const MainLayout = ({ children }) => {
-  const [store, dispatch] = useContext(Context);
+const MainLayout = ({ socket, children }) => {
+  const [appStore, appDispatch] = useAppContext();
 
   const classes = MainLayoutStyles();
 
   return (
-    <div className={classes.root}>
-      {store.main.loading ? (
-        <Backdrop className={classes.backdrop} open={store.main.loading}>
+    <div className={classes.appRoot}>
+      {appStore.loading ? (
+        <Backdrop className={classes.appBackdrop} open={appStore.loading}>
           <CircularProgress color="primary" />
         </Backdrop>
       ) : (
-        <>
-          <Header />
-          {children}
-        </>
+        [
+          <Header socket={socket} />,
+          <Box className={classes.appContainer}>{children}</Box>,
+          <Footer />,
+        ]
       )}
     </div>
   );

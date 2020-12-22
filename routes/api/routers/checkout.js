@@ -1,29 +1,25 @@
-import express from "express";
+import express from 'express';
+import { getCheckout, postDownload } from '../../../controllers/checkout.js';
 import {
-  isAuthenticated,
   checkParamsId,
+  isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
-import { getCheckout } from "../../../controllers/checkout.js";
+} from '../../../utils/helpers.js';
 
 const router = express.Router();
 
-// router.route('/cart').get(isAuthenticated, checkout .getProcessCart);
-
-// router
-//   .route('/cart/artwork/:artworkId')
-//   .post(isAuthenticated, checkout .addToCart)
-//   .delete(isAuthenticated, checkout .deleteFromCart);
-
-router.route("/checkout");
-// $CART
-/*   .get(isAuthenticated, checkout .getPaymentCart) */
-/*   .post(isAuthenticated, checkout.postPaymentCart); */
-
-router.route("/checkout/:artworkId").get(
+router.route('/checkout/:versionId').get(
   [isAuthenticated, checkParamsId],
   handler(getCheckout, false, (req, res, next) => ({
-    artworkId: req.params.artworkId,
+    ...req.params,
+  }))
+);
+
+router.route('/download/:versionId').post(
+  [isAuthenticated, checkParamsId],
+  handler(postDownload, false, (req, res, next) => ({
+    ...req.params,
+    ...req.body,
   }))
 );
 

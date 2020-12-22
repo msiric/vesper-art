@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
-import createError from "http-errors";
-import escapeHTML from "escape-html";
-import jwt from "jsonwebtoken";
 import currency from "currency.js";
+import escapeHTML from "escape-html";
+import createError from "http-errors";
+import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -38,6 +38,28 @@ export const requestHandler = (promise, transaction, params) => async (
   }
 };
 
+export const formatArtworkValues = (data) => {
+  return {
+    ...data,
+    artworkPersonal:
+      data.artworkAvailability === "available" &&
+      data.artworkType === "commercial"
+        ? data.artworkUse === "separate" || data.artworkLicense === "personal"
+          ? currency(data.artworkPersonal).intValue
+          : null
+        : "",
+    artworkCommercial:
+      data.artworkLicense === "commercial"
+        ? data.artworkAvailability === "available" &&
+          data.artworkLicense === "commercial" &&
+          data.artworkUse === "separate"
+          ? currency(data.artworkCommercial).add(data.artworkPersonal).intValue
+          : currency(data.artworkPersonal).intValue
+        : null,
+    artworkTags: JSON.parse(data.artworkTags),
+  };
+};
+
 export const isAuthenticated = async (req, res, next) => {
   try {
     const authentication = req.headers["authorization"];
@@ -66,10 +88,12 @@ export const isNotAuthenticated = async (req, res, next) => {
   return next();
 };
 
-export const formatParams = ({ cursor, ceiling }) => {
-  const skip = cursor && /^\d+$/.test(cursor) ? Number(cursor) : 0;
-  const limit = ceiling && /^\d+$/.test(ceiling) ? Number(ceiling) : 0;
-  return { skip, limit };
+export const formatParams = ({ dataCursor, dataCeiling }) => {
+  const dataSkip =
+    dataCursor && /^\d+$/.test(dataCursor) ? Number(dataCursor) : 0;
+  const dataLimit =
+    dataCeiling && /^\d+$/.test(dataCeiling) ? Number(dataCeiling) : 0;
+  return { dataSkip, dataLimit };
 };
 
 export const checkParamsUsername = (req, res, next) => {
@@ -95,12 +119,9 @@ export const checkParamsId = (req, res, next) => {
   throw createError(400, "Invalid route parameter");
 };
 
-export const formatPrice = (value) => {
-  return currency(value).divide(100);
-};
-
 export const sanitizeData = (body) =>
   Object.keys(body).reduce((obj, key) => {
+    if (body[key] === null) return obj;
     if (Array.isArray(body[key])) {
       obj[key] = body[key].map((elem) => {
         if (typeof elem === "object") return sanitizeData(elem);
@@ -113,3 +134,13 @@ export const sanitizeData = (body) =>
     }
     return obj;
   }, {});
+
+export const checkImageOrientation = (width, height) => {
+  if (width > height) {
+    return "landscape";
+  } else if (width < height) {
+    return "portrait";
+  } else {
+    return "square";
+  }
+};

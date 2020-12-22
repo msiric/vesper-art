@@ -1,5 +1,16 @@
-import mongoose from 'mongoose';
-import Comment from '../models/comment.js';
+import Comment from "../models/comment.js";
+
+export const fetchCommentById = async ({
+  artworkId,
+  commentId,
+  session = null,
+}) => {
+  return await Comment.findOne({
+    $and: [{ _id: commentId }, { artwork: artworkId }],
+  })
+    .populate("owner")
+    .session(session);
+};
 
 export const addNewComment = async ({
   artworkId,
@@ -27,7 +38,7 @@ export const editExistingComment = async ({
       $and: [{ _id: commentId }, { artwork: artworkId }, { owner: userId }],
     },
     { content: commentContent, modified: true }
-  );
+  ).session(session);
 };
 
 export const removeExistingComment = async ({

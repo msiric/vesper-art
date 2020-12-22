@@ -1,25 +1,23 @@
-import mongoose from 'mongoose';
-import User from '../models/user.js';
-import { updateAccessToken, sendRefreshToken } from '../utils/auth.js';
+import User from "../models/user.js";
+import { sendRefreshToken, updateAccessToken } from "../utils/auth.js";
 
 export const addNewUser = async ({
-  email,
-  username,
-  password,
-  token,
+  userEmail,
+  userUsername,
+  userPassword,
+  verificationToken,
   session = null,
 }) => {
   const newUser = new User();
-  newUser.name = username;
-  newUser.email = email;
+  newUser.name = userUsername;
+  newUser.email = userEmail;
   newUser.photo = newUser.gravatar();
-  newUser.password = password;
+  newUser.description = null;
+  newUser.password = userPassword;
   newUser.customWork = true;
   newUser.displaySaves = true;
-  newUser.verificationToken = token;
+  newUser.verificationToken = verificationToken;
   newUser.verified = false;
-  newUser.cart = [];
-  newUser.discount = null;
   newUser.inbox = 0;
   newUser.notifications = 0;
   newUser.rating = 0;
@@ -29,14 +27,16 @@ export const addNewUser = async ({
   newUser.purchases = [];
   newUser.sales = [];
   newUser.country = null;
+  newUser.origin = null;
   newUser.stripeId = null;
+  newUser.generated = false;
   newUser.active = true;
   return await newUser.save({ session });
 };
 
 export const logUserOut = (res) => {
-  sendRefreshToken(res, '');
-  return { accessToken: '', user: '' };
+  sendRefreshToken(res, "");
+  return { accessToken: "", user: "" };
 };
 
 export const refreshAccessToken = async (req, res, next) => {
@@ -59,12 +59,16 @@ export const editUserVerification = async ({ tokenId, session = null }) => {
   ).session(session);
 };
 
-export const editUserResetToken = async ({ email, token, session = null }) => {
+export const editUserResetToken = async ({
+  userEmail,
+  resetToken,
+  session = null,
+}) => {
   return await User.updateOne(
     {
-      email: email,
+      email: userEmail,
     },
-    { resetToken: token, resetExpiry: Date.now() + 3600000 }
+    { resetToken, resetExpiry: Date.now() + 3600000 }
   ).session(session);
 };
 

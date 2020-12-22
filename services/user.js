@@ -1,7 +1,6 @@
-import mongoose from 'mongoose';
-import Artwork from '../models/artwork.js';
-import Notification from '../models/notification.js';
-import User from '../models/user.js';
+import Artwork from "../models/artwork.js";
+import Notification from "../models/notification.js";
+import User from "../models/user.js";
 
 export const fetchUserById = async ({ userId, session = null }) => {
   return await User.findOne({
@@ -9,9 +8,9 @@ export const fetchUserById = async ({ userId, session = null }) => {
   });
 };
 
-export const fetchUserByEmail = async ({ email, session = null }) => {
+export const fetchUserByEmail = async ({ userEmail, session = null }) => {
   return await User.findOne({
-    $and: [{ email: email }, { active: true }],
+    $and: [{ email: userEmail }, { active: true }],
   }).session(session);
 };
 
@@ -22,25 +21,42 @@ export const fetchUserByToken = async ({ tokenId, session = null }) => {
   }).session(session);
 };
 
-export const fetchUserByCreds = async ({ username, session = null }) => {
+export const fetchUserByCreds = async ({ userUsername, session = null }) => {
   return await User.findOne({
     $and: [
-      { $or: [{ email: username }, { name: username }] },
+      { $or: [{ email: userUsername }, { name: userUsername }] },
       { active: true },
     ],
   }).session(session);
 };
 
-export const fetchUserDiscount = async ({ userId, session = null }) => {
+export const fetchUserSales = async ({
+  userId,
+  dataSkip,
+  dataLimit,
+  session = null,
+}) => {
   return await User.findOne({
     $and: [{ _id: userId }, { active: true }],
-  }).populate('discount');
-};
-
-export const fetchUserSales = async ({ userId, session = null }) => {
-  return await User.findOne({
-    _id: userId,
-  }).deepPopulate('sales.buyer sales.version sales.review');
+  }).populate(
+    dataSkip !== undefined && dataLimit !== undefined
+      ? {
+          path: "sales",
+          options: {
+            limit: dataLimit,
+            skip: dataSkip,
+          },
+          populate: {
+            path: "buyer version review",
+          },
+        }
+      : {
+          path: "sales",
+          populate: {
+            path: "buyer version review",
+          },
+        }
+  );
 };
 
 export const editUserStripe = async ({ userId, stripeId, session = null }) => {
@@ -61,36 +77,61 @@ export const editUserSale = async ({ userId, orderId, session = null }) => {
   ).session(session);
 };
 
-export const fetchUserPurchases = async ({ userId, session = null }) => {
-  return await User.findOne({
-    _id: userId,
-  }).deepPopulate('purchases.seller purchases.version purchases.review');
-};
-
-export const fetchUserProfile = async ({
-  username,
-  skip,
-  limit,
+export const fetchUserPurchases = async ({
+  userId,
+  dataSkip,
+  dataLimit,
   session = null,
 }) => {
   return await User.findOne({
-    $and: [{ name: username }, { active: true }],
+    $and: [{ _id: userId }, { active: true }],
   }).populate(
-    skip && limit
+    dataSkip !== undefined && dataLimit !== undefined
       ? {
-          path: 'artwork',
+          path: "purchases",
           options: {
-            limit,
-            skip,
+            limit: dataLimit,
+            skip: dataSkip,
           },
           populate: {
-            path: 'current',
+            path: "seller version review",
           },
         }
       : {
-          path: 'artwork',
+          path: "purchases",
           populate: {
-            path: 'current',
+            path: "seller version review",
+          },
+        }
+  );
+};
+
+export const fetchUserProfile = async ({
+  userUsername,
+  dataSkip,
+  dataLimit,
+  session = null,
+}) => {
+  return await User.findOne({
+    $and: [{ name: userUsername }, { active: true }],
+  }).populate(
+    dataSkip !== undefined && dataLimit !== undefined
+      ? {
+          path: "artwork",
+          match: { active: true },
+          options: {
+            limit: dataLimit,
+            skip: dataSkip,
+          },
+          populate: {
+            path: "owner current",
+          },
+        }
+      : {
+          path: "artwork",
+          match: { active: true },
+          populate: {
+            path: "owner current",
           },
         }
   );
@@ -98,27 +139,27 @@ export const fetchUserProfile = async ({
 
 export const fetchUserArtwork = async ({
   userId,
-  cursor,
-  ceiling,
+  dataCursor,
+  dataCeiling,
   session = null,
 }) => {
-  const { skip, limit } = formatParams({ cursor, ceiling });
+  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   return await Artwork.find(
     {
       $and: [{ owner: userId }, { active: true }],
     },
     undefined,
     {
-      skip,
-      limit,
+      skip: dataSkip,
+      limit: dataLimit,
     }
   );
 };
 
 export const fetchUserSaves = async ({
   userId,
-  skip,
-  limit,
+  dataSkip,
+  dataLimit,
   session = null,
 }) => {
   return await User.findOne(
@@ -127,17 +168,17 @@ export const fetchUserSaves = async ({
     },
     undefined,
     {
-      skip,
-      limit,
+      skip: dataSkip,
+      limit: dataLimit,
     }
   ).populate({
-    path: 'savedArtwork',
+    path: "savedArtwork",
     options: {
-      limit,
-      skip,
+      skip: dataSkip,
+      limit: dataLimit,
     },
     populate: {
-      path: 'current',
+      path: "current",
     },
   });
 };
@@ -146,7 +187,7 @@ export const fetchUserStatistics = async ({ userId, session = null }) => {
   return await User.findOne({
     $and: [{ _id: userId }, { active: true }],
   }).deepPopulate(
-    'purchases.version purchases.licenses sales.version sales.licenses'
+    "purchases.version purchases.license sales.version sales.license"
   );
 };
 
@@ -167,50 +208,51 @@ export const editUserProfile = async ({
 
 export const fetchUserNotifications = async ({
   userId,
-  skip,
-  limit,
+  dataSkip,
+  dataLimit,
   session = null,
 }) => {
   return await Notification.find({ receiver: userId }, undefined, {
-    skip,
-    limit,
+    skip: dataSkip,
+    limit: dataLimit,
   })
-    .populate('user')
+    .populate("user")
     .sort({ created: -1 });
 };
 
 export const editUserEmail = async ({
   userId,
-  email,
-  token,
+  userEmail,
+  verificationToken,
   session = null,
 }) => {
   return await User.updateOne(
     {
       $and: [{ _id: userId }, { active: true }],
     },
-    { email: email, verificationToken: token, verified: false }
+    { email: userEmail, verificationToken, verified: false }
   ).session(session);
 };
 
 export const editUserPassword = async ({
   userId,
-  password,
-  session = null,
-}) => {
-  return await User.updateOne({ _id: userId }, { password: password }).session(
-    session
-  );
-};
-
-export const editUserPreferences = async ({
-  userId,
-  displaySaves,
+  userPassword,
   session = null,
 }) => {
   return await User.updateOne(
     { _id: userId },
-    { displaySaves: displaySaves }
+    { password: userPassword }
+  ).session(session);
+};
+
+export const editUserPreferences = async ({
+  userId,
+  userSaves,
+  session = null,
+}) => {
+  return await User.updateOne(
+    { _id: userId },
+    { displaySaves: userSaves }
   ).session(session);
 };
 
@@ -239,6 +281,43 @@ export const addUserNotification = async ({ userId, session = null }) => {
   return await User.updateOne(
     { _id: userId },
     { $inc: { notifications: 1 } }
+  ).session(session);
+};
+
+export const addNewIntent = async ({
+  userId,
+  versionId,
+  intentId,
+  session = null,
+}) => {
+  console.log(typeof intentId);
+  return await User.updateOne(
+    { _id: userId },
+    {
+      $addToSet: {
+        intents: {
+          intentId: intentId,
+          versionId: versionId,
+        },
+      },
+    }
+  ).session(session);
+};
+
+export const removeExistingIntent = async ({
+  userId,
+  intentId,
+  session = null,
+}) => {
+  return await User.updateOne(
+    { _id: userId },
+    {
+      $pull: {
+        intents: {
+          intentId: intentId,
+        },
+      },
+    }
   ).session(session);
 };
 
@@ -281,8 +360,6 @@ export const deactivateExistingUser = async ({ userId, session = null }) => {
         verified: false,
         resetToken: null,
         resetExpiry: null,
-        cart: null,
-        discount: null,
         inbox: null,
         notifications: null,
         rating: null,
@@ -292,30 +369,10 @@ export const deactivateExistingUser = async ({ userId, session = null }) => {
         purchases: null,
         sales: null,
         stripeId: null,
+        intents: null,
+        generated: false,
         active: false,
       },
     }
-  ).session(session);
-};
-
-export const addUserDiscount = async ({
-  userId,
-  discountId,
-  session = null,
-}) => {
-  return await User.updateOne(
-    {
-      $and: [{ _id: userId }, { active: true }],
-    },
-    { discount: discountId }
-  ).session(session);
-};
-
-export const removeUserDiscount = async ({ userId, session = null }) => {
-  return await User.updateOne(
-    {
-      $and: [{ _id: userId }, { active: true }],
-    },
-    { discount: null }
   ).session(session);
 };

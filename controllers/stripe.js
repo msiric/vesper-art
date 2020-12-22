@@ -1,54 +1,73 @@
-import mongoose from "mongoose";
-import { server, stripe as processor } from "../config/secret.js";
-import { payment } from "../config/constants.js";
-import License from "../models/license.js";
-import crypto from "crypto";
-import createError from "http-errors";
 import axios from "axios";
-import FormData from "form-data";
-import querystring from "querystring";
+import crypto from "crypto";
 import currency from "currency.js";
+import FormData from "form-data";
+import createError from "http-errors";
+import mongoose from "mongoose";
+import querystring from "querystring";
+import { payment } from "../config/constants.js";
+import { server, stripe as processor } from "../config/secret.js";
+import socketApi from "../lib/socket.js";
+import License from "../models/license.js";
+import { fetchVersionDetails } from "../services/artwork.js";
+import { fetchDiscountById } from "../services/discount.js";
+import { addNewNotification } from "../services/notification.js";
+import { addNewOrder } from "../services/order.js";
 import {
   constructStripeEvent,
+  constructStripeIntent,
   constructStripeLink,
   constructStripePayout,
-  constructStripeIntent,
-  updateStripeIntent,
   fetchStripeAccount,
   fetchStripeBalance,
+  updateStripeIntent,
 } from "../services/stripe.js";
 import {
-  fetchUserDiscount,
-  editUserStripe,
   editUserPurchase,
+  editUserSale,
+  editUserStripe,
+  fetchUserById,
+  removeExistingIntent,
 } from "../services/user.js";
-import { fetchArtworkDetails } from "../services/artwork.js";
-import { addNewLicenses } from "../services/license.js";
-import { addNewOrder } from "../services/order.js";
-import { addNewNotification } from "../services/notification.js";
-import socketApi from "../lib/socket.js";
-import orderValidator from "../validation/order.js";
-import licenseValidator from "../validation/license.js";
 import { sanitizeData } from "../utils/helpers.js";
+import licenseValidator from "../validation/license.js";
+import orderValidator from "../validation/order.js";
 
-export const receiveWebhookEvent = async ({ signature, body, session }) => {
-  const endpointSecret = process.env.STRIPE_WEBHOOK;
-  const stripeEvent = await constructStripeEvent({
-    body,
-    secret: endpointSecret,
-    signature,
-  });
+export const receiveWebhookEvent = async ({
+  stripeSignature,
+  stripeBody,
+  session,
+}) => {
+  const stripeSecret = process.env.STRIPE_WEBHOOK;
+  let stripeEvent;
+
+  try {
+    stripeEvent = await constructStripeEvent({
+      stripeBody,
+      stripeSecret,
+      stripeSignature,
+    });
+  } catch (err) {
+    console.log("event error");
+  }
+
+  console.log("stripe event", stripeEvent.type);
 
   switch (stripeEvent.type) {
     case "payment_intent.succeeded":
+      console.log("Payment success");
       const paymentIntent = stripeEvent.data.object;
-      await processTransaction({ intent: paymentIntent, session });
+      await processTransaction({ stripeIntent: paymentIntent, session });
+      break;
+    case "payment_intent.failed":
+      console.log("Failed payment");
       break;
     default:
-      throw createError(400, "Invalid Stripe event");
+      console.log("Invalid event");
   }
 
-  return { received: true };
+  console.log("done");
+  return { message: "Event received" };
 };
 
 export const getStripeUser = async ({ accountId }) => {
@@ -56,7 +75,8 @@ export const getStripeUser = async ({ accountId }) => {
   return {
     capabilities: {
       cardPayments: foundAccount.capabilities.card_payments,
-      platformPayments: foundAccount.capabilities.platform_payments,
+      // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
+      platformPayments: foundAccount.capabilities.transfers,
     },
   };
 };
@@ -64,120 +84,163 @@ export const getStripeUser = async ({ accountId }) => {
 // $TODO validacija licenci
 export const managePaymentIntent = async ({
   userId,
-  artworkId,
+  versionId,
   intentId,
-  licenses,
+  discountId,
+  artworkLicense,
   session,
 }) => {
-  const foundUser = await fetchUserDiscount({ userId, session });
-  if (foundUser) {
-    const foundArtwork = await fetchArtworkDetails({ artworkId, session });
-    if (foundArtwork) {
-      let personalLicenses = 0;
-      let commercialLicenses = 0;
-      licenses.map((license) => {
-        if (license.licenseType === "personal") {
-          personalLicenses += foundArtwork.current.personal;
-          license.licensePrice = currency(
-            foundArtwork.current.personal
-          ).intValue;
-        } else if (license.licenseType === "commercial") {
-          commercialLicenses += foundArtwork.current.commercial;
-          license.licensePrice = currency(
-            foundArtwork.current.commercial
-          ).intValue;
-        }
-      });
-      const buyerFee = currency(personalLicenses)
-        .add(commercialLicenses)
-        .multiply(payment.buyerFee.multiplier)
-        .add(payment.buyerFee.addend);
-      const sellerFee = currency(1 - payment.appFee);
-      const discount = foundUser.discount
-        ? currency(personalLicenses)
-            .add(commercialLicenses)
-            .multiply(foundUser.discount.discount)
-        : 0;
-      const buyerTotal = currency(personalLicenses)
-        .add(commercialLicenses)
-        .subtract(discount)
-        .add(buyerFee);
-      const sellerTotal = currency(personalLicenses)
-        .add(commercialLicenses)
-        .multiply(sellerFee);
-      const platformTotal = currency(buyerTotal).subtract(sellerTotal);
-      const stripeFees = currency(1.03).add(2).add(0.3);
-      const total = currency(platformTotal).subtract(stripeFees);
+  // $TODO Treba li dohvacat usera?
+  const foundUser = await fetchUserById({ userId, session });
+  if (foundUser && foundUser.active) {
+    // $TODO Check that discount is valid/active (moze i bolje)
+    const foundDiscount = discountId
+      ? await fetchDiscountById({ discountId, session })
+      : null;
+    const foundVersion = await fetchVersionDetails({ versionId, session });
+    if (foundVersion) {
+      if (foundVersion._id.equals(foundVersion.artwork.current)) {
+        if (!foundVersion.artwork.owner._id.equals(foundUser._id)) {
+          // $TODO Bolje sredit validaciju licence
+          // $TODO Sredit validnu licencu (npr, ako je "use": "included", ne moze bit odabran personal license)
+          const licensePrice =
+            artworkLicense.type === "personal"
+              ? foundVersion.personal
+              : artworkLicense.type === "commercial"
+              ? foundVersion.commercial
+              : 0;
+          if (licensePrice !== -1) {
+            const licenseValue = currency(licensePrice);
+            const buyerFee = currency(licensePrice)
+              .multiply(payment.buyerFee.multiplier)
+              .add(payment.buyerFee.addend);
+            const sellerFee = currency(1 - payment.appFee);
+            const discount =
+              foundDiscount && foundDiscount.active
+                ? currency(licensePrice).multiply(foundDiscount.discount)
+                : 0;
+            const buyerTotal = currency(licensePrice)
+              .subtract(discount)
+              .add(buyerFee);
+            const sellerTotal = currency(licensePrice).multiply(sellerFee);
+            const platformTotal = currency(buyerTotal).subtract(sellerTotal);
+            const stripeFees = currency(1.03).add(2).add(0.3);
+            const total = currency(platformTotal).subtract(stripeFees);
 
-      const orderData = {
-        buyerId: foundUser._id,
-        sellerId: foundArtwork.owner._id,
-        artworkId: foundArtwork._id,
-        versionId: foundArtwork.current._id,
-        discountId: foundUser.discount ? foundUser.discount._id : null,
-        spent: buyerTotal.intValue,
-        earned: sellerTotal.intValue,
-        fee: platformTotal.intValue,
-        licenses: licenses,
-      };
-      const paymentIntent = intentId
-        ? await updateStripeIntent({
-            intentId,
-            amount: buyerTotal.intValue,
-            application_fee_amount: platformTotal.intValue,
-            session,
-          })
-        : await constructStripeIntent({
-            method: "card",
-            amount: buyerTotal.intValue,
-            currency: "usd",
-            fee: platformTotal.intValue,
-            seller: foundArtwork.owner.stripeId,
-            order: orderData,
-            session,
-          });
-      return {
-        intent: {
-          id: paymentIntent.id,
-          secret: paymentIntent.client_secret,
-        },
-      };
+            const orderData = intentId
+              ? artworkLicense.assignee
+                ? {
+                    discountId:
+                      foundDiscount && foundDiscount.active
+                        ? foundDiscount._id
+                        : null,
+                    spent: buyerTotal.intValue,
+                    earned: sellerTotal.intValue,
+                    fee: platformTotal.intValue,
+                    licenseData: {
+                      licenseAssignee: artworkLicense.assignee,
+                      licenseCompany: artworkLicense.company,
+                      licenseType: artworkLicense.type,
+                      licensePrice: licenseValue.intValue,
+                    },
+                  }
+                : {
+                    discountId:
+                      foundDiscount && foundDiscount.active
+                        ? foundDiscount._id
+                        : null,
+                    spent: buyerTotal.intValue,
+                    earned: sellerTotal.intValue,
+                    fee: platformTotal.intValue,
+                  }
+              : {
+                  buyerId: foundUser._id,
+                  sellerId: foundVersion.artwork.owner._id,
+                  artworkId: foundVersion.artwork._id,
+                  versionId: foundVersion._id,
+                  discountId:
+                    foundDiscount && foundDiscount.active
+                      ? foundDiscount._id
+                      : null,
+                  spent: buyerTotal.intValue,
+                  earned: sellerTotal.intValue,
+                  fee: platformTotal.intValue,
+                  licenseData: {
+                    licenseAssignee: artworkLicense.assignee,
+                    licenseCompany: artworkLicense.company,
+                    licenseType: artworkLicense.type,
+                    licensePrice: licenseValue.intValue,
+                  },
+                };
+            const paymentIntent = intentId
+              ? await updateStripeIntent({
+                  intentAmount: buyerTotal.intValue,
+                  intentFee: platformTotal.intValue,
+                  orderData: orderData,
+                  intentId,
+                  session,
+                })
+              : await constructStripeIntent({
+                  intentMethod: "card",
+                  intentAmount: buyerTotal.intValue,
+                  intentCurrency: "usd",
+                  intentFee: platformTotal.intValue,
+                  sellerId: foundVersion.artwork.owner.stripeId,
+                  orderData: orderData,
+                  session,
+                });
+            return {
+              intent: {
+                id: paymentIntent.id,
+                secret: paymentIntent.client_secret,
+              },
+            };
+          }
+          throw createError(400, "License type is not valid");
+        }
+        throw createError(400, "You are the owner of this artwork");
+      }
+      throw createError(400, "Artwork version is obsolete");
     }
     throw createError(400, "Artwork not found");
   }
   throw createError(400, "User not found");
 };
 
-export const redirectToStripe = async ({ userAccount, userOnboarded }) => {
+export const redirectToStripe = async ({ accountId, userOnboarded }) => {
   if (!userOnboarded)
     throw createError(
       400,
       "You need to complete the onboarding process before accessing your Stripe dashboard"
     );
   const loginLink = await constructStripeLink({
-    userOnboarded,
-    domain: server.serverDomain,
+    accountId,
+    serverDomain: server.serverDomain,
   });
-  if (userAccount) loginLink.url = `${loginLink.url}#/account`;
 
   return { url: loginLink.url };
 };
 
-export const onboardUser = async ({ req, res, country, email }) => {
-  req.session.state = Math.random().toString(36).slice(2);
-  req.session.id = res.locals.user.id;
-  req.session.name = res.locals.user.name;
+export const onboardUser = async ({
+  sessionData,
+  responseData,
+  userOrigin,
+  userEmail,
+}) => {
+  sessionData.state = Math.random().toString(36).slice(2);
+  sessionData.id = responseData.user.id;
+  sessionData.name = responseData.user.name;
 
   const parameters = {
     client_id: processor.clientId,
-    state: req.session.state,
+    state: sessionData.state,
     redirect_uri: `${server.serverDomain}/stripe/token`,
     "stripe_user[business_type]": "individual",
     "stripe_user[business_name]": undefined,
     "stripe_user[first_name]": undefined,
     "stripe_user[last_name]": undefined,
-    "stripe_user[email]": email || undefined,
-    "stripe_user[country]": country || undefined,
+    "stripe_user[email]": userEmail || undefined,
+    "stripe_user[country]": userOrigin || undefined,
   };
 
   // If we're suggesting this account have the `card_payments` capability,
@@ -197,15 +260,20 @@ export const onboardUser = async ({ req, res, country, email }) => {
   };
 };
 
-export const assignStripeId = async ({ sessionState, queryState, session }) => {
-  if (sessionState != queryState)
+export const assignStripeId = async ({
+  responseObject,
+  sessionData,
+  queryData,
+  session,
+}) => {
+  if (sessionData.state != queryData.state)
     throw createError(500, "There was an error in the onboarding process");
 
   const formData = new FormData();
   formData.append("grant_type", "authorization_code");
   formData.append("client_id", processor.clientId);
   formData.append("client_secret", processor.secretKey);
-  formData.append("code", req.query.code);
+  formData.append("code", queryData.code);
 
   const expressAuthorized = await axios.post(processor.tokenUri, formData, {
     headers: formData.getHeaders(),
@@ -214,18 +282,18 @@ export const assignStripeId = async ({ sessionState, queryState, session }) => {
   if (expressAuthorized.error) throw createError(500, expressAuthorized.error);
 
   await editUserStripe({
-    userId: req.session.id,
+    userId: sessionData.id,
     stripeId: expressAuthorized.data.stripe_user_id,
     session,
   });
 
-  const username = req.session.name;
+  const username = sessionData.name;
 
-  req.session.state = null;
-  req.session.id = null;
-  req.session.name = null;
+  sessionData.state = null;
+  sessionData.id = null;
+  sessionData.name = null;
 
-  return res.redirect(`/user/${username}`);
+  return responseObject.redirect(`http://localhost:3000/user/${username}`);
 };
 
 export const createPayout = async ({ userId, session }) => {
@@ -237,9 +305,9 @@ export const createPayout = async ({ userId, session }) => {
     });
     const { amount, currency } = balance.available[0];
     await constructStripePayout({
-      amount,
-      currency,
-      descriptor: server.appName,
+      payoutAmount: amount,
+      payoutCurrency: currency,
+      payoutDescriptor: server.appName,
       stripeId: foundUser.stripeId,
       session,
     });
@@ -250,69 +318,70 @@ export const createPayout = async ({ userId, session }) => {
   throw createError(400, "Cannot create payout for this user");
 };
 
-const processTransaction = async ({ intent, session }) => {
-  const orderData = JSON.parse(intent.metadata.orderData);
+const processTransaction = async ({ stripeIntent, session }) => {
+  const orderData = JSON.parse(stripeIntent.metadata.orderData);
   const buyerId = mongoose.Types.ObjectId(orderData.buyerId);
   const sellerId = mongoose.Types.ObjectId(orderData.sellerId);
   const artworkId = mongoose.Types.ObjectId(orderData.artworkId);
   const versionId = mongoose.Types.ObjectId(orderData.versionId);
   const discountId = mongoose.Types.ObjectId(orderData.discountId);
-  const intentId = intent.id;
-  const licenseSet = [];
-  const licenseIds = [];
-  for (let license of orderData) {
-    const { error } = licenseValidator(
-      sanitizeData({
-        licenseOwner: buyerId,
-        licenseArtwork: artworkId,
-        licenseType: license.licenseType,
-        licensePrice: license.licensePrice,
-      })
-    );
-    if (error) throw createError(400, error);
-    const newLicense = new License();
-    newLicense.owner = buyerId;
-    newLicense.artwork = artworkId;
-    newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
-    newLicense.type = license.licenseType;
-    newLicense.active = true;
-    newLicense.price = license.licensePrice;
-    licenseSet.push(newLicense);
-  }
-  const savedLicenses = await addNewLicenses({
-    licenses: licenseSet,
-    session,
-  });
-  savedLicenses.forEach((license) => {
-    licenseIds.push(license._id);
-  });
-  const { error } = orderValidator(
+  const intentId = stripeIntent.id;
+  const {
+    licenseAssignee,
+    licenseCompany,
+    licenseType,
+    licensePrice,
+  } = orderData.licenseData;
+  const { licenseError } = licenseValidator(
+    sanitizeData({
+      licenseOwner: buyerId,
+      licenseArtwork: artworkId,
+      licenseAssignee,
+      licenseCompany,
+      licenseType,
+      licensePrice,
+    })
+  );
+  if (licenseError) throw createError(400, licenseError);
+  const newLicense = new License();
+  newLicense.owner = buyerId;
+  newLicense.artwork = artworkId;
+  newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
+  newLicense.assignee = licenseAssignee;
+  newLicense.company = licenseCompany;
+  newLicense.type = licenseType;
+  newLicense.active = true;
+  newLicense.price = licensePrice;
+  const savedLicense = await newLicense.save({ session });
+  const { orderError } = orderValidator(
     sanitizeData({
       orderBuyer: buyerId,
       orderSeller: sellerId,
       orderArtwork: artworkId,
       orderVersion: versionId,
       orderDiscount: discountId,
-      orderLicenses: licenseIds,
+      orderLicense: savedLicense._id,
       orderSpent: orderData.spent,
       orderEarned: orderData.earned,
       orderFee: orderData.fee,
       orderIntent: intentId,
     })
   );
-  if (error) throw createError(400, error);
+  if (orderError) throw createError(400, orderError);
   const orderObject = {
-    buyer: buyerId,
-    seller: sellerId,
-    artwork: artworkId,
-    version: versionId,
-    discount: discountId,
-    licenses: licenseIds,
+    buyerId,
+    sellerId,
+    artworkId,
+    versionId,
+    discountId,
+    licenseId: savedLicense._id,
+    review: null,
     spent: orderData.spent,
     earned: orderData.earned,
     fee: orderData.fee,
+    commercial: true,
     status: "completed",
-    intent: intentId,
+    intentId: intentId,
   };
   const savedOrder = await addNewOrder({ orderData: orderObject, session });
   await editUserPurchase({
@@ -321,14 +390,16 @@ const processTransaction = async ({ intent, session }) => {
     session,
   });
   await editUserSale({ userId: sellerId, orderId: savedOrder._id, session });
+  await removeExistingIntent({ userId: sellerId, intentId, session });
   // new start
   await addNewNotification({
     notificationLink: savedOrder._id,
+    notificationRef: "",
     notificationType: "order",
     notificationReceiver: sellerId,
     session,
   });
   socketApi.sendNotification(sellerId, savedOrder._id);
   // new end
-  return true;
+  return { message: "Order processed successfully" };
 };

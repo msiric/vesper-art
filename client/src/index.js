@@ -1,18 +1,35 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import Interceptor from './shared/Interceptor/Interceptor.js';
-import App from './components/App/App.js';
-import Store from './components/Store/Store.js';
-import * as serviceWorker from './serviceWorker.js';
+import React from "react";
+import ReactDOM from "react-dom";
+import Interceptor from "./containers/Interceptor/Interceptor.js";
+import {
+  appReducer,
+  appStore,
+  Provider as AppProvider,
+} from "./contexts/App.js";
+import {
+  eventsReducer,
+  eventsStore,
+  Provider as EventsProvider,
+} from "./contexts/Events.js";
+import {
+  Provider as UserProvider,
+  userReducer,
+  userStore,
+} from "./contexts/User.js";
+import "./index.css";
+import * as serviceWorker from "./serviceWorker.js";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Store>
-      <Interceptor>{(socket) => <App socket={socket} />}</Interceptor>
-    </Store>
+    <AppProvider reducer={appReducer} store={appStore}>
+      <UserProvider reducer={userReducer} store={userStore}>
+        <EventsProvider reducer={eventsReducer} store={eventsStore}>
+          <Interceptor />
+        </EventsProvider>
+      </UserProvider>
+    </AppProvider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change
