@@ -1,18 +1,18 @@
 import {
-    Column, Entity,
-    PrimaryGeneratedColumn
+  Column, Entity,
+  PrimaryGeneratedColumn
 } from 'typeorm';
   
   @Entity()
-  export class VersionTags {
+  export class ArtworkFavorites {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    version: null // $TODO
+    owner: null // $TODO
 
     @Column()
-    tag: null // $TODO
+    artwork: null // $TODO
 
     @Column({ type: 'date' })
     created: Date;
