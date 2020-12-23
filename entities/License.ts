@@ -1,39 +1,48 @@
 import {
-  Column, CreateDateColumn, Entity,
-  PrimaryGeneratedColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class License {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Artwork } from "./Artwork";
+import { User } from "./User";
 
-    @Column()
-    owner: null // $TODO
-  
-    @Column()
-    artwork: null // $TODO
-  
-    @Column()
-    fingerprint: string;
-    
-    @Column()
-    assignee: string;
+@Entity()
+export class License extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @Column()
-    company: string;
+  @OneToOne(() => User)
+  @JoinColumn()
+  owner: User;
 
-    @Column()
-    text: string;
+  @OneToOne(() => Artwork)
+  @JoinColumn()
+  artwork: Artwork;
 
-    @Column()
-    active: boolean;
+  @Column()
+  fingerprint: string;
 
-    @Column()
-    price: number;
+  @Column()
+  assignee: string;
 
-    @CreateDateColumn()
-    created: Date;
+  @Column()
+  company: string;
 
-    // Does it need an updated field?
-  }
+  @Column()
+  text: string;
+
+  @Column()
+  active: boolean;
+
+  @Column()
+  price: number;
+
+  @CreateDateColumn()
+  created: Date;
+
+  // Does it need an updated field?
+}

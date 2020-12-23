@@ -1,26 +1,35 @@
 import {
-  Column, CreateDateColumn, Entity,
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class Intent {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  UpdateDateColumn,
+} from "typeorm";
+import { User } from "./User";
+import { Version } from "./Version";
 
-    @Column()
-    owner: null // TODO
-  
-    @Column()
-    version: null // TODO
-  
-    @Column()
-    uuid: string;
+@Entity()
+export class Intent extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @CreateDateColumn()
-    created: Date;
+  @OneToOne(() => User)
+  @JoinColumn()
+  owner: User;
 
-    @UpdateDateColumn()
-    updated: Date;
-  }
+  @OneToOne(() => Version)
+  @JoinColumn()
+  version: Version;
+
+  @Column()
+  uuid: string;
+
+  @CreateDateColumn()
+  created: Date;
+
+  @UpdateDateColumn()
+  updated: Date;
+}

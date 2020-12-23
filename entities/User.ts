@@ -1,68 +1,75 @@
 import {
-  Column, CreateDateColumn, Entity,
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class User {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  UpdateDateColumn,
+} from "typeorm";
+import { Avatar } from "./Avatar";
 
-    @Column()
-    email: string;
-  
-    @Column()
-    name: string;
-  
-    @Column()
-    password: string;
+@Entity()
+export class User extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @Column()
-    avatar: null // TODO;
+  @Column()
+  email: string;
 
-    @Column()
-    description: string;
+  @Column()
+  name: string;
 
-    @Column()
-    country: string;
+  @Column()
+  password: string;
 
-    @Column()
-    businessAddress: string;
+  @OneToOne(() => Avatar)
+  @JoinColumn()
+  avatar: Avatar;
 
-    @Column()
-    customWork: boolean;
+  @Column()
+  description: string;
 
-    @Column()
-    displayFavorites: boolean;
+  @Column()
+  country: string;
 
-    @Column()
-    resetToken: string;
+  @Column()
+  businessAddress: string;
 
-    @CreateDateColumn()
-    resetExpiry: Date;
+  @Column()
+  customWork: boolean;
 
-    @Column()
-    jwtVersion: number;
+  @Column()
+  displayFavorites: boolean;
 
-    @Column()
-    stripeId: string;
+  @Column()
+  resetToken: string;
 
-    @Column()
-    verificationToken: string;
+  @CreateDateColumn()
+  resetExpiry: Date;
 
-    @Column()
-    verified: boolean;
+  @Column()
+  jwtVersion: number;
 
-    @Column()
-    active: boolean;
+  @Column()
+  stripeId: string;
 
-    @Column()
-    generated: boolean;
+  @Column()
+  verificationToken: string;
 
-    @CreateDateColumn()
-    created: Date;
+  @Column()
+  verified: boolean;
 
-    @UpdateDateColumn()
-    updated: Date;
-  }
+  @Column()
+  active: boolean;
+
+  @Column()
+  generated: boolean;
+
+  @CreateDateColumn()
+  created: Date;
+
+  @UpdateDateColumn()
+  updated: Date;
+}

@@ -6,34 +6,35 @@ import {
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from "typeorm";
-import { User } from "./User";
+import { Version } from "./Version";
 
 @Entity()
-export class Notification extends BaseEntity {
+export class Art extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => User)
+  @OneToOne(() => Version)
   @JoinColumn()
-  receiver: User;
+  parent: Version;
 
   @Column()
-  link: string;
+  source: string;
 
   @Column()
-  ref: string;
+  orientation: string;
 
   @Column()
-  type: string;
+  dominant: string;
 
   @Column()
-  read: boolean;
+  height: string;
+
+  @Column()
+  width: string;
 
   @CreateDateColumn()
   created: Date;
 
-  @UpdateDateColumn()
-  updated: Date;
+  // Does it need an updated field?
 }

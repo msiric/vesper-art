@@ -1,32 +1,39 @@
 import {
-  Column, CreateDateColumn, Entity,
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class Ticket {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  UpdateDateColumn,
+} from "typeorm";
+import { User } from "./User";
 
-    @Column()
-    owner: null // $TODO
-  
-    @Column()
-    title: string
-  
-    @Column()
-    body: string
-    
-    @Column()
-    attachment: string
+@Entity()
+export class Ticket extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @Column()
-    status: string
+  @OneToOne(() => User)
+  @JoinColumn()
+  owner: User;
 
-    @CreateDateColumn()
-    created: Date;
+  @Column()
+  title: string;
 
-    @UpdateDateColumn()
-    updated: Date;
-  }
+  @Column()
+  body: string;
+
+  @Column()
+  attachment: string;
+
+  @Column()
+  status: string;
+
+  @CreateDateColumn()
+  created: Date;
+
+  @UpdateDateColumn()
+  updated: Date;
+}

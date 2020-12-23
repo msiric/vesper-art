@@ -1,56 +1,76 @@
 import {
-  Column, CreateDateColumn, Entity,
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class Order {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  UpdateDateColumn,
+} from "typeorm";
+import { Artwork } from "./Artwork";
+import { Discount } from "./Discount";
+import { Intent } from "./Intent";
+import { License } from "./License";
+import { Review } from "./Review";
+import { User } from "./User";
+import { Version } from "./Version";
 
-    @Column()
-    buyer: null // $TODO
-  
-    @Column()
-    seller: null // $TODO
-  
-    @Column()
-    artwork: null // $TODO
-    
-    @Column()
-    version: null // $TODO
+@Entity()
+export class Order extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @Column()
-    license: null // $TODO
+  @OneToOne(() => User)
+  @JoinColumn()
+  buyer: User;
 
-    @Column()
-    discount: null // $TODO
+  @OneToOne(() => User)
+  @JoinColumn()
+  seller: User;
 
-    @Column()
-    review: null // $TODO
+  @OneToOne(() => Artwork)
+  @JoinColumn()
+  artwork: Artwork;
 
-    @Column()
-    intent: null // $TODO
+  @OneToOne(() => Version)
+  @JoinColumn()
+  version: Version;
 
-    @Column()
-    spent: number
+  @OneToOne(() => License)
+  @JoinColumn()
+  license: License;
 
-    @Column()
-    earned: number
+  @OneToOne(() => Discount)
+  @JoinColumn()
+  discount: Discount;
 
-    @Column()
-    fee: number
+  @OneToOne(() => Review)
+  @JoinColumn()
+  review: Review;
 
-    @Column()
-    commercial: boolean
+  @OneToOne(() => Intent)
+  @JoinColumn()
+  intent: Intent;
 
-    @Column()
-    status: string
+  @Column()
+  spent: number;
 
-    @CreateDateColumn()
-    created: Date;
+  @Column()
+  earned: number;
 
-    @UpdateDateColumn()
-    updated: Date;
-  }
+  @Column()
+  fee: number;
+
+  @Column()
+  commercial: boolean;
+
+  @Column()
+  status: string;
+
+  @CreateDateColumn()
+  created: Date;
+
+  @UpdateDateColumn()
+  updated: Date;
+}

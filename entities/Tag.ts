@@ -1,16 +1,19 @@
 import {
-  Column, CreateDateColumn, Entity,
-  PrimaryGeneratedColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class Tag {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 
-    @Column()
-    title: string
+@Entity()
+export class Tag extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @CreateDateColumn()
-    created: Date;
-  }
+  @Column()
+  title: string;
+
+  @CreateDateColumn()
+  created: Date;
+}

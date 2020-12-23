@@ -1,32 +1,38 @@
 import {
-  Column, CreateDateColumn, Entity,
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class Artwork {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  UpdateDateColumn,
+} from "typeorm";
+import { User } from "./User";
+import { Version } from "./Version";
 
-    @Column()
-    owner: null // $TODO;
-  
-    @Column()
-    current: null // $TODO;
-  
-    @Column()
-    favorites: number;
+@Entity()
+export class Artwork extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @Column()
-    active: boolean;
+  @OneToOne(() => User)
+  @JoinColumn()
+  owner: User;
 
-    @Column()
-    generated: boolean;
+  @OneToOne(() => Version)
+  @JoinColumn()
+  current: Version;
 
-    @CreateDateColumn()
-    created: Date;
+  @Column()
+  active: boolean;
 
-    @UpdateDateColumn()
-    updated: Date;
-  }
+  @Column()
+  generated: boolean;
+
+  @CreateDateColumn()
+  created: Date;
+
+  @UpdateDateColumn()
+  updated: Date;
+}

@@ -1,48 +1,58 @@
 import {
-  Column, CreateDateColumn, Entity,
-  PrimaryGeneratedColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class Version {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Art } from "./Art";
+import { Artwork } from "./Artwork";
 
-    @Column()
-    artwork: null // $TODO
-  
-    @Column()
-    title: string
-  
-    @Column()
-    category: string
-    
-    @Column()
-    description: string
+@Entity()
+export class Version extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @Column()
-    license: string
+  @OneToOne(() => Artwork)
+  @JoinColumn()
+  artwork: Artwork;
 
-    @Column()
-    use: string
-    
-    @Column()
-    personal: number
+  @Column()
+  title: string;
 
-    @Column()
-    commercial: number
+  @Column()
+  category: string;
 
-    @Column()
-    availability: string
-    
-    @Column()
-    cover: null // $TODO
+  @Column()
+  description: string;
 
-    @Column()
-    media: null // $TODO
+  @Column()
+  license: string;
 
-    @CreateDateColumn()
-    created: Date;
+  @Column()
+  use: string;
 
-    // Does it need an updated field?
-  }
+  @Column()
+  personal: number;
+
+  @Column()
+  commercial: number;
+
+  @Column()
+  availability: string;
+
+  @OneToOne(() => Art)
+  @JoinColumn()
+  cover: Art;
+
+  @OneToOne(() => Art)
+  @JoinColumn()
+  media: Art;
+
+  @CreateDateColumn()
+  created: Date;
+
+  // Does it need an updated field?
+}

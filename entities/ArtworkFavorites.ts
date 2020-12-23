@@ -1,21 +1,29 @@
 import {
-  Column, CreateDateColumn, Entity,
-  PrimaryGeneratedColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class ArtworkFavorites {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  BaseEntity,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Artwork } from "./Artwork";
+import { User } from "./User";
 
-    @Column()
-    owner: null // $TODO
+@Entity()
+export class ArtworkFavorites extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @Column()
-    artwork: null // $TODO
+  @OneToOne(() => User)
+  @JoinColumn()
+  owner: User;
 
-    @CreateDateColumn()
-    created: Date;
+  @OneToOne(() => Artwork)
+  @JoinColumn()
+  artwork: Artwork;
 
-    // Does it need an updated field?
-  }
+  @CreateDateColumn()
+  created: Date;
+
+  // Does it need an updated field?
+}

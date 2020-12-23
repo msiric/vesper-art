@@ -1,22 +1,25 @@
 import {
-  Column, CreateDateColumn, Entity,
-  PrimaryGeneratedColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class Discount {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 
-    @Column()
-    name: string
-  
-    @Column()
-    discount: number
-  
-    @Column()
-    active: boolean;
+@Entity()
+export class Discount extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @CreateDateColumn()
-    created: Date;
-  }
+  @Column()
+  name: string;
+
+  @Column()
+  discount: number;
+
+  @Column()
+  active: boolean;
+
+  @CreateDateColumn()
+  created: Date;
+}

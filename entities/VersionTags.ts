@@ -1,19 +1,27 @@
 import {
-  Column, CreateDateColumn, Entity,
-  PrimaryGeneratedColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class VersionTags {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  BaseEntity,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Tag } from "./Tag";
+import { Version } from "./Version";
 
-    @Column()
-    version: null // $TODO
+@Entity()
+export class VersionTags extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @Column()
-    tag: null // $TODO
+  @OneToOne(() => Version)
+  @JoinColumn()
+  version: Version;
 
-    @CreateDateColumn()
-    created: Date;
-  }
+  @OneToOne(() => Tag)
+  @JoinColumn()
+  tag: Tag;
+
+  @CreateDateColumn()
+  created: Date;
+}

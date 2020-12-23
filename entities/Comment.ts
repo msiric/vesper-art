@@ -1,32 +1,41 @@
 import {
-  Column, CreateDateColumn, Entity,
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class Comment {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  UpdateDateColumn,
+} from "typeorm";
+import { Artwork } from "./Artwork";
+import { User } from "./User";
 
-    @Column()
-    owner: null // $TODO;
-  
-    @Column()
-    artwork: null // $TODO;
-  
-    @Column()
-    content: string;
+@Entity()
+export class Comment extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @Column()
-    modified: boolean;
+  @OneToOne(() => User)
+  @JoinColumn()
+  owner: User;
 
-    @Column()
-    generated: boolean;
+  @OneToOne(() => Artwork)
+  @JoinColumn()
+  artwork: Artwork;
 
-    @CreateDateColumn()
-    created: Date;
+  @Column()
+  content: string;
 
-    @UpdateDateColumn()
-    updated: Date;
-  }
+  @Column()
+  modified: boolean;
+
+  @Column()
+  generated: boolean;
+
+  @CreateDateColumn()
+  created: Date;
+
+  @UpdateDateColumn()
+  updated: Date;
+}

@@ -1,25 +1,36 @@
 import {
-  Column, CreateDateColumn, Entity,
-  PrimaryGeneratedColumn
-} from 'typeorm';
-  
-  @Entity()
-  export class Review {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Artwork } from "./Artwork";
+import { Order } from "./Order";
+import { User } from "./User";
 
-    @Column()
-    order: null // $TODO
-  
-    @Column()
-    artwork: null // $TODO
-  
-    @Column()
-    owner: null // $TODO
-    
-    @Column()
-    rating: number
+@Entity()
+export class Review extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @CreateDateColumn()
-    created: Date;
-  }
+  @OneToOne(() => Order)
+  @JoinColumn()
+  order: Order;
+
+  @OneToOne(() => Artwork)
+  @JoinColumn()
+  artwork: Artwork;
+
+  @OneToOne(() => User)
+  @JoinColumn()
+  owner: User;
+
+  @Column()
+  rating: number;
+
+  @CreateDateColumn()
+  created: Date;
+}
