@@ -15,8 +15,12 @@ dotenv.config({
 });
 
 export const mongo = {
-  database: `mongodb+srv://${process.env.DEV_DB_USER}:${process.env.DEV_DB_PASS}@${process.env.DEV_DB_NAME}-5nkas.mongodb.net/test?retryWrites=true&w=majority`,
-  secret: process.env.DEV_DB_SECRET,
+  database: `mongodb+srv://${process.env.MONGO_DEV_DB_USER}:${process.env.MONGO_DEV_DB_PASS}@${process.env.MONGO_DEV_DB_NAME}-5nkas.mongodb.net/test?retryWrites=true&w=majority`,
+  secret: process.env.MONGO_DEV_DB_SECRET,
+};
+
+export const postgres = {
+  database: process.env.PG_DEV_DB_URL,
 };
 
 export const server = {

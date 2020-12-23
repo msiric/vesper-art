@@ -10,7 +10,9 @@ import createError from "http-errors";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import path from "path";
-import { mongo } from "./config/secret.js";
+import "reflect-metadata";
+import { createConnection } from "typeorm";
+import { mongo, postgres } from "./config/secret.js";
 import api from "./routes/api/index.js";
 import stripe from "./routes/stripe/index.js";
 import { rateLimiter } from "./utils/limiter.js";
@@ -54,11 +56,30 @@ mongoose.connect(
   { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
   (err) => {
     if (err) console.log(err);
-    console.log("Connected to the database");
+    console.log("Connected to MongoDB");
   }
 );
 
 mongoose.set("useCreateIndex", true);
+
+(async () => {
+  try {
+    await createConnection({
+      type: "postgres",
+      url: postgres.database,
+      logging: true,
+      // synchronize: true,
+      migrations: [path.join(__dirname, "./migrations/*")],
+      entities: [path.join(__dirname, "./entities/*")],
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    });
+    console.log("Connected to PostgreSQL");
+  } catch (err) {
+    console.log(err);
+  }
+})();
 
 app.use(rateLimiter);
 
