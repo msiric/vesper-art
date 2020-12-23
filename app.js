@@ -16,7 +16,7 @@ import stripe from "./routes/stripe/index.js";
 import { rateLimiter } from "./utils/limiter.js";
 
 const app = express();
-const __dirname = path.resolve();
+const dirname = path.resolve();
 
 app.use(compression());
 app.use(helmet());
@@ -47,7 +47,7 @@ app.use(
     keys: ["key1", "key2"],
   })
 );
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(dirname, "public")));
 
 mongoose.connect(
   mongo.database,
