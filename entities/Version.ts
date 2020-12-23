@@ -1,12 +1,12 @@
 import {
-    Column, Entity,
-    PrimaryGeneratedColumn
+  Column, Entity,
+  PrimaryGeneratedColumn
 } from 'typeorm';
   
   @Entity()
   export class Version {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
     @Column()
     artwork: null // $TODO

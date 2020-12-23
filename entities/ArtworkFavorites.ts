@@ -5,8 +5,8 @@ import {
   
   @Entity()
   export class ArtworkFavorites {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
     @Column()
     owner: null // $TODO

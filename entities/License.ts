@@ -1,12 +1,12 @@
 import {
-    Column, Entity,
-    PrimaryGeneratedColumn
+  Column, Entity,
+  PrimaryGeneratedColumn
 } from 'typeorm';
   
   @Entity()
   export class License {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
     @Column()
     owner: null // $TODO

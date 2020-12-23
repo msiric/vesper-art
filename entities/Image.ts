@@ -1,12 +1,12 @@
 import {
-    Column, Entity,
-    PrimaryGeneratedColumn
+  Column, Entity,
+  PrimaryGeneratedColumn
 } from 'typeorm';
   
   @Entity()
   export class Image {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
     @Column()
     type: string
