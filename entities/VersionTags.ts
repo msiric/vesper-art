@@ -1,5 +1,5 @@
 import {
-  Column, Entity,
+  Column, CreateDateColumn, Entity,
   PrimaryGeneratedColumn
 } from 'typeorm';
   
@@ -14,6 +14,6 @@ import {
     @Column()
     tag: null // $TODO
 
-    @Column({ type: 'date' })
+    @CreateDateColumn()
     created: Date;
   }

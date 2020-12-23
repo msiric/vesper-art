@@ -1,5 +1,5 @@
 import {
-  Column, Entity,
+  Column, CreateDateColumn, Entity,
   PrimaryGeneratedColumn
 } from 'typeorm';
   
@@ -17,6 +17,6 @@ import {
     @Column()
     active: boolean;
 
-    @Column({ type: 'date' })
+    @CreateDateColumn()
     created: Date;
   }

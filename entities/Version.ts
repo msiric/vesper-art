@@ -1,5 +1,5 @@
 import {
-  Column, Entity,
+  Column, CreateDateColumn, Entity,
   PrimaryGeneratedColumn
 } from 'typeorm';
   
@@ -41,6 +41,8 @@ import {
     @Column()
     media: null // $TODO
 
-    @Column({ type: 'date' })
+    @CreateDateColumn()
     created: Date;
+
+    // Does it need an updated field?
   }

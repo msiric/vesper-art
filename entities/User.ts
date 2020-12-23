@@ -1,6 +1,7 @@
 import {
-  Column, Entity,
-  PrimaryGeneratedColumn
+  Column, CreateDateColumn, Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from 'typeorm';
   
   @Entity()
@@ -38,7 +39,7 @@ import {
     @Column()
     resetToken: string;
 
-    @Column({ type: 'date' })
+    @CreateDateColumn()
     resetExpiry: Date;
 
     @Column()
@@ -59,6 +60,9 @@ import {
     @Column()
     generated: boolean;
 
-    @Column({ type: 'date' })
+    @CreateDateColumn()
     created: Date;
+
+    @UpdateDateColumn()
+    updated: Date;
   }

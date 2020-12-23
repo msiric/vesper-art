@@ -1,5 +1,5 @@
 import {
-  Column, Entity,
+  Column, CreateDateColumn, Entity,
   PrimaryGeneratedColumn
 } from 'typeorm';
   
@@ -20,6 +20,6 @@ import {
     @Column()
     rating: number
 
-    @Column({ type: 'date' })
+    @CreateDateColumn()
     created: Date;
   }

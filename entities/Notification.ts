@@ -1,6 +1,7 @@
 import {
-  Column, Entity,
-  PrimaryGeneratedColumn
+  Column, CreateDateColumn, Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from 'typeorm';
   
   @Entity()
@@ -23,6 +24,9 @@ import {
     @Column()
     read: boolean;
 
-    @Column({ type: 'date' })
+    @CreateDateColumn()
     created: Date;
+
+    @UpdateDateColumn()
+    updated: Date;
   }
