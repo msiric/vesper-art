@@ -10,7 +10,7 @@ export const postDiscount = {
   success: { message: "Discount successfully applied", variant: "success" },
   error: { message: "Failed to apply discount", variant: "error" },
 };
-// $TODO Not used?
+// $Checked Not used? (Can be removed safely)
 export const deleteDiscount = {
   request: async ({ discountId }) =>
     await ax.delete(`/api/discount/${discountId}`),

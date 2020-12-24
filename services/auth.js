@@ -74,9 +74,12 @@ export const editUserResetToken = async ({
   ).session(session);
 };
 
-// $TODO NOT USED
-export const resetUserPassword = async ({ tokenId, password }) => {
-  const hashedPassword = await argon2.hash(password);
+export const resetUserPassword = async ({
+  tokenId,
+  userPassword,
+  session = null,
+}) => {
+  const hashedPassword = await argon2.hash(userPassword);
   return await User.updateOne(
     {
       resetToken: tokenId,
@@ -90,13 +93,12 @@ export const resetUserPassword = async ({ tokenId, password }) => {
   ).session(session);
 };
 
-// $TODO NOT USED
 // needs transaction (not tested)
-export const resetRegisterToken = async ({ tokenId, session = null }) => {
+export const resetRegisterToken = async ({ tokenId }) => {
   return await User.updateOne(
     {
       verificationToken: tokenId,
     },
     { verificationToken: null, verified: true }
-  ).session(session);
+  );
 };

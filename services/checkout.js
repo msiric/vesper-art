@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import Artwork from "../models/artwork.js";
 
-// $TODO NOT USED
+// $CHECKED NOT USED (Can be safely removed)
 export const fetchCheckoutArtwork = async ({
   userId,
   artworkId,

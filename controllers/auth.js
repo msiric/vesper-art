@@ -6,12 +6,13 @@ import { server } from "../config/secret.js";
 import {
   addNewUser,
   editUserResetToken,
-  editUserVerification,
   logUserOut,
   refreshAccessToken,
+  resetRegisterToken,
+  resetUserPassword,
   revokeAccessToken,
 } from "../services/auth.js";
-import { editUserPassword, fetchUserByCreds } from "../services/user.js";
+import { fetchUserByCreds } from "../services/user.js";
 import {
   createAccessToken,
   createRefreshToken,
@@ -141,7 +142,7 @@ export const postRevokeToken = async ({ userId }) => {
 
 // needs transaction (not tested)
 export const verifyRegisterToken = async ({ tokenId }) => {
-  await editUserVerification({ tokenId });
+  await resetRegisterToken({ tokenId });
   return { message: "Token successfully verified" };
 };
 
@@ -172,7 +173,7 @@ export const resetPassword = async ({
 }) => {
   const { error } = resetValidator(sanitizeData({ userPassword, userConfirm }));
   if (error) throw createError(400, error);
-  const updatedUser = await editUserPassword({
+  const updatedUser = await resetUserPassword({
     tokenId,
     userPassword,
     session,

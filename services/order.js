@@ -1,5 +1,4 @@
 import Order from "../models/order.js";
-import User from "../models/user.js";
 
 export const addNewOrder = async ({ orderData, session = null }) => {
   const newOrder = new Order();
@@ -61,20 +60,6 @@ export const fetchUserOrder = async ({ orderId, userId, session = null }) => {
     .populate("seller")
     .deepPopulate("artwork.review")
     .session(session);
-};
-
-// $TODO NOT USED
-export const fetchSoldOrders = async ({ userId, session = null }) => {
-  return await User.findOne({
-    _id: userId,
-  }).deepPopulate("sales.buyer sales.version sales.review");
-};
-
-// $TODO NOT USED
-export const fetchBoughtOrders = async ({ userId, session = null }) => {
-  return await User.findOne({
-    _id: userId,
-  }).deepPopulate("purchases.seller purchases.version purchases.review");
 };
 
 export const addOrderReview = async ({

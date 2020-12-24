@@ -15,7 +15,7 @@ export const fetchUserByEmail = async ({ userEmail, session = null }) => {
   }).session(session);
 };
 
-// $TODO NOT USED
+// $CHECKED NOT USED (Can be left as is)
 export const fetchUserByToken = async ({ tokenId, session = null }) => {
   return await User.findOne({
     resetToken: tokenId,
@@ -30,6 +30,35 @@ export const fetchUserByCreds = async ({ userUsername, session = null }) => {
       { active: true },
     ],
   }).session(session);
+};
+
+export const fetchUserPurchases = async ({
+  userId,
+  dataSkip,
+  dataLimit,
+  session = null,
+}) => {
+  return await User.findOne({
+    $and: [{ _id: userId }, { active: true }],
+  }).populate(
+    dataSkip !== undefined && dataLimit !== undefined
+      ? {
+          path: "purchases",
+          options: {
+            limit: dataLimit,
+            skip: dataSkip,
+          },
+          populate: {
+            path: "seller version review",
+          },
+        }
+      : {
+          path: "purchases",
+          populate: {
+            path: "seller version review",
+          },
+        }
+  );
 };
 
 export const fetchUserSales = async ({
@@ -77,35 +106,6 @@ export const editUserSale = async ({ userId, orderId, session = null }) => {
     { _id: userId },
     { $push: { sales: orderId }, $inc: { notifications: 1 } }
   ).session(session);
-};
-
-export const fetchUserPurchases = async ({
-  userId,
-  dataSkip,
-  dataLimit,
-  session = null,
-}) => {
-  return await User.findOne({
-    $and: [{ _id: userId }, { active: true }],
-  }).populate(
-    dataSkip !== undefined && dataLimit !== undefined
-      ? {
-          path: "purchases",
-          options: {
-            limit: dataLimit,
-            skip: dataSkip,
-          },
-          populate: {
-            path: "seller version review",
-          },
-        }
-      : {
-          path: "purchases",
-          populate: {
-            path: "seller version review",
-          },
-        }
-  );
 };
 
 export const fetchUserProfile = async ({
@@ -193,20 +193,28 @@ export const fetchUserStatistics = async ({ userId, session = null }) => {
   );
 };
 
-// $TODO NOT USED
 export const editUserProfile = async ({
-  userId,
-  userMedia,
-  userDescription,
-  userCountry,
+  foundUser,
+  avatarUpload,
+  userData,
   session = null,
 }) => {
-  return await User.updateOne(
-    {
-      $and: [{ _id: userId }, { active: true }],
-    },
-    { photo: userMedia, description: userDescription, country: userCountry }
-  );
+  if (foundUser) {
+    if (avatarUpload.fileMedia) foundUser.photo = avatarUpload.fileMedia;
+    if (avatarUpload.fileDominant)
+      foundUser.dominant = avatarUpload.fileDominant;
+    if (avatarUpload.fileOrientation)
+      foundUser.orientation = avatarUpload.fileOrientation;
+    if (avatarUpload.height && avatarUpload.width) {
+      foundUser.height = avatarUpload.height;
+      foundUser.width = avatarUpload.width;
+    }
+    if (userData.userDescription)
+      foundUser.description = userData.userDescription;
+    if (userData.userCountry) foundUser.country = userData.userCountry;
+    return await foundUser.save({ session });
+  }
+  throw createError(400, "User not found");
 };
 
 export const fetchUserNotifications = async ({

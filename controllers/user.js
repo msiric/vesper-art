@@ -15,6 +15,7 @@ import {
   editUserEmail,
   editUserPassword,
   editUserPreferences,
+  editUserProfile,
   fetchUserByEmail,
   fetchUserById,
   fetchUserNotifications,
@@ -135,23 +136,8 @@ export const updateUserProfile = async ({
   const { error } = profileValidator(sanitizeData(userData));
   if (error) throw createError(400, error);
   const foundUser = await fetchUserById({ userId, session });
-  if (foundUser) {
-    if (avatarUpload.fileMedia) foundUser.photo = avatarUpload.fileMedia;
-    if (avatarUpload.fileDominant)
-      foundUser.dominant = avatarUpload.fileDominant;
-    if (avatarUpload.fileOrientation)
-      foundUser.orientation = avatarUpload.fileOrientation;
-    if (avatarUpload.height && avatarUpload.width) {
-      foundUser.height = avatarUpload.height;
-      foundUser.width = avatarUpload.width;
-    }
-    if (userData.userDescription)
-      foundUser.description = userData.userDescription;
-    if (userData.userCountry) foundUser.country = userData.userCountry;
-    await foundUser.save({ session });
-    return { message: "User details updated" };
-  }
-  throw createError(400, "User not found");
+  await editUserProfile({ foundUser, avatarUpload, userData, session });
+  return { message: "User details updated" };
 };
 
 export const getUserSettings = async ({ userId }) => {
