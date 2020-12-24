@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import mongoose from "mongoose";
 import mongooseDeepPopulate from "mongoose-deep-populate";
 import fuzzySearch from "mongoose-fuzzy-searching";
@@ -67,13 +66,6 @@ UserSchema.plugin(fuzzySearch, {
     { name: "email", weight: 2 },
   ],
 });
-
-UserSchema.methods.gravatar = function (size) {
-  if (!size) size = 200;
-  if (!this.email) return "https://gravatar.com/avatar/?s=" + size + "&d=retro";
-  var md5 = crypto.createHash("md5").update(this.email).digest("hex");
-  return "https://gravatar.com/avatar/" + md5 + "?s=" + size + "&d=retro";
-};
 
 const User = mongoose.model("User", UserSchema);
 

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import createError from "http-errors";
 import randomString from "randomstring";
 import { server } from "../config/secret.js";
+import { fetchUserByCreds } from "../services/mongo/user.js";
 import {
   addNewUser,
   editUserResetToken,
@@ -11,8 +12,7 @@ import {
   resetRegisterToken,
   resetUserPassword,
   revokeAccessToken,
-} from "../services/mongo/auth.js";
-import { fetchUserByCreds } from "../services/mongo/user.js";
+} from "../services/postgres/auth.js";
 import {
   createAccessToken,
   createRefreshToken,
@@ -33,6 +33,7 @@ export const postSignUp = async ({
   userConfirm,
   session,
 }) => {
+  console.log(userEmail, userUsername, userPassword, userConfirm);
   const { error } = signupValidator(
     sanitizeData({
       userEmail,

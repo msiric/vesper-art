@@ -1,7 +1,8 @@
 import argon2 from "argon2";
-import User from "../../models/user.js";
+import { User } from "../../entities/User";
 import { sendRefreshToken, updateAccessToken } from "../../utils/auth.js";
 
+// $Done (mongo -> postgres)
 export const addNewUser = async ({
   userEmail,
   userUsername,
@@ -11,28 +12,11 @@ export const addNewUser = async ({
 }) => {
   const hashedPassword = await argon2.hash(userPassword);
   const newUser = new User();
-  newUser.name = userUsername;
   newUser.email = userEmail;
-  newUser.photo = newUser.gravatar();
-  newUser.description = null;
+  newUser.name = userUsername;
   newUser.password = hashedPassword;
-  newUser.customWork = true;
-  newUser.displaySaves = true;
+  newUser.avatar = null;
   newUser.verificationToken = verificationToken;
-  newUser.verified = false;
-  newUser.inbox = 0;
-  newUser.notifications = 0;
-  newUser.rating = 0;
-  newUser.reviews = 0;
-  newUser.artwork = [];
-  newUser.savedArtwork = [];
-  newUser.purchases = [];
-  newUser.sales = [];
-  newUser.country = null;
-  newUser.origin = null;
-  newUser.stripeId = null;
-  newUser.generated = false;
-  newUser.active = true;
   return await newUser.save({ session });
 };
 

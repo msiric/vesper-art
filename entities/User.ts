@@ -25,10 +25,10 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @Column()
@@ -38,19 +38,19 @@ export class User extends BaseEntity {
   @JoinColumn()
   avatar: Avatar;
 
-  @Column()
+  @Column({ default: "" })
   description: string;
 
-  @Column()
+  @Column({ default: "" })
   country: string;
 
-  @Column()
+  @Column({ default: "" })
   businessAddress: string;
 
-  @Column()
+  @Column({ default: false })
   customWork: boolean;
 
-  @Column()
+  @Column({ default: true })
   displayFavorites: boolean;
 
   @OneToMany(() => Review, (review) => review.reviewee)
@@ -86,28 +86,28 @@ export class User extends BaseEntity {
   @OneToMany(() => Comment, (comment) => comment.owner)
   comments: Comment[];
 
-  @Column()
+  @Column({ default: "" })
   resetToken: string;
 
   @CreateDateColumn()
   resetExpiry: Date;
 
-  @Column()
+  @Column({ default: 0 })
   jwtVersion: number;
 
-  @Column()
+  @Column({ default: "" })
   stripeId: string;
 
-  @Column()
+  @Column({ default: "" })
   verificationToken: string;
 
-  @Column()
+  @Column({ default: false })
   verified: boolean;
 
-  @Column()
+  @Column({ default: true })
   active: boolean;
 
-  @Column()
+  @Column({ default: false })
   generated: boolean;
 
   @CreateDateColumn()

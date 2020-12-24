@@ -1,5 +1,5 @@
-import Joi from 'joi';
-import joiObjectId from 'joi-objectid';
+import Joi from "joi";
+import joiObjectId from "joi-objectid";
 
 Joi.objectId = joiObjectId(Joi);
 
@@ -9,7 +9,7 @@ const schema = Joi.object().keys({
   userPassword: Joi.string()
     .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/)
     .required(),
-  userConfirm: Joi.ref('userPassword'),
+  userConfirm: Joi.ref("userPassword"),
 });
 
 export default (data) => Joi.validate(data, schema);
