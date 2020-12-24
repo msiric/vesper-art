@@ -4,10 +4,14 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Comment } from "./Comment";
+import { Favorite } from "./Favorite";
 import { User } from "./User";
 import { Version } from "./Version";
 
@@ -16,13 +20,21 @@ export class Artwork extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.artworks)
   owner: User;
 
   @OneToOne(() => Version)
   @JoinColumn()
   current: Version;
+
+  @OneToMany(() => Version, (version) => version.artwork)
+  versions: Version[];
+
+  @OneToMany(() => Comment, (comment) => comment.artwork)
+  comments: Comment[];
+
+  @OneToMany(() => Favorite, (favorite) => favorite.artwork)
+  favorites: Favorite[];
 
   @Column()
   active: boolean;

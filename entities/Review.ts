@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -24,9 +25,11 @@ export class Review extends BaseEntity {
   @JoinColumn()
   artwork: Artwork;
 
-  @OneToOne(() => User)
-  @JoinColumn()
-  owner: User;
+  @ManyToOne(() => User, (user) => user.givenReviews)
+  reviewer: User;
+
+  @ManyToOne(() => User, (user) => user.receivedReviews)
+  reviewee: User;
 
   @Column()
   rating: number;

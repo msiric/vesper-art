@@ -2,28 +2,23 @@ import {
   BaseEntity,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Artwork } from "./Artwork";
 import { User } from "./User";
 
 @Entity()
-export class ArtworkFavorites extends BaseEntity {
+export class Favorite extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.favorites)
   owner: User;
 
-  @OneToOne(() => Artwork)
-  @JoinColumn()
+  @ManyToOne(() => Artwork, (artwork) => artwork.favorites)
   artwork: Artwork;
 
   @CreateDateColumn()
   created: Date;
-
-  // Does it need an updated field?
 }

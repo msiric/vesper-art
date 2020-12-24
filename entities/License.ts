@@ -4,8 +4,10 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Artwork } from "./Artwork";
 import { User } from "./User";
@@ -15,8 +17,7 @@ export class License extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.licenses)
   owner: User;
 
   @OneToOne(() => Artwork)
@@ -44,5 +45,6 @@ export class License extends BaseEntity {
   @CreateDateColumn()
   created: Date;
 
-  // Does it need an updated field?
+  @UpdateDateColumn()
+  updated: Date;
 }

@@ -4,19 +4,23 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Art } from "./Art";
 import { Artwork } from "./Artwork";
+import { Tag } from "./Tag";
 
 @Entity()
 export class Version extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => Artwork)
-  @JoinColumn()
+  @ManyToOne(() => Artwork, (artwork) => artwork.versions)
   artwork: Artwork;
 
   @Column()
@@ -24,6 +28,10 @@ export class Version extends BaseEntity {
 
   @Column()
   category: string;
+
+  @ManyToMany(() => Tag, (tag) => tag.id)
+  @JoinTable()
+  tags: Tag[];
 
   @Column()
   description: string;
@@ -54,5 +62,6 @@ export class Version extends BaseEntity {
   @CreateDateColumn()
   created: Date;
 
-  // Does it need an updated field?
+  @UpdateDateColumn()
+  updated: Date;
 }

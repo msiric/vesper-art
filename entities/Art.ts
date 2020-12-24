@@ -35,6 +35,4 @@ export class Art extends BaseEntity {
 
   @CreateDateColumn()
   created: Date;
-
-  // Does it need an updated field?
 }
