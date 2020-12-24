@@ -64,11 +64,11 @@ mongoose.set("useCreateIndex", true);
 
 (async () => {
   try {
-    const connection = await createConnection({
+    await createConnection({
       type: "postgres",
       url: postgres.database,
       logging: true,
-      // synchronize: true,
+      synchronize: true,
       migrations: [path.join(__dirname, "./migrations/*")],
       entities: [path.join(__dirname, "./entities/*")],
       ssl: {
@@ -76,7 +76,6 @@ mongoose.set("useCreateIndex", true);
       },
     });
     console.log("Connected to PostgreSQL");
-    await connection.synchronize();
   } catch (err) {
     console.log(err);
   }

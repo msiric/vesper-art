@@ -1,4 +1,12 @@
 import createError from "http-errors";
+import { fetchOrderByVersion } from "../services/mongo/order.js";
+import { fetchStripeAccount } from "../services/mongo/stripe.js";
+import {
+  addUserArtwork,
+  addUserSave,
+  fetchUserById,
+  removeUserSave,
+} from "../services/mongo/user.js";
 import {
   addArtworkSave,
   addNewArtwork,
@@ -14,15 +22,7 @@ import {
   fetchUserArtworks,
   removeArtworkSave,
   removeArtworkVersion,
-} from "../services/mongo/artwork.js";
-import { fetchOrderByVersion } from "../services/mongo/order.js";
-import { fetchStripeAccount } from "../services/mongo/stripe.js";
-import {
-  addUserArtwork,
-  addUserSave,
-  fetchUserById,
-  removeUserSave,
-} from "../services/mongo/user.js";
+} from "../services/postgres/artwork.js";
 import {
   formatArtworkValues,
   formatParams,
