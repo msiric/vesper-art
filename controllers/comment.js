@@ -4,15 +4,15 @@ import {
   addArtworkComment,
   fetchArtworkById,
   removeArtworkComment,
-} from "../services/artwork.js";
+} from "../services/mongo/artwork.js";
 import {
   addNewComment,
   editExistingComment,
   fetchCommentById,
   removeExistingComment,
-} from "../services/comment.js";
-import { addNewNotification } from "../services/notification.js";
-import { addUserNotification } from "../services/user.js";
+} from "../services/mongo/comment.js";
+import { addNewNotification } from "../services/mongo/notification.js";
+import { addUserNotification } from "../services/mongo/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import commentValidator from "../validation/comment.js";
 

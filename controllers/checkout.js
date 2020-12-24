@@ -2,14 +2,14 @@ import crypto from "crypto";
 import createError from "http-errors";
 import socketApi from "../lib/socket.js";
 import License from "../models/license.js";
-import { fetchVersionDetails } from "../services/artwork.js";
-import { addNewNotification } from "../services/notification.js";
-import { addNewOrder } from "../services/order.js";
+import { fetchVersionDetails } from "../services/mongo/artwork.js";
+import { addNewNotification } from "../services/mongo/notification.js";
+import { addNewOrder } from "../services/mongo/order.js";
 import {
   editUserPurchase,
   editUserSale,
   fetchUserById,
-} from "../services/user.js";
+} from "../services/mongo/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import licenseValidator from "../validation/license.js";
 import orderValidator from "../validation/order.js";

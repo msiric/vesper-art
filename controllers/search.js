@@ -1,5 +1,8 @@
 import createError from "http-errors";
-import { fetchArtworkResults, fetchUserResults } from "../services/search.js";
+import {
+  fetchArtworkResults,
+  fetchUserResults,
+} from "../services/mongo/search.js";
 import { formatParams, sanitizeData } from "../utils/helpers.js";
 import searchValidator from "../validation/search.js";
 

@@ -1,6 +1,5 @@
-import mongoose from "mongoose";
-import Notification from "../models/notification.js";
-import User from "../models/user.js";
+import Notification from "../../models/notification.js";
+import User from "../../models/user.js";
 
 export const addNewNotification = async ({
   notificationLink,

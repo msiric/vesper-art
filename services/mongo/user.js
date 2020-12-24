@@ -1,7 +1,7 @@
 import argon2 from "argon2";
-import Artwork from "../models/artwork.js";
-import Notification from "../models/notification.js";
-import User from "../models/user.js";
+import Artwork from "../../models/artwork.js";
+import Notification from "../../models/notification.js";
+import User from "../../models/user.js";
 
 export const fetchUserById = async ({ userId, session = null }) => {
   return await User.findOne({

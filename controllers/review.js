@@ -1,11 +1,11 @@
 import currency from "currency.js";
 import createError from "http-errors";
 import socketApi from "../lib/socket.js";
-import { addArtworkReview } from "../services/artwork.js";
-import { addNewNotification } from "../services/notification.js";
-import { addOrderReview, fetchUserOrder } from "../services/order.js";
-import { addNewReview } from "../services/review.js";
-import { editUserRating } from "../services/user.js";
+import { addArtworkReview } from "../services/mongo/artwork.js";
+import { addNewNotification } from "../services/mongo/notification.js";
+import { addOrderReview, fetchUserOrder } from "../services/mongo/order.js";
+import { addNewReview } from "../services/mongo/review.js";
+import { editUserRating } from "../services/mongo/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import reviewValidator from "../validation/review.js";
 

@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import { addNewTicket } from "../services/ticket.js";
+import { addNewTicket } from "../services/mongo/ticket.js";
 import { sendEmail } from "../utils/email.js";
 import { sanitizeData } from "../utils/helpers.js";
 import ticketValidator from "../validation/ticket.js";

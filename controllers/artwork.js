@@ -14,15 +14,15 @@ import {
   fetchUserArtworks,
   removeArtworkSave,
   removeArtworkVersion,
-} from "../services/artwork.js";
-import { fetchOrderByVersion } from "../services/order.js";
-import { fetchStripeAccount } from "../services/stripe.js";
+} from "../services/mongo/artwork.js";
+import { fetchOrderByVersion } from "../services/mongo/order.js";
+import { fetchStripeAccount } from "../services/mongo/stripe.js";
 import {
   addUserArtwork,
   addUserSave,
   fetchUserById,
   removeUserSave,
-} from "../services/user.js";
+} from "../services/mongo/user.js";
 import {
   formatArtworkValues,
   formatParams,

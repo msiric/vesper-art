@@ -11,8 +11,8 @@ import {
   resetRegisterToken,
   resetUserPassword,
   revokeAccessToken,
-} from "../services/auth.js";
-import { fetchUserByCreds } from "../services/user.js";
+} from "../services/mongo/auth.js";
+import { fetchUserByCreds } from "../services/mongo/user.js";
 import {
   createAccessToken,
   createRefreshToken,

@@ -9,10 +9,10 @@ import { payment } from "../config/constants.js";
 import { server, stripe as processor } from "../config/secret.js";
 import socketApi from "../lib/socket.js";
 import License from "../models/license.js";
-import { fetchVersionDetails } from "../services/artwork.js";
-import { fetchDiscountById } from "../services/discount.js";
-import { addNewNotification } from "../services/notification.js";
-import { addNewOrder } from "../services/order.js";
+import { fetchVersionDetails } from "../services/mongo/artwork.js";
+import { fetchDiscountById } from "../services/mongo/discount.js";
+import { addNewNotification } from "../services/mongo/notification.js";
+import { addNewOrder } from "../services/mongo/order.js";
 import {
   constructStripeEvent,
   constructStripeIntent,
@@ -21,14 +21,14 @@ import {
   fetchStripeAccount,
   fetchStripeBalance,
   updateStripeIntent,
-} from "../services/stripe.js";
+} from "../services/mongo/stripe.js";
 import {
   editUserPurchase,
   editUserSale,
   editUserStripe,
   fetchUserById,
   removeExistingIntent,
-} from "../services/user.js";
+} from "../services/mongo/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import licenseValidator from "../validation/license.js";
 import orderValidator from "../validation/order.js";

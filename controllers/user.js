@@ -6,9 +6,12 @@ import {
   fetchArtworkByOwner,
   fetchArtworksByOwner,
   fetchUserArtworks,
-} from "../services/artwork.js";
-import { fetchOrdersByBuyer, fetchOrdersBySeller } from "../services/order.js";
-import { fetchStripeBalance } from "../services/stripe.js";
+} from "../services/mongo/artwork.js";
+import {
+  fetchOrdersByBuyer,
+  fetchOrdersBySeller,
+} from "../services/mongo/order.js";
+import { fetchStripeBalance } from "../services/mongo/stripe.js";
 import {
   addNewIntent,
   deactivateExistingUser,
@@ -24,7 +27,7 @@ import {
   fetchUserSaves,
   fetchUserStatistics,
   removeExistingIntent,
-} from "../services/user.js";
+} from "../services/mongo/user.js";
 import { sendEmail } from "../utils/email.js";
 import { formatParams, sanitizeData } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";

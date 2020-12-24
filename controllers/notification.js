@@ -4,7 +4,7 @@ import {
   editUnreadNotification,
   fetchExistingNotifications,
   incrementUserNotification,
-} from "../services/notification.js";
+} from "../services/mongo/notification.js";
 
 export const getNotifications = async ({ userId }) => {
   const foundNotifications = await fetchExistingNotifications({
