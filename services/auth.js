@@ -1,3 +1,4 @@
+import argon2 from "argon2";
 import User from "../models/user.js";
 import { sendRefreshToken, updateAccessToken } from "../utils/auth.js";
 
@@ -8,12 +9,13 @@ export const addNewUser = async ({
   verificationToken,
   session = null,
 }) => {
+  const hashedPassword = await argon2.hash(userPassword);
   const newUser = new User();
   newUser.name = userUsername;
   newUser.email = userEmail;
   newUser.photo = newUser.gravatar();
   newUser.description = null;
-  newUser.password = userPassword;
+  newUser.password = hashedPassword;
   newUser.customWork = true;
   newUser.displaySaves = true;
   newUser.verificationToken = verificationToken;
@@ -72,20 +74,23 @@ export const editUserResetToken = async ({
   ).session(session);
 };
 
+// $TODO NOT USED
 export const resetUserPassword = async ({ tokenId, password }) => {
+  const hashedPassword = await argon2.hash(password);
   return await User.updateOne(
     {
       resetToken: tokenId,
       resetExpiry: { $gt: Date.now() },
     },
     {
-      password: password,
+      password: hashedPassword,
       resetToken: null,
       resetExpiry: null,
     }
   ).session(session);
 };
 
+// $TODO NOT USED
 // needs transaction (not tested)
 export const resetRegisterToken = async ({ tokenId, session = null }) => {
   return await User.updateOne(

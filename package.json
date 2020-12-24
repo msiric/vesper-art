@@ -17,11 +17,11 @@
   "license": "ISC",
   "dependencies": {
     "@hapi/joi": "^16.1.7",
+    "argon2": "^0.27.1",
     "async": "^3.1.0",
     "aws-sdk": "^2.486.0",
     "axios": "^0.19.2",
     "base64-stream": "^1.0.0",
-    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "concurrently": "^5.1.0",

@@ -63,12 +63,14 @@ export const fetchUserOrder = async ({ orderId, userId, session = null }) => {
     .session(session);
 };
 
+// $TODO NOT USED
 export const fetchSoldOrders = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,
   }).deepPopulate("sales.buyer sales.version sales.review");
 };
 
+// $TODO NOT USED
 export const fetchBoughtOrders = async ({ userId, session = null }) => {
   return await User.findOne({
     _id: userId,

@@ -1,3 +1,4 @@
+import argon2 from "argon2";
 import Artwork from "../models/artwork.js";
 import Notification from "../models/notification.js";
 import User from "../models/user.js";
@@ -14,6 +15,7 @@ export const fetchUserByEmail = async ({ userEmail, session = null }) => {
   }).session(session);
 };
 
+// $TODO NOT USED
 export const fetchUserByToken = async ({ tokenId, session = null }) => {
   return await User.findOne({
     resetToken: tokenId,
@@ -191,6 +193,7 @@ export const fetchUserStatistics = async ({ userId, session = null }) => {
   );
 };
 
+// $TODO NOT USED
 export const editUserProfile = async ({
   userId,
   userMedia,
@@ -239,9 +242,10 @@ export const editUserPassword = async ({
   userPassword,
   session = null,
 }) => {
+  const hashedPassword = await argon2.hash(userPassword);
   return await User.updateOne(
     { _id: userId },
-    { password: userPassword }
+    { password: hashedPassword }
   ).session(session);
 };
 
@@ -290,7 +294,6 @@ export const addNewIntent = async ({
   intentId,
   session = null,
 }) => {
-  console.log(typeof intentId);
   return await User.updateOne(
     { _id: userId },
     {

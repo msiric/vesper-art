@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt-nodejs";
 import crypto from "crypto";
 import mongoose from "mongoose";
 import mongooseDeepPopulate from "mongoose-deep-populate";
@@ -60,21 +59,6 @@ const UserSchema = new Schema({
   created: { type: Date, default: Date.now },
 });
 
-UserSchema.pre("save", function (next) {
-  var user = this;
-  if (!user.isModified("password")) return next();
-  if (user.password) {
-    bcrypt.genSalt(10, function (err, salt) {
-      if (err) return next(err);
-      bcrypt.hash(user.password, salt, null, function (err, hash) {
-        if (err) return next(err);
-        user.password = hash;
-        next(err);
-      });
-    });
-  }
-});
-
 UserSchema.plugin(deepPopulate);
 
 UserSchema.plugin(fuzzySearch, {
@@ -83,10 +67,6 @@ UserSchema.plugin(fuzzySearch, {
     { name: "email", weight: 2 },
   ],
 });
-
-UserSchema.methods.comparePassword = function (password) {
-  return bcrypt.compareSync(password, this.password);
-};
 
 UserSchema.methods.gravatar = function (size) {
   if (!size) size = 200;

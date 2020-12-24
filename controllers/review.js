@@ -1,3 +1,4 @@
+import currency from "currency.js";
 import createError from "http-errors";
 import socketApi from "../lib/socket.js";
 import { addArtworkReview } from "../services/artwork.js";
@@ -7,7 +8,6 @@ import { addNewReview } from "../services/review.js";
 import { editUserRating } from "../services/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import reviewValidator from "../validation/review.js";
-import currency from "currency.js";
 
 // needs transaction (done)
 export const postReview = async ({
@@ -32,21 +32,11 @@ export const postReview = async ({
           reviewRating,
           session,
         });
-        console.log("buyerRating", foundOrder.buyer);
-        console.log("buyerRating", foundOrder.seller.rating);
-        console.log("buyerReviews", foundOrder.seller.reviews);
-        console.log("reviewRating", reviewRating);
-
         const numerator = currency(foundOrder.seller.rating)
           .multiply(foundOrder.seller.reviews)
           .add(reviewRating);
-        console.log("numerator", numerator);
         const denominator = currency(foundOrder.seller.reviews).add(1);
-        console.log("denominator", denominator);
-
         const newRating = currency(numerator).divide(denominator);
-        console.log("newRating", newRating);
-
         await editUserRating({
           userId: foundOrder.seller._id,
           userRating: newRating.value,

@@ -64,7 +64,7 @@ mongoose.set("useCreateIndex", true);
 
 (async () => {
   try {
-    await createConnection({
+    const connection = await createConnection({
       type: "postgres",
       url: postgres.database,
       logging: true,
@@ -76,6 +76,7 @@ mongoose.set("useCreateIndex", true);
       },
     });
     console.log("Connected to PostgreSQL");
+    await connection.synchronize();
   } catch (err) {
     console.log(err);
   }

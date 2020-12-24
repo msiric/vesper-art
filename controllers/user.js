@@ -136,7 +136,6 @@ export const updateUserProfile = async ({
   if (error) throw createError(400, error);
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
-    console.log(avatarUpload);
     if (avatarUpload.fileMedia) foundUser.photo = avatarUpload.fileMedia;
     if (avatarUpload.fileDominant)
       foundUser.dominant = avatarUpload.fileDominant;

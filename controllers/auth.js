@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt-nodejs";
+import argon2 from "argon2";
 import crypto from "crypto";
 import createError from "http-errors";
 import randomString from "randomstring";
@@ -84,7 +84,7 @@ export const postLogIn = async ({
   } else if (!foundUser.verified) {
     throw createError(400, "Please verify your account");
   } else {
-    const valid = bcrypt.compareSync(userPassword, foundUser.password);
+    const valid = await argon2.verify(userPassword, foundUser.password);
 
     if (!valid) {
       throw createError(
