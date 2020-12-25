@@ -7,7 +7,6 @@ import "dotenv/config.js";
 import express from "express";
 import helmet from "helmet";
 import createError from "http-errors";
-import mongoose from "mongoose";
 import morgan from "morgan";
 import path from "path";
 import "reflect-metadata";
@@ -51,16 +50,16 @@ app.use(
 );
 app.use(express.static(path.join(dirname, "public")));
 
-mongoose.connect(
-  mongo.database,
-  { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
-  (err) => {
-    if (err) console.log(err);
-    console.log("Connected to MongoDB");
-  }
-);
+// mongoose.connect(
+//   mongo.database,
+//   { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
+//   (err) => {
+//     if (err) console.log(err);
+//     console.log("Connected to MongoDB");
+//   }
+// );
 
-mongoose.set("useCreateIndex", true);
+// mongoose.set("useCreateIndex", true);
 
 (async () => {
   try {

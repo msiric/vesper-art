@@ -3,7 +3,7 @@ import { Comment } from "../../entities/Comment";
 // $Needs testing (mongo -> postgres)
 export const fetchCommentById = async ({ artworkId, commentId }) => {
   return await Comment.findOne({
-    where: [{ id: commentId }, { artwork: artworkId }],
+    where: [{ id: commentId, artwork: artworkId }],
     relations: ["owner"],
   });
 };
@@ -27,7 +27,7 @@ export const editExistingComment = async ({
   commentContent,
 }) => {
   const foundComment = await Comment.findOne({
-    where: [{ id: commentId }, { artwork: artworkId }, { owner: userId }],
+    where: [{ id: commentId, artwork: artworkId, owner: userId }],
   });
   foundComment.content = commentContent;
   foundComment.modified = true;
@@ -41,7 +41,7 @@ export const removeExistingComment = async ({
   userId,
 }) => {
   const foundComment = await Comment.findOne({
-    where: [{ id: commentId }, { artwork: artworkId }, { owner: userId }],
+    where: [{ id: commentId, artwork: artworkId, owner: userId }],
   });
   return await Comment.remove({ foundComment });
 };

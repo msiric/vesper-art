@@ -39,7 +39,7 @@ export const fetchUserByCreds = async ({ userUsername }) => {
 export const fetchUserPurchases = async ({ userId, dataSkip, dataLimit }) => {
   return dataSkip && dataLimit
     ? await User.findOne({
-        where: [{ id: userId }, { active: true }],
+        where: [{ id: userId, active: true }],
         relations: [
           "purchases",
           "purchases.seller",
@@ -50,7 +50,7 @@ export const fetchUserPurchases = async ({ userId, dataSkip, dataLimit }) => {
         take: dataLimit,
       })
     : await User.findOne({
-        where: [{ id: userId }, { active: true }],
+        where: [{ id: userId, active: true }],
         relations: [
           "purchases",
           "purchases.seller",
@@ -65,13 +65,13 @@ export const fetchUserPurchases = async ({ userId, dataSkip, dataLimit }) => {
 export const fetchUserSales = async ({ userId, dataSkip, dataLimit }) => {
   return dataSkip && dataLimit
     ? await User.findOne({
-        where: [{ id: userId }, { active: true }],
+        where: [{ id: userId, active: true }],
         relations: ["sales", "sales.buyer", "sales.version", "sales.review"],
         skip: dataSkip,
         take: dataLimit,
       })
     : await User.findOne({
-        where: [{ id: userId }, { active: true }],
+        where: [{ id: userId, active: true }],
         relations: ["sales", "sales.buyer", "sales.version", "sales.review"],
       });
 };
@@ -108,14 +108,14 @@ export const fetchUserProfile = async ({
   const foundUser =
     dataSkip && dataLimit
       ? await User.findOne({
-          where: [{ name: userUsername }, { active: true }],
+          where: [{ name: userUsername, active: true }],
           relations: ["artwork", "artwork.owner", "artwork.current"],
           skip: dataSkip,
           take: dataLimit,
         })
       : await User.findOne({
-          where: [{ id: userId }, { active: true }],
-          relations: ["sales", "sales.buyer", "sales.version", "sales.review"],
+          where: [{ name: userUsername, active: true }],
+          relations: ["artwork", "artwork.owner", "artwork.current"],
         });
   return foundUser.artwork.filter((artwork) => artwork.active === true);
 };
@@ -124,7 +124,7 @@ export const fetchUserProfile = async ({
 export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   return await Artwork.find({
-    where: [{ owner: userId }, { active: true }],
+    where: [{ owner: userId, active: true }],
     skip: dataSkip,
     take: dataLimit,
   });

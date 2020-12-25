@@ -3,7 +3,7 @@ import { License } from "../../entities/License";
 // $Needs testing (mongo -> postgres)
 export const fetchLicenseByFingerprint = async ({ licenseFingerprint }) => {
   return await License.findOne({
-    where: [{ fingerprint: licenseFingerprint }, { active: true }],
+    where: [{ fingerprint: licenseFingerprint, active: true }],
     relations: ["artwork"],
   });
 };

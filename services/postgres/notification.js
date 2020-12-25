@@ -30,7 +30,7 @@ export const fetchExistingNotifications = async ({ userId }) => {
 // $Needs testing (mongo -> postgres)
 export const editReadNotification = async ({ userId, notificationId }) => {
   const foundNotification = await Notification.findOne({
-    where: [{ id: notificationId }, { receiver: userId }],
+    where: [{ id: notificationId, receiver: userId }],
   });
   foundNotification.read = true;
   return await Notification.save({ foundNotification });
@@ -39,7 +39,7 @@ export const editReadNotification = async ({ userId, notificationId }) => {
 // $Needs testing (mongo -> postgres)
 export const editUnreadNotification = async ({ userId, notificationId }) => {
   const foundNotification = await Notification.findOne({
-    where: [{ id: notificationId }, { receiver: userId }],
+    where: [{ id: notificationId, receiver: userId }],
   });
   foundNotification.read = false;
   return await Notification.save({ foundNotification });

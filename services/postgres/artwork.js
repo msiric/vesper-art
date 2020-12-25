@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { Artwork } from "../../entities/Artwork";
-import License from "../../entities/License";
-import Version from "../../entities/Version";
+import { License } from "../../entities/License";
+import { Version } from "../../entities/Version";
 
 // $Needs testing (mongo -> postgres)
 export const fetchArtworkById = async ({ artworkId }) => {
@@ -35,13 +35,13 @@ export const fetchArtworkDetails = async ({
 }) => {
   return dataSkip !== undefined && dataLimit !== undefined
     ? await Artwork.findOne({
-        where: [{ id: artworkId }, { active: true }],
+        where: [{ id: artworkId, active: true }],
         relations: ["comments", "comments.owner"],
         skip: dataSkip,
         take: dataLimit,
       })
     : await Artwork.findOne({
-        where: [{ id: artworkId }, { active: true }],
+        where: [{ id: artworkId, active: true }],
         relations: ["owner", "current", "comments", "comments.owner"],
       });
 };
@@ -53,7 +53,7 @@ export const fetchArtworkComments = async ({
   dataLimit,
 }) => {
   return await Artwork.findOne({
-    where: [{ id: artworkId }, { active: true }],
+    where: [{ id: artworkId, active: true }],
     relations: ["comments", "comments.owner"],
     skip: dataSkip,
     take: dataLimit,
@@ -67,71 +67,43 @@ export const fetchArtworkReviews = async ({
   dataLimit,
 }) => {
   return await Artwork.findOne({
-    where: [{ id: artworkId }, { active: true }],
+    where: [{ id: artworkId, active: true }],
     relations: ["reviews", "reviews.owner", "owner", "current"],
     skip: dataSkip,
     take: dataLimit,
   });
 };
 
-export const fetchUserArtworks = async ({
-  userId,
-  dataSkip,
-  dataLimit,
-  session = null,
-}) => {
-  return await Artwork.find(
-    {
-      $and: [{ owner: userId }, { active: true }],
-    },
-    undefined,
-    {
-      skip: dataSkip,
-      limit: dataLimit,
-    }
-  ).populate(
-    "current",
-    "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
-  );
-};
-
-export const fetchArtworksByOwner = async ({ userId, session = null }) => {
+// $TODO doesn't limit reviews, but artwork?
+export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
   return await Artwork.find({
-    $and: [{ owner: userId }, { active: true }],
-  })
-    .populate("current")
-    .populate("versions");
+    where: [{ owner: userId, active: true }],
+    relations: ["current"],
+    skip: dataSkip,
+    take: dataLimit,
+  });
 };
 
-export const fetchArtworkByOwner = async ({
-  artworkId,
-  userId,
-  session = null,
-}) => {
-  return await Artwork.findOne({
-    $and: [{ _id: artworkId }, { owner: userId }, { active: true }],
-  })
-    .populate("current")
-    .populate("versions");
+// $Needs testing (mongo -> postgres)
+export const fetchArtworksByOwner = async ({ userId }) => {
+  return await Artwork.find({
+    where: [{ owner: userId, active: true }],
+    relations: ["current", "versions"],
+  });
 };
 
-export const fetchArtworkLicenses = async ({
-  artworkId,
-  userId,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+export const fetchArtworkLicenses = async ({ artworkId, userId }) => {
   return await License.find({
-    $and: [{ artwork: artworkId }, { owner: userId }, { active: false }],
-  }).sort({ created: -1 });
+    where: [{ artwork: artworkId, owner: userId, active: false }],
+    order: {
+      created: "DESC",
+    },
+  });
 };
 
 // needs transaction (done)
-export const addNewArtwork = async ({
-  artworkData,
-  artworkUpload,
-  userId,
-  session = null,
-}) => {
+export const addNewArtwork = async ({ artworkData, artworkUpload, userId }) => {
   const newVersion = new Version();
   newVersion.cover = artworkUpload.fileCover || "";
   newVersion.media = artworkUpload.fileMedia || "";
@@ -159,7 +131,7 @@ export const addNewArtwork = async ({
   newArtwork.saves = 0;
   const savedArtwork = await newArtwork.save({ session });
   savedVersion.artwork = savedArtwork._id;
-  return await savedVersion.save({ session });
+  return await savedVersion.save();
 };
 
 // needs transaction (done)
