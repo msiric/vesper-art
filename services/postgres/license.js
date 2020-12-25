@@ -1,29 +1,23 @@
-import License from "../../models/license.js";
+import { License } from "../../entities/License";
 
-export const fetchLicenseByFingerprint = async ({
-  licenseFingerprint,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+export const fetchLicenseByFingerprint = async ({ licenseFingerprint }) => {
   return await License.findOne({
-    fingerprint: licenseFingerprint,
-    active: true,
-  }).populate("artwork");
+    where: [{ fingerprint: licenseFingerprint }, { active: true }],
+    relations: ["artwork"],
+  });
 };
 
-export const addNewLicense = async ({
-  userId,
-  artworkData,
-  licenseData,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+export const addNewLicense = async ({ userId, artworkData, licenseData }) => {
   const newLicense = new License();
   newLicense.owner = userId;
-  newLicense.artwork = artworkData._id;
+  newLicense.artwork = artworkData.id;
   newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
   newLicense.assignee = licenseData.licenseAssignee;
   newLicense.company = licenseData.licenseCompany;
   newLicense.type = licenseData.licenseType;
   newLicense.active = false;
   newLicense.price = artworkData.current[licenseData.licenseType];
-  return await newLicense.save({ session });
+  return await newLicense.save();
 };

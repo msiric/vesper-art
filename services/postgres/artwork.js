@@ -3,121 +3,75 @@ import { Artwork } from "../../entities/Artwork";
 import License from "../../entities/License";
 import Version from "../../entities/Version";
 
-export const fetchArtworkById = async ({ artworkId, session = null }) => {
+// $Needs testing (mongo -> postgres)
+export const fetchArtworkById = async ({ artworkId }) => {
   return await Artwork.findOne({
-    $and: [{ _id: artworkId }, { active: true }],
-  }).session(session);
+    where: [{ id: artworkId }, { active: true }],
+  });
 };
 
-export const fetchActiveArtworks = async ({
-  dataSkip,
-  dataLimit,
-  session = null,
-}) => {
-  const foundArtwork = await Artwork.find();
-  console.log("found artwork", foundArtwork);
-  // return await Artwork.find({ active: true }, undefined, {
-  //   skip: dataSkip,
-  //   limit: dataLimit,
-  // })
-  //   .populate("owner")
-  //   .populate(
-  //     "current",
-  //     "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
-  //   );
+// $Needs testing (mongo -> postgres)
+export const fetchActiveArtworks = async ({ dataSkip, dataLimit }) => {
+  return await Artwork.find({
+    where: [{ active: true }],
+    relations: ["owner", "current"],
+    skip: dataSkip,
+    take: dataLimit,
+  });
 };
 
-export const fetchVersionDetails = async ({ versionId, session = null }) => {
-  return await Version.findOne({ _id: versionId }).deepPopulate(
-    "artwork.owner"
-  );
+export const fetchVersionDetails = async ({ versionId }) => {
+  return await Version.findOne({
+    where: [{ id: versionId }],
+    relations: ["artwork", "artwork.owner"],
+  });
 };
 
+// $TODO doesn't limit comments, but artwork?
 export const fetchArtworkDetails = async ({
   artworkId,
   dataSkip,
   dataLimit,
-  session = null,
 }) => {
-  return await Artwork.findOne({
-    $and: [{ _id: artworkId }, { active: true }],
-  })
-    .populate(
-      dataSkip !== undefined && dataLimit !== undefined
-        ? {
-            path: "comments",
-            options: {
-              skip: dataSkip,
-              limit: dataLimit,
-            },
-            populate: {
-              path: "owner",
-            },
-          }
-        : {
-            path: "comments",
-            populate: {
-              path: "owner",
-            },
-          }
-    )
-    .populate("owner")
-    .populate(
-      "current",
-      "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
-    );
+  return dataSkip !== undefined && dataLimit !== undefined
+    ? await Artwork.findOne({
+        where: [{ id: artworkId }, { active: true }],
+        relations: ["comments", "comments.owner"],
+        skip: dataSkip,
+        take: dataLimit,
+      })
+    : await Artwork.findOne({
+        where: [{ id: artworkId }, { active: true }],
+        relations: ["owner", "current", "comments", "comments.owner"],
+      });
 };
 
+// $TODO doesn't limit comments, but artwork?
 export const fetchArtworkComments = async ({
   artworkId,
   dataSkip,
   dataLimit,
-  session = null,
 }) => {
   return await Artwork.findOne({
-    $and: [{ _id: artworkId }, { active: true }],
-  })
-    .populate({
-      path: "comments",
-      options: {
-        skip: dataSkip,
-        limit: dataLimit,
-      },
-      populate: {
-        path: "owner",
-      },
-    })
-    .populate("owner")
-    .populate(
-      "current",
-      "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
-    );
+    where: [{ id: artworkId }, { active: true }],
+    relations: ["comments", "comments.owner"],
+    skip: dataSkip,
+    take: dataLimit,
+  });
 };
 
+// $TODO doesn't limit reviews, but artwork?
 export const fetchArtworkReviews = async ({
   artworkId,
   dataSkip,
   dataLimit,
-  session = null,
 }) => {
   return await Artwork.findOne({
-    $and: [{ _id: artworkId }, { active: true }],
-  })
-    .populate({
-      path: "reviews",
-      options: {
-        skip: dataSkip,
-        limit: dataLimit,
-      },
-      populate: {
-        path: "owner",
-      },
-    })
-    .populate("owner")
-    .populate(
-      "current",
-      "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
-    );
+    where: [{ id: artworkId }, { active: true }],
+    relations: ["reviews", "reviews.owner", "owner", "current"],
+    skip: dataSkip,
+    take: dataLimit,
+  });
 };
 
 export const fetchUserArtworks = async ({

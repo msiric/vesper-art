@@ -1,53 +1,47 @@
-import Comment from "../../models/comment.js";
+import { Comment } from "../../entities/Comment";
 
-export const fetchCommentById = async ({
-  artworkId,
-  commentId,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+export const fetchCommentById = async ({ artworkId, commentId }) => {
   return await Comment.findOne({
-    $and: [{ _id: commentId }, { artwork: artworkId }],
-  })
-    .populate("owner")
-    .session(session);
+    where: [{ id: commentId }, { artwork: artworkId }],
+    relations: ["owner"],
+  });
 };
 
-export const addNewComment = async ({
-  artworkId,
-  userId,
-  commentContent,
-  session = null,
-}) => {
-  const comment = new Comment();
-  comment.artwork = artworkId;
-  comment.owner = userId;
-  comment.content = commentContent;
-  comment.modified = false;
-  return await comment.save({ session });
+// $Needs testing (mongo -> postgres)
+export const addNewComment = async ({ artworkId, userId, commentContent }) => {
+  const newComment = new Comment();
+  newComment.artwork = artworkId;
+  newComment.owner = userId;
+  newComment.content = commentContent;
+  newComment.modified = false;
+  newComment.generated = false;
+  return await newComment.save();
 };
 
+// $Needs testing (mongo -> postgres)
 export const editExistingComment = async ({
   commentId,
   artworkId,
   userId,
   commentContent,
-  session = null,
 }) => {
-  return await Comment.updateOne(
-    {
-      $and: [{ _id: commentId }, { artwork: artworkId }, { owner: userId }],
-    },
-    { content: commentContent, modified: true }
-  ).session(session);
+  const foundComment = await Comment.findOne({
+    where: [{ id: commentId }, { artwork: artworkId }, { owner: userId }],
+  });
+  foundComment.content = commentContent;
+  foundComment.modified = true;
+  return await Comment.save({ foundComment });
 };
 
+// $Needs testing (mongo -> postgres)
 export const removeExistingComment = async ({
   commentId,
   artworkId,
   userId,
-  session = null,
 }) => {
-  return await Comment.deleteOne({
-    $and: [{ _id: commentId }, { artwork: artworkId }, { owner: userId }],
-  }).session(session);
+  const foundComment = await Comment.findOne({
+    where: [{ id: commentId }, { artwork: artworkId }, { owner: userId }],
+  });
+  return await Comment.remove({ foundComment });
 };

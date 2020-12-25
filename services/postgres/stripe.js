@@ -6,7 +6,6 @@ export const constructStripeEvent = async ({
   stripeBody,
   stripeSignature,
   stripeSecret,
-  session = null,
 }) => {
   return await stripe.webhooks.constructEvent(
     stripeBody,
@@ -15,11 +14,7 @@ export const constructStripeEvent = async ({
   );
 };
 
-export const constructStripeLink = async ({
-  accountId,
-  serverDomain,
-  session = null,
-}) => {
+export const constructStripeLink = async ({ accountId, serverDomain }) => {
   return await stripe.accounts.createLoginLink(accountId, {
     redirect_url: `${serverDomain}/stripe/dashboard`,
   });
@@ -30,7 +25,6 @@ export const constructStripePayout = async ({
   payoutCurrency,
   payoutDescriptor,
   stripeId,
-  session = null,
 }) => {
   return await stripe.payouts.create(
     {
@@ -51,7 +45,6 @@ export const constructStripeIntent = async ({
   intentFee,
   sellerId,
   orderData,
-  session = null,
 }) => {
   return await stripe.paymentIntents.create({
     payment_method_types: [intentMethod],
@@ -73,7 +66,6 @@ export const updateStripeIntent = async ({
   intentAmount,
   intentFee,
   orderData,
-  session = null,
 }) => {
   const foundIntent = await stripe.paymentIntents.retrieve(intentId);
   const foundOrder = JSON.parse(foundIntent.metadata.orderData);
@@ -89,10 +81,10 @@ export const updateStripeIntent = async ({
   });
 };
 
-export const fetchStripeBalance = async ({ stripeId, session = null }) => {
+export const fetchStripeBalance = async ({ stripeId }) => {
   return await stripe.balance.retrieve({ stripe_account: stripeId });
 };
 
-export const fetchStripeAccount = async ({ accountId, session = null }) => {
+export const fetchStripeAccount = async ({ accountId }) => {
   return await stripe.accounts.retrieve(accountId);
 };

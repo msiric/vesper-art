@@ -1,12 +1,12 @@
-import Notification from "../../models/notification.js";
-import User from "../../models/user.js";
+import { Notification } from "../../entities/notification";
+import { User } from "../../entities/User";
 
+// $Needs testing (mongo -> postgres)
 export const addNewNotification = async ({
   notificationLink,
   notificationRef,
   notificationType,
   notificationReceiver,
-  session = null,
 }) => {
   const newNotification = new Notification();
   newNotification.link = notificationLink;
@@ -14,64 +14,51 @@ export const addNewNotification = async ({
   newNotification.type = notificationType;
   newNotification.receiver = notificationReceiver;
   newNotification.read = false;
-  return await newNotification.save({ session });
+  return await newNotification.save();
 };
 
-export const fetchExistingNotifications = async ({
-  userId,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+export const fetchExistingNotifications = async ({ userId }) => {
   return await Notification.find({
-    receiver: userId,
-  }).sort({ created: -1 });
-};
-
-export const editReadNotification = async ({
-  userId,
-  notificationId,
-  session = null,
-}) => {
-  return await Notification.updateOne(
-    {
-      $and: [
-        {
-          _id: notificationId,
-        },
-        { receiver: userId },
-      ],
+    where: [{ receiver: userId }],
+    order: {
+      created: "DESC",
     },
-    { read: true }
-  ).session(session);
+  });
 };
 
-export const editUnreadNotification = async ({
-  userId,
-  notificationId,
-  session = null,
-}) => {
-  return await Notification.updateOne(
-    {
-      $and: [
-        {
-          _id: notificationId,
-        },
-        { receiver: userId },
-      ],
-    },
-    { read: false }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+export const editReadNotification = async ({ userId, notificationId }) => {
+  const foundNotification = await Notification.findOne({
+    where: [{ id: notificationId }, { receiver: userId }],
+  });
+  foundNotification.read = true;
+  return await Notification.save({ foundNotification });
 };
 
-export const decrementUserNotification = async ({ userId, session = null }) => {
-  return await User.updateOne(
-    { _id: userId },
-    { $inc: { notifications: -1 } }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+export const editUnreadNotification = async ({ userId, notificationId }) => {
+  const foundNotification = await Notification.findOne({
+    where: [{ id: notificationId }, { receiver: userId }],
+  });
+  foundNotification.read = false;
+  return await Notification.save({ foundNotification });
 };
 
-export const incrementUserNotification = async ({ userId, session = null }) => {
-  return await User.updateOne(
-    { _id: userId },
-    { $inc: { notifications: 1 } }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+export const decrementUserNotification = async ({ userId }) => {
+  return await User.increment(
+    { where: [{ id: userId, active: true }] },
+    "notifications",
+    -1
+  );
+};
+
+// $Needs testing (mongo -> postgres)
+export const incrementUserNotification = async ({ userId }) => {
+  return await User.increment(
+    { where: [{ id: userId, active: true }] },
+    "notifications",
+    1
+  );
 };

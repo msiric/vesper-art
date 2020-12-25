@@ -1,4 +1,3 @@
-import argon2 from "argon2";
 import crypto from "crypto";
 import createError from "http-errors";
 import randomString from "randomstring";
@@ -12,6 +11,7 @@ import {
   resetRegisterToken,
   resetUserPassword,
   revokeAccessToken,
+  verifyUserLogin,
 } from "../services/postgres/auth.js";
 import {
   createAccessToken,
@@ -33,7 +33,6 @@ export const postSignUp = async ({
   userConfirm,
   session,
 }) => {
-  console.log(userEmail, userUsername, userPassword, userConfirm);
   const { error } = signupValidator(
     sanitizeData({
       userEmail,
@@ -78,54 +77,37 @@ export const postLogIn = async ({
     sanitizeData({ userUsername, userPassword })
   );
   if (error) throw createError(400, error);
-  const foundUser = await fetchUserByCreds({ userUsername, session });
-  if (!foundUser) {
-    throw createError(400, "Account with provided credentials does not exist");
-  } else if (!foundUser.active) {
-    throw createError(400, "This account is no longer active");
-  } else if (!foundUser.verified) {
-    throw createError(400, "Please verify your account");
-  } else {
-    const valid = await argon2.verify(userPassword, foundUser.password);
+  const { foundUser } = await verifyUserLogin({ userUsername, userPassword });
 
-    if (!valid) {
-      throw createError(
-        400,
-        "Account with provided credentials does not exist"
-      );
-    }
+  const tokenPayload = {
+    id: foundUser.id,
+    name: foundUser.name,
+    jwtVersion: foundUser.jwtVersion,
+    onboarded: !!foundUser.stripeId,
+    active: foundUser.active,
+  };
 
-    const tokenPayload = {
-      id: foundUser._id,
-      name: foundUser.name,
-      jwtVersion: foundUser.jwtVersion,
-      onboarded: !!foundUser.stripeId,
-      active: foundUser.active,
-    };
+  const userInfo = {
+    id: foundUser.id,
+    name: foundUser.name,
+    email: foundUser.email,
+    avatar: foundUser.avatar,
+    notifications: foundUser.notifications,
+    favorites: foundUser.favorites,
+    active: foundUser.active,
+    stripeId: foundUser.stripeId,
+    intents: foundUser.intents,
+    country: foundUser.country,
+    businessAddress: foundUser.businessAddress,
+    jwtVersion: foundUser.jwtVersion,
+  };
 
-    const userInfo = {
-      id: foundUser._id,
-      name: foundUser.name,
-      email: foundUser.email,
-      photo: foundUser.photo,
-      messages: foundUser.inbox,
-      notifications: foundUser.notifications,
-      saved: foundUser.savedArtwork,
-      active: foundUser.active,
-      stripeId: foundUser.stripeId,
-      intents: foundUser.intents,
-      country: foundUser.country,
-      origin: foundUser.origin,
-      jwtVersion: foundUser.jwtVersion,
-    };
+  sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
 
-    sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
-
-    return {
-      accessToken: createAccessToken({ userData: tokenPayload }),
-      user: userInfo,
-    };
-  }
+  return {
+    accessToken: createAccessToken({ userData: tokenPayload }),
+    user: userInfo,
+  };
 };
 
 export const postLogOut = ({ res }) => {

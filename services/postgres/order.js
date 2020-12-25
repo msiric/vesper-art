@@ -1,6 +1,8 @@
-import Order from "../../models/order.js";
+import { LessThan, MoreThanOrEqual } from "typeorm";
+import { Order } from "../../entities/Order";
 
-export const addNewOrder = async ({ orderData, session = null }) => {
+// $Needs testing (mongo -> postgres)
+export const addNewOrder = async ({ orderData }) => {
   const newOrder = new Order();
   newOrder.buyer = orderData.buyerId;
   newOrder.seller = orderData.sellerId;
@@ -15,99 +17,98 @@ export const addNewOrder = async ({ orderData, session = null }) => {
   newOrder.commercial = orderData.commercial;
   newOrder.status = orderData.status;
   newOrder.intent = orderData.intentId;
-  return await newOrder.save({ session });
+  return await newOrder.save();
 };
 
-export const fetchOrderByVersion = async ({
-  artworkId,
-  versionId,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+export const fetchOrderByVersion = async ({ artworkId, versionId }) => {
   return await Order.findOne({
-    artwork: artworkId,
-    version: versionId,
-  }).session(session);
+    where: [{ artwork: artworkId, version: versionId }],
+  });
 };
 
-export const fetchOrderDetails = async ({
-  userId,
-  orderId,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+export const fetchOrderDetails = async ({ userId, orderId }) => {
   return await Order.findOne({
-    $and: [
-      {
-        $or: [{ buyer: userId }, { seller: userId }],
-      },
-      { _id: orderId },
+    where: [
+      { buyer: userId, id: orderId },
+      { seller: userId, id: orderId },
     ],
-  })
-    .populate("buyer")
-    .populate("seller")
-    .populate("discount")
-    .populate("version")
-    .populate("artwork")
-    .populate("review")
-    .deepPopulate("license.artwork")
-    .session(session);
+    relations: [
+      "buyer",
+      "seller",
+      "discount",
+      "version",
+      "artwork",
+      "review",
+      "license",
+      "license.artwork",
+    ],
+  });
 };
 
-export const fetchUserOrder = async ({ orderId, userId, session = null }) => {
+// $Needs testing (mongo -> postgres)
+export const fetchUserOrder = async ({ orderId, userId }) => {
   return await Order.findOne({
-    $and: [{ _id: orderId }, { buyer: userId }],
-  })
-    .populate("buyer")
-    .populate("seller")
-    .deepPopulate("artwork.review")
-    .session(session);
+    where: [{ buyer: userId, id: orderId }],
+    relations: ["buyer", "seller", "artwork", "artwork.review"],
+  });
 };
 
-export const addOrderReview = async ({
-  orderId,
-  userId,
-  reviewId,
-  session = null,
-}) => {
-  return await Order.updateOne(
-    {
-      $and: [{ _id: orderId }, { buyer: userId }],
-    },
-    { review: reviewId }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+export const addOrderReview = async ({ orderId, userId, reviewId }) => {
+  const foundOrder = await Order.findOne({
+    where: [{ buyer: userId, id: orderId }],
+  });
+  foundOrder.review = reviewId;
+  return await Order.save({ foundOrder });
 };
 
-export const fetchOrdersBySeller = async ({
-  userId,
-  rangeFrom,
-  rangeTo,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+// $TODO does created get filtered correctly?
+export const fetchOrdersBySeller = async ({ userId, rangeFrom, rangeTo }) => {
   return rangeFrom && rangeTo
     ? await Order.find({
-        $and: [
-          { seller: userId },
-          { created: { $gte: new Date(rangeFrom), $lt: new Date(rangeTo) } },
+        where: [
+          {
+            seller: userId,
+            created:
+              MoreThanOrEqual(new Date(rangeFrom)) &&
+              LessThan(new Date(rangeTo)),
+          },
         ],
-      }).populate("review version license sales.review")
+        relations: ["review", "version", "license", "sales", "sales.review"],
+      })
     : await Order.find({
-        $and: [{ seller: userId }],
-      }).populate("review version license sales.review");
+        where: [
+          {
+            seller: userId,
+          },
+        ],
+        relations: ["review", "version", "license", "sales", "sales.review"],
+      });
 };
 
-export const fetchOrdersByBuyer = async ({
-  userId,
-  rangeFrom,
-  rangeTo,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+export const fetchOrdersByBuyer = async ({ userId, rangeFrom, rangeTo }) => {
   return rangeFrom && rangeTo
     ? await Order.find({
-        $and: [
-          { buyer: userId },
-          { created: { $gte: new Date(rangeFrom), $lt: new Date(rangeTo) } },
+        where: [
+          {
+            buyer: userId,
+            created:
+              MoreThanOrEqual(new Date(rangeFrom)) &&
+              LessThan(new Date(rangeTo)),
+          },
         ],
-      }).populate("review version license sales.review")
+        relations: ["review", "version", "license", "sales", "sales.review"],
+      })
     : await Order.find({
-        $and: [{ buyer: userId }],
-      }).populate("review version license sales.review");
+        where: [
+          {
+            buyer: userId,
+          },
+        ],
+        relations: ["review", "version", "license", "sales", "sales.review"],
+      });
 };

@@ -28,7 +28,8 @@ export const postReview = async ({
       if (!foundOrder.artwork.review) {
         const savedReview = await addNewReview({
           orderData: foundOrder,
-          userId,
+          reviewerId: userId,
+          revieweeId: foundOrder.seller,
           reviewRating,
           session,
         });

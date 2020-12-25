@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+import { User } from "../entities/User";
 
 export const createAccessToken = ({ userData }) => {
   return jwt.sign(
@@ -29,7 +29,7 @@ export const updateAccessToken = async (req, res, next) => {
     return { ok: false, accessToken: "" };
   }
 
-  const foundUser = await User.findOne({ _id: payload.userId });
+  const { foundUser } = await User.findOne({ id: payload.userId });
 
   if (!foundUser) {
     return { ok: false, accessToken: "" };
@@ -40,7 +40,7 @@ export const updateAccessToken = async (req, res, next) => {
   }
 
   const tokenPayload = {
-    id: foundUser._id,
+    id: foundUser.id,
     name: foundUser.name,
     jwtVersion: foundUser.jwtVersion,
     onboarded: !!foundUser.stripeId,
@@ -48,18 +48,17 @@ export const updateAccessToken = async (req, res, next) => {
   };
 
   const userInfo = {
-    id: foundUser._id,
+    id: foundUser.id,
     name: foundUser.name,
     email: foundUser.email,
-    photo: foundUser.photo,
-    messages: foundUser.inbox,
+    avatar: foundUser.avatar,
     notifications: foundUser.notifications,
-    saved: foundUser.savedArtwork,
+    favorites: foundUser.favorites,
     active: foundUser.active,
     stripeId: foundUser.stripeId,
     intents: foundUser.intents,
     country: foundUser.country,
-    origin: foundUser.origin,
+    businessAddress: foundUser.businessAddress,
     jwtVersion: foundUser.jwtVersion,
   };
 

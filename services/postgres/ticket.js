@@ -1,15 +1,12 @@
-import Ticket from "../../models/ticket.js";
+import { Ticket } from "../../entities/Ticket";
 
-export const addNewTicket = async ({
-  userId,
-  ticketTitle,
-  ticketBody,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+export const addNewTicket = async ({ userId, ticketTitle, ticketBody }) => {
   const newTicket = new Ticket();
   newTicket.owner = userId;
   newTicket.title = ticketTitle;
   newTicket.body = ticketBody;
-  newTicket.resolved = false;
+  newTicket.attachment = ""; // $TODO
+  newTicket.status = "In progress";
   return await newTicket.save();
 };

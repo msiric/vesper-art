@@ -34,7 +34,7 @@ export class License extends BaseEntity {
   company: string;
 
   @Column()
-  text: string;
+  type: string;
 
   @Column()
   active: boolean;

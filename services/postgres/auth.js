@@ -1,6 +1,9 @@
 import argon2 from "argon2";
+import createError from "http-errors";
+import { MoreThan } from "typeorm";
 import { User } from "../../entities/User";
 import { sendRefreshToken, updateAccessToken } from "../../utils/auth.js";
+import { fetchUserByCreds } from "./user";
 
 // $Done (mongo -> postgres)
 export const addNewUser = async ({
@@ -8,7 +11,6 @@ export const addNewUser = async ({
   userUsername,
   userPassword,
   verificationToken,
-  session = null,
 }) => {
   const hashedPassword = await argon2.hash(userPassword);
   const newUser = new User();
@@ -17,7 +19,29 @@ export const addNewUser = async ({
   newUser.password = hashedPassword;
   newUser.avatar = null;
   newUser.verificationToken = verificationToken;
-  return await newUser.save({ session });
+  return await newUser.save();
+};
+
+// $Done (mongo -> postgres)
+export const verifyUserLogin = async ({ userUsername, userPassword }) => {
+  const foundUser = await fetchUserByCreds({ userUsername });
+  if (!foundUser) {
+    throw createError(400, "Account with provided credentials does not exist");
+  } else if (!foundUser.active) {
+    throw createError(400, "This account is no longer active");
+  } else if (!foundUser.verified) {
+    throw createError(400, "Please verify your account");
+  } else {
+    const valid = await argon2.verify(foundUser.password, userPassword);
+
+    if (!valid) {
+      throw createError(
+        400,
+        "Account with provided credentials does not exist"
+      );
+    }
+    return { foundUser };
+  }
 };
 
 export const logUserOut = (res) => {
@@ -29,60 +53,43 @@ export const refreshAccessToken = async (req, res, next) => {
   return await updateAccessToken(req, res, next);
 };
 
-export const revokeAccessToken = async ({ userId, session = null }) => {
-  return await User.findOneAndUpdate(
-    { _id: userId },
-    { $inc: { jwtVersion: 1 } }
+// $Needs testing (mongo -> postgres)
+export const revokeAccessToken = async ({ userId }) => {
+  return await User.increment(
+    { where: [{ id: userId, active: true }] },
+    "jwtVersion",
+    1
   );
 };
 
-export const editUserVerification = async ({ tokenId, session = null }) => {
-  return await User.updateOne(
-    {
-      verificationToken: tokenId,
-    },
-    { verificationToken: null, verified: true }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+export const editUserResetToken = async ({ userEmail, resetToken }) => {
+  const foundUser = await User.findOne({
+    where: [{ email: userEmail, active: true }],
+  });
+  foundUser.resetToken = resetToken;
+  foundUser.resetExpiry = Date.now() + 3600000;
+  return await User.save({ foundUser });
 };
 
-export const editUserResetToken = async ({
-  userEmail,
-  resetToken,
-  session = null,
-}) => {
-  return await User.updateOne(
-    {
-      email: userEmail,
-    },
-    { resetToken, resetExpiry: Date.now() + 3600000 }
-  ).session(session);
-};
-
-export const resetUserPassword = async ({
-  tokenId,
-  userPassword,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+export const resetUserPassword = async ({ tokenId, userPassword }) => {
   const hashedPassword = await argon2.hash(userPassword);
-  return await User.updateOne(
-    {
-      resetToken: tokenId,
-      resetExpiry: { $gt: Date.now() },
-    },
-    {
-      password: hashedPassword,
-      resetToken: null,
-      resetExpiry: null,
-    }
-  ).session(session);
+  const foundUser = await User.findOne({
+    where: [{ resetToken: tokenId, resetExpiry: MoreThan(Date.now()) }],
+  });
+  foundUser.password = hashedPassword;
+  foundUser.resetToken = "";
+  foundUser.resetExpiry = "";
+  return await User.save({ foundUser });
 };
 
-// needs transaction (not tested)
+// $Done (mongo -> postgres)
 export const resetRegisterToken = async ({ tokenId }) => {
-  return await User.updateOne(
-    {
-      verificationToken: tokenId,
-    },
-    { verificationToken: null, verified: true }
-  );
+  const foundUser = await User.findOne({
+    where: [{ verificationToken: tokenId }],
+  });
+  foundUser.verificationToken = "";
+  foundUser.verified = true;
+  await User.save(foundUser);
 };

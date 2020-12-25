@@ -1,13 +1,15 @@
-import Discount from "../../models/discount.js";
+import { Discount } from "../../entities/Discount";
 
-export const fetchDiscountByCode = async ({ discountCode, session = null }) => {
+// $Needs testing (mongo -> postgres)
+export const fetchDiscountByCode = async ({ discountCode }) => {
   return await Discount.findOne({
-    name: discountCode,
-  }).session(session);
+    where: [{ name: discountCode }],
+  });
 };
 
-export const fetchDiscountById = async ({ discountId, session = null }) => {
+// $Needs testing (mongo -> postgres)
+export const fetchDiscountById = async ({ discountId }) => {
   return await Discount.findOne({
-    _id: discountId,
-  }).session(session);
+    where: [{ id: discountId }],
+  });
 };

@@ -1,15 +1,17 @@
-import Review from "../../models/review.js";
+import { Review } from "../../entities/Review";
 
+// $Needs testing (mongo -> postgres)
 export const addNewReview = async ({
   orderData,
   reviewRating,
-  userId,
-  session = null,
+  reviewerId,
+  revieweeId,
 }) => {
   const newReview = new Review();
-  newReview.order = orderData._id;
-  newReview.artwork = orderData._id;
-  newReview.owner = userId;
+  newReview.order = orderData.id;
+  newReview.artwork = orderData.id;
+  newReview.reviewerId = reviewerId;
+  newReview.revieweeId = revieweeId;
   newReview.rating = reviewRating;
-  return await newReview.save({ session });
+  return await newReview.save();
 };
