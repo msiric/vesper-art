@@ -20,6 +20,7 @@ export const fetchActiveArtworks = async ({ dataSkip, dataLimit }) => {
   });
 };
 
+// $Needs testing (mongo -> postgres)
 export const fetchVersionDetails = async ({ versionId }) => {
   return await Version.findOne({
     where: [{ id: versionId }],

@@ -44,7 +44,7 @@ export class Order extends BaseEntity {
   @JoinColumn()
   discount: Discount;
 
-  @OneToOne(() => Review)
+  @OneToOne(() => Review, (review) => review.order)
   @JoinColumn()
   review: Review;
 

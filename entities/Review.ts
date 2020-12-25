@@ -17,8 +17,7 @@ export class Review extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => Order)
-  @JoinColumn()
+  @OneToOne(() => Order, (order) => order.review)
   order: Order;
 
   @OneToOne(() => Artwork)

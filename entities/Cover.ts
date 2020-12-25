@@ -3,20 +3,18 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Version } from "./Version";
 
 @Entity()
-export class Art extends BaseEntity {
+export class Cover extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => Version)
-  @JoinColumn()
-  parent: Version;
+  @OneToOne(() => Version, (version) => version.cover)
+  version: Version;
 
   @Column()
   source: string;

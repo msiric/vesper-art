@@ -6,15 +6,15 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { User } from "./User";
+import { Version } from "./Version";
 
 @Entity()
-export class Avatar extends BaseEntity {
+export class Media extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => User, (user) => user.avatar)
-  user: User;
+  @OneToOne(() => Version, (version) => version.media)
+  version: Version;
 
   @Column()
   source: string;

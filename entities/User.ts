@@ -34,7 +34,7 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @OneToOne(() => Avatar)
+  @OneToOne(() => Avatar, (avatar) => avatar.user)
   @JoinColumn()
   avatar: Avatar;
 

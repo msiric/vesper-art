@@ -11,8 +11,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Art } from "./Art";
 import { Artwork } from "./Artwork";
+import { Cover } from "./Cover";
+import { Media } from "./Media";
 import { Tag } from "./Tag";
 
 @Entity()
@@ -51,13 +52,13 @@ export class Version extends BaseEntity {
   @Column()
   availability: string;
 
-  @OneToOne(() => Art)
+  @OneToOne(() => Cover, (cover) => cover.version)
   @JoinColumn()
-  cover: Art;
+  cover: Cover;
 
-  @OneToOne(() => Art)
+  @OneToOne(() => Media, (media) => media.version)
   @JoinColumn()
-  media: Art;
+  media: Media;
 
   @CreateDateColumn()
   created: Date;
