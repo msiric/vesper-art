@@ -1,23 +1,23 @@
-import express from 'express';
+import express from "express";
+import { deleteDiscount, postDiscount } from "../../../controllers/discount.js";
 import {
-  isAuthenticated,
   checkParamsId,
+  isAuthenticated,
   requestHandler as handler,
-} from '../../../utils/helpers.js';
-import { postDiscount, deleteDiscount } from '../../../controllers/discount.js';
+} from "../../../utils/helpers.js";
 
 const router = express.Router();
 
-router.route('/discount').post(
+router.route("/discount").post(
   isAuthenticated,
-  handler(postDiscount, true, (req, res, next) => ({
+  handler(postDiscount, (req, res, next) => ({
     ...req.body,
   }))
 );
 
-router.route('/discount/:discountId').delete(
+router.route("/discount/:discountId").delete(
   [isAuthenticated, checkParamsId],
-  handler(deleteDiscount, true, (req, res, next) => ({
+  handler(deleteDiscount, (req, res, next) => ({
     ...req.params,
   }))
 );

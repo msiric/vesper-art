@@ -1,32 +1,32 @@
-import express from 'express';
-import {
-  isAuthenticated,
-  checkParamsId,
-  requestHandler as handler,
-} from '../../../utils/helpers.js';
+import express from "express";
 import {
   getNotifications,
   readNotification,
   unreadNotification,
-} from '../../../controllers/notification.js';
+} from "../../../controllers/notification.js";
+import {
+  checkParamsId,
+  isAuthenticated,
+  requestHandler as handler,
+} from "../../../utils/helpers.js";
 
 const router = express.Router();
 
-router.route('/notifications').get(
+router.route("/notifications").get(
   isAuthenticated,
-  handler(getNotifications, false, (req, res, next) => ({}))
+  handler(getNotifications, (req, res, next) => ({}))
 );
 
-router.route('/read_notification/:notificationId').patch(
+router.route("/read_notification/:notificationId").patch(
   [isAuthenticated, checkParamsId],
-  handler(readNotification, false, (req, res, next) => ({
+  handler(readNotification, (req, res, next) => ({
     ...req.params,
   }))
 );
 
-router.route('/unread_notification/:notificationId').patch(
+router.route("/unread_notification/:notificationId").patch(
   [isAuthenticated, checkParamsId],
-  handler(unreadNotification, false, (req, res, next) => ({
+  handler(unreadNotification, (req, res, next) => ({
     ...req.params,
   }))
 );

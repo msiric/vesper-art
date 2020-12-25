@@ -31,7 +31,7 @@ const router = express.Router();
 
 router.route("/user/:userUsername").get(
   checkParamsUsername,
-  handler(getUserProfile, false, (req, res, next) => ({
+  handler(getUserProfile, (req, res, next) => ({
     ...req.params,
     ...req.query,
   }))
@@ -39,7 +39,7 @@ router.route("/user/:userUsername").get(
 
 router.route("/user/:userId/artwork").get(
   checkParamsId,
-  handler(getUserArtwork, false, (req, res, next) => ({
+  handler(getUserArtwork, (req, res, next) => ({
     ...req.params,
     ...req.query,
   }))
@@ -47,7 +47,7 @@ router.route("/user/:userId/artwork").get(
 
 router.route("/user/:userId/ownership").get(
   checkParamsId,
-  handler(getUserOwnership, false, (req, res, next) => ({
+  handler(getUserOwnership, (req, res, next) => ({
     ...req.params,
     ...req.query,
   }))
@@ -55,7 +55,7 @@ router.route("/user/:userId/ownership").get(
 
 router.route("/user/:userId/saves").get(
   checkParamsId,
-  handler(getUserSaves, false, (req, res, next) => ({
+  handler(getUserSaves, (req, res, next) => ({
     ...req.params,
     ...req.query,
   }))
@@ -65,7 +65,7 @@ router
   .route("/user/:userId")
   .patch(
     [isAuthenticated, checkParamsId, multerApi.uploadUserLocal],
-    handler(updateUserProfile, true, (req, res, next) => ({
+    handler(updateUserProfile, (req, res, next) => ({
       ...req.params,
       userPath: req.file ? req.file.path : "",
       userFilename: req.file ? req.file.filename : "",
@@ -75,14 +75,14 @@ router
   )
   .delete(
     [isAuthenticated, checkParamsId],
-    handler(deactivateUser, true, (req, res, next) => ({
+    handler(deactivateUser, (req, res, next) => ({
       ...req.params,
     }))
   );
 
 router.route("/user/:userId/origin").patch(
   [isAuthenticated, checkParamsId],
-  handler(updateUserOrigin, false, (req, res, next) => ({
+  handler(updateUserOrigin, (req, res, next) => ({
     ...req.params,
     ...req.body,
   }))
@@ -90,14 +90,14 @@ router.route("/user/:userId/origin").patch(
 
 router.route("/user/:userId/statistics").get(
   [isAuthenticated, checkParamsId],
-  handler(getUserStatistics, false, (req, res, next) => ({
+  handler(getUserStatistics, (req, res, next) => ({
     ...req.params,
   }))
 );
 
 router.route("/user/:userId/sales").get(
   [isAuthenticated, checkParamsId],
-  handler(getUserSales, false, (req, res, next) => ({
+  handler(getUserSales, (req, res, next) => ({
     ...req.params,
     ...req.query,
   }))
@@ -105,7 +105,7 @@ router.route("/user/:userId/sales").get(
 
 router.route("/user/:userId/purchases").get(
   [isAuthenticated, checkParamsId],
-  handler(getUserPurchases, false, (req, res, next) => ({
+  handler(getUserPurchases, (req, res, next) => ({
     ...req.params,
     ...req.query,
   }))
@@ -113,14 +113,14 @@ router.route("/user/:userId/purchases").get(
 
 router.route("/user/:userId/settings").get(
   [isAuthenticated, checkParamsId],
-  handler(getUserSettings, false, (req, res, next) => ({
+  handler(getUserSettings, (req, res, next) => ({
     ...req.params,
   }))
 );
 
 router.route("/user/:userId/preferences").patch(
   [isAuthenticated, checkParamsId],
-  handler(updateUserPreferences, false, (req, res, next) => ({
+  handler(updateUserPreferences, (req, res, next) => ({
     ...req.params,
     ...req.body,
   }))
@@ -128,7 +128,7 @@ router.route("/user/:userId/preferences").patch(
 
 router.route("/user/:userId/notifications").get(
   [isAuthenticated, checkParamsId],
-  handler(getUserNotifications, false, (req, res, next) => ({
+  handler(getUserNotifications, (req, res, next) => ({
     ...req.params,
     ...req.query,
   }))
@@ -136,7 +136,7 @@ router.route("/user/:userId/notifications").get(
 
 router.route("/user/:userId/update_email").patch(
   [isAuthenticated, checkParamsId],
-  handler(updateUserEmail, true, (req, res, next) => ({
+  handler(updateUserEmail, (req, res, next) => ({
     ...req.params,
     ...req.body,
   }))
@@ -144,7 +144,7 @@ router.route("/user/:userId/update_email").patch(
 
 router.route("/user/:userId/update_password").patch(
   [isAuthenticated, checkParamsId],
-  handler(updateUserPassword, false, (req, res, next) => ({
+  handler(updateUserPassword, (req, res, next) => ({
     ...req.params,
     ...req.body,
   }))
@@ -152,7 +152,7 @@ router.route("/user/:userId/update_password").patch(
 
 router.route("/user/:userId/intents").post(
   [isAuthenticated, checkParamsId],
-  handler(createUserIntent, false, (req, res, next) => ({
+  handler(createUserIntent, (req, res, next) => ({
     ...req.params,
     ...req.body,
   }))
@@ -160,14 +160,14 @@ router.route("/user/:userId/intents").post(
 
 router.route("/user/:userId/intents/:intentId").delete(
   [isAuthenticated, checkParamsId],
-  handler(deleteUserIntent, false, (req, res, next) => ({
+  handler(deleteUserIntent, (req, res, next) => ({
     ...req.params,
   }))
 );
 
 router.route("/user/:userId/artwork/:artworkId/download").get(
   [isAuthenticated, checkParamsId],
-  handler(getUserMedia, false, (req, res, next) => ({
+  handler(getUserMedia, (req, res, next) => ({
     ...req.params,
   }))
 );

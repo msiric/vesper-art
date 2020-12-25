@@ -23,7 +23,9 @@ export class Artwork extends BaseEntity {
   @ManyToOne(() => User, (user) => user.artworks)
   owner: User;
 
-  @OneToOne(() => Version)
+  @OneToOne(() => Version, (version) => version.artwork, {
+    cascade: ["insert"],
+  })
   @JoinColumn()
   current: Version;
 

@@ -1,16 +1,16 @@
-import express from 'express';
+import express from "express";
+import { postReview } from "../../../controllers/review.js";
 import {
-  isAuthenticated,
   checkParamsId,
+  isAuthenticated,
   requestHandler as handler,
-} from '../../../utils/helpers.js';
-import { postReview } from '../../../controllers/review.js';
+} from "../../../utils/helpers.js";
 
 const router = express.Router();
 
-router.route('/rate_artwork/:orderId').post(
+router.route("/rate_artwork/:orderId").post(
   [isAuthenticated, checkParamsId],
-  handler(postReview, true, (req, res, next) => ({
+  handler(postReview, (req, res, next) => ({
     ...req.body,
     ...req.params,
   }))

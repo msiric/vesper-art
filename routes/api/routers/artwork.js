@@ -24,14 +24,14 @@ import {
 const router = express.Router();
 
 router.route("/artwork").get(
-  handler(getArtwork, false, (req, res, next) => ({
+  handler(getArtwork, (req, res, next) => ({
     ...req.query,
   }))
 );
 
 router.route("/artwork/:artworkId").get(
   checkParamsId,
-  handler(getArtworkDetails, false, (req, res, next) => ({
+  handler(getArtworkDetails, (req, res, next) => ({
     ...req.params,
     ...req.query,
   }))
@@ -39,7 +39,7 @@ router.route("/artwork/:artworkId").get(
 
 router.route("/artwork/:artworkId/comments").get(
   checkParamsId,
-  handler(getArtworkComments, false, (req, res, next) => ({
+  handler(getArtworkComments, (req, res, next) => ({
     ...req.params,
     ...req.query,
   }))
@@ -47,7 +47,7 @@ router.route("/artwork/:artworkId/comments").get(
 
 router.route("/artwork/:artworkId/reviews").get(
   checkParamsId,
-  handler(getArtworkReviews, false, (req, res, next) => ({
+  handler(getArtworkReviews, (req, res, next) => ({
     ...req.params,
     ...req.query,
   }))
@@ -57,13 +57,13 @@ router
   .route("/artwork/:artworkId/licenses")
   .get(
     [isAuthenticated, checkParamsId],
-    handler(getLicenses, false, (req, res, next) => ({
+    handler(getLicenses, (req, res, next) => ({
       ...req.params,
     }))
   )
   .post(
     [isAuthenticated, checkParamsId],
-    handler(saveLicense, true, (req, res, next) => ({
+    handler(saveLicense, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))
@@ -75,14 +75,14 @@ router
 
 router.route("/my_artwork").get(
   isAuthenticated,
-  handler(getUserArtwork, false, (req, res, next) => ({
+  handler(getUserArtwork, (req, res, next) => ({
     ...req.query,
   }))
 );
 
 router.route("/add_artwork").post(
   [isAuthenticated, multerApi.uploadArtworkLocal],
-  handler(postNewArtwork, true, (req, res, next) => ({
+  handler(postNewArtwork, (req, res, next) => ({
     artworkPath: req.file ? req.file.path : "",
     artworkFilename: req.file ? req.file.filename : "",
     artworkMimetype: req.file ? req.file.mimetype : "",
@@ -94,13 +94,13 @@ router
   .route("/edit_artwork/:artworkId")
   .get(
     [isAuthenticated, checkParamsId],
-    handler(editArtwork, false, (req, res, next) => ({
+    handler(editArtwork, (req, res, next) => ({
       ...req.params,
     }))
   )
   .patch(
     [isAuthenticated, checkParamsId, multerApi.uploadArtworkLocal],
-    handler(updateArtwork, true, (req, res, next) => ({
+    handler(updateArtwork, (req, res, next) => ({
       ...req.params,
       artworkPath: req.file ? req.file.path : "",
       artworkFilename: req.file ? req.file.filename : "",
@@ -110,7 +110,7 @@ router
   )
   .delete(
     [isAuthenticated, checkParamsId],
-    handler(deleteArtwork, true, (req, res, next) => ({
+    handler(deleteArtwork, (req, res, next) => ({
       ...req.params,
     }))
   );
@@ -119,13 +119,13 @@ router
   .route("/save_artwork/:artworkId")
   .post(
     [isAuthenticated, checkParamsId],
-    handler(saveArtwork, true, (req, res, next) => ({
+    handler(saveArtwork, (req, res, next) => ({
       ...req.params,
     }))
   )
   .delete(
     [isAuthenticated, checkParamsId],
-    handler(unsaveArtwork, true, (req, res, next) => ({
+    handler(unsaveArtwork, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
