@@ -100,6 +100,7 @@ export const editUserSale = async ({ userId, orderId }) => {
 
 // $Needs testing (mongo -> postgres)
 // $TODO doesn't limit artwork, but user?
+// $TODO how to filter only active artwork?
 export const fetchUserProfile = async ({
   userUsername,
   dataSkip,
@@ -130,46 +131,37 @@ export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
   });
 };
 
-export const fetchUserSaves = async ({
-  userId,
-  dataSkip,
-  dataLimit,
-  session = null,
-}) => {
-  return await User.findOne(
-    {
-      $and: [{ _id: userId }, { active: true }],
-    },
-    undefined,
-    {
-      skip: dataSkip,
-      limit: dataLimit,
-    }
-  ).populate({
-    path: "savedArtwork",
-    options: {
-      skip: dataSkip,
-      limit: dataLimit,
-    },
-    populate: {
-      path: "current",
-    },
+// $Needs testing (mongo -> postgres)
+// $TODO doesn't limit favorites, but user?
+export const fetchUserSaves = async ({ userId, dataSkip, dataLimit }) => {
+  return await User.findOne({
+    where: [{ id: userId, active: true }],
+    relations: ["favorites", "current"],
+    skip: dataSkip,
+    take: dataLimit,
   });
 };
 
-export const fetchUserStatistics = async ({ userId, session = null }) => {
+// $Needs testing (mongo -> postgres)
+export const fetchUserStatistics = async ({ userId }) => {
   return await User.findOne({
-    $and: [{ _id: userId }, { active: true }],
-  }).deepPopulate(
-    "purchases.version purchases.license sales.version sales.license"
-  );
+    where: [{ id: userId, active: true }],
+    relations: [
+      "purchases",
+      "sales",
+      "purchases.version",
+      "purchases.license",
+      "sales.version",
+      "sales.license",
+    ],
+  });
 };
 
+// $TODO avatar needs to be saved properly
 export const editUserProfile = async ({
   foundUser,
   avatarUpload,
   userData,
-  session = null,
 }) => {
   if (foundUser) {
     if (avatarUpload.fileMedia) foundUser.photo = avatarUpload.fileMedia;
@@ -184,178 +176,142 @@ export const editUserProfile = async ({
     if (userData.userDescription)
       foundUser.description = userData.userDescription;
     if (userData.userCountry) foundUser.country = userData.userCountry;
-    return await foundUser.save({ session });
+    return await foundUser.save();
   }
   throw createError(400, "User not found");
 };
 
+// $Needs testing (mongo -> postgres)
 export const fetchUserNotifications = async ({
   userId,
   dataSkip,
   dataLimit,
-  session = null,
 }) => {
-  return await Notification.find({ receiver: userId }, undefined, {
+  return await Notification.find({
+    where: [{ receiver: userId }],
     skip: dataSkip,
-    limit: dataLimit,
-  })
-    .populate("user")
-    .sort({ created: -1 });
+    take: dataLimit,
+    relations: ["user"],
+    order: {
+      created: "DESC",
+    },
+  });
 };
 
+// $Needs testing (mongo -> postgres)
 export const editUserEmail = async ({
   userId,
   userEmail,
   verificationToken,
-  session = null,
 }) => {
-  return await User.updateOne(
-    {
-      $and: [{ _id: userId }, { active: true }],
-    },
-    { email: userEmail, verificationToken, verified: false }
-  ).session(session);
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.email = userEmail;
+  foundUser.verificationToken = verificationToken;
+  foundUser.verified = false;
+  return await User.save({ foundUser });
 };
 
-export const editUserPassword = async ({
-  userId,
-  userPassword,
-  session = null,
-}) => {
+// $Needs testing (mongo -> postgres)
+export const editUserPassword = async ({ userId, userPassword }) => {
   const hashedPassword = await argon2.hash(userPassword);
-  return await User.updateOne(
-    { _id: userId },
-    { password: hashedPassword }
-  ).session(session);
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.password = hashedPassword;
+  return await User.save({ foundUser });
 };
 
-export const editUserPreferences = async ({
-  userId,
-  userSaves,
-  session = null,
-}) => {
-  return await User.updateOne(
-    { _id: userId },
-    { displaySaves: userSaves }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+export const editUserPreferences = async ({ userId, userSaves }) => {
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.displayFavorites = userSaves;
+  return await User.save({ foundUser });
 };
 
-export const addUserArtwork = async ({ userId, artworkId, session = null }) => {
-  return await User.updateOne(
-    { _id: userId },
-    { $push: { artwork: artworkId } }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+export const addUserArtwork = async ({ userId, artworkId }) => {
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.artworks.push(artworkId);
+  return await User.save({ foundUser });
 };
 
-export const addUserSave = async ({ userId, artworkId, session = null }) => {
-  return await User.updateOne(
-    { _id: userId },
-    { $push: { savedArtwork: artworkId } }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+export const addUserSave = async ({ userId, artworkId }) => {
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.favorites.push(artworkId);
+  return await User.save({ foundUser });
 };
 
-export const removeUserSave = async ({ userId, artworkId, session = null }) => {
-  return await User.updateOne(
-    { _id: userId },
-    { $pull: { savedArtwork: artworkId } }
-  ).session(session);
+// $TODO probably not how it's done
+export const removeUserSave = async ({ userId, artworkId }) => {
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.favorites.filter((favorite) => favorite !== artworkId);
+  return await User.save({ foundUser });
 };
 
-export const addUserNotification = async ({ userId, session = null }) => {
+// $TODO doesn't work this way anymore
+export const addUserNotification = async ({ userId }) => {
   return await User.updateOne(
     { _id: userId },
     { $inc: { notifications: 1 } }
   ).session(session);
 };
 
-export const addNewIntent = async ({
-  userId,
-  versionId,
-  intentId,
-  session = null,
-}) => {
-  return await User.updateOne(
-    { _id: userId },
-    {
-      $addToSet: {
-        intents: {
-          intentId: intentId,
-          versionId: versionId,
-        },
-      },
-    }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+export const addNewIntent = async ({ userId, versionId, intentId }) => {
+  const foundUser = await User.findOne({ where: [{ id: userId }] });
+  foundUser.intents.push(intentId);
+  return await User.save({ foundUser });
 };
 
+// $TODO probably not how it's done
 export const removeExistingIntent = async ({
   userId,
   intentId,
   session = null,
 }) => {
-  return await User.updateOne(
-    { _id: userId },
-    {
-      $pull: {
-        intents: {
-          intentId: intentId,
-        },
-      },
-    }
-  ).session(session);
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.intents.filter((intent) => intent !== intentId);
+  return await User.save({ foundUser });
 };
 
-export const editUserRating = async ({
-  userId,
-  userRating,
-  session = null,
-}) => {
-  return await User.updateOne(
-    {
-      $and: [{ _id: userId }, { active: true }],
-    },
-    {
-      rating: userRating,
-      $inc: { reviews: 1, notifications: 1 },
-    }
-  ).session(session);
+// $TODO probably not how it's done
+export const editUserRating = async ({ userId, userRating }) => {
+  const foundUser = await User.findOne({
+    where: [{ _id: userId, active: true }],
+  });
+  foundUser.rating = userRating;
+  foundUser.reviews++;
 };
 
 // needs testing (better way to update already found user)
 // not tested
 // needs transaction (not tested)
-export const deactivateExistingUser = async ({ userId, session = null }) => {
-  return await User.updateOne(
-    { _id: userId },
-    {
-      $set: {
-        name: null,
-        email: null,
-        password: null,
-        photo: null,
-        height: null,
-        width: null,
-        description: null,
-        facebookId: null,
-        googleId: null,
-        customWork: false,
-        displaySaves: false,
-        verificationToken: null,
-        verified: false,
-        resetToken: null,
-        resetExpiry: null,
-        inbox: null,
-        notifications: null,
-        rating: null,
-        reviews: null,
-        artwork: null,
-        savedArtwork: null,
-        purchases: null,
-        sales: null,
-        stripeId: null,
-        intents: null,
-        generated: false,
-        active: false,
-      },
-    }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+export const deactivateExistingUser = async ({ userId }) => {
+  const foundUser = await User.findOne({ where: [{ id: userId }] });
+  foundUser.email = "";
+  foundUser.name = "";
+  foundUser.password = "";
+  foundUser.avatar = null;
+  foundUser.description = "";
+  foundUser.country = "";
+  foundUser.businessAddress = "";
+  foundUser.resetToken = "";
+  foundUser.resetExpiry = null;
+  foundUser.verificationToken = "";
+  foundUser.active = false;
+  return await User.save({ foundUser });
 };
