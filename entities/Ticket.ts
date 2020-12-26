@@ -14,7 +14,9 @@ export class Ticket extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user.tickets)
+  @ManyToOne(() => User, (user) => user.tickets, {
+    onDelete: "CASCADE",
+  })
   owner: User;
 
   @Column()

@@ -10,7 +10,6 @@ import {
 import {
   addArtworkSave,
   addNewArtwork,
-  addNewLicense,
   addNewVersion,
   deactivateExistingArtwork,
   fetchActiveArtworks,
@@ -23,6 +22,7 @@ import {
   removeArtworkSave,
   removeArtworkVersion,
 } from "../services/postgres/artwork.js";
+import { addNewLicense } from "../services/postgres/license.js";
 import {
   formatArtworkValues,
   formatParams,

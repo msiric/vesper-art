@@ -21,7 +21,9 @@ export class Version extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => Artwork, (artwork) => artwork.versions)
+  @ManyToOne(() => Artwork, (artwork) => artwork.versions, {
+    onDelete: "CASCADE",
+  })
   artwork: Artwork;
 
   @Column()
@@ -52,11 +54,11 @@ export class Version extends BaseEntity {
   @Column()
   availability: string;
 
-  @OneToOne(() => Cover, (cover) => cover.version)
+  @OneToOne(() => Cover, (cover) => cover.version, { cascade: ["insert"] })
   @JoinColumn()
   cover: Cover;
 
-  @OneToOne(() => Media, (media) => media.version)
+  @OneToOne(() => Media, (media) => media.version, { cascade: ["insert"] })
   @JoinColumn()
   media: Media;
 

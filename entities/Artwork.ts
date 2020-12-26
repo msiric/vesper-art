@@ -29,13 +29,19 @@ export class Artwork extends BaseEntity {
   @JoinColumn()
   current: Version;
 
-  @OneToMany(() => Version, (version) => version.artwork)
+  @OneToMany(() => Version, (version) => version.artwork, {
+    cascade: ["insert"],
+  })
   versions: Version[];
 
-  @OneToMany(() => Comment, (comment) => comment.artwork)
+  @OneToMany(() => Comment, (comment) => comment.artwork, {
+    onDelete: "CASCADE",
+  })
   comments: Comment[];
 
-  @OneToMany(() => Favorite, (favorite) => favorite.artwork)
+  @OneToMany(() => Favorite, (favorite) => favorite.artwork, {
+    onDelete: "CASCADE",
+  })
   favorites: Favorite[];
 
   @Column()

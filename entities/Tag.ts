@@ -13,7 +13,9 @@ export class Tag extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToMany(() => Version, (version) => version.tags)
+  @ManyToMany(() => Version, (version) => version.tags, {
+    onDelete: "CASCADE",
+  })
   versions: Version[];
 
   @Column()

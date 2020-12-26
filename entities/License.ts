@@ -17,7 +17,9 @@ export class License extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user.licenses)
+  @ManyToOne(() => User, (user) => user.licenses, {
+    onDelete: "CASCADE",
+  })
   owner: User;
 
   @OneToOne(() => Artwork)

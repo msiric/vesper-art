@@ -1,4 +1,6 @@
-import crypto from "crypto";
+import { Cover } from "entities/Cover";
+import { Favorite } from "entities/Favorite";
+import { Media } from "entities/Media";
 import { Artwork } from "../../entities/Artwork";
 import { License } from "../../entities/License";
 import { Version } from "../../entities/Version";
@@ -103,15 +105,24 @@ export const fetchArtworkLicenses = async ({ artworkId, userId }) => {
   });
 };
 
-// needs transaction (done)
+// $Needs testing (mongo -> postgres)
+// probably not working as intended
 export const addNewArtwork = async ({ artworkData, artworkUpload, userId }) => {
+  const newCover = new Cover();
+  newMedia.source = artworkUpload.fileCover;
+  newMedia.dominant = artworkUpload.fileDominant;
+  newMedia.orientation = artworkUpload.fileOrientation;
+  newMedia.height = null; // $TODO replace with cover height
+  newMedia.width = null; // $TODO replace with cover width
+  const newMedia = new Media();
+  newMedia.source = artworkUpload.fileMedia;
+  newMedia.dominant = artworkUpload.fileDominant;
+  newMedia.orientation = artworkUpload.fileOrientation;
+  newMedia.height = artworkUpload.fileHeight;
+  newMedia.width = artworkUpload.fileWidth;
   const newVersion = new Version();
-  newVersion.cover = artworkUpload.fileCover || "";
-  newVersion.media = artworkUpload.fileMedia || "";
-  newVersion.dominant = artworkUpload.fileDominant || "";
-  newVersion.orientation = artworkUpload.fileOrientation || "";
-  newVersion.height = artworkUpload.fileHeight || "";
-  newVersion.width = artworkUpload.fileWidth || "";
+  newVersion.cover = newCover;
+  newVersion.media = newMedia;
   newVersion.title = artworkData.artworkTitle || "";
   newVersion.type = artworkData.artworkType || "";
   newVersion.availability = artworkData.artworkAvailability || "";
@@ -122,145 +133,115 @@ export const addNewArtwork = async ({ artworkData, artworkUpload, userId }) => {
   newVersion.category = artworkData.artworkCategory || "";
   newVersion.description = artworkData.artworkDescription || "";
   newVersion.tags = artworkData.artworkTags || [];
-  const savedVersion = await newVersion.save({ session });
   const newArtwork = new Artwork();
   newArtwork.owner = userId;
-  newArtwork.generated = false;
+  newArtwork.current = newVersion;
   newArtwork.active = true;
-  newArtwork.comments = [];
-  newArtwork.current = savedVersion._id;
-  newArtwork.saves = 0;
-  const savedArtwork = await newArtwork.save({ session });
-  savedVersion.artwork = savedArtwork._id;
-  return await savedVersion.save();
+  newArtwork.generated = false;
+  return await newArtwork.save();
 };
 
-// needs transaction (done)
-// needs testing
-// $TODO Assign prev version values or empty values?
+// $Needs testing (mongo -> postgres)
+// probably not working as intended
 export const addNewVersion = async ({
   prevArtwork,
   artworkData,
   artworkUpload,
-  session = null,
 }) => {
+  const newCover = new Cover();
+  newMedia.source = artworkUpload.fileCover;
+  newMedia.dominant = artworkUpload.fileDominant;
+  newMedia.orientation = artworkUpload.fileOrientation;
+  newMedia.height = null; // $TODO replace with cover height
+  newMedia.width = null; // $TODO replace with cover width
+  const newMedia = new Media();
+  newMedia.source = artworkUpload.fileMedia;
+  newMedia.dominant = artworkUpload.fileDominant;
+  newMedia.orientation = artworkUpload.fileOrientation;
+  newMedia.height = artworkUpload.fileHeight;
+  newMedia.width = artworkUpload.fileWidth;
   const newVersion = new Version();
-  newVersion.cover = artworkUpload.fileCover || prevArtwork.cover;
-  newVersion.media = artworkUpload.fileMedia || prevArtwork.media;
-  newVersion.dominant = artworkUpload.fileDominant || prevArtwork.dominant;
-  newVersion.orientation = artworkUpload.fileOrientation || "";
-  newVersion.height = artworkUpload.fileHeight || prevArtwork.height;
-  newVersion.width = artworkUpload.fileWidth || prevArtwork.width;
-  newVersion.title = artworkData.artworkTitle || prevArtwork.artworkTitle;
-  newVersion.type = artworkData.artworkType || prevArtwork.artworkType;
-  newVersion.availability =
-    artworkData.artworkAvailability || prevArtwork.artworkAvailability;
-  newVersion.license = artworkData.artworkLicense || prevArtwork.artworkLicense;
-  newVersion.use = artworkData.artworkUse || prevArtwork.artworkUse;
-  newVersion.personal = artworkData.artworkPersonal;
-  newVersion.commercial = artworkData.artworkCommercial;
-  newVersion.category =
-    artworkData.artworkCategory || prevArtwork.artworkCategory;
-  newVersion.description =
-    artworkData.artworkDescription || prevArtwork.artworkDescription;
-  newVersion.tags = artworkData.artworkTags || prevArtwork.artworkTags;
+  newVersion.cover = newCover;
+  newVersion.media = newMedia;
+  newVersion.title = artworkData.artworkTitle;
+  newVersion.type = artworkData.artworkType;
+  newVersion.availability = artworkData.artworkAvailability;
+  newVersion.license = artworkData.artworkLicense;
+  newVersion.use = artworkData.artworkUse;
+  newVersion.personal;
+  newVersion.commercial;
+  newVersion.category = artworkData.artworkCategory;
+  newVersion.description = artworkData.artworkDescription;
+  newVersion.tags = artworkData.artworkTags;
   newVersion.artwork = prevArtwork.artwork;
-  return await newVersion.save({ session });
+  return await newVersion.save();
 };
 
-// needs transaction (done)
-export const addArtworkSave = async ({ artworkId, session = null }) => {
-  return await Artwork.updateOne(
-    {
-      $and: [{ _id: artworkId }, { active: true }],
-    },
-    { $inc: { saves: 1 } }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+// check if cascade works correctly
+export const addArtworkSave = async ({ artworkId }) => {
+  const newFavorite = new Favorite();
+  newFavorite.owner = null; // $TODO add owner;
+  newFavorite.artwork = artworkId;
+  const foundArtwork = await Artwork.findOne({ where: [{ id: artworkId }] });
+  foundArtwork.favorites.push(newFavorite);
+  return await Artwork.save({ foundArtwork });
 };
 
-export const removeArtworkSave = async ({ artworkId, session = null }) => {
-  return await Artwork.updateOne(
-    {
-      $and: [{ _id: artworkId }, { active: true }],
-    },
-    { $inc: { saves: -1 } }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+// check if cascade works correctly
+export const removeArtworkSave = async ({ artworkId }) => {
+  const foundFavorite = await Favorite.findOne({ artwork: artworkId });
+  await Favorite.remove({ foundFavorite });
 };
 
-export const removeArtworkVersion = async ({ versionId, session = null }) => {
-  return await Version.remove({
-    _id: versionId,
-  }).session(session);
+// $Needs testing (mongo -> postgres)
+// check if cascade works correctly
+export const removeArtworkVersion = async ({ versionId }) => {
+  const foundVersion = await Version.findOne({ id: versionId });
+  await Version.remove({ foundVersion });
 };
 
-export const addArtworkComment = async ({
-  artworkId,
-  commentId,
-  session = null,
-}) => {
-  return await Artwork.findOneAndUpdate(
-    {
-      _id: artworkId,
-    },
-    { $push: { comments: commentId } },
-    { new: true }
-  ).session(session);
+// $TODO not needed anymore
+// export const addArtworkComment = async ({ artworkId, commentId }) => {
+//   return await Artwork.findOneAndUpdate(
+//     {
+//       _id: artworkId,
+//     },
+//     { $push: { comments: commentId } },
+//     { new: true }
+//   );
+// };
+
+// $TODO not needed anymore
+// export const removeArtworkComment = async ({ artworkId, commentId }) => {
+//   return await Artwork.findOneAndUpdate(
+//     {
+//       _id: artworkId,
+//     },
+//     { $pull: { comments: commentId } },
+//     { new: true }
+//   );
+// };
+
+// $Needs testing (mongo -> postgres)
+export const deactivateExistingArtwork = async ({ artworkId }) => {
+  const foundArtwork = Artwork.findOne({
+    where: [{ id: artworkId, active: true }],
+  });
+  foundArtwork.active = false;
+  return await Artwork.save({ foundArtwork });
 };
 
-export const removeArtworkComment = async ({
-  artworkId,
-  commentId,
-  session = null,
-}) => {
-  return await Artwork.findOneAndUpdate(
-    {
-      _id: artworkId,
-    },
-    { $pull: { comments: commentId } },
-    { new: true }
-  ).session(session);
-};
-
-// needs transaction (done)
-export const addNewLicense = async ({
-  userId,
-  artworkData,
-  licenseData,
-  session = null,
-}) => {
-  const newLicense = new License();
-  newLicense.owner = userId;
-  newLicense.artwork = artworkData._id;
-  newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
-  newLicense.assignee = licenseData.licenseAssignee;
-  newLicense.company = licenseData.licenseCompany;
-  newLicense.type = licenseData.licenseType;
-  newLicense.active = false;
-  newLicense.price = artworkData.current[licenseData.licenseType];
-  return await newLicense.save({ session });
-};
-
-export const deactivateExistingArtwork = async ({
-  artworkId,
-  session = null,
-}) => {
-  return await Artwork.updateOne({ _id: artworkId }, { active: false }).session(
-    session
-  );
-};
-
-export const addArtworkReview = async ({
-  artworkId,
-  reviewId,
-  session = null,
-}) => {
-  return await Artwork.updateOne(
-    {
-      $and: [{ _id: artworkId }, { active: true }],
-    },
-    { $push: { reviews: reviewId } }
-  ).session(session);
-};
+// $TODO not needed anymore
+// export const addArtworkReview = async ({ artworkId, reviewId }) => {
+//   return await Artwork.updateOne(
+//     {
+//       $and: [{ _id: artworkId }, { active: true }],
+//     },
+//     { $push: { reviews: reviewId } }
+//   );
+// };
 
 // needs transaction (done)
 // const deleteLicense = async (req, res, next) => {
