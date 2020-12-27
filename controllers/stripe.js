@@ -99,8 +99,8 @@ export const managePaymentIntent = async ({
       : null;
     const foundVersion = await fetchVersionDetails({ versionId, session });
     if (foundVersion) {
-      if (foundVersion._id.equals(foundVersion.artwork.current)) {
-        if (!foundVersion.artwork.owner._id.equals(foundUser._id)) {
+      if (foundVersion.id.equals(foundVersion.artwork.current)) {
+        if (!foundVersion.artwork.owner.id.equals(foundUser.id)) {
           // $TODO Bolje sredit validaciju licence
           // $TODO Sredit validnu licencu (npr, ako je "use": "included", ne moze bit odabran personal license)
           const licensePrice =
@@ -132,7 +132,7 @@ export const managePaymentIntent = async ({
                 ? {
                     discountId:
                       foundDiscount && foundDiscount.active
-                        ? foundDiscount._id
+                        ? foundDiscount.id
                         : null,
                     spent: buyerTotal.intValue,
                     earned: sellerTotal.intValue,
@@ -147,20 +147,20 @@ export const managePaymentIntent = async ({
                 : {
                     discountId:
                       foundDiscount && foundDiscount.active
-                        ? foundDiscount._id
+                        ? foundDiscount.id
                         : null,
                     spent: buyerTotal.intValue,
                     earned: sellerTotal.intValue,
                     fee: platformTotal.intValue,
                   }
               : {
-                  buyerId: foundUser._id,
-                  sellerId: foundVersion.artwork.owner._id,
-                  artworkId: foundVersion.artwork._id,
-                  versionId: foundVersion._id,
+                  buyerId: foundUser.id,
+                  sellerId: foundVersion.artwork.owner.id,
+                  artworkId: foundVersion.artwork.id,
+                  versionId: foundVersion.id,
                   discountId:
                     foundDiscount && foundDiscount.active
-                      ? foundDiscount._id
+                      ? foundDiscount.id
                       : null,
                   spent: buyerTotal.intValue,
                   earned: sellerTotal.intValue,
@@ -352,7 +352,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
   newLicense.type = licenseType;
   newLicense.active = true;
   newLicense.price = licensePrice;
-  const savedLicense = await newLicense.save({ session });
+  const savedLicense = await License.save({ newLicense });
   const { orderError } = orderValidator(
     sanitizeData({
       orderBuyer: buyerId,
@@ -360,7 +360,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
       orderArtwork: artworkId,
       orderVersion: versionId,
       orderDiscount: discountId,
-      orderLicense: savedLicense._id,
+      orderLicense: savedLicense.id,
       orderSpent: orderData.spent,
       orderEarned: orderData.earned,
       orderFee: orderData.fee,
@@ -374,7 +374,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
     artworkId,
     versionId,
     discountId,
-    licenseId: savedLicense._id,
+    licenseId: savedLicense.id,
     review: null,
     spent: orderData.spent,
     earned: orderData.earned,
@@ -386,20 +386,20 @@ const processTransaction = async ({ stripeIntent, session }) => {
   const savedOrder = await addNewOrder({ orderData: orderObject, session });
   await editUserPurchase({
     userId: buyerId,
-    orderId: savedOrder._id,
+    orderId: savedOrder.id,
     session,
   });
-  await editUserSale({ userId: sellerId, orderId: savedOrder._id, session });
+  await editUserSale({ userId: sellerId, orderId: savedOrder.id, session });
   await removeExistingIntent({ userId: sellerId, intentId, session });
   // new start
   await addNewNotification({
-    notificationLink: savedOrder._id,
+    notificationLink: savedOrder.id,
     notificationRef: "",
     notificationType: "order",
     notificationReceiver: sellerId,
     session,
   });
-  socketApi.sendNotification(sellerId, savedOrder._id);
+  socketApi.sendNotification(sellerId, savedOrder.id);
   // new end
   return { message: "Order processed successfully" };
 };

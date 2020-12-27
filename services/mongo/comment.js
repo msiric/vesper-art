@@ -6,7 +6,7 @@ export const fetchCommentById = async ({
   session = null,
 }) => {
   return await Comment.findOne({
-    $and: [{ _id: commentId }, { artwork: artworkId }],
+    $and: [{ id: commentId }, { artwork: artworkId }],
   })
     .populate("owner")
     .session(session);
@@ -35,7 +35,7 @@ export const editExistingComment = async ({
 }) => {
   return await Comment.updateOne(
     {
-      $and: [{ _id: commentId }, { artwork: artworkId }, { owner: userId }],
+      $and: [{ id: commentId }, { artwork: artworkId }, { owner: userId }],
     },
     { content: commentContent, modified: true }
   ).session(session);
@@ -48,6 +48,6 @@ export const removeExistingComment = async ({
   session = null,
 }) => {
   return await Comment.deleteOne({
-    $and: [{ _id: commentId }, { artwork: artworkId }, { owner: userId }],
+    $and: [{ id: commentId }, { artwork: artworkId }, { owner: userId }],
   }).session(session);
 };

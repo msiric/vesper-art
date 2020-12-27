@@ -6,11 +6,11 @@ const EditPreferencesForm = ({ setValue, getValues, errors }) => {
   return (
     <Box>
       <SwitchInput
-        value={getValues("userSaves")}
+        value={getValues("userFavorites")}
         setValue={setValue}
-        name="userSaves"
+        name="userFavorites"
         type="text"
-        label="Display saved artwork"
+        label="Display favorited artwork"
         errors={errors}
       />
     </Box>

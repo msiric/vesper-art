@@ -90,21 +90,21 @@ export const getGallery = {
   success: { message: "Artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch artwork", variant: "error" },
 };
-export const postSave = {
+export const postFavorite = {
   request: async ({ artworkId }) =>
     await ax.post(`/api/artwork/${artworkId}/favorites`),
   success: { message: "Artwork successfully saved", variant: "success" },
-  error: { message: "Failed to save artwork", variant: "error" },
+  error: { message: "Failed to favorite artwork", variant: "error" },
 };
-export const deleteSave = {
+export const deleteFavorite = {
   request: async ({ artworkId }) =>
     await ax.delete(`/api/artwork/${artworkId}/favorites`),
   success: { message: "Artwork successfully unsaved", variant: "success" },
   error: { message: "Failed to unsaved artwork", variant: "error" },
 };
-export const getSaves = {
+export const getFavorites = {
   request: async ({ userId }) =>
     await ax.get(`/api/user/${userId}/saved_artwork`),
-  success: { message: "Saves successfully fetched", variant: "success" },
-  error: { message: "Failed to fetch saves", variant: "error" },
+  success: { message: "Favorites successfully fetched", variant: "success" },
+  error: { message: "Failed to fetch favorites", variant: "error" },
 };

@@ -19,5 +19,5 @@ export const addNewLicense = async ({ userId, artworkData, licenseData }) => {
   newLicense.type = licenseData.licenseType;
   newLicense.active = false;
   newLicense.price = artworkData.current[licenseData.licenseType];
-  return await newLicense.save();
+  return await License.save({ newLicense });
 };

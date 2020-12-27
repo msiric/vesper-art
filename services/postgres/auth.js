@@ -19,7 +19,7 @@ export const addNewUser = async ({
   newUser.password = hashedPassword;
   newUser.avatar = null;
   newUser.verificationToken = verificationToken;
-  return await newUser.save();
+  return await User.save({ newUser });
 };
 
 // $Done (mongo -> postgres)
@@ -91,5 +91,5 @@ export const resetRegisterToken = async ({ tokenId }) => {
   });
   foundUser.verificationToken = "";
   foundUser.verified = true;
-  await User.save(foundUser);
+  return await User.save(foundUser);
 };

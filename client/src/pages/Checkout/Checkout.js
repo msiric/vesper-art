@@ -266,7 +266,7 @@ const Processor = ({ match, location, stripe }) => {
 
   const handleDiscountChange = async (values, actions) => {
     try {
-      const intentId = userStore.intents[state.version._id] || null;
+      const intentId = userStore.intents[state.version.id] || null;
       const {
         data: { payload },
       } = values
@@ -274,13 +274,13 @@ const Processor = ({ match, location, stripe }) => {
         : { data: { payload: null } };
       if (intentId) {
         await postIntent.request({
-          versionId: state.version._id,
+          versionId: state.version.id,
           artworkLicense: {
             assignee: "",
             company: "",
             type: state.license,
           },
-          discountId: payload ? payload._id : null,
+          discountId: payload ? payload.id : null,
           intentId,
         });
       }
@@ -296,15 +296,15 @@ const Processor = ({ match, location, stripe }) => {
 
   const saveIntent = async (values) => {
     try {
-      const intentId = userStore.intents[state.version._id] || null;
+      const intentId = userStore.intents[state.version.id] || null;
       const { data } = await postIntent.request({
-        versionId: state.version._id,
+        versionId: state.version.id,
         artworkLicense: {
           assignee: values.licenseAssignee,
           company: values.licenseCompany,
           type: values.licenseType,
         },
-        discountId: state.discount ? state.discount._id : null,
+        discountId: state.discount ? state.discount.id : null,
         intentId,
       });
       if (!intentId) {
@@ -312,14 +312,14 @@ const Processor = ({ match, location, stripe }) => {
           await postCheckout.request({
             userId: userStore.id,
             data: {
-              version: state.version._id,
+              version: state.version.id,
               intentId: data.intent.id,
             },
           });
           userDispatch({
             type: "updateIntents",
             intents: {
-              [state.version._id]: data.intent.id,
+              [state.version.id]: data.intent.id,
             },
           });
         } catch (err) {
@@ -488,7 +488,7 @@ const Processor = ({ match, location, stripe }) => {
     <Container key={location.key} className={globalClasses.gridContainer}>
       <MainHeading text={"Checkout"} className={globalClasses.mainHeading} />
       <Grid container spacing={2}>
-        {state.loading || (state.version._id && stripe) ? (
+        {state.loading || (state.version.id && stripe) ? (
           <>
             <Grid item xs={12} md={8}>
               <FormProvider control={control}>

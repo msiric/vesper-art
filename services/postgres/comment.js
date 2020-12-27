@@ -16,7 +16,7 @@ export const addNewComment = async ({ artworkId, userId, commentContent }) => {
   newComment.content = commentContent;
   newComment.modified = false;
   newComment.generated = false;
-  return await newComment.save();
+  return await Comment.save({ newComment });
 };
 
 // $Needs testing (mongo -> postgres)

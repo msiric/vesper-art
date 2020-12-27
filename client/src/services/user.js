@@ -61,13 +61,13 @@ export const getOwnership = {
   },
   error: { message: "Failed to fetch user purchases", variant: "error" },
 };
-export const getSaves = {
+export const getFavorites = {
   request: async ({ userId, dataCursor, dataCeiling }) =>
     await ax.get(
-      `/api/users/${userId}/saves?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+      `/api/users/${userId}/favorites?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
     ),
-  success: { message: "Saves successfully fetched", variant: "success" },
-  error: { message: "Failed to fetch saves", variant: "error" },
+  success: { message: "Favorites successfully fetched", variant: "success" },
+  error: { message: "Failed to fetch favorites", variant: "error" },
 };
 export const getSettings = {
   request: async ({ userId }) => await ax.get(`/api/users/${userId}/settings`),

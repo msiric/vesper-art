@@ -45,12 +45,12 @@ export const postDownload = async ({
       if (licensePrice === 0) {
         // $TODO Treba li dohvacat usera?
         const foundUser = await fetchUserById({ userId, session });
-        if (!foundVersion.artwork.owner._id.equals(foundUser._id)) {
+        if (!foundVersion.artwork.owner.id.equals(foundUser.id)) {
           if (foundUser && foundUser.active) {
             const { licenseError } = licenseValidator(
               sanitizeData({
-                licenseOwner: foundUser._id,
-                licenseArtwork: foundVersion.artwork._id,
+                licenseOwner: foundUser.id,
+                licenseArtwork: foundVersion.artwork.id,
                 licenseAssignee,
                 licenseCompany,
                 licenseType,
@@ -59,23 +59,23 @@ export const postDownload = async ({
             );
             if (licenseError) throw createError(400, licenseError);
             const newLicense = new License();
-            newLicense.owner = foundUser._id;
-            newLicense.artwork = foundVersion.artwork._id;
+            newLicense.owner = foundUser.id;
+            newLicense.artwork = foundVersion.artwork.id;
             newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
             newLicense.assignee = licenseAssignee;
             newLicense.company = licenseCompany;
             newLicense.type = licenseType;
             newLicense.active = true;
             newLicense.price = licensePrice;
-            const savedLicense = await newLicense.save({ session });
+            const savedLicense = await License.save({ newLicense });
             const { orderError } = orderValidator(
               sanitizeData({
-                orderBuyer: foundUser._id,
-                orderSeller: foundVersion.artwork.owner._id,
-                orderArtwork: foundVersion.artwork._id,
-                orderVersion: foundVersion._id,
+                orderBuyer: foundUser.id,
+                orderSeller: foundVersion.artwork.owner.id,
+                orderArtwork: foundVersion.artwork.id,
+                orderVersion: foundVersion.id,
                 orderDiscount: null,
-                orderLicense: savedLicense._id,
+                orderLicense: savedLicense.id,
                 orderSpent: 0,
                 orderEarned: 0,
                 orderFee: 0,
@@ -84,12 +84,12 @@ export const postDownload = async ({
             );
             if (orderError) throw createError(400, orderError);
             const orderObject = {
-              buyerId: foundUser._id,
-              sellerId: foundVersion.artwork.owner._id,
-              artworkId: foundVersion.artwork._id,
-              versionId: foundVersion._id,
+              buyerId: foundUser.id,
+              sellerId: foundVersion.artwork.owner.id,
+              artworkId: foundVersion.artwork.id,
+              versionId: foundVersion.id,
               discountId: null,
-              licenseId: savedLicense._id,
+              licenseId: savedLicense.id,
               review: null,
               spent: 0,
               earned: 0,
@@ -103,26 +103,26 @@ export const postDownload = async ({
               session,
             });
             await editUserPurchase({
-              userId: foundUser._id,
-              orderId: savedOrder._id,
+              userId: foundUser.id,
+              orderId: savedOrder.id,
               session,
             });
             await editUserSale({
-              userId: foundVersion.artwork.owner._id,
-              orderId: savedOrder._id,
+              userId: foundVersion.artwork.owner.id,
+              orderId: savedOrder.id,
               session,
             });
             // new start
             await addNewNotification({
-              notificationLink: savedOrder._id,
+              notificationLink: savedOrder.id,
               notificationRef: "",
               notificationType: "order",
-              notificationReceiver: foundVersion.artwork.owner._id,
+              notificationReceiver: foundVersion.artwork.owner.id,
               session,
             });
             socketApi.sendNotification(
-              foundVersion.artwork.owner._id,
-              savedOrder._id
+              foundVersion.artwork.owner.id,
+              savedOrder.id
             );
             // new end
             return { message: "Order completed successfully" };

@@ -39,30 +39,30 @@ export const postReview = async ({
         const denominator = currency(foundOrder.seller.reviews).add(1);
         const newRating = currency(numerator).divide(denominator);
         await editUserRating({
-          userId: foundOrder.seller._id,
+          userId: foundOrder.seller.id,
           userRating: newRating.value,
           session,
         });
         await addOrderReview({
-          reviewId: savedReview._id,
+          reviewId: savedReview.id,
           orderId,
           userId,
           session,
         });
         await addArtworkReview({
-          artworkId: foundOrder.artwork._id,
-          reviewId: savedReview._id,
+          artworkId: foundOrder.artwork.id,
+          reviewId: savedReview.id,
           session,
         });
         // new start
         await addNewNotification({
-          notificationLink: foundOrder._id,
-          notificationRef: savedReview._id,
+          notificationLink: foundOrder.id,
+          notificationRef: savedReview.id,
           notificationType: "review",
           notificationReceiver: foundOrder.seller,
           session,
         });
-        socketApi.sendNotification(foundOrder.seller, foundOrder._id);
+        socketApi.sendNotification(foundOrder.seller, foundOrder.id);
         // new end
         return { message: "Review successfully published" };
       }

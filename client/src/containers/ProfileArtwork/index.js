@@ -9,7 +9,7 @@ const ProfileArtwork = ({
   tabs,
   user,
   loadMoreArtwork,
-  loadMoreSaves,
+  loadMoreFavorites,
   handleTabsChange,
   handleChangeIndex,
   loading,
@@ -67,7 +67,7 @@ const ProfileArtwork = ({
                 {
                   display: user.displayFavorites,
                   iterable: true,
-                  content: user.savedArtwork.length,
+                  content: user.favoritedArtwork.length,
                   component: (
                     <Box
                       style={{
@@ -77,9 +77,9 @@ const ProfileArtwork = ({
                       }}
                     >
                       <ArtworkPanel
-                        elements={user.savedArtwork}
+                        elements={user.favoritedArtwork}
                         hasMore={null}
-                        loadMore={loadMoreSaves}
+                        loadMore={loadMoreFavorites}
                         type="artwork"
                         fixed={true}
                         loading={loading}
@@ -88,7 +88,7 @@ const ProfileArtwork = ({
                   ),
                   error: (
                     <EmptySection
-                      label="You have no saved artwork"
+                      label="You have no favorited artwork"
                       loading={loading}
                     />
                   ),
@@ -147,7 +147,7 @@ const ProfileArtwork = ({
                 {
                   display: user.displayFavorites,
                   iterable: true,
-                  content: user.savedArtwork.length,
+                  content: user.favoritedArtwork.length,
                   component: (
                     <Box
                       style={{
@@ -157,9 +157,9 @@ const ProfileArtwork = ({
                       }}
                     >
                       <ArtworkPanel
-                        elements={user.savedArtwork}
+                        elements={user.favoritedArtwork}
                         hasMore={null}
-                        loadMore={loadMoreSaves}
+                        loadMore={loadMoreFavorites}
                         type="artwork"
                         fixed={true}
                         loading={loading}
@@ -168,7 +168,7 @@ const ProfileArtwork = ({
                   ),
                   error: (
                     <EmptySection
-                      label="This user has no saved artwork"
+                      label="This user has no favorited artwork"
                       loading={loading}
                     />
                   ),

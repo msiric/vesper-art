@@ -45,14 +45,14 @@ export const postComment = async ({
     });
     const updatedArtwork = await addArtworkComment({
       artworkId,
-      commentId: savedComment._id,
+      commentId: savedComment.id,
       session,
     });
     if (!savedComment.owner.equals(updatedArtwork.owner)) {
       await addUserNotification({ userId: updatedArtwork.owner, session });
       const savedNotification = await addNewNotification({
-        notificationLink: foundArtwork._id,
-        notificationRef: savedComment._id,
+        notificationLink: foundArtwork.id,
+        notificationRef: savedComment.id,
         notificationType: "comment",
         notificationReceiver: updatedArtwork.owner,
         session,

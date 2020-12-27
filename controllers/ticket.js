@@ -19,7 +19,7 @@ export const postTicket = async ({
     ticketTitle,
     ticketBody,
   });
-  const ticketId = savedTicket._id;
+  const ticketId = savedTicket.id;
   await sendEmail({
     emailReceiver: userEmail,
     emailSubject: `Support ticket (#${ticketId}): ${ticketTitle}`,

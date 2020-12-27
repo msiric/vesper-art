@@ -13,5 +13,5 @@ export const addNewReview = async ({
   newReview.reviewerId = reviewerId;
   newReview.revieweeId = revieweeId;
   newReview.rating = reviewRating;
-  return await newReview.save();
+  return await Review.save({ newReview });
 };

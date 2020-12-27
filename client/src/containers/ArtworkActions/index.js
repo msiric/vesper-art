@@ -44,7 +44,7 @@ const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
                 }}
               />
               <Typography style={{ fontSize: 34 }} align="center">
-                {artwork.saves}
+                {artwork.favorites}
               </Typography>
             </Box>
           </Box>
@@ -61,10 +61,10 @@ const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
               alignItems: "center",
             }}
           >
-            {artwork.owner && artwork.owner._id !== userStore.id && (
+            {artwork.owner && artwork.owner.id !== userStore.id && (
               <FavoriteButton
                 artwork={artwork}
-                favorited={userStore.saved[artwork._id]}
+                favorited={userStore.favorites[artwork.id]}
                 labeled
                 handleCallback={handleArtworkSave}
               />

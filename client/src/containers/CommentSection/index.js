@@ -42,7 +42,7 @@ const CommentSection = ({
 
   const onSubmit = async (values) => {
     const { data } = await postComment.request({
-      artworkId: artwork._id,
+      artworkId: artwork.id,
       data: values,
     });
     handleCommentAdd(data.payload);

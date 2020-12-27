@@ -10,7 +10,7 @@ const ArtworkSchema = new Schema({
   versions: [{ type: Schema.Types.ObjectId, ref: "Version" }], // nesting
   comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }], // nesting
   reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }], // nesting
-  saves: Number,
+  favorites: Number,
   generated: Boolean,
   active: Boolean,
   created: { type: Date, default: Date.now },

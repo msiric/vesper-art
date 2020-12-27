@@ -8,10 +8,10 @@ export const fetchCheckoutArtwork = async ({
   session = null,
 }) => {
   const foundArtwork = await Artwork.findOne({
-    $and: [{ _id: artworkId }, { active: true }],
+    $and: [{ id: artworkId }, { active: true }],
   }).populate(
     "current",
-    "_id cover created title personal type license availability description use commercial height width"
+    "id cover created title personal type license availability description use commercial height width"
   );
   if (foundArtwork) {
     res.json({

@@ -17,7 +17,7 @@ export const addNewOrder = async ({ orderData }) => {
   newOrder.commercial = orderData.commercial ? "commercial" : "free";
   newOrder.status = orderData.status;
   newOrder.intent = orderData.intentId;
-  return await newOrder.save();
+  return await Order.save({ newOrder });
 };
 
 // $Needs testing (mongo -> postgres)

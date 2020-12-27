@@ -80,7 +80,7 @@ const Order = ({ match, location }) => {
 
   const handleArtworkDownload = async () => {
     try {
-      const { data } = await getDownload.request({ orderId: state.order._id });
+      const { data } = await getDownload.request({ orderId: state.order.id });
       const link = document.createElement("a");
       link.href = data.url;
       link.setAttribute("download", data.file);
@@ -93,7 +93,7 @@ const Order = ({ match, location }) => {
 
   const handleRatingSubmit = async (values) => {
     await postReview.request({
-      artworkId: state.order._id,
+      artworkId: state.order.id,
       reviewRating: values.artistRating,
     });
     setState((prevState) => ({
@@ -101,8 +101,8 @@ const Order = ({ match, location }) => {
       order: {
         ...prevState.order,
         review: {
-          order: prevState.order._id,
-          artwork: prevState.order.artwork._id,
+          order: prevState.order.id,
+          artwork: prevState.order.artwork.id,
           owner: userStore.id,
           rating: values.artistRating,
         },
@@ -116,12 +116,12 @@ const Order = ({ match, location }) => {
   };
 
   const isSeller = () =>
-    state.order._id &&
-    userStore.id.toString() === state.order.seller._id.toString();
+    state.order.id &&
+    userStore.id.toString() === state.order.seller.id.toString();
 
   const isBuyer = () =>
-    state.order._id &&
-    userStore.id.toString() === state.order.buyer._id.toString();
+    state.order.id &&
+    userStore.id.toString() === state.order.buyer.id.toString();
 
   useEffect(() => {
     fetchOrder();
@@ -130,7 +130,7 @@ const Order = ({ match, location }) => {
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.loading || state.order._id ? (
+        {state.loading || state.order.id ? (
           <>
             <Grid item xs={12} md={8}>
               <OrderPreview

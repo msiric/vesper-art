@@ -16,10 +16,10 @@ import artworkCardStyles from "./styles.js";
 
 const initialProps = {
   artwork: {
-    _id: null,
+    id: null,
     current: { cover: null, height: null, width: null },
     owner: {},
-    saves: null,
+    favorites: null,
   },
   type: null,
 };
@@ -38,22 +38,22 @@ const ArtworkCard = ({
   const item =
     type !== "version"
       ? {
-          _id: artwork._id ? artwork._id : "",
-          data: artwork._id ? artwork.current : {},
-          owner: artwork._id ? artwork.owner : {},
-          saves: artwork._id ? artwork.saves : [],
-          src: artwork._id ? artwork.current.cover : "",
-          height: artwork._id ? artwork.current.height : "",
-          width: artwork._id ? artwork.current.width : "",
+          id: artwork.id ? artwork.id : "",
+          data: artwork.id ? artwork.current : {},
+          owner: artwork.id ? artwork.owner : {},
+          favorites: artwork.id ? artwork.favorites : [],
+          src: artwork.id ? artwork.current.cover : "",
+          height: artwork.id ? artwork.current.height : "",
+          width: artwork.id ? artwork.current.width : "",
         }
       : {
-          _id: artwork._id ? artwork.artwork._id : "",
-          data: artwork._id ? artwork : {},
-          owner: artwork._id ? artwork.artwork.owner : {},
-          saves: artwork._id ? artwork.artwork.saves : [],
-          src: artwork._id ? artwork.cover : "",
-          height: artwork._id ? artwork.height : "",
-          width: artwork._id ? artwork.width : "",
+          id: artwork.id ? artwork.artwork.id : "",
+          data: artwork.id ? artwork : {},
+          owner: artwork.id ? artwork.artwork.owner : {},
+          favorites: artwork.id ? artwork.artwork.favorites : [],
+          src: artwork.id ? artwork.cover : "",
+          height: artwork.id ? artwork.height : "",
+          width: artwork.id ? artwork.width : "",
         };
 
   return (
@@ -65,7 +65,7 @@ const ArtworkCard = ({
               noWrap
               variant="h5"
               component={RouterLink}
-              to={`/artwork/${item._id}`}
+              to={`/artwork/${item.id}`}
               className={classes.artworkTitle}
             >
               {item.data.title}
@@ -91,7 +91,7 @@ const ArtworkCard = ({
       {/*       <SkeletonWrapper loading={loading} height="180px">
         <CardMedia
           component={RouterLink}
-          to={`/artwork/${item._id}`}
+          to={`/artwork/${item.id}`}
           className={classes.artworkMedia}
           style={{
             paddingTop: `${(item.data.height / item.data.width) * 100}%`,
@@ -103,7 +103,7 @@ const ArtworkCard = ({
         />
       </SkeletonWrapper> */}
       <ImageWrapper
-        redirect={`/artwork/${item._id}`}
+        redirect={`/artwork/${item.id}`}
         height={item.data.height}
         width={item.data.width}
         source={item.data.cover}
@@ -113,11 +113,11 @@ const ArtworkCard = ({
       <CardActions disableSpacing className={classes.artworkFooter}>
         <SkeletonWrapper loading={loading}>
           <Box style={{ display: "flex" }}>
-            {item.owner._id === userStore.id ? (
+            {item.owner.id === userStore.id ? (
               <IconButton
                 aria-label={"Edit artwork"}
                 component={RouterLink}
-                to={`/artwork/${artwork._id}/edit`}
+                to={`/artwork/${artwork.id}/edit`}
                 className={classes.buttonColor}
               >
                 <EditIcon />
@@ -126,10 +126,10 @@ const ArtworkCard = ({
               [
                 <FavoriteButton
                   artwork={artwork}
-                  favorited={userStore.saved[item._id]}
+                  favorited={userStore.favorites[item.id]}
                   handleCallback={handleArtworkSave}
                 />,
-                <ShareButton link={`artwork/${artwork._id}`} type="artwork" />,
+                <ShareButton link={`artwork/${artwork.id}`} type="artwork" />,
               ]
             )}
           </Box>

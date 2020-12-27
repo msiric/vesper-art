@@ -12,7 +12,7 @@ export const userStore = {
   width: null,
   stripeId: null,
   country: null,
-  saved: {},
+  favorites: {},
   intents: {},
 };
 
@@ -27,7 +27,7 @@ export const userReducer = (state, action) => {
         name: action.name,
         email: action.email,
         avatar: action.avatar,
-        saved: action.saved,
+        favorites: action.favorites,
         stripeId: action.stripeId,
         country: action.country,
         intents: action.intents,
@@ -40,7 +40,7 @@ export const userReducer = (state, action) => {
         avatar: action.avatar,
         stripeId: action.stripeId,
         country: action.country,
-        saved: action.saved,
+        favorites: action.favorites,
         intents: action.intents,
       };
     case "RESET_USER":
@@ -56,7 +56,7 @@ export const userReducer = (state, action) => {
         width: null,
         stripeId: null,
         country: null,
-        saved: {},
+        favorites: {},
         intents: {},
       };
     case "UPDATE_TOKEN":
@@ -64,10 +64,10 @@ export const userReducer = (state, action) => {
         ...state,
         token: action.token,
       };
-    case "UPDATE_SAVES":
+    case "UPDATE_FAVORITES":
       return {
         ...state,
-        saved: { ...state.saved, ...action.saved },
+        favorites: { ...state.favorites, ...action.favorites },
       };
     default:
       return state;

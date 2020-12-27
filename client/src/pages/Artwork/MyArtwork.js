@@ -89,7 +89,7 @@ const MyArtwork = ({ location }) => {
         ...prevState,
         isDeleting: false,
         artwork: prevState.artwork.filter(
-          (item) => item._id !== prevState.modal.id
+          (item) => item.id !== prevState.modal.id
         ),
         modal: {
           ...prevState.modal,
@@ -243,7 +243,7 @@ const MyArtwork = ({ location }) => {
               },
             ]}
             data={state.artwork.map((artwork) => [
-              artwork._id,
+              artwork.id,
               artwork.current.cover,
               artwork.current.title,
               artwork.current.availability,
@@ -254,7 +254,7 @@ const MyArtwork = ({ location }) => {
                 amount: artwork.current.commercial,
               },
               artwork.current.created,
-              actionsColumn(artwork._id),
+              actionsColumn(artwork.id),
             ])}
             empty={
               <EmptySection

@@ -29,7 +29,7 @@ export const getOrderDetails = async ({ userId, orderId }) => {
     // notif
     // if (req.query.ref) {
     //   const foundNotif = await Notification.findById({
-    //     _id: req.query.ref,
+    //     id: req.query.ref,
     //   }).session(session);
     //   if (foundNotif) {
     //     let changed = false;
@@ -45,7 +45,7 @@ export const getOrderDetails = async ({ userId, orderId }) => {
     //       await foundNotif.save({ session });
     //       await User.updateOne(
     //         {
-    //           _id: res.locals.user.id,
+    //           id: res.locals.user.id,
     //         },
     //         { $inc: { notifications: -1 } },
     //         { useFindAndModify: false }

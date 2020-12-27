@@ -14,7 +14,7 @@ export const addNewNotification = async ({
   newNotification.type = notificationType;
   newNotification.receiver = notificationReceiver;
   newNotification.read = false;
-  return await newNotification.save();
+  return await Notification.save({ newNotification });
 };
 
 // $Needs testing (mongo -> postgres)

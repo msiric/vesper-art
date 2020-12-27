@@ -66,7 +66,7 @@ const CheckoutSummary = ({
   const classes = checkoutSummaryStyles();
 
   useEffect(() => {
-    if (version._id) {
+    if (version.id) {
       setState((prevState) => ({
         ...prevState,
         summary: {
@@ -110,7 +110,7 @@ const CheckoutSummary = ({
         <List disablePadding>
           <ListItem
             className={classes.listItem}
-            key={version._id}
+            key={version.id}
             disableGutters
           >
             <ListItemText

@@ -91,7 +91,7 @@ const Gallery = ({ match, location }) => {
       if (!artworkIds[artwork[item].cover]) {
         const { r, g, b } = hexToRgb(artwork[item].dominant);
         uniqueCovers.push({
-          _id: item,
+          id: item,
           cover: artwork[item].cover,
           media: artwork[item].media,
           height: artwork[item].height,
@@ -160,7 +160,7 @@ const Gallery = ({ match, location }) => {
             ? item.version.cover
             : item.current.cover
         ] = {
-          _id: item._id,
+          id: item.id,
           title:
             state.display === "purchases"
               ? item.version.title
@@ -227,7 +227,7 @@ const Gallery = ({ match, location }) => {
   const loadMoreArtwork = async () => {
     try {
       const { data } = await getArtwork.request({
-        userId: state.user._id,
+        userId: state.user.id,
         dataCursor: state.scroll.artwork.dataCursor,
         dataCeiling: state.scroll.artwork.dataCeiling,
       });
@@ -255,7 +255,7 @@ const Gallery = ({ match, location }) => {
 
   const handleGalleryToggle = async (item, index) => {
     const foundMedia = item.media && state.covers[index].media === item.media;
-    const identifier = state[state.display][item.cover]._id;
+    const identifier = state[state.display][item.cover].id;
     if (foundMedia) {
       setState((prevState) => ({
         ...prevState,

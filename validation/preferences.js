@@ -1,10 +1,10 @@
-import Joi from 'joi';
-import joiObjectId from 'joi-objectid';
+import Joi from "joi";
+import joiObjectId from "joi-objectid";
 
 Joi.objectId = joiObjectId(Joi);
 
 const schema = Joi.object().keys({
-  userSaves: Joi.boolean().required(),
+  userFavorites: Joi.boolean().required(),
 });
 
 export default (data) => Joi.validate(data, schema);

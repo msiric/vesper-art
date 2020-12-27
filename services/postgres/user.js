@@ -133,7 +133,7 @@ export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
 
 // $Needs testing (mongo -> postgres)
 // $TODO doesn't limit favorites, but user?
-export const fetchUserSaves = async ({ userId, dataSkip, dataLimit }) => {
+export const fetchuserFavorites = async ({ userId, dataSkip, dataLimit }) => {
   return await User.findOne({
     where: [{ id: userId, active: true }],
     relations: ["favorites", "current"],
@@ -224,11 +224,11 @@ export const editUserPassword = async ({ userId, userPassword }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const editUserPreferences = async ({ userId, userSaves }) => {
+export const editUserPreferences = async ({ userId, userFavorites }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });
-  foundUser.displayFavorites = userSaves;
+  foundUser.displayFavorites = userFavorites;
   return await User.save({ foundUser });
 };
 
@@ -262,7 +262,7 @@ export const removeUserFavorite = async ({ userId, artworkId }) => {
 // $TODO doesn't work this way anymore
 export const addUserNotification = async ({ userId }) => {
   return await User.updateOne(
-    { _id: userId },
+    { id: userId },
     { $inc: { notifications: 1 } }
   ).session(session);
 };
@@ -290,7 +290,7 @@ export const removeExistingIntent = async ({
 // $TODO probably not how it's done
 export const editUserRating = async ({ userId, userRating }) => {
   const foundUser = await User.findOne({
-    where: [{ _id: userId, active: true }],
+    where: [{ id: userId, active: true }],
   });
   foundUser.rating = userRating;
   foundUser.reviews++;

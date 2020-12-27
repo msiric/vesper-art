@@ -11,7 +11,7 @@ import settingsPreferencesStyles from "./styles.js";
 
 const SettingsPreferences = ({ user, handleUpdatePreferences, loading }) => {
   const setDefaultValues = () => ({
-    userSaves: loading ? false : user.displayFavorites,
+    userFavorites: loading ? false : user.displayFavorites,
   });
 
   const {

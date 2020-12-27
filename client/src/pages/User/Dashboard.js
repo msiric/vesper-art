@@ -4,7 +4,7 @@ import {
   Container,
   Divider,
   Grid,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { LocalizationProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
@@ -55,7 +55,7 @@ const Dashboard = ({ location }) => {
       const { data } = await getStatistics.request({ userId: userStore.id });
       const currentStats = {
         review: data.statistics.rating,
-        saves: data.statistics.savedArtwork.length,
+        favorites: data.statistics.favoritedArtwork.length,
         orders: data.statistics[state.display.type].length,
         spent: data.statistics.purchases.length
           ? data.statistics.purchases.reduce((a, b) => a + b.spent, 0)
@@ -224,7 +224,7 @@ const Dashboard = ({ location }) => {
               {
                 data:
                   state.display.type === "purchases"
-                    ? state.currentStats.saves
+                    ? state.currentStats.favorites
                     : state.currentStats.review || "/",
                 label:
                   state.display.type === "purchases" ? "Favorites" : "Rating",

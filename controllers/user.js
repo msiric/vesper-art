@@ -21,10 +21,10 @@ import {
   editUserProfile,
   fetchUserByEmail,
   fetchUserById,
+  fetchuserFavorites,
   fetchUserNotifications,
   fetchUserProfile,
   fetchUserPurchases,
-  fetchUserSaves,
   fetchUserStatistics,
   removeExistingIntent,
 } from "../services/mongo/user.js";
@@ -81,8 +81,8 @@ export const getUserOwnership = async ({ userId, dataCursor, dataCeiling }) => {
 
 export const getUserFavorites = async ({ userId, dataCursor, dataCeiling }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
-  const foundUser = await fetchUserSaves({ userId, dataSkip, dataLimit });
-  return { saves: foundUser.savedArtwork };
+  const foundUser = await fetchuserFavorites({ userId, dataSkip, dataLimit });
+  return { favorites: foundUser.favoritedArtwork };
 };
 
 export const getUserStatistics = async ({ userId }) => {
@@ -119,7 +119,7 @@ export const updateUserOrigin = async ({
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
     if (userBusinessAddress) foundUser.businessAddress = userBusinessAddress;
-    await foundUser.save({ session });
+    await User.save({ foundUser });
     return { message: "User business address updated" };
   }
   throw createError(400, "User not found");
@@ -229,20 +229,20 @@ export const updateUserPassword = async ({
 };
 
 // needs transaction (done)
-export const updateUserPreferences = async ({ userId, userSaves }) => {
-  const { error } = preferencesValidator(sanitizeData({ userSaves }));
+export const updateUserPreferences = async ({ userId, userFavorites }) => {
+  const { error } = preferencesValidator(sanitizeData({ userFavorites }));
   if (error) throw createError(400, error);
-  await editUserPreferences({ userId, userSaves });
+  await editUserPreferences({ userId, userFavorites });
   return { message: "Preferences updated successfully" };
 };
 
 /* const deleteUser = async (req, res, next) => {
   try {
     const foundUser = await User.findOne({
-      $and: [{ _id: res.locals.user.id }, { active: true }]
+      $and: [{ id: res.locals.user.id }, { active: true }]
     });
     if (foundUser) {
-      if (foundUser.avatar.includes(foundUser._id)) {
+      if (foundUser.avatar.includes(foundUser.id)) {
         const folderName = 'profileavatars/';
         const fileName = foundUser.avatar.split('/').slice(-1)[0];
         const filePath = folderName + fileName;
@@ -254,7 +254,7 @@ export const updateUserPreferences = async ({ userId, userSaves }) => {
         await s3.deleteObject(params).promise();
       }
       const updatedUser = await User.updateOne(
-        { _id: foundUser._id },
+        { id: foundUser.id },
         {
           $set: {
             name: 'Deleted User',
@@ -273,7 +273,7 @@ export const updateUserPreferences = async ({ userId, userSaves }) => {
             notifications: null,
             rating: null,
             reviews: null,
-            savedArtwork: null,
+            favoritedArtwork: null,
             earnings: null,
             incomingFunds: null,
             outgoingFunds: null,
@@ -311,8 +311,8 @@ export const deactivateUser = async ({ userId, session }) => {
     });
     for (let artwork of foundArtwork) {
       const foundOrder = await fetchOrderByVersion({
-        artworkId: artwork._id,
-        versionId: artwork.current._id,
+        artworkId: artwork.id,
+        versionId: artwork.current.id,
         session,
       });
       if (!foundOrder.length) {
@@ -327,17 +327,17 @@ export const deactivateUser = async ({ userId, session }) => {
         });
 
         await removeArtworkVersion({
-          versionId: artwork.current._id,
+          versionId: artwork.current.id,
           session,
         });
       }
-      await deactivateExistingArtwork({ artworkId: artwork._id, session });
+      await deactivateExistingArtwork({ artworkId: artwork.id, session });
     }
     await deleteS3Object({
       fileLink: foundUser.avatar,
       folderName: "profilePhotos/",
     });
-    await deactivateExistingUser({ userId: foundUser._id, session });
+    await deactivateExistingUser({ userId: foundUser.id, session });
     req.logout();
     req.session.destroy(function (err) {
       res.json("/");

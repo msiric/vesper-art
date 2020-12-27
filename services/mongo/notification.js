@@ -35,7 +35,7 @@ export const editReadNotification = async ({
     {
       $and: [
         {
-          _id: notificationId,
+          id: notificationId,
         },
         { receiver: userId },
       ],
@@ -53,7 +53,7 @@ export const editUnreadNotification = async ({
     {
       $and: [
         {
-          _id: notificationId,
+          id: notificationId,
         },
         { receiver: userId },
       ],
@@ -64,14 +64,14 @@ export const editUnreadNotification = async ({
 
 export const decrementUserNotification = async ({ userId, session = null }) => {
   return await User.updateOne(
-    { _id: userId },
+    { id: userId },
     { $inc: { notifications: -1 } }
   ).session(session);
 };
 
 export const incrementUserNotification = async ({ userId, session = null }) => {
   return await User.updateOne(
-    { _id: userId },
+    { id: userId },
     { $inc: { notifications: 1 } }
   ).session(session);
 };

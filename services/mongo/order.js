@@ -39,7 +39,7 @@ export const fetchOrderDetails = async ({
       {
         $or: [{ buyer: userId }, { seller: userId }],
       },
-      { _id: orderId },
+      { id: orderId },
     ],
   })
     .populate("buyer")
@@ -54,7 +54,7 @@ export const fetchOrderDetails = async ({
 
 export const fetchUserOrder = async ({ orderId, userId, session = null }) => {
   return await Order.findOne({
-    $and: [{ _id: orderId }, { buyer: userId }],
+    $and: [{ id: orderId }, { buyer: userId }],
   })
     .populate("buyer")
     .populate("seller")
@@ -70,7 +70,7 @@ export const addOrderReview = async ({
 }) => {
   return await Order.updateOne(
     {
-      $and: [{ _id: orderId }, { buyer: userId }],
+      $and: [{ id: orderId }, { buyer: userId }],
     },
     { review: reviewId }
   ).session(session);

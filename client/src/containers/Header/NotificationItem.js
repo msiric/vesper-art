@@ -92,8 +92,8 @@ const NotificationItem = ({
           <IconButton
             onClick={
               notification.read
-                ? () => handleUnreadClick(notification._id)
-                : () => handleReadClick(notification._id)
+                ? () => handleUnreadClick(notification.id)
+                : () => handleReadClick(notification.id)
             }
             edge="end"
             aria-label={notification.read ? "Mark unread" : "Mark read"}

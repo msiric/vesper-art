@@ -5,7 +5,7 @@ import Version from "../../models/version.js";
 
 export const fetchArtworkById = async ({ artworkId, session = null }) => {
   return await Artwork.findOne({
-    $and: [{ _id: artworkId }, { active: true }],
+    $and: [{ id: artworkId }, { active: true }],
   }).session(session);
 };
 
@@ -21,14 +21,12 @@ export const fetchActiveArtworks = async ({
     .populate("owner")
     .populate(
       "current",
-      "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
+      "id cover created title personal type license availability description tags use commercial dominant orientation height width"
     );
 };
 
 export const fetchVersionDetails = async ({ versionId, session = null }) => {
-  return await Version.findOne({ _id: versionId }).deepPopulate(
-    "artwork.owner"
-  );
+  return await Version.findOne({ id: versionId }).deepPopulate("artwork.owner");
 };
 
 export const fetchArtworkDetails = async ({
@@ -38,7 +36,7 @@ export const fetchArtworkDetails = async ({
   session = null,
 }) => {
   return await Artwork.findOne({
-    $and: [{ _id: artworkId }, { active: true }],
+    $and: [{ id: artworkId }, { active: true }],
   })
     .populate(
       dataSkip !== undefined && dataLimit !== undefined
@@ -62,7 +60,7 @@ export const fetchArtworkDetails = async ({
     .populate("owner")
     .populate(
       "current",
-      "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
+      "id cover created title personal type license availability description tags use commercial dominant orientation height width"
     );
 };
 
@@ -73,7 +71,7 @@ export const fetchArtworkComments = async ({
   session = null,
 }) => {
   return await Artwork.findOne({
-    $and: [{ _id: artworkId }, { active: true }],
+    $and: [{ id: artworkId }, { active: true }],
   })
     .populate({
       path: "comments",
@@ -88,7 +86,7 @@ export const fetchArtworkComments = async ({
     .populate("owner")
     .populate(
       "current",
-      "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
+      "id cover created title personal type license availability description tags use commercial dominant orientation height width"
     );
 };
 
@@ -99,7 +97,7 @@ export const fetchArtworkReviews = async ({
   session = null,
 }) => {
   return await Artwork.findOne({
-    $and: [{ _id: artworkId }, { active: true }],
+    $and: [{ id: artworkId }, { active: true }],
   })
     .populate({
       path: "reviews",
@@ -114,7 +112,7 @@ export const fetchArtworkReviews = async ({
     .populate("owner")
     .populate(
       "current",
-      "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
+      "id cover created title personal type license availability description tags use commercial dominant orientation height width"
     );
 };
 
@@ -135,7 +133,7 @@ export const fetchUserArtworks = async ({
     }
   ).populate(
     "current",
-    "_id cover created title personal type license availability description tags use commercial dominant orientation height width"
+    "id cover created title personal type license availability description tags use commercial dominant orientation height width"
   );
 };
 
@@ -153,7 +151,7 @@ export const fetchArtworkByOwner = async ({
   session = null,
 }) => {
   return await Artwork.findOne({
-    $and: [{ _id: artworkId }, { owner: userId }, { active: true }],
+    $and: [{ id: artworkId }, { owner: userId }, { active: true }],
   })
     .populate("current")
     .populate("versions");
@@ -199,10 +197,10 @@ export const addNewArtwork = async ({
   newArtwork.generated = false;
   newArtwork.active = true;
   newArtwork.comments = [];
-  newArtwork.current = savedVersion._id;
-  newArtwork.saves = 0;
+  newArtwork.current = savedVersion.id;
+  newArtwork.favorites = 0;
   const savedArtwork = await newArtwork.save({ session });
-  savedVersion.artwork = savedArtwork._id;
+  savedVersion.artwork = savedArtwork.id;
   return await savedVersion.save({ session });
 };
 
@@ -243,24 +241,24 @@ export const addNewVersion = async ({
 export const addArtworkFavorite = async ({ artworkId, session = null }) => {
   return await Artwork.updateOne(
     {
-      $and: [{ _id: artworkId }, { active: true }],
+      $and: [{ id: artworkId }, { active: true }],
     },
-    { $inc: { saves: 1 } }
+    { $inc: { favorites: 1 } }
   ).session(session);
 };
 
 export const removeArtworkFavorite = async ({ artworkId, session = null }) => {
   return await Artwork.updateOne(
     {
-      $and: [{ _id: artworkId }, { active: true }],
+      $and: [{ id: artworkId }, { active: true }],
     },
-    { $inc: { saves: -1 } }
+    { $inc: { favorites: -1 } }
   ).session(session);
 };
 
 export const removeArtworkVersion = async ({ versionId, session = null }) => {
   return await Version.remove({
-    _id: versionId,
+    id: versionId,
   }).session(session);
 };
 
@@ -271,7 +269,7 @@ export const addArtworkComment = async ({
 }) => {
   return await Artwork.findOneAndUpdate(
     {
-      _id: artworkId,
+      id: artworkId,
     },
     { $push: { comments: commentId } },
     { new: true }
@@ -285,7 +283,7 @@ export const removeArtworkComment = async ({
 }) => {
   return await Artwork.findOneAndUpdate(
     {
-      _id: artworkId,
+      id: artworkId,
     },
     { $pull: { comments: commentId } },
     { new: true }
@@ -301,7 +299,7 @@ export const addNewLicense = async ({
 }) => {
   const newLicense = new License();
   newLicense.owner = userId;
-  newLicense.artwork = artworkData._id;
+  newLicense.artwork = artworkData.id;
   newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
   newLicense.assignee = licenseData.licenseAssignee;
   newLicense.company = licenseData.licenseCompany;
@@ -315,7 +313,7 @@ export const deactivateExistingArtwork = async ({
   artworkId,
   session = null,
 }) => {
-  return await Artwork.updateOne({ _id: artworkId }, { active: false }).session(
+  return await Artwork.updateOne({ id: artworkId }, { active: false }).session(
     session
   );
 };
@@ -327,7 +325,7 @@ export const addArtworkReview = async ({
 }) => {
   return await Artwork.updateOne(
     {
-      $and: [{ _id: artworkId }, { active: true }],
+      $and: [{ id: artworkId }, { active: true }],
     },
     { $push: { reviews: reviewId } }
   ).session(session);
@@ -349,23 +347,23 @@ export const addArtworkReview = async ({
 //     if (foundLicense) {
 //       if (foundLicense.length > 1) {
 //         const targetLicense = foundLicense.find((license) =>
-//           license._id.equals(licenseId)
+//           license.id.equals(licenseId)
 //         );
 //         if (targetLicense) {
 //           await User.updateOne(
 //             {
-//               _id: res.locals.user.id,
+//               id: res.locals.user.id,
 //               cart: { $elemMatch: { artwork: targetLicense.artwork } },
 //             },
 //             {
 //               $pull: {
-//                 'cart.$.licenses': targetLicense._id,
+//                 'cart.$.licenses': targetLicense.id,
 //               },
 //             }
 //           ).session(session);
 //           await License.remove({
 //             $and: [
-//               { _id: targetLicense._id },
+//               { id: targetLicense.id },
 //               { owner: res.locals.user.id },
 //               { active: false },
 //             ],

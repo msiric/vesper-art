@@ -7,8 +7,8 @@ export const addNewReview = async ({
   session = null,
 }) => {
   const newReview = new Review();
-  newReview.order = orderData._id;
-  newReview.artwork = orderData._id;
+  newReview.order = orderData.id;
+  newReview.artwork = orderData.id;
   newReview.owner = userId;
   newReview.rating = reviewRating;
   return await newReview.save({ session });

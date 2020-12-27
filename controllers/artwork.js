@@ -176,12 +176,12 @@ export const postNewArtwork = async ({
       savedCover,
       savedMedia,
     });
-    const savedArtwork = await addNewArtwork({
+    const favoritedArtwork = await addNewArtwork({
       savedVersion,
       userId,
     });
     await addUserArtwork({
-      artworkId: savedArtwork.id,
+      artworkId: favoritedArtwork.id,
       userId,
     });
     return { redirect: "/my_artwork" };
@@ -261,8 +261,8 @@ export const updateArtwork = async ({
       savedMedia,
     });
     const foundOrder = await fetchOrderByVersion({
-      artworkId: foundArtwork._id,
-      versionId: foundArtwork.current._id,
+      artworkId: foundArtwork.id,
+      versionId: foundArtwork.current.id,
       session,
     });
     if (!foundOrder) {
@@ -278,14 +278,14 @@ export const updateArtwork = async ({
         });
       }
       await removeArtworkVersion({
-        versionId: foundArtwork.current._id,
+        versionId: foundArtwork.current.id,
         session,
       });
     } else {
-      foundArtwork.versions.push(foundArtwork.current._id);
+      foundArtwork.versions.push(foundArtwork.current.id);
     }
     foundArtwork.current = savedVersion;
-    await foundArtwork.save({ session });
+    await Artwork.save({ foundArtwork });
     return { redirect: "my_artwork" };
   } else {
     throw createError(400, "Artwork not found");
@@ -304,8 +304,8 @@ export const deleteArtwork = async ({ userId, artworkId, data }) => {
     // $TODO Check that artwork wasn't updated in the meantime (current === version)
     if (true) {
       const foundOrder = await fetchOrderByVersion({
-        artworkId: foundArtwork._id,
-        versionId: foundArtwork.current._id,
+        artworkId: foundArtwork.id,
+        versionId: foundArtwork.current.id,
         session,
       });
       if (!foundOrder) {
@@ -320,7 +320,7 @@ export const deleteArtwork = async ({ userId, artworkId, data }) => {
         });
 
         await removeArtworkVersion({
-          versionId: foundArtwork.current._id,
+          versionId: foundArtwork.current.id,
           session,
         });
       }
@@ -339,8 +339,8 @@ export const favoriteArtwork = async ({ userId, artworkId, session }) => {
     session,
   });
   if (foundUser) {
-    if (!foundUser.savedArtwork.includes(artworkId)) {
-      await addUserFavorite({ userId: foundUser._id, artworkId, session });
+    if (!foundUser.favoritedArtwork.includes(artworkId)) {
+      await addUserFavorite({ userId: foundUser.id, artworkId, session });
       await addArtworkFavorite({ artworkId, session });
       return { message: "Artwork saved" };
     }
@@ -355,8 +355,8 @@ export const unfavoriteArtwork = async ({ userId, artworkId, session }) => {
     session,
   });
   if (foundUser) {
-    if (foundUser.savedArtwork.includes(artworkId)) {
-      await removeUserFavorite({ userId: foundUser._id, artworkId, session });
+    if (foundUser.favoritedArtwork.includes(artworkId)) {
+      await removeUserFavorite({ userId: foundUser.id, artworkId, session });
       await removeArtworkFavorite({ artworkId, session });
       return { message: "Artwork unsaved" };
     }

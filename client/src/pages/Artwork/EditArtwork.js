@@ -36,7 +36,7 @@ const initialState = {
   loading: true,
   isDeleting: false,
   artwork: {
-    _id: null,
+    id: null,
     current: {
       title: "",
       type: "",
@@ -166,8 +166,8 @@ const EditArtwork = ({ match, location }) => {
     try {
       setState({ ...state, isDeleting: true });
       await deleteArtwork.request({
-        artworkId: state.artwork._id,
-        data: state.artwork.current._id,
+        artworkId: state.artwork.id,
+        data: state.artwork.current.id,
       });
       history.push("/");
       enqueueSnackbar(deleteArtwork.success.message, {
@@ -193,7 +193,7 @@ const EditArtwork = ({ match, location }) => {
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.loading || state.artwork._id ? (
+        {state.loading || state.artwork.id ? (
           <Grid item sm={12} style={{ height: "100%" }}>
             <MainHeading
               text="Edit artwork"

@@ -40,12 +40,12 @@ const Home = ({ location }) => {
       //   return {
       //     comments: [],
       //     reviews: [],
-      //     _id: artwork.id,
+      //     id: artwork.id,
       //     created: artwork.created_utc,
-      //     owner: { _id: artwork.id, name: artwork.author },
+      //     owner: { id: artwork.id, name: artwork.author },
       //     active: true,
       //     current: {
-      //       _id: artwork.id,
+      //       id: artwork.id,
       //       cover: artwork.thumbnail,
       //       height: artwork.thumbnail_height,
       //       width: artwork.thumbnail_width,
@@ -60,7 +60,7 @@ const Home = ({ location }) => {
       //       description: artwork.title,
       //       id: artwork.id,
       //     },
-      //     saves: 0,
+      //     favorites: 0,
       //   };
       // });
       // setState((prevState) => ({

@@ -162,7 +162,7 @@ export const addNewArtwork = async ({ savedVersion, userId }) => {
   newArtwork.current = savedVersion;
   newArtwork.active = true;
   newArtwork.generated = false;
-  return await newArtwork.save();
+  return await Artwork.save({ newArtwork });
 };
 
 // $Needs testing (mongo -> postgres)
@@ -194,7 +194,7 @@ export const removeArtworkVersion = async ({ versionId }) => {
 // export const addArtworkComment = async ({ artworkId, commentId }) => {
 //   return await Artwork.findOneAndUpdate(
 //     {
-//       _id: artworkId,
+//       id: artworkId,
 //     },
 //     { $push: { comments: commentId } },
 //     { new: true }
@@ -205,7 +205,7 @@ export const removeArtworkVersion = async ({ versionId }) => {
 // export const removeArtworkComment = async ({ artworkId, commentId }) => {
 //   return await Artwork.findOneAndUpdate(
 //     {
-//       _id: artworkId,
+//       id: artworkId,
 //     },
 //     { $pull: { comments: commentId } },
 //     { new: true }
@@ -225,7 +225,7 @@ export const deactivateExistingArtwork = async ({ artworkId }) => {
 // export const addArtworkReview = async ({ artworkId, reviewId }) => {
 //   return await Artwork.updateOne(
 //     {
-//       $and: [{ _id: artworkId }, { active: true }],
+//       $and: [{ id: artworkId }, { active: true }],
 //     },
 //     { $push: { reviews: reviewId } }
 //   );
@@ -247,23 +247,23 @@ export const deactivateExistingArtwork = async ({ artworkId }) => {
 //     if (foundLicense) {
 //       if (foundLicense.length > 1) {
 //         const targetLicense = foundLicense.find((license) =>
-//           license._id.equals(licenseId)
+//           license.id.equals(licenseId)
 //         );
 //         if (targetLicense) {
 //           await User.updateOne(
 //             {
-//               _id: res.locals.user.id,
+//               id: res.locals.user.id,
 //               cart: { $elemMatch: { artwork: targetLicense.artwork } },
 //             },
 //             {
 //               $pull: {
-//                 'cart.$.licenses': targetLicense._id,
+//                 'cart.$.licenses': targetLicense.id,
 //               },
 //             }
 //           ).session(session);
 //           await License.remove({
 //             $and: [
-//               { _id: targetLicense._id },
+//               { id: targetLicense.id },
 //               { owner: res.locals.user.id },
 //               { active: false },
 //             ],

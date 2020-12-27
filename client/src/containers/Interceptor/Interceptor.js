@@ -54,7 +54,7 @@ const Interceptor = ({ children }) => {
             avatar: data.user.avatar,
             stripeId: data.user.stripeId,
             country: data.user.country,
-            saved: data.user.saved.reduce(function (object, item) {
+            favorites: data.user.favorites.reduce(function (object, item) {
               object[item] = true;
               return object;
             }, {}),
@@ -149,7 +149,7 @@ const Interceptor = ({ children }) => {
           avatar: data.user.avatar,
           stripeId: data.user.stripeId,
           country: data.user.country,
-          saved: data.user.saved.reduce(function (object, item) {
+          favorites: data.user.favorites.reduce(function (object, item) {
             object[item] = true;
             return object;
           }, {}),
@@ -207,7 +207,7 @@ const Interceptor = ({ children }) => {
         avatar: data.user.avatar,
         stripeId: data.user.stripeId,
         country: data.user.country,
-        saved: data.user.saved.reduce(function (object, item) {
+        favorites: data.user.favorites.reduce(function (object, item) {
           object[item] = true;
           return object;
         }, {}),

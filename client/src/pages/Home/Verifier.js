@@ -100,7 +100,7 @@ const Verifier = () => {
           </FormProvider>
           {state.loading ? (
             <LoadingSpinner />
-          ) : state.license._id ? (
+          ) : state.license.id ? (
             <div className="table-responsive">
               <table className="simple">
                 <thead>
@@ -114,7 +114,7 @@ const Verifier = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr key={state.license._id}>
+                  <tr key={state.license.id}>
                     <td>
                       <Typography className="truncate">
                         {state.license.fingerprint}

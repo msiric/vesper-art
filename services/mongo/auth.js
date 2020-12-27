@@ -25,7 +25,7 @@ export const addNewUser = async ({
   newUser.rating = 0;
   newUser.reviews = 0;
   newUser.artwork = [];
-  newUser.savedArtwork = [];
+  newUser.favoritedArtwork = [];
   newUser.purchases = [];
   newUser.sales = [];
   newUser.country = null;
@@ -47,7 +47,7 @@ export const refreshAccessToken = async (req, res, next) => {
 
 export const revokeAccessToken = async ({ userId, session = null }) => {
   return await User.findOneAndUpdate(
-    { _id: userId },
+    { id: userId },
     { $inc: { jwtVersion: 1 } }
   );
 };

@@ -95,7 +95,7 @@ const Settings = ({ location }) => {
       ...prevState,
       user: {
         ...prevState.user,
-        displayFavorites: values.userSaves,
+        displayFavorites: values.userFavorites,
       },
     }));
   };
@@ -139,7 +139,7 @@ const Settings = ({ location }) => {
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.loading || state.user._id ? (
+        {state.loading || state.user.id ? (
           <Grid item sm={12}>
             <MainHeading
               text="Settings"
