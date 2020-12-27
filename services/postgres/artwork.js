@@ -1,9 +1,9 @@
-import { upload } from "common/constants";
-import { Cover } from "entities/Cover";
-import { Favorite } from "entities/Favorite";
-import { Media } from "entities/Media";
+import { upload } from "../../common/constants";
 import { Artwork } from "../../entities/Artwork";
+import { Cover } from "../../entities/Cover";
+import { Favorite } from "../../entities/Favorite";
 import { License } from "../../entities/License";
+import { Media } from "../../entities/Media";
 import { Version } from "../../entities/Version";
 
 // $Needs testing (mongo -> postgres)
@@ -162,17 +162,23 @@ export const addNewArtwork = async ({ savedVersion, userId }) => {
   newArtwork.current = savedVersion;
   newArtwork.active = true;
   newArtwork.generated = false;
-  return await Artwork.save({ newArtwork });
+  return newArtwork;
+};
+
+export const addNewFavorite = async ({ userId, artworkId }) => {
+  const newFavorite = new Favorite();
+  newFavorite.owner = userId;
+  newFavorite.artwork = artworkId;
+  return newFavorite;
 };
 
 // $Needs testing (mongo -> postgres)
 // check if cascade works correctly
-export const addArtworkFavorite = async ({ artworkId }) => {
-  const newFavorite = new Favorite();
-  newFavorite.owner = null; // $TODO add owner;
-  newFavorite.artwork = artworkId;
-  const foundArtwork = await Artwork.findOne({ where: [{ id: artworkId }] });
-  foundArtwork.favorites.push(newFavorite);
+export const addArtworkFavorite = async ({ artworkId, savedFavorite }) => {
+  const foundArtwork = await Artwork.findOne({
+    where: [{ id: artworkId, active: true }],
+  });
+  foundArtwork.favorites.push(savedFavorite);
   return await Artwork.save({ foundArtwork });
 };
 

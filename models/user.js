@@ -43,7 +43,7 @@ const UserSchema = new Schema({
   rating: Number,
   reviews: Number,
   artwork: [{ type: Schema.Types.ObjectId, ref: "Artwork" }], // nesting
-  favoritedArtwork: [{ type: Schema.Types.ObjectId, ref: "Artwork" }], // nesting
+  favorites: [{ type: Schema.Types.ObjectId, ref: "Artwork" }], // nesting
   purchases: [{ type: Schema.Types.ObjectId, ref: "Order" }], // nesting
   sales: [{ type: Schema.Types.ObjectId, ref: "Order" }], // nesting
   stripeId: String,

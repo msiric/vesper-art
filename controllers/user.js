@@ -1,7 +1,6 @@
 import aws from "aws-sdk";
 import createError from "http-errors";
 import randomString from "randomstring";
-import { fetchUserArtwork } from "services/postgres/user.js";
 import { server } from "../config/secret.js";
 import {
   fetchArtworkByOwner,
@@ -28,6 +27,7 @@ import {
   fetchUserStatistics,
   removeExistingIntent,
 } from "../services/mongo/user.js";
+import { fetchUserArtwork } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
 import { formatParams, sanitizeData } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
@@ -82,7 +82,7 @@ export const getUserOwnership = async ({ userId, dataCursor, dataCeiling }) => {
 export const getUserFavorites = async ({ userId, dataCursor, dataCeiling }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundUser = await fetchuserFavorites({ userId, dataSkip, dataLimit });
-  return { favorites: foundUser.favoritedArtwork };
+  return { favorites: foundUser.favorites };
 };
 
 export const getUserStatistics = async ({ userId }) => {
@@ -273,7 +273,7 @@ export const updateUserPreferences = async ({ userId, userFavorites }) => {
             notifications: null,
             rating: null,
             reviews: null,
-            favoritedArtwork: null,
+            favorites: null,
             earnings: null,
             incomingFunds: null,
             outgoingFunds: null,

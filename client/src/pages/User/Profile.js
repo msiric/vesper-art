@@ -12,7 +12,7 @@ import globalStyles from "../../styles/global.js";
 
 const initialState = {
   loading: true,
-  user: { artwork: {}, favoritedArtwork: [] },
+  user: { artwork: {}, favorites: [] },
   tabs: { value: 0, revealed: false, loading: true },
   scroll: {
     artwork: {
@@ -60,7 +60,7 @@ const Profile = ({ match, location }) => {
             ...data.user,
             editable: true,
             artwork: data.artwork.filter((item) => item.current !== null),
-            favoritedArtwork: [],
+            favorites: [],
           },
           scroll: {
             ...prevState.scroll,
@@ -84,7 +84,7 @@ const Profile = ({ match, location }) => {
             ...data.user,
             editable: false,
             artwork: data.artwork.filter((item) => item.current !== null),
-            favoritedArtwork: [],
+            favorites: [],
           },
           scroll: {
             ...prevState.scroll,
@@ -153,7 +153,7 @@ const Profile = ({ match, location }) => {
         ...prevState,
         user: {
           ...prevState.user,
-          favoritedArtwork: [...prevState.user.favoritedArtwork].concat(data),
+          favorites: [...prevState.user.favorites].concat(data),
         },
         tabs: { ...prevState.tabs, loading: false },
         scroll: {

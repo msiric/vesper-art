@@ -67,7 +67,7 @@ const ProfileArtwork = ({
                 {
                   display: user.displayFavorites,
                   iterable: true,
-                  content: user.favoritedArtwork.length,
+                  content: user.favorites.length,
                   component: (
                     <Box
                       style={{
@@ -77,7 +77,7 @@ const ProfileArtwork = ({
                       }}
                     >
                       <ArtworkPanel
-                        elements={user.favoritedArtwork}
+                        elements={user.favorites}
                         hasMore={null}
                         loadMore={loadMoreFavorites}
                         type="artwork"
@@ -147,7 +147,7 @@ const ProfileArtwork = ({
                 {
                   display: user.displayFavorites,
                   iterable: true,
-                  content: user.favoritedArtwork.length,
+                  content: user.favorites.length,
                   component: (
                     <Box
                       style={{
@@ -157,7 +157,7 @@ const ProfileArtwork = ({
                       }}
                     >
                       <ArtworkPanel
-                        elements={user.favoritedArtwork}
+                        elements={user.favorites}
                         hasMore={null}
                         loadMore={loadMoreFavorites}
                         type="artwork"

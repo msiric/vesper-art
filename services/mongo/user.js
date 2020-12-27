@@ -174,7 +174,7 @@ export const fetchuserFavorites = async ({
       limit: dataLimit,
     }
   ).populate({
-    path: "favoritedArtwork",
+    path: "favorites",
     options: {
       skip: dataSkip,
       limit: dataLimit,
@@ -282,7 +282,7 @@ export const addUserFavorite = async ({
 }) => {
   return await User.updateOne(
     { id: userId },
-    { $push: { favoritedArtwork: artworkId } }
+    { $push: { favorites: artworkId } }
   ).session(session);
 };
 
@@ -293,7 +293,7 @@ export const removeUserFavorite = async ({
 }) => {
   return await User.updateOne(
     { id: userId },
-    { $pull: { favoritedArtwork: artworkId } }
+    { $pull: { favorites: artworkId } }
   ).session(session);
 };
 
@@ -384,7 +384,7 @@ export const deactivateExistingUser = async ({ userId, session = null }) => {
         rating: null,
         reviews: null,
         artwork: null,
-        favoritedArtwork: null,
+        favorites: null,
         purchases: null,
         sales: null,
         stripeId: null,

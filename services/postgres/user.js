@@ -233,20 +233,29 @@ export const editUserPreferences = async ({ userId, userFavorites }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const addUserArtwork = async ({ userId, artworkId }) => {
+export const addUserArtwork = async ({ userId, savedArtwork }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });
-  foundUser.artwork.push(artworkId);
+  foundUser.artwork.push(savedArtwork);
   return await User.save({ foundUser });
 };
 
 // $Needs testing (mongo -> postgres)
-export const addUserFavorite = async ({ userId, artworkId }) => {
+export const addUserLicense = async ({ savedLicense }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });
-  foundUser.favorites.push(artworkId);
+  foundUser.licenses.push(savedLicense);
+  return await User.save({ foundUser });
+};
+
+// $Needs testing (mongo -> postgres)
+export const addUserFavorite = async ({ userId, savedFavorite }) => {
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.favorites.push(savedFavorite);
   return await User.save({ foundUser });
 };
 

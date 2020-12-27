@@ -1,12 +1,13 @@
+const TRANSFORMED_WIDTH = 500;
+
 export const upload = {
   artwork: {
     fileSize: 10 * 1024 * 1024,
     fileDimensions: { height: 1200, width: 1200 },
     fileTransform: {
-      width: 500,
-      get height(fileHeight, fileWidth) {
-        return fileHeight / (fileWidth / this.width);
-      },
+      width: TRANSFORMED_WIDTH,
+      height: (fileHeight, fileWidth) =>
+        fileHeight / (fileWidth / TRANSFORMED_WIDTH),
     },
     mimeTypes: ["image/jpg", "image/jpeg", "image/gif", "image/png"],
   },

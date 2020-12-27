@@ -2,14 +2,9 @@ import createError from "http-errors";
 import { fetchOrderByVersion } from "../services/mongo/order.js";
 import { fetchStripeAccount } from "../services/mongo/stripe.js";
 import {
-  addUserArtwork,
-  addUserFavorite,
-  fetchUserById,
-  removeUserFavorite,
-} from "../services/mongo/user.js";
-import {
   addArtworkFavorite,
   addNewArtwork,
+  addNewFavorite,
   addNewVersion,
   deactivateExistingArtwork,
   fetchActiveArtworks,
@@ -19,10 +14,15 @@ import {
   fetchArtworkLicenses,
   fetchArtworkReviews,
   fetchUserArtworks,
-  removeArtworkFavorite,
   removeArtworkVersion,
 } from "../services/postgres/artwork.js";
 import { addNewLicense } from "../services/postgres/license.js";
+import {
+  addUserArtwork,
+  addUserFavorite,
+  addUserLicense,
+  fetchUserById,
+} from "../services/postgres/user.js";
 import {
   formatArtworkValues,
   formatParams,
@@ -176,12 +176,12 @@ export const postNewArtwork = async ({
       savedCover,
       savedMedia,
     });
-    const favoritedArtwork = await addNewArtwork({
+    const savedArtwork = await addNewArtwork({
       savedVersion,
       userId,
     });
     await addUserArtwork({
-      artworkId: favoritedArtwork.id,
+      savedArtwork,
       userId,
     });
     return { redirect: "/my_artwork" };
@@ -333,15 +333,21 @@ export const deleteArtwork = async ({ userId, artworkId, data }) => {
 };
 
 // needs transaction (done)
-export const favoriteArtwork = async ({ userId, artworkId, session }) => {
+export const favoriteArtwork = async ({ userId, artworkId }) => {
   const foundUser = await fetchUserById({
     userId,
-    session,
   });
   if (foundUser) {
-    if (!foundUser.favoritedArtwork.includes(artworkId)) {
-      await addUserFavorite({ userId: foundUser.id, artworkId, session });
-      await addArtworkFavorite({ artworkId, session });
+    if (!foundUser.favorites.includes(artworkId)) {
+      const savedFavorite = await addNewFavorite({
+        userId: foundUser.id,
+        artworkId,
+      });
+      await addArtworkFavorite({
+        artworkId,
+        savedFavorite,
+      });
+      await addUserFavorite({ userId: foundUser.id, savedFavorite });
       return { message: "Artwork saved" };
     }
     throw createError(400, "Artwork could not be saved");
@@ -349,15 +355,14 @@ export const favoriteArtwork = async ({ userId, artworkId, session }) => {
   throw createError(400, "User not found");
 };
 
-export const unfavoriteArtwork = async ({ userId, artworkId, session }) => {
+// $TODO ne valja
+export const unfavoriteArtwork = async ({ userId, artworkId }) => {
   const foundUser = await fetchUserById({
     userId,
-    session,
   });
   if (foundUser) {
-    if (foundUser.favoritedArtwork.includes(artworkId)) {
-      await removeUserFavorite({ userId: foundUser.id, artworkId, session });
-      await removeArtworkFavorite({ artworkId, session });
+    if (foundUser.favorites.includes(artworkId)) {
+      await removeExistingFavorite({ userId: foundUser.id, artworkId });
       return { message: "Artwork unsaved" };
     }
     throw createError(400, "Artwork could not be unsaved");
@@ -367,15 +372,15 @@ export const unfavoriteArtwork = async ({ userId, artworkId, session }) => {
 
 // needs transaction (done)
 // $TODO validacija licenci?
-export const saveLicense = async ({ userId, artworkId, license, session }) => {
-  const foundArtwork = await fetchArtworkDetails({ artworkId, session });
+export const saveLicense = async ({ userId, artworkId, license }) => {
+  const foundArtwork = await fetchArtworkDetails({ artworkId });
   if (foundArtwork) {
-    await addNewLicense({
+    const savedLicense = await addNewLicense({
       artworkData: foundArtwork,
       licenseData: license,
       userId,
-      session,
     });
+    await addUserLicense({ savedLicense, userId });
     return { message: "License saved", license: license };
   }
   throw createError(400, "Artwork not found");
