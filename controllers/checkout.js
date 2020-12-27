@@ -2,14 +2,14 @@ import crypto from "crypto";
 import createError from "http-errors";
 import socketApi from "../lib/socket.js";
 import License from "../models/license.js";
-import { fetchVersionDetails } from "../services/mongo/artwork.js";
-import { addNewNotification } from "../services/mongo/notification.js";
-import { addNewOrder } from "../services/mongo/order.js";
+import { fetchVersionDetails } from "../services/postgres/artwork.js";
+import { addNewNotification } from "../services/postgres/notification.js";
+import { addNewOrder } from "../services/postgres/order.js";
 import {
   editUserPurchase,
   editUserSale,
   fetchUserById,
-} from "../services/mongo/user.js";
+} from "../services/postgres/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import licenseValidator from "../validation/license.js";
 import orderValidator from "../validation/order.js";
@@ -94,7 +94,7 @@ export const postDownload = async ({
               spent: 0,
               earned: 0,
               fee: 0,
-              commercial: false,
+              type: "free",
               status: "completed",
               intentId: null,
             };

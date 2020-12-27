@@ -1,5 +1,6 @@
 import createError from "http-errors";
-import { addNewTicket } from "../services/mongo/ticket.js";
+import { addNewTicket } from "../services/postgres/ticket.js";
+import { addUserTicket } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
 import { sanitizeData } from "../utils/helpers.js";
 import ticketValidator from "../validation/ticket.js";
@@ -14,16 +15,16 @@ export const postTicket = async ({
 }) => {
   const { error } = ticketValidator(sanitizeData({ ticketTitle, ticketBody }));
   if (error) throw createError(400, error);
-  await addNewTicket({
+  const savedTicket = await addNewTicket({
     userId,
     ticketTitle,
     ticketBody,
   });
-  const ticketId = savedTicket.id;
+  await addUserTicket({ userId, savedTicket });
   await sendEmail({
     emailReceiver: userEmail,
-    emailSubject: `Support ticket (#${ticketId}): ${ticketTitle}`,
+    emailSubject: `Support ticket (#${savedTicket.id}): ${ticketTitle}`,
     emailContent: ticketBody,
   });
-  return { message: "Ticket successfully sent" };
+  return { message: "Ticket successfully created" };
 };

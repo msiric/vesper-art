@@ -58,7 +58,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Review, (review) => review.reviewer)
   givenReviews: Review[];
-
+  // $TODO not pushed to user
   @OneToMany(() => Notification, (notification) => notification.receiver)
   notifications: Notification[];
 
@@ -67,19 +67,19 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Favorite, (favorite) => favorite.owner)
   favorites: Favorite[];
-
+  // $TODO not pushed to user
   @OneToMany(() => Order, (order) => order.buyer)
   purchases: Order[];
-
+  // $TODO not pushed to user
   @OneToMany(() => Order, (order) => order.seller)
   sales: Order[];
-
+  // $TODO not pushed to user
   @OneToMany(() => Intent, (intent) => intent.owner)
   intents: Intent[];
 
   @OneToMany(() => Ticket, (ticket) => ticket.owner)
   tickets: Ticket[];
-
+  // $TODO not pushed to user
   @OneToMany(() => License, (license) => license.owner)
   licenses: License[];
 

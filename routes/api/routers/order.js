@@ -31,7 +31,8 @@ router.route("/orders/:orderId").get(
   }))
 );
 
-router.route("/orders/:orderId/ratings").post(
+// $TODO ne valja
+router.route("/orders/:orderId/reviews").post(
   [isAuthenticated, checkParamsId],
   handler(postReview, (req, res, next) => ({
     ...req.body,

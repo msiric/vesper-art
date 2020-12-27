@@ -5,7 +5,6 @@ import {
   getArtwork,
   getArtworkComments,
   getArtworkDetails,
-  getArtworkReviews,
   getLicenses,
   postNewArtwork,
   saveLicense,
@@ -70,61 +69,23 @@ router
     }))
   );
 
-router.route("/artwork/:artworkId/comments").get(
-  checkParamsId,
-  handler(getArtworkComments, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
-
-router.route("/artwork/:artworkId/reviews").get(
-  checkParamsId,
-  handler(getArtworkReviews, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
-
+// $TODO doesn't limit comments
 router
-  .route("/artwork/:artworkId/licenses")
+  .route("/artwork/:artworkId/comments")
   .get(
-    [isAuthenticated, checkParamsId],
-    handler(getLicenses, (req, res, next) => ({
+    checkParamsId,
+    handler(getArtworkComments, (req, res, next) => ({
       ...req.params,
+      ...req.query,
     }))
   )
   .post(
     [isAuthenticated, checkParamsId],
-    handler(saveLicense, (req, res, next) => ({
+    handler(postComment, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))
   );
-
-router
-  .route("/artwork/:artworkId/favorites")
-  .post(
-    [isAuthenticated, checkParamsId],
-    handler(favoriteArtwork, (req, res, next) => ({
-      ...req.params,
-    }))
-  )
-  .delete(
-    [isAuthenticated, checkParamsId],
-    handler(unfavoriteArtwork, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
-    }))
-  );
-
-router.route("/artwork/:artworkId/comments").post(
-  [isAuthenticated, checkParamsId],
-  handler(postComment, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
 
 router
   .route("/artwork/:artworkId/comments/:commentId")
@@ -145,6 +106,39 @@ router
     [isAuthenticated, checkParamsId],
     handler(deleteComment, (req, res, next) => ({
       ...req.params,
+    }))
+  );
+
+router
+  .route("/artwork/:artworkId/favorites")
+  .post(
+    [isAuthenticated, checkParamsId],
+    handler(favoriteArtwork, (req, res, next) => ({
+      ...req.params,
+    }))
+  )
+  .delete(
+    [isAuthenticated, checkParamsId],
+    handler(unfavoriteArtwork, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
+
+// $TODO not needed?
+router
+  .route("/artwork/:artworkId/licenses")
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(getLicenses, (req, res, next) => ({
+      ...req.params,
+    }))
+  )
+  .post(
+    [isAuthenticated, checkParamsId],
+    handler(saveLicense, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
     }))
   );
 

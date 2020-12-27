@@ -14,7 +14,7 @@ export const addNewOrder = async ({ orderData }) => {
   newOrder.spent = orderData.spent;
   newOrder.earned = orderData.earned;
   newOrder.fee = orderData.fee;
-  newOrder.commercial = orderData.commercial ? "commercial" : "free";
+  newOrder.type = orderData.commercial ? "commercial" : "free";
   newOrder.status = orderData.status;
   newOrder.intent = orderData.intentId;
   return await Order.save({ newOrder });
@@ -56,11 +56,11 @@ export const fetchUserOrder = async ({ orderId, userId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const addOrderReview = async ({ orderId, userId, reviewId }) => {
+export const addOrderReview = async ({ orderId, userId, savedReview }) => {
   const foundOrder = await Order.findOne({
     where: [{ buyer: userId, id: orderId }],
   });
-  foundOrder.review = reviewId;
+  foundOrder.review = savedReview;
   return await Order.save({ foundOrder });
 };
 

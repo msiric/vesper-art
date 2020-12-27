@@ -3,16 +3,15 @@ import socketApi from "../lib/socket.js";
 import {
   addArtworkComment,
   fetchArtworkById,
-  removeArtworkComment,
-} from "../services/mongo/artwork.js";
+} from "../services/postgres/artwork.js";
 import {
   addNewComment,
   editExistingComment,
   fetchCommentById,
   removeExistingComment,
-} from "../services/mongo/comment.js";
-import { addNewNotification } from "../services/mongo/notification.js";
-import { addUserNotification } from "../services/mongo/user.js";
+} from "../services/postgres/comment.js";
+import { addNewNotification } from "../services/postgres/notification.js";
+import { addUserNotification } from "../services/postgres/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import commentValidator from "../validation/comment.js";
 
@@ -25,15 +24,10 @@ export const getComment = async ({ artworkId, commentId, session }) => {
   return { comment: foundComment };
 };
 
-export const postComment = async ({
-  userId,
-  artworkId,
-  commentContent,
-  session,
-}) => {
+export const postComment = async ({ userId, artworkId, commentContent }) => {
   const { error } = commentValidator(sanitizeData({ commentContent }));
   if (error) throw createError(400, error);
-  const foundArtwork = await fetchArtworkById({ artworkId, session });
+  const foundArtwork = await fetchArtworkById({ artworkId });
   if (!foundArtwork) {
     throw createError(400, "Artwork not found");
   } else {
@@ -41,23 +35,24 @@ export const postComment = async ({
       artworkId,
       userId,
       commentContent,
-      session,
     });
-    const updatedArtwork = await addArtworkComment({
+    await addArtworkComment({
       artworkId,
-      commentId: savedComment.id,
-      session,
+      savedComment,
     });
-    if (!savedComment.owner.equals(updatedArtwork.owner)) {
-      await addUserNotification({ userId: updatedArtwork.owner, session });
+    const updatedUser = await addUserComment({
+      userId,
+      savedComment,
+    });
+    if (!savedComment.owner.equals(updatedUser.id)) {
+      await addUserNotification({ userId: updatedUser.id });
       const savedNotification = await addNewNotification({
         notificationLink: foundArtwork.id,
         notificationRef: savedComment.id,
         notificationType: "comment",
-        notificationReceiver: updatedArtwork.owner,
-        session,
+        notificationReceiver: updatedUser.id,
       });
-      socketApi.sendNotification(updatedArtwork.owner, savedNotification);
+      socketApi.sendNotification(updatedUser.id, savedNotification);
     }
     return {
       message: "Comment posted successfully",
@@ -85,18 +80,11 @@ export const patchComment = async ({
   return { message: "Comment updated successfully" };
 };
 
-export const deleteComment = async ({
-  userId,
-  artworkId,
-  commentId,
-  session,
-}) => {
-  await removeArtworkComment({ artworkId, commentId, session });
+export const deleteComment = async ({ userId, artworkId, commentId }) => {
   await removeExistingComment({
     commentId,
     artworkId,
     userId,
-    session,
   });
   return { message: "Comment deleted successfully" };
 };

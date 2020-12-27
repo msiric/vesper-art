@@ -12,7 +12,7 @@ import {
   fetchArtworkComments,
   fetchArtworkDetails,
   fetchArtworkLicenses,
-  fetchArtworkReviews,
+  fetchFavoriteByParents,
   fetchUserArtworks,
   removeArtworkVersion,
 } from "../services/postgres/artwork.js";
@@ -60,21 +60,6 @@ export const getArtworkComments = async ({
 }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundArtwork = await fetchArtworkComments({
-    artworkId,
-    dataSkip,
-    dataLimit,
-  });
-  if (foundArtwork) return { artwork: foundArtwork };
-  throw createError(400, "Artwork not found");
-};
-
-export const getArtworkReviews = async ({
-  artworkId,
-  dataCursor,
-  dataCeiling,
-}) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
-  const foundArtwork = await fetchArtworkReviews({
     artworkId,
     dataSkip,
     dataLimit,
@@ -334,40 +319,35 @@ export const deleteArtwork = async ({ userId, artworkId, data }) => {
 
 // needs transaction (done)
 export const favoriteArtwork = async ({ userId, artworkId }) => {
-  const foundUser = await fetchUserById({
+  const foundFavorite = await fetchFavoriteByParents({
     userId,
+    artworkId,
   });
-  if (foundUser) {
-    if (!foundUser.favorites.includes(artworkId)) {
-      const savedFavorite = await addNewFavorite({
-        userId: foundUser.id,
-        artworkId,
-      });
-      await addArtworkFavorite({
-        artworkId,
-        savedFavorite,
-      });
-      await addUserFavorite({ userId: foundUser.id, savedFavorite });
-      return { message: "Artwork saved" };
-    }
-    throw createError(400, "Artwork could not be saved");
+  if (!foundFavorite) {
+    const savedFavorite = await addNewFavorite({
+      userId,
+      artworkId,
+    });
+    await addArtworkFavorite({
+      artworkId,
+      savedFavorite,
+    });
+    await addUserFavorite({ userId, savedFavorite });
+    return { message: "Artwork favorited" };
   }
-  throw createError(400, "User not found");
+  throw createError(400, "Artwork has already been favorited");
 };
 
-// $TODO ne valja
 export const unfavoriteArtwork = async ({ userId, artworkId }) => {
-  const foundUser = await fetchUserById({
+  const foundFavorite = await fetchFavoriteByParents({
     userId,
+    artworkId,
   });
-  if (foundUser) {
-    if (foundUser.favorites.includes(artworkId)) {
-      await removeExistingFavorite({ userId: foundUser.id, artworkId });
-      return { message: "Artwork unsaved" };
-    }
-    throw createError(400, "Artwork could not be unsaved");
+  if (foundFavorite) {
+    await removeExistingFavorite({ userId, artworkId });
+    return { message: "Artwork unfavorited" };
   }
-  throw createError(400, "User not found");
+  throw createError(400, "Artwork is not among your favorites");
 };
 
 // needs transaction (done)

@@ -242,11 +242,44 @@ export const addUserArtwork = async ({ userId, savedArtwork }) => {
 };
 
 // $Needs testing (mongo -> postgres)
+export const addUserComment = async ({ userId, savedComment }) => {
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.comments.push(savedComment);
+  return await User.save({ foundUser });
+};
+
+export const addSellerReview = async ({ userId, savedReview }) => {
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.receivedReviews.push(savedReview);
+  return await User.save({ foundUser });
+};
+
+export const addBuyerReview = async ({ userId, savedReview }) => {
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.givenReviews.push(savedReview);
+  return await User.save({ foundUser });
+};
+
+// $Needs testing (mongo -> postgres)
 export const addUserLicense = async ({ savedLicense }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });
   foundUser.licenses.push(savedLicense);
+  return await User.save({ foundUser });
+};
+
+export const addUserTicket = async ({ userId, savedTicket }) => {
+  const foundUser = await User.findOne({
+    where: [{ id: userId, active: true }],
+  });
+  foundUser.tickets.push(savedTicket);
   return await User.save({ foundUser });
 };
 

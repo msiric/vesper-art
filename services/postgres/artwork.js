@@ -65,20 +65,6 @@ export const fetchArtworkComments = async ({
 };
 
 // $TODO doesn't limit reviews, but artwork?
-export const fetchArtworkReviews = async ({
-  artworkId,
-  dataSkip,
-  dataLimit,
-}) => {
-  return await Artwork.findOne({
-    where: [{ id: artworkId, active: true }],
-    relations: ["reviews", "reviews.owner", "owner", "current"],
-    skip: dataSkip,
-    take: dataLimit,
-  });
-};
-
-// $TODO doesn't limit reviews, but artwork?
 export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
   return await Artwork.find({
     where: [{ owner: userId, active: true }],
@@ -152,6 +138,7 @@ export const addNewVersion = async ({
   newVersion.description = artworkData.artworkDescription;
   newVersion.tags = artworkData.artworkTags;
   if (prevArtwork.artwork) newVersion.artwork = prevArtwork.artwork;
+  return newVersion;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -182,6 +169,13 @@ export const addArtworkFavorite = async ({ artworkId, savedFavorite }) => {
   return await Artwork.save({ foundArtwork });
 };
 
+export const fetchFavoriteByParents = async ({ userId, artworkId }) => {
+  const foundFavorite = await Favorite.findOne({
+    where: [{ owner: userId, artwork: artworkId }],
+  });
+  return foundFavorite;
+};
+
 // $Needs testing (mongo -> postgres)
 // check if cascade works correctly
 export const removeArtworkFavorite = async ({ artworkId }) => {
@@ -196,16 +190,13 @@ export const removeArtworkVersion = async ({ versionId }) => {
   await Version.remove({ foundVersion });
 };
 
-// $TODO not needed anymore
-// export const addArtworkComment = async ({ artworkId, commentId }) => {
-//   return await Artwork.findOneAndUpdate(
-//     {
-//       id: artworkId,
-//     },
-//     { $push: { comments: commentId } },
-//     { new: true }
-//   );
-// };
+export const addArtworkComment = async ({ artworkId, savedComment }) => {
+  const foundArtwork = await Artwork.findOne({
+    where: [{ id: artworkId, active: true }],
+  });
+  foundArtwork.comments.push(savedComment);
+  return await Artwork.save({ foundArtwork });
+};
 
 // $TODO not needed anymore
 // export const removeArtworkComment = async ({ artworkId, commentId }) => {
@@ -226,16 +217,6 @@ export const deactivateExistingArtwork = async ({ artworkId }) => {
   foundArtwork.active = false;
   return await Artwork.save({ foundArtwork });
 };
-
-// $TODO not needed anymore
-// export const addArtworkReview = async ({ artworkId, reviewId }) => {
-//   return await Artwork.updateOne(
-//     {
-//       $and: [{ id: artworkId }, { active: true }],
-//     },
-//     { $push: { reviews: reviewId } }
-//   );
-// };
 
 // needs transaction (done)
 // const deleteLicense = async (req, res, next) => {

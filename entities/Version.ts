@@ -31,8 +31,8 @@ export class Version extends BaseEntity {
 
   @Column()
   category: string;
-
-  @ManyToMany(() => Tag, (tag) => tag.id)
+  // $TODO not implemented
+  @ManyToMany(() => Tag, (tag) => tag.id, { cascade: ["insert"] })
   @JoinTable()
   tags: Tag[];
 

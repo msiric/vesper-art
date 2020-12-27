@@ -11,5 +11,5 @@ export const addNewTicket = async ({
   newTicket.title = ticketTitle;
   newTicket.body = ticketBody;
   newTicket.resolved = false;
-  return await newTicket.save();
+  return newTicket;
 };
