@@ -48,7 +48,7 @@ export const artworkS3Upload = async ({ filePath, fileName, mimeType }) => {
   const sharpCover = await sharp(filePath, {
     animated: SHARP_FORMATS[mimeType].animated,
   })
-    .resize(upload.artwork.fileTransform)
+    .resize(upload.artwork.fileTransform.width)
     [SHARP_FORMATS[mimeType].type]()
     .toBuffer();
   const {

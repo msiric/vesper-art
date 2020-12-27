@@ -6,7 +6,6 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -21,7 +20,7 @@ export class Version extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => Artwork, (artwork) => artwork.versions, {
+  @OneToOne(() => Artwork, (artwork) => artwork.current, {
     onDelete: "CASCADE",
   })
   artwork: Artwork;

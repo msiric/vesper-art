@@ -240,6 +240,7 @@ export const editUserPreferences = async ({ userId, userFavorites }) => {
 export const addUserArtwork = async ({ userId, savedArtwork }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
+    relations: ["artwork"],
   });
   foundUser.artwork.push(savedArtwork);
   return await User.save(foundUser);

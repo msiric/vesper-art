@@ -2,7 +2,9 @@ import createError from "http-errors";
 import {
   addArtworkFavorite,
   addNewArtwork,
+  addNewCover,
   addNewFavorite,
+  addNewMedia,
   addNewVersion,
   deactivateExistingArtwork,
   fetchActiveArtworks,

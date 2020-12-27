@@ -92,20 +92,20 @@ export const fetchArtworkLicenses = async ({ artworkId, userId }) => {
   });
 };
 
-const addNewCover = async ({ artworkUpload }) => {
+export const addNewCover = async ({ artworkUpload }) => {
   const newCover = new Cover();
-  newMedia.source = artworkUpload.fileCover;
-  newMedia.dominant = artworkUpload.fileDominant;
-  newMedia.orientation = artworkUpload.fileOrientation;
-  newMedia.height = upload.artwork.fileTransform.height(
+  newCover.source = artworkUpload.fileCover;
+  newCover.dominant = artworkUpload.fileDominant;
+  newCover.orientation = artworkUpload.fileOrientation;
+  newCover.height = upload.artwork.fileTransform.height(
     artworkUpload.fileHeight,
     artworkUpload.fileWidth
   );
-  newMedia.width = upload.artwork.fileTransform.width;
+  newCover.width = upload.artwork.fileTransform.width;
   return newCover;
 };
 
-const addNewMedia = async ({ artworkUpload }) => {
+export const addNewMedia = async ({ artworkUpload }) => {
   const newMedia = new Media();
   newMedia.source = artworkUpload.fileMedia;
   newMedia.dominant = artworkUpload.fileDominant;
@@ -132,11 +132,12 @@ export const addNewVersion = async ({
   newVersion.availability = artworkData.artworkAvailability;
   newVersion.license = artworkData.artworkLicense;
   newVersion.use = artworkData.artworkUse;
-  newVersion.personal;
-  newVersion.commercial;
-  newVersion.category = artworkData.artworkCategory;
+  newVersion.personal = artworkData.artworkPersonal || 0; // $TODO uvijek mora bit integer;
+  newVersion.commercial = artworkData.artworkCommercial;
+  newVersion.category = artworkData.artworkCategory || "$TODO remove this";
   newVersion.description = artworkData.artworkDescription;
-  newVersion.tags = artworkData.artworkTags;
+  // $TODO restore after tags implementation
+  // newVersion.tags = artworkData.artworkTags;
   if (prevArtwork.artwork) newVersion.artwork = prevArtwork.artwork;
   return newVersion;
 };

@@ -62,7 +62,7 @@ export class User extends BaseEntity {
   @OneToMany(() => Notification, (notification) => notification.receiver)
   notifications: Notification[];
 
-  @OneToMany(() => Artwork, (artwork) => artwork.owner)
+  @OneToMany(() => Artwork, (artwork) => artwork.owner, { cascade: ["insert"] })
   artwork: Artwork[];
 
   @OneToMany(() => Favorite, (favorite) => favorite.owner)
