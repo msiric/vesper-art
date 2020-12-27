@@ -266,6 +266,7 @@ const Processor = ({ match, location, stripe }) => {
 
   const handleDiscountChange = async (values, actions) => {
     try {
+      // $TODO REMOVE INTENT AND FETCH FROM API
       const intentId = userStore.intents[state.version.id] || null;
       const {
         data: { payload },
@@ -296,6 +297,7 @@ const Processor = ({ match, location, stripe }) => {
 
   const saveIntent = async (values) => {
     try {
+      // $TODO REMOVE INTENT AND FETCH FROM API
       const intentId = userStore.intents[state.version.id] || null;
       const { data } = await postIntent.request({
         versionId: state.version.id,
@@ -316,6 +318,7 @@ const Processor = ({ match, location, stripe }) => {
               intentId: data.intent.id,
             },
           });
+          // $TODO REMOVE INTENT AND FETCH FROM API
           userDispatch({
             type: "updateIntents",
             intents: {
