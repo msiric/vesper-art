@@ -54,14 +54,6 @@ const Interceptor = ({ children }) => {
             avatar: data.user.avatar,
             stripeId: data.user.stripeId,
             country: data.user.country,
-            favorites: data.user.favorites.reduce(function (object, item) {
-              object[item] = true;
-              return object;
-            }, {}),
-            intents: data.user.intents.reduce(function (object, item) {
-              object[item.artworkId] = item.intentId;
-              return object;
-            }, {}),
           });
           eventsDispatch({
             type: "SET_EVENTS",
@@ -149,14 +141,6 @@ const Interceptor = ({ children }) => {
           avatar: data.user.avatar,
           stripeId: data.user.stripeId,
           country: data.user.country,
-          favorites: data.user.favorites.reduce(function (object, item) {
-            object[item] = true;
-            return object;
-          }, {}),
-          intents: data.user.intents.reduce(function (object, item) {
-            object[item.artworkId] = item.intentId;
-            return object;
-          }, {}),
         });
 
         eventsDispatch({
@@ -207,14 +191,6 @@ const Interceptor = ({ children }) => {
         avatar: data.user.avatar,
         stripeId: data.user.stripeId,
         country: data.user.country,
-        favorites: data.user.favorites.reduce(function (object, item) {
-          object[item] = true;
-          return object;
-        }, {}),
-        intents: data.user.intents.reduce(function (object, item) {
-          object[item.artworkId] = item.intentId;
-          return object;
-        }, {}),
       });
       socket.emit("authenticateUser", {
         token: `Bearer ${data.accessToken}`,

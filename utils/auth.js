@@ -29,7 +29,9 @@ export const updateAccessToken = async (req, res, next) => {
     return { ok: false, accessToken: "" };
   }
 
-  const { foundUser } = await User.findOne({ id: payload.userId });
+  const foundUser = await User.findOne({
+    where: [{ id: payload.userId, active: true }],
+  });
 
   if (!foundUser) {
     return { ok: false, accessToken: "" };
@@ -53,10 +55,8 @@ export const updateAccessToken = async (req, res, next) => {
     email: foundUser.email,
     avatar: foundUser.avatar,
     notifications: foundUser.notifications,
-    favorites: foundUser.favorites,
     active: foundUser.active,
     stripeId: foundUser.stripeId,
-    intents: foundUser.intents,
     country: foundUser.country,
     businessAddress: foundUser.businessAddress,
     jwtVersion: foundUser.jwtVersion,
