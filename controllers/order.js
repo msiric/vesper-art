@@ -1,7 +1,10 @@
 import aws from "aws-sdk";
 import createError from "http-errors";
-import { fetchOrderDetails } from "../services/mongo/order.js";
-import { fetchUserPurchases, fetchUserSales } from "../services/mongo/user.js";
+import { fetchOrderDetails } from "../services/postgres/order.js";
+import {
+  fetchUserPurchases,
+  fetchUserSales,
+} from "../services/postgres/user.js";
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,

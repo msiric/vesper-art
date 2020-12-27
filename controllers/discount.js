@@ -2,7 +2,7 @@ import createError from "http-errors";
 import {
   fetchDiscountByCode,
   fetchDiscountById,
-} from "../services/mongo/discount.js";
+} from "../services/postgres/discount.js";
 import { sanitizeData } from "../utils/helpers.js";
 import discountValidator from "../validation/discount.js";
 

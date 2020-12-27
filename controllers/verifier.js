@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import { fetchLicenseByFingerprint } from "../services/mongo/license.js";
+import { fetchLicenseByFingerprint } from "../services/postgres/license.js";
 import { sanitizeData } from "../utils/helpers.js";
 import verifierValidator from "../validation/verifier.js";
 

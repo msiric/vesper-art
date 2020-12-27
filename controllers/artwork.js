@@ -1,6 +1,4 @@
 import createError from "http-errors";
-import { fetchOrderByVersion } from "../services/mongo/order.js";
-import { fetchStripeAccount } from "../services/mongo/stripe.js";
 import {
   addArtworkFavorite,
   addNewArtwork,
@@ -17,6 +15,8 @@ import {
   removeArtworkVersion,
 } from "../services/postgres/artwork.js";
 import { addNewLicense } from "../services/postgres/license.js";
+import { fetchOrderByVersion } from "../services/postgres/order.js";
+import { fetchStripeAccount } from "../services/postgres/stripe.js";
 import {
   addUserArtwork,
   addUserFavorite,

@@ -2,7 +2,6 @@ import crypto from "crypto";
 import createError from "http-errors";
 import randomString from "randomstring";
 import { server } from "../config/secret.js";
-import { fetchUserByCreds } from "../services/mongo/user.js";
 import {
   addNewUser,
   editUserResetToken,
@@ -13,6 +12,7 @@ import {
   revokeAccessToken,
   verifyUserLogin,
 } from "../services/postgres/auth.js";
+import { fetchUserByCreds } from "../services/postgres/user.js";
 import {
   createAccessToken,
   createRefreshToken,

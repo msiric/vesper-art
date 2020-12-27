@@ -2,7 +2,7 @@ import createError from "http-errors";
 import {
   fetchArtworkResults,
   fetchUserResults,
-} from "../services/mongo/search.js";
+} from "../services/postgres/search.js";
 import { formatParams, sanitizeData } from "../utils/helpers.js";
 import searchValidator from "../validation/search.js";
 

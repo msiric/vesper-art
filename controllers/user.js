@@ -5,12 +5,12 @@ import { server } from "../config/secret.js";
 import {
   fetchArtworkByOwner,
   fetchArtworksByOwner,
-} from "../services/mongo/artwork.js";
+} from "../services/postgres/artwork.js";
 import {
   fetchOrdersByBuyer,
   fetchOrdersBySeller,
-} from "../services/mongo/order.js";
-import { fetchStripeBalance } from "../services/mongo/stripe.js";
+} from "../services/postgres/order.js";
+import { fetchStripeBalance } from "../services/postgres/stripe.js";
 import {
   addNewIntent,
   deactivateExistingUser,
@@ -18,6 +18,7 @@ import {
   editUserPassword,
   editUserPreferences,
   editUserProfile,
+  fetchUserArtwork,
   fetchUserByEmail,
   fetchUserById,
   fetchuserFavorites,
@@ -26,8 +27,7 @@ import {
   fetchUserPurchases,
   fetchUserStatistics,
   removeExistingIntent,
-} from "../services/mongo/user.js";
-import { fetchUserArtwork } from "../services/postgres/user.js";
+} from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
 import { formatParams, sanitizeData } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
