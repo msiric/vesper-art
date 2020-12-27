@@ -12,6 +12,12 @@ import {
   unfavoriteArtwork,
   updateArtwork,
 } from "../../../controllers/artwork.js";
+import {
+  deleteComment,
+  getComment,
+  patchComment,
+  postComment,
+} from "../../../controllers/comment.js";
 import multerApi from "../../../lib/multer.js";
 import {
   checkParamsId,
@@ -109,6 +115,36 @@ router
     handler(unfavoriteArtwork, (req, res, next) => ({
       ...req.params,
       ...req.query,
+    }))
+  );
+
+router.route("/artwork/:artworkId/comments").post(
+  [isAuthenticated, checkParamsId],
+  handler(postComment, (req, res, next) => ({
+    ...req.params,
+    ...req.body,
+  }))
+);
+
+router
+  .route("/artwork/:artworkId/comments/:commentId")
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(getComment, (req, res, next) => ({
+      ...req.params,
+    }))
+  )
+  .patch(
+    [isAuthenticated, checkParamsId],
+    handler(patchComment, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
+    }))
+  )
+  .delete(
+    [isAuthenticated, checkParamsId],
+    handler(deleteComment, (req, res, next) => ({
+      ...req.params,
     }))
   );
 

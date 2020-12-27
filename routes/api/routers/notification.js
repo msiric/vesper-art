@@ -17,20 +17,19 @@ router.route("/notifications").get(
   handler(getNotifications, (req, res, next) => ({}))
 );
 
-// $TODO ne valja ruta nista
-router.route("/read_notification/:notificationId").patch(
-  [isAuthenticated, checkParamsId],
-  handler(readNotification, (req, res, next) => ({
-    ...req.params,
-  }))
-);
-
-// $TODO ne valja ruta nista
-router.route("/unread_notification/:notificationId").patch(
-  [isAuthenticated, checkParamsId],
-  handler(unreadNotification, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+router
+  .route("/notifications/:notificationId")
+  .post(
+    [isAuthenticated, checkParamsId],
+    handler(readNotification, (req, res, next) => ({
+      ...req.params,
+    }))
+  )
+  .delete(
+    [isAuthenticated, checkParamsId],
+    handler(unreadNotification, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
 
 export default router;

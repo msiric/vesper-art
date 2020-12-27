@@ -87,14 +87,6 @@ router.route("/users/:userId/favorites").get(
   }))
 );
 
-router.route("/users/:userId/origin").patch(
-  [isAuthenticated, checkParamsId],
-  handler(updateUserOrigin, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
-
 router.route("/users/:userId/statistics").get(
   [isAuthenticated, checkParamsId],
   handler(getUserStatistics, (req, res, next) => ({
@@ -125,14 +117,6 @@ router.route("/users/:userId/settings").get(
   }))
 );
 
-router.route("/users/:userId/preferences").patch(
-  [isAuthenticated, checkParamsId],
-  handler(updateUserPreferences, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
-
 router.route("/users/:userId/notifications").get(
   [isAuthenticated, checkParamsId],
   handler(getUserNotifications, (req, res, next) => ({
@@ -141,18 +125,19 @@ router.route("/users/:userId/notifications").get(
   }))
 );
 
-router.route("/users/:userId/intents").post(
+router.route("/users/:userId/origin").patch(
   [isAuthenticated, checkParamsId],
-  handler(createUserIntent, (req, res, next) => ({
+  handler(updateUserOrigin, (req, res, next) => ({
     ...req.params,
     ...req.body,
   }))
 );
 
-router.route("/users/:userId/intents/:intentId").delete(
+router.route("/users/:userId/preferences").patch(
   [isAuthenticated, checkParamsId],
-  handler(deleteUserIntent, (req, res, next) => ({
+  handler(updateUserPreferences, (req, res, next) => ({
     ...req.params,
+    ...req.body,
   }))
 );
 
@@ -169,6 +154,21 @@ router.route("/users/:userId/password").patch(
   handler(updateUserPassword, (req, res, next) => ({
     ...req.params,
     ...req.body,
+  }))
+);
+
+router.route("/users/:userId/intents").post(
+  [isAuthenticated, checkParamsId],
+  handler(createUserIntent, (req, res, next) => ({
+    ...req.params,
+    ...req.body,
+  }))
+);
+
+router.route("/users/:userId/intents/:intentId").delete(
+  [isAuthenticated, checkParamsId],
+  handler(deleteUserIntent, (req, res, next) => ({
+    ...req.params,
   }))
 );
 

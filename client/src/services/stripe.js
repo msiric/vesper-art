@@ -16,9 +16,9 @@ export const postIntent = {
   error: { message: "Failed to save intent", variant: "error" },
 };
 export const postAuthorize = {
-  request: async ({ userOrigin, userEmail }) =>
+  request: async ({ userBusinessAddress, userEmail }) =>
     await ax.post("/stripe/authorize", {
-      userOrigin,
+      userBusinessAddress,
       userEmail,
     }),
   success: { message: "User successfully authorized", variant: "success" },

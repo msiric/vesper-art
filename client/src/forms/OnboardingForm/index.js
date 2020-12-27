@@ -7,9 +7,9 @@ const OnboardingForm = ({ getValues, setValue, errors }) => {
   return (
     <Box>
       <AutocompleteInput
-        value={getValues("userOrigin")}
+        value={getValues("userBusinessAddress")}
         setValue={setValue}
-        name="userOrigin"
+        name="userBusinessAddress"
         label="Country"
         errors={errors}
         options={countries.filter((country) => country.supported === true)}

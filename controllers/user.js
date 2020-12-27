@@ -109,14 +109,18 @@ export const getUserPurchases = async ({ userId, rangeFrom, rangeTo }) => {
   return { statistics: foundOrders };
 };
 
-export const updateUserOrigin = async ({ userId, userOrigin, session }) => {
-  const { error } = originValidator(sanitizeData({ userOrigin }));
+export const updateUserOrigin = async ({
+  userId,
+  userBusinessAddress,
+  session,
+}) => {
+  const { error } = originValidator(sanitizeData({ userBusinessAddress }));
   if (error) throw createError(400, error);
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
-    if (userOrigin) foundUser.origin = userOrigin;
+    if (userBusinessAddress) foundUser.businessAddress = userBusinessAddress;
     await foundUser.save({ session });
-    return { message: "User origin updated" };
+    return { message: "User business address updated" };
   }
   throw createError(400, "User not found");
 };

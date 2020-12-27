@@ -32,13 +32,13 @@ export const getDetails = {
 };
 export const getComment = {
   request: async ({ artworkId, commentId }) =>
-    await ax.get(`/api/artwork/${artworkId}/comment/${commentId}`),
+    await ax.get(`/api/artwork/${artworkId}/comments/${commentId}`),
   success: { message: "Comment successfully fetched", variant: "success" },
   error: { message: "Failed to fetch comment", variant: "error" },
 };
 export const deleteComment = {
   request: async ({ artworkId, commentId }) =>
-    await ax.delete(`/api/artwork/${artworkId}/comment/${commentId}`),
+    await ax.delete(`/api/artwork/${artworkId}/comments/${commentId}`),
   success: { message: "Comment successfully deleted", variant: "success" },
   error: { message: "Failed to delete comment", variant: "error" },
 };
@@ -53,13 +53,13 @@ export const getComments = {
 };
 export const patchComment = {
   request: async ({ artworkId, commentId, data }) =>
-    await ax.patch(`/api/artwork/${artworkId}/comment/${commentId}`, data),
+    await ax.patch(`/api/artwork/${artworkId}/comments/${commentId}`, data),
   success: { message: "Comment successfully updated", variant: "success" },
   error: { message: "Failed to update comment", variant: "error" },
 };
 export const postComment = {
   request: async ({ artworkId, data }) =>
-    await ax.post(`/api/artwork/${artworkId}/comment`, data),
+    await ax.post(`/api/artwork/${artworkId}/comments`, data),
   success: { message: "Comment successfully posted", variant: "success" },
   error: { message: "Failed to post comment", variant: "error" },
 };

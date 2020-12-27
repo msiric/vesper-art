@@ -129,13 +129,13 @@ export const postLogout = {
 };
 export const patchRead = {
   request: async ({ notificationId }) =>
-    await ax.patch(`/api/read_notification/${notificationId}`),
+    await ax.post(`/api/notifications/${notificationId}`),
   success: { message: "Notification successfully read", variant: "success" },
   error: { message: "Failed to read notification", variant: "error" },
 };
 export const patchUnread = {
   request: async ({ notificationId }) =>
-    await ax.patch(`/api/unread_notification/${notificationId}`),
+    await ax.delete(`/api/notifications/${notificationId}`),
   success: { message: "Notification successfully unread", variant: "success" },
   error: { message: "Failed to unread notification", variant: "error" },
 };

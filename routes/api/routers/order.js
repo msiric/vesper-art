@@ -5,6 +5,7 @@ import {
   getOrderDetails,
   getSoldOrders,
 } from "../../../controllers/order.js";
+import { postReview } from "../../../controllers/review.js";
 import {
   checkParamsId,
   isAuthenticated,
@@ -26,6 +27,14 @@ router.route("/orders/purchases").get(
 router.route("/orders/:orderId").get(
   [isAuthenticated, checkParamsId],
   handler(getOrderDetails, (req, res, next) => ({
+    ...req.params,
+  }))
+);
+
+router.route("/orders/:orderId/ratings").post(
+  [isAuthenticated, checkParamsId],
+  handler(postReview, (req, res, next) => ({
+    ...req.body,
     ...req.params,
   }))
 );

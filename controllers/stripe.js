@@ -224,7 +224,7 @@ export const redirectToStripe = async ({ accountId, userOnboarded }) => {
 export const onboardUser = async ({
   sessionData,
   responseData,
-  userOrigin,
+  userBusinessAddress,
   userEmail,
 }) => {
   sessionData.state = Math.random().toString(36).slice(2);
@@ -240,7 +240,7 @@ export const onboardUser = async ({
     "stripe_user[first_name]": undefined,
     "stripe_user[last_name]": undefined,
     "stripe_user[email]": userEmail || undefined,
-    "stripe_user[country]": userOrigin || undefined,
+    "stripe_user[country]": userBusinessAddress || undefined,
   };
 
   // If we're suggesting this account have the `card_payments` capability,
