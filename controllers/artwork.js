@@ -270,7 +270,7 @@ export const updateArtwork = async ({
       foundArtwork.versions.push(foundArtwork.current.id);
     }
     foundArtwork.current = savedVersion;
-    await Artwork.save({ foundArtwork });
+    await Artwork.save(foundArtwork);
     return { redirect: "my_artwork" };
   } else {
     throw createError(400, "Artwork not found");

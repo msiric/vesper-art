@@ -19,7 +19,7 @@ export const addNewUser = async ({
   newUser.password = hashedPassword;
   newUser.avatar = null;
   newUser.verificationToken = verificationToken;
-  return await User.save({ newUser });
+  return await User.save(newUser);
 };
 
 // $Done (mongo -> postgres)
@@ -69,7 +69,7 @@ export const editUserResetToken = async ({ userEmail, resetToken }) => {
   });
   foundUser.resetToken = resetToken;
   foundUser.resetExpiry = Date.now() + 3600000;
-  return await User.save({ foundUser });
+  return await User.save(foundUser);
 };
 
 // $Needs testing (mongo -> postgres)
@@ -81,7 +81,7 @@ export const resetUserPassword = async ({ tokenId, userPassword }) => {
   foundUser.password = hashedPassword;
   foundUser.resetToken = "";
   foundUser.resetExpiry = "";
-  return await User.save({ foundUser });
+  return await User.save(foundUser);
 };
 
 // $Done (mongo -> postgres)

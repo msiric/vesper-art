@@ -8,5 +8,5 @@ export const addNewTicket = async ({ userId, ticketTitle, ticketBody }) => {
   newTicket.body = ticketBody;
   newTicket.attachment = ""; // $TODO
   newTicket.status = "In progress";
-  return await Ticket.save({ newTicket });
+  return await Ticket.save(newTicket);
 };

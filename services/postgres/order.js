@@ -17,7 +17,7 @@ export const addNewOrder = async ({ orderData }) => {
   newOrder.type = orderData.commercial ? "commercial" : "free";
   newOrder.status = orderData.status;
   newOrder.intent = orderData.intentId;
-  return await Order.save({ newOrder });
+  return await Order.save(newOrder);
 };
 
 // $Needs testing (mongo -> postgres)
@@ -61,7 +61,7 @@ export const addOrderReview = async ({ orderId, userId, savedReview }) => {
     where: [{ buyer: userId, id: orderId }],
   });
   foundOrder.review = savedReview;
-  return await Order.save({ foundOrder });
+  return await Order.save(foundOrder);
 };
 
 // $Needs testing (mongo -> postgres)

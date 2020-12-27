@@ -14,7 +14,7 @@ export const addNewNotification = async ({
   newNotification.type = notificationType;
   newNotification.receiver = notificationReceiver;
   newNotification.read = false;
-  return await Notification.save({ newNotification });
+  return await Notification.save(newNotification);
 };
 
 // $Needs testing (mongo -> postgres)
@@ -33,7 +33,7 @@ export const editReadNotification = async ({ userId, notificationId }) => {
     where: [{ id: notificationId, receiver: userId }],
   });
   foundNotification.read = true;
-  return await Notification.save({ foundNotification });
+  return await Notification.save(foundNotification);
 };
 
 // $Needs testing (mongo -> postgres)
@@ -42,7 +42,7 @@ export const editUnreadNotification = async ({ userId, notificationId }) => {
     where: [{ id: notificationId, receiver: userId }],
   });
   foundNotification.read = false;
-  return await Notification.save({ foundNotification });
+  return await Notification.save(foundNotification);
 };
 
 // $Needs testing (mongo -> postgres)

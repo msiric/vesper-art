@@ -31,7 +31,7 @@ export const editExistingComment = async ({
   });
   foundComment.content = commentContent;
   foundComment.modified = true;
-  return await Comment.save({ foundComment });
+  return await Comment.save(foundComment);
 };
 
 // $Needs testing (mongo -> postgres)
@@ -43,5 +43,5 @@ export const removeExistingComment = async ({
   const foundComment = await Comment.findOne({
     where: [{ id: commentId, artwork: artworkId, owner: userId }],
   });
-  return await Comment.remove({ foundComment });
+  return await Comment.remove(foundComment);
 };

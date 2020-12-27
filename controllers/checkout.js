@@ -67,7 +67,7 @@ export const postDownload = async ({
             newLicense.type = licenseType;
             newLicense.active = true;
             newLicense.price = licensePrice;
-            const savedLicense = await License.save({ newLicense });
+            const savedLicense = await License.save(newLicense);
             const { orderError } = orderValidator(
               sanitizeData({
                 orderBuyer: foundUser.id,

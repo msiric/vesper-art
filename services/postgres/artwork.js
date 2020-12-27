@@ -166,7 +166,7 @@ export const addArtworkFavorite = async ({ artworkId, savedFavorite }) => {
     where: [{ id: artworkId, active: true }],
   });
   foundArtwork.favorites.push(savedFavorite);
-  return await Artwork.save({ foundArtwork });
+  return await Artwork.save(foundArtwork);
 };
 
 export const fetchFavoriteByParents = async ({ userId, artworkId }) => {
@@ -180,14 +180,14 @@ export const fetchFavoriteByParents = async ({ userId, artworkId }) => {
 // check if cascade works correctly
 export const removeArtworkFavorite = async ({ artworkId }) => {
   const foundFavorite = await Favorite.findOne({ artwork: artworkId });
-  await Favorite.remove({ foundFavorite });
+  await Favorite.remove(foundFavorite);
 };
 
 // $Needs testing (mongo -> postgres)
 // check if cascade works correctly
 export const removeArtworkVersion = async ({ versionId }) => {
   const foundVersion = await Version.findOne({ id: versionId });
-  await Version.remove({ foundVersion });
+  await Version.remove(foundVersion);
 };
 
 export const addArtworkComment = async ({ artworkId, savedComment }) => {
@@ -195,7 +195,7 @@ export const addArtworkComment = async ({ artworkId, savedComment }) => {
     where: [{ id: artworkId, active: true }],
   });
   foundArtwork.comments.push(savedComment);
-  return await Artwork.save({ foundArtwork });
+  return await Artwork.save(foundArtwork);
 };
 
 // $TODO not needed anymore
@@ -215,7 +215,7 @@ export const deactivateExistingArtwork = async ({ artworkId }) => {
     where: [{ id: artworkId, active: true }],
   });
   foundArtwork.active = false;
-  return await Artwork.save({ foundArtwork });
+  return await Artwork.save(foundArtwork);
 };
 
 // needs transaction (done)

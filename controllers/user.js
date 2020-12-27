@@ -119,7 +119,7 @@ export const updateUserOrigin = async ({
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
     if (userBusinessAddress) foundUser.businessAddress = userBusinessAddress;
-    await User.save({ foundUser });
+    await User.save(foundUser);
     return { message: "User business address updated" };
   }
   throw createError(400, "User not found");
