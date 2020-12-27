@@ -83,7 +83,7 @@ const CommentCard = ({
           >
             <Avatar
               alt={comment.owner.name}
-              src={comment.owner.photo}
+              src={comment.owner.avatar}
               component={Link}
               to={`/user/${comment.owner.name}`}
               className={classes.noLink}

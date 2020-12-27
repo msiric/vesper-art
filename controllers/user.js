@@ -242,9 +242,9 @@ export const updateUserPreferences = async ({ userId, userSaves }) => {
       $and: [{ _id: res.locals.user.id }, { active: true }]
     });
     if (foundUser) {
-      if (foundUser.photo.includes(foundUser._id)) {
-        const folderName = 'profilePhotos/';
-        const fileName = foundUser.photo.split('/').slice(-1)[0];
+      if (foundUser.avatar.includes(foundUser._id)) {
+        const folderName = 'profileavatars/';
+        const fileName = foundUser.avatar.split('/').slice(-1)[0];
         const filePath = folderName + fileName;
         const s3 = new aws.S3();
         const params = {
@@ -259,7 +259,7 @@ export const updateUserPreferences = async ({ userId, userSaves }) => {
           $set: {
             name: 'Deleted User',
             password: null,
-            photo: foundUser.gravatar(),
+            avatar: foundUser.gravatar(),
             description: null,
             facebookId: null,
             googleId: null,
@@ -334,7 +334,7 @@ export const deactivateUser = async ({ userId, session }) => {
       await deactivateExistingArtwork({ artworkId: artwork._id, session });
     }
     await deleteS3Object({
-      fileLink: foundUser.photo,
+      fileLink: foundUser.avatar,
       folderName: "profilePhotos/",
     });
     await deactivateExistingUser({ userId: foundUser._id, session });

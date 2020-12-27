@@ -12,7 +12,7 @@ export const addNewOrder = async ({ orderData, session = null }) => {
   newOrder.spent = orderData.spent;
   newOrder.earned = orderData.earned;
   newOrder.fee = orderData.fee;
-  newOrder.commercial = orderData.commercial;
+  newOrder.type = orderData.commercial ? "commercial" : "free";
   newOrder.status = orderData.status;
   newOrder.intent = orderData.intentId;
   return await newOrder.save({ session });

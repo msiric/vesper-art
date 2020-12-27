@@ -28,7 +28,7 @@ const ProfileArtwork = ({
               headings: [
                 { display: true, label: "User artwork", props: {} },
                 {
-                  display: user.displaySaves,
+                  display: user.displayFavorites,
                   label: "Saved artwork",
                   props: {},
                 },
@@ -65,7 +65,7 @@ const ProfileArtwork = ({
                   loading: false,
                 },
                 {
-                  display: user.displaySaves,
+                  display: user.displayFavorites,
                   iterable: true,
                   content: user.savedArtwork.length,
                   component: (
@@ -108,7 +108,7 @@ const ProfileArtwork = ({
               headings: [
                 { display: true, label: "User artwork", props: {} },
                 {
-                  display: user.displaySaves,
+                  display: user.displayFavorites,
                   label: "Saved artwork",
                   props: {},
                 },
@@ -145,7 +145,7 @@ const ProfileArtwork = ({
                   loading: false,
                 },
                 {
-                  display: user.displaySaves,
+                  display: user.displayFavorites,
                   iterable: true,
                   content: user.savedArtwork.length,
                   component: (

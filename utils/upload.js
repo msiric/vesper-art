@@ -106,7 +106,7 @@ export const finalizeMediaUpload = async ({
     fileOrientation: "",
   };
   try {
-    // $TODO Verify that the user uploading the photo is valid and check its id
+    // $TODO Verify that the user uploading the avatar is valid and check its id
     if (filePath && fileName) {
       const verifiedInput = await verifyDimensions({ filePath, fileType });
       if (verifiedInput.valid) {

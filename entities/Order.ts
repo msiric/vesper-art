@@ -62,7 +62,7 @@ export class Order extends BaseEntity {
   fee: number;
 
   @Column()
-  commercial: boolean;
+  type: string;
 
   @Column()
   status: string;

@@ -20,7 +20,7 @@ export class Artwork extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user.artworks)
+  @ManyToOne(() => User, (user) => user.artwork)
   owner: User;
 
   @OneToOne(() => Version, (version) => version.artwork, {

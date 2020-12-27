@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Button, Container, Grid } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon,
+  EditRounded as EditIcon
 } from "@material-ui/icons";
 import { useSnackbar } from "notistack";
 import queryString from "query-string";
@@ -23,7 +23,7 @@ import {
   deleteComment,
   getComment,
   getComments,
-  getDetails,
+  getDetails
 } from "../../services/artwork.js";
 import { postDownload } from "../../services/checkout.js";
 import globalStyles from "../../styles/global.js";
@@ -232,7 +232,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
             owner: {
               _id: userStore.id,
               name: userStore.name,
-              photo: userStore.photo,
+              avatar: userStore.avatar,
             },
           },
         ],

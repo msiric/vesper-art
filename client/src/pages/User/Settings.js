@@ -64,7 +64,7 @@ const Settings = ({ location }) => {
       ...prevState,
       user: {
         ...prevState.user,
-        photo: values.userMedia,
+        avatar: values.userMedia,
         description: values.userDescription,
         country: values.userCountry,
       },
@@ -95,7 +95,7 @@ const Settings = ({ location }) => {
       ...prevState,
       user: {
         ...prevState.user,
-        displaySaves: values.userSaves,
+        displayFavorites: values.userSaves,
       },
     }));
   };

@@ -200,7 +200,7 @@ export const editUserProfile = async ({
   session = null,
 }) => {
   if (foundUser) {
-    if (avatarUpload.fileMedia) foundUser.photo = avatarUpload.fileMedia;
+    if (avatarUpload.fileMedia) foundUser.avatar = avatarUpload.fileMedia;
     if (avatarUpload.fileDominant)
       foundUser.dominant = avatarUpload.fileDominant;
     if (avatarUpload.fileOrientation)
@@ -264,7 +264,7 @@ export const editUserPreferences = async ({
 }) => {
   return await User.updateOne(
     { _id: userId },
-    { displaySaves: userSaves }
+    { displayFavorites: userSaves }
   ).session(session);
 };
 
@@ -367,14 +367,14 @@ export const deactivateExistingUser = async ({ userId, session = null }) => {
         name: null,
         email: null,
         password: null,
-        photo: null,
+        avatar: null,
         height: null,
         width: null,
         description: null,
         facebookId: null,
         googleId: null,
         customWork: false,
-        displaySaves: false,
+        displayFavorites: false,
         verificationToken: null,
         verified: false,
         resetToken: null,

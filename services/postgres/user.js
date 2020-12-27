@@ -164,7 +164,7 @@ export const editUserProfile = async ({
   userData,
 }) => {
   if (foundUser) {
-    if (avatarUpload.fileMedia) foundUser.photo = avatarUpload.fileMedia;
+    if (avatarUpload.fileMedia) foundUser.avatar = avatarUpload.fileMedia;
     if (avatarUpload.fileDominant)
       foundUser.dominant = avatarUpload.fileDominant;
     if (avatarUpload.fileOrientation)
@@ -237,7 +237,7 @@ export const addUserArtwork = async ({ userId, artworkId }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });
-  foundUser.artworks.push(artworkId);
+  foundUser.artwork.push(artworkId);
   return await User.save({ foundUser });
 };
 

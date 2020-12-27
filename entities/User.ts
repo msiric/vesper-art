@@ -63,7 +63,7 @@ export class User extends BaseEntity {
   notifications: Notification[];
 
   @OneToMany(() => Artwork, (artwork) => artwork.owner)
-  artworks: Artwork[];
+  artwork: Artwork[];
 
   @OneToMany(() => Favorite, (favorite) => favorite.owner)
   favorites: Favorite[];

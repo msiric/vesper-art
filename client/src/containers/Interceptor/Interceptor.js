@@ -51,7 +51,7 @@ const Interceptor = ({ children }) => {
             id: data.user.id,
             name: data.user.name,
             email: data.user.email,
-            photo: data.user.photo,
+            avatar: data.user.avatar,
             stripeId: data.user.stripeId,
             country: data.user.country,
             saved: data.user.saved.reduce(function (object, item) {
@@ -146,7 +146,7 @@ const Interceptor = ({ children }) => {
           type: "UPDATE_USER",
           token: data.accessToken,
           email: data.user.email,
-          photo: data.user.photo,
+          avatar: data.user.avatar,
           stripeId: data.user.stripeId,
           country: data.user.country,
           saved: data.user.saved.reduce(function (object, item) {
@@ -204,7 +204,7 @@ const Interceptor = ({ children }) => {
         type: "UPDATE_USER",
         token: data.accessToken,
         email: data.user.email,
-        photo: data.user.photo,
+        avatar: data.user.avatar,
         stripeId: data.user.stripeId,
         country: data.user.country,
         saved: data.user.saved.reduce(function (object, item) {
