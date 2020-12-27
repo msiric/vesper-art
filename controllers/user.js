@@ -55,7 +55,7 @@ export const getUserProfile = async ({
     dataSkip,
     dataLimit,
   });
-  if (foundUser) return { user: foundUser, artwork: foundUser.artwork };
+  if (foundUser) return { user: foundUser };
   throw createError(400, "User not found");
 };
 

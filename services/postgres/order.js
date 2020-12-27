@@ -77,7 +77,7 @@ export const fetchOrdersBySeller = async ({ userId, rangeFrom, rangeTo }) => {
               LessThan(new Date(rangeTo)),
           },
         ],
-        relations: ["review", "version", "license", "sales", "sales.review"],
+        relations: ["review", "version", "license"],
       })
     : await Order.find({
         where: [
@@ -85,7 +85,7 @@ export const fetchOrdersBySeller = async ({ userId, rangeFrom, rangeTo }) => {
             seller: userId,
           },
         ],
-        relations: ["review", "version", "license", "sales", "sales.review"],
+        relations: ["review", "version", "license"],
       });
 };
 
@@ -101,7 +101,7 @@ export const fetchOrdersByBuyer = async ({ userId, rangeFrom, rangeTo }) => {
               LessThan(new Date(rangeTo)),
           },
         ],
-        relations: ["review", "version", "license", "sales", "sales.review"],
+        relations: ["review", "version", "license"],
       })
     : await Order.find({
         where: [
@@ -109,6 +109,6 @@ export const fetchOrdersByBuyer = async ({ userId, rangeFrom, rangeTo }) => {
             buyer: userId,
           },
         ],
-        relations: ["review", "version", "license", "sales", "sales.review"],
+        relations: ["review", "version", "license"],
       });
 };

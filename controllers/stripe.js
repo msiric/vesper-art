@@ -293,7 +293,7 @@ export const assignStripeId = async ({
   sessionData.id = null;
   sessionData.name = null;
 
-  return responseObject.redirect(`http://localhost:3000/user/${username}`);
+  return responseObject.redirect(`http://localhost:3000/users/${username}`);
 };
 
 export const createPayout = async ({ userId, session }) => {

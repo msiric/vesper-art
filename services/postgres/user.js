@@ -2,6 +2,7 @@ import argon2 from "argon2";
 import { Artwork } from "../../entities/Artwork";
 import { Notification } from "../../entities/Notification";
 import { User } from "../../entities/User";
+import { formatParams } from "../../utils/helpers";
 
 // $Needs testing (mongo -> postgres)
 export const fetchUserById = async ({ userId }) => {
@@ -118,7 +119,10 @@ export const fetchUserProfile = async ({
           where: [{ name: userUsername, active: true }],
           relations: ["artwork", "artwork.owner", "artwork.current"],
         });
-  return foundUser.artwork.filter((artwork) => artwork.active === true);
+  foundUser.artwork = foundUser.artwork.filter(
+    (artwork) => artwork.active === true
+  );
+  return foundUser;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -136,7 +140,7 @@ export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
 export const fetchuserFavorites = async ({ userId, dataSkip, dataLimit }) => {
   return await User.findOne({
     where: [{ id: userId, active: true }],
-    relations: ["favorites", "current"],
+    relations: ["artwork"],
     skip: dataSkip,
     take: dataLimit,
   });

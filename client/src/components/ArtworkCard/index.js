@@ -78,7 +78,7 @@ const ArtworkCard = ({
               noWrap
               variant="body1"
               component={RouterLink}
-              to={`/user/${item.owner.name}`}
+              to={`/users/${item.owner.name}`}
               className={classes.artworkSeller}
             >
               {item.owner.name}

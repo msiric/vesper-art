@@ -59,7 +59,7 @@ const Profile = ({ match, location }) => {
           user: {
             ...data.user,
             editable: true,
-            artwork: data.artwork.filter((item) => item.current !== null),
+            artwork: data.user.artwork.filter((item) => item.current !== null),
             favorites: [],
           },
           scroll: {
@@ -67,7 +67,7 @@ const Profile = ({ match, location }) => {
             artwork: {
               ...prevState.scroll.artwork,
               hasMore:
-                data.artwork.length < prevState.scroll.artwork.dataCeiling
+                data.user.artwork.length < prevState.scroll.artwork.dataCeiling
                   ? false
                   : true,
               dataCursor:
@@ -83,7 +83,7 @@ const Profile = ({ match, location }) => {
           user: {
             ...data.user,
             editable: false,
-            artwork: data.artwork.filter((item) => item.current !== null),
+            artwork: data.user.artwork.filter((item) => item.current !== null),
             favorites: [],
           },
           scroll: {
@@ -91,7 +91,7 @@ const Profile = ({ match, location }) => {
             artwork: {
               ...prevState.scroll.artwork,
               hasMore:
-                data.artwork.length < prevState.scroll.artwork.dataCeiling
+                data.user.artwork.length < prevState.scroll.artwork.dataCeiling
                   ? false
                   : true,
               dataCursor:
@@ -117,14 +117,14 @@ const Profile = ({ match, location }) => {
         ...prevState,
         user: {
           ...prevState.user,
-          artwork: [...prevState.user.artwork].concat(data.artwork),
+          artwork: [...prevState.user.artwork].concat(data.user.artwork),
         },
         scroll: {
           ...state.scroll,
           artwork: {
             ...state.scroll.artwork,
             hasMore:
-              data.artwork.length < state.scroll.artwork.dataCeiling
+              data.user.artwork.length < state.scroll.artwork.dataCeiling
                 ? false
                 : true,
             dataCursor:

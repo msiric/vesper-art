@@ -2,9 +2,7 @@ import currency from "currency.js";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
-
-const ObjectId = mongoose.Types.ObjectId;
+import validateUuid from "uuid-validate";
 
 export const requestHandler = (promise, params) => async (req, res, next) => {
   const boundParams = params ? params(req, res, next) : {};
@@ -88,12 +86,11 @@ export const checkParamsUsername = (req, res, next) => {
 };
 
 export const checkParamsId = (req, res, next) => {
-  const isId = (id) => (ObjectId(id) ? true : false);
   let isValid = true;
   for (let param in req.params) {
     const value = req.params[param];
     if (!value) isValid = false;
-    else if (!isId(value)) isValid = false;
+    else if (!validateUuid(value)) isValid = false;
   }
   if (isValid) return next();
   throw createError(400, "Invalid route parameter");

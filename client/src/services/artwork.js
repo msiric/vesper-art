@@ -84,9 +84,9 @@ export const getGallery = {
   request: async ({ userId, dataCursor = null, dataCeiling = null }) =>
     typeof dataCursor !== null && typeof dataCeiling !== null
       ? await ax.get(
-          `/api/user/${userId}/artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+          `/api/users/${userId}/artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
         )
-      : await ax.get(`/api/user/${userId}/artwork`),
+      : await ax.get(`/api/users/${userId}/artwork`),
   success: { message: "Artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch artwork", variant: "error" },
 };
@@ -104,7 +104,7 @@ export const deleteFavorite = {
 };
 export const getFavorites = {
   request: async ({ userId }) =>
-    await ax.get(`/api/user/${userId}/saved_artwork`),
+    await ax.get(`/api/users/${userId}/saved_artwork`),
   success: { message: "Favorites successfully fetched", variant: "success" },
   error: { message: "Failed to fetch favorites", variant: "error" },
 };
