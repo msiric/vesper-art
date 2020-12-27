@@ -7,7 +7,7 @@ import {
 
 const router = express.Router();
 
-router.route("/contact_support").post(
+router.route("/contact").post(
   isAuthenticated,
   handler(postTicket, (req, res, next) => ({
     userEmail: res.locals.user ? res.locals.user.email : null,

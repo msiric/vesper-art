@@ -1,8 +1,9 @@
 import { ax } from "../containers/Interceptor/Interceptor.js";
 
+// $TODO wat??? artworkId instead of orderId?
 export const postReview = {
   request: async ({ artworkId, reviewRating }) =>
-    await ax.post(`/api/rate_artwork/${artworkId}`, {
+    await ax.post(`/api/orders/${artworkId}/ratings`, {
       reviewRating,
     }),
   success: { message: "Review successfully published", variant: "success" },

@@ -8,7 +8,7 @@ import {
 
 const router = express.Router();
 
-router.route("/rate_artwork/:orderId").post(
+router.route("/orders/:orderId/ratings").post(
   [isAuthenticated, checkParamsId],
   handler(postReview, (req, res, next) => ({
     ...req.body,

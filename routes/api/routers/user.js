@@ -4,13 +4,13 @@ import {
   deactivateUser,
   deleteUserIntent,
   getUserArtwork,
+  getUserFavorites,
   getUserMedia,
   getUserNotifications,
   getUserOwnership,
   getUserProfile,
   getUserPurchases,
   getUserSales,
-  getUserSaves,
   getUserSettings,
   getUserStatistics,
   updateUserEmail,
@@ -29,7 +29,7 @@ import {
 
 const router = express.Router();
 
-router.route("/user/:userUsername").get(
+router.route("/users/:userUsername").get(
   checkParamsUsername,
   handler(getUserProfile, (req, res, next) => ({
     ...req.params,
@@ -37,32 +37,8 @@ router.route("/user/:userUsername").get(
   }))
 );
 
-router.route("/user/:userId/artwork").get(
-  checkParamsId,
-  handler(getUserArtwork, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
-
-router.route("/user/:userId/ownership").get(
-  checkParamsId,
-  handler(getUserOwnership, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
-
-router.route("/user/:userId/saves").get(
-  checkParamsId,
-  handler(getUserSaves, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
-
 router
-  .route("/user/:userId")
+  .route("/users/:userId")
   .patch(
     [isAuthenticated, checkParamsId, multerApi.uploadUserLocal],
     handler(updateUserProfile, (req, res, next) => ({
@@ -80,7 +56,38 @@ router
     }))
   );
 
-router.route("/user/:userId/origin").patch(
+router.route("/users/:userId/artwork").get(
+  checkParamsId,
+  handler(getUserArtwork, (req, res, next) => ({
+    ...req.params,
+    ...req.query,
+  }))
+);
+
+router.route("/users/:userId/artwork/:artworkId/download").get(
+  [isAuthenticated, checkParamsId],
+  handler(getUserMedia, (req, res, next) => ({
+    ...req.params,
+  }))
+);
+
+router.route("/users/:userId/ownership").get(
+  checkParamsId,
+  handler(getUserOwnership, (req, res, next) => ({
+    ...req.params,
+    ...req.query,
+  }))
+);
+
+router.route("/users/:userId/favorites").get(
+  checkParamsId,
+  handler(getUserFavorites, (req, res, next) => ({
+    ...req.params,
+    ...req.query,
+  }))
+);
+
+router.route("/users/:userId/origin").patch(
   [isAuthenticated, checkParamsId],
   handler(updateUserOrigin, (req, res, next) => ({
     ...req.params,
@@ -88,14 +95,14 @@ router.route("/user/:userId/origin").patch(
   }))
 );
 
-router.route("/user/:userId/statistics").get(
+router.route("/users/:userId/statistics").get(
   [isAuthenticated, checkParamsId],
   handler(getUserStatistics, (req, res, next) => ({
     ...req.params,
   }))
 );
 
-router.route("/user/:userId/sales").get(
+router.route("/users/:userId/sales").get(
   [isAuthenticated, checkParamsId],
   handler(getUserSales, (req, res, next) => ({
     ...req.params,
@@ -103,7 +110,7 @@ router.route("/user/:userId/sales").get(
   }))
 );
 
-router.route("/user/:userId/purchases").get(
+router.route("/users/:userId/purchases").get(
   [isAuthenticated, checkParamsId],
   handler(getUserPurchases, (req, res, next) => ({
     ...req.params,
@@ -111,14 +118,14 @@ router.route("/user/:userId/purchases").get(
   }))
 );
 
-router.route("/user/:userId/settings").get(
+router.route("/users/:userId/settings").get(
   [isAuthenticated, checkParamsId],
   handler(getUserSettings, (req, res, next) => ({
     ...req.params,
   }))
 );
 
-router.route("/user/:userId/preferences").patch(
+router.route("/users/:userId/preferences").patch(
   [isAuthenticated, checkParamsId],
   handler(updateUserPreferences, (req, res, next) => ({
     ...req.params,
@@ -126,7 +133,7 @@ router.route("/user/:userId/preferences").patch(
   }))
 );
 
-router.route("/user/:userId/notifications").get(
+router.route("/users/:userId/notifications").get(
   [isAuthenticated, checkParamsId],
   handler(getUserNotifications, (req, res, next) => ({
     ...req.params,
@@ -134,23 +141,7 @@ router.route("/user/:userId/notifications").get(
   }))
 );
 
-router.route("/user/:userId/update_email").patch(
-  [isAuthenticated, checkParamsId],
-  handler(updateUserEmail, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
-
-router.route("/user/:userId/update_password").patch(
-  [isAuthenticated, checkParamsId],
-  handler(updateUserPassword, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
-
-router.route("/user/:userId/intents").post(
+router.route("/users/:userId/intents").post(
   [isAuthenticated, checkParamsId],
   handler(createUserIntent, (req, res, next) => ({
     ...req.params,
@@ -158,17 +149,26 @@ router.route("/user/:userId/intents").post(
   }))
 );
 
-router.route("/user/:userId/intents/:intentId").delete(
+router.route("/users/:userId/intents/:intentId").delete(
   [isAuthenticated, checkParamsId],
   handler(deleteUserIntent, (req, res, next) => ({
     ...req.params,
   }))
 );
 
-router.route("/user/:userId/artwork/:artworkId/download").get(
+router.route("/users/:userId/email").patch(
   [isAuthenticated, checkParamsId],
-  handler(getUserMedia, (req, res, next) => ({
+  handler(updateUserEmail, (req, res, next) => ({
     ...req.params,
+    ...req.body,
+  }))
+);
+
+router.route("/users/:userId/password").patch(
+  [isAuthenticated, checkParamsId],
+  handler(updateUserPassword, (req, res, next) => ({
+    ...req.params,
+    ...req.body,
   }))
 );
 

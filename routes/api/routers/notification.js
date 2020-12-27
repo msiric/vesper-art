@@ -17,6 +17,7 @@ router.route("/notifications").get(
   handler(getNotifications, (req, res, next) => ({}))
 );
 
+// $TODO ne valja ruta nista
 router.route("/read_notification/:notificationId").patch(
   [isAuthenticated, checkParamsId],
   handler(readNotification, (req, res, next) => ({
@@ -24,6 +25,7 @@ router.route("/read_notification/:notificationId").patch(
   }))
 );
 
+// $TODO ne valja ruta nista
 router.route("/unread_notification/:notificationId").patch(
   [isAuthenticated, checkParamsId],
   handler(unreadNotification, (req, res, next) => ({

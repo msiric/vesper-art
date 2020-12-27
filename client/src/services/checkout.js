@@ -6,14 +6,14 @@ export const getCheckout = {
   error: { message: "Failed to fetch checkout", variant: "error" },
 };
 export const postDiscount = {
-  request: async ({ data }) => await ax.post("/api/discount", data),
+  request: async ({ data }) => await ax.post("/api/discounts", data),
   success: { message: "Discount successfully applied", variant: "success" },
   error: { message: "Failed to apply discount", variant: "error" },
 };
 // $Checked Not used? (Can be removed safely)
 export const deleteDiscount = {
   request: async ({ discountId }) =>
-    await ax.delete(`/api/discount/${discountId}`),
+    await ax.delete(`/api/discounts/${discountId}`),
   success: { message: "Discount successfully removed", variant: "success" },
   error: { message: "Failed to remove discount", variant: "error" },
 };

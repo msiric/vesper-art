@@ -3,12 +3,12 @@ import { fetchOrderByVersion } from "../services/mongo/order.js";
 import { fetchStripeAccount } from "../services/mongo/stripe.js";
 import {
   addUserArtwork,
-  addUserSave,
+  addUserFavorite,
   fetchUserById,
-  removeUserSave,
+  removeUserFavorite,
 } from "../services/mongo/user.js";
 import {
-  addArtworkSave,
+  addArtworkFavorite,
   addNewArtwork,
   addNewVersion,
   deactivateExistingArtwork,
@@ -19,7 +19,7 @@ import {
   fetchArtworkLicenses,
   fetchArtworkReviews,
   fetchUserArtworks,
-  removeArtworkSave,
+  removeArtworkFavorite,
   removeArtworkVersion,
 } from "../services/postgres/artwork.js";
 import { addNewLicense } from "../services/postgres/license.js";
@@ -37,6 +37,7 @@ export const getArtwork = async ({ dataCursor, dataCeiling }) => {
   return { artwork: foundArtwork };
 };
 
+// $TODO how to handle limiting comments?
 export const getArtworkDetails = async ({
   artworkId,
   dataCursor,
@@ -82,6 +83,7 @@ export const getArtworkReviews = async ({
   throw createError(400, "Artwork not found");
 };
 
+// $TODO handle in user controller?
 export const getUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundArtwork = await fetchUserArtworks({
@@ -151,7 +153,6 @@ export const postNewArtwork = async ({
       });
       if (
         (formattedData.artworkPersonal || formattedData.artworkCommercial) &&
-        // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
         (foundAccount.capabilities.card_payments !== "active" ||
           foundAccount.capabilities.transfers !== "active")
       ) {
@@ -161,16 +162,27 @@ export const postNewArtwork = async ({
         );
       }
     }
-    const savedVersion = await addNewArtwork({
+    const savedCover = await addNewCover({
+      artworkUpload,
+    });
+    const savedMedia = await addNewMedia({
+      artworkUpload,
+    });
+    const savedVersion = await addNewVersion({
+      prevArtwork: { cover: null, media: null, artwork: null },
       artworkData: formattedData,
       artworkUpload,
       userId,
-      session,
+      savedCover,
+      savedMedia,
+    });
+    const savedArtwork = await addNewArtwork({
+      savedVersion,
+      userId,
     });
     await addUserArtwork({
-      artworkId: savedVersion.artwork,
+      artworkId: savedArtwork.id,
       userId,
-      session,
     });
     return { redirect: "/my_artwork" };
   }
@@ -221,7 +233,6 @@ export const updateArtwork = async ({
       });
       if (
         (formattedData.artworkPersonal || formattedData.artworkCommercial) &&
-        // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
         (foundAccount.capabilities.card_payments !== "active" ||
           foundAccount.capabilities.transfers !== "active")
       ) {
@@ -231,11 +242,23 @@ export const updateArtwork = async ({
         );
       }
     }
+
+    const savedCover = artworkUpload.fileCover
+      ? await addNewCover({
+          artworkUpload,
+        })
+      : foundArtwork.current.cover;
+    const savedMedia = artworkUpload.fileMedia
+      ? await addNewMedia({
+          artworkUpload,
+        })
+      : foundArtwork.current.media;
     const savedVersion = await addNewVersion({
       prevArtwork: foundArtwork.current,
       artworkData: formattedData,
       artworkUpload,
-      session,
+      savedCover,
+      savedMedia,
     });
     const foundOrder = await fetchOrderByVersion({
       artworkId: foundArtwork._id,
@@ -261,7 +284,7 @@ export const updateArtwork = async ({
     } else {
       foundArtwork.versions.push(foundArtwork.current._id);
     }
-    foundArtwork.current = savedVersion._id;
+    foundArtwork.current = savedVersion;
     await foundArtwork.save({ session });
     return { redirect: "my_artwork" };
   } else {
@@ -272,11 +295,10 @@ export const updateArtwork = async ({
 // $TODO
 // does it work in all cases?
 // needs testing
-export const deleteArtwork = async ({ userId, artworkId, data, session }) => {
+export const deleteArtwork = async ({ userId, artworkId, data }) => {
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,
-    session,
   });
   if (foundArtwork) {
     // $TODO Check that artwork wasn't updated in the meantime (current === version)
@@ -311,15 +333,15 @@ export const deleteArtwork = async ({ userId, artworkId, data, session }) => {
 };
 
 // needs transaction (done)
-export const saveArtwork = async ({ userId, artworkId, session }) => {
+export const favoriteArtwork = async ({ userId, artworkId, session }) => {
   const foundUser = await fetchUserById({
     userId,
     session,
   });
   if (foundUser) {
     if (!foundUser.savedArtwork.includes(artworkId)) {
-      await addUserSave({ userId: foundUser._id, artworkId, session });
-      await addArtworkSave({ artworkId, session });
+      await addUserFavorite({ userId: foundUser._id, artworkId, session });
+      await addArtworkFavorite({ artworkId, session });
       return { message: "Artwork saved" };
     }
     throw createError(400, "Artwork could not be saved");
@@ -327,15 +349,15 @@ export const saveArtwork = async ({ userId, artworkId, session }) => {
   throw createError(400, "User not found");
 };
 
-export const unsaveArtwork = async ({ userId, artworkId, session }) => {
+export const unfavoriteArtwork = async ({ userId, artworkId, session }) => {
   const foundUser = await fetchUserById({
     userId,
     session,
   });
   if (foundUser) {
     if (foundUser.savedArtwork.includes(artworkId)) {
-      await removeUserSave({ userId: foundUser._id, artworkId, session });
-      await removeArtworkSave({ artworkId, session });
+      await removeUserFavorite({ userId: foundUser._id, artworkId, session });
+      await removeArtworkFavorite({ artworkId, session });
       return { message: "Artwork unsaved" };
     }
     throw createError(400, "Artwork could not be unsaved");

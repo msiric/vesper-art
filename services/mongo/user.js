@@ -275,14 +275,22 @@ export const addUserArtwork = async ({ userId, artworkId, session = null }) => {
   ).session(session);
 };
 
-export const addUserSave = async ({ userId, artworkId, session = null }) => {
+export const addUserFavorite = async ({
+  userId,
+  artworkId,
+  session = null,
+}) => {
   return await User.updateOne(
     { _id: userId },
     { $push: { savedArtwork: artworkId } }
   ).session(session);
 };
 
-export const removeUserSave = async ({ userId, artworkId, session = null }) => {
+export const removeUserFavorite = async ({
+  userId,
+  artworkId,
+  session = null,
+}) => {
   return await User.updateOne(
     { _id: userId },
     { $pull: { savedArtwork: artworkId } }

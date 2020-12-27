@@ -15,6 +15,7 @@ router.route("/checkout/:versionId").get(
   }))
 );
 
+// $TODO wat? not used?
 router.route("/download/:versionId").post(
   [isAuthenticated, checkParamsId],
   handler(postDownload, (req, res, next) => ({

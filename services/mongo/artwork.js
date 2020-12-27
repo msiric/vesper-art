@@ -240,7 +240,7 @@ export const addNewVersion = async ({
 };
 
 // needs transaction (done)
-export const addArtworkSave = async ({ artworkId, session = null }) => {
+export const addArtworkFavorite = async ({ artworkId, session = null }) => {
   return await Artwork.updateOne(
     {
       $and: [{ _id: artworkId }, { active: true }],
@@ -249,7 +249,7 @@ export const addArtworkSave = async ({ artworkId, session = null }) => {
   ).session(session);
 };
 
-export const removeArtworkSave = async ({ artworkId, session = null }) => {
+export const removeArtworkFavorite = async ({ artworkId, session = null }) => {
   return await Artwork.updateOne(
     {
       $and: [{ _id: artworkId }, { active: true }],

@@ -99,7 +99,7 @@ const PricingCard = ({
             color="primary"
             variant="outlined"
             component={RouterLink}
-            to={`/edit_artwork/${artworkId}`}
+            to={`/artwork/${artworkId}/edit`}
             startIcon={<EditIcon />}
           >
             Edit artwork

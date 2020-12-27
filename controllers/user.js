@@ -1,11 +1,11 @@
 import aws from "aws-sdk";
 import createError from "http-errors";
 import randomString from "randomstring";
+import { fetchUserArtwork } from "services/postgres/user.js";
 import { server } from "../config/secret.js";
 import {
   fetchArtworkByOwner,
   fetchArtworksByOwner,
-  fetchUserArtworks,
 } from "../services/mongo/artwork.js";
 import {
   fetchOrdersByBuyer,
@@ -61,7 +61,7 @@ export const getUserProfile = async ({
 
 export const getUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
-  const foundArtwork = await fetchUserArtworks({
+  const foundArtwork = await fetchUserArtwork({
     userId,
     dataSkip,
     dataLimit,
@@ -79,7 +79,7 @@ export const getUserOwnership = async ({ userId, dataCursor, dataCeiling }) => {
   return { purchases: foundPurchases.purchases };
 };
 
-export const getUserSaves = async ({ userId, dataCursor, dataCeiling }) => {
+export const getUserFavorites = async ({ userId, dataCursor, dataCeiling }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundUser = await fetchUserSaves({ userId, dataSkip, dataLimit });
   return { saves: foundUser.savedArtwork };

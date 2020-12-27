@@ -2,14 +2,19 @@ export const upload = {
   artwork: {
     fileSize: 10 * 1024 * 1024,
     fileDimensions: { height: 1200, width: 1200 },
-    fileTransform: { width: 500 },
-    mimeTypes: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
+    fileTransform: {
+      width: 500,
+      get height(fileHeight, fileWidth) {
+        return fileHeight / (fileWidth / this.width);
+      },
+    },
+    mimeTypes: ["image/jpg", "image/jpeg", "image/gif", "image/png"],
   },
   user: {
     fileSize: 5 * 1024 * 1024,
     fileDimensions: { height: 150, width: 150 },
     fileTransform: { width: 150 },
-    mimeTypes: ['image/jpg', 'image/jpeg', 'image/png'],
+    mimeTypes: ["image/jpg", "image/jpeg", "image/png"],
   },
 };
 

@@ -21,20 +21,19 @@ router.route("/artwork/:artworkId/comment").post(
   }))
 );
 
-router.route("/artwork/:artworkId/comment/:commentId").patch(
-  [isAuthenticated, checkParamsId],
-  handler(patchComment, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
-
 router
   .route("/artwork/:artworkId/comment/:commentId")
   .get(
     [isAuthenticated, checkParamsId],
     handler(getComment, (req, res, next) => ({
       ...req.params,
+    }))
+  )
+  .patch(
+    [isAuthenticated, checkParamsId],
+    handler(patchComment, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
     }))
   )
   .delete(

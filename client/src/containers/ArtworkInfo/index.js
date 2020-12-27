@@ -126,7 +126,7 @@ const ArtworkInfo = ({
                           variant="outlined"
                           color="primary"
                           component={RouterLink}
-                          to={`/edit_artwork/${artwork._id}`}
+                          to={`/artwork/${artwork._id}/edit`}
                         >
                           Edit artwork
                         </Button>

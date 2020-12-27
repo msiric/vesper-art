@@ -10,10 +10,12 @@ import { formatDate } from "../../../../common/helpers.js";
 import Datatable from "../../components/DataTable/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
+import { useTracked as useUserContext } from "../../contexts/User.js";
 import { deleteArtwork, getGallery } from "../../services/artwork.js";
 import globalStyles from "../../styles/global.js";
 
 const MyArtwork = ({ location }) => {
+  const [userStore] = useUserContext();
   const [state, setState] = useState({
     isDeleting: false,
     loading: true,
@@ -34,6 +36,7 @@ const MyArtwork = ({ location }) => {
   const fetchArtwork = async () => {
     try {
       const { data } = await getGallery.request({
+        userId: userStore.id,
         dataCursor: state.dataCursor,
         dataCeiling: state.dataCeiling,
       });
@@ -70,7 +73,7 @@ const MyArtwork = ({ location }) => {
   };
 
   const handleArtworkEdit = (artworkId) => {
-    history.push(`/edit_artwork/${artworkId}`);
+    history.push(`/artwork/${artworkId}/edit`);
   };
 
   const handleArtworkDelete = async () => {
@@ -267,7 +270,7 @@ const MyArtwork = ({ location }) => {
             addOptions={{
               enabled: true,
               title: "Add artwork",
-              route: "add_artwork",
+              route: "artwork/add",
             }}
           />
         </Grid>

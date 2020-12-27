@@ -242,7 +242,7 @@ export const addUserArtwork = async ({ userId, artworkId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const addUserSave = async ({ userId, artworkId }) => {
+export const addUserFavorite = async ({ userId, artworkId }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });
@@ -251,7 +251,7 @@ export const addUserSave = async ({ userId, artworkId }) => {
 };
 
 // $TODO probably not how it's done
-export const removeUserSave = async ({ userId, artworkId }) => {
+export const removeUserFavorite = async ({ userId, artworkId }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });

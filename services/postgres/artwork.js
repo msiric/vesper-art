@@ -1,3 +1,4 @@
+import { upload } from "common/constants";
 import { Cover } from "entities/Cover";
 import { Favorite } from "entities/Favorite";
 import { Media } from "entities/Media";
@@ -39,7 +40,7 @@ export const fetchArtworkDetails = async ({
   return dataSkip !== undefined && dataLimit !== undefined
     ? await Artwork.findOne({
         where: [{ id: artworkId, active: true }],
-        relations: ["comments", "comments.owner"],
+        relations: ["owner", "current", "comments", "comments.owner"],
         skip: dataSkip,
         take: dataLimit,
       })
@@ -105,40 +106,27 @@ export const fetchArtworkLicenses = async ({ artworkId, userId }) => {
   });
 };
 
-// $Needs testing (mongo -> postgres)
-// probably not working as intended
-export const addNewArtwork = async ({ artworkData, artworkUpload, userId }) => {
+const addNewCover = async ({ artworkUpload }) => {
   const newCover = new Cover();
   newMedia.source = artworkUpload.fileCover;
   newMedia.dominant = artworkUpload.fileDominant;
   newMedia.orientation = artworkUpload.fileOrientation;
-  newMedia.height = null; // $TODO replace with cover height
-  newMedia.width = null; // $TODO replace with cover width
+  newMedia.height = upload.artwork.fileTransform.height(
+    artworkUpload.fileHeight,
+    artworkUpload.fileWidth
+  );
+  newMedia.width = upload.artwork.fileTransform.width;
+  return newCover;
+};
+
+const addNewMedia = async ({ artworkUpload }) => {
   const newMedia = new Media();
   newMedia.source = artworkUpload.fileMedia;
   newMedia.dominant = artworkUpload.fileDominant;
   newMedia.orientation = artworkUpload.fileOrientation;
   newMedia.height = artworkUpload.fileHeight;
   newMedia.width = artworkUpload.fileWidth;
-  const newVersion = new Version();
-  newVersion.cover = newCover;
-  newVersion.media = newMedia;
-  newVersion.title = artworkData.artworkTitle || "";
-  newVersion.type = artworkData.artworkType || "";
-  newVersion.availability = artworkData.artworkAvailability || "";
-  newVersion.license = artworkData.artworkLicense || "";
-  newVersion.use = artworkData.artworkUse || "";
-  newVersion.personal = artworkData.artworkPersonal;
-  newVersion.commercial = artworkData.artworkCommercial;
-  newVersion.category = artworkData.artworkCategory || "";
-  newVersion.description = artworkData.artworkDescription || "";
-  newVersion.tags = artworkData.artworkTags || [];
-  const newArtwork = new Artwork();
-  newArtwork.owner = userId;
-  newArtwork.current = newVersion;
-  newArtwork.active = true;
-  newArtwork.generated = false;
-  return await newArtwork.save();
+  return newMedia;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -147,22 +135,12 @@ export const addNewVersion = async ({
   prevArtwork,
   artworkData,
   artworkUpload,
+  savedCover,
+  savedMedia,
 }) => {
-  const newCover = new Cover();
-  newMedia.source = artworkUpload.fileCover;
-  newMedia.dominant = artworkUpload.fileDominant;
-  newMedia.orientation = artworkUpload.fileOrientation;
-  newMedia.height = null; // $TODO replace with cover height
-  newMedia.width = null; // $TODO replace with cover width
-  const newMedia = new Media();
-  newMedia.source = artworkUpload.fileMedia;
-  newMedia.dominant = artworkUpload.fileDominant;
-  newMedia.orientation = artworkUpload.fileOrientation;
-  newMedia.height = artworkUpload.fileHeight;
-  newMedia.width = artworkUpload.fileWidth;
   const newVersion = new Version();
-  newVersion.cover = newCover;
-  newVersion.media = newMedia;
+  newVersion.cover = savedCover;
+  newVersion.media = savedMedia;
   newVersion.title = artworkData.artworkTitle;
   newVersion.type = artworkData.artworkType;
   newVersion.availability = artworkData.artworkAvailability;
@@ -173,13 +151,23 @@ export const addNewVersion = async ({
   newVersion.category = artworkData.artworkCategory;
   newVersion.description = artworkData.artworkDescription;
   newVersion.tags = artworkData.artworkTags;
-  newVersion.artwork = prevArtwork.artwork;
-  return await newVersion.save();
+  if (prevArtwork.artwork) newVersion.artwork = prevArtwork.artwork;
+};
+
+// $Needs testing (mongo -> postgres)
+// probably not working as intended
+export const addNewArtwork = async ({ savedVersion, userId }) => {
+  const newArtwork = new Artwork();
+  newArtwork.owner = userId;
+  newArtwork.current = savedVersion;
+  newArtwork.active = true;
+  newArtwork.generated = false;
+  return await newArtwork.save();
 };
 
 // $Needs testing (mongo -> postgres)
 // check if cascade works correctly
-export const addArtworkSave = async ({ artworkId }) => {
+export const addArtworkFavorite = async ({ artworkId }) => {
   const newFavorite = new Favorite();
   newFavorite.owner = null; // $TODO add owner;
   newFavorite.artwork = artworkId;
@@ -190,7 +178,7 @@ export const addArtworkSave = async ({ artworkId }) => {
 
 // $Needs testing (mongo -> postgres)
 // check if cascade works correctly
-export const removeArtworkSave = async ({ artworkId }) => {
+export const removeArtworkFavorite = async ({ artworkId }) => {
   const foundFavorite = await Favorite.findOne({ artwork: artworkId });
   await Favorite.remove({ foundFavorite });
 };

@@ -117,7 +117,7 @@ const ArtworkCard = ({
               <IconButton
                 aria-label={"Edit artwork"}
                 component={RouterLink}
-                to={`/edit_artwork/${artwork._id}`}
+                to={`/artwork/${artwork._id}/edit`}
                 className={classes.buttonColor}
               >
                 <EditIcon />
