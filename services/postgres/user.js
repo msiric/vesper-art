@@ -250,6 +250,7 @@ export const addUserArtwork = async ({ userId, savedArtwork }) => {
 export const addUserComment = async ({ userId, savedComment }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
+    relations: ["comments"],
   });
   foundUser.comments.push(savedComment);
   return await User.save(foundUser);
@@ -258,6 +259,7 @@ export const addUserComment = async ({ userId, savedComment }) => {
 export const addSellerReview = async ({ userId, savedReview }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
+    relations: ["receivedReviews"],
   });
   foundUser.receivedReviews.push(savedReview);
   return await User.save(foundUser);
@@ -266,6 +268,7 @@ export const addSellerReview = async ({ userId, savedReview }) => {
 export const addBuyerReview = async ({ userId, savedReview }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
+    relations: ["givenReviews"],
   });
   foundUser.givenReviews.push(savedReview);
   return await User.save(foundUser);
@@ -275,6 +278,7 @@ export const addBuyerReview = async ({ userId, savedReview }) => {
 export const addUserLicense = async ({ savedLicense }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
+    relations: ["licenses"],
   });
   foundUser.licenses.push(savedLicense);
   return await User.save(foundUser);
@@ -283,6 +287,7 @@ export const addUserLicense = async ({ savedLicense }) => {
 export const addUserTicket = async ({ userId, savedTicket }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
+    relations: ["tickets"],
   });
   foundUser.tickets.push(savedTicket);
   return await User.save(foundUser);
@@ -292,6 +297,7 @@ export const addUserTicket = async ({ userId, savedTicket }) => {
 export const addUserFavorite = async ({ userId, savedFavorite }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
+    relations: ["favorites"],
   });
   foundUser.favorites.push(savedFavorite);
   return await User.save(foundUser);
@@ -316,7 +322,9 @@ export const addUserNotification = async ({ userId }) => {
 
 // $Needs testing (mongo -> postgres)
 export const addNewIntent = async ({ userId, versionId, intentId }) => {
-  const foundUser = await User.findOne({ where: [{ id: userId }] });
+  const foundUser = await User.findOne({
+    where: [{ id: userId }],
+  });
   foundUser.intents.push(intentId);
   return await User.save(foundUser);
 };
@@ -335,6 +343,7 @@ export const removeExistingIntent = async ({
 };
 
 // $TODO probably not how it's done
+// doesn't work this way
 export const editUserRating = async ({ userId, userRating }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],

@@ -165,6 +165,7 @@ export const addNewFavorite = async ({ userId, artworkId }) => {
 export const addArtworkFavorite = async ({ artworkId, savedFavorite }) => {
   const foundArtwork = await Artwork.findOne({
     where: [{ id: artworkId, active: true }],
+    relations: ["favorites"],
   });
   foundArtwork.favorites.push(savedFavorite);
   return await Artwork.save(foundArtwork);
@@ -194,6 +195,7 @@ export const removeArtworkVersion = async ({ versionId }) => {
 export const addArtworkComment = async ({ artworkId, savedComment }) => {
   const foundArtwork = await Artwork.findOne({
     where: [{ id: artworkId, active: true }],
+    relations: ["comments"],
   });
   foundArtwork.comments.push(savedComment);
   return await Artwork.save(foundArtwork);
