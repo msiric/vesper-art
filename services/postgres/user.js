@@ -111,13 +111,23 @@ export const fetchUserProfile = async ({
     dataSkip && dataLimit
       ? await User.findOne({
           where: [{ name: userUsername, active: true }],
-          relations: ["artwork", "artwork.owner", "artwork.current"],
+          relations: [
+            "artwork",
+            "artwork.owner",
+            "artwork.current",
+            "artwork.current.cover",
+          ],
           skip: dataSkip,
           take: dataLimit,
         })
       : await User.findOne({
           where: [{ name: userUsername, active: true }],
-          relations: ["artwork", "artwork.owner", "artwork.current"],
+          relations: [
+            "artwork",
+            "artwork.owner",
+            "artwork.current",
+            "artwork.current.cover",
+          ],
         });
   foundUser.artwork = foundUser.artwork.filter(
     (artwork) => artwork.active === true
@@ -130,6 +140,7 @@ export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   return await Artwork.find({
     where: [{ owner: userId, active: true }],
+    relations: ["current", "current.cover"],
     skip: dataSkip,
     take: dataLimit,
   });

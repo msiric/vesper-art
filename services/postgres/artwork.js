@@ -17,7 +17,7 @@ export const fetchArtworkById = async ({ artworkId }) => {
 export const fetchActiveArtworks = async ({ dataSkip, dataLimit }) => {
   return await Artwork.find({
     where: [{ active: true }],
-    relations: ["owner", "current"],
+    relations: ["owner", "current", "current.cover"],
     skip: dataSkip,
     take: dataLimit,
   });
@@ -27,7 +27,7 @@ export const fetchActiveArtworks = async ({ dataSkip, dataLimit }) => {
 export const fetchVersionDetails = async ({ versionId }) => {
   return await Version.findOne({
     where: [{ id: versionId }],
-    relations: ["artwork", "artwork.owner"],
+    relations: ["artwork", "artwork.owner", "cover"],
   });
 };
 
@@ -40,13 +40,25 @@ export const fetchArtworkDetails = async ({
   return dataSkip !== undefined && dataLimit !== undefined
     ? await Artwork.findOne({
         where: [{ id: artworkId, active: true }],
-        relations: ["owner", "current", "comments", "comments.owner"],
+        relations: [
+          "owner",
+          "current",
+          "current.cover",
+          "comments",
+          "comments.owner",
+        ],
         skip: dataSkip,
         take: dataLimit,
       })
     : await Artwork.findOne({
         where: [{ id: artworkId, active: true }],
-        relations: ["owner", "current", "comments", "comments.owner"],
+        relations: [
+          "owner",
+          "current",
+          "current.cover",
+          "comments",
+          "comments.owner",
+        ],
       });
 };
 
@@ -68,7 +80,7 @@ export const fetchArtworkComments = async ({
 export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
   return await Artwork.find({
     where: [{ owner: userId, active: true }],
-    relations: ["current"],
+    relations: ["current", "current.cover"],
     skip: dataSkip,
     take: dataLimit,
   });
@@ -78,7 +90,7 @@ export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
 export const fetchArtworksByOwner = async ({ userId }) => {
   return await Artwork.find({
     where: [{ owner: userId, active: true }],
-    relations: ["current", "versions"],
+    relations: ["current", "current.cover"],
   });
 };
 
