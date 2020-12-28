@@ -416,6 +416,8 @@ const ArtworkDetails = ({ match, location, socket }) => {
     reset(setDefaultValues());
   }, [state.license]);
 
+  console.log(state.artwork);
+
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>

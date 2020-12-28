@@ -5,7 +5,7 @@ import CardActions from "@material-ui/core/CardActions";
 import CardHeader from "@material-ui/core/CardHeader";
 import IconButton from "@material-ui/core/IconButton";
 import { EditRounded as EditIcon } from "@material-ui/icons";
-import React from "react";
+import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useTracked as useUserContext } from "../../contexts/User.js";
 import FavoriteButton from "../FavoriteButton/index.js";
@@ -27,11 +27,11 @@ const initialProps = {
 const ArtworkCard = ({
   artwork = initialProps.artwork,
   type = initialProps.type,
-  fixed,
   handleArtworkSave,
   loading,
 }) => {
   const [userStore] = useUserContext();
+  const [state, setState] = useState({ favorited: false });
 
   const classes = artworkCardStyles();
 
@@ -42,18 +42,18 @@ const ArtworkCard = ({
           data: artwork.id ? artwork.current : {},
           owner: artwork.id ? artwork.owner : {},
           favorites: artwork.id ? artwork.favorites : [],
-          src: artwork.id ? artwork.current.cover : "",
-          height: artwork.id ? artwork.current.height : "",
-          width: artwork.id ? artwork.current.width : "",
+          src: artwork.id ? artwork.current.cover.source : "",
+          height: artwork.id ? artwork.current.cover.height : "",
+          width: artwork.id ? artwork.current.cover.width : "",
         }
       : {
           id: artwork.id ? artwork.artwork.id : "",
           data: artwork.id ? artwork : {},
           owner: artwork.id ? artwork.artwork.owner : {},
           favorites: artwork.id ? artwork.artwork.favorites : [],
-          src: artwork.id ? artwork.cover : "",
-          height: artwork.id ? artwork.height : "",
-          width: artwork.id ? artwork.width : "",
+          src: artwork.id ? artwork.cover.source : "",
+          height: artwork.id ? artwork.cover.height : "",
+          width: artwork.id ? artwork.cover.width : "",
         };
 
   return (
@@ -106,7 +106,7 @@ const ArtworkCard = ({
         redirect={`/artwork/${item.id}`}
         height={item.data.height}
         width={item.data.width}
-        source={item.data.cover}
+        source={item.data.cover.source}
         placeholder={item.data.dominant}
         loading={loading}
       />
@@ -126,7 +126,9 @@ const ArtworkCard = ({
               [
                 <FavoriteButton
                   artwork={artwork}
-                  favorited={userStore.favorites[item.id]}
+                  // $TODO fixat treba
+                  // favorited={userStore.favorites[item.id]}
+                  favorited={false}
                   handleCallback={handleArtworkSave}
                 />,
                 <ShareButton link={`artwork/${artwork.id}`} type="artwork" />,

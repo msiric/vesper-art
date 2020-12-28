@@ -17,7 +17,6 @@ const ArtworkPanel = ({
   elements,
   hasMore,
   loadMore,
-  enqueueSnackbar,
   type,
   fixed,
   loading,

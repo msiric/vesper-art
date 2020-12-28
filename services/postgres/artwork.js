@@ -46,6 +46,7 @@ export const fetchArtworkDetails = async ({
           "current.cover",
           "comments",
           "comments.owner",
+          "favorites",
         ],
         skip: dataSkip,
         take: dataLimit,
@@ -58,6 +59,7 @@ export const fetchArtworkDetails = async ({
           "current.cover",
           "comments",
           "comments.owner",
+          "favorites",
         ],
       });
 };

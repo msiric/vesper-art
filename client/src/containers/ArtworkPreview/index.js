@@ -7,13 +7,13 @@ import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { Typography } from "../../styles/theme.js";
 import artworkPreviewStyles from "./styles.js";
 
-const ArtworkPreview = ({ version = {}, loading }) => {
+const ArtworkPreview = ({ version = { cover: {} }, loading }) => {
   const history = useHistory();
   const classes = artworkPreviewStyles();
 
   const { r, g, b } = loading
     ? { r: null, g: null, b: null }
-    : hexToRgb(version.dominant);
+    : hexToRgb(version.cover.dominant);
 
   return (
     <Card
@@ -54,7 +54,7 @@ const ArtworkPreview = ({ version = {}, loading }) => {
           <ImageWrapper
             height={version.height}
             width={version.width}
-            source={version.cover}
+            source={version.cover.source}
             placeholder={version.dominant}
             styles={{
               boxShadow: `0px 0px 40px 15px rgba(${r},${g},${b},0.75)`,
