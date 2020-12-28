@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import { Artwork } from "../../entities/Artwork";
+import { Avatar } from "../../entities/Avatar";
 import { Notification } from "../../entities/Notification";
 import { User } from "../../entities/User";
 import { formatParams } from "../../utils/helpers";
@@ -8,6 +9,7 @@ import { formatParams } from "../../utils/helpers";
 export const fetchUserById = async ({ userId }) => {
   return await User.findOne({
     where: [{ id: userId }, { active: true }],
+    relations: ["avatar"],
   });
 };
 
@@ -15,6 +17,7 @@ export const fetchUserById = async ({ userId }) => {
 export const fetchUserByEmail = async ({ userEmail }) => {
   return await User.findOne({
     where: [{ email: userEmail }, { active: true }],
+    relations: ["avatar"],
   });
 };
 
@@ -22,6 +25,7 @@ export const fetchUserByEmail = async ({ userEmail }) => {
 export const fetchUserByToken = async ({ tokenId }) => {
   return await User.findOne({
     where: [{ resetToken: tokenId, resetExpiry: { $gt: Date.now() } }],
+    relations: ["avatar"],
   });
 };
 
@@ -32,6 +36,7 @@ export const fetchUserByCreds = async ({ userUsername }) => {
       { email: userUsername, active: true },
       { name: userUsername, active: true },
     ],
+    relations: ["avatar"],
   });
 };
 
@@ -112,6 +117,7 @@ export const fetchUserProfile = async ({
       ? await User.findOne({
           where: [{ name: userUsername, active: true }],
           relations: [
+            "avatar",
             "artwork",
             "artwork.owner",
             "artwork.current",
@@ -123,6 +129,7 @@ export const fetchUserProfile = async ({
       : await User.findOne({
           where: [{ name: userUsername, active: true }],
           relations: [
+            "avatar",
             "artwork",
             "artwork.owner",
             "artwork.current",
@@ -172,28 +179,34 @@ export const fetchUserStatistics = async ({ userId }) => {
   });
 };
 
-// $TODO avatar needs to be saved properly
-export const editUserProfile = async ({
-  foundUser,
-  avatarUpload,
-  userData,
-}) => {
-  if (foundUser) {
-    if (avatarUpload.fileMedia) foundUser.avatar = avatarUpload.fileMedia;
-    if (avatarUpload.fileDominant)
-      foundUser.dominant = avatarUpload.fileDominant;
-    if (avatarUpload.fileOrientation)
-      foundUser.orientation = avatarUpload.fileOrientation;
-    if (avatarUpload.height && avatarUpload.width) {
-      foundUser.height = avatarUpload.height;
-      foundUser.width = avatarUpload.width;
-    }
-    if (userData.userDescription)
-      foundUser.description = userData.userDescription;
-    if (userData.userCountry) foundUser.country = userData.userCountry;
-    return await foundUser.save();
-  }
-  throw createError(400, "User not found");
+// $Needs testing (mongo -> postgres)
+export const addUserAvatar = async ({ avatarUpload }) => {
+  const newAvatar = new Avatar();
+  newAvatar.source = avatarUpload.fileMedia;
+  newAvatar.dominant = avatarUpload.fileDominant;
+  newAvatar.orientation = avatarUpload.fileOrientation;
+  newAvatar.height = avatarUpload.fileHeight;
+  newAvatar.width = avatarUpload.fileWidth;
+  return newAvatar;
+};
+
+// $Needs testing (mongo -> postgres)
+export const editUserAvatar = async ({ foundUser, avatarUpload }) => {
+  foundUser.avatar.source = avatarUpload.fileMedia;
+  foundUser.avatar.dominant = avatarUpload.fileDominant;
+  foundUser.avatar.orientation = avatarUpload.fileOrientation;
+  foundUser.avatar.height = avatarUpload.fileHeight;
+  foundUser.avatar.width = avatarUpload.fileWidth;
+  return foundUser.avatar;
+};
+
+// $Needs testing (mongo -> postgres)
+export const editUserProfile = async ({ foundUser, userData, savedAvatar }) => {
+  if (savedAvatar) foundUser.avatar = savedAvatar;
+  if (userData.userDescription)
+    foundUser.description = userData.userDescription;
+  if (userData.userCountry) foundUser.country = userData.userCountry;
+  return await User.save(foundUser);
 };
 
 // $Needs testing (mongo -> postgres)
@@ -361,6 +374,12 @@ export const editUserRating = async ({ userId, userRating }) => {
   });
   foundUser.rating = userRating;
   foundUser.reviews++;
+};
+
+// $Needs testing (mongo -> postgres)
+export const editUserOrigin = async ({ foundUser, userBusinessAddress }) => {
+  if (userBusinessAddress) foundUser.businessAddress = userBusinessAddress;
+  return await User.save(foundUser);
 };
 
 // needs testing (better way to update already found user)

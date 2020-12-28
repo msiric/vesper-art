@@ -34,7 +34,9 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @OneToOne(() => Avatar, (avatar) => avatar.user)
+  @OneToOne(() => Avatar, (avatar) => avatar.user, {
+    cascade: ["insert", "update"],
+  })
   @JoinColumn()
   avatar: Avatar;
 

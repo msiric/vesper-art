@@ -13,8 +13,11 @@ import {
 import { fetchStripeBalance } from "../services/postgres/stripe.js";
 import {
   addNewIntent,
+  addUserAvatar,
   deactivateExistingUser,
+  editUserAvatar,
   editUserEmail,
+  editUserOrigin,
   editUserPassword,
   editUserPreferences,
   editUserProfile,
@@ -118,20 +121,19 @@ export const updateUserOrigin = async ({
   if (error) throw createError(400, error);
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
-    if (userBusinessAddress) foundUser.businessAddress = userBusinessAddress;
-    await User.save(foundUser);
+    await editUserOrigin({ foundUser, userBusinessAddress });
     return { message: "User business address updated" };
   }
   throw createError(400, "User not found");
 };
 
+// $TODO Update context with new data
 export const updateUserProfile = async ({
   userId,
   userPath,
   userFilename,
   userMimetype,
   userData,
-  session,
 }) => {
   // $TODO Validate data passed to upload
   const avatarUpload = await finalizeMediaUpload({
@@ -142,8 +144,13 @@ export const updateUserProfile = async ({
   });
   const { error } = profileValidator(sanitizeData(userData));
   if (error) throw createError(400, error);
-  const foundUser = await fetchUserById({ userId, session });
-  await editUserProfile({ foundUser, avatarUpload, userData, session });
+  const foundUser = await fetchUserById({ userId });
+  const savedAvatar = avatarUpload.fileMedia
+    ? foundUser.avatar
+      ? await editUserAvatar({ foundUser, avatarUpload })
+      : await addUserAvatar({ avatarUpload })
+    : null;
+  await editUserProfile({ foundUser, userData, savedAvatar });
   return { message: "User details updated" };
 };
 
@@ -186,6 +193,7 @@ export const deleteUserIntent = async ({ userId, intentId }) => {
   return { message: "Intent successfully deleted" };
 };
 
+// $TODO Update context with new data
 export const updateUserEmail = async ({ userId, userEmail, session }) => {
   const { error } = emailValidator(sanitizeData({ userEmail }));
   if (error) throw createError(400, error);
@@ -229,6 +237,7 @@ export const updateUserPassword = async ({
 };
 
 // needs transaction (done)
+// $TODO Update context with new data
 export const updateUserPreferences = async ({ userId, userFavorites }) => {
   const { error } = preferencesValidator(sanitizeData({ userFavorites }));
   if (error) throw createError(400, error);
