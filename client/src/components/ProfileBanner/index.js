@@ -2,7 +2,7 @@ import { Box } from "@material-ui/core";
 import {
   LocationOnRounded as LocationIcon,
   PersonRounded as MemberIcon,
-  StarRounded as StarIcon
+  StarRounded as StarIcon,
 } from "@material-ui/icons";
 import React from "react";
 import { formatDate } from "../../../../common/helpers.js";
@@ -10,7 +10,7 @@ import {
   artepunktTheme,
   Avatar,
   Card,
-  Typography
+  Typography,
 } from "../../styles/theme.js";
 import ShareButton from "../ShareButton/index.js";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";
@@ -50,7 +50,7 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
             <SkeletonWrapper loading={loading} variant="circle">
               <Avatar
                 alt={user.name}
-                src={user.avatar}
+                src={user.avatar.source}
                 title={user.name}
                 width={130}
                 height={130}

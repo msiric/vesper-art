@@ -340,7 +340,7 @@ const Header = ({ socket, history }) => {
           <Divider />
         </>
       )}
-      <MenuItem component={Link} to={`/users/${userStore.name}`} disableRipple>
+      <MenuItem component={Link} to={`/user/${userStore.name}`} disableRipple>
         <ListItemAvatar>
           <Avatar>
             <ProfileIcon />

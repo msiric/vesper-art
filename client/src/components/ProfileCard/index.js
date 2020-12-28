@@ -31,7 +31,7 @@ const ProfileCard = ({ user, styles, loading }) => {
         <Box className={classes.profileCardWrapper}>
           <Avatar
             component={RouterLink}
-            to={`/users/${user.name}`}
+            to={`/user/${user.name}`}
             alt={user.name}
             src={user.avatar}
             title={user.name}
@@ -50,7 +50,7 @@ const ProfileCard = ({ user, styles, loading }) => {
         <SkeletonWrapper variant="text" loading={loading}>
           <Typography
             component={RouterLink}
-            to={`/users/${user.name}`}
+            to={`/user/${user.name}`}
             gutterBottom
             variant="h5"
             align="center"

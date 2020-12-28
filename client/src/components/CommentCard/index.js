@@ -85,7 +85,7 @@ const CommentCard = ({
               alt={comment.owner.name}
               src={comment.owner.avatar}
               component={Link}
-              to={`/users/${comment.owner.name}`}
+              to={`/user/${comment.owner.name}`}
               className={classes.noLink}
             />
           </SkeletonWrapper>
@@ -96,7 +96,7 @@ const CommentCard = ({
               <SkeletonWrapper variant="text" loading={loading}>
                 <Typography
                   component={Link}
-                  to={`/users/${comment.owner.name}`}
+                  to={`/user/${comment.owner.name}`}
                   style={{ textDecoration: "none" }}
                   color="text.primary"
                 >

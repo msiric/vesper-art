@@ -12,7 +12,7 @@ import globalStyles from "../../styles/global.js";
 
 const initialState = {
   loading: true,
-  user: { artwork: {}, favorites: [] },
+  user: { artwork: {}, favorites: [], avatar: {} },
   tabs: { value: 0, revealed: false, loading: true },
   scroll: {
     artwork: {
