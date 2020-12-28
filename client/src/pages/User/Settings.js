@@ -22,7 +22,7 @@ import { deleteEmptyValues } from "../../utils/helpers.js";
 
 const initialState = {
   loading: true,
-  user: {},
+  user: { avatar: {} },
   modal: { open: false },
   isDeactivating: false,
 };

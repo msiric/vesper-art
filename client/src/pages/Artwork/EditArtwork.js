@@ -46,6 +46,8 @@ const initialState = {
       personal: "",
       commercial: "",
       description: "",
+      cover: {},
+      media: {},
       tags: [],
     },
   },
@@ -223,7 +225,7 @@ const EditArtwork = ({ match, location }) => {
                   <CardContent>
                     <ArtworkForm
                       capabilities={state.capabilities}
-                      preview={state.artwork.current.cover}
+                      preview={state.artwork.current.cover.source}
                       errors={errors}
                       setValue={setValue}
                       trigger={trigger}
