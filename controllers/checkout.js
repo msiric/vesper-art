@@ -45,7 +45,7 @@ export const postDownload = async ({
       if (licensePrice === 0) {
         // $TODO Treba li dohvacat usera?
         const foundUser = await fetchUserById({ userId, session });
-        if (!foundVersion.artwork.owner.id.equals(foundUser.id)) {
+        if (!foundVersion.artwork.owner.id === foundUser.id) {
           if (foundUser && foundUser.active) {
             const { licenseError } = licenseValidator(
               sanitizeData({

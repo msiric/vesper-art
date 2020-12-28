@@ -11,7 +11,10 @@ import {
   removeExistingComment,
 } from "../services/postgres/comment.js";
 import { addNewNotification } from "../services/postgres/notification.js";
-import { addUserNotification } from "../services/postgres/user.js";
+import {
+  addUserComment,
+  addUserNotification,
+} from "../services/postgres/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import commentValidator from "../validation/comment.js";
 
@@ -44,7 +47,7 @@ export const postComment = async ({ userId, artworkId, commentContent }) => {
       userId,
       savedComment,
     });
-    if (!savedComment.owner.equals(updatedUser.id)) {
+    if (!savedComment.owner === updatedUser.id) {
       await addUserNotification({ userId: updatedUser.id });
       const savedNotification = await addNewNotification({
         notificationLink: foundArtwork.id,

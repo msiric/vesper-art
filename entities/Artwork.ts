@@ -35,6 +35,7 @@ export class Artwork extends BaseEntity {
   versions: Version[];
 
   @OneToMany(() => Comment, (comment) => comment.artwork, {
+    cascade: ["insert"],
     onDelete: "CASCADE",
   })
   comments: Comment[];
