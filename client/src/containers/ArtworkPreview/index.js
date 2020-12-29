@@ -90,7 +90,7 @@ const ArtworkPreview = ({ version = { cover: {} }, loading }) => {
               mb={2}
               fontSize={12}
               fontStyle="italic"
-            >{`The original artwork dimensions (in pixels) are: ${version.width}x${version.height}`}</Typography>
+            >{`The original artwork dimensions (in pixels) are: ${version.cover.width}x${version.cover.height}`}</Typography>
           </SkeletonWrapper>
         </Box>
       </Box>
