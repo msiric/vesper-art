@@ -98,6 +98,8 @@ export const postLogIn = async ({
     country: foundUser.country,
     businessAddress: foundUser.businessAddress,
     jwtVersion: foundUser.jwtVersion,
+    favorites: foundUser.favorites,
+    intents: foundUser.intents,
   };
 
   sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));

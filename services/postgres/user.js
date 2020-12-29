@@ -36,7 +36,7 @@ export const fetchUserByCreds = async ({ userUsername }) => {
       { email: userUsername, active: true },
       { name: userUsername, active: true },
     ],
-    relations: ["avatar"],
+    relations: ["avatar", "favorites", "intents"],
   });
 };
 
