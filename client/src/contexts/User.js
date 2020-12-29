@@ -29,6 +29,8 @@ export const userReducer = (state, action) => {
         avatar: action.avatar,
         stripeId: action.stripeId,
         country: action.country,
+        favorites: action.favorites,
+        intents: action.intents,
       };
     case "UPDATE_USER":
       return {
@@ -38,6 +40,8 @@ export const userReducer = (state, action) => {
         avatar: action.avatar,
         stripeId: action.stripeId,
         country: action.country,
+        favorites: action.favorites,
+        intents: action.intents,
       };
     case "RESET_USER":
       return {
@@ -52,6 +56,8 @@ export const userReducer = (state, action) => {
         width: null,
         stripeId: null,
         country: null,
+        favorites: {},
+        intents: {},
       };
     case "UPDATE_TOKEN":
       return {
