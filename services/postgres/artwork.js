@@ -188,6 +188,14 @@ export const addArtworkFavorite = async ({ artworkId, savedFavorite }) => {
   return await Artwork.save(foundArtwork);
 };
 
+export const removeExistingFavorite = async ({ userId, artworkId }) => {
+  const foundFavorite = await Favorite.findOne({
+    where: [{ artwork: artworkId, owner: userId }],
+    relations: ["artwork", "owner"],
+  });
+  return await Favorite.remove(foundFavorite);
+};
+
 export const fetchFavoriteByParents = async ({ userId, artworkId }) => {
   const foundFavorite = await Favorite.findOne({
     where: [{ owner: userId, artwork: artworkId }],

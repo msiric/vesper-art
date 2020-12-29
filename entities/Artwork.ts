@@ -41,6 +41,7 @@ export class Artwork extends BaseEntity {
   comments: Comment[];
 
   @OneToMany(() => Favorite, (favorite) => favorite.artwork, {
+    cascade: ["insert"],
     onDelete: "CASCADE",
   })
   favorites: Favorite[];

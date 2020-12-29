@@ -15,6 +15,7 @@ import {
   fetchFavoriteByParents,
   fetchUserArtworks,
   removeArtworkVersion,
+  removeExistingFavorite,
 } from "../services/postgres/artwork.js";
 import { addNewLicense } from "../services/postgres/license.js";
 import { fetchOrderByVersion } from "../services/postgres/order.js";
@@ -330,11 +331,13 @@ export const favoriteArtwork = async ({ userId, artworkId }) => {
       userId,
       artworkId,
     });
-    await addArtworkFavorite({
-      artworkId,
-      savedFavorite,
-    });
-    await addUserFavorite({ userId, savedFavorite });
+    await Promise.all([
+      addArtworkFavorite({
+        artworkId,
+        savedFavorite,
+      }),
+      addUserFavorite({ userId, savedFavorite }),
+    ]);
     return { message: "Artwork favorited" };
   }
   throw createError(400, "Artwork has already been favorited");

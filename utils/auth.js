@@ -31,7 +31,10 @@ export const updateAccessToken = async (req, res, next) => {
 
   const foundUser = await User.findOne({
     where: [{ id: payload.userId, active: true }],
+    relations: ["avatar", "favorites", "favorites.artwork", "intents"],
   });
+
+  console.log(foundUser.favorites);
 
   if (!foundUser) {
     return { ok: false, accessToken: "" };

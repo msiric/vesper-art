@@ -126,9 +126,7 @@ const ArtworkCard = ({
               [
                 <FavoriteButton
                   artwork={artwork}
-                  // $TODO fixat treba
-                  // favorited={userStore.favorites[item.id]}
-                  favorited={false}
+                  favorited={userStore.favorites[item.id]}
                   handleCallback={handleArtworkSave}
                 />,
                 <ShareButton link={`artwork/${artwork.id}`} type="artwork" />,

@@ -64,9 +64,7 @@ const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
             {artwork.owner && artwork.owner.id !== userStore.id && (
               <FavoriteButton
                 artwork={artwork}
-                // $TODO fixat treba
-                // favorited={userStore.favorites[item.id]}
-                favorited={false}
+                favorited={userStore.favorites[artwork.id]}
                 labeled
                 handleCallback={handleArtworkSave}
               />
