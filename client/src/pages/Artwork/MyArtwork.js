@@ -244,7 +244,7 @@ const MyArtwork = ({ location }) => {
             ]}
             data={state.artwork.map((artwork) => [
               artwork.id,
-              artwork.current.cover,
+              artwork.current.cover.source,
               artwork.current.title,
               artwork.current.availability,
               artwork.current.type,
