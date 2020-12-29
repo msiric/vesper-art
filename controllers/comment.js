@@ -1,5 +1,4 @@
 import createError from "http-errors";
-import socketApi from "../lib/socket.js";
 import {
   addArtworkComment,
   fetchArtworkById,
@@ -10,11 +9,7 @@ import {
   fetchCommentById,
   removeExistingComment,
 } from "../services/postgres/comment.js";
-import { addNewNotification } from "../services/postgres/notification.js";
-import {
-  addUserComment,
-  addUserNotification,
-} from "../services/postgres/user.js";
+import { addUserComment } from "../services/postgres/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import commentValidator from "../validation/comment.js";
 
@@ -39,24 +34,34 @@ export const postComment = async ({ userId, artworkId, commentContent }) => {
       userId,
       commentContent,
     });
-    await addArtworkComment({
-      artworkId,
-      savedComment,
-    });
-    const updatedUser = await addUserComment({
-      userId,
-      savedComment,
-    });
-    if (!savedComment.owner === updatedUser.id) {
-      await addUserNotification({ userId: updatedUser.id });
-      const savedNotification = await addNewNotification({
-        notificationLink: foundArtwork.id,
-        notificationRef: savedComment.id,
-        notificationType: "comment",
-        notificationReceiver: updatedUser.id,
-      });
-      socketApi.sendNotification(updatedUser.id, savedNotification);
-    }
+    // await addArtworkComment({
+    //   artworkId,
+    //   savedComment,
+    // });
+    // const updatedUser = await addUserComment({
+    //   userId,
+    //   savedComment,
+    // });
+    await Promise.all([
+      addArtworkComment({
+        artworkId,
+        savedComment,
+      }),
+      addUserComment({
+        userId,
+        savedComment,
+      }),
+    ]);
+    // if (!savedComment.owner === updatedUser.id) {
+    //   await addUserNotification({ userId: updatedUser.id });
+    //   const savedNotification = await addNewNotification({
+    //     notificationLink: foundArtwork.id,
+    //     notificationRef: savedComment.id,
+    //     notificationType: "comment",
+    //     notificationReceiver: updatedUser.id,
+    //   });
+    //   socketApi.sendNotification(updatedUser.id, savedNotification);
+    // }
     return {
       message: "Comment posted successfully",
       payload: savedComment,

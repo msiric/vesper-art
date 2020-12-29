@@ -85,7 +85,7 @@ export class User extends BaseEntity {
   @OneToMany(() => License, (license) => license.owner)
   licenses: License[];
 
-  @OneToMany(() => Comment, (comment) => comment.owner, { cascade: ["insert"] })
+  @OneToMany(() => Comment, (comment) => comment.owner)
   comments: Comment[];
 
   @Column({ default: "" })
