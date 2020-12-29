@@ -37,31 +37,34 @@ export const fetchArtworkDetails = async ({
   dataSkip,
   dataLimit,
 }) => {
-  return dataSkip !== undefined && dataLimit !== undefined
-    ? await Artwork.findOne({
-        where: [{ id: artworkId, active: true }],
-        relations: [
-          "owner",
-          "current",
-          "current.cover",
-          "comments",
-          "comments.owner",
-          "favorites",
-        ],
-        skip: dataSkip,
-        take: dataLimit,
-      })
-    : await Artwork.findOne({
-        where: [{ id: artworkId, active: true }],
-        relations: [
-          "owner",
-          "current",
-          "current.cover",
-          "comments",
-          "comments.owner",
-          "favorites",
-        ],
-      });
+  const foundArtwork =
+    dataSkip !== undefined && dataLimit !== undefined
+      ? await Artwork.findOne({
+          where: [{ id: artworkId, active: true }],
+          relations: [
+            "owner",
+            "current",
+            "current.cover",
+            "comments",
+            "comments.owner",
+            "favorites",
+          ],
+          skip: dataSkip,
+          take: dataLimit,
+        })
+      : await Artwork.findOne({
+          where: [{ id: artworkId, active: true }],
+          relations: [
+            "owner",
+            "current",
+            "current.cover",
+            "comments",
+            "comments.owner",
+            "favorites",
+          ],
+        });
+  foundArtwork.favorites = foundArtwork.favorites.length;
+  return foundArtwork;
 };
 
 // $TODO doesn't limit comments, but artwork?
