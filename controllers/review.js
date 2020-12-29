@@ -30,19 +30,21 @@ export const postReview = async ({ userId, reviewRating, orderId }) => {
           .add(reviewRating);
         const denominator = currency(foundOrder.seller.reviews).add(1);
         const newRating = currency(numerator).divide(denominator); */
-        await addSellerReview({
-          userId: foundOrder.seller.id,
-          savedReview,
-        });
-        await addBuyerReview({
-          userId,
-          savedReview,
-        });
-        await addOrderReview({
-          savedReview,
-          orderId,
-          userId,
-        });
+        const [updatedSeller, updatedBuyer, updatedOrder] = await Promise.all([
+          addSellerReview({
+            userId: foundOrder.seller.id,
+            savedReview,
+          }),
+          addBuyerReview({
+            userId,
+            savedReview,
+          }),
+          addOrderReview({
+            savedReview,
+            orderId,
+            userId,
+          }),
+        ]);
         // new start
         await addNewNotification({
           notificationLink: foundOrder.id,

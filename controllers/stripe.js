@@ -318,6 +318,7 @@ export const createPayout = async ({ userId, session }) => {
   throw createError(400, "Cannot create payout for this user");
 };
 
+// $TODO not good
 const processTransaction = async ({ stripeIntent, session }) => {
   const orderData = JSON.parse(stripeIntent.metadata.orderData);
   const buyerId = mongoose.Types.ObjectId(orderData.buyerId);

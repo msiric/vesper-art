@@ -1,10 +1,12 @@
 import {
+  AfterLoad,
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { formatAmount } from "../common/helpers";
 
 @Entity()
 export class Discount extends BaseEntity {
@@ -22,4 +24,9 @@ export class Discount extends BaseEntity {
 
   @CreateDateColumn()
   created: Date;
+
+  @AfterLoad()
+  correctAmount() {
+    this.discount = formatAmount(this.discount).intValue;
+  }
 }

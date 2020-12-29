@@ -24,6 +24,7 @@ export const getCheckout = async ({ userId, versionId }) => {
   throw createError(400, "Artwork not found");
 };
 
+// $TODO not good
 export const postDownload = async ({
   userId,
   versionId,
@@ -35,7 +36,7 @@ export const postDownload = async ({
   const foundVersion = await fetchVersionDetails({ versionId });
   if (foundVersion && foundVersion.artwork.active) {
     // $TODO Bolje sredit validaciju licence
-    const { intValue: licensePrice } =
+    const licensePrice =
       licenseType === "personal"
         ? foundVersion.personal
         : licenseType === "commercial"

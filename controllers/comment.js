@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import socketApi from "../lib/socket.js";
 import {
   addArtworkComment,
   fetchArtworkById,
@@ -9,7 +10,11 @@ import {
   fetchCommentById,
   removeExistingComment,
 } from "../services/postgres/comment.js";
-import { addUserComment } from "../services/postgres/user.js";
+import { addNewNotification } from "../services/postgres/notification.js";
+import {
+  addUserComment,
+  addUserNotification,
+} from "../services/postgres/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import commentValidator from "../validation/comment.js";
 
@@ -34,15 +39,7 @@ export const postComment = async ({ userId, artworkId, commentContent }) => {
       userId,
       commentContent,
     });
-    // await addArtworkComment({
-    //   artworkId,
-    //   savedComment,
-    // });
-    // const updatedUser = await addUserComment({
-    //   userId,
-    //   savedComment,
-    // });
-    await Promise.all([
+    const [updatedArtwork, updatedUser] = await Promise.all([
       addArtworkComment({
         artworkId,
         savedComment,
@@ -52,16 +49,19 @@ export const postComment = async ({ userId, artworkId, commentContent }) => {
         savedComment,
       }),
     ]);
-    // if (!savedComment.owner === updatedUser.id) {
-    //   await addUserNotification({ userId: updatedUser.id });
-    //   const savedNotification = await addNewNotification({
-    //     notificationLink: foundArtwork.id,
-    //     notificationRef: savedComment.id,
-    //     notificationType: "comment",
-    //     notificationReceiver: updatedUser.id,
-    //   });
-    //   socketApi.sendNotification(updatedUser.id, savedNotification);
-    // }
+    if (!savedComment.owner === foundArtwork.owner.id) {
+      const savedNotification = await addNewNotification({
+        notificationLink: foundArtwork.id,
+        notificationRef: savedComment.id,
+        notificationType: "comment",
+        notificationReceiver: foundArtwork.owner.id,
+      });
+      await addUserNotification({
+        userId: foundArtwork.owner.id,
+        savedNotification,
+      });
+      socketApi.sendNotification(foundArtwork.owner.id, savedNotification);
+    }
     return {
       message: "Comment posted successfully",
       payload: savedComment,

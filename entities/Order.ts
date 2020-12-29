@@ -1,4 +1,5 @@
 import {
+  AfterLoad,
   BaseEntity,
   Column,
   CreateDateColumn,
@@ -9,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { formatAmount } from "../common/helpers";
 import { Artwork } from "./Artwork";
 import { Discount } from "./Discount";
 import { Intent } from "./Intent";
@@ -44,7 +46,7 @@ export class Order extends BaseEntity {
   @JoinColumn()
   discount: Discount;
 
-  @OneToOne(() => Review, (review) => review.order)
+  @OneToOne(() => Review, (review) => review.order, { cascade: ["insert"] })
   @JoinColumn()
   review: Review;
 
@@ -72,4 +74,11 @@ export class Order extends BaseEntity {
 
   @UpdateDateColumn()
   updated: Date;
+
+  @AfterLoad()
+  correctAmount() {
+    this.spent = formatAmount(this.spent).intValue;
+    this.earned = formatAmount(this.earned).intValue;
+    this.fee = formatAmount(this.fee).intValue;
+  }
 }

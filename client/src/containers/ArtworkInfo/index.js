@@ -37,9 +37,7 @@ const ArtworkInfo = ({
                   props: {},
                 },
                 {
-                  display:
-                    artwork.current.commercial !== null &&
-                    artwork.current.license === "commercial",
+                  display: artwork.current.license === "commercial",
                   label: "Commercial license",
                   props: {},
                 },
@@ -67,9 +65,7 @@ const ArtworkInfo = ({
                   loading: loading,
                 },
                 {
-                  display:
-                    artwork.current.commercial !== null &&
-                    artwork.current.license === "commercial",
+                  display: artwork.current.license === "commercial",
                   iterable: false,
                   content: null,
                   component: (

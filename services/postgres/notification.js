@@ -9,10 +9,10 @@ export const addNewNotification = async ({
   notificationReceiver,
 }) => {
   const newNotification = new Notification();
+  newNotification.receiver = notificationReceiver;
   newNotification.link = notificationLink;
   newNotification.ref = notificationRef;
   newNotification.type = notificationType;
-  newNotification.receiver = notificationReceiver;
   newNotification.read = false;
   return await Notification.save(newNotification);
 };

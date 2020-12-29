@@ -10,6 +10,7 @@ import { Version } from "../../entities/Version";
 export const fetchArtworkById = async ({ artworkId }) => {
   return await Artwork.findOne({
     where: [{ id: artworkId }, { active: true }],
+    relations: ["owner"],
   });
 };
 

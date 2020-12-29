@@ -1,4 +1,5 @@
 import {
+  AfterLoad,
   BaseEntity,
   Column,
   CreateDateColumn,
@@ -10,6 +11,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { formatAmount } from "../common/helpers";
 import { Artwork } from "./Artwork";
 import { Cover } from "./Cover";
 import { Media } from "./Media";
@@ -66,4 +68,10 @@ export class Version extends BaseEntity {
 
   @UpdateDateColumn()
   updated: Date;
+
+  @AfterLoad()
+  correctAmount() {
+    this.personal = formatAmount(this.personal).intValue;
+    this.commercial = formatAmount(this.commercial).intValue;
+  }
 }

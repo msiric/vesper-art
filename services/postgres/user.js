@@ -336,12 +336,13 @@ export const removeUserFavorite = async ({ userId, artworkId }) => {
   return await User.save(foundUser);
 };
 
-// $TODO doesn't work this way anymore
-export const addUserNotification = async ({ userId }) => {
-  return await User.updateOne(
-    { id: userId },
-    { $inc: { notifications: 1 } }
-  ).session(session);
+// $Needs testing (mongo -> postgres)
+export const addUserNotification = async ({ userId, savedNotification }) => {
+  const foundUser = User.findOne({
+    where: [{ id: userId }],
+    relations: ["notifications"],
+  });
+  return await foundUser.notifications.push(savedNotification);
 };
 
 // $Needs testing (mongo -> postgres)

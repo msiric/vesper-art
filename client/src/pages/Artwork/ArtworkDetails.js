@@ -146,8 +146,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
         license:
           data.artwork.current.use !== "included"
             ? "personal"
-            : data.artwork.current.commercial !== null &&
-              data.artwork.current.license === "commercial"
+            : data.artwork.current.license === "commercial"
             ? "commercial"
             : null,
         artwork: data.artwork,
