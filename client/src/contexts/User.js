@@ -12,6 +12,8 @@ export const userStore = {
   width: null,
   stripeId: null,
   country: null,
+  favorites: {},
+  intents: {},
 };
 
 export const userReducer = (state, action) => {
