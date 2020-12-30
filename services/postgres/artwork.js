@@ -1,5 +1,6 @@
 import { upload } from "../../common/constants";
 import { Artwork } from "../../entities/Artwork";
+import { Comment } from "../../entities/Comment";
 import { Cover } from "../../entities/Cover";
 import { Favorite } from "../../entities/Favorite";
 import { License } from "../../entities/License";
@@ -32,57 +33,31 @@ export const fetchVersionDetails = async ({ versionId }) => {
   });
 };
 
-// $TODO doesn't limit comments, but artwork?
 export const fetchArtworkDetails = async ({
   artworkId,
   dataSkip,
   dataLimit,
 }) => {
-  const foundArtwork =
-    dataSkip !== undefined && dataLimit !== undefined
-      ? await Artwork.findOne({
-          where: [{ id: artworkId, active: true }],
-          relations: [
-            "owner",
-            "current",
-            "current.cover",
-            "comments",
-            "comments.owner",
-            "favorites",
-          ],
-          skip: dataSkip,
-          take: dataLimit,
-        })
-      : await Artwork.findOne({
-          where: [{ id: artworkId, active: true }],
-          relations: [
-            "owner",
-            "current",
-            "current.cover",
-            "comments",
-            "comments.owner",
-            "favorites",
-          ],
-        });
-  foundArtwork.favorites = foundArtwork.favorites.length;
+  const foundArtwork = await Artwork.findOne({
+    where: [{ id: artworkId, active: true }],
+    relations: ["owner", "current", "current.cover"],
+  });
   return foundArtwork;
 };
 
-// $TODO doesn't limit comments, but artwork?
 export const fetchArtworkComments = async ({
   artworkId,
   dataSkip,
   dataLimit,
 }) => {
-  return await Artwork.findOne({
-    where: [{ id: artworkId, active: true }],
-    relations: ["comments", "comments.owner"],
+  return await Comment.find({
+    where: [{ artworkId: artworkId }],
+    relations: ["owner", "owner.avatar"],
     skip: dataSkip,
     take: dataLimit,
   });
 };
 
-// $TODO doesn't limit reviews, but artwork?
 export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
   return await Artwork.find({
     where: [{ owner: userId, active: true }],
@@ -101,6 +76,7 @@ export const fetchArtworksByOwner = async ({ userId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
+// $TODO zasto active false?
 export const fetchArtworkLicenses = async ({ artworkId, userId }) => {
   return await License.find({
     where: [{ artwork: artworkId, owner: userId, active: false }],

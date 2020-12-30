@@ -41,45 +41,23 @@ export const fetchUserByCreds = async ({ userUsername }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-// $TODO doesn't limit purchases, but user?
 export const fetchUserPurchases = async ({ userId, dataSkip, dataLimit }) => {
-  return dataSkip && dataLimit
-    ? await User.findOne({
-        where: [{ id: userId, active: true }],
-        relations: [
-          "purchases",
-          "purchases.seller",
-          "purchases.version",
-          "purchases.review",
-        ],
-        skip: dataSkip,
-        take: dataLimit,
-      })
-    : await User.findOne({
-        where: [{ id: userId, active: true }],
-        relations: [
-          "purchases",
-          "purchases.seller",
-          "purchases.version",
-          "purchases.review",
-        ],
-      });
+  return await Order.find({
+    where: [{ buyerId: userId }],
+    relations: ["seller", "version", "review"],
+    skip: dataSkip,
+    take: dataLimit,
+  });
 };
 
 // $Needs testing (mongo -> postgres)
-// $TODO doesn't limit sales, but user?
 export const fetchUserSales = async ({ userId, dataSkip, dataLimit }) => {
-  return dataSkip && dataLimit
-    ? await User.findOne({
-        where: [{ id: userId, active: true }],
-        relations: ["sales", "sales.buyer", "sales.version", "sales.review"],
-        skip: dataSkip,
-        take: dataLimit,
-      })
-    : await User.findOne({
-        where: [{ id: userId, active: true }],
-        relations: ["sales", "sales.buyer", "sales.version", "sales.review"],
-      });
+  return await Order.find({
+    where: [{ sellerId: userId }],
+    relations: ["buyer", "version", "review"],
+    skip: dataSkip,
+    take: dataLimit,
+  });
 };
 
 // $Needs testing (mongo -> postgres)
@@ -105,8 +83,6 @@ export const editUserSale = async ({ userId, orderId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-// $TODO doesn't limit artwork, but user?
-// $TODO how to filter only active artwork?
 export const fetchUserProfile = async ({
   userUsername,
   dataSkip,
@@ -139,17 +115,14 @@ export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-// $TODO doesn't limit favorites, but user?
-// totalna debilana
 export const fetchuserFavorites = async ({ userId, dataSkip, dataLimit }) => {
-  return await User.findOne({
-    where: [{ id: userId, active: true }],
+  return await Favorite.find({
+    where: [{ ownerId: userId }],
     relations: [
-      "favorites",
-      "favorites.artwork",
-      "favorites.artwork.current",
-      "favorites.artwork.current.cover",
-      "favorites.owner",
+      "artwork",
+      "artwork.owner",
+      "artwork.current",
+      "artwork.current.cover",
     ],
     skip: dataSkip,
     take: dataLimit,
@@ -339,16 +312,6 @@ export const removeExistingIntent = async ({
   });
   foundUser.intents.filter((intent) => intent !== intentId);
   return await User.save(foundUser);
-};
-
-// $TODO probably not how it's done
-// doesn't work this way
-export const editUserRating = async ({ userId, userRating }) => {
-  const foundUser = await User.findOne({
-    where: [{ id: userId, active: true }],
-  });
-  foundUser.rating = userRating;
-  foundUser.reviews++;
 };
 
 // $Needs testing (mongo -> postgres)

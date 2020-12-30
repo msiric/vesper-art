@@ -69,7 +69,6 @@ router
     }))
   );
 
-// $TODO doesn't limit comments
 router
   .route("/artwork/:artworkId/comments")
   .get(
