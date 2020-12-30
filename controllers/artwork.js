@@ -21,7 +21,6 @@ import { fetchOrderByVersion } from "../services/postgres/order.js";
 import { fetchStripeAccount } from "../services/postgres/stripe.js";
 import {
   addUserArtwork,
-  addUserFavorite,
   addUserLicense,
   fetchUserById,
 } from "../services/postgres/user.js";
@@ -330,7 +329,6 @@ export const favoriteArtwork = async ({ userId, artworkId }) => {
       userId,
       artworkId,
     });
-    await addUserFavorite({ userId, savedFavorite });
     return { message: "Artwork favorited" };
   }
   throw createError(400, "Artwork has already been favorited");
@@ -342,7 +340,7 @@ export const unfavoriteArtwork = async ({ userId, artworkId }) => {
     artworkId,
   });
   if (foundFavorite) {
-    await removeExistingFavorite({ userId, artworkId });
+    await removeExistingFavorite({ foundFavorite });
     return { message: "Artwork unfavorited" };
   }
   throw createError(400, "Artwork is not among your favorites");

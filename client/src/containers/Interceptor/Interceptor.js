@@ -55,7 +55,7 @@ const Interceptor = ({ children }) => {
             stripeId: data.user.stripeId,
             country: data.user.country,
             favorites: data.user.favorites.reduce((object, item) => {
-              object[item.artwork.id] = true;
+              object[item.artworkId] = true;
               return object;
             }, {}),
             intents: data.user.intents.reduce((object, item) => {
@@ -150,7 +150,7 @@ const Interceptor = ({ children }) => {
           stripeId: data.user.stripeId,
           country: data.user.country,
           favorites: data.user.favorites.reduce((object, item) => {
-            object[item.artwork.id] = true;
+            object[item.artworkId] = true;
             return object;
           }, {}),
           intents: data.user.intents.reduce((object, item) => {
@@ -208,7 +208,7 @@ const Interceptor = ({ children }) => {
         stripeId: data.user.stripeId,
         country: data.user.country,
         favorites: data.user.favorites.reduce((object, item) => {
-          object[item.artwork.id] = true;
+          object[item.artworkId] = true;
           return object;
         }, {}),
         intents: data.user.intents.reduce((object, item) => {

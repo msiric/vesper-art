@@ -14,7 +14,7 @@ export class Notification extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user.notifications, {
+  @ManyToOne(() => User, (user) => user, {
     onDelete: "CASCADE",
   })
   receiver: User;

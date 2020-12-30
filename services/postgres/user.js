@@ -1,6 +1,9 @@
 import argon2 from "argon2";
+import { Brackets, getConnection } from "typeorm";
 import { Artwork } from "../../entities/Artwork";
 import { Avatar } from "../../entities/Avatar";
+import { Favorite } from "../../entities/Favorite";
+import { Intent } from "../../entities/Intent";
 import { Notification } from "../../entities/Notification";
 import { User } from "../../entities/User";
 import { formatParams } from "../../utils/helpers";
@@ -31,13 +34,49 @@ export const fetchUserByToken = async ({ tokenId }) => {
 
 // $Done (mongo -> postgres)
 export const fetchUserByCreds = async ({ userUsername }) => {
-  return await User.findOne({
-    where: [
-      { email: userUsername, active: true },
-      { name: userUsername, active: true },
-    ],
-    relations: ["avatar", "favorites", "intents"],
-  });
+  // return await User.findOne({
+  //   where: [
+  //     { email: userUsername, active: true },
+  //     { name: userUsername, active: true },
+  //   ],
+  //   relations: ["avatar", "favorites", "intents"],
+  // });
+  const foundUser = await getConnection()
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .leftJoinAndMapMany(
+      "user.intents",
+      Intent,
+      "intent",
+      "intent.ownerId = :id",
+      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
+    )
+    .leftJoinAndMapMany(
+      "user.notifications",
+      Notification,
+      "notification",
+      "notification.receiverId = :id",
+      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
+    )
+    .leftJoinAndMapMany(
+      "user.favorites",
+      Favorite,
+      "favorite",
+      "favorite.ownerId = :id",
+      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
+    )
+    .where("user.name = :name", { name: userUsername })
+    .andWhere("user.active = :active", { active: true })
+    .orWhere(
+      new Brackets((qb) => {
+        qb.where("user.email = :name", {
+          name: userUsername,
+        }).andWhere("user.active = :active", { active: true });
+      })
+    )
+    .getOne();
+  console.log(foundUser);
+  return foundUser;
 };
 
 // $Needs testing (mongo -> postgres)

@@ -62,7 +62,7 @@ const Login = () => {
           stripeId: data.user.stripeId,
           country: data.user.country,
           favorites: data.user.favorites.reduce((object, item) => {
-            object[item] = true;
+            object[item.artworkId] = true;
             return object;
           }, {}),
           intents: data.user.intents.reduce((object, item) => {

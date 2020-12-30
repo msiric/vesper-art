@@ -149,9 +149,9 @@ export const addNewArtwork = async ({ savedVersion, userId }) => {
 
 export const addNewFavorite = async ({ userId, artworkId }) => {
   const newFavorite = new Favorite();
-  newFavorite.owner = userId;
-  newFavorite.artwork = artworkId;
-  return newFavorite;
+  newFavorite.ownerId = userId;
+  newFavorite.artworkId = artworkId;
+  return await Favorite.save(newFavorite);
 };
 
 // $Needs testing (mongo -> postgres)
@@ -165,17 +165,13 @@ export const addArtworkFavorite = async ({ artworkId, savedFavorite }) => {
   return await Artwork.save(foundArtwork);
 };
 
-export const removeExistingFavorite = async ({ userId, artworkId }) => {
-  const foundFavorite = await Favorite.findOne({
-    where: [{ artwork: artworkId, owner: userId }],
-    relations: ["artwork", "owner"],
-  });
+export const removeExistingFavorite = async ({ foundFavorite }) => {
   return await Favorite.remove(foundFavorite);
 };
 
 export const fetchFavoriteByParents = async ({ userId, artworkId }) => {
   const foundFavorite = await Favorite.findOne({
-    where: [{ owner: userId, artwork: artworkId }],
+    where: [{ ownerId: userId, artworkId }],
   });
   return foundFavorite;
 };

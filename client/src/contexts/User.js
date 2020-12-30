@@ -17,6 +17,8 @@ export const userStore = {
 };
 
 export const userReducer = (state, action) => {
+  console.log(action);
+
   switch (action.type) {
     case "SET_USER":
       return {

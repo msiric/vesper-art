@@ -1,5 +1,6 @@
 import {
   BaseEntity,
+  Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
@@ -13,13 +14,19 @@ export class Favorite extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user.favorites, {
+  @ManyToOne(() => User, (user) => user, {
     onDelete: "CASCADE",
   })
   owner: User;
 
+  @Column()
+  ownerId: string;
+
   @ManyToOne(() => Artwork, (artwork) => artwork)
   artwork: Artwork;
+
+  @Column()
+  artworkId: string;
 
   @CreateDateColumn()
   created: Date;

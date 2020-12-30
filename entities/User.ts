@@ -4,14 +4,11 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { Avatar } from "./Avatar";
-import { Favorite } from "./Favorite";
-import { Notification } from "./Notification";
 
 @Entity()
 export class User extends BaseEntity {
@@ -47,17 +44,6 @@ export class User extends BaseEntity {
 
   @Column({ default: true })
   displayFavorites: boolean;
-
-  // $TODO should these three be removed completely and joined with query builder?
-
-  // $TODO not pushed to user
-  @OneToMany(() => Notification, (notification) => notification.receiver)
-  notifications: Notification[];
-
-  @OneToMany(() => Favorite, (favorite) => favorite.owner, {
-    cascade: ["insert"],
-  })
-  favorites: Favorite[];
 
   @Column({ default: "" })
   resetToken: string;
