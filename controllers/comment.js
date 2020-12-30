@@ -1,9 +1,6 @@
 import createError from "http-errors";
 import socketApi from "../lib/socket.js";
-import {
-  addArtworkComment,
-  fetchArtworkById,
-} from "../services/postgres/artwork.js";
+import { fetchArtworkById } from "../services/postgres/artwork.js";
 import {
   addNewComment,
   editExistingComment,
@@ -35,10 +32,6 @@ export const postComment = async ({ userId, artworkId, commentContent }) => {
       artworkId,
       userId,
       commentContent,
-    });
-    const updatedArtwork = await addArtworkComment({
-      artworkId,
-      savedComment,
     });
     if (!savedComment.owner === foundArtwork.owner.id) {
       const savedNotification = await addNewNotification({

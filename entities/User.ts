@@ -11,7 +11,6 @@ import {
 } from "typeorm";
 import { Avatar } from "./Avatar";
 import { Favorite } from "./Favorite";
-import { Intent } from "./Intent";
 import { Notification } from "./Notification";
 
 @Entity()
@@ -55,12 +54,10 @@ export class User extends BaseEntity {
   @OneToMany(() => Notification, (notification) => notification.receiver)
   notifications: Notification[];
 
-  @OneToMany(() => Favorite, (favorite) => favorite.owner)
+  @OneToMany(() => Favorite, (favorite) => favorite.owner, {
+    cascade: ["insert"],
+  })
   favorites: Favorite[];
-
-  // $TODO not pushed to user
-  @OneToMany(() => Intent, (intent) => intent.owner)
-  intents: Intent[];
 
   @Column({ default: "" })
   resetToken: string;

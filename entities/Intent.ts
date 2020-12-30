@@ -17,7 +17,7 @@ export class Intent extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user.intents)
+  @ManyToOne(() => User)
   owner: User;
 
   @OneToOne(() => Version)

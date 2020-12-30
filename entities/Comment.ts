@@ -15,14 +15,10 @@ export class Comment extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user, {
-    onDelete: "CASCADE",
-  })
+  @ManyToOne(() => User, (user) => user)
   owner: User;
 
-  @ManyToOne(() => Artwork, (artwork) => artwork.comments, {
-    onDelete: "CASCADE",
-  })
+  @ManyToOne(() => Artwork, (artwork) => artwork)
   artwork: Artwork;
 
   @Column()

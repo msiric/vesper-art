@@ -18,9 +18,7 @@ export class Favorite extends BaseEntity {
   })
   owner: User;
 
-  @ManyToOne(() => Artwork, (artwork) => artwork.favorites, {
-    onDelete: "CASCADE",
-  })
+  @ManyToOne(() => Artwork, (artwork) => artwork)
   artwork: Artwork;
 
   @CreateDateColumn()

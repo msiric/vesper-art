@@ -1,6 +1,5 @@
 import createError from "http-errors";
 import {
-  addArtworkFavorite,
   addNewArtwork,
   addNewCover,
   addNewFavorite,
@@ -331,13 +330,7 @@ export const favoriteArtwork = async ({ userId, artworkId }) => {
       userId,
       artworkId,
     });
-    await Promise.all([
-      addArtworkFavorite({
-        artworkId,
-        savedFavorite,
-      }),
-      addUserFavorite({ userId, savedFavorite }),
-    ]);
+    await addUserFavorite({ userId, savedFavorite });
     return { message: "Artwork favorited" };
   }
   throw createError(400, "Artwork has already been favorited");
