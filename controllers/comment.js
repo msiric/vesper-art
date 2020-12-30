@@ -11,10 +11,7 @@ import {
   removeExistingComment,
 } from "../services/postgres/comment.js";
 import { addNewNotification } from "../services/postgres/notification.js";
-import {
-  addUserComment,
-  addUserNotification,
-} from "../services/postgres/user.js";
+import { addUserNotification } from "../services/postgres/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import commentValidator from "../validation/comment.js";
 
@@ -39,16 +36,10 @@ export const postComment = async ({ userId, artworkId, commentContent }) => {
       userId,
       commentContent,
     });
-    const [updatedArtwork, updatedUser] = await Promise.all([
-      addArtworkComment({
-        artworkId,
-        savedComment,
-      }),
-      addUserComment({
-        userId,
-        savedComment,
-      }),
-    ]);
+    const updatedArtwork = await addArtworkComment({
+      artworkId,
+      savedComment,
+    });
     if (!savedComment.owner === foundArtwork.owner.id) {
       const savedNotification = await addNewNotification({
         notificationLink: foundArtwork.id,

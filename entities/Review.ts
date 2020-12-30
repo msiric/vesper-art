@@ -24,10 +24,10 @@ export class Review extends BaseEntity {
   @JoinColumn()
   artwork: Artwork;
 
-  @ManyToOne(() => User, (user) => user.givenReviews)
+  @ManyToOne(() => User)
   reviewer: User;
 
-  @ManyToOne(() => User, (user) => user.receivedReviews)
+  @ManyToOne(() => User, (user) => user.reviews)
   reviewee: User;
 
   @Column()

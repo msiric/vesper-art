@@ -116,29 +116,14 @@ export const fetchUserProfile = async ({
     dataSkip && dataLimit
       ? await User.findOne({
           where: [{ name: userUsername, active: true }],
-          relations: [
-            "avatar",
-            "artwork",
-            "artwork.owner",
-            "artwork.current",
-            "artwork.current.cover",
-          ],
+          relations: ["avatar"],
           skip: dataSkip,
           take: dataLimit,
         })
       : await User.findOne({
           where: [{ name: userUsername, active: true }],
-          relations: [
-            "avatar",
-            "artwork",
-            "artwork.owner",
-            "artwork.current",
-            "artwork.current.cover",
-          ],
+          relations: ["avatar"],
         });
-  foundUser.artwork = foundUser.artwork.filter(
-    (artwork) => artwork.active === true
-  );
   return foundUser;
 };
 
@@ -290,18 +275,9 @@ export const addUserComment = async ({ userId, savedComment }) => {
 export const addSellerReview = async ({ userId, savedReview }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
-    relations: ["receivedReviews"],
+    relations: ["reviews"],
   });
-  foundUser.receivedReviews.push(savedReview);
-  return await User.save(foundUser);
-};
-
-export const addBuyerReview = async ({ userId, savedReview }) => {
-  const foundUser = await User.findOne({
-    where: [{ id: userId, active: true }],
-    relations: ["givenReviews"],
-  });
-  foundUser.givenReviews.push(savedReview);
+  foundUser.reviews.push(savedReview);
   return await User.save(foundUser);
 };
 
@@ -312,15 +288,6 @@ export const addUserLicense = async ({ savedLicense }) => {
     relations: ["licenses"],
   });
   foundUser.licenses.push(savedLicense);
-  return await User.save(foundUser);
-};
-
-export const addUserTicket = async ({ userId, savedTicket }) => {
-  const foundUser = await User.findOne({
-    where: [{ id: userId, active: true }],
-    relations: ["tickets"],
-  });
-  foundUser.tickets.push(savedTicket);
   return await User.save(foundUser);
 };
 

@@ -189,6 +189,13 @@ const routes = [
     exact: true,
     type: "protected",
   },
+  // 404
+  {
+    path: "/404",
+    Component: lazy(() => import("../../pages/Home/NotFound")),
+    exact: true,
+    type: "public",
+  },
 ];
 
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (

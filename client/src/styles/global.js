@@ -9,6 +9,11 @@ const GlobalStyles = makeStyles((muiTheme) => ({
   mainHeading: {
     marginBottom: 24,
   },
+  "@global": {
+    ".illustrationPrimary": {
+      fill: artepunktTheme.palette.primary.main,
+    },
+  },
 }));
 
 export default GlobalStyles;

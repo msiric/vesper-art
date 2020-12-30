@@ -9,16 +9,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Artwork } from "./Artwork";
 import { Avatar } from "./Avatar";
-import { Comment } from "./Comment";
 import { Favorite } from "./Favorite";
 import { Intent } from "./Intent";
-import { License } from "./License";
 import { Notification } from "./Notification";
-import { Order } from "./Order";
 import { Review } from "./Review";
-import { Ticket } from "./Ticket";
 
 @Entity()
 export class User extends BaseEntity {
@@ -55,38 +50,21 @@ export class User extends BaseEntity {
   @Column({ default: true })
   displayFavorites: boolean;
 
-  @OneToMany(() => Review, (review) => review.reviewee)
-  receivedReviews: Review[];
+  // $TODO should these four be removed completely and joined with query builder?
 
-  @OneToMany(() => Review, (review) => review.reviewer)
-  givenReviews: Review[];
   // $TODO not pushed to user
   @OneToMany(() => Notification, (notification) => notification.receiver)
   notifications: Notification[];
 
-  @OneToMany(() => Artwork, (artwork) => artwork.owner, { cascade: ["insert"] })
-  artwork: Artwork[];
-
   @OneToMany(() => Favorite, (favorite) => favorite.owner)
   favorites: Favorite[];
-  // $TODO not pushed to user
-  @OneToMany(() => Order, (order) => order.buyer)
-  purchases: Order[];
-  // $TODO not pushed to user
-  @OneToMany(() => Order, (order) => order.seller)
-  sales: Order[];
+
   // $TODO not pushed to user
   @OneToMany(() => Intent, (intent) => intent.owner)
   intents: Intent[];
 
-  @OneToMany(() => Ticket, (ticket) => ticket.owner)
-  tickets: Ticket[];
-  // $TODO not pushed to user
-  @OneToMany(() => License, (license) => license.owner)
-  licenses: License[];
-
-  @OneToMany(() => Comment, (comment) => comment.owner)
-  comments: Comment[];
+  @OneToMany(() => Review, (review) => review.reviewee)
+  reviews: Review[];
 
   @Column({ default: "" })
   resetToken: string;

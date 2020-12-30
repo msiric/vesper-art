@@ -20,7 +20,7 @@ export class Artwork extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user.artwork)
+  @ManyToOne(() => User)
   owner: User;
 
   @OneToOne(() => Version, (version) => version.artwork, {
@@ -28,6 +28,8 @@ export class Artwork extends BaseEntity {
   })
   @JoinColumn()
   current: Version;
+
+  // $TODO should these three be removed completely and joined with query builder?
 
   @OneToMany(() => Version, (version) => version.artwork, {
     cascade: ["insert"],

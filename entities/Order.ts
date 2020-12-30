@@ -24,10 +24,10 @@ export class Order extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user.purchases)
+  @ManyToOne(() => User)
   buyer: User;
 
-  @ManyToOne(() => User, (user) => user.sales)
+  @ManyToOne(() => User)
   seller: User;
 
   @OneToOne(() => Artwork)

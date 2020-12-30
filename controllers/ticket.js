@@ -1,6 +1,5 @@
 import createError from "http-errors";
 import { addNewTicket } from "../services/postgres/ticket.js";
-import { addUserTicket } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
 import { sanitizeData } from "../utils/helpers.js";
 import ticketValidator from "../validation/ticket.js";
@@ -20,7 +19,6 @@ export const postTicket = async ({
     ticketTitle,
     ticketBody,
   });
-  await addUserTicket({ userId, savedTicket });
   await sendEmail({
     emailReceiver: userEmail,
     emailSubject: `Support ticket (#${savedTicket.id}): ${ticketTitle}`,

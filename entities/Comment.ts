@@ -15,7 +15,7 @@ export class Comment extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user.comments, {
+  @ManyToOne(() => User, (user) => user, {
     onDelete: "CASCADE",
   })
   owner: User;
