@@ -153,7 +153,7 @@ const Profile = ({ match, location }) => {
         ...prevState,
         user: {
           ...prevState.user,
-          favorites: [...prevState.user.favorites].concat(data),
+          favorites: [...prevState.user.favorites].concat(data.favorites),
         },
         tabs: { ...prevState.tabs, loading: false },
         scroll: {
@@ -161,7 +161,9 @@ const Profile = ({ match, location }) => {
           favorites: {
             ...state.scroll,
             hasMore:
-              data.length < state.scroll.favorites.dataCeiling ? false : true,
+              data.favorites.length < state.scroll.favorites.dataCeiling
+                ? false
+                : true,
             dataCursor:
               state.scroll.favorites.dataCursor +
               state.scroll.favorites.dataCeiling,
@@ -219,6 +221,8 @@ const Profile = ({ match, location }) => {
   useEffect(() => {
     fetchUser();
   }, [location]);
+
+  console.log(state);
 
   return state.loading || state.user.id ? (
     <Container key={location.key} className={globalClasses.gridContainer}>

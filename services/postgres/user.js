@@ -155,10 +155,17 @@ export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
 
 // $Needs testing (mongo -> postgres)
 // $TODO doesn't limit favorites, but user?
+// totalna debilana
 export const fetchuserFavorites = async ({ userId, dataSkip, dataLimit }) => {
   return await User.findOne({
     where: [{ id: userId, active: true }],
-    relations: ["artwork"],
+    relations: [
+      "favorites",
+      "favorites.artwork",
+      "favorites.artwork.current",
+      "favorites.artwork.current.cover",
+      "favorites.owner",
+    ],
     skip: dataSkip,
     take: dataLimit,
   });
