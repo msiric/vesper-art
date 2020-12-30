@@ -13,7 +13,6 @@ import { Avatar } from "./Avatar";
 import { Favorite } from "./Favorite";
 import { Intent } from "./Intent";
 import { Notification } from "./Notification";
-import { Review } from "./Review";
 
 @Entity()
 export class User extends BaseEntity {
@@ -50,7 +49,7 @@ export class User extends BaseEntity {
   @Column({ default: true })
   displayFavorites: boolean;
 
-  // $TODO should these four be removed completely and joined with query builder?
+  // $TODO should these three be removed completely and joined with query builder?
 
   // $TODO not pushed to user
   @OneToMany(() => Notification, (notification) => notification.receiver)
@@ -62,9 +61,6 @@ export class User extends BaseEntity {
   // $TODO not pushed to user
   @OneToMany(() => Intent, (intent) => intent.owner)
   intents: Intent[];
-
-  @OneToMany(() => Review, (review) => review.reviewee)
-  reviews: Review[];
 
   @Column({ default: "" })
   resetToken: string;
