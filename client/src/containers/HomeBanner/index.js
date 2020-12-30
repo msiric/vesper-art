@@ -121,7 +121,7 @@ const HomeBanner = () => {
             }}
           >
             <Button component={RouterLink} to="/verifier" variant="outlined">
-              Verify a license
+              Verify license
             </Button>
           </Box>
         </CardContent>
