@@ -127,7 +127,6 @@ export const updateUserOrigin = async ({
   throw createError(400, "User not found");
 };
 
-// $TODO Update context with new data
 export const updateUserProfile = async ({
   userId,
   userPath,
@@ -144,6 +143,7 @@ export const updateUserProfile = async ({
   });
   const { error } = profileValidator(sanitizeData(userData));
   if (error) throw createError(400, error);
+  // $TODO Find or fail? Minimize overhead
   const foundUser = await fetchUserById({ userId });
   const savedAvatar = avatarUpload.fileMedia
     ? foundUser.avatar
@@ -155,6 +155,7 @@ export const updateUserProfile = async ({
 };
 
 export const getUserSettings = async ({ userId }) => {
+  // $TODO Minimize overhead
   const foundUser = await fetchUserById({ userId });
   if (foundUser) {
     return { user: foundUser };

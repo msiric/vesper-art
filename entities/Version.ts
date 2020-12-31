@@ -9,7 +9,7 @@ import {
   ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from "typeorm";
 import { formatAmount } from "../common/helpers";
 import { Artwork } from "./Artwork";
@@ -55,7 +55,7 @@ export class Version extends BaseEntity {
   @Column()
   availability: string;
 
-  @OneToOne(() => Cover, (cover) => cover.version, { cascade: ["insert"] })
+  @OneToOne(() => Cover, (cover) => cover.version, { cascade: ["insert"], eager: true })
   @JoinColumn()
   cover: Cover;
 

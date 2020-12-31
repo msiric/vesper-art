@@ -53,7 +53,7 @@ const SettingsProfile = ({ user, handleUpdateProfile, loading }) => {
         >
           <CardContent className={classes.settingsProfileContent}>
             <EditUserForm
-              preview={user.avatar.source}
+              preview={user.source}
               errors={errors}
               getValues={getValues}
               setValue={setValue}

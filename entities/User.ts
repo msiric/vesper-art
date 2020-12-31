@@ -26,6 +26,7 @@ export class User extends BaseEntity {
 
   @OneToOne(() => Avatar, (avatar) => avatar.user, {
     cascade: ["insert", "update"],
+    eager: true,
   })
   @JoinColumn()
   avatar: Avatar;

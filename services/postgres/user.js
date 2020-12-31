@@ -1,5 +1,5 @@
 import argon2 from "argon2";
-import { Brackets, getConnection } from "typeorm";
+import { getConnection } from "typeorm";
 import { Artwork } from "../../entities/Artwork";
 import { Avatar } from "../../entities/Avatar";
 import { Favorite } from "../../entities/Favorite";
@@ -8,39 +8,92 @@ import { Notification } from "../../entities/Notification";
 import { User } from "../../entities/User";
 import { formatParams } from "../../utils/helpers";
 
+const USER_ACTIVE_STATUS = true;
+const USER_ESSENTIAL_INFO = [
+  "user.id AS id",
+  "user.email AS email",
+  "user.name AS name",
+  "avatar.source AS source",
+  "avatar.orientation AS orientation",
+  "avatar.dominant AS dominant",
+  "avatar.height AS height",
+  "avatar.width AS width",
+  "user.description AS description",
+  "user.country AS country",
+  "user.active AS active",
+];
+const USER_DETAILED_INFO = [
+  "user.businessAddress AS businessAddress",
+  "user.customWork AS customWork",
+  "user.displayFavorites AS displayFavorites",
+  "user.stripeId AS stripeId",
+];
+const USER_VERIFICATION_INFO = [
+  "user.resetToken AS resetToken",
+  "user.resetExpiry AS resetExpiry",
+  "user.jwtVersion AS jwtVersion",
+  "user.verificationToken AS verificationToken",
+  "user.verified AS verified",
+];
+const USER_AUTH_INFO = [
+  "user.password AS password",
+  "user.jwtVersion AS jwtVersion",
+];
+
 // $Needs testing (mongo -> postgres)
 export const fetchUserById = async ({ userId }) => {
-  return await User.findOne({
-    where: [{ id: userId }, { active: true }],
-    relations: ["avatar"],
-  });
+  return await getConnection()
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .leftJoinAndSelect("user.avatar", "avatar")
+    .where("user.id = :id AND user.active = :active", {
+      id: userId,
+      active: USER_ACTIVE_STATUS,
+    })
+    .select([
+      ...USER_ESSENTIAL_INFO,
+      ...USER_DETAILED_INFO,
+      ...USER_VERIFICATION_INFO,
+    ])
+    .getRawOne();
 };
 
 // $Needs testing (mongo -> postgres)
 export const fetchUserByEmail = async ({ userEmail }) => {
-  return await User.findOne({
-    where: [{ email: userEmail }, { active: true }],
-    relations: ["avatar"],
-  });
+  return await getConnection()
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .leftJoinAndSelect("user.avatar", "avatar")
+    .where("user.email = :email AND user.active = :active", {
+      email: userEmail,
+      active: USER_ACTIVE_STATUS,
+    })
+    .select([
+      ...USER_ESSENTIAL_INFO,
+      ...USER_DETAILED_INFO,
+      ...USER_VERIFICATION_INFO,
+    ])
+    .getRawOne();
 };
 
-// $CHECKED NOT USED (Can be left as is)
+// $TODO convert to query builder
 export const fetchUserByToken = async ({ tokenId }) => {
   return await User.findOne({
     where: [{ resetToken: tokenId, resetExpiry: { $gt: Date.now() } }],
-    relations: ["avatar"],
   });
 };
 
 // $Done (mongo -> postgres)
 export const fetchUserByCreds = async ({ userUsername }) => {
-  // return await User.findOne({
-  //   where: [
-  //     { email: userUsername, active: true },
-  //     { name: userUsername, active: true },
-  //   ],
-  //   relations: ["avatar", "favorites", "intents"],
-  // });
+  const { userId } = await getConnection()
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .where(
+      "(user.name = :name OR user.email = :name) AND user.active = :active",
+      { name: userUsername, active: true }
+    )
+    .select("user.id", "userId")
+    .getRawOne();
   const foundUser = await getConnection()
     .getRepository(User)
     .createQueryBuilder("user")
@@ -49,33 +102,24 @@ export const fetchUserByCreds = async ({ userUsername }) => {
       Intent,
       "intent",
       "intent.ownerId = :id",
-      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
+      { id: userId }
     )
     .leftJoinAndMapMany(
       "user.notifications",
       Notification,
       "notification",
-      "notification.receiverId = :id",
-      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
+      "notification.receiverId = :id AND notification.read = :read",
+      { id: userId, read: false }
     )
     .leftJoinAndMapMany(
       "user.favorites",
       Favorite,
       "favorite",
       "favorite.ownerId = :id",
-      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
+      { id: userId }
     )
-    .where("user.name = :name", { name: userUsername })
-    .andWhere("user.active = :active", { active: true })
-    .orWhere(
-      new Brackets((qb) => {
-        qb.where("user.email = :name", {
-          name: userUsername,
-        }).andWhere("user.active = :active", { active: true });
-      })
-    )
+    .where("user.id = :id", { id: userId })
     .getOne();
-  console.log(foundUser);
   return foundUser;
 };
 
@@ -127,19 +171,16 @@ export const fetchUserProfile = async ({
   dataSkip,
   dataLimit,
 }) => {
-  const foundUser =
-    dataSkip && dataLimit
-      ? await User.findOne({
-          where: [{ name: userUsername, active: true }],
-          relations: ["avatar"],
-          skip: dataSkip,
-          take: dataLimit,
-        })
-      : await User.findOne({
-          where: [{ name: userUsername, active: true }],
-          relations: ["avatar"],
-        });
-  return foundUser;
+  return await getConnection()
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .leftJoinAndSelect("user.avatar", "avatar")
+    .where("user.name = :name AND user.active = :active", {
+      name: userUsername,
+      active: USER_ACTIVE_STATUS,
+    })
+    .select(USER_ESSENTIAL_INFO)
+    .getRawOne();
 };
 
 // $Needs testing (mongo -> postgres)
@@ -147,7 +188,7 @@ export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   return await Artwork.find({
     where: [{ owner: userId, active: true }],
-    relations: ["current", "current.cover"],
+    relations: ["current"],
     skip: dataSkip,
     take: dataLimit,
   });
@@ -157,12 +198,7 @@ export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
 export const fetchuserFavorites = async ({ userId, dataSkip, dataLimit }) => {
   return await Favorite.find({
     where: [{ ownerId: userId }],
-    relations: [
-      "artwork",
-      "artwork.owner",
-      "artwork.current",
-      "artwork.current.cover",
-    ],
+    relations: ["artwork", "artwork.owner", "artwork.current"],
     skip: dataSkip,
     take: dataLimit,
   });

@@ -19,7 +19,7 @@ export const fetchArtworkById = async ({ artworkId }) => {
 export const fetchActiveArtworks = async ({ dataSkip, dataLimit }) => {
   return await Artwork.find({
     where: [{ active: true }],
-    relations: ["owner", "current", "current.cover"],
+    relations: ["owner", "current"],
     skip: dataSkip,
     take: dataLimit,
   });
@@ -29,7 +29,7 @@ export const fetchActiveArtworks = async ({ dataSkip, dataLimit }) => {
 export const fetchVersionDetails = async ({ versionId }) => {
   return await Version.findOne({
     where: [{ id: versionId }],
-    relations: ["artwork", "artwork.owner", "cover"],
+    relations: ["artwork", "artwork.owner"],
   });
 };
 
@@ -40,7 +40,7 @@ export const fetchArtworkDetails = async ({
 }) => {
   const foundArtwork = await Artwork.findOne({
     where: [{ id: artworkId, active: true }],
-    relations: ["owner", "current", "current.cover"],
+    relations: ["owner", "current"],
   });
   return foundArtwork;
 };
@@ -52,7 +52,7 @@ export const fetchArtworkComments = async ({
 }) => {
   return await Comment.find({
     where: [{ artworkId: artworkId }],
-    relations: ["owner", "owner.avatar"],
+    relations: ["owner"],
     skip: dataSkip,
     take: dataLimit,
   });
@@ -61,7 +61,7 @@ export const fetchArtworkComments = async ({
 export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
   return await Artwork.find({
     where: [{ owner: userId, active: true }],
-    relations: ["current", "current.cover"],
+    relations: ["current"],
     skip: dataSkip,
     take: dataLimit,
   });
@@ -71,7 +71,7 @@ export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
 export const fetchArtworksByOwner = async ({ userId }) => {
   return await Artwork.find({
     where: [{ owner: userId, active: true }],
-    relations: ["current", "current.cover"],
+    relations: ["current"],
   });
 };
 
