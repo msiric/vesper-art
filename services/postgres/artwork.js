@@ -1,3 +1,4 @@
+import { getConnection } from "typeorm";
 import { upload } from "../../common/constants";
 import { Artwork } from "../../entities/Artwork";
 import { Comment } from "../../entities/Comment";
@@ -6,6 +7,8 @@ import { Favorite } from "../../entities/Favorite";
 import { License } from "../../entities/License";
 import { Media } from "../../entities/Media";
 import { Version } from "../../entities/Version";
+
+const ARTWORK_ACTIVE_STATUS = true;
 
 // $Needs testing (mongo -> postgres)
 export const fetchArtworkById = async ({ artworkId }) => {
@@ -38,10 +41,42 @@ export const fetchArtworkDetails = async ({
   dataSkip,
   dataLimit,
 }) => {
-  const foundArtwork = await Artwork.findOne({
-    where: [{ id: artworkId, active: true }],
-    relations: ["owner", "current"],
-  });
+  // const foundArtwork = await Artwork.findOne({
+  //   where: [{ id: artworkId, active: true }],
+  //   relations: ["owner", "current"],
+  // });
+  // return foundArtwork;
+
+  // $TODO find count of favorites
+  const foundArtwork = await getConnection()
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndMapMany(
+      "artwork.comments",
+      Comment,
+      "comment",
+      "comment.artworkId = :id",
+      { id: artworkId }
+    )
+    .leftJoinAndSelect("comment.owner", "commentOwner")
+    .leftJoinAndSelect("commentOwner.avatar", "commentAvatar")
+    .leftJoinAndMapMany(
+      "artwork.favorites",
+      Favorite,
+      "favorite",
+      "favorite.artworkId = :id",
+      { id: artworkId }
+    )
+    .where("artwork.id = :id AND artwork.active = :active", {
+      id: artworkId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .getOne();
+  console.log(foundArtwork);
   return foundArtwork;
 };
 
@@ -51,7 +86,7 @@ export const fetchArtworkComments = async ({
   dataLimit,
 }) => {
   return await Comment.find({
-    where: [{ artworkId: artworkId }],
+    where: [{ artwork: artworkId }],
     relations: ["owner"],
     skip: dataSkip,
     take: dataLimit,

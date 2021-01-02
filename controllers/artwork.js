@@ -60,12 +60,12 @@ export const getArtworkComments = async ({
   dataCeiling,
 }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
-  const foundArtwork = await fetchArtworkComments({
+  const foundComments = await fetchArtworkComments({
     artworkId,
     dataSkip,
     dataLimit,
   });
-  if (foundArtwork) return { artwork: foundArtwork };
+  if (foundComments) return { comments: foundComments };
   throw createError(400, "Artwork not found");
 };
 

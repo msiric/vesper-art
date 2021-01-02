@@ -137,6 +137,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
         dataCursor: initialState.scroll.comments.dataCursor,
         dataCeiling: initialState.scroll.comments.dataCeiling,
       });
+      console.log(data);
       const { foundHighlight, fetchedHighlight } = await resolveHighlight(
         data.artwork.comments
       );

@@ -42,7 +42,6 @@ export const deleteComment = {
   success: { message: "Comment successfully deleted", variant: "success" },
   error: { message: "Failed to delete comment", variant: "error" },
 };
-// $CHECKED Not used? (Leave as is)
 export const getComments = {
   request: async ({ artworkId, dataCursor = null, dataCeiling = null }) =>
     await ax.get(

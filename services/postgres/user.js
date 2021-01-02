@@ -9,31 +9,29 @@ import { User } from "../../entities/User";
 import { formatParams } from "../../utils/helpers";
 
 const USER_ACTIVE_STATUS = true;
+const ARTWORK_ACTIVE_STATUS = true;
 const USER_ESSENTIAL_INFO = [
-  "user.id AS id",
-  "user.email AS email",
-  "user.name AS name",
-  "avatar.source AS source",
-  "avatar.orientation AS orientation",
-  "avatar.dominant AS dominant",
-  "avatar.height AS height",
-  "avatar.width AS width",
-  "user.description AS description",
-  "user.country AS country",
-  "user.active AS active",
+  "user.id",
+  "user.email",
+  "user.name",
+  "user.avatar",
+  "user.description",
+  "user.country",
+  "user.active",
+  "user.created",
 ];
 const USER_DETAILED_INFO = [
-  "user.businessAddress AS businessAddress",
-  "user.customWork AS customWork",
-  "user.displayFavorites AS displayFavorites",
-  "user.stripeId AS stripeId",
+  "user.businessAddress",
+  "user.customWork",
+  "user.displayFavorites",
+  "user.stripeId",
 ];
 const USER_VERIFICATION_INFO = [
-  "user.resetToken AS resetToken",
-  "user.resetExpiry AS resetExpiry",
-  "user.jwtVersion AS jwtVersion",
-  "user.verificationToken AS verificationToken",
-  "user.verified AS verified",
+  "user.resetToken",
+  "user.resetExpiry",
+  "user.jwtVersion",
+  "user.verificationToken",
+  "user.verified",
 ];
 const USER_AUTH_INFO = [
   "user.password AS password",
@@ -77,10 +75,24 @@ export const fetchUserByEmail = async ({ userEmail }) => {
 };
 
 // $TODO convert to query builder
+// $TODO not used?
 export const fetchUserByToken = async ({ tokenId }) => {
-  return await User.findOne({
-    where: [{ resetToken: tokenId, resetExpiry: { $gt: Date.now() } }],
-  });
+  // return await User.findOne({
+  //   where: [{ resetToken: tokenId, resetExpiry: { $gt: Date.now() } }],
+  // });
+  const foundUser = await getConnection()
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .leftJoinAndSelect("user.avatar", "avatar")
+    .where(
+      "user.resetToken = :token AND user.resetExpiry = MoreThan(Date.now())",
+      {
+        token: tokenId,
+      }
+    )
+    .select(USER_ESSENTIAL_INFO)
+    .getRawOne();
+  return foundUser;
 };
 
 // $Done (mongo -> postgres)
@@ -125,22 +137,42 @@ export const fetchUserByCreds = async ({ userUsername }) => {
 
 // $Needs testing (mongo -> postgres)
 export const fetchUserPurchases = async ({ userId, dataSkip, dataLimit }) => {
-  return await Order.find({
-    where: [{ buyerId: userId }],
-    relations: ["seller", "version", "review"],
-    skip: dataSkip,
-    take: dataLimit,
-  });
+  // return await Order.find({
+  //   where: [{ buyerId: userId }],
+  //   relations: ["seller", "version", "review"],
+  //   skip: dataSkip,
+  //   take: dataLimit,
+  // });
+  await getConnection()
+    .getRepository(Order)
+    .createQueryBuilder("order")
+    .leftJoinAndSelect("order.seller", "seller")
+    .leftJoinAndSelect("seller.avatar", "avatar")
+    .leftJoinAndSelect("order.version", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("order.review", "review")
+    .where("order.buyerId = :id", { id: userId })
+    .getMany();
 };
 
 // $Needs testing (mongo -> postgres)
 export const fetchUserSales = async ({ userId, dataSkip, dataLimit }) => {
-  return await Order.find({
-    where: [{ sellerId: userId }],
-    relations: ["buyer", "version", "review"],
-    skip: dataSkip,
-    take: dataLimit,
-  });
+  // return await Order.find({
+  //   where: [{ sellerId: userId }],
+  //   relations: ["buyer", "version", "review"],
+  //   skip: dataSkip,
+  //   take: dataLimit,
+  // });
+  await getConnection()
+    .getRepository(Order)
+    .createQueryBuilder("order")
+    .leftJoinAndSelect("order.buyer", "buyer")
+    .leftJoinAndSelect("buyer.avatar", "avatar")
+    .leftJoinAndSelect("order.version", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("order.review", "review")
+    .where("order.sellerId = :id", { id: userId })
+    .getMany();
 };
 
 // $Needs testing (mongo -> postgres)
@@ -171,16 +203,42 @@ export const fetchUserProfile = async ({
   dataSkip,
   dataLimit,
 }) => {
-  return await getConnection()
+  const { userId } = await getConnection()
     .getRepository(User)
     .createQueryBuilder("user")
+    .where("user.name = :name AND user.active = :active", {
+      name: userUsername,
+      active: true,
+    })
+    .select("user.id", "userId")
+    .getRawOne();
+  const foundUser = await getConnection()
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .select(USER_ESSENTIAL_INFO)
     .leftJoinAndSelect("user.avatar", "avatar")
+    .leftJoinAndMapMany(
+      "user.artwork",
+      Artwork,
+      "artwork",
+      "artwork.ownerId = :id AND artwork.active = :active",
+      { id: userId, active: ARTWORK_ACTIVE_STATUS }
+    )
+    .leftJoinAndMapMany(
+      "artwork.owner",
+      User,
+      "owner",
+      "artwork.ownerId = :id",
+      { id: userId }
+    )
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
     .where("user.name = :name AND user.active = :active", {
       name: userUsername,
       active: USER_ACTIVE_STATUS,
     })
-    .select(USER_ESSENTIAL_INFO)
-    .getRawOne();
+    .getOne();
+  return foundUser;
 };
 
 // $Needs testing (mongo -> postgres)
