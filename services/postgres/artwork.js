@@ -173,7 +173,7 @@ export const fetchArtworksByOwner = async ({ userId }) => {
 };
 
 export const addNewCover = async ({ artworkUpload }) => {
-  const newCover = new Cover();
+  /*   const newCover = new Cover();
   newCover.source = artworkUpload.fileCover;
   newCover.dominant = artworkUpload.fileDominant;
   newCover.orientation = artworkUpload.fileOrientation;
@@ -182,17 +182,54 @@ export const addNewCover = async ({ artworkUpload }) => {
     artworkUpload.fileWidth
   );
   newCover.width = upload.artwork.fileTransform.width;
-  return newCover;
+  return newCover; */
+
+  const savedCover = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Cover)
+    .values([
+      {
+        source: artworkUpload.fileCover,
+        dominant: artworkUpload.fileDominant,
+        orientation: artworkUpload.fileOrientation,
+        height: upload.artwork.fileTransform.height(
+          artworkUpload.fileHeight,
+          artworkUpload.fileWidth
+        ),
+        width: upload.artwork.fileTransform.width,
+      },
+    ])
+    .execute();
+  console.log(savedCover);
+  return savedCover;
 };
 
 export const addNewMedia = async ({ artworkUpload }) => {
-  const newMedia = new Media();
+  /*   const newMedia = new Media();
   newMedia.source = artworkUpload.fileMedia;
   newMedia.dominant = artworkUpload.fileDominant;
   newMedia.orientation = artworkUpload.fileOrientation;
   newMedia.height = artworkUpload.fileHeight;
   newMedia.width = artworkUpload.fileWidth;
-  return newMedia;
+  return newMedia; */
+
+  const savedMedia = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Media)
+    .values([
+      {
+        source: artworkUpload.fileMedia,
+        dominant: artworkUpload.fileDominant,
+        orientation: artworkUpload.fileOrientation,
+        height: artworkUpload.fileHeight,
+        width: artworkUpload.fileWidth,
+      },
+    ])
+    .execute();
+  console.log(savedMedia);
+  return savedMedia;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -204,7 +241,7 @@ export const addNewVersion = async ({
   savedCover,
   savedMedia,
 }) => {
-  const newVersion = new Version();
+  /*   const newVersion = new Version();
   newVersion.cover = savedCover;
   newVersion.media = savedMedia;
   newVersion.title = artworkData.artworkTitle;
@@ -219,25 +256,81 @@ export const addNewVersion = async ({
   // $TODO restore after tags implementation
   // newVersion.tags = artworkData.artworkTags;
   if (prevArtwork.artwork) newVersion.artwork = prevArtwork.artwork;
-  return newVersion;
+  return newVersion; */
+
+  const savedVersion = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Version)
+    .values([
+      {
+        title: artworkData.artworkTitle,
+        type: artworkData.artworkType,
+        availability: artworkData.artworkAvailability,
+        license: artworkData.artworkLicense,
+        use: artworkData.artworkUse,
+        personal: artworkData.artworkPersonal,
+        commercial: artworkData.artworkCommercial,
+        category: artworkData.artworkCategory,
+        description: artworkData.artworkDescription,
+        // $TODO restore after tags implementation
+        /* tags: artworkUpload.fileDominant, */
+        cover: savedCover,
+        media: savedMedia,
+        artwork: prevArtwork.artwork ? prevArtwork.artwork : null,
+      },
+    ])
+    .execute();
+  console.log(savedVersion);
+  return savedVersion;
 };
 
 // $Needs testing (mongo -> postgres)
 // probably not working as intended
 export const addNewArtwork = async ({ savedVersion, userId }) => {
-  const newArtwork = new Artwork();
+  /*   const newArtwork = new Artwork();
   newArtwork.owner = userId;
-  newArtwork.current = savedVersion;
+  newArtwork.current = savedVersion.id;
   newArtwork.active = true;
   newArtwork.generated = false;
-  return newArtwork;
+  return newArtwork; */
+
+  const savedArtwork = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Artwork)
+    .values([
+      {
+        owner: userId,
+        current: savedVersion.id,
+        active: true,
+        generated: false,
+      },
+    ])
+    .execute();
+  console.log(savedArtwork);
+  return savedArtwork;
 };
 
 export const addNewFavorite = async ({ userId, artworkId }) => {
-  const newFavorite = new Favorite();
+  /*   const newFavorite = new Favorite();
   newFavorite.ownerId = userId;
   newFavorite.artworkId = artworkId;
-  return await Favorite.save(newFavorite);
+  return await Favorite.save(newFavorite); */
+
+  const savedFavorite = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Favorite)
+    .values([
+      {
+        ownerId: userId,
+        artworkId,
+      },
+    ])
+    .execute();
+  console.log(savedFavorite);
+  return savedFavorite;
 };
 
 export const removeExistingFavorite = async ({ favoriteId }) => {
@@ -297,11 +390,23 @@ export const removeArtworkVersion = async ({ versionId }) => {
 
 // $Needs testing (mongo -> postgres)
 export const deactivateExistingArtwork = async ({ artworkId }) => {
-  const foundArtwork = Artwork.findOne({
+  /*   const foundArtwork = Artwork.findOne({
     where: [{ id: artworkId, active: true }],
   });
   foundArtwork.active = false;
-  return await Artwork.save(foundArtwork);
+  return await Artwork.save(foundArtwork); */
+
+  const updatedArtwork = await getConnection()
+    .createQueryBuilder()
+    .update(Artwork)
+    .set({ active: false })
+    .where("id = :id AND active = :active", {
+      id: artworkId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .execute();
+  console.log(updatedArtwork);
+  return updatedArtwork;
 };
 
 // needs transaction (done)

@@ -1,3 +1,4 @@
+import { getConnection } from "typeorm";
 import { Comment } from "../../entities/Comment";
 
 // $Needs testing (mongo -> postgres)
@@ -23,13 +24,30 @@ export const fetchCommentById = async ({ artworkId, commentId }) => {
 
 // $Needs testing (mongo -> postgres)
 export const addNewComment = async ({ artworkId, userId, commentContent }) => {
-  const newComment = new Comment();
+  /*   const newComment = new Comment();
   newComment.artwork = artworkId;
   newComment.owner = userId;
   newComment.content = commentContent;
   newComment.modified = false;
   newComment.generated = false;
-  return await Comment.save(newComment);
+  return await Comment.save(newComment); */
+
+  const savedComment = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Comment)
+    .values([
+      {
+        artwork: artworkId,
+        owner: userId,
+        content: commentContent,
+        modified: false,
+        generated: false,
+      },
+    ])
+    .execute();
+  console.log(savedComment);
+  return savedComment;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -39,12 +57,25 @@ export const editExistingComment = async ({
   userId,
   commentContent,
 }) => {
-  const foundComment = await Comment.findOne({
+  /*   const foundComment = await Comment.findOne({
     where: [{ id: commentId, artwork: artworkId, owner: userId }],
   });
   foundComment.content = commentContent;
   foundComment.modified = true;
-  return await Comment.save(foundComment);
+  return await Comment.save(foundComment); */
+
+  const updatedComment = await getConnection()
+    .createQueryBuilder()
+    .update(Comment)
+    .set({ content: commentContent, modified: true })
+    .where("id = :commentId AND artwork = :artworkId AND owner = :userId", {
+      commentId,
+      artworkId,
+      userId,
+    })
+    .execute();
+  console.log(updatedComment);
+  return updatedComment;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -53,8 +84,21 @@ export const removeExistingComment = async ({
   artworkId,
   userId,
 }) => {
-  const foundComment = await Comment.findOne({
+  /*   const foundComment = await Comment.findOne({
     where: [{ id: commentId, artwork: artworkId, owner: userId }],
   });
-  return await Comment.remove(foundComment);
+  return await Comment.remove(foundComment); */
+
+  const deletedComment = await getConnection()
+    .createQueryBuilder()
+    .delete()
+    .from(Comment)
+    .where("id = :commentId AND artwork = :artworkId AND owner = :userId", {
+      commentId,
+      artworkId,
+      userId,
+    })
+    .execute();
+  console.log(deletedComment);
+  return deletedComment;
 };

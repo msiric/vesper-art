@@ -46,7 +46,7 @@ export class Order extends BaseEntity {
   @JoinColumn()
   discount: Discount;
 
-  @OneToOne(() => Review, (review) => review.order, { cascade: ["insert"] })
+  @OneToOne(() => Review, (review) => review.order)
   @JoinColumn()
   review: Review;
 

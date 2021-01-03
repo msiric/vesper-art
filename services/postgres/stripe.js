@@ -7,17 +7,19 @@ export const constructStripeEvent = async ({
   stripeSignature,
   stripeSecret,
 }) => {
-  return await stripe.webhooks.constructEvent(
+  const constructedEvent = await stripe.webhooks.constructEvent(
     stripeBody,
     stripeSignature,
     stripeSecret
   );
+  return constructedEvent;
 };
 
 export const constructStripeLink = async ({ accountId, serverDomain }) => {
-  return await stripe.accounts.createLoginLink(accountId, {
+  const createdLink = await stripe.accounts.createLoginLink(accountId, {
     redirect_url: `${serverDomain}/stripe/dashboard`,
   });
+  return createdLink;
 };
 
 export const constructStripePayout = async ({
@@ -26,7 +28,7 @@ export const constructStripePayout = async ({
   payoutDescriptor,
   stripeId,
 }) => {
-  return await stripe.payouts.create(
+  const createdPayout = await stripe.payouts.create(
     {
       amount: payoutAmount,
       currency: payoutCurrency,
@@ -36,6 +38,7 @@ export const constructStripePayout = async ({
       stripe_account: stripeId,
     }
   );
+  return createdPayout;
 };
 
 export const constructStripeIntent = async ({
@@ -46,7 +49,7 @@ export const constructStripeIntent = async ({
   sellerId,
   orderData,
 }) => {
-  return await stripe.paymentIntents.create({
+  const createdIntent = await stripe.paymentIntents.create({
     payment_method_types: [intentMethod],
     amount: intentAmount,
     currency: intentCurrency,
@@ -59,6 +62,7 @@ export const constructStripeIntent = async ({
       orderData: JSON.stringify(orderData),
     },
   });
+  return createdIntent;
 };
 
 export const updateStripeIntent = async ({
@@ -72,19 +76,24 @@ export const updateStripeIntent = async ({
   for (let item in orderData) {
     foundOrder[item] = orderData[item];
   }
-  return await stripe.paymentIntents.update(intentId, {
+  const updatedIntent = await stripe.paymentIntents.update(intentId, {
     amount: intentAmount,
     application_fee_amount: intentFee,
     metadata: {
       orderData: JSON.stringify(foundOrder),
     },
   });
+  return updatedIntent;
 };
 
 export const fetchStripeBalance = async ({ stripeId }) => {
-  return await stripe.balance.retrieve({ stripe_account: stripeId });
+  const retrievedBalance = await stripe.balance.retrieve({
+    stripe_account: stripeId,
+  });
+  return retrievedBalance;
 };
 
 export const fetchStripeAccount = async ({ accountId }) => {
-  return await stripe.accounts.retrieve(accountId);
+  const retrievedAccount = await stripe.accounts.retrieve(accountId);
+  return retrievedAccount;
 };

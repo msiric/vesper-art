@@ -7,11 +7,28 @@ export const addNewReview = async ({
   reviewerId,
   revieweeId,
 }) => {
-  const newReview = new Review();
+  /*   const newReview = new Review();
   newReview.order = orderData.id;
-  newReview.artwork = orderData.id;
+  newReview.artwork = orderData.artwork.id;
   newReview.reviewerId = reviewerId;
   newReview.revieweeId = revieweeId;
   newReview.rating = reviewRating;
-  return newReview;
+  return newReview; */
+
+  const savedReview = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Review)
+    .values([
+      {
+        order: orderData.id,
+        artwork: orderData.artwork.id,
+        reviewerId: reviewerId,
+        revieweeId: revieweeId,
+        rating: reviewRating,
+      },
+    ])
+    .execute();
+  console.log(savedReview);
+  return savedReview;
 };

@@ -2,7 +2,7 @@ import { Order } from "../../entities/Order";
 
 // $Needs testing (mongo -> postgres)
 export const addNewOrder = async ({ orderData }) => {
-  const newOrder = new Order();
+  /*   const newOrder = new Order();
   newOrder.buyer = orderData.buyerId;
   newOrder.seller = orderData.sellerId;
   newOrder.artwork = orderData.artworkId;
@@ -16,7 +16,32 @@ export const addNewOrder = async ({ orderData }) => {
   newOrder.type = orderData.commercial ? "commercial" : "free";
   newOrder.status = orderData.status;
   newOrder.intent = orderData.intentId;
-  return await Order.save(newOrder);
+  return await Order.save(newOrder); */
+
+  const savedOrder = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Order)
+    .values([
+      {
+        buyer: orderData.buyerId,
+        seller: orderData.sellerId,
+        artwork: orderData.artworkId,
+        version: orderData.versionId,
+        discount: orderData.discountId,
+        license: orderData.licenseId,
+        review: orderData.review,
+        spent: orderData.spent,
+        earned: orderData.earned,
+        fee: orderData.fee,
+        type: orderData.commercial ? "commercial" : "free",
+        status: orderData.status,
+        intent: orderData.intentId,
+      },
+    ])
+    .execute();
+  console.log(savedOrder);
+  return savedOrder;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -115,11 +140,23 @@ export const fetchUserPurchase = async ({ orderId, userId }) => {
 
 // $Needs testing (mongo -> postgres)
 export const addOrderReview = async ({ orderId, userId, savedReview }) => {
-  const foundOrder = await Order.findOne({
+  /*   const foundOrder = await Order.findOne({
     where: [{ buyer: userId, id: orderId }],
   });
   foundOrder.review = savedReview;
-  return await Order.save(foundOrder);
+  return await Order.save(foundOrder); */
+
+  const updatedOrder = await getConnection()
+    .createQueryBuilder()
+    .update(Order)
+    .set({ review: savedReview })
+    .where("id = :orderId AND buyer = :userId", {
+      orderId,
+      userId,
+    })
+    .execute();
+  console.log(updatedOrder);
+  return updatedOrder;
 };
 
 // $Needs testing (mongo -> postgres)

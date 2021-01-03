@@ -9,7 +9,7 @@ import {
   ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from "typeorm";
 import { formatAmount } from "../common/helpers";
 import { Artwork } from "./Artwork";
@@ -22,9 +22,7 @@ export class Version extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => Artwork, (artwork) => artwork.current, {
-    onDelete: "CASCADE",
-  })
+  @OneToOne(() => Artwork, (artwork) => artwork.current)
   artwork: Artwork;
 
   @Column()
@@ -32,6 +30,7 @@ export class Version extends BaseEntity {
 
   @Column()
   category: string;
+
   // $TODO not implemented
   @ManyToMany(() => Tag, (tag) => tag.id, { cascade: ["insert"] })
   @JoinTable()
@@ -55,11 +54,13 @@ export class Version extends BaseEntity {
   @Column()
   availability: string;
 
-  @OneToOne(() => Cover, (cover) => cover.version, { cascade: ["insert"], eager: true })
+  @OneToOne(() => Cover, (cover) => cover.version, {
+    eager: true,
+  })
   @JoinColumn()
   cover: Cover;
 
-  @OneToOne(() => Media, (media) => media.version, { cascade: ["insert"] })
+  @OneToOne(() => Media, (media) => media.version)
   @JoinColumn()
   media: Media;
 

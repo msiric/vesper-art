@@ -99,14 +99,14 @@ export const fetchUserByToken = async ({ tokenId }) => {
 
 // $Done (mongo -> postgres)
 export const fetchUserByCreds = async ({ userUsername }) => {
-  const { userId } = await getConnection()
+  const data = await getConnection()
     .getRepository(User)
     .createQueryBuilder("user")
+    .select("user.id")
     .where(
       "(user.name = :name OR user.email = :name) AND user.active = :active",
       { name: userUsername, active: true }
     )
-    .select("user.id", "userId")
     .getOne();
   const foundUser = await getConnection()
     .getRepository(User)
@@ -116,23 +116,23 @@ export const fetchUserByCreds = async ({ userUsername }) => {
       Intent,
       "intent",
       "intent.ownerId = :id",
-      { id: userId }
+      { id: data.id }
     )
     .leftJoinAndMapMany(
       "user.notifications",
       Notification,
       "notification",
       "notification.receiverId = :id AND notification.read = :read",
-      { id: userId, read: false }
+      { id: data.id, read: false }
     )
     .leftJoinAndMapMany(
       "user.favorites",
       Favorite,
       "favorite",
       "favorite.ownerId = :id",
-      { id: userId }
+      { id: data.id }
     )
-    .where("user.id = :id", { id: userId })
+    .where("user.id = :id", { id: data.id })
     .getOne();
   console.log(foundUser);
   return foundUser;
@@ -206,14 +206,14 @@ export const fetchUserProfile = async ({
   dataSkip,
   dataLimit,
 }) => {
-  const { userId } = await getConnection()
+  const data = await getConnection()
     .getRepository(User)
     .createQueryBuilder("user")
+    .select("user.id")
     .where("user.name = :name AND user.active = :active", {
       name: userUsername,
-      active: true,
+      active: USER_ACTIVE_STATUS,
     })
-    .select("user.id", "userId")
     .getOne();
   const foundUser = await getConnection()
     .getRepository(User)
@@ -225,14 +225,14 @@ export const fetchUserProfile = async ({
       Artwork,
       "artwork",
       "artwork.ownerId = :id AND artwork.active = :active",
-      { id: userId, active: ARTWORK_ACTIVE_STATUS }
+      { id: data.id, active: ARTWORK_ACTIVE_STATUS }
     )
     .leftJoinAndMapMany(
       "artwork.owner",
       User,
       "owner",
       "artwork.ownerId = :id",
-      { id: userId }
+      { id: data.id }
     )
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")

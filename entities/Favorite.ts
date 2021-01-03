@@ -14,9 +14,7 @@ export class Favorite extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user, {
-    onDelete: "CASCADE",
-  })
+  @ManyToOne(() => User, (user) => user)
   owner: User;
 
   @Column()

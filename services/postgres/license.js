@@ -23,7 +23,7 @@ export const fetchLicenseByFingerprint = async ({ licenseFingerprint }) => {
 
 // $Needs testing (mongo -> postgres)
 export const addNewLicense = async ({ userId, artworkData, licenseData }) => {
-  const newLicense = new License();
+  /*   const newLicense = new License();
   newLicense.owner = userId;
   newLicense.artwork = artworkData.id;
   newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
@@ -32,5 +32,25 @@ export const addNewLicense = async ({ userId, artworkData, licenseData }) => {
   newLicense.type = licenseData.licenseType;
   newLicense.active = false;
   newLicense.price = artworkData.current[licenseData.licenseType];
-  return newLicense;
+  return newLicense; */
+
+  const savedLicense = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(License)
+    .values([
+      {
+        owner: userId,
+        artwork: artworkData.id,
+        fingerprint: crypto.randomBytes(20).toString("hex"),
+        assignee: licenseData.licenseAssignee,
+        company: licenseData.licenseCompany,
+        type: licenseData.licenseType,
+        active: false,
+        price: artworkData.current[licenseData.licenseType],
+      },
+    ])
+    .execute();
+  console.log(savedLicense);
+  return savedLicense;
 };

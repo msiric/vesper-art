@@ -1,5 +1,20 @@
 import { Notification } from "../../entities/notification";
-import { User } from "../../entities/User";
+
+export const fetchNotificationById = async ({ userId, notificationId }) => {
+  const foundNotification = await getConnection()
+    .getRepository(Notification)
+    .createQueryBuilder("notification")
+    .where(
+      "notification.id = :notificationId AND notification.receiver = :userId",
+      {
+        notificationId,
+        userId,
+      }
+    )
+    .getOne();
+  console.log(foundNotification);
+  return foundNotification;
+};
 
 // $Needs testing (mongo -> postgres)
 export const addNewNotification = async ({
@@ -40,36 +55,42 @@ export const fetchExistingNotifications = async ({ userId }) => {
 
 // $Needs testing (mongo -> postgres)
 export const editReadNotification = async ({ userId, notificationId }) => {
-  const foundNotification = await Notification.findOne({
+  /*   const foundNotification = await Notification.findOne({
     where: [{ id: notificationId, receiver: userId }],
   });
   foundNotification.read = true;
-  return await Notification.save(foundNotification);
+  return await Notification.save(foundNotification); */
+
+  const updatedNotification = await getConnection()
+    .createQueryBuilder()
+    .update(Notification)
+    .set({ read: true })
+    .where("id = :notificationId AND receiver = :userId", {
+      notificationId,
+      userId,
+    })
+    .execute();
+  console.log(updatedNotification);
+  return updatedNotification;
 };
 
 // $Needs testing (mongo -> postgres)
 export const editUnreadNotification = async ({ userId, notificationId }) => {
-  const foundNotification = await Notification.findOne({
+  /*   const foundNotification = await Notification.findOne({
     where: [{ id: notificationId, receiver: userId }],
   });
   foundNotification.read = false;
-  return await Notification.save(foundNotification);
-};
+  return await Notification.save(foundNotification); */
 
-// $Needs testing (mongo -> postgres)
-export const decrementUserNotification = async ({ userId }) => {
-  return await User.increment(
-    { where: [{ id: userId, active: true }] },
-    "notifications",
-    -1
-  );
-};
-
-// $Needs testing (mongo -> postgres)
-export const incrementUserNotification = async ({ userId }) => {
-  return await User.increment(
-    { where: [{ id: userId, active: true }] },
-    "notifications",
-    1
-  );
+  const updatedNotification = await getConnection()
+    .createQueryBuilder()
+    .update(Notification)
+    .set({ read: false })
+    .where("id = :notificationId AND receiver = :userId", {
+      notificationId,
+      userId,
+    })
+    .execute();
+  console.log(updatedNotification);
+  return updatedNotification;
 };
