@@ -23,8 +23,6 @@ import {
   updateStripeIntent,
 } from "../services/postgres/stripe.js";
 import {
-  editUserPurchase,
-  editUserSale,
   editUserStripe,
   fetchUserById,
   removeExistingIntent,
@@ -385,12 +383,6 @@ const processTransaction = async ({ stripeIntent, session }) => {
     intentId: intentId,
   };
   const savedOrder = await addNewOrder({ orderData: orderObject, session });
-  await editUserPurchase({
-    userId: buyerId,
-    orderId: savedOrder.id,
-    session,
-  });
-  await editUserSale({ userId: sellerId, orderId: savedOrder.id, session });
   await removeExistingIntent({ userId: sellerId, intentId, session });
   // new start
   await addNewNotification({

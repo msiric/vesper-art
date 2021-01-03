@@ -5,11 +5,7 @@ import License from "../models/license.js";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
 import { addNewNotification } from "../services/postgres/notification.js";
 import { addNewOrder } from "../services/postgres/order.js";
-import {
-  editUserPurchase,
-  editUserSale,
-  fetchUserById,
-} from "../services/postgres/user.js";
+import { fetchUserById } from "../services/postgres/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import licenseValidator from "../validation/license.js";
 import orderValidator from "../validation/order.js";
@@ -101,16 +97,6 @@ export const postDownload = async ({
             };
             const savedOrder = await addNewOrder({
               orderData: orderObject,
-              session,
-            });
-            await editUserPurchase({
-              userId: foundUser.id,
-              orderId: savedOrder.id,
-              session,
-            });
-            await editUserSale({
-              userId: foundVersion.artwork.owner.id,
-              orderId: savedOrder.id,
               session,
             });
             // new start

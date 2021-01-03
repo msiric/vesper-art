@@ -18,11 +18,7 @@ import {
 import { addNewLicense } from "../services/postgres/license.js";
 import { fetchOrderByVersion } from "../services/postgres/order.js";
 import { fetchStripeAccount } from "../services/postgres/stripe.js";
-import {
-  addUserArtwork,
-  addUserLicense,
-  fetchUserById,
-} from "../services/postgres/user.js";
+import { fetchUserById } from "../services/postgres/user.js";
 import {
   formatArtworkValues,
   formatParams,
@@ -155,10 +151,6 @@ export const postNewArtwork = async ({
     });
     const savedArtwork = await addNewArtwork({
       savedVersion,
-      userId,
-    });
-    await addUserArtwork({
-      savedArtwork,
       userId,
     });
     return { redirect: "/my_artwork" };
@@ -347,7 +339,6 @@ export const saveLicense = async ({ userId, artworkId, license }) => {
       licenseData: license,
       userId,
     });
-    await addUserLicense({ savedLicense, userId });
     return { message: "License saved", license: license };
   }
   throw createError(400, "Artwork not found");

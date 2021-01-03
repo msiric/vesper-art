@@ -180,24 +180,21 @@ export const fetchUserSales = async ({ userId, dataSkip, dataLimit }) => {
 
 // $Needs testing (mongo -> postgres)
 export const editUserStripe = async ({ userId, stripeId }) => {
-  const foundUser = await User.findOne({ where: [{ id: userId }] });
+  /*   const foundUser = await User.findOne({ where: [{ id: userId }] });
   foundUser.stripeId = stripeId;
-  return await User.save(foundUser);
-};
+  return await User.save(foundUser); */
 
-// $Needs testing (mongo -> postgres)
-export const editUserPurchase = async ({ userId, orderId }) => {
-  const foundUser = await User.findOne({ where: [{ id: userId }] });
-  foundUser.purchases.push(orderId);
-  return await User.save(foundUser);
-};
-
-// $Needs testing (mongo -> postgres)
-export const editUserSale = async ({ userId, orderId }) => {
-  const foundUser = await User.findOne({ where: [{ id: userId }] });
-  foundUser.sales.push(orderId);
-  foundUser.notifications++;
-  return await User.save(foundUser);
+  const updatedUser = await getConnection()
+    .createQueryBuilder()
+    .update(User)
+    .set({ stripeId })
+    .where("id = :userId AND active = :active", {
+      userId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .execute();
+  console.log(updatedUser);
+  return updatedUser;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -324,6 +321,7 @@ export const fetchUserStatistics = async ({ userId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
+// $TODO needs work
 export const addUserAvatar = async ({ avatarUpload }) => {
   const newAvatar = new Avatar();
   newAvatar.source = avatarUpload.fileMedia;
@@ -335,6 +333,7 @@ export const addUserAvatar = async ({ avatarUpload }) => {
 };
 
 // $Needs testing (mongo -> postgres)
+// $TODO needs work
 export const editUserAvatar = async ({ foundUser, avatarUpload }) => {
   foundUser.avatar.source = avatarUpload.fileMedia;
   foundUser.avatar.dominant = avatarUpload.fileDominant;
@@ -345,12 +344,25 @@ export const editUserAvatar = async ({ foundUser, avatarUpload }) => {
 };
 
 // $Needs testing (mongo -> postgres)
+// $TODO how to conditionally update?
 export const editUserProfile = async ({ foundUser, userData, savedAvatar }) => {
   if (savedAvatar) foundUser.avatar = savedAvatar;
   if (userData.userDescription)
     foundUser.description = userData.userDescription;
   if (userData.userCountry) foundUser.country = userData.userCountry;
   return await User.save(foundUser);
+
+  const updatedUser = await getConnection()
+    .createQueryBuilder()
+    .update(User)
+    .set({})
+    .where("id = :userId AND active = :active", {
+      userId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .execute();
+  console.log(updatedUser);
+  return updatedUser;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -387,102 +399,72 @@ export const editUserEmail = async ({
   userEmail,
   verificationToken,
 }) => {
-  const foundUser = await User.findOne({
+  /*   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });
   foundUser.email = userEmail;
   foundUser.verificationToken = verificationToken;
   foundUser.verified = false;
-  return await User.save(foundUser);
+  return await User.save(foundUser); */
+
+  const updatedUser = await getConnection()
+    .createQueryBuilder()
+    .update(User)
+    .set({ email: userEmail, verificationToken, verified: false })
+    .where("id = :userId AND active = :active", {
+      userId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .execute();
+  console.log(updatedUser);
+  return updatedUser;
 };
 
 // $Needs testing (mongo -> postgres)
 export const editUserPassword = async ({ userId, userPassword }) => {
   const hashedPassword = await argon2.hash(userPassword);
-  const foundUser = await User.findOne({
+  /*   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });
   foundUser.password = hashedPassword;
-  return await User.save(foundUser);
+  return await User.save(foundUser); */
+
+  const updatedUser = await getConnection()
+    .createQueryBuilder()
+    .update(User)
+    .set({ password: hashedPassword })
+    .where("id = :userId AND active = :active", {
+      userId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .execute();
+  console.log(updatedUser);
+  return updatedUser;
 };
 
 // $Needs testing (mongo -> postgres)
 export const editUserPreferences = async ({ userId, userFavorites }) => {
-  const foundUser = await User.findOne({
+  /*   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });
   foundUser.displayFavorites = userFavorites;
-  return await User.save(foundUser);
+  return await User.save(foundUser); */
+
+  const updatedUser = await getConnection()
+    .createQueryBuilder()
+    .update(User)
+    .set({ displayFavorites: userFavorites })
+    .where("id = :userId AND active = :active", {
+      userId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .execute();
+  console.log(updatedUser);
+  return updatedUser;
 };
 
 // $Needs testing (mongo -> postgres)
-export const addUserArtwork = async ({ userId, savedArtwork }) => {
-  const foundUser = await User.findOne({
-    where: [{ id: userId, active: true }],
-    relations: ["artwork"],
-  });
-  foundUser.artwork.push(savedArtwork);
-  return await User.save(foundUser);
-};
-
-// $Needs testing (mongo -> postgres)
-export const addUserComment = async ({ userId, savedComment }) => {
-  const foundUser = await User.findOne({
-    where: [{ id: userId, active: true }],
-    relations: ["comments"],
-  });
-  foundUser.comments.push(savedComment);
-  return await User.save(foundUser);
-};
-
-export const addSellerReview = async ({ userId, savedReview }) => {
-  const foundUser = await User.findOne({
-    where: [{ id: userId, active: true }],
-    relations: ["reviews"],
-  });
-  foundUser.reviews.push(savedReview);
-  return await User.save(foundUser);
-};
-
-// $Needs testing (mongo -> postgres)
-export const addUserLicense = async ({ savedLicense }) => {
-  const foundUser = await User.findOne({
-    where: [{ id: userId, active: true }],
-    relations: ["licenses"],
-  });
-  foundUser.licenses.push(savedLicense);
-  return await User.save(foundUser);
-};
-
-// $Needs testing (mongo -> postgres)
-export const addUserFavorite = async ({ userId, savedFavorite }) => {
-  const foundUser = await User.findOne({
-    where: [{ id: userId, active: true }],
-    relations: ["favorites"],
-  });
-  foundUser.favorites.push(savedFavorite);
-  return await User.save(foundUser);
-};
-
-// $TODO probably not how it's done
-export const removeUserFavorite = async ({ userId, artworkId }) => {
-  const foundUser = await User.findOne({
-    where: [{ id: userId, active: true }],
-  });
-  foundUser.favorites.filter((favorite) => favorite !== artworkId);
-  return await User.save(foundUser);
-};
-
-// $Needs testing (mongo -> postgres)
-export const addUserNotification = async ({ userId, savedNotification }) => {
-  const foundUser = User.findOne({
-    where: [{ id: userId }],
-    relations: ["notifications"],
-  });
-  return await foundUser.notifications.push(savedNotification);
-};
-
-// $Needs testing (mongo -> postgres)
+// $TODO needs to be saved to intents instead of user
 export const addNewIntent = async ({ userId, versionId, intentId }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId }],
@@ -492,6 +474,7 @@ export const addNewIntent = async ({ userId, versionId, intentId }) => {
 };
 
 // $TODO probably not how it's done
+// $TODO needs to be removed from intents instead of user
 export const removeExistingIntent = async ({
   userId,
   intentId,
@@ -506,8 +489,20 @@ export const removeExistingIntent = async ({
 
 // $Needs testing (mongo -> postgres)
 export const editUserOrigin = async ({ foundUser, userBusinessAddress }) => {
-  if (userBusinessAddress) foundUser.businessAddress = userBusinessAddress;
-  return await User.save(foundUser);
+  /*   if (userBusinessAddress) foundUser.businessAddress = userBusinessAddress;
+  return await User.save(foundUser); */
+
+  const updatedUser = await getConnection()
+    .createQueryBuilder()
+    .update(User)
+    .set({ businessAddress: userBusinessAddress })
+    .where("id = :userId AND active = :active", {
+      userId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .execute();
+  console.log(updatedUser);
+  return updatedUser;
 };
 
 // needs testing (better way to update already found user)
@@ -515,7 +510,7 @@ export const editUserOrigin = async ({ foundUser, userBusinessAddress }) => {
 // needs transaction (not tested)
 // $Needs testing (mongo -> postgres)
 export const deactivateExistingUser = async ({ userId }) => {
-  const foundUser = await User.findOne({ where: [{ id: userId }] });
+  /*   const foundUser = await User.findOne({ where: [{ id: userId }] });
   foundUser.email = "";
   foundUser.name = "";
   foundUser.password = "";
@@ -527,5 +522,29 @@ export const deactivateExistingUser = async ({ userId }) => {
   foundUser.resetExpiry = null;
   foundUser.verificationToken = "";
   foundUser.active = false;
-  return await User.save(foundUser);
+  return await User.save(foundUser); */
+
+  const updatedUser = await getConnection()
+    .createQueryBuilder()
+    .update(User)
+    .set({
+      email: "",
+      name: "",
+      password: "",
+      avatar: null,
+      description: "",
+      country: "",
+      businessAddress: "",
+      resetToken: "",
+      resetExpiry: null,
+      verificationToken: "",
+      active: false,
+    })
+    .where("id = :userId AND active = :active", {
+      userId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .execute();
+  console.log(updatedUser);
+  return updatedUser;
 };

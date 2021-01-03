@@ -8,7 +8,6 @@ import {
   removeExistingComment,
 } from "../services/postgres/comment.js";
 import { addNewNotification } from "../services/postgres/notification.js";
-import { addUserNotification } from "../services/postgres/user.js";
 import { sanitizeData } from "../utils/helpers.js";
 import commentValidator from "../validation/comment.js";
 
@@ -39,10 +38,6 @@ export const postComment = async ({ userId, artworkId, commentContent }) => {
         notificationRef: savedComment.id,
         notificationType: "comment",
         notificationReceiver: foundArtwork.owner.id,
-      });
-      await addUserNotification({
-        userId: foundArtwork.owner.id,
-        savedNotification,
       });
       socketApi.sendNotification(foundArtwork.owner.id, savedNotification);
     }
