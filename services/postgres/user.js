@@ -258,7 +258,7 @@ export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
     .leftJoinAndSelect("version.cover", "cover")
     .where("artwork.ownerId = :id AND artwork.active = :active", {
       id: userId,
-      active: active,
+      active: USER_ACTIVE_STATUS,
     })
     .getMany();
   console.log(foundArtwork);
