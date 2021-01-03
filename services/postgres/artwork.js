@@ -9,12 +9,23 @@ import { Version } from "../../entities/Version";
 
 const ARTWORK_ACTIVE_STATUS = true;
 
-// $Needs testing (mongo -> postgres)
 export const fetchArtworkById = async ({ artworkId }) => {
-  return await Artwork.findOne({
+  /*   return await Artwork.findOne({
     where: [{ id: artworkId }, { active: true }],
     relations: ["owner"],
-  });
+  }); */
+
+  const foundArtwork = await getConnection()
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .where("artwork.id = :id AND artwork.active = :active", {
+      id: artworkId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .getOne();
+  console.log(foundArtwork);
+  return foundArtwork;
 };
 
 // $Needs testing (mongo -> postgres)
