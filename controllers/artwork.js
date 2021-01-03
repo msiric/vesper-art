@@ -10,7 +10,6 @@ import {
   fetchArtworkByOwner,
   fetchArtworkComments,
   fetchArtworkDetails,
-  fetchArtworkLicenses,
   fetchFavoriteByParents,
   fetchUserArtworks,
   removeArtworkVersion,
@@ -87,14 +86,6 @@ export const editArtwork = async ({ userId, artworkId }) => {
   });
   if (foundArtwork) return { artwork: foundArtwork };
   throw createError(400, "Artwork not found");
-};
-
-export const getLicenses = async ({ userId, artworkId }) => {
-  const foundLicenses = await fetchArtworkLicenses({
-    artworkId,
-    userId,
-  });
-  return { licenses: foundLicenses };
 };
 
 export const postNewArtwork = async ({
@@ -340,7 +331,7 @@ export const unfavoriteArtwork = async ({ userId, artworkId }) => {
     artworkId,
   });
   if (foundFavorite) {
-    await removeExistingFavorite({ foundFavorite });
+    await removeExistingFavorite({ favoriteId: foundFavorite.id });
     return { message: "Artwork unfavorited" };
   }
   throw createError(400, "Artwork is not among your favorites");

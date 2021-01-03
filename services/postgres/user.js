@@ -5,8 +5,8 @@ import { Avatar } from "../../entities/Avatar";
 import { Favorite } from "../../entities/Favorite";
 import { Intent } from "../../entities/Intent";
 import { Notification } from "../../entities/Notification";
+import { Order } from "../../entities/Order";
 import { User } from "../../entities/User";
-import { formatParams } from "../../utils/helpers";
 
 const USER_ACTIVE_STATUS = true;
 const ARTWORK_ACTIVE_STATUS = true;
@@ -243,38 +243,81 @@ export const fetchUserProfile = async ({
 
 // $Needs testing (mongo -> postgres)
 export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
-  return await Artwork.find({
-    where: [{ owner: userId, active: true }],
-    relations: ["current"],
-    skip: dataSkip,
-    take: dataLimit,
-  });
+  // const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
+  // return await Artwork.find({
+  //   where: [{ owner: userId, active: true }],
+  //   relations: ["current"],
+  //   skip: dataSkip,
+  //   take: dataLimit,
+  // });
+
+  const foundArtwork = await getConnection()
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .where("artwork.ownerId = :id AND artwork.active = :active", {
+      id: userId,
+      active: active,
+    })
+    .getMany();
+  console.log(foundArtwork);
+  return foundArtwork;
 };
 
 // $Needs testing (mongo -> postgres)
 export const fetchuserFavorites = async ({ userId, dataSkip, dataLimit }) => {
-  return await Favorite.find({
-    where: [{ ownerId: userId }],
-    relations: ["artwork", "artwork.owner", "artwork.current"],
-    skip: dataSkip,
-    take: dataLimit,
-  });
+  // return await Favorite.find({
+  //   where: [{ ownerId: userId }],
+  //   relations: ["artwork", "artwork.owner", "artwork.current"],
+  //   skip: dataSkip,
+  //   take: dataLimit,
+  // });
+
+  const foundFavorites = await getConnection()
+    .getRepository(Favorite)
+    .createQueryBuilder("favorite")
+    .leftJoinAndSelect("favorite.artwork", "artwork")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .where("artwork.ownerId = :id", {
+      id: userId,
+    })
+    .getMany();
+  console.log(foundFavorites);
+  return foundFavorites;
 };
 
 // $Needs testing (mongo -> postgres)
 export const fetchUserStatistics = async ({ userId }) => {
-  return await User.findOne({
-    where: [{ id: userId, active: true }],
-    relations: [
-      "purchases",
-      "sales",
-      "purchases.version",
-      "purchases.license",
-      "sales.version",
-      "sales.license",
-    ],
-  });
+  // return await User.findOne({
+  //   where: [{ id: userId, active: true }],
+  //   relations: [
+  //     "purchases",
+  //     "sales",
+  //     "purchases.version",
+  //     "purchases.license",
+  //     "sales.version",
+  //     "sales.license",
+  //   ],
+  // });
+
+  const foundStatistics = await getConnection()
+    .getRepository(Order)
+    .createQueryBuilder("order")
+    .leftJoinAndSelect("order.version", "version")
+    .leftJoinAndSelect("order.license", "license")
+    .where(
+      "order.buyerId = :userId AND order.active = :active) OR (order.sellerId = :userId AND order.active = :active)",
+      {
+        userId: userId,
+        active: true,
+      }
+    )
+    .getMany();
+  console.log(foundStatistics);
+  return foundStatistics;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -313,15 +356,26 @@ export const fetchUserNotifications = async ({
   dataSkip,
   dataLimit,
 }) => {
-  return await Notification.find({
-    where: [{ receiver: userId }],
-    skip: dataSkip,
-    take: dataLimit,
-    relations: ["user"],
-    order: {
-      created: "DESC",
-    },
-  });
+  // return await Notification.find({
+  //   where: [{ receiver: userId }],
+  //   skip: dataSkip,
+  //   take: dataLimit,
+  //   relations: ["user"],
+  //   order: {
+  //     created: "DESC",
+  //   },
+  // });
+
+  const foundNotifications = await getConnection()
+    .getRepository(Notification)
+    .createQueryBuilder("notification")
+    .where("notification.receiverId = :userId", {
+      userId: userId,
+    })
+    .addOrderBy("notification.created", "DESC")
+    .getMany();
+  console.log(foundNotifications);
+  return foundNotifications;
 };
 
 // $Needs testing (mongo -> postgres)

@@ -1,11 +1,24 @@
 import { License } from "../../entities/License";
 
+const LICENSE_ACTIVE_STATUS = true;
+
 // $Needs testing (mongo -> postgres)
 export const fetchLicenseByFingerprint = async ({ licenseFingerprint }) => {
-  return await License.findOne({
-    where: [{ fingerprint: licenseFingerprint, active: true }],
-    relations: ["artwork"],
-  });
+  // return await License.findOne({
+  //   where: [{ fingerprint: licenseFingerprint, active: true }],
+  //   relations: ["artwork"],
+  // });
+
+  const foundLicense = await getConnection()
+    .getRepository(License)
+    .createQueryBuilder("license")
+    .where("license.fingerprint = :fingerprint AND license.active = :active", {
+      fingerprint: licenseFingerprint,
+      active: LICENSE_ACTIVE_STATUS,
+    })
+    .getOne();
+  console.log(foundLicense);
+  return foundLicense;
 };
 
 // $Needs testing (mongo -> postgres)

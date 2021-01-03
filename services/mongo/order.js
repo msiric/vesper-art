@@ -52,7 +52,11 @@ export const fetchOrderDetails = async ({
     .session(session);
 };
 
-export const fetchUserOrder = async ({ orderId, userId, session = null }) => {
+export const fetchUserPurchase = async ({
+  orderId,
+  userId,
+  session = null,
+}) => {
   return await Order.findOne({
     $and: [{ id: orderId }, { buyer: userId }],
   })

@@ -19,12 +19,23 @@ export const addNewNotification = async ({
 
 // $Needs testing (mongo -> postgres)
 export const fetchExistingNotifications = async ({ userId }) => {
-  return await Notification.find({
-    where: [{ receiver: userId }],
-    order: {
-      created: "DESC",
-    },
-  });
+  // return await Notification.find({
+  //   where: [{ receiver: userId }],
+  //   order: {
+  //     created: "DESC",
+  //   },
+  // });
+
+  const foundNotifications = await getConnection()
+    .getRepository(Notification)
+    .createQueryBuilder("notification")
+    .where("notification.receiverId = :id", {
+      id: userId,
+    })
+    .addOrderBy("notification.created", "DESC")
+    .getMany();
+  console.log(foundNotifications);
+  return foundNotifications;
 };
 
 // $Needs testing (mongo -> postgres)

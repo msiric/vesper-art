@@ -1,7 +1,10 @@
 import createError from "http-errors";
 import socketApi from "../lib/socket.js";
 import { addNewNotification } from "../services/postgres/notification.js";
-import { addOrderReview, fetchUserOrder } from "../services/postgres/order.js";
+import {
+  addOrderReview,
+  fetchUserPurchase,
+} from "../services/postgres/order.js";
 import { addNewReview } from "../services/postgres/review.js";
 import { sanitizeData } from "../utils/helpers.js";
 import reviewValidator from "../validation/review.js";
@@ -11,7 +14,7 @@ export const postReview = async ({ userId, reviewRating, orderId }) => {
   const { error } = reviewValidator(sanitizeData({ reviewRating }));
   if (error) throw createError(400, error);
   if (reviewRating) {
-    const foundOrder = await fetchUserOrder({
+    const foundOrder = await fetchUserPurchase({
       orderId,
       userId,
     });

@@ -4,7 +4,6 @@ import { Artwork } from "../../entities/Artwork";
 import { Comment } from "../../entities/Comment";
 import { Cover } from "../../entities/Cover";
 import { Favorite } from "../../entities/Favorite";
-import { License } from "../../entities/License";
 import { Media } from "../../entities/Media";
 import { Version } from "../../entities/Version";
 
@@ -20,20 +19,46 @@ export const fetchArtworkById = async ({ artworkId }) => {
 
 // $Needs testing (mongo -> postgres)
 export const fetchActiveArtworks = async ({ dataSkip, dataLimit }) => {
-  return await Artwork.find({
-    where: [{ active: true }],
-    relations: ["owner", "current"],
-    skip: dataSkip,
-    take: dataLimit,
-  });
+  // return await Artwork.find({
+  //   where: [{ active: true }],
+  //   relations: ["owner", "current"],
+  //   skip: dataSkip,
+  //   take: dataLimit,
+  // });
+  const foundArtwork = await getConnection()
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .where("artwork.active = :active", {
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .getMany();
+  console.log(foundArtwork);
+  return foundArtwork;
 };
 
 // $Needs testing (mongo -> postgres)
 export const fetchVersionDetails = async ({ versionId }) => {
-  return await Version.findOne({
-    where: [{ id: versionId }],
-    relations: ["artwork", "artwork.owner"],
-  });
+  // return await Version.findOne({
+  //   where: [{ id: versionId }],
+  //   relations: ["artwork", "artwork.owner"],
+  // });
+  const foundVersion = await getConnection()
+    .getRepository(Version)
+    .createQueryBuilder("version")
+    .leftJoinAndSelect("version.artwork", "artwork")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .leftJoinAndSelect("version.cover", "cover")
+    .where("version.id = :id", {
+      id: versionId,
+    })
+    .getOne();
+  console.log(foundVersion);
+  return foundVersion;
 };
 
 export const fetchArtworkDetails = async ({
@@ -85,39 +110,54 @@ export const fetchArtworkComments = async ({
   dataSkip,
   dataLimit,
 }) => {
-  return await Comment.find({
-    where: [{ artwork: artworkId }],
-    relations: ["owner"],
-    skip: dataSkip,
-    take: dataLimit,
-  });
+  // return await Comment.find({
+  //   where: [{ artwork: artworkId }],
+  //   relations: ["owner"],
+  //   skip: dataSkip,
+  //   take: dataLimit,
+  // });
+  const foundComments = await getConnection()
+    .getRepository(Comment)
+    .createQueryBuilder("comment")
+    .leftJoinAndSelect("comment.owner", "owner")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .where("comment.artworkId = :id", {
+      id: artworkId,
+    })
+    .getMany();
+  console.log(foundComments);
+  return foundComments;
 };
 
 export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
-  return await Artwork.find({
-    where: [{ owner: userId, active: true }],
-    relations: ["current"],
-    skip: dataSkip,
-    take: dataLimit,
-  });
+  // return await Artwork.find({
+  //   where: [{ owner: userId, active: true }],
+  //   relations: ["current"],
+  //   skip: dataSkip,
+  //   take: dataLimit,
+  // });
+  const foundArtwork = await getConnection()
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .where("artwork.ownerId = :id AND artwork.active = :active", {
+      id: userId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .getMany();
+  console.log(foundArtwork);
+  return foundArtwork;
 };
 
+// $TODO isto kao i prethodni service samo bez skip i limit
 // $Needs testing (mongo -> postgres)
 export const fetchArtworksByOwner = async ({ userId }) => {
   return await Artwork.find({
     where: [{ owner: userId, active: true }],
     relations: ["current"],
-  });
-};
-
-// $Needs testing (mongo -> postgres)
-// $TODO zasto active false?
-export const fetchArtworkLicenses = async ({ artworkId, userId }) => {
-  return await License.find({
-    where: [{ artwork: artworkId, owner: userId, active: false }],
-    order: {
-      created: "DESC",
-    },
   });
 };
 
@@ -189,49 +229,48 @@ export const addNewFavorite = async ({ userId, artworkId }) => {
   return await Favorite.save(newFavorite);
 };
 
-// $Needs testing (mongo -> postgres)
-// check if cascade works correctly
-export const addArtworkFavorite = async ({ artworkId, savedFavorite }) => {
-  const foundArtwork = await Artwork.findOne({
-    where: [{ id: artworkId, active: true }],
-    relations: ["favorites"],
-  });
-  foundArtwork.favorites.push(savedFavorite);
-  return await Artwork.save(foundArtwork);
-};
-
-export const removeExistingFavorite = async ({ foundFavorite }) => {
-  return await Favorite.remove(foundFavorite);
+export const removeExistingFavorite = async ({ favoriteId }) => {
+  const deletedFavorite = await getConnection()
+    .createQueryBuilder()
+    .delete()
+    .from(Favorite)
+    .where("id = :id", { id: favoriteId })
+    .execute();
+  console.log(deletedFavorite);
+  return deletedFavorite;
 };
 
 export const fetchFavoriteByParents = async ({ userId, artworkId }) => {
-  const foundFavorite = await Favorite.findOne({
-    where: [{ ownerId: userId, artworkId }],
-  });
+  // const foundFavorite = await Favorite.findOne({
+  //   where: [{ ownerId: userId, artworkId }],
+  // });
+  // return foundFavorite;
+
+  const foundFavorite = await getConnection()
+    .getRepository(Favorite)
+    .createQueryBuilder("favorite")
+    .where("favorite.ownerId = :ownerId AND favorite.artworkId = :artworkId", {
+      ownerId: userId,
+      artworkId: artworkId,
+    })
+    .getOne();
+  console.log(foundFavorite);
   return foundFavorite;
 };
 
 // $Needs testing (mongo -> postgres)
 // check if cascade works correctly
-export const removeArtworkFavorite = async ({ artworkId }) => {
-  const foundFavorite = await Favorite.findOne({ artwork: artworkId });
-  await Favorite.remove(foundFavorite);
-};
-
-// $Needs testing (mongo -> postgres)
-// check if cascade works correctly
 export const removeArtworkVersion = async ({ versionId }) => {
-  const foundVersion = await Version.findOne({ id: versionId });
-  await Version.remove(foundVersion);
-};
-
-export const addArtworkComment = async ({ artworkId, savedComment }) => {
-  const foundArtwork = await Artwork.findOne({
-    where: [{ id: artworkId, active: true }],
-    relations: ["comments"],
-  });
-  foundArtwork.comments.push(savedComment);
-  return await Artwork.save(foundArtwork);
+  // const foundVersion = await Version.findOne({ id: versionId });
+  // await Version.remove(foundVersion);
+  const deletedVersion = await getConnection()
+    .createQueryBuilder()
+    .delete()
+    .from(Version)
+    .where("id = :id", { id: versionId })
+    .execute();
+  console.log(deletedVersion);
+  return deletedVersion;
 };
 
 // $TODO not needed anymore

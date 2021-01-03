@@ -2,10 +2,23 @@ import { Comment } from "../../entities/Comment";
 
 // $Needs testing (mongo -> postgres)
 export const fetchCommentById = async ({ artworkId, commentId }) => {
-  return await Comment.findOne({
-    where: [{ id: commentId, artwork: artworkId }],
-    relations: ["owner"],
-  });
+  // return await Comment.findOne({
+  //   where: [{ id: commentId, artwork: artworkId }],
+  //   relations: ["owner"],
+  // });
+
+  const foundComment = await getConnection()
+    .getRepository(Comment)
+    .createQueryBuilder("comment")
+    .leftJoinAndSelect("comment.owner", "owner")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .where("comment.id = :commentId AND comment.artworkId = :artworkId", {
+      commentId: commentId,
+      artworkId: artworkId,
+    })
+    .getOne();
+  console.log(foundComment);
+  return foundComment;
 };
 
 // $Needs testing (mongo -> postgres)
