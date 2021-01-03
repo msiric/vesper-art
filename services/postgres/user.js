@@ -33,45 +33,46 @@ const USER_VERIFICATION_INFO = [
   "user.verificationToken",
   "user.verified",
 ];
-const USER_AUTH_INFO = [
-  "user.password AS password",
-  "user.jwtVersion AS jwtVersion",
-];
+const USER_AUTH_INFO = ["user.password", "user.jwtVersion"];
 
 // $Needs testing (mongo -> postgres)
 export const fetchUserById = async ({ userId }) => {
-  return await getConnection()
+  const foundUser = await getConnection()
     .getRepository(User)
     .createQueryBuilder("user")
+    .select([
+      ...USER_ESSENTIAL_INFO,
+      ...USER_DETAILED_INFO,
+      ...USER_VERIFICATION_INFO,
+    ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where("user.id = :id AND user.active = :active", {
       id: userId,
       active: USER_ACTIVE_STATUS,
     })
+    .getOne();
+  console.log(foundUser);
+  return foundUser;
+};
+
+// $Needs testing (mongo -> postgres)
+export const fetchUserByEmail = async ({ userEmail }) => {
+  const foundUser = await getConnection()
+    .getRepository(User)
+    .createQueryBuilder("user")
     .select([
       ...USER_ESSENTIAL_INFO,
       ...USER_DETAILED_INFO,
       ...USER_VERIFICATION_INFO,
     ])
-    .getRawOne();
-};
-
-// $Needs testing (mongo -> postgres)
-export const fetchUserByEmail = async ({ userEmail }) => {
-  return await getConnection()
-    .getRepository(User)
-    .createQueryBuilder("user")
     .leftJoinAndSelect("user.avatar", "avatar")
     .where("user.email = :email AND user.active = :active", {
       email: userEmail,
       active: USER_ACTIVE_STATUS,
     })
-    .select([
-      ...USER_ESSENTIAL_INFO,
-      ...USER_DETAILED_INFO,
-      ...USER_VERIFICATION_INFO,
-    ])
-    .getRawOne();
+    .getOne();
+  console.log(foundUser);
+  return foundUser;
 };
 
 // $TODO convert to query builder
@@ -83,6 +84,7 @@ export const fetchUserByToken = async ({ tokenId }) => {
   const foundUser = await getConnection()
     .getRepository(User)
     .createQueryBuilder("user")
+    .select(USER_ESSENTIAL_INFO)
     .leftJoinAndSelect("user.avatar", "avatar")
     .where(
       "user.resetToken = :token AND user.resetExpiry = MoreThan(Date.now())",
@@ -90,8 +92,8 @@ export const fetchUserByToken = async ({ tokenId }) => {
         token: tokenId,
       }
     )
-    .select(USER_ESSENTIAL_INFO)
-    .getRawOne();
+    .getOne();
+  console.log(foundUser);
   return foundUser;
 };
 
@@ -105,7 +107,7 @@ export const fetchUserByCreds = async ({ userUsername }) => {
       { name: userUsername, active: true }
     )
     .select("user.id", "userId")
-    .getRawOne();
+    .getOne();
   const foundUser = await getConnection()
     .getRepository(User)
     .createQueryBuilder("user")
@@ -132,6 +134,7 @@ export const fetchUserByCreds = async ({ userUsername }) => {
     )
     .where("user.id = :id", { id: userId })
     .getOne();
+  console.log(foundUser);
   return foundUser;
 };
 
@@ -211,7 +214,7 @@ export const fetchUserProfile = async ({
       active: true,
     })
     .select("user.id", "userId")
-    .getRawOne();
+    .getOne();
   const foundUser = await getConnection()
     .getRepository(User)
     .createQueryBuilder("user")
