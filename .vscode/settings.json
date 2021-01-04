@@ -8,6 +8,6 @@
   },
   "git.enableSmartCommit": true,
   "git.confirmSync": false,
-  "window.zoomLevel": -1,
+  "window.zoomLevel": 1,
   "workbench.startupEditor": "newUntitledFile"
 }

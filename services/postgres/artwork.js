@@ -9,6 +9,7 @@ import { Version } from "../../entities/Version";
 
 const ARTWORK_ACTIVE_STATUS = true;
 
+// Only used when inserting comment
 export const fetchArtworkById = async ({ artworkId }) => {
   /*   return await Artwork.findOne({
     where: [{ id: artworkId }, { active: true }],
@@ -165,12 +166,12 @@ export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
 
 // $TODO isto kao i prethodni service samo bez skip i limit
 // $Needs testing (mongo -> postgres)
-export const fetchArtworksByOwner = async ({ userId }) => {
-  return await Artwork.find({
-    where: [{ owner: userId, active: true }],
-    relations: ["current"],
-  });
-};
+// export const fetchArtworksByOwner = async ({ userId }) => {
+//   return await Artwork.find({
+//     where: [{ owner: userId, active: true }],
+//     relations: ["current"],
+//   });
+// };
 
 export const addNewCover = async ({ artworkUpload }) => {
   /*   const newCover = new Cover();

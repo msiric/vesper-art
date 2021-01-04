@@ -1,11 +1,9 @@
+import argon2 from "argon2";
 import aws from "aws-sdk";
 import createError from "http-errors";
 import randomString from "randomstring";
 import { server } from "../config/secret.js";
-import {
-  fetchArtworkByOwner,
-  fetchArtworksByOwner,
-} from "../services/postgres/artwork.js";
+import { fetchArtworkByOwner } from "../services/postgres/artwork.js";
 import {
   fetchOrdersByBuyer,
   fetchOrdersBySeller,
@@ -25,6 +23,7 @@ import {
   fetchUserByEmail,
   fetchUserById,
   fetchuserFavorites,
+  fetchUserIdByName,
   fetchUserNotifications,
   fetchUserProfile,
   fetchUserPurchases,
@@ -32,7 +31,11 @@ import {
   removeExistingIntent,
 } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
-import { formatParams, sanitizeData } from "../utils/helpers.js";
+import {
+  formatParams,
+  retrieveEntityId,
+  sanitizeData,
+} from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 import emailValidator from "../validation/email.js";
 import originValidator from "../validation/origin.js";
@@ -53,8 +56,13 @@ export const getUserProfile = async ({
   dataCeiling,
 }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
+  const userId = await fetchUserIdByName({
+    userUsername,
+    includeEmail: false,
+  });
   const foundUser = await fetchUserProfile({
     userUsername,
+    userId,
     dataSkip,
     dataLimit,
   });
@@ -147,10 +155,11 @@ export const updateUserProfile = async ({
   const foundUser = await fetchUserById({ userId });
   const savedAvatar = avatarUpload.fileMedia
     ? foundUser.avatar
-      ? await editUserAvatar({ foundUser, avatarUpload })
-      : await addUserAvatar({ avatarUpload })
+      ? await editUserAvatar({ userId: foundUser.id, avatarUpload })
+      : await addUserAvatar({ userId: foundUser.id, avatarUpload })
     : null;
-  await editUserProfile({ foundUser, userData, savedAvatar });
+  const savedAvatarId = retrieveEntityId(savedAvatar);
+  await editUserProfile({ foundUser, userData, savedAvatarId });
   return { message: "User details updated" };
 };
 
@@ -233,7 +242,8 @@ export const updateUserPassword = async ({
     })
   );
   if (error) throw createError(400, error);
-  await editUserPassword({ userId, userPassword });
+  const hashedPassword = await argon2.hash(userPassword);
+  await editUserPassword({ userId, hashedPassword });
   return { message: "Password updated successfully" };
 };
 
@@ -315,7 +325,7 @@ export const updateUserPreferences = async ({ userId, userFavorites }) => {
 export const deactivateUser = async ({ userId, session }) => {
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
-    const foundArtwork = await fetchArtworksByOwner({
+    const foundArtwork = await fetchUserArtwork({
       userId,
       session,
     });

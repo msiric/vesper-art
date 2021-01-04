@@ -23,13 +23,30 @@ export const addNewNotification = async ({
   notificationType,
   notificationReceiver,
 }) => {
-  const newNotification = new Notification();
-  newNotification.receiver = notificationReceiver;
-  newNotification.link = notificationLink;
-  newNotification.ref = notificationRef;
-  newNotification.type = notificationType;
-  newNotification.read = false;
-  return await Notification.save(newNotification);
+  // const newNotification = new Notification();
+  // newNotification.receiver = notificationReceiver;
+  // newNotification.link = notificationLink;
+  // newNotification.ref = notificationRef;
+  // newNotification.type = notificationType;
+  // newNotification.read = false;
+  // return await Notification.save(newNotification);
+
+  const savedNotification = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Notification)
+    .values([
+      {
+        receiver: notificationReceiver,
+        link: notificationLink,
+        ref: notificationRef,
+        type: notificationType,
+        read: false,
+      },
+    ])
+    .execute();
+  console.log(savedNotification);
+  return savedNotification;
 };
 
 // $Needs testing (mongo -> postgres)

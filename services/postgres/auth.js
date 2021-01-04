@@ -1,17 +1,14 @@
-import argon2 from "argon2";
-import createError from "http-errors";
+import { getConnection } from "typeorm";
 import { User } from "../../entities/User";
 import { sendRefreshToken, updateAccessToken } from "../../utils/auth.js";
-import { fetchUserByCreds } from "./user";
 
 // $Done (mongo -> postgres)
 export const addNewUser = async ({
   userEmail,
   userUsername,
-  userPassword,
+  hashedPassword,
   verificationToken,
 }) => {
-  const hashedPassword = await argon2.hash(userPassword);
   /*   const newUser = new User();
   newUser.email = userEmail;
   newUser.name = userUsername;
@@ -36,28 +33,6 @@ export const addNewUser = async ({
     .execute();
   console.log(savedUser);
   return savedUser;
-};
-
-// $Done (mongo -> postgres)
-export const verifyUserLogin = async ({ userUsername, userPassword }) => {
-  const foundUser = await fetchUserByCreds({ userUsername });
-  if (!foundUser) {
-    throw createError(400, "Account with provided credentials does not exist");
-  } else if (!foundUser.active) {
-    throw createError(400, "This account is no longer active");
-  } else if (!foundUser.verified) {
-    throw createError(400, "Please verify your account");
-  } else {
-    const valid = await argon2.verify(foundUser.password, userPassword);
-
-    if (!valid) {
-      throw createError(
-        400,
-        "Account with provided credentials does not exist"
-      );
-    }
-    return { foundUser };
-  }
 };
 
 export const logUserOut = (res) => {
@@ -115,8 +90,7 @@ export const editUserResetToken = async ({ userEmail, resetToken }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const resetUserPassword = async ({ tokenId, userPassword }) => {
-  const hashedPassword = await argon2.hash(userPassword);
+export const resetUserPassword = async ({ tokenId, hashedPassword }) => {
   /*   const foundUser = await User.findOne({
     where: [{ resetToken: tokenId, resetExpiry: MoreThan(Date.now()) }],
   });
@@ -158,7 +132,8 @@ export const resetRegisterToken = async ({ tokenId }) => {
     .set({ verificationToken: "", verified: true })
     .where("verificationToken = :tokenId AND active = :active", {
       tokenId,
-      active: ARTWORK_ACTIVE_STATUS,
+      // $TODO add constant
+      active: true,
     })
     .execute();
   console.log(updatedUser);

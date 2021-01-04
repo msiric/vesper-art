@@ -121,3 +121,6 @@ export const checkImageOrientation = (width, height) => {
     return "square";
   }
 };
+
+export const retrieveEntityId = (entity) => console.log("ENTITY", entity);
+// entity ? entity.identifiers[0].id : null;

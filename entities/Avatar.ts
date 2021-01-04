@@ -17,6 +17,9 @@ export class Avatar extends BaseEntity {
   user: User;
 
   @Column()
+  userId: string;
+
+  @Column()
   source: string;
 
   @Column()

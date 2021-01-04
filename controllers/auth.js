@@ -1,3 +1,4 @@
+import argon2 from "argon2";
 import crypto from "crypto";
 import createError from "http-errors";
 import randomString from "randomstring";
@@ -10,9 +11,11 @@ import {
   resetRegisterToken,
   resetUserPassword,
   revokeAccessToken,
-  verifyUserLogin,
 } from "../services/postgres/auth.js";
-import { fetchUserByCreds } from "../services/postgres/user.js";
+import {
+  fetchUserByAuth,
+  fetchUserIdByName,
+} from "../services/postgres/user.js";
 import {
   createAccessToken,
   createRefreshToken,
@@ -42,16 +45,17 @@ export const postSignUp = async ({
     })
   );
   if (error) throw createError(400, error);
-  const foundUser = await fetchUserByCreds({ userUsername, session });
-  if (foundUser) {
+  const userId = await fetchUserIdByName({ userUsername, includeEmail: true });
+  if (userId) {
     throw createError(400, "Account with that email/username already exists");
   } else {
     const verificationToken = randomString.generate();
     const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
+    const hashedPassword = await argon2.hash(userPassword);
     await addNewUser({
       userEmail,
       userUsername,
-      userPassword,
+      hashedPassword,
       verificationToken,
       session,
     });
@@ -77,7 +81,25 @@ export const postLogIn = async ({
     sanitizeData({ userUsername, userPassword })
   );
   if (error) throw createError(400, error);
-  const { foundUser } = await verifyUserLogin({ userUsername, userPassword });
+
+  const userId = await fetchUserIdByName({ userUsername, includeEmail: true });
+  const foundUser = await fetchUserByAuth({ userId });
+  if (!foundUser) {
+    throw createError(400, "Account with provided credentials does not exist");
+  } else if (!foundUser.active) {
+    throw createError(400, "This account is no longer active");
+  } else if (!foundUser.verified) {
+    throw createError(400, "Please verify your account");
+  } else {
+    const valid = await argon2.verify(foundUser.password, userPassword);
+
+    if (!valid) {
+      throw createError(
+        400,
+        "Account with provided credentials does not exist"
+      );
+    }
+  }
 
   const tokenPayload = {
     id: foundUser.id,
@@ -156,9 +178,10 @@ export const resetPassword = async ({
 }) => {
   const { error } = resetValidator(sanitizeData({ userPassword, userConfirm }));
   if (error) throw createError(400, error);
+  const hashedPassword = await argon2.hash(userPassword);
   const updatedUser = await resetUserPassword({
     tokenId,
-    userPassword,
+    hashedPassword,
     session,
   });
   await sendEmail({

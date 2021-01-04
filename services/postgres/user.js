@@ -1,4 +1,3 @@
-import argon2 from "argon2";
 import { getConnection } from "typeorm";
 import { Artwork } from "../../entities/Artwork";
 import { Avatar } from "../../entities/Avatar";
@@ -34,6 +33,22 @@ const USER_VERIFICATION_INFO = [
   "user.verified",
 ];
 const USER_AUTH_INFO = ["user.password", "user.jwtVersion"];
+
+export const fetchUserIdByName = async ({ userUsername, includeEmail }) => {
+  const foundUser = await getConnection()
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .select("user.id")
+    .where(
+      includeEmail
+        ? "(user.name = :name OR user.email = :name) AND user.active = :active"
+        : "user.name = :name AND user.active = :active",
+      { name: userUsername, active: USER_ACTIVE_STATUS }
+    )
+    .getOne();
+  console.log(foundUser);
+  return foundUser ? foundUser.id : null;
+};
 
 // $Needs testing (mongo -> postgres)
 export const fetchUserById = async ({ userId }) => {
@@ -84,7 +99,7 @@ export const fetchUserByToken = async ({ tokenId }) => {
   const foundUser = await getConnection()
     .getRepository(User)
     .createQueryBuilder("user")
-    .select(USER_ESSENTIAL_INFO)
+    .select([...USER_ESSENTIAL_INFO, ...USER_VERIFICATION_INFO])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where(
       "user.resetToken = :token AND user.resetExpiry = MoreThan(Date.now())",
@@ -98,16 +113,7 @@ export const fetchUserByToken = async ({ tokenId }) => {
 };
 
 // $Done (mongo -> postgres)
-export const fetchUserByCreds = async ({ userUsername }) => {
-  const data = await getConnection()
-    .getRepository(User)
-    .createQueryBuilder("user")
-    .select("user.id")
-    .where(
-      "(user.name = :name OR user.email = :name) AND user.active = :active",
-      { name: userUsername, active: true }
-    )
-    .getOne();
+export const fetchUserByAuth = async ({ userId }) => {
   const foundUser = await getConnection()
     .getRepository(User)
     .createQueryBuilder("user")
@@ -116,23 +122,23 @@ export const fetchUserByCreds = async ({ userUsername }) => {
       Intent,
       "intent",
       "intent.ownerId = :id",
-      { id: data.id }
+      { id: userId }
     )
     .leftJoinAndMapMany(
       "user.notifications",
       Notification,
       "notification",
       "notification.receiverId = :id AND notification.read = :read",
-      { id: data.id, read: false }
+      { id: userId, read: false }
     )
     .leftJoinAndMapMany(
       "user.favorites",
       Favorite,
       "favorite",
       "favorite.ownerId = :id",
-      { id: data.id }
+      { id: userId }
     )
-    .where("user.id = :id", { id: data.id })
+    .where("user.id = :id", { id: userId })
     .getOne();
   console.log(foundUser);
   return foundUser;
@@ -200,18 +206,10 @@ export const editUserStripe = async ({ userId, stripeId }) => {
 // $Needs testing (mongo -> postgres)
 export const fetchUserProfile = async ({
   userUsername,
+  userId,
   dataSkip,
   dataLimit,
 }) => {
-  const data = await getConnection()
-    .getRepository(User)
-    .createQueryBuilder("user")
-    .select("user.id")
-    .where("user.name = :name AND user.active = :active", {
-      name: userUsername,
-      active: USER_ACTIVE_STATUS,
-    })
-    .getOne();
   const foundUser = await getConnection()
     .getRepository(User)
     .createQueryBuilder("user")
@@ -222,14 +220,14 @@ export const fetchUserProfile = async ({
       Artwork,
       "artwork",
       "artwork.ownerId = :id AND artwork.active = :active",
-      { id: data.id, active: ARTWORK_ACTIVE_STATUS }
+      { id: userId, active: ARTWORK_ACTIVE_STATUS }
     )
     .leftJoinAndMapMany(
       "artwork.owner",
       User,
       "owner",
       "artwork.ownerId = :id",
-      { id: data.id }
+      { id: userId }
     )
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
@@ -322,42 +320,87 @@ export const fetchUserStatistics = async ({ userId }) => {
 
 // $Needs testing (mongo -> postgres)
 // $TODO needs work
-export const addUserAvatar = async ({ avatarUpload }) => {
-  const newAvatar = new Avatar();
-  newAvatar.source = avatarUpload.fileMedia;
-  newAvatar.dominant = avatarUpload.fileDominant;
-  newAvatar.orientation = avatarUpload.fileOrientation;
-  newAvatar.height = avatarUpload.fileHeight;
-  newAvatar.width = avatarUpload.fileWidth;
-  return newAvatar;
+export const addUserAvatar = async ({ userId, avatarUpload }) => {
+  // const newAvatar = new Avatar();
+  // newAvatar.source = avatarUpload.fileMedia;
+  // newAvatar.dominant = avatarUpload.fileDominant;
+  // newAvatar.orientation = avatarUpload.fileOrientation;
+  // newAvatar.height = avatarUpload.fileHeight;
+  // newAvatar.width = avatarUpload.fileWidth;
+  // return newAvatar;
+
+  const savedAvatar = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Avatar)
+    .values([
+      {
+        source: avatarUpload.fileMedia,
+        dominant: avatarUpload.fileDominant,
+        orientation: avatarUpload.fileOrientation,
+        height: avatarUpload.fileHeight,
+        width: avatarUpload.fileWidth,
+        userId,
+      },
+    ])
+    .execute();
+  console.log(savedAvatar);
+  return savedAvatar;
 };
 
 // $Needs testing (mongo -> postgres)
 // $TODO needs work
-export const editUserAvatar = async ({ foundUser, avatarUpload }) => {
-  foundUser.avatar.source = avatarUpload.fileMedia;
-  foundUser.avatar.dominant = avatarUpload.fileDominant;
-  foundUser.avatar.orientation = avatarUpload.fileOrientation;
-  foundUser.avatar.height = avatarUpload.fileHeight;
-  foundUser.avatar.width = avatarUpload.fileWidth;
-  return foundUser.avatar;
+export const editUserAvatar = async ({ userId, avatarUpload }) => {
+  // foundUser.avatar.source = avatarUpload.fileMedia;
+  // foundUser.avatar.dominant = avatarUpload.fileDominant;
+  // foundUser.avatar.orientation = avatarUpload.fileOrientation;
+  // foundUser.avatar.height = avatarUpload.fileHeight;
+  // foundUser.avatar.width = avatarUpload.fileWidth;
+  // return foundUser.avatar;
+
+  const updatedAvatar = await getConnection()
+    .createQueryBuilder()
+    .update(Avatar)
+    .set({
+      source: avatarUpload.fileMedia,
+      dominant: avatarUpload.fileDominant,
+      orientation: avatarUpload.fileOrientation,
+      height: avatarUpload.fileHeight,
+      width: avatarUpload.fileWidth,
+      userId,
+    })
+    .where("userId = :userId", {
+      userId,
+    })
+    .returning("id")
+    .execute();
+  console.log(updatedAvatar);
+  return updatedAvatar;
 };
 
 // $Needs testing (mongo -> postgres)
 // $TODO how to conditionally update?
-export const editUserProfile = async ({ foundUser, userData, savedAvatar }) => {
-  if (savedAvatar) foundUser.avatar = savedAvatar;
-  if (userData.userDescription)
-    foundUser.description = userData.userDescription;
-  if (userData.userCountry) foundUser.country = userData.userCountry;
-  return await User.save(foundUser);
+export const editUserProfile = async ({
+  foundUser,
+  userData,
+  savedAvatarId,
+}) => {
+  // if (savedAvatar) foundUser.avatar = savedAvatar;
+  // if (userData.userDescription)
+  //   foundUser.description = userData.userDescription;
+  // if (userData.userCountry) foundUser.country = userData.userCountry;
+  // return await User.save(foundUser);
 
   const updatedUser = await getConnection()
     .createQueryBuilder()
     .update(User)
-    .set({})
+    .set({
+      avatar: savedAvatarId || foundUser.avatar,
+      description: userData.userDescription || foundUser.description,
+      country: userData.userCountry || foundUser.country,
+    })
     .where("id = :userId AND active = :active", {
-      userId,
+      userId: foundUser.id,
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
@@ -421,8 +464,7 @@ export const editUserEmail = async ({
 };
 
 // $Needs testing (mongo -> postgres)
-export const editUserPassword = async ({ userId, userPassword }) => {
-  const hashedPassword = await argon2.hash(userPassword);
+export const editUserPassword = async ({ userId, hashedPassword }) => {
   /*   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });

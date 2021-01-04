@@ -23,7 +23,7 @@ export const fetchUserByToken = async ({ tokenId, session = null }) => {
   }).session(session);
 };
 
-export const fetchUserByCreds = async ({ userUsername, session = null }) => {
+export const fetchUserByAuth = async ({ userUsername, session = null }) => {
   return await User.findOne({
     $and: [
       { $or: [{ email: userUsername }, { name: userUsername }] },
