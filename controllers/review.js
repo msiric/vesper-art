@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { reviewValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
 import { addNewNotification } from "../services/postgres/notification.js";
 import {
@@ -7,11 +8,12 @@ import {
 } from "../services/postgres/order.js";
 import { addNewReview } from "../services/postgres/review.js";
 import { generateUuids, sanitizeData } from "../utils/helpers.js";
-import reviewValidator from "../validation/review.js";
 
 // needs transaction (done)
 export const postReview = async ({ userId, reviewRating, orderId }) => {
-  const { error } = reviewValidator(sanitizeData({ reviewRating }));
+  const { error } = await reviewValidation.validate(
+    sanitizeData({ reviewRating })
+  );
   if (error) throw createError(400, error);
   if (reviewRating) {
     const foundOrder = await fetchUserPurchase({

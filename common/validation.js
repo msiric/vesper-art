@@ -163,16 +163,16 @@ export const patchAvatar = Yup.object().shape({
 });
 
 export const orderValidation = Yup.object().shape({
-  orderBuyer: Yup.string.uuid("Invalid UUID")().required(),
-  orderSeller: Yup.string.uuid("Invalid UUID")().required(),
-  orderArtwork: Yup.string.uuid("Invalid UUID")().required(),
-  orderVersion: Yup.string.uuid("Invalid UUID")().required(),
-  orderDiscount: Yup.string.uuid("Invalid UUID")().required(),
-  orderLicense: Yup.string.uuid("Invalid UUID")().required(),
+  orderBuyer: Yup.string().uuid("Invalid UUID").required(),
+  orderSeller: Yup.string().uuid("Invalid UUID").required(),
+  orderArtwork: Yup.string().uuid("Invalid UUID").required(),
+  orderVersion: Yup.string().uuid("Invalid UUID").required(),
+  orderDiscount: Yup.string().uuid("Invalid UUID").required(),
+  orderLicense: Yup.string().uuid("Invalid UUID").required(),
   orderSpent: Yup.number().integer().required(),
   orderEarned: Yup.number().integer().required(),
   orderFee: Yup.number().integer().required(),
-  orderIntent: Yup.string.uuid("Invalid UUID")().required(),
+  orderIntent: Yup.string().uuid("Invalid UUID").required(),
 });
 
 export const originValidation = Yup.object().shape({
@@ -215,12 +215,13 @@ export const resetValidation = Yup.object().shape({
 
 export const reviewValidation = Yup.object().shape({
   reviewRating: Yup.number().min(1).max(5).required("Rating cannot be empty"),
-  reviewContent: Yup.string().trim().required("Revieww cannot be empty"),
 });
 
 export const searchValidation = Yup.object().shape({
-  searchQuery: Yup.string().allow(""),
-  searchType: Yup.string().valid("artwork", "users").required(),
+  searchQuery: Yup.string(),
+  searchType: Yup.string()
+    .matches(/(artwork|users)/, "Search type is invalid")
+    .required(),
 });
 
 export const signupValidation = Yup.object().shape({

@@ -1,10 +1,12 @@
 import createError from "http-errors";
+import { fingerprintValidation } from "../common/validation";
 import { fetchLicenseByFingerprint } from "../services/postgres/license.js";
 import { sanitizeData } from "../utils/helpers.js";
-import verifierValidator from "../validation/verifier.js";
 
 export const verifyLicense = async ({ licenseFingerprint }) => {
-  const { error } = verifierValidator(sanitizeData({ licenseFingerprint }));
+  const { error } = await fingerprintValidation.validate(
+    sanitizeData({ licenseFingerprint })
+  );
   if (error) throw createError(400, error);
   const foundLicense = await fetchLicenseByFingerprint({ licenseFingerprint });
   if (foundLicense) {

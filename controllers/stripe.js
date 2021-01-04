@@ -5,6 +5,7 @@ import FormData from "form-data";
 import createError from "http-errors";
 import mongoose from "mongoose";
 import querystring from "querystring";
+import { licenseValidation, orderValidation } from "../common/validation";
 import { payment } from "../config/constants.js";
 import { server, stripe as processor } from "../config/secret.js";
 import socketApi from "../lib/socket.js";
@@ -28,8 +29,6 @@ import {
   removeExistingIntent,
 } from "../services/postgres/user.js";
 import { generateUuids, sanitizeData } from "../utils/helpers.js";
-import licenseValidator from "../validation/license.js";
-import orderValidator from "../validation/order.js";
 
 export const receiveWebhookEvent = async ({
   stripeSignature,
@@ -331,7 +330,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
     licenseType,
     licensePrice,
   } = orderData.licenseData;
-  const { licenseError } = licenseValidator(
+  const { licenseError } = await licenseValidation.validate(
     sanitizeData({
       licenseOwner: buyerId,
       licenseArtwork: artworkId,
@@ -352,7 +351,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
   newLicense.active = true;
   newLicense.price = licensePrice;
   const savedLicense = await License.save(newLicense);
-  const { orderError } = orderValidator(
+  const { orderError } = await orderValidation.validate(
     sanitizeData({
       orderBuyer: buyerId,
       orderSeller: sellerId,

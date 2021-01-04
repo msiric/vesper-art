@@ -1,15 +1,17 @@
 import createError from "http-errors";
+import { discountValidation } from "../common/validation";
 import {
   fetchDiscountByCode,
   fetchDiscountById,
 } from "../services/postgres/discount.js";
 import { sanitizeData } from "../utils/helpers.js";
-import discountValidator from "../validation/discount.js";
 
 // needs transaction (done)
 // treba sredit
 export const postDiscount = async ({ userId, discountCode, session }) => {
-  const { error } = discountValidator(sanitizeData({ discountCode }));
+  const { error } = await discountValidation.validate(
+    sanitizeData({ discountCode })
+  );
   if (error) throw createError(400, error);
 
   const foundDiscount = await fetchDiscountByCode({

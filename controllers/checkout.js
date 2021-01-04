@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import createError from "http-errors";
+import { licenseValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
 import License from "../models/license.js";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
@@ -7,7 +8,6 @@ import { addNewNotification } from "../services/postgres/notification.js";
 import { addNewOrder } from "../services/postgres/order.js";
 import { fetchUserById } from "../services/postgres/user.js";
 import { generateUuids, sanitizeData } from "../utils/helpers.js";
-import licenseValidator from "../validation/license.js";
 import orderValidator from "../validation/order.js";
 
 export const getCheckout = async ({ userId, versionId }) => {
@@ -44,7 +44,7 @@ export const postDownload = async ({
         const foundUser = await fetchUserById({ userId, session });
         if (!foundVersion.artwork.owner.id === foundUser.id) {
           if (foundUser && foundUser.active) {
-            const { licenseError } = licenseValidator(
+            const { licenseError } = await licenseValidation.validate(
               sanitizeData({
                 licenseOwner: foundUser.id,
                 licenseArtwork: foundVersion.artwork.id,

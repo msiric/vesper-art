@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { artworkValidation } from "../common/validation";
 import {
   addNewArtwork,
   addNewCover,
@@ -27,7 +28,6 @@ import {
   sanitizeData,
 } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
-import artworkValidator from "../validation/artwork.js";
 
 export const getArtwork = async ({ dataCursor, dataCeiling }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
@@ -110,7 +110,9 @@ export const postNewArtwork = async ({
     artworkUpload.fileOrientation
   ) {
     const formattedData = formatArtworkValues(artworkData);
-    const { error } = artworkValidator(sanitizeData(formattedData));
+    const { error } = await artworkValidation.validate(
+      sanitizeData(formattedData)
+    );
     if (error) throw createError(400, error);
     if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
       const foundUser = await fetchUserById({
@@ -191,7 +193,9 @@ export const updateArtwork = async ({
     fileType: "artwork",
   });
   const formattedData = formatArtworkValues(artworkData);
-  const { error } = artworkValidator(sanitizeData(formattedData));
+  const { error } = await artworkValidation.validate(
+    sanitizeData(formattedData)
+  );
   if (error) throw createError(400, error);
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,

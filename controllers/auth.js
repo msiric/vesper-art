@@ -2,6 +2,12 @@ import argon2 from "argon2";
 import crypto from "crypto";
 import createError from "http-errors";
 import randomString from "randomstring";
+import {
+  emailValidation,
+  loginValidation,
+  resetValidation,
+  signupValidation,
+} from "../common/validation";
 import { server } from "../config/secret.js";
 import {
   addNewUser,
@@ -23,10 +29,6 @@ import {
 } from "../utils/auth.js";
 import { sendEmail } from "../utils/email.js";
 import { generateUuids, sanitizeData } from "../utils/helpers.js";
-import emailValidator from "../validation/email.js";
-import loginValidator from "../validation/login.js";
-import resetValidator from "../validation/reset.js";
-import signupValidator from "../validation/signup.js";
 
 // needs transaction (not tested)
 export const postSignUp = async ({
@@ -36,7 +38,7 @@ export const postSignUp = async ({
   userConfirm,
   session,
 }) => {
-  const { error } = signupValidator(
+  const { error } = await signupValidation.validate(
     sanitizeData({
       userEmail,
       userUsername,
@@ -81,7 +83,7 @@ export const postLogIn = async ({
   res,
   session,
 }) => {
-  const { error } = loginValidator(
+  const { error } = await loginValidation.validate(
     sanitizeData({ userUsername, userPassword })
   );
   if (error) throw createError(400, error);
@@ -156,7 +158,7 @@ export const verifyRegisterToken = async ({ tokenId }) => {
 };
 
 export const forgotPassword = async ({ userEmail, session }) => {
-  const { error } = emailValidator(sanitizeData({ userEmail }));
+  const { error } = await emailValidation.validate(sanitizeData({ userEmail }));
   if (error) throw createError(400, error);
   crypto.randomBytes(20, async function (err, buf) {
     const resetToken = buf.toString("hex");
@@ -180,7 +182,9 @@ export const resetPassword = async ({
   userConfirm,
   session,
 }) => {
-  const { error } = resetValidator(sanitizeData({ userPassword, userConfirm }));
+  const { error } = await resetValidation.validate(
+    sanitizeData({ userPassword, userConfirm })
+  );
   if (error) throw createError(400, error);
   const hashedPassword = await argon2.hash(userPassword);
   const updatedUser = await resetUserPassword({

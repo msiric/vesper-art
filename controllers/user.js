@@ -2,6 +2,12 @@ import argon2 from "argon2";
 import aws from "aws-sdk";
 import createError from "http-errors";
 import randomString from "randomstring";
+import {
+  emailValidation,
+  originValidation,
+  passwordValidation,
+  preferencesValidation,
+} from "../common/validation";
 import { server } from "../config/secret.js";
 import { fetchArtworkByOwner } from "../services/postgres/artwork.js";
 import {
@@ -33,11 +39,6 @@ import {
 import { sendEmail } from "../utils/email.js";
 import { formatParams, generateUuids, sanitizeData } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
-import emailValidator from "../validation/email.js";
-import originValidator from "../validation/origin.js";
-import passwordValidator from "../validation/password.js";
-import preferencesValidator from "../validation/preferences.js";
-import profileValidator from "../validation/profile.js";
 import rangeValidator from "../validation/range.js";
 
 aws.config.update({
@@ -121,7 +122,9 @@ export const updateUserOrigin = async ({
   userBusinessAddress,
   session,
 }) => {
-  const { error } = originValidator(sanitizeData({ userBusinessAddress }));
+  const { error } = await originValidation.validate(
+    sanitizeData({ userBusinessAddress })
+  );
   if (error) throw createError(400, error);
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
@@ -145,7 +148,7 @@ export const updateUserProfile = async ({
     mimeType: userMimetype,
     fileType: "user",
   });
-  const { error } = profileValidator(sanitizeData(userData));
+  const { error } = await profileValidation.validate(sanitizeData(userData));
   if (error) throw createError(400, error);
   // $TODO Find or fail? Minimize overhead
   const foundUser = await fetchUserById({ userId });
@@ -214,7 +217,7 @@ export const deleteUserIntent = async ({ userId, intentId }) => {
 
 // $TODO Update context with new data
 export const updateUserEmail = async ({ userId, userEmail, session }) => {
-  const { error } = emailValidator(sanitizeData({ userEmail }));
+  const { error } = await emailValidation.validate(sanitizeData({ userEmail }));
   if (error) throw createError(400, error);
   const foundUser = await fetchUserByEmail({ userEmail, session });
   if (foundUser) {
@@ -243,7 +246,7 @@ export const updateUserPassword = async ({
   userPassword,
   userConfirm,
 }) => {
-  const { error } = passwordValidator(
+  const { error } = await passwordValidation.validate(
     sanitizeData({
       userCurrent,
       userPassword,
@@ -259,7 +262,9 @@ export const updateUserPassword = async ({
 // needs transaction (done)
 // $TODO Update context with new data
 export const updateUserPreferences = async ({ userId, userFavorites }) => {
-  const { error } = preferencesValidator(sanitizeData({ userFavorites }));
+  const { error } = await preferencesValidation.validate(
+    sanitizeData({ userFavorites })
+  );
   if (error) throw createError(400, error);
   await editUserPreferences({ userId, userFavorites });
   return { message: "Preferences updated successfully" };
