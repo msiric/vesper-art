@@ -1,3 +1,4 @@
+import { getConnection } from "typeorm";
 import { License } from "../../entities/License";
 
 const LICENSE_ACTIVE_STATUS = true;

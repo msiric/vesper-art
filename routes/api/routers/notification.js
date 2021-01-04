@@ -12,19 +12,24 @@ import {
 
 const router = express.Router();
 
-router.route("/notifications").get(
-  isAuthenticated,
-  handler(getNotifications, (req, res, next) => ({}))
-);
+router
+  .route("/notifications")
+  // $TODO not tested
+  .get(
+    isAuthenticated,
+    handler(getNotifications, (req, res, next) => ({}))
+  );
 
 router
   .route("/notifications/:notificationId")
+  // $TODO not tested
   .post(
     [isAuthenticated, checkParamsId],
     handler(readNotification, (req, res, next) => ({
       ...req.params,
     }))
   )
+  // $TODO not tested
   .delete(
     [isAuthenticated, checkParamsId],
     handler(unreadNotification, (req, res, next) => ({

@@ -29,16 +29,20 @@ import {
 
 const router = express.Router();
 
-router.route("/users/:userUsername").get(
-  checkParamsUsername,
-  handler(getUserProfile, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
+router
+  .route("/users/:userUsername")
+  // $DONE works
+  .get(
+    checkParamsUsername,
+    handler(getUserProfile, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
 
 router
   .route("/users/:userId")
+  // $DONE works
   .patch(
     [isAuthenticated, checkParamsId, multerApi.uploadUserLocal],
     handler(updateUserProfile, (req, res, next) => ({
@@ -49,6 +53,7 @@ router
       userData: { ...req.body },
     }))
   )
+  // $TODO not tested
   .delete(
     [isAuthenticated, checkParamsId],
     handler(deactivateUser, (req, res, next) => ({
@@ -56,120 +61,165 @@ router
     }))
   );
 
-router.route("/users/:userId/artwork").get(
-  checkParamsId,
-  handler(getUserArtwork, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
+router
+  .route("/users/:userId/artwork")
+  // $TODO not tested
+  .get(
+    checkParamsId,
+    handler(getUserArtwork, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
 
-router.route("/users/:userId/artwork/:artworkId/download").get(
-  [isAuthenticated, checkParamsId],
-  handler(getUserMedia, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+router
+  .route("/users/:userId/artwork/:artworkId/download")
+  // $TODO not tested
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(getUserMedia, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
 
-router.route("/users/:userId/ownership").get(
-  checkParamsId,
-  handler(getUserOwnership, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
+router
+  .route("/users/:userId/ownership")
+  // $TODO not tested
+  .get(
+    checkParamsId,
+    handler(getUserOwnership, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
 
-router.route("/users/:userId/favorites").get(
-  checkParamsId,
-  handler(getUserFavorites, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
+router
+  .route("/users/:userId/favorites")
+  // $TODO not tested
+  .get(
+    checkParamsId,
+    handler(getUserFavorites, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
 
-router.route("/users/:userId/statistics").get(
-  [isAuthenticated, checkParamsId],
-  handler(getUserStatistics, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+router
+  .route("/users/:userId/statistics")
+  // $TODO not tested
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(getUserStatistics, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
 
-router.route("/users/:userId/sales").get(
-  [isAuthenticated, checkParamsId],
-  handler(getUserSales, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
+router
+  .route("/users/:userId/sales")
+  // $TODO not tested
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(getUserSales, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
 
-router.route("/users/:userId/purchases").get(
-  [isAuthenticated, checkParamsId],
-  handler(getUserPurchases, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
+router
+  .route("/users/:userId/purchases")
+  // $TODO not tested
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(getUserPurchases, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
 
-router.route("/users/:userId/settings").get(
-  [isAuthenticated, checkParamsId],
-  handler(getUserSettings, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+router
+  .route("/users/:userId/settings")
+  // $DONE works
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(getUserSettings, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
 
-router.route("/users/:userId/notifications").get(
-  [isAuthenticated, checkParamsId],
-  handler(getUserNotifications, (req, res, next) => ({
-    ...req.params,
-    ...req.query,
-  }))
-);
+router
+  .route("/users/:userId/notifications")
+  // $TODO not tested
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(getUserNotifications, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
 
-router.route("/users/:userId/origin").patch(
-  [isAuthenticated, checkParamsId],
-  handler(updateUserOrigin, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
+router
+  .route("/users/:userId/origin")
+  // $TODO not tested
+  .patch(
+    [isAuthenticated, checkParamsId],
+    handler(updateUserOrigin, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
+    }))
+  );
 
-router.route("/users/:userId/preferences").patch(
-  [isAuthenticated, checkParamsId],
-  handler(updateUserPreferences, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
+router
+  .route("/users/:userId/preferences")
+  // $TODO not tested
+  .patch(
+    [isAuthenticated, checkParamsId],
+    handler(updateUserPreferences, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
+    }))
+  );
 
-router.route("/users/:userId/email").patch(
-  [isAuthenticated, checkParamsId],
-  handler(updateUserEmail, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
+router
+  .route("/users/:userId/email")
+  // $TODO not tested
+  .patch(
+    [isAuthenticated, checkParamsId],
+    handler(updateUserEmail, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
+    }))
+  );
 
-router.route("/users/:userId/password").patch(
-  [isAuthenticated, checkParamsId],
-  handler(updateUserPassword, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
+router
+  .route("/users/:userId/password")
+  // $TODO not tested
+  .patch(
+    [isAuthenticated, checkParamsId],
+    handler(updateUserPassword, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
+    }))
+  );
 
-router.route("/users/:userId/intents").post(
-  [isAuthenticated, checkParamsId],
-  handler(createUserIntent, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
+router
+  .route("/users/:userId/intents")
+  // $TODO not tested
+  .post(
+    [isAuthenticated, checkParamsId],
+    handler(createUserIntent, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
+    }))
+  );
 
-router.route("/users/:userId/intents/:intentId").delete(
-  [isAuthenticated, checkParamsId],
-  handler(deleteUserIntent, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+router
+  .route("/users/:userId/intents/:intentId")
+  // $TODO not tested
+  .delete(
+    [isAuthenticated, checkParamsId],
+    handler(deleteUserIntent, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
 
 export default router;

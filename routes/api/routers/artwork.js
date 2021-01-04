@@ -5,9 +5,7 @@ import {
   getArtwork,
   getArtworkComments,
   getArtworkDetails,
-  getLicenses,
   postNewArtwork,
-  saveLicense,
   unfavoriteArtwork,
   updateArtwork,
 } from "../../../controllers/artwork.js";
@@ -28,11 +26,13 @@ const router = express.Router();
 
 router
   .route("/artwork")
+  // $DONE works
   .get(
     handler(getArtwork, (req, res, next) => ({
       ...req.query,
     }))
   )
+  // $DONE works
   .post(
     [isAuthenticated, multerApi.uploadArtworkLocal],
     handler(postNewArtwork, (req, res, next) => ({
@@ -45,6 +45,7 @@ router
 
 router
   .route("/artwork/:artworkId")
+  // $DONE works (NOTE needs to return number of favorites instead of array)
   .get(
     checkParamsId,
     handler(getArtworkDetails, (req, res, next) => ({
@@ -52,6 +53,7 @@ router
       ...req.query,
     }))
   )
+  // $TODO not tested
   .patch(
     [isAuthenticated, checkParamsId, multerApi.uploadArtworkLocal],
     handler(updateArtwork, (req, res, next) => ({
@@ -62,6 +64,7 @@ router
       artworkData: { ...req.body },
     }))
   )
+  // $TODO not tested
   .delete(
     [isAuthenticated, checkParamsId],
     handler(deleteArtwork, (req, res, next) => ({
@@ -71,6 +74,7 @@ router
 
 router
   .route("/artwork/:artworkId/comments")
+  // $TODO not tested
   .get(
     checkParamsId,
     handler(getArtworkComments, (req, res, next) => ({
@@ -78,6 +82,7 @@ router
       ...req.query,
     }))
   )
+  // $DONE works
   .post(
     [isAuthenticated, checkParamsId],
     handler(postComment, (req, res, next) => ({
@@ -88,12 +93,14 @@ router
 
 router
   .route("/artwork/:artworkId/comments/:commentId")
+  // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
     handler(getComment, (req, res, next) => ({
       ...req.params,
     }))
   )
+  // $DONE works
   .patch(
     [isAuthenticated, checkParamsId],
     handler(patchComment, (req, res, next) => ({
@@ -101,6 +108,7 @@ router
       ...req.body,
     }))
   )
+  // $DONE works
   .delete(
     [isAuthenticated, checkParamsId],
     handler(deleteComment, (req, res, next) => ({
@@ -110,12 +118,14 @@ router
 
 router
   .route("/artwork/:artworkId/favorites")
+  // $DONE works
   .post(
     [isAuthenticated, checkParamsId],
     handler(favoriteArtwork, (req, res, next) => ({
       ...req.params,
     }))
   )
+  // $DONE works
   .delete(
     [isAuthenticated, checkParamsId],
     handler(unfavoriteArtwork, (req, res, next) => ({
@@ -123,26 +133,5 @@ router
       ...req.query,
     }))
   );
-
-// $TODO not needed?
-router
-  .route("/artwork/:artworkId/licenses")
-  .get(
-    [isAuthenticated, checkParamsId],
-    handler(getLicenses, (req, res, next) => ({
-      ...req.params,
-    }))
-  )
-  .post(
-    [isAuthenticated, checkParamsId],
-    handler(saveLicense, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
-    }))
-  );
-
-// router
-//   .route('/artwork/:artworkId/licenses/:licenseId')
-//   .delete(isAuthenticated, artwork.deleteLicense);
 
 export default router;

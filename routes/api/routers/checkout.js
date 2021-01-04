@@ -8,20 +8,26 @@ import {
 
 const router = express.Router();
 
-router.route("/checkout/:versionId").get(
-  [isAuthenticated, checkParamsId],
-  handler(getCheckout, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+router
+  .route("/checkout/:versionId")
+  // $TODO not tested
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(getCheckout, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
 
 // $TODO wat? not used?
-router.route("/download/:versionId").post(
-  [isAuthenticated, checkParamsId],
-  handler(postDownload, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
+router
+  .route("/download/:versionId")
+  // $TODO not tested
+  .post(
+    [isAuthenticated, checkParamsId],
+    handler(postDownload, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
+    }))
+  );
 
 export default router;

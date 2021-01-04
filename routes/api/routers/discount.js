@@ -8,18 +8,24 @@ import {
 
 const router = express.Router();
 
-router.route("/discounts").post(
-  isAuthenticated,
-  handler(postDiscount, (req, res, next) => ({
-    ...req.body,
-  }))
-);
+router
+  .route("/discounts")
+  // $TODO not tested
+  .post(
+    isAuthenticated,
+    handler(postDiscount, (req, res, next) => ({
+      ...req.body,
+    }))
+  );
 
-router.route("/discounts/:discountId").delete(
-  [isAuthenticated, checkParamsId],
-  handler(deleteDiscount, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+router
+  .route("/discounts/:discountId")
+  // $TODO not tested
+  .delete(
+    [isAuthenticated, checkParamsId],
+    handler(deleteDiscount, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
 
 export default router;
