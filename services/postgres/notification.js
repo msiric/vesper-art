@@ -1,4 +1,4 @@
-import { Notification } from "../../entities/notification";
+import { Notification } from "../../entities/Notification";
 
 export const fetchNotificationById = async ({ userId, notificationId }) => {
   const foundNotification = await getConnection()
