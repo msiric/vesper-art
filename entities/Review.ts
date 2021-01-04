@@ -3,7 +3,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -17,18 +16,29 @@ export class Review extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => Order, (order) => order.review)
+  @OneToOne(() => Order)
   order: Order;
 
-  @OneToOne(() => Artwork)
-  @JoinColumn()
+  @Column()
+  orderId: string;
+
+  @ManyToOne(() => Artwork)
   artwork: Artwork;
+
+  @Column()
+  artworkId: string;
 
   @ManyToOne(() => User)
   reviewer: User;
 
+  @Column()
+  reviewerId: string;
+
   @ManyToOne(() => User)
   reviewee: User;
+
+  @Column()
+  revieweeId: string;
 
   @Column()
   rating: number;

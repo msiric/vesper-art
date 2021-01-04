@@ -14,8 +14,11 @@ export class Notification extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user)
+  @ManyToOne(() => User)
   receiver: User;
+
+  @Column()
+  receiverId: string;
 
   @Column()
   link: string;

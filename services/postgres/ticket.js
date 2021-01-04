@@ -1,7 +1,12 @@
 import { Ticket } from "../../entities/Ticket";
 
 // $Needs testing (mongo -> postgres)
-export const addNewTicket = async ({ userId, ticketTitle, ticketBody }) => {
+export const addNewTicket = async ({
+  ticketId,
+  userId,
+  ticketTitle,
+  ticketBody,
+}) => {
   /*   const newTicket = new Ticket();
   newTicket.owner = userId;
   newTicket.title = ticketTitle;
@@ -16,7 +21,8 @@ export const addNewTicket = async ({ userId, ticketTitle, ticketBody }) => {
     .into(Ticket)
     .values([
       {
-        owner: userId,
+        id: ticketId,
+        ownerId: userId,
         title: ticketTitle,
         body: ticketBody,
         attachment: "", // $TODO

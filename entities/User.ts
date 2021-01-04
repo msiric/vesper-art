@@ -30,6 +30,9 @@ export class User extends BaseEntity {
   @JoinColumn()
   avatar: Avatar;
 
+  @Column({ nullable: true })
+  avatarId: string;
+
   @Column({ default: "" })
   description: string;
 

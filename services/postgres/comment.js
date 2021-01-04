@@ -23,7 +23,12 @@ export const fetchCommentById = async ({ artworkId, commentId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const addNewComment = async ({ artworkId, userId, commentContent }) => {
+export const addNewComment = async ({
+  commentId,
+  artworkId,
+  userId,
+  commentContent,
+}) => {
   /*   const newComment = new Comment();
   newComment.artwork = artworkId;
   newComment.owner = userId;
@@ -38,8 +43,9 @@ export const addNewComment = async ({ artworkId, userId, commentContent }) => {
     .into(Comment)
     .values([
       {
-        artwork: artworkId,
-        owner: userId,
+        id: commentId,
+        artworkId,
+        ownerId: userId,
         content: commentContent,
         modified: false,
         generated: false,
@@ -68,7 +74,7 @@ export const editExistingComment = async ({
     .createQueryBuilder()
     .update(Comment)
     .set({ content: commentContent, modified: true })
-    .where("id = :commentId AND artwork = :artworkId AND owner = :userId", {
+    .where("id = :commentId AND artworkId = :artworkId AND ownerId = :userId", {
       commentId,
       artworkId,
       userId,
@@ -93,7 +99,7 @@ export const removeExistingComment = async ({
     .createQueryBuilder()
     .delete()
     .from(Comment)
-    .where("id = :commentId AND artwork = :artworkId AND owner = :userId", {
+    .where("id = :commentId AND artworkId = :artworkId AND ownerId = :userId", {
       commentId,
       artworkId,
       userId,

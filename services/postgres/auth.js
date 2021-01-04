@@ -4,6 +4,7 @@ import { sendRefreshToken, updateAccessToken } from "../../utils/auth.js";
 
 // $Done (mongo -> postgres)
 export const addNewUser = async ({
+  userId,
   userEmail,
   userUsername,
   hashedPassword,
@@ -23,6 +24,7 @@ export const addNewUser = async ({
     .into(User)
     .values([
       {
+        id: userId,
         email: userEmail,
         name: userUsername,
         password: hashedPassword,

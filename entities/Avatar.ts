@@ -13,7 +13,7 @@ export class Avatar extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => User, (user) => user.avatar)
+  @OneToOne(() => User)
   user: User;
 
   @Column()

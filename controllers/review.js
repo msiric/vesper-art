@@ -6,7 +6,7 @@ import {
   fetchUserPurchase,
 } from "../services/postgres/order.js";
 import { addNewReview } from "../services/postgres/review.js";
-import { sanitizeData } from "../utils/helpers.js";
+import { generateUuids, sanitizeData } from "../utils/helpers.js";
 import reviewValidator from "../validation/review.js";
 
 // needs transaction (done)
@@ -20,8 +20,12 @@ export const postReview = async ({ userId, reviewRating, orderId }) => {
     });
     if (foundOrder) {
       if (!foundOrder.artwork.review) {
+        const { reviewId } = generateUuids({
+          reviewId: null,
+        });
         // $TODO should this be saved or just returned?
         const savedReview = await addNewReview({
+          reviewId,
           orderData: foundOrder,
           reviewerId: userId,
           revieweeId: foundOrder.seller,
@@ -37,8 +41,12 @@ export const postReview = async ({ userId, reviewRating, orderId }) => {
           orderId,
           userId,
         });
+        const { notificationId } = generateUuids({
+          notificationId: null,
+        });
         // new start
         await addNewNotification({
+          notificationId,
           notificationLink: foundOrder.id,
           notificationRef: savedReview.id,
           notificationType: "review",

@@ -320,7 +320,7 @@ export const fetchUserStatistics = async ({ userId }) => {
 
 // $Needs testing (mongo -> postgres)
 // $TODO needs work
-export const addUserAvatar = async ({ userId, avatarUpload }) => {
+export const addUserAvatar = async ({ avatarId, userId, avatarUpload }) => {
   // const newAvatar = new Avatar();
   // newAvatar.source = avatarUpload.fileMedia;
   // newAvatar.dominant = avatarUpload.fileDominant;
@@ -335,6 +335,7 @@ export const addUserAvatar = async ({ userId, avatarUpload }) => {
     .into(Avatar)
     .values([
       {
+        id: avatarId,
         source: avatarUpload.fileMedia,
         dominant: avatarUpload.fileDominant,
         orientation: avatarUpload.fileOrientation,
@@ -380,11 +381,7 @@ export const editUserAvatar = async ({ userId, avatarUpload }) => {
 
 // $Needs testing (mongo -> postgres)
 // $TODO how to conditionally update?
-export const editUserProfile = async ({
-  foundUser,
-  userData,
-  savedAvatarId,
-}) => {
+export const editUserProfile = async ({ foundUser, userData, avatarId }) => {
   // if (savedAvatar) foundUser.avatar = savedAvatar;
   // if (userData.userDescription)
   //   foundUser.description = userData.userDescription;
@@ -395,9 +392,11 @@ export const editUserProfile = async ({
     .createQueryBuilder()
     .update(User)
     .set({
-      avatar: savedAvatarId || foundUser.avatar,
-      description: userData.userDescription || foundUser.description,
-      country: userData.userCountry || foundUser.country,
+      avatarId: avatarId ? avatarId : foundUser.avatar,
+      description: userData.userDescription
+        ? userData.userDescription
+        : foundUser.description,
+      country: userData.userCountry ? userData.userCountry : foundUser.country,
     })
     .where("id = :userId AND active = :active", {
       userId: foundUser.id,

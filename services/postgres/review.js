@@ -2,6 +2,7 @@ import { Review } from "../../entities/Review";
 
 // $Needs testing (mongo -> postgres)
 export const addNewReview = async ({
+  reviewId,
   orderData,
   reviewRating,
   reviewerId,
@@ -21,8 +22,9 @@ export const addNewReview = async ({
     .into(Review)
     .values([
       {
-        order: orderData.id,
-        artwork: orderData.artwork.id,
+        id: reviewId,
+        orderId: orderData.id,
+        artworkId: orderData.artwork.id,
         reviewerId: reviewerId,
         revieweeId: revieweeId,
         rating: reviewRating,

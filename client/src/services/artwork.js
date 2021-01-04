@@ -38,7 +38,7 @@ export const getComment = {
 };
 export const deleteComment = {
   request: async ({ artworkId, commentId }) =>
-    await ax.delete(`/api/artwork/${artworkId}/comments/${commentId}`),
+    await ax(`/api/artwork/${artworkId}/comments/${commentId}`),
   success: { message: "Comment successfully deleted", variant: "success" },
   error: { message: "Failed to delete comment", variant: "error" },
 };
@@ -68,8 +68,7 @@ export const editArtwork = {
   error: { message: "Failed to fetch artwork", variant: "error" },
 };
 export const deleteArtwork = {
-  request: async ({ artworkId }) =>
-    await ax.delete(`/api/artwork/${artworkId}`),
+  request: async ({ artworkId }) => await ax(`/api/artwork/${artworkId}`),
   success: { message: "Artwork successfully deleted", variant: "success" },
   error: { message: "Failed to delete artwork", variant: "error" },
 };
@@ -97,7 +96,7 @@ export const postFavorite = {
 };
 export const deleteFavorite = {
   request: async ({ artworkId }) =>
-    await ax.delete(`/api/artwork/${artworkId}/favorites`),
+    await ax(`/api/artwork/${artworkId}/favorites`),
   success: { message: "Artwork successfully unsaved", variant: "success" },
   error: { message: "Failed to unsaved artwork", variant: "error" },
 };

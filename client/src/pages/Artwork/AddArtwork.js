@@ -4,6 +4,7 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
+import { pricing } from "../../../../common/constants.js";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
@@ -40,8 +41,8 @@ const AddArtwork = () => {
       artworkAvailability: "",
       artworkLicense: "",
       artworkUse: "",
-      artworkPersonal: "",
-      artworkCommercial: "",
+      artworkPersonal: pricing.minimumPrice,
+      artworkCommercial: pricing.minimumPrice,
       artworkCategory: "",
       artworkDescription: "",
       artworkTags: [],

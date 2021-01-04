@@ -15,11 +15,17 @@ export class Comment extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user)
+  @ManyToOne(() => User)
   owner: User;
 
-  @ManyToOne(() => Artwork, (artwork) => artwork)
+  @Column()
+  ownerId: string;
+
+  @ManyToOne(() => Artwork)
   artwork: Artwork;
+
+  @Column()
+  artworkId: string;
 
   @Column()
   content: string;

@@ -63,7 +63,7 @@
     "socket.io": "^2.2.0",
     "stripe": "^7.4.0",
     "typeorm": "^0.2.29",
-    "uuid-validate": "^0.0.3",
+    "uuid": "^8.3.2",
     "yup": "^0.29.3"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 import { Order } from "../../entities/Order";
 
 // $Needs testing (mongo -> postgres)
-export const addNewOrder = async ({ orderData }) => {
+export const addNewOrder = async ({ orderId, orderData }) => {
   /*   const newOrder = new Order();
   newOrder.buyer = orderData.buyerId;
   newOrder.seller = orderData.sellerId;
@@ -24,19 +24,20 @@ export const addNewOrder = async ({ orderData }) => {
     .into(Order)
     .values([
       {
-        buyer: orderData.buyerId,
-        seller: orderData.sellerId,
-        artwork: orderData.artworkId,
-        version: orderData.versionId,
-        discount: orderData.discountId,
-        license: orderData.licenseId,
-        review: orderData.review,
+        id: orderId,
+        buyerId: orderData.buyerId,
+        sellerId: orderData.sellerId,
+        artworkId: orderData.artworkId,
+        versionId: orderData.versionId,
+        licenseId: orderData.licenseId,
+        discountId: orderData.discountId,
+        reviewId: orderData.review,
+        intentId: orderData.intentId,
         spent: orderData.spent,
         earned: orderData.earned,
         fee: orderData.fee,
         type: orderData.commercial ? "commercial" : "free",
         status: orderData.status,
-        intent: orderData.intentId,
       },
     ])
     .execute();
@@ -149,8 +150,8 @@ export const addOrderReview = async ({ orderId, userId, savedReview }) => {
   const updatedOrder = await getConnection()
     .createQueryBuilder()
     .update(Order)
-    .set({ review: savedReview })
-    .where("id = :orderId AND buyer = :userId", {
+    .set({ reviewId: savedReview })
+    .where("id = :orderId AND buyerId = :userId", {
       orderId,
       userId,
     })

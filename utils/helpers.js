@@ -2,7 +2,12 @@ import currency from "currency.js";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
-import validateUuid from "uuid-validate";
+import {
+  v4 as uuidv4,
+  validate as validateUuid,
+  version as validateVersion,
+} from "uuid";
+import { uuid } from "../config/secret";
 
 export const requestHandler = (promise, params) => async (req, res, next) => {
   const boundParams = params ? params(req, res, next) : {};
@@ -24,8 +29,8 @@ export const formatArtworkValues = (data) => {
       data.artworkType === "commercial"
         ? data.artworkUse === "separate" || data.artworkLicense === "personal"
           ? currency(data.artworkPersonal).intValue
-          : null
-        : "",
+          : 0
+        : 0,
     artworkCommercial:
       data.artworkLicense === "commercial"
         ? data.artworkAvailability === "available" &&
@@ -33,7 +38,7 @@ export const formatArtworkValues = (data) => {
           data.artworkUse === "separate"
           ? currency(data.artworkCommercial).add(data.artworkPersonal).intValue
           : currency(data.artworkPersonal).intValue
-        : null,
+        : 0,
     artworkTags: JSON.parse(data.artworkTags),
   };
 };
@@ -85,12 +90,15 @@ export const checkParamsUsername = (req, res, next) => {
   throw createError(400, "Invalid route parameter");
 };
 
+export const isValidUuid = (value) =>
+  validateUuid(value) && validateVersion(value) === uuid.version;
+
 export const checkParamsId = (req, res, next) => {
   let isValid = true;
   for (let param in req.params) {
     const value = req.params[param];
     if (!value) isValid = false;
-    else if (!validateUuid(value)) isValid = false;
+    else if (!isValidUuid(value)) isValid = false;
   }
   if (isValid) return next();
   throw createError(400, "Invalid route parameter");
@@ -122,5 +130,10 @@ export const checkImageOrientation = (width, height) => {
   }
 };
 
-export const retrieveEntityId = (entity) => console.log("ENTITY", entity);
-// entity ? entity.identifiers[0].id : null;
+export const generateUuids = ({ ...args }) => {
+  const generatedUuids = {};
+  for (let item in args) {
+    generatedUuids[item] = uuidv4();
+  }
+  return generatedUuids;
+};

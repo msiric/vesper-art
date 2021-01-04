@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { addNewTicket } from "../services/postgres/ticket.js";
 import { sendEmail } from "../utils/email.js";
-import { sanitizeData } from "../utils/helpers.js";
+import { generateUuids, sanitizeData } from "../utils/helpers.js";
 import ticketValidator from "../validation/ticket.js";
 
 // how to handle transactions?
@@ -14,7 +14,11 @@ export const postTicket = async ({
 }) => {
   const { error } = ticketValidator(sanitizeData({ ticketTitle, ticketBody }));
   if (error) throw createError(400, error);
+  const { ticketId } = generateUuids({
+    ticketId: null,
+  });
   const savedTicket = await addNewTicket({
+    ticketId,
     userId,
     ticketTitle,
     ticketBody,

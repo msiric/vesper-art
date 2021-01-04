@@ -173,7 +173,7 @@ export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
 //   });
 // };
 
-export const addNewCover = async ({ artworkUpload }) => {
+export const addNewCover = async ({ coverId, artworkUpload }) => {
   /*   const newCover = new Cover();
   newCover.source = artworkUpload.fileCover;
   newCover.dominant = artworkUpload.fileDominant;
@@ -191,9 +191,10 @@ export const addNewCover = async ({ artworkUpload }) => {
     .into(Cover)
     .values([
       {
+        id: coverId,
         source: artworkUpload.fileCover,
-        dominant: artworkUpload.fileDominant,
         orientation: artworkUpload.fileOrientation,
+        dominant: artworkUpload.fileDominant,
         height: upload.artwork.fileTransform.height(
           artworkUpload.fileHeight,
           artworkUpload.fileWidth
@@ -206,7 +207,7 @@ export const addNewCover = async ({ artworkUpload }) => {
   return savedCover;
 };
 
-export const addNewMedia = async ({ artworkUpload }) => {
+export const addNewMedia = async ({ mediaId, artworkUpload }) => {
   /*   const newMedia = new Media();
   newMedia.source = artworkUpload.fileMedia;
   newMedia.dominant = artworkUpload.fileDominant;
@@ -221,6 +222,7 @@ export const addNewMedia = async ({ artworkUpload }) => {
     .into(Media)
     .values([
       {
+        id: mediaId,
         source: artworkUpload.fileMedia,
         dominant: artworkUpload.fileDominant,
         orientation: artworkUpload.fileOrientation,
@@ -236,11 +238,13 @@ export const addNewMedia = async ({ artworkUpload }) => {
 // $Needs testing (mongo -> postgres)
 // probably not working as intended
 export const addNewVersion = async ({
+  versionId,
+  coverId,
+  mediaId,
+  artworkId,
   prevArtwork,
   artworkData,
   artworkUpload,
-  savedCover,
-  savedMedia,
 }) => {
   /*   const newVersion = new Version();
   newVersion.cover = savedCover;
@@ -265,6 +269,7 @@ export const addNewVersion = async ({
     .into(Version)
     .values([
       {
+        id: versionId,
         title: artworkData.artworkTitle,
         type: artworkData.artworkType,
         availability: artworkData.artworkAvailability,
@@ -276,9 +281,9 @@ export const addNewVersion = async ({
         description: artworkData.artworkDescription,
         // $TODO restore after tags implementation
         /* tags: artworkUpload.fileDominant, */
-        cover: savedCover,
-        media: savedMedia,
-        artwork: prevArtwork.artwork ? prevArtwork.artwork : null,
+        coverId,
+        mediaId,
+        artworkId,
       },
     ])
     .execute();
@@ -288,7 +293,7 @@ export const addNewVersion = async ({
 
 // $Needs testing (mongo -> postgres)
 // probably not working as intended
-export const addNewArtwork = async ({ savedVersion, userId }) => {
+export const addNewArtwork = async ({ artworkId, versionId, userId }) => {
   /*   const newArtwork = new Artwork();
   newArtwork.owner = userId;
   newArtwork.current = savedVersion.id;
@@ -302,8 +307,9 @@ export const addNewArtwork = async ({ savedVersion, userId }) => {
     .into(Artwork)
     .values([
       {
-        owner: userId,
-        current: savedVersion.id,
+        id: artworkId,
+        ownerId: userId,
+        currentId: versionId,
         active: true,
         generated: false,
       },
@@ -313,7 +319,7 @@ export const addNewArtwork = async ({ savedVersion, userId }) => {
   return savedArtwork;
 };
 
-export const addNewFavorite = async ({ userId, artworkId }) => {
+export const addNewFavorite = async ({ favoriteId, userId, artworkId }) => {
   /*   const newFavorite = new Favorite();
   newFavorite.ownerId = userId;
   newFavorite.artworkId = artworkId;
@@ -325,6 +331,7 @@ export const addNewFavorite = async ({ userId, artworkId }) => {
     .into(Favorite)
     .values([
       {
+        id: favoriteId,
         ownerId: userId,
         artworkId,
       },

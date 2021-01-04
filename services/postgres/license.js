@@ -22,7 +22,12 @@ export const fetchLicenseByFingerprint = async ({ licenseFingerprint }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const addNewLicense = async ({ userId, artworkData, licenseData }) => {
+export const addNewLicense = async ({
+  licenseId,
+  userId,
+  artworkData,
+  licenseData,
+}) => {
   /*   const newLicense = new License();
   newLicense.owner = userId;
   newLicense.artwork = artworkData.id;
@@ -40,8 +45,9 @@ export const addNewLicense = async ({ userId, artworkData, licenseData }) => {
     .into(License)
     .values([
       {
-        owner: userId,
-        artwork: artworkData.id,
+        id: licenseId,
+        ownerId: userId,
+        artworkId: artworkData.id,
         fingerprint: crypto.randomBytes(20).toString("hex"),
         assignee: licenseData.licenseAssignee,
         company: licenseData.licenseCompany,

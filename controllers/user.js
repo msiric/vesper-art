@@ -31,11 +31,7 @@ import {
   removeExistingIntent,
 } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
-import {
-  formatParams,
-  retrieveEntityId,
-  sanitizeData,
-} from "../utils/helpers.js";
+import { formatParams, generateUuids, sanitizeData } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 import emailValidator from "../validation/email.js";
 import originValidator from "../validation/origin.js";
@@ -153,13 +149,26 @@ export const updateUserProfile = async ({
   if (error) throw createError(400, error);
   // $TODO Find or fail? Minimize overhead
   const foundUser = await fetchUserById({ userId });
-  const savedAvatar = avatarUpload.fileMedia
-    ? foundUser.avatar
-      ? await editUserAvatar({ userId: foundUser.id, avatarUpload })
-      : await addUserAvatar({ userId: foundUser.id, avatarUpload })
-    : null;
-  const savedAvatarId = retrieveEntityId(savedAvatar);
-  await editUserProfile({ foundUser, userData, savedAvatarId });
+  let avatarId;
+  if (avatarUpload.fileMedia) {
+    if (foundUser.avatar) {
+      await editUserAvatar({ userId: foundUser.id, avatarUpload });
+    } else {
+      ({ avatarId } = generateUuids({
+        avatarId: null,
+      }));
+      await addUserAvatar({
+        avatarId,
+        userId: foundUser.id,
+        avatarUpload,
+      });
+    }
+  }
+  await editUserProfile({
+    foundUser,
+    userData,
+    avatarId,
+  });
   return { message: "User details updated" };
 };
 

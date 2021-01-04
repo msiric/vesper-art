@@ -20,9 +20,15 @@ export class Intent extends BaseEntity {
   @ManyToOne(() => User)
   owner: User;
 
+  @Column()
+  ownerId: string;
+
   @OneToOne(() => Version)
   @JoinColumn()
   version: Version;
+
+  @Column()
+  versionId: string;
 
   @Column()
   uuid: string;

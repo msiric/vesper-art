@@ -22,7 +22,7 @@ import {
   sendRefreshToken,
 } from "../utils/auth.js";
 import { sendEmail } from "../utils/email.js";
-import { sanitizeData } from "../utils/helpers.js";
+import { generateUuids, sanitizeData } from "../utils/helpers.js";
 import emailValidator from "../validation/email.js";
 import loginValidator from "../validation/login.js";
 import resetValidator from "../validation/reset.js";
@@ -52,7 +52,11 @@ export const postSignUp = async ({
     const verificationToken = randomString.generate();
     const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
     const hashedPassword = await argon2.hash(userPassword);
+    const { userId } = generateUuids({
+      userId: null,
+    });
     await addNewUser({
+      userId,
       userEmail,
       userUsername,
       hashedPassword,

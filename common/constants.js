@@ -4,6 +4,11 @@ export const app = {
   name: "Diagon",
 };
 
+export const pricing = {
+  minimumPrice: 10,
+  maximumPrice: 100000,
+};
+
 export const upload = {
   artwork: {
     fileSize: 10 * 1024 * 1024,

@@ -8,7 +8,7 @@ import {
   removeExistingComment,
 } from "../services/postgres/comment.js";
 import { addNewNotification } from "../services/postgres/notification.js";
-import { sanitizeData } from "../utils/helpers.js";
+import { generateUuids, sanitizeData } from "../utils/helpers.js";
 import commentValidator from "../validation/comment.js";
 
 export const getComment = async ({ artworkId, commentId, session }) => {
@@ -27,13 +27,21 @@ export const postComment = async ({ userId, artworkId, commentContent }) => {
   if (!foundArtwork) {
     throw createError(400, "Artwork not found");
   } else {
+    const { commentId } = generateUuids({
+      commentId: null,
+    });
     const savedComment = await addNewComment({
+      commentId,
       artworkId,
       userId,
       commentContent,
     });
     if (!savedComment.owner === foundArtwork.owner.id) {
+      const { notificationId } = generateUuids({
+        notificationId: null,
+      });
       const savedNotification = await addNewNotification({
+        notificationId,
         notificationLink: foundArtwork.id,
         notificationRef: savedComment.id,
         notificationType: "comment",

@@ -14,8 +14,11 @@ export class Ticket extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user)
+  @ManyToOne(() => User)
   owner: User;
+
+  @Column()
+  ownerId: string;
 
   @Column()
   title: string;

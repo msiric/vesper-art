@@ -7,6 +7,7 @@ import {
   addNewVersion,
   deactivateExistingArtwork,
   fetchActiveArtworks,
+  fetchArtworkById,
   fetchArtworkByOwner,
   fetchArtworkComments,
   fetchArtworkDetails,
@@ -22,6 +23,7 @@ import { fetchUserById } from "../services/postgres/user.js";
 import {
   formatArtworkValues,
   formatParams,
+  generateUuids,
   sanitizeData,
 } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
@@ -135,22 +137,33 @@ export const postNewArtwork = async ({
         );
       }
     }
-    const savedCover = await addNewCover({
+    const { coverId, mediaId, versionId, artworkId } = generateUuids({
+      coverId: null,
+      mediaId: null,
+      versionId: null,
+      artworkId: null,
+    });
+    await addNewCover({
+      coverId,
       artworkUpload,
     });
-    const savedMedia = await addNewMedia({
+    await addNewMedia({
+      mediaId,
       artworkUpload,
     });
-    const savedVersion = await addNewVersion({
+    await addNewVersion({
+      versionId,
+      artworkId,
+      coverId,
+      mediaId,
+      userId,
       prevArtwork: { cover: null, media: null, artwork: null },
       artworkData: formattedData,
       artworkUpload,
-      userId,
-      savedCover,
-      savedMedia,
     });
-    const savedArtwork = await addNewArtwork({
-      savedVersion,
+    await addNewArtwork({
+      artworkId,
+      versionId,
       userId,
     });
     return { redirect: "/my_artwork" };
@@ -303,30 +316,46 @@ export const deleteArtwork = async ({ userId, artworkId, data }) => {
 
 // needs transaction (done)
 export const favoriteArtwork = async ({ userId, artworkId }) => {
-  const foundFavorite = await fetchFavoriteByParents({
-    userId,
-    artworkId,
-  });
-  if (!foundFavorite) {
-    const savedFavorite = await addNewFavorite({
+  const [foundFavorite, foundArtwork] = await Promise.all([
+    fetchFavoriteByParents({
       userId,
       artworkId,
-    });
-    return { message: "Artwork favorited" };
+    }),
+    fetchArtworkById({ artworkId }),
+  ]);
+  if (foundArtwork.owner.id !== userId) {
+    if (!foundFavorite) {
+      const { favoriteId } = generateUuids({
+        favoriteId: null,
+      });
+      const savedFavorite = await addNewFavorite({
+        favoriteId,
+        userId,
+        artworkId,
+      });
+      return { message: "Artwork favorited" };
+    }
+    throw createError(400, "Artwork has already been favorited");
   }
-  throw createError(400, "Artwork has already been favorited");
+  throw createError(400, "Cannot favorite your own artwork");
 };
 
 export const unfavoriteArtwork = async ({ userId, artworkId }) => {
-  const foundFavorite = await fetchFavoriteByParents({
-    userId,
-    artworkId,
-  });
-  if (foundFavorite) {
-    await removeExistingFavorite({ favoriteId: foundFavorite.id });
-    return { message: "Artwork unfavorited" };
+  const [foundFavorite, foundArtwork] = await Promise.all([
+    fetchFavoriteByParents({
+      userId,
+      artworkId,
+    }),
+    fetchArtworkById({ artworkId }),
+  ]);
+  if (foundArtwork.owner.id !== userId) {
+    if (foundFavorite) {
+      await removeExistingFavorite({ favoriteId: foundFavorite.id });
+      return { message: "Artwork unfavorited" };
+    }
+    throw createError(400, "Artwork has already been unfavorited");
   }
-  throw createError(400, "Artwork is not among your favorites");
+  throw createError(400, "Cannot unfavorite your own artwork");
 };
 
 // needs transaction (done)
@@ -334,7 +363,11 @@ export const unfavoriteArtwork = async ({ userId, artworkId }) => {
 export const saveLicense = async ({ userId, artworkId, license }) => {
   const foundArtwork = await fetchArtworkDetails({ artworkId });
   if (foundArtwork) {
+    const { licenseId } = generateUuids({
+      licenseId: null,
+    });
     const savedLicense = await addNewLicense({
+      licenseId,
       artworkData: foundArtwork,
       licenseData: license,
       userId,

@@ -19,12 +19,18 @@ export class License extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => User, (user) => user)
+  @ManyToOne(() => User)
   owner: User;
+
+  @Column()
+  ownerId: string;
 
   @OneToOne(() => Artwork)
   @JoinColumn()
   artwork: Artwork;
+
+  @Column()
+  artworkId: string;
 
   @Column()
   fingerprint: string;

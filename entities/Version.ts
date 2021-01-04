@@ -4,9 +4,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -26,9 +26,12 @@ export class Version extends BaseEntity {
   artwork: Artwork;
 
   @Column()
-  title: string;
+  artworkId: string;
 
   @Column()
+  title: string;
+
+  @Column({ nullable: true })
   category: string;
 
   // $TODO not implemented
@@ -54,15 +57,17 @@ export class Version extends BaseEntity {
   @Column()
   availability: string;
 
-  @OneToOne(() => Cover, (cover) => cover.version, {
-    eager: true,
-  })
-  @JoinColumn()
+  @ManyToOne(() => Cover)
   cover: Cover;
 
-  @OneToOne(() => Media, (media) => media.version)
-  @JoinColumn()
+  @Column()
+  coverId: string;
+
+  @ManyToOne(() => Media)
   media: Media;
+
+  @Column()
+  mediaId: string;
 
   @CreateDateColumn()
   created: Date;

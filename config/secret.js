@@ -43,3 +43,8 @@ export const mailer = {
   email: process.env.MAILER_MAIL,
   password: process.env.MAILER_PASS,
 };
+
+export const uuid = {
+  version: 4,
+  import: "v4",
+};

@@ -27,32 +27,56 @@ export class Order extends BaseEntity {
   @ManyToOne(() => User)
   buyer: User;
 
+  @Column()
+  buyerId: string;
+
   @ManyToOne(() => User)
   seller: User;
+
+  @Column()
+  sellerId: string;
 
   @OneToOne(() => Artwork)
   @JoinColumn()
   artwork: Artwork;
 
+  @Column()
+  artworkId: string;
+
   @OneToOne(() => Version)
   @JoinColumn()
   version: Version;
+
+  @Column()
+  versionId: string;
 
   @OneToOne(() => License)
   @JoinColumn()
   license: License;
 
+  @Column()
+  licenseId: string;
+
   @OneToOne(() => Discount)
   @JoinColumn()
   discount: Discount;
 
-  @OneToOne(() => Review, (review) => review.order)
+  @Column()
+  discountId: string;
+
+  @OneToOne(() => Review)
   @JoinColumn()
   review: Review;
+
+  @Column()
+  reviewId: string;
 
   @OneToOne(() => Intent)
   @JoinColumn()
   intent: Intent;
+
+  @Column()
+  intentId: string;
 
   @Column()
   spent: number;

@@ -20,9 +20,15 @@ export class Artwork extends BaseEntity {
   @ManyToOne(() => User)
   owner: User;
 
-  @OneToOne(() => Version, (version) => version.artwork)
+  @Column()
+  ownerId: string;
+
+  @OneToOne(() => Version)
   @JoinColumn()
   current: Version;
+
+  @Column()
+  currentId: string;
 
   @Column()
   active: boolean;

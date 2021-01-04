@@ -20,7 +20,7 @@ export class Favorite extends BaseEntity {
   @Column()
   ownerId: string;
 
-  @ManyToOne(() => Artwork, (artwork) => artwork)
+  @ManyToOne(() => Artwork)
   artwork: Artwork;
 
   @Column()

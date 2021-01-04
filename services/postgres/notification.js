@@ -18,6 +18,7 @@ export const fetchNotificationById = async ({ userId, notificationId }) => {
 
 // $Needs testing (mongo -> postgres)
 export const addNewNotification = async ({
+  notificationId,
   notificationLink,
   notificationRef,
   notificationType,
@@ -37,7 +38,8 @@ export const addNewNotification = async ({
     .into(Notification)
     .values([
       {
-        receiver: notificationReceiver,
+        id: notificationId,
+        receiverId: notificationReceiver,
         link: notificationLink,
         ref: notificationRef,
         type: notificationType,
@@ -82,7 +84,7 @@ export const editReadNotification = async ({ userId, notificationId }) => {
     .createQueryBuilder()
     .update(Notification)
     .set({ read: true })
-    .where("id = :notificationId AND receiver = :userId", {
+    .where("id = :notificationId AND receiverId = :userId", {
       notificationId,
       userId,
     })
@@ -103,7 +105,7 @@ export const editUnreadNotification = async ({ userId, notificationId }) => {
     .createQueryBuilder()
     .update(Notification)
     .set({ read: false })
-    .where("id = :notificationId AND receiver = :userId", {
+    .where("id = :notificationId AND receiverId = :userId", {
       notificationId,
       userId,
     })

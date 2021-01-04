@@ -6,7 +6,7 @@ import { fetchVersionDetails } from "../services/postgres/artwork.js";
 import { addNewNotification } from "../services/postgres/notification.js";
 import { addNewOrder } from "../services/postgres/order.js";
 import { fetchUserById } from "../services/postgres/user.js";
-import { sanitizeData } from "../utils/helpers.js";
+import { generateUuids, sanitizeData } from "../utils/helpers.js";
 import licenseValidator from "../validation/license.js";
 import orderValidator from "../validation/order.js";
 
@@ -95,12 +95,20 @@ export const postDownload = async ({
               status: "completed",
               intentId: null,
             };
+            const { orderId } = generateUuids({
+              orderId: null,
+            });
             const savedOrder = await addNewOrder({
+              orderId,
               orderData: orderObject,
               session,
             });
+            const { notificationId } = generateUuids({
+              notificationId: null,
+            });
             // new start
             await addNewNotification({
+              notificationId,
               notificationLink: savedOrder.id,
               notificationRef: "",
               notificationType: "order",

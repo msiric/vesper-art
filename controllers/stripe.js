@@ -27,7 +27,7 @@ import {
   fetchUserById,
   removeExistingIntent,
 } from "../services/postgres/user.js";
-import { sanitizeData } from "../utils/helpers.js";
+import { generateUuids, sanitizeData } from "../utils/helpers.js";
 import licenseValidator from "../validation/license.js";
 import orderValidator from "../validation/order.js";
 
@@ -382,10 +382,21 @@ const processTransaction = async ({ stripeIntent, session }) => {
     status: "completed",
     intentId: intentId,
   };
-  const savedOrder = await addNewOrder({ orderData: orderObject, session });
+  const { orderId } = generateUuids({
+    orderId: null,
+  });
+  const savedOrder = await addNewOrder({
+    orderId,
+    orderData: orderObject,
+    session,
+  });
   await removeExistingIntent({ userId: sellerId, intentId, session });
+  const { notificationId } = generateUuids({
+    notificationId: null,
+  });
   // new start
   await addNewNotification({
+    notificationId,
     notificationLink: savedOrder.id,
     notificationRef: "",
     notificationType: "order",
