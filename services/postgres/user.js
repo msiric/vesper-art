@@ -64,8 +64,8 @@ export const fetchUserById = async ({ userId, connection }) => {
       ...USER_VERIFICATION_INFO,
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
-    .where("user.id = :id AND user.active = :active", {
-      id: userId,
+    .where("user.id = :userId AND user.active = :active", {
+      userId,
       active: USER_ACTIVE_STATUS,
     })
     .getOne();
@@ -124,24 +124,24 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
       "user.intents",
       Intent,
       "intent",
-      "intent.ownerId = :id",
-      { id: userId }
+      "intent.ownerId = :userId",
+      { userId }
     )
     .leftJoinAndMapMany(
       "user.notifications",
       Notification,
       "notification",
-      "notification.receiverId = :id AND notification.read = :read",
-      { id: userId, read: false }
+      "notification.receiverId = :userId AND notification.read = :read",
+      { userId, read: false }
     )
     .leftJoinAndMapMany(
       "user.favorites",
       Favorite,
       "favorite",
-      "favorite.ownerId = :id",
-      { id: userId }
+      "favorite.ownerId = :userId",
+      { userId }
     )
-    .where("user.id = :id", { id: userId })
+    .where("user.id = :userId", { userId })
     .getOne();
   console.log(foundUser);
   return foundUser;
@@ -160,7 +160,7 @@ export const fetchUserPurchases = async ({
   //   skip: dataSkip,
   //   take: dataLimit,
   // });
-  await connection
+  const foundPurchases = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.seller", "seller")
@@ -168,8 +168,10 @@ export const fetchUserPurchases = async ({
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
-    .where("order.buyerId = :id", { id: userId })
+    .where("order.buyerId = :userId", { userId })
     .getMany();
+  console.log(foundPurchases);
+  return foundPurchases;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -185,7 +187,7 @@ export const fetchUserSales = async ({
   //   skip: dataSkip,
   //   take: dataLimit,
   // });
-  await connection
+  const foundSales = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.buyer", "buyer")
@@ -193,8 +195,10 @@ export const fetchUserSales = async ({
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
-    .where("order.sellerId = :id", { id: userId })
+    .where("order.sellerId = :userId", { userId })
     .getMany();
+  console.log(foundSales);
+  return foundSales;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -233,15 +237,15 @@ export const fetchUserProfile = async ({
       "user.artwork",
       Artwork,
       "artwork",
-      "artwork.ownerId = :id AND artwork.active = :active",
-      { id: userId, active: ARTWORK_ACTIVE_STATUS }
+      "artwork.ownerId = :userId AND artwork.active = :active",
+      { userId, active: ARTWORK_ACTIVE_STATUS }
     )
     .leftJoinAndMapMany(
       "artwork.owner",
       User,
       "owner",
-      "artwork.ownerId = :id",
-      { id: userId }
+      "artwork.ownerId = :userId",
+      { userId }
     )
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
@@ -273,8 +277,8 @@ export const fetchUserArtwork = async ({
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
-    .where("artwork.ownerId = :id AND artwork.active = :active", {
-      id: userId,
+    .where("artwork.ownerId = :userId AND artwork.active = :active", {
+      userId,
       active: USER_ACTIVE_STATUS,
     })
     .getMany();
@@ -303,8 +307,8 @@ export const fetchuserFavorites = async ({
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
-    .where("artwork.ownerId = :id", {
-      id: userId,
+    .where("artwork.ownerId = :userId", {
+      userId,
     })
     .getMany();
   console.log(foundFavorites);

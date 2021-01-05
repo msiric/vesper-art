@@ -146,8 +146,8 @@ export const postLogOut = ({ res }) => {
   return logUserOut(res);
 };
 
-export const postRefreshToken = async ({ req, res, next }) => {
-  return await refreshAccessToken(req, res, next);
+export const postRefreshToken = async ({ req, res, next, connection }) => {
+  return await refreshAccessToken(req, res, next, connection);
 };
 
 export const postRevokeToken = async ({ userId }) => {

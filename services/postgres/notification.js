@@ -68,8 +68,8 @@ export const fetchExistingNotifications = async ({ userId, connection }) => {
   const foundNotifications = await connection
     .getRepository(Notification)
     .createQueryBuilder("notification")
-    .where("notification.receiverId = :id", {
-      id: userId,
+    .where("notification.receiverId = :userId", {
+      userId,
     })
     .addOrderBy("notification.created", "DESC")
     .getMany();

@@ -2,6 +2,7 @@ import express from "express";
 import {
   deleteArtwork,
   favoriteArtwork,
+  fetchArtworkFavorites,
   getArtwork,
   getArtworkComments,
   getArtworkDetails,
@@ -118,6 +119,12 @@ router
 
 router
   .route("/artwork/:artworkId/favorites")
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(fetchArtworkFavorites, false, (req, res, next) => ({
+      ...req.params,
+    }))
+  )
   // $DONE works
   .post(
     [isAuthenticated, checkParamsId],

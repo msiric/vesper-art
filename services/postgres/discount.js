@@ -26,8 +26,8 @@ export const fetchDiscountById = async ({ discountId, connection }) => {
   const foundDiscount = await connection
     .getRepository(Discount)
     .createQueryBuilder("discount")
-    .where("discount.id = :id", {
-      id: discountId,
+    .where("discount.id = :discountId", {
+      discountId,
     })
     .getOne();
   console.log(foundDiscount);
