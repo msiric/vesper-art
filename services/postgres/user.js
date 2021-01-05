@@ -240,7 +240,7 @@ export const fetchUserProfile = async ({
       "artwork.ownerId = :userId AND artwork.active = :active",
       { userId, active: ARTWORK_ACTIVE_STATUS }
     )
-    .leftJoinAndMapMany(
+    .leftJoinAndMapOne(
       "artwork.owner",
       User,
       "owner",
