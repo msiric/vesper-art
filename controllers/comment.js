@@ -21,10 +21,7 @@ export const getComment = async ({ artworkId, commentId, session }) => {
 };
 
 export const postComment = async ({ userId, artworkId, commentContent }) => {
-  const { error } = await commentValidation.validate(
-    sanitizeData({ commentContent })
-  );
-  if (error) throw createError(400, error);
+  await commentValidation.validate(sanitizeData({ commentContent }));
   const foundArtwork = await fetchArtworkById({ artworkId });
   if (!foundArtwork) {
     throw createError(400, "Artwork not found");
@@ -65,10 +62,7 @@ export const patchComment = async ({
   commentContent,
   session,
 }) => {
-  const { error } = await commentValidation.validate(
-    sanitizeData({ commentContent })
-  );
-  if (error) throw createError(400, error);
+  await commentValidation.validate(sanitizeData({ commentContent }));
   await editExistingComment({
     commentId,
     artworkId,

@@ -110,10 +110,7 @@ export const postNewArtwork = async ({
     artworkUpload.fileOrientation
   ) {
     const formattedData = formatArtworkValues(artworkData);
-    const { error } = await artworkValidation.validate(
-      sanitizeData(formattedData)
-    );
-    if (error) throw createError(400, error);
+    await artworkValidation.validate(sanitizeData(formattedData));
     if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
       const foundUser = await fetchUserById({
         userId,
@@ -193,10 +190,7 @@ export const updateArtwork = async ({
     fileType: "artwork",
   });
   const formattedData = formatArtworkValues(artworkData);
-  const { error } = await artworkValidation.validate(
-    sanitizeData(formattedData)
-  );
-  if (error) throw createError(400, error);
+  await artworkValidation.validate(sanitizeData(formattedData));
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,

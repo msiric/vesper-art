@@ -1,4 +1,3 @@
-import createError from "http-errors";
 import { ticketValidation } from "../common/validation";
 import { addNewTicket } from "../services/postgres/ticket.js";
 import { sendEmail } from "../utils/email.js";
@@ -12,10 +11,7 @@ export const postTicket = async ({
   ticketTitle,
   ticketBody,
 }) => {
-  const { error } = await ticketValidation.validate(
-    sanitizeData({ ticketTitle, ticketBody })
-  );
-  if (error) throw createError(400, error);
+  await ticketValidation.validate(sanitizeData({ ticketTitle, ticketBody }));
   const { ticketId } = generateUuids({
     ticketId: null,
   });

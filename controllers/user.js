@@ -105,14 +105,12 @@ export const getUserStatistics = async ({ userId }) => {
 
 export const getUserSales = async ({ userId, rangeFrom, rangeTo }) => {
   const { error } = rangeValidator(sanitizeData({ rangeFrom, rangeTo }));
-  if (error) throw createError(400, error);
   const foundOrders = await fetchOrdersBySeller({ userId, rangeFrom, rangeTo });
   return { statistics: foundOrders };
 };
 
 export const getUserPurchases = async ({ userId, rangeFrom, rangeTo }) => {
   const { error } = rangeValidator(sanitizeData({ rangeFrom, rangeTo }));
-  if (error) throw createError(400, error);
   const foundOrders = await fetchOrdersByBuyer({ userId, rangeFrom, rangeTo });
   return { statistics: foundOrders };
 };
@@ -122,10 +120,7 @@ export const updateUserOrigin = async ({
   userBusinessAddress,
   session,
 }) => {
-  const { error } = await originValidation.validate(
-    sanitizeData({ userBusinessAddress })
-  );
-  if (error) throw createError(400, error);
+  await originValidation.validate(sanitizeData({ userBusinessAddress }));
   const foundUser = await fetchUserById({ userId, session });
   if (foundUser) {
     await editUserOrigin({ foundUser, userBusinessAddress });
@@ -148,8 +143,7 @@ export const updateUserProfile = async ({
     mimeType: userMimetype,
     fileType: "user",
   });
-  const { error } = await profileValidation.validate(sanitizeData(userData));
-  if (error) throw createError(400, error);
+  await profileValidation.validate(sanitizeData(userData));
   // $TODO Find or fail? Minimize overhead
   const foundUser = await fetchUserById({ userId });
   let avatarId;
@@ -217,8 +211,7 @@ export const deleteUserIntent = async ({ userId, intentId }) => {
 
 // $TODO Update context with new data
 export const updateUserEmail = async ({ userId, userEmail, session }) => {
-  const { error } = await emailValidation.validate(sanitizeData({ userEmail }));
-  if (error) throw createError(400, error);
+  await emailValidation.validate(sanitizeData({ userEmail }));
   const foundUser = await fetchUserByEmail({ userEmail, session });
   if (foundUser) {
     throw createError(400, "User with entered email already exists");
@@ -246,14 +239,13 @@ export const updateUserPassword = async ({
   userPassword,
   userConfirm,
 }) => {
-  const { error } = await passwordValidation.validate(
+  await passwordValidation.validate(
     sanitizeData({
       userCurrent,
       userPassword,
       userConfirm,
     })
   );
-  if (error) throw createError(400, error);
   const hashedPassword = await argon2.hash(userPassword);
   await editUserPassword({ userId, hashedPassword });
   return { message: "Password updated successfully" };
@@ -262,10 +254,7 @@ export const updateUserPassword = async ({
 // needs transaction (done)
 // $TODO Update context with new data
 export const updateUserPreferences = async ({ userId, userFavorites }) => {
-  const { error } = await preferencesValidation.validate(
-    sanitizeData({ userFavorites })
-  );
-  if (error) throw createError(400, error);
+  await preferencesValidation.validate(sanitizeData({ userFavorites }));
   await editUserPreferences({ userId, userFavorites });
   return { message: "Preferences updated successfully" };
 };

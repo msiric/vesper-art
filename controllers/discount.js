@@ -9,10 +9,7 @@ import { sanitizeData } from "../utils/helpers.js";
 // needs transaction (done)
 // treba sredit
 export const postDiscount = async ({ userId, discountCode, session }) => {
-  const { error } = await discountValidation.validate(
-    sanitizeData({ discountCode })
-  );
-  if (error) throw createError(400, error);
+  await discountValidation.validate(sanitizeData({ discountCode }));
 
   const foundDiscount = await fetchDiscountByCode({
     discountCode,

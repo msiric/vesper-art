@@ -38,7 +38,7 @@ export const postSignUp = async ({
   userConfirm,
   session,
 }) => {
-  const { error } = await signupValidation.validate(
+  await signupValidation.validate(
     sanitizeData({
       userEmail,
       userUsername,
@@ -46,7 +46,6 @@ export const postSignUp = async ({
       userConfirm,
     })
   );
-  if (error) throw createError(400, error);
   const userId = await fetchUserIdByName({ userUsername, includeEmail: true });
   if (userId) {
     throw createError(400, "Account with that email/username already exists");
@@ -83,10 +82,7 @@ export const postLogIn = async ({
   res,
   session,
 }) => {
-  const { error } = await loginValidation.validate(
-    sanitizeData({ userUsername, userPassword })
-  );
-  if (error) throw createError(400, error);
+  await loginValidation.validate(sanitizeData({ userUsername, userPassword }));
 
   const userId = await fetchUserIdByName({ userUsername, includeEmail: true });
   const foundUser = await fetchUserByAuth({ userId });
@@ -158,8 +154,7 @@ export const verifyRegisterToken = async ({ tokenId }) => {
 };
 
 export const forgotPassword = async ({ userEmail, session }) => {
-  const { error } = await emailValidation.validate(sanitizeData({ userEmail }));
-  if (error) throw createError(400, error);
+  await emailValidation.validate(sanitizeData({ userEmail }));
   crypto.randomBytes(20, async function (err, buf) {
     const resetToken = buf.toString("hex");
     await editUserResetToken({ userEmail, resetToken, session });
@@ -182,10 +177,7 @@ export const resetPassword = async ({
   userConfirm,
   session,
 }) => {
-  const { error } = await resetValidation.validate(
-    sanitizeData({ userPassword, userConfirm })
-  );
-  if (error) throw createError(400, error);
+  await resetValidation.validate(sanitizeData({ userPassword, userConfirm }));
   const hashedPassword = await argon2.hash(userPassword);
   const updatedUser = await resetUserPassword({
     tokenId,

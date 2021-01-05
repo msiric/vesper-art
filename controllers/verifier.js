@@ -4,10 +4,7 @@ import { fetchLicenseByFingerprint } from "../services/postgres/license.js";
 import { sanitizeData } from "../utils/helpers.js";
 
 export const verifyLicense = async ({ licenseFingerprint }) => {
-  const { error } = await fingerprintValidation.validate(
-    sanitizeData({ licenseFingerprint })
-  );
-  if (error) throw createError(400, error);
+  await fingerprintValidation.validate(sanitizeData({ licenseFingerprint }));
   const foundLicense = await fetchLicenseByFingerprint({ licenseFingerprint });
   if (foundLicense) {
     return { license: foundLicense };

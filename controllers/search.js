@@ -1,4 +1,3 @@
-import createError from "http-errors";
 import {
   fetchArtworkResults,
   fetchUserResults,
@@ -13,7 +12,6 @@ export const getResults = async ({
   dataCeiling,
 }) => {
   const { error } = searchValidator(sanitizeData({ searchQuery, searchType }));
-  if (error) throw createError(400, error);
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   let foundResults = [];
   let foundType = null;

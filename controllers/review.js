@@ -11,10 +11,7 @@ import { generateUuids, sanitizeData } from "../utils/helpers.js";
 
 // needs transaction (done)
 export const postReview = async ({ userId, reviewRating, orderId }) => {
-  const { error } = await reviewValidation.validate(
-    sanitizeData({ reviewRating })
-  );
-  if (error) throw createError(400, error);
+  await reviewValidation.validate(sanitizeData({ reviewRating }));
   if (reviewRating) {
     const foundOrder = await fetchUserPurchase({
       orderId,
