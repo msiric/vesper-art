@@ -5,14 +5,15 @@ import FormData from "form-data";
 import createError from "http-errors";
 import mongoose from "mongoose";
 import querystring from "querystring";
+import { licenseValidation, orderValidation } from "../common/validation";
 import { payment } from "../config/constants.js";
 import { server, stripe as processor } from "../config/secret.js";
 import socketApi from "../lib/socket.js";
 import License from "../models/license.js";
-import { fetchVersionDetails } from "../services/artwork.js";
-import { fetchDiscountById } from "../services/discount.js";
-import { addNewNotification } from "../services/notification.js";
-import { addNewOrder } from "../services/order.js";
+import { fetchVersionDetails } from "../services/postgres/artwork.js";
+import { fetchDiscountById } from "../services/postgres/discount.js";
+import { addNewNotification } from "../services/postgres/notification.js";
+import { addNewOrder } from "../services/postgres/order.js";
 import {
   constructStripeEvent,
   constructStripeIntent,
@@ -21,22 +22,18 @@ import {
   fetchStripeAccount,
   fetchStripeBalance,
   updateStripeIntent,
-} from "../services/stripe.js";
+} from "../services/postgres/stripe.js";
 import {
-  editUserPurchase,
-  editUserSale,
   editUserStripe,
   fetchUserById,
   removeExistingIntent,
-} from "../services/user.js";
-import { sanitizeData } from "../utils/helpers.js";
-import licenseValidator from "../validation/license.js";
-import orderValidator from "../validation/order.js";
+} from "../services/postgres/user.js";
+import { generateUuids, sanitizeData } from "../utils/helpers.js";
 
 export const receiveWebhookEvent = async ({
   stripeSignature,
   stripeBody,
-  session,
+  connection,
 }) => {
   const stripeSecret = process.env.STRIPE_WEBHOOK;
   let stripeEvent;
@@ -57,7 +54,7 @@ export const receiveWebhookEvent = async ({
     case "payment_intent.succeeded":
       console.log("Payment success");
       const paymentIntent = stripeEvent.data.object;
-      await processTransaction({ stripeIntent: paymentIntent, session });
+      await processTransaction({ stripeIntent: paymentIntent, connection });
       break;
     case "payment_intent.failed":
       console.log("Failed payment");
@@ -88,19 +85,19 @@ export const managePaymentIntent = async ({
   intentId,
   discountId,
   artworkLicense,
-  session,
+  connection,
 }) => {
   // $TODO Treba li dohvacat usera?
-  const foundUser = await fetchUserById({ userId, session });
+  const foundUser = await fetchUserById({ userId, connection });
   if (foundUser && foundUser.active) {
     // $TODO Check that discount is valid/active (moze i bolje)
     const foundDiscount = discountId
-      ? await fetchDiscountById({ discountId, session })
+      ? await fetchDiscountById({ discountId, connection })
       : null;
-    const foundVersion = await fetchVersionDetails({ versionId, session });
+    const foundVersion = await fetchVersionDetails({ versionId, connection });
     if (foundVersion) {
-      if (foundVersion._id.equals(foundVersion.artwork.current)) {
-        if (!foundVersion.artwork.owner._id.equals(foundUser._id)) {
+      if (foundVersion.id === foundVersion.artwork.current) {
+        if (!foundVersion.artwork.owner.id === foundUser.id) {
           // $TODO Bolje sredit validaciju licence
           // $TODO Sredit validnu licencu (npr, ako je "use": "included", ne moze bit odabran personal license)
           const licensePrice =
@@ -132,7 +129,7 @@ export const managePaymentIntent = async ({
                 ? {
                     discountId:
                       foundDiscount && foundDiscount.active
-                        ? foundDiscount._id
+                        ? foundDiscount.id
                         : null,
                     spent: buyerTotal.intValue,
                     earned: sellerTotal.intValue,
@@ -147,20 +144,20 @@ export const managePaymentIntent = async ({
                 : {
                     discountId:
                       foundDiscount && foundDiscount.active
-                        ? foundDiscount._id
+                        ? foundDiscount.id
                         : null,
                     spent: buyerTotal.intValue,
                     earned: sellerTotal.intValue,
                     fee: platformTotal.intValue,
                   }
               : {
-                  buyerId: foundUser._id,
-                  sellerId: foundVersion.artwork.owner._id,
-                  artworkId: foundVersion.artwork._id,
-                  versionId: foundVersion._id,
+                  buyerId: foundUser.id,
+                  sellerId: foundVersion.artwork.owner.id,
+                  artworkId: foundVersion.artwork.id,
+                  versionId: foundVersion.id,
                   discountId:
                     foundDiscount && foundDiscount.active
-                      ? foundDiscount._id
+                      ? foundDiscount.id
                       : null,
                   spent: buyerTotal.intValue,
                   earned: sellerTotal.intValue,
@@ -178,7 +175,7 @@ export const managePaymentIntent = async ({
                   intentFee: platformTotal.intValue,
                   orderData: orderData,
                   intentId,
-                  session,
+                  connection,
                 })
               : await constructStripeIntent({
                   intentMethod: "card",
@@ -187,7 +184,7 @@ export const managePaymentIntent = async ({
                   intentFee: platformTotal.intValue,
                   sellerId: foundVersion.artwork.owner.stripeId,
                   orderData: orderData,
-                  session,
+                  connection,
                 });
             return {
               intent: {
@@ -207,7 +204,11 @@ export const managePaymentIntent = async ({
   throw createError(400, "User not found");
 };
 
-export const redirectToStripe = async ({ accountId, userOnboarded }) => {
+export const redirectToStripe = async ({
+  accountId,
+  userOnboarded,
+  connection,
+}) => {
   if (!userOnboarded)
     throw createError(
       400,
@@ -224,8 +225,9 @@ export const redirectToStripe = async ({ accountId, userOnboarded }) => {
 export const onboardUser = async ({
   sessionData,
   responseData,
-  userOrigin,
+  userBusinessAddress,
   userEmail,
+  connection,
 }) => {
   sessionData.state = Math.random().toString(36).slice(2);
   sessionData.id = responseData.user.id;
@@ -240,7 +242,7 @@ export const onboardUser = async ({
     "stripe_user[first_name]": undefined,
     "stripe_user[last_name]": undefined,
     "stripe_user[email]": userEmail || undefined,
-    "stripe_user[country]": userOrigin || undefined,
+    "stripe_user[country]": userBusinessAddress || undefined,
   };
 
   // If we're suggesting this account have the `card_payments` capability,
@@ -264,7 +266,7 @@ export const assignStripeId = async ({
   responseObject,
   sessionData,
   queryData,
-  session,
+  connection,
 }) => {
   if (sessionData.state != queryData.state)
     throw createError(500, "There was an error in the onboarding process");
@@ -284,7 +286,7 @@ export const assignStripeId = async ({
   await editUserStripe({
     userId: sessionData.id,
     stripeId: expressAuthorized.data.stripe_user_id,
-    session,
+    connection,
   });
 
   const username = sessionData.name;
@@ -293,15 +295,15 @@ export const assignStripeId = async ({
   sessionData.id = null;
   sessionData.name = null;
 
-  return responseObject.redirect(`http://localhost:3000/user/${username}`);
+  return responseObject.redirect(`http://localhost:3000/users/${username}`);
 };
 
-export const createPayout = async ({ userId, session }) => {
-  const foundUser = await fetchUserById({ userId, session });
+export const createPayout = async ({ userId, connection }) => {
+  const foundUser = await fetchUserById({ userId, connection });
   if (foundUser.stripeId) {
     const balance = await fetchStripeBalance({
       stripeId: foundUser.stripeId,
-      session,
+      connection,
     });
     const { amount, currency } = balance.available[0];
     await constructStripePayout({
@@ -309,7 +311,7 @@ export const createPayout = async ({ userId, session }) => {
       payoutCurrency: currency,
       payoutDescriptor: server.appName,
       stripeId: foundUser.stripeId,
-      session,
+      connection,
     });
     return {
       message: "Payout successfully created",
@@ -318,7 +320,8 @@ export const createPayout = async ({ userId, session }) => {
   throw createError(400, "Cannot create payout for this user");
 };
 
-const processTransaction = async ({ stripeIntent, session }) => {
+// $TODO not good
+const processTransaction = async ({ stripeIntent, connection }) => {
   const orderData = JSON.parse(stripeIntent.metadata.orderData);
   const buyerId = mongoose.Types.ObjectId(orderData.buyerId);
   const sellerId = mongoose.Types.ObjectId(orderData.sellerId);
@@ -332,7 +335,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
     licenseType,
     licensePrice,
   } = orderData.licenseData;
-  const { licenseError } = licenseValidator(
+  const { licenseError } = await licenseValidation.validate(
     sanitizeData({
       licenseOwner: buyerId,
       licenseArtwork: artworkId,
@@ -352,15 +355,15 @@ const processTransaction = async ({ stripeIntent, session }) => {
   newLicense.type = licenseType;
   newLicense.active = true;
   newLicense.price = licensePrice;
-  const savedLicense = await newLicense.save({ session });
-  const { orderError } = orderValidator(
+  const savedLicense = await License.save(newLicense);
+  const { orderError } = await orderValidation.validate(
     sanitizeData({
       orderBuyer: buyerId,
       orderSeller: sellerId,
       orderArtwork: artworkId,
       orderVersion: versionId,
       orderDiscount: discountId,
-      orderLicense: savedLicense._id,
+      orderLicense: savedLicense.id,
       orderSpent: orderData.spent,
       orderEarned: orderData.earned,
       orderFee: orderData.fee,
@@ -374,32 +377,35 @@ const processTransaction = async ({ stripeIntent, session }) => {
     artworkId,
     versionId,
     discountId,
-    licenseId: savedLicense._id,
+    licenseId: savedLicense.id,
     review: null,
     spent: orderData.spent,
     earned: orderData.earned,
     fee: orderData.fee,
-    commercial: true,
+    type: "commercial",
     status: "completed",
     intentId: intentId,
   };
-  const savedOrder = await addNewOrder({ orderData: orderObject, session });
-  await editUserPurchase({
-    userId: buyerId,
-    orderId: savedOrder._id,
-    session,
+  const { orderId, notificationId } = generateUuids({
+    orderId: null,
+    notificationId: null,
   });
-  await editUserSale({ userId: sellerId, orderId: savedOrder._id, session });
-  await removeExistingIntent({ userId: sellerId, intentId, session });
+  const savedOrder = await addNewOrder({
+    orderId,
+    orderData: orderObject,
+    connection,
+  });
+  await removeExistingIntent({ userId: sellerId, intentId, connection });
   // new start
   await addNewNotification({
-    notificationLink: savedOrder._id,
+    notificationId,
+    notificationLink: savedOrder.id,
     notificationRef: "",
     notificationType: "order",
     notificationReceiver: sellerId,
-    session,
+    connection,
   });
-  socketApi.sendNotification(sellerId, savedOrder._id);
+  socketApi.sendNotification(sellerId, savedOrder.id);
   // new end
   return { message: "Order processed successfully" };
 };

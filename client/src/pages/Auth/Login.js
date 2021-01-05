@@ -58,14 +58,14 @@ const Login = () => {
           id: data.user.id,
           name: data.user.name,
           email: data.user.email,
-          photo: data.user.photo,
+          avatar: data.user.avatar,
           stripeId: data.user.stripeId,
           country: data.user.country,
-          saved: data.user.saved.reduce(function (object, item) {
-            object[item] = true;
+          favorites: data.user.favorites.reduce((object, item) => {
+            object[item.artworkId] = true;
             return object;
           }, {}),
-          intents: data.user.intents.reduce(function (object, item) {
+          intents: data.user.intents.reduce((object, item) => {
             object[item.artworkId] = item.intentId;
             return object;
           }, {}),

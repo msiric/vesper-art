@@ -2,9 +2,25 @@ import currency from "currency.js";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import { getConnection } from "typeorm";
+import {
+  v4 as uuidv4,
+  validate as validateUuid,
+  version as validateVersion,
+} from "uuid";
+import { uuid } from "../config/secret";
 
-const ObjectId = mongoose.Types.ObjectId;
+/* export const requestHandler = (promise, params) => async (req, res, next) => {
+  const boundParams = params ? params(req, res, next) : {};
+  const userId = res.locals.user ? res.locals.user.id : null;
+  try {
+    const result = await promise({ userId, ...boundParams });
+    return res.json(result || { message: "OK" });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+}; */
 
 export const requestHandler = (promise, transaction, params) => async (
   req,
@@ -14,22 +30,27 @@ export const requestHandler = (promise, transaction, params) => async (
   const boundParams = params ? params(req, res, next) : {};
   const userId = res.locals.user ? res.locals.user.id : null;
   if (transaction) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
-      const result = await promise({ userId, session, ...boundParams });
-      await session.commitTransaction();
-      return res.json(result || { message: "OK" });
-    } catch (error) {
-      await session.abortTransaction();
-      console.log(error);
-      next(error);
-    } finally {
-      session.endSession();
-    }
+    await getConnection().transaction(async (transactionalEntityManager) => {
+      try {
+        const result = await promise({
+          userId,
+          connection: transactionalEntityManager,
+          ...boundParams,
+        });
+        return res.json(result || { message: "OK" });
+      } catch (error) {
+        console.log(error);
+        next(error);
+      }
+    });
   } else {
     try {
-      const result = await promise({ userId, ...boundParams });
+      const connection = getConnection();
+      const result = await promise({
+        userId,
+        connection,
+        ...boundParams,
+      });
       return res.json(result || { message: "OK" });
     } catch (error) {
       console.log(error);
@@ -46,8 +67,8 @@ export const formatArtworkValues = (data) => {
       data.artworkType === "commercial"
         ? data.artworkUse === "separate" || data.artworkLicense === "personal"
           ? currency(data.artworkPersonal).intValue
-          : null
-        : "",
+          : 0
+        : 0,
     artworkCommercial:
       data.artworkLicense === "commercial"
         ? data.artworkAvailability === "available" &&
@@ -55,7 +76,7 @@ export const formatArtworkValues = (data) => {
           data.artworkUse === "separate"
           ? currency(data.artworkCommercial).add(data.artworkPersonal).intValue
           : currency(data.artworkPersonal).intValue
-        : null,
+        : 0,
     artworkTags: JSON.parse(data.artworkTags),
   };
 };
@@ -107,13 +128,15 @@ export const checkParamsUsername = (req, res, next) => {
   throw createError(400, "Invalid route parameter");
 };
 
+export const isValidUuid = (value) =>
+  validateUuid(value) && validateVersion(value) === uuid.version;
+
 export const checkParamsId = (req, res, next) => {
-  const isId = (id) => (ObjectId(id) ? true : false);
   let isValid = true;
   for (let param in req.params) {
     const value = req.params[param];
     if (!value) isValid = false;
-    else if (!isId(value)) isValid = false;
+    else if (!isValidUuid(value)) isValid = false;
   }
   if (isValid) return next();
   throw createError(400, "Invalid route parameter");
@@ -143,4 +166,12 @@ export const checkImageOrientation = (width, height) => {
   } else {
     return "square";
   }
+};
+
+export const generateUuids = ({ ...args }) => {
+  const generatedUuids = {};
+  for (let item in args) {
+    generatedUuids[item] = uuidv4();
+  }
+  return generatedUuids;
 };

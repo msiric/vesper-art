@@ -11,7 +11,7 @@ import settingsPreferencesStyles from "./styles.js";
 
 const SettingsPreferences = ({ user, handleUpdatePreferences, loading }) => {
   const setDefaultValues = () => ({
-    userSaves: loading ? false : user.displaySaves,
+    userFavorites: loading ? false : user.displayFavorites,
   });
 
   const {
@@ -33,7 +33,7 @@ const SettingsPreferences = ({ user, handleUpdatePreferences, loading }) => {
 
   useEffect(() => {
     reset(setDefaultValues());
-  }, [user.displaySaves]);
+  }, [user.displayFavorites]);
 
   return (
     <Card className={classes.artworkContainer} style={{ marginBottom: "16px" }}>

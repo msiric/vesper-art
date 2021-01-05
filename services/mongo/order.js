@@ -1,5 +1,4 @@
-import Order from "../models/order.js";
-import User from "../models/user.js";
+import Order from "../../models/order.js";
 
 export const addNewOrder = async ({ orderData, session = null }) => {
   const newOrder = new Order();
@@ -13,7 +12,7 @@ export const addNewOrder = async ({ orderData, session = null }) => {
   newOrder.spent = orderData.spent;
   newOrder.earned = orderData.earned;
   newOrder.fee = orderData.fee;
-  newOrder.commercial = orderData.commercial;
+  newOrder.type = orderData.commercial ? "commercial" : "free";
   newOrder.status = orderData.status;
   newOrder.intent = orderData.intentId;
   return await newOrder.save({ session });
@@ -40,7 +39,7 @@ export const fetchOrderDetails = async ({
       {
         $or: [{ buyer: userId }, { seller: userId }],
       },
-      { _id: orderId },
+      { id: orderId },
     ],
   })
     .populate("buyer")
@@ -53,26 +52,18 @@ export const fetchOrderDetails = async ({
     .session(session);
 };
 
-export const fetchUserOrder = async ({ orderId, userId, session = null }) => {
+export const fetchUserPurchase = async ({
+  orderId,
+  userId,
+  session = null,
+}) => {
   return await Order.findOne({
-    $and: [{ _id: orderId }, { buyer: userId }],
+    $and: [{ id: orderId }, { buyer: userId }],
   })
     .populate("buyer")
     .populate("seller")
     .deepPopulate("artwork.review")
     .session(session);
-};
-
-export const fetchSoldOrders = async ({ userId, session = null }) => {
-  return await User.findOne({
-    _id: userId,
-  }).deepPopulate("sales.buyer sales.version sales.review");
-};
-
-export const fetchBoughtOrders = async ({ userId, session = null }) => {
-  return await User.findOne({
-    _id: userId,
-  }).deepPopulate("purchases.seller purchases.version purchases.review");
 };
 
 export const addOrderReview = async ({
@@ -83,7 +74,7 @@ export const addOrderReview = async ({
 }) => {
   return await Order.updateOne(
     {
-      $and: [{ _id: orderId }, { buyer: userId }],
+      $and: [{ id: orderId }, { buyer: userId }],
     },
     { review: reviewId }
   ).session(session);

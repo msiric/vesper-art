@@ -1,5 +1,4 @@
-import mongoose from 'mongoose';
-import Ticket from '../models/ticket.js';
+import Ticket from "../../models/ticket.js";
 
 export const addNewTicket = async ({
   userId,
@@ -12,5 +11,5 @@ export const addNewTicket = async ({
   newTicket.title = ticketTitle;
   newTicket.body = ticketBody;
   newTicket.resolved = false;
-  return await newTicket.save();
+  return newTicket;
 };

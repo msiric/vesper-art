@@ -1,4 +1,4 @@
-import License from '../models/license.js';
+import License from "../../models/license.js";
 
 export const fetchLicenseByFingerprint = async ({
   licenseFingerprint,
@@ -7,7 +7,7 @@ export const fetchLicenseByFingerprint = async ({
   return await License.findOne({
     fingerprint: licenseFingerprint,
     active: true,
-  }).populate('artwork');
+  }).populate("artwork");
 };
 
 export const addNewLicense = async ({
@@ -18,8 +18,8 @@ export const addNewLicense = async ({
 }) => {
   const newLicense = new License();
   newLicense.owner = userId;
-  newLicense.artwork = artworkData._id;
-  newLicense.fingerprint = crypto.randomBytes(20).toString('hex');
+  newLicense.artwork = artworkData.id;
+  newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
   newLicense.assignee = licenseData.licenseAssignee;
   newLicense.company = licenseData.licenseCompany;
   newLicense.type = licenseData.licenseType;

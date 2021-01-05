@@ -1,26 +1,21 @@
 import createError from "http-errors";
+import { commentValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
-import {
-  addArtworkComment,
-  fetchArtworkById,
-  removeArtworkComment,
-} from "../services/artwork.js";
+import { fetchArtworkById } from "../services/postgres/artwork.js";
 import {
   addNewComment,
   editExistingComment,
   fetchCommentById,
   removeExistingComment,
-} from "../services/comment.js";
-import { addNewNotification } from "../services/notification.js";
-import { addUserNotification } from "../services/user.js";
-import { sanitizeData } from "../utils/helpers.js";
-import commentValidator from "../validation/comment.js";
+} from "../services/postgres/comment.js";
+import { addNewNotification } from "../services/postgres/notification.js";
+import { generateUuids, sanitizeData } from "../utils/helpers.js";
 
-export const getComment = async ({ artworkId, commentId, session }) => {
+export const getComment = async ({ artworkId, commentId, connection }) => {
   const foundComment = await fetchCommentById({
     artworkId,
     commentId,
-    session,
+    connection,
   });
   return { comment: foundComment };
 };
@@ -29,35 +24,34 @@ export const postComment = async ({
   userId,
   artworkId,
   commentContent,
-  session,
+  connection,
 }) => {
-  const { error } = commentValidator(sanitizeData({ commentContent }));
-  if (error) throw createError(400, error);
-  const foundArtwork = await fetchArtworkById({ artworkId, session });
+  await commentValidation.validate(sanitizeData({ commentContent }));
+  const foundArtwork = await fetchArtworkById({ artworkId, connection });
   if (!foundArtwork) {
     throw createError(400, "Artwork not found");
   } else {
+    const { commentId, notificationId } = generateUuids({
+      commentId: null,
+      notificationId: null,
+    });
     const savedComment = await addNewComment({
+      commentId,
       artworkId,
       userId,
       commentContent,
-      session,
+      connection,
     });
-    const updatedArtwork = await addArtworkComment({
-      artworkId,
-      commentId: savedComment._id,
-      session,
-    });
-    if (!savedComment.owner.equals(updatedArtwork.owner)) {
-      await addUserNotification({ userId: updatedArtwork.owner, session });
+    if (!savedComment.owner === foundArtwork.owner.id) {
       const savedNotification = await addNewNotification({
-        notificationLink: foundArtwork._id,
-        notificationRef: savedComment._id,
+        notificationId,
+        notificationLink: foundArtwork.id,
+        notificationRef: savedComment.id,
         notificationType: "comment",
-        notificationReceiver: updatedArtwork.owner,
-        session,
+        notificationReceiver: foundArtwork.owner.id,
+        connection,
       });
-      socketApi.sendNotification(updatedArtwork.owner, savedNotification);
+      socketApi.sendNotification(foundArtwork.owner.id, savedNotification);
     }
     return {
       message: "Comment posted successfully",
@@ -71,32 +65,24 @@ export const patchComment = async ({
   artworkId,
   commentId,
   commentContent,
-  session,
+  connection,
 }) => {
-  const { error } = commentValidator(sanitizeData({ commentContent }));
-  if (error) throw createError(400, error);
+  await commentValidation.validate(sanitizeData({ commentContent }));
   await editExistingComment({
     commentId,
     artworkId,
     userId,
     commentContent,
-    session,
+    connection,
   });
   return { message: "Comment updated successfully" };
 };
 
-export const deleteComment = async ({
-  userId,
-  artworkId,
-  commentId,
-  session,
-}) => {
-  await removeArtworkComment({ artworkId, commentId, session });
+export const deleteComment = async ({ userId, artworkId, commentId }) => {
   await removeExistingComment({
     commentId,
     artworkId,
     userId,
-    session,
   });
   return { message: "Comment deleted successfully" };
 };

@@ -57,7 +57,7 @@ const LicenseCard = ({ license, loading }) => {
       ]}
       data={[
         [
-          license._id,
+          license.id,
           license.fingerprint,
           license.type,
           license.assignee,

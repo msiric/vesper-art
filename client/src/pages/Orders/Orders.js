@@ -163,7 +163,7 @@ const Orders = () => {
               ,
             ]}
             data={state.orders.map((order) => [
-              order._id,
+              order.id,
               order.version.cover,
               order.version.title,
               state.display === "purchases"

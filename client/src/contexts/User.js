@@ -7,16 +7,18 @@ export const userStore = {
   id: null,
   name: null,
   email: null,
-  photo: null,
+  avatar: null,
   height: null,
   width: null,
   stripeId: null,
   country: null,
-  saved: {},
+  favorites: {},
   intents: {},
 };
 
 export const userReducer = (state, action) => {
+  console.log(action);
+
   switch (action.type) {
     case "SET_USER":
       return {
@@ -26,10 +28,10 @@ export const userReducer = (state, action) => {
         id: action.id,
         name: action.name,
         email: action.email,
-        photo: action.photo,
-        saved: action.saved,
+        avatar: action.avatar,
         stripeId: action.stripeId,
         country: action.country,
+        favorites: action.favorites,
         intents: action.intents,
       };
     case "UPDATE_USER":
@@ -37,10 +39,10 @@ export const userReducer = (state, action) => {
         ...state,
         token: action.token,
         email: action.email,
-        photo: action.photo,
+        avatar: action.avatar,
         stripeId: action.stripeId,
         country: action.country,
-        saved: action.saved,
+        favorites: action.favorites,
         intents: action.intents,
       };
     case "RESET_USER":
@@ -51,12 +53,12 @@ export const userReducer = (state, action) => {
         id: null,
         name: null,
         email: null,
-        photo: null,
+        avatar: null,
         height: null,
         width: null,
         stripeId: null,
         country: null,
-        saved: {},
+        favorites: {},
         intents: {},
       };
     case "UPDATE_TOKEN":
@@ -64,10 +66,10 @@ export const userReducer = (state, action) => {
         ...state,
         token: action.token,
       };
-    case "UPDATE_SAVES":
+    case "UPDATE_FAVORITES":
       return {
         ...state,
-        saved: { ...state.saved, ...action.saved },
+        favorites: { ...state.favorites, ...action.favorites },
       };
     default:
       return state;

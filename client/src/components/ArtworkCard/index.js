@@ -5,7 +5,7 @@ import CardActions from "@material-ui/core/CardActions";
 import CardHeader from "@material-ui/core/CardHeader";
 import IconButton from "@material-ui/core/IconButton";
 import { EditRounded as EditIcon } from "@material-ui/icons";
-import React from "react";
+import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useTracked as useUserContext } from "../../contexts/User.js";
 import FavoriteButton from "../FavoriteButton/index.js";
@@ -16,10 +16,10 @@ import artworkCardStyles from "./styles.js";
 
 const initialProps = {
   artwork: {
-    _id: null,
+    id: null,
     current: { cover: null, height: null, width: null },
     owner: {},
-    saves: null,
+    favorites: null,
   },
   type: null,
 };
@@ -27,33 +27,33 @@ const initialProps = {
 const ArtworkCard = ({
   artwork = initialProps.artwork,
   type = initialProps.type,
-  fixed,
   handleArtworkSave,
   loading,
 }) => {
   const [userStore] = useUserContext();
+  const [state, setState] = useState({ favorited: false });
 
   const classes = artworkCardStyles();
 
   const item =
     type !== "version"
       ? {
-          _id: artwork._id ? artwork._id : "",
-          data: artwork._id ? artwork.current : {},
-          owner: artwork._id ? artwork.owner : {},
-          saves: artwork._id ? artwork.saves : [],
-          src: artwork._id ? artwork.current.cover : "",
-          height: artwork._id ? artwork.current.height : "",
-          width: artwork._id ? artwork.current.width : "",
+          id: artwork.id ? artwork.id : "",
+          data: artwork.id ? artwork.current : {},
+          owner: artwork.id ? artwork.owner : {},
+          favorites: artwork.id ? artwork.favorites : [],
+          src: artwork.id ? artwork.current.cover.source : "",
+          height: artwork.id ? artwork.current.cover.height : "",
+          width: artwork.id ? artwork.current.cover.width : "",
         }
       : {
-          _id: artwork._id ? artwork.artwork._id : "",
-          data: artwork._id ? artwork : {},
-          owner: artwork._id ? artwork.artwork.owner : {},
-          saves: artwork._id ? artwork.artwork.saves : [],
-          src: artwork._id ? artwork.cover : "",
-          height: artwork._id ? artwork.height : "",
-          width: artwork._id ? artwork.width : "",
+          id: artwork.id ? artwork.artwork.id : "",
+          data: artwork.id ? artwork : {},
+          owner: artwork.id ? artwork.artwork.owner : {},
+          favorites: artwork.id ? artwork.artwork.favorites : [],
+          src: artwork.id ? artwork.cover.source : "",
+          height: artwork.id ? artwork.cover.height : "",
+          width: artwork.id ? artwork.cover.width : "",
         };
 
   return (
@@ -65,7 +65,7 @@ const ArtworkCard = ({
               noWrap
               variant="h5"
               component={RouterLink}
-              to={`/artwork/${item._id}`}
+              to={`/artwork/${item.id}`}
               className={classes.artworkTitle}
             >
               {item.data.title}
@@ -91,7 +91,7 @@ const ArtworkCard = ({
       {/*       <SkeletonWrapper loading={loading} height="180px">
         <CardMedia
           component={RouterLink}
-          to={`/artwork/${item._id}`}
+          to={`/artwork/${item.id}`}
           className={classes.artworkMedia}
           style={{
             paddingTop: `${(item.data.height / item.data.width) * 100}%`,
@@ -103,21 +103,21 @@ const ArtworkCard = ({
         />
       </SkeletonWrapper> */}
       <ImageWrapper
-        redirect={`/artwork/${item._id}`}
+        redirect={`/artwork/${item.id}`}
         height={item.data.height}
         width={item.data.width}
-        source={item.data.cover}
+        source={item.data.cover ? item.data.cover.source : ""}
         placeholder={item.data.dominant}
         loading={loading}
       />
       <CardActions disableSpacing className={classes.artworkFooter}>
         <SkeletonWrapper loading={loading}>
           <Box style={{ display: "flex" }}>
-            {item.owner._id === userStore.id ? (
+            {item.owner.id === userStore.id ? (
               <IconButton
                 aria-label={"Edit artwork"}
                 component={RouterLink}
-                to={`/edit_artwork/${artwork._id}`}
+                to={`/artwork/${artwork.id}/edit`}
                 className={classes.buttonColor}
               >
                 <EditIcon />
@@ -126,10 +126,10 @@ const ArtworkCard = ({
               [
                 <FavoriteButton
                   artwork={artwork}
-                  favorited={userStore.saved[item._id]}
+                  favorited={userStore.favorites[item.id]}
                   handleCallback={handleArtworkSave}
                 />,
-                <ShareButton link={`artwork/${artwork._id}`} type="artwork" />,
+                <ShareButton link={`artwork/${artwork.id}`} type="artwork" />,
               ]
             )}
           </Box>

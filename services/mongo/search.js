@@ -1,5 +1,5 @@
-import User from "../models/user.js";
-import Version from "../models/version.js";
+import User from "../../models/user.js";
+import Version from "../../models/version.js";
 
 export const fetchArtworkResults = async ({
   searchQuery,

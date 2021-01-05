@@ -1,77 +1,64 @@
 import createError from "http-errors";
+import { reviewValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
-import { addArtworkReview } from "../services/artwork.js";
-import { addNewNotification } from "../services/notification.js";
-import { addOrderReview, fetchUserOrder } from "../services/order.js";
-import { addNewReview } from "../services/review.js";
-import { editUserRating } from "../services/user.js";
-import { sanitizeData } from "../utils/helpers.js";
-import reviewValidator from "../validation/review.js";
-import currency from "currency.js";
+import { addNewNotification } from "../services/postgres/notification.js";
+import {
+  addOrderReview,
+  fetchUserPurchase,
+} from "../services/postgres/order.js";
+import { addNewReview } from "../services/postgres/review.js";
+import { generateUuids, sanitizeData } from "../utils/helpers.js";
 
 // needs transaction (done)
 export const postReview = async ({
   userId,
   reviewRating,
   orderId,
-  session,
+  connection,
 }) => {
-  const { error } = reviewValidator(sanitizeData({ reviewRating }));
-  if (error) throw createError(400, error);
+  await reviewValidation.validate(sanitizeData({ reviewRating }));
   if (reviewRating) {
-    const foundOrder = await fetchUserOrder({
+    const foundOrder = await fetchUserPurchase({
       orderId,
       userId,
-      session,
+      connection,
     });
     if (foundOrder) {
       if (!foundOrder.artwork.review) {
-        const savedReview = await addNewReview({
-          orderData: foundOrder,
-          userId,
-          reviewRating,
-          session,
+        const { reviewId, notificationId } = generateUuids({
+          reviewId: null,
+          notificationId: null,
         });
-        console.log("buyerRating", foundOrder.buyer);
-        console.log("buyerRating", foundOrder.seller.rating);
-        console.log("buyerReviews", foundOrder.seller.reviews);
-        console.log("reviewRating", reviewRating);
-
-        const numerator = currency(foundOrder.seller.rating)
+        // $TODO should this be saved or just returned?
+        const savedReview = await addNewReview({
+          reviewId,
+          orderData: foundOrder,
+          reviewerId: userId,
+          revieweeId: foundOrder.seller,
+          reviewRating,
+          connection,
+        });
+        /*         const numerator = currency(foundOrder.seller.rating)
           .multiply(foundOrder.seller.reviews)
           .add(reviewRating);
-        console.log("numerator", numerator);
         const denominator = currency(foundOrder.seller.reviews).add(1);
-        console.log("denominator", denominator);
-
-        const newRating = currency(numerator).divide(denominator);
-        console.log("newRating", newRating);
-
-        await editUserRating({
-          userId: foundOrder.seller._id,
-          userRating: newRating.value,
-          session,
-        });
-        await addOrderReview({
-          reviewId: savedReview._id,
+        const newRating = currency(numerator).divide(denominator); */
+        const updatedOrder = await addOrderReview({
+          savedReview,
           orderId,
           userId,
-          session,
-        });
-        await addArtworkReview({
-          artworkId: foundOrder.artwork._id,
-          reviewId: savedReview._id,
-          session,
+          connection,
         });
         // new start
         await addNewNotification({
-          notificationLink: foundOrder._id,
-          notificationRef: savedReview._id,
+          notificationId,
+          notificationLink: foundOrder.id,
+          notificationRef: savedReview.id,
           notificationType: "review",
           notificationReceiver: foundOrder.seller,
-          session,
+          connection,
         });
-        socketApi.sendNotification(foundOrder.seller, foundOrder._id);
+        socketApi.sendNotification(foundOrder.seller, foundOrder.id);
         // new end
         return { message: "Review successfully published" };
       }

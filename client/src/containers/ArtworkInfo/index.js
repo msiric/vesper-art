@@ -21,7 +21,7 @@ const ArtworkInfo = ({
   const [userStore] = useUserContext();
   const classes = artworkInfoStyles();
 
-  const isSeller = () => userStore.id === artwork.owner._id;
+  const isSeller = () => userStore.id === artwork.owner.id;
 
   return (
     <Card className={classes.root} loading={loading}>
@@ -37,9 +37,7 @@ const ArtworkInfo = ({
                   props: {},
                 },
                 {
-                  display:
-                    artwork.current.commercial !== null &&
-                    artwork.current.license === "commercial",
+                  display: artwork.current.license === "commercial",
                   label: "Commercial license",
                   props: {},
                 },
@@ -51,8 +49,8 @@ const ArtworkInfo = ({
                   content: null,
                   component: (
                     <PricingCard
-                      artworkId={artwork._id}
-                      versionId={artwork.current._id}
+                      artworkId={artwork.id}
+                      versionId={artwork.current.id}
                       price={artwork.current.personal}
                       isSeller={isSeller}
                       heading="Personal license. Use for personal projects, social media, and
@@ -67,15 +65,13 @@ const ArtworkInfo = ({
                   loading: loading,
                 },
                 {
-                  display:
-                    artwork.current.commercial !== null &&
-                    artwork.current.license === "commercial",
+                  display: artwork.current.license === "commercial",
                   iterable: false,
                   content: null,
                   component: (
                     <PricingCard
-                      artworkId={artwork._id}
-                      versionId={artwork.current._id}
+                      artworkId={artwork.id}
+                      versionId={artwork.current.id}
                       price={artwork.current.commercial}
                       isSeller={isSeller}
                       heading="Commercial license. Use anywhere in the world for unlimited projects with no expiration dates"
@@ -126,7 +122,7 @@ const ArtworkInfo = ({
                           variant="outlined"
                           color="primary"
                           component={RouterLink}
-                          to={`/edit_artwork/${artwork._id}`}
+                          to={`/artwork/${artwork.id}/edit`}
                         >
                           Edit artwork
                         </Button>

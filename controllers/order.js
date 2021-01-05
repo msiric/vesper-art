@@ -1,7 +1,10 @@
-import createError from "http-errors";
-import { fetchOrderDetails } from "../services/order.js";
-import { fetchUserPurchases, fetchUserSales } from "../services/user.js";
 import aws from "aws-sdk";
+import createError from "http-errors";
+import { fetchOrderDetails } from "../services/postgres/order.js";
+import {
+  fetchUserPurchases,
+  fetchUserSales,
+} from "../services/postgres/user.js";
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,
@@ -9,27 +12,28 @@ aws.config.update({
   region: process.env.S3_REGION,
 });
 
-export const getSoldOrders = async ({ userId }) => {
-  const foundUser = await fetchUserSales({ userId });
+export const getSoldOrders = async ({ userId, connection }) => {
+  const foundUser = await fetchUserSales({ userId, connection });
   return { sales: foundUser.sales };
 };
 
-export const getBoughtOrders = async ({ userId }) => {
-  const foundUser = await fetchUserPurchases({ userId });
+export const getBoughtOrders = async ({ userId, connection }) => {
+  const foundUser = await fetchUserPurchases({ userId, connection });
   return { purchases: foundUser.purchases };
 };
 
-export const getOrderDetails = async ({ userId, orderId }) => {
+export const getOrderDetails = async ({ userId, orderId, connection }) => {
   const foundOrder = await fetchOrderDetails({
     userId,
     orderId,
+    connection,
   });
   if (foundOrder) {
     // let decreaseNotif = false;
     // notif
     // if (req.query.ref) {
     //   const foundNotif = await Notification.findById({
-    //     _id: req.query.ref,
+    //     id: req.query.ref,
     //   }).session(session);
     //   if (foundNotif) {
     //     let changed = false;
@@ -45,7 +49,7 @@ export const getOrderDetails = async ({ userId, orderId }) => {
     //       await foundNotif.save({ session });
     //       await User.updateOne(
     //         {
-    //           _id: res.locals.user.id,
+    //           id: res.locals.user.id,
     //         },
     //         { $inc: { notifications: -1 } },
     //         { useFindAndModify: false }
@@ -59,10 +63,11 @@ export const getOrderDetails = async ({ userId, orderId }) => {
   throw createError(400, "Order not found");
 };
 
-export const downloadOrderArtwork = async ({ userId, orderId }) => {
+export const downloadOrderArtwork = async ({ userId, orderId, connection }) => {
   const foundOrder = await fetchOrderDetails({
     userId,
     orderId,
+    connection,
   });
   if (foundOrder) {
     const s3 = new aws.S3({ signatureVersion: "v4" });

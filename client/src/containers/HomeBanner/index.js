@@ -46,7 +46,7 @@ const HomeBanner = () => {
                 width: "60%",
               }}
             >
-              Browse, share and collect digital art the way it's supposed to be
+              Browse, share and collect digital art the way it's intended to be
               done
             </Typography>
           </Box>
@@ -121,7 +121,7 @@ const HomeBanner = () => {
             }}
           >
             <Button component={RouterLink} to="/verifier" variant="outlined">
-              Verify a license
+              Verify license
             </Button>
           </Box>
         </CardContent>

@@ -22,7 +22,7 @@ import { deleteEmptyValues } from "../../utils/helpers.js";
 
 const initialState = {
   loading: true,
-  user: {},
+  user: { avatar: {} },
   modal: { open: false },
   isDeactivating: false,
 };
@@ -64,7 +64,7 @@ const Settings = ({ location }) => {
       ...prevState,
       user: {
         ...prevState.user,
-        photo: values.userMedia,
+        avatar: values.userMedia,
         description: values.userDescription,
         country: values.userCountry,
       },
@@ -95,7 +95,7 @@ const Settings = ({ location }) => {
       ...prevState,
       user: {
         ...prevState.user,
-        displaySaves: values.userSaves,
+        displayFavorites: values.userFavorites,
       },
     }));
   };
@@ -139,7 +139,7 @@ const Settings = ({ location }) => {
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.loading || state.user._id ? (
+        {state.loading || state.user.id ? (
           <Grid item sm={12}>
             <MainHeading
               text="Settings"

@@ -1,25 +1,33 @@
-import express from 'express';
+import express from "express";
+import { deleteDiscount, postDiscount } from "../../../controllers/discount.js";
 import {
-  isAuthenticated,
   checkParamsId,
+  isAuthenticated,
   requestHandler as handler,
-} from '../../../utils/helpers.js';
-import { postDiscount, deleteDiscount } from '../../../controllers/discount.js';
+} from "../../../utils/helpers.js";
 
 const router = express.Router();
 
-router.route('/discount').post(
-  isAuthenticated,
-  handler(postDiscount, true, (req, res, next) => ({
-    ...req.body,
-  }))
-);
+// $TODO wat?
 
-router.route('/discount/:discountId').delete(
-  [isAuthenticated, checkParamsId],
-  handler(deleteDiscount, true, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+router
+  .route("/discounts")
+  // $TODO not tested
+  .post(
+    isAuthenticated,
+    handler(postDiscount, false, (req, res, next) => ({
+      ...req.body,
+    }))
+  );
+
+router
+  .route("/discounts/:discountId")
+  // $TODO not tested
+  .delete(
+    [isAuthenticated, checkParamsId],
+    handler(deleteDiscount, true, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
 
 export default router;

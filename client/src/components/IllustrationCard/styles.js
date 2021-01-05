@@ -1,5 +1,4 @@
 import { makeStyles } from "@material-ui/core/styles";
-import { artepunktTheme } from "../../styles/theme";
 
 const illustrationCardStyles = makeStyles((muiTheme) => ({
   illustrationContainer: {
@@ -30,11 +29,6 @@ const illustrationCardStyles = makeStyles((muiTheme) => ({
       transform: "translate(-50%,-50%)",
       width: "80%",
       height: "auto",
-    },
-  },
-  "@global": {
-    ".illustrationPrimary": {
-      fill: artepunktTheme.palette.primary.main,
     },
   },
 }));

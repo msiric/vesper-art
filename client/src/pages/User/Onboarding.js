@@ -42,7 +42,7 @@ const Onboarding = () => {
     getValues,
   } = useForm({
     defaultValues: {
-      userOrigin: "",
+      userBusinessAddress: "",
     },
     resolver: yupResolver(originValidation),
   });
@@ -54,11 +54,11 @@ const Onboarding = () => {
           userId: userStore.id,
           data: {
             ...values,
-            userOrigin: values.userOrigin,
+            userBusinessAddress: values.userBusinessAddress,
           },
         });
         const { data } = await postAuthorize.request({
-          userOrigin: values.userOrigin,
+          userBusinessAddress: values.userBusinessAddress,
           userEmail: userStore.email,
         });
 
@@ -135,9 +135,9 @@ const Onboarding = () => {
                     </ListItem>
                   </List>
                   {/* $TODO Refactor supportedCountries */}
-                  {userStore.origin ? (
-                    countries[userStore.origin] &&
-                    countries[userStore.origin].supported ? (
+                  {userStore.businessAddress ? (
+                    countries[userStore.businessAddress] &&
+                    countries[userStore.businessAddress].supported ? (
                       <Typography
                         color="textSecondary"
                         style={{ alignSelf: "flex-start" }}

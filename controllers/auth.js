@@ -1,28 +1,34 @@
-import bcrypt from "bcrypt-nodejs";
+import argon2 from "argon2";
 import crypto from "crypto";
 import createError from "http-errors";
 import randomString from "randomstring";
+import {
+  emailValidation,
+  loginValidation,
+  resetValidation,
+  signupValidation,
+} from "../common/validation";
 import { server } from "../config/secret.js";
 import {
   addNewUser,
   editUserResetToken,
-  editUserVerification,
   logUserOut,
   refreshAccessToken,
+  resetRegisterToken,
+  resetUserPassword,
   revokeAccessToken,
-} from "../services/auth.js";
-import { editUserPassword, fetchUserByCreds } from "../services/user.js";
+} from "../services/postgres/auth.js";
+import {
+  fetchUserByAuth,
+  fetchUserIdByName,
+} from "../services/postgres/user.js";
 import {
   createAccessToken,
   createRefreshToken,
   sendRefreshToken,
 } from "../utils/auth.js";
 import { sendEmail } from "../utils/email.js";
-import { sanitizeData } from "../utils/helpers.js";
-import emailValidator from "../validation/email.js";
-import loginValidator from "../validation/login.js";
-import resetValidator from "../validation/reset.js";
-import signupValidator from "../validation/signup.js";
+import { generateUuids, sanitizeData } from "../utils/helpers.js";
 
 // needs transaction (not tested)
 export const postSignUp = async ({
@@ -30,9 +36,9 @@ export const postSignUp = async ({
   userUsername,
   userPassword,
   userConfirm,
-  session,
+  connection,
 }) => {
-  const { error } = signupValidator(
+  await signupValidation.validate(
     sanitizeData({
       userEmail,
       userUsername,
@@ -40,19 +46,27 @@ export const postSignUp = async ({
       userConfirm,
     })
   );
-  if (error) throw createError(400, error);
-  const foundUser = await fetchUserByCreds({ userUsername, session });
-  if (foundUser) {
+  const userId = await fetchUserIdByName({
+    userUsername,
+    includeEmail: true,
+    connection,
+  });
+  if (userId) {
     throw createError(400, "Account with that email/username already exists");
   } else {
     const verificationToken = randomString.generate();
     const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
+    const hashedPassword = await argon2.hash(userPassword);
+    const { userId } = generateUuids({
+      userId: null,
+    });
     await addNewUser({
+      userId,
       userEmail,
       userUsername,
-      userPassword,
+      hashedPassword,
       verificationToken,
-      session,
+      connection,
     });
     await sendEmail({
       emailReceiver: userEmail,
@@ -70,13 +84,16 @@ export const postLogIn = async ({
   userUsername,
   userPassword,
   res,
-  session,
+  connection,
 }) => {
-  const { error } = loginValidator(
-    sanitizeData({ userUsername, userPassword })
-  );
-  if (error) throw createError(400, error);
-  const foundUser = await fetchUserByCreds({ userUsername, session });
+  await loginValidation.validate(sanitizeData({ userUsername, userPassword }));
+
+  const userId = await fetchUserIdByName({
+    userUsername,
+    includeEmail: true,
+    connection,
+  });
+  const foundUser = await fetchUserByAuth({ userId, connection });
   if (!foundUser) {
     throw createError(400, "Account with provided credentials does not exist");
   } else if (!foundUser.active) {
@@ -84,7 +101,7 @@ export const postLogIn = async ({
   } else if (!foundUser.verified) {
     throw createError(400, "Please verify your account");
   } else {
-    const valid = bcrypt.compareSync(userPassword, foundUser.password);
+    const valid = await argon2.verify(foundUser.password, userPassword);
 
     if (!valid) {
       throw createError(
@@ -92,38 +109,37 @@ export const postLogIn = async ({
         "Account with provided credentials does not exist"
       );
     }
-
-    const tokenPayload = {
-      id: foundUser._id,
-      name: foundUser.name,
-      jwtVersion: foundUser.jwtVersion,
-      onboarded: !!foundUser.stripeId,
-      active: foundUser.active,
-    };
-
-    const userInfo = {
-      id: foundUser._id,
-      name: foundUser.name,
-      email: foundUser.email,
-      photo: foundUser.photo,
-      messages: foundUser.inbox,
-      notifications: foundUser.notifications,
-      saved: foundUser.savedArtwork,
-      active: foundUser.active,
-      stripeId: foundUser.stripeId,
-      intents: foundUser.intents,
-      country: foundUser.country,
-      origin: foundUser.origin,
-      jwtVersion: foundUser.jwtVersion,
-    };
-
-    sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
-
-    return {
-      accessToken: createAccessToken({ userData: tokenPayload }),
-      user: userInfo,
-    };
   }
+
+  const tokenPayload = {
+    id: foundUser.id,
+    name: foundUser.name,
+    jwtVersion: foundUser.jwtVersion,
+    onboarded: !!foundUser.stripeId,
+    active: foundUser.active,
+  };
+
+  const userInfo = {
+    id: foundUser.id,
+    name: foundUser.name,
+    email: foundUser.email,
+    avatar: foundUser.avatar,
+    notifications: foundUser.notifications,
+    active: foundUser.active,
+    stripeId: foundUser.stripeId,
+    country: foundUser.country,
+    businessAddress: foundUser.businessAddress,
+    jwtVersion: foundUser.jwtVersion,
+    favorites: foundUser.favorites,
+    intents: foundUser.intents,
+  };
+
+  sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
+
+  return {
+    accessToken: createAccessToken({ userData: tokenPayload }),
+    user: userInfo,
+  };
 };
 
 export const postLogOut = ({ res }) => {
@@ -141,16 +157,15 @@ export const postRevokeToken = async ({ userId }) => {
 
 // needs transaction (not tested)
 export const verifyRegisterToken = async ({ tokenId }) => {
-  await editUserVerification({ tokenId });
+  await resetRegisterToken({ tokenId });
   return { message: "Token successfully verified" };
 };
 
-export const forgotPassword = async ({ userEmail, session }) => {
-  const { error } = emailValidator(sanitizeData({ userEmail }));
-  if (error) throw createError(400, error);
+export const forgotPassword = async ({ userEmail, connection }) => {
+  await emailValidation.validate(sanitizeData({ userEmail }));
   crypto.randomBytes(20, async function (err, buf) {
     const resetToken = buf.toString("hex");
-    await editUserResetToken({ userEmail, resetToken, session });
+    await editUserResetToken({ userEmail, resetToken, connection });
     await sendEmail({
       emailReceiver: userEmail,
       emailSubject: "Reset your password",
@@ -168,14 +183,14 @@ export const resetPassword = async ({
   tokenId,
   userPassword,
   userConfirm,
-  session,
+  connection,
 }) => {
-  const { error } = resetValidator(sanitizeData({ userPassword, userConfirm }));
-  if (error) throw createError(400, error);
-  const updatedUser = await editUserPassword({
+  await resetValidation.validate(sanitizeData({ userPassword, userConfirm }));
+  const hashedPassword = await argon2.hash(userPassword);
+  const updatedUser = await resetUserPassword({
     tokenId,
-    userPassword,
-    session,
+    hashedPassword,
+    connection,
   });
   await sendEmail({
     emailReceiver: updatedUser.email,

@@ -1,4 +1,4 @@
-import Discount from '../models/discount.js';
+import Discount from "../../models/discount.js";
 
 export const fetchDiscountByCode = async ({ discountCode, session = null }) => {
   return await Discount.findOne({
@@ -8,6 +8,6 @@ export const fetchDiscountByCode = async ({ discountCode, session = null }) => {
 
 export const fetchDiscountById = async ({ discountId, session = null }) => {
   return await Discount.findOne({
-    _id: discountId,
+    id: discountId,
   }).session(session);
 };

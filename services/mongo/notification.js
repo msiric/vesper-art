@@ -1,6 +1,5 @@
-import mongoose from "mongoose";
-import Notification from "../models/notification.js";
-import User from "../models/user.js";
+import Notification from "../../models/notification.js";
+import User from "../../models/user.js";
 
 export const addNewNotification = async ({
   notificationLink,
@@ -36,7 +35,7 @@ export const editReadNotification = async ({
     {
       $and: [
         {
-          _id: notificationId,
+          id: notificationId,
         },
         { receiver: userId },
       ],
@@ -54,7 +53,7 @@ export const editUnreadNotification = async ({
     {
       $and: [
         {
-          _id: notificationId,
+          id: notificationId,
         },
         { receiver: userId },
       ],
@@ -65,14 +64,14 @@ export const editUnreadNotification = async ({
 
 export const decrementUserNotification = async ({ userId, session = null }) => {
   return await User.updateOne(
-    { _id: userId },
+    { id: userId },
     { $inc: { notifications: -1 } }
   ).session(session);
 };
 
 export const incrementUserNotification = async ({ userId, session = null }) => {
   return await User.updateOne(
-    { _id: userId },
+    { id: userId },
     { $inc: { notifications: 1 } }
   ).session(session);
 };

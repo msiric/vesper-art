@@ -118,7 +118,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
     let fetchedHighlight = {};
     if (query.notif === "comment" && query.ref) {
       foundHighlight =
-        !!comments.filter((comment) => comment._id === query.ref)[0] || false;
+        !!comments.filter((comment) => comment.id === query.ref)[0] || false;
       fetchedHighlight = !foundHighlight ? await fetchHighlight(query.ref) : {};
       if (!foundHighlight) {
         enqueueSnackbar("Comment not found", {
@@ -137,6 +137,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
         dataCursor: initialState.scroll.comments.dataCursor,
         dataCeiling: initialState.scroll.comments.dataCeiling,
       });
+      console.log(data);
       const { foundHighlight, fetchedHighlight } = await resolveHighlight(
         data.artwork.comments
       );
@@ -146,8 +147,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
         license:
           data.artwork.current.use !== "included"
             ? "personal"
-            : data.artwork.current.commercial !== null &&
-              data.artwork.current.license === "commercial"
+            : data.artwork.current.license === "commercial"
             ? "commercial"
             : null,
         artwork: data.artwork,
@@ -188,7 +188,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
       ...prevState,
       artwork: {
         ...prevState.artwork,
-        saves: prevState.artwork.saves + increment,
+        favorites: prevState.artwork.favorites + increment,
       },
     }));
   };
@@ -205,7 +205,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
   const handleDownload = async (values) => {
     try {
       await postDownload.request({
-        versionId: state.artwork.current._id,
+        versionId: state.artwork.current.id,
         data: values,
       });
       setState((prevState) => ({
@@ -230,9 +230,9 @@ const ArtworkDetails = ({ match, location, socket }) => {
           {
             ...comment,
             owner: {
-              _id: userStore.id,
+              id: userStore.id,
               name: userStore.name,
-              photo: userStore.photo,
+              avatar: userStore.avatar,
             },
           },
         ],
@@ -246,7 +246,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
       artwork: {
         ...prevState.artwork,
         comments: prevState.artwork.comments.map((item) =>
-          item._id === id
+          item.id === id
             ? {
                 ...item,
                 content: content,
@@ -348,7 +348,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
       artwork: {
         ...prevState.artwork,
         comments: prevState.artwork.comments.filter(
-          (comment) => comment._id !== id
+          (comment) => comment.id !== id
         ),
       },
       popover: {
@@ -362,14 +362,14 @@ const ArtworkDetails = ({ match, location, socket }) => {
   const loadMoreComments = async () => {
     try {
       const { data } = await getComments.request({
-        artworkId: state.artwork._id,
+        artworkId: state.artwork.id,
         dataCursor: state.scroll.comments.dataCursor,
         dataCeiling: state.scroll.comments.dataCeiling,
       });
       const foundHighlight =
         !state.highlight.found && query.notif === "comment" && query.ref
           ? !!data.artwork.comments.filter(
-              (comment) => comment._id === query.ref
+              (comment) => comment.id === query.ref
             )[0]
           : false;
       setState((prevState) => ({
@@ -406,7 +406,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
     }
   };
 
-  const isSeller = () => userStore.id === state.artwork.owner._id;
+  const isSeller = () => userStore.id === state.artwork.owner.id;
 
   useEffect(() => {
     fetchArtwork();
@@ -416,10 +416,12 @@ const ArtworkDetails = ({ match, location, socket }) => {
     reset(setDefaultValues());
   }, [state.license]);
 
+  console.log(state.artwork);
+
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.loading || state.artwork._id ? (
+        {state.loading || state.artwork.id ? (
           <>
             <Grid item sm={12} md={8}>
               <ArtworkPreview

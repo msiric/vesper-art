@@ -59,7 +59,7 @@ const OrderCard = ({ order, isSeller, loading }) => {
       ]}
       data={[
         [
-          order._id,
+          order.id,
           order.buyer.name,
           order.seller.name,
           order.discount,

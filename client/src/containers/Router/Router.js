@@ -15,7 +15,7 @@ const routes = [
     type: "protected",
   },
   {
-    path: "/add_artwork",
+    path: "/artwork/add",
     Component: lazy(() => import("../../pages/Artwork/AddArtwork")),
     exact: true,
     type: "protected",
@@ -27,7 +27,7 @@ const routes = [
     type: "public",
   },
   {
-    path: "/edit_artwork/:id",
+    path: "/artwork/:id/edit",
     Component: lazy(() => import("../../pages/Artwork/EditArtwork")),
     exact: true,
     type: "protected",
@@ -188,6 +188,13 @@ const routes = [
     Component: lazy(() => import("../../pages/User/Onboarding")),
     exact: true,
     type: "protected",
+  },
+  // 404
+  {
+    path: "/404",
+    Component: lazy(() => import("../../pages/Home/NotFound")),
+    exact: true,
+    type: "public",
   },
 ];
 

@@ -1,5 +1,9 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+import { getConnection } from "typeorm";
+import { Favorite } from "../entities/Favorite";
+import { Intent } from "../entities/Intent";
+import { Notification } from "../entities/Notification";
+import { User } from "../entities/User";
 
 export const createAccessToken = ({ userData }) => {
   return jwt.sign(
@@ -17,6 +21,7 @@ export const createAccessToken = ({ userData }) => {
   );
 };
 
+// $TODO getConnection needs to come from one of the services
 export const updateAccessToken = async (req, res, next) => {
   const token = req.cookies.jid;
   if (!token) return { ok: false, accessToken: "" };
@@ -29,7 +34,38 @@ export const updateAccessToken = async (req, res, next) => {
     return { ok: false, accessToken: "" };
   }
 
-  const foundUser = await User.findOne({ _id: payload.userId });
+  // const foundUser = await User.findOne({
+  //   where: [{ id: payload.userId, active: true }],
+  //   relations: ["avatar", "favorites", "favorites.artwork", "intents"],
+  // });
+
+  const foundUser = await getConnection()
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .leftJoinAndMapMany(
+      "user.intents",
+      Intent,
+      "intent",
+      "intent.ownerId = :id",
+      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
+    )
+    .leftJoinAndMapMany(
+      "user.notifications",
+      Notification,
+      "notification",
+      "notification.receiverId = :id",
+      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
+    )
+    .leftJoinAndMapMany(
+      "user.favorites",
+      Favorite,
+      "favorite",
+      "favorite.ownerId = :id",
+      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
+    )
+    .where("user.id = :id", { id: payload.userId })
+    .andWhere("user.active = :active", { active: true })
+    .getOne();
 
   if (!foundUser) {
     return { ok: false, accessToken: "" };
@@ -40,7 +76,7 @@ export const updateAccessToken = async (req, res, next) => {
   }
 
   const tokenPayload = {
-    id: foundUser._id,
+    id: foundUser.id,
     name: foundUser.name,
     jwtVersion: foundUser.jwtVersion,
     onboarded: !!foundUser.stripeId,
@@ -48,19 +84,18 @@ export const updateAccessToken = async (req, res, next) => {
   };
 
   const userInfo = {
-    id: foundUser._id,
+    id: foundUser.id,
     name: foundUser.name,
     email: foundUser.email,
-    photo: foundUser.photo,
-    messages: foundUser.inbox,
+    avatar: foundUser.avatar,
     notifications: foundUser.notifications,
-    saved: foundUser.savedArtwork,
     active: foundUser.active,
     stripeId: foundUser.stripeId,
-    intents: foundUser.intents,
     country: foundUser.country,
-    origin: foundUser.origin,
+    businessAddress: foundUser.businessAddress,
     jwtVersion: foundUser.jwtVersion,
+    favorites: foundUser.favorites,
+    intents: foundUser.intents,
   };
 
   sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));

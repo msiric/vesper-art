@@ -5,7 +5,7 @@ import {
 } from "@material-ui/icons";
 import React, { useState } from "react";
 import { useTracked as useUserContext } from "../../contexts/User.js";
-import { deleteSave, postSave } from "../../services/artwork.js";
+import { deleteFavorite, postFavorite } from "../../services/artwork.js";
 import favoriteButtonStyles from "./styles.js";
 
 const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
@@ -17,10 +17,10 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
   const handleSaveArtwork = async (id) => {
     try {
       setState({ loading: true });
-      await postSave.request({ artworkId: id });
+      await postFavorite.request({ artworkId: id });
       userDispatch({
-        type: "UPDATE_SAVES",
-        saved: {
+        type: "UPDATE_FAVORITES",
+        favorites: {
           [id]: true,
         },
       });
@@ -35,10 +35,10 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
   const handleUnsaveArtwork = async (id) => {
     try {
       setState({ loading: true });
-      await deleteSave.request({ artworkId: id });
+      await deleteFavorite.request({ artworkId: id });
       userDispatch({
-        type: "UPDATE_SAVES",
-        saved: {
+        type: "UPDATE_FAVORITES",
+        favorites: {
           [id]: false,
         },
       });
@@ -58,8 +58,8 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
       disabled={state.loading}
       onClick={() =>
         favorited
-          ? handleUnsaveArtwork(artwork._id)
-          : handleSaveArtwork(artwork._id)
+          ? handleUnsaveArtwork(artwork.id)
+          : handleSaveArtwork(artwork.id)
       }
     >
       {favorited ? "Unfavorite" : "Favorite"}
@@ -70,8 +70,8 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
       aria-label={`${favorited ? "Unsave artwork" : "Save artwork"}`}
       onClick={() =>
         favorited
-          ? handleUnsaveArtwork(artwork._id)
-          : handleSaveArtwork(artwork._id)
+          ? handleUnsaveArtwork(artwork.id)
+          : handleSaveArtwork(artwork.id)
       }
       disabled={state.loading}
     >

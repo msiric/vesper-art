@@ -1,35 +1,34 @@
-import createError from 'http-errors';
+import createError from "http-errors";
+import { discountValidation } from "../common/validation";
 import {
   fetchDiscountByCode,
   fetchDiscountById,
-} from '../services/discount.js';
-import { sanitizeData } from '../utils/helpers.js';
-import discountValidator from '../validation/discount.js';
+} from "../services/postgres/discount.js";
+import { sanitizeData } from "../utils/helpers.js";
 
 // needs transaction (done)
 // treba sredit
-export const postDiscount = async ({ userId, discountCode, session }) => {
-  const { error } = discountValidator(sanitizeData({ discountCode }));
-  if (error) throw createError(400, error);
+export const postDiscount = async ({ userId, discountCode, connection }) => {
+  await discountValidation.validate(sanitizeData({ discountCode }));
 
   const foundDiscount = await fetchDiscountByCode({
     discountCode,
-    session,
+    connection,
   });
   if (foundDiscount) {
     if (foundDiscount.active) {
-      return { message: 'Discount applied', payload: foundDiscount };
+      return { message: "Discount applied", payload: foundDiscount };
     }
-    throw createError(400, 'Discount expired');
+    throw createError(400, "Discount expired");
   }
-  throw createError(400, 'Discount not found');
+  throw createError(400, "Discount not found");
 };
 
 // needs transaction (done)
-export const deleteDiscount = async ({ userId, discountId, session }) => {
-  const foundDiscount = await fetchDiscountById({ discountId, session });
+export const deleteDiscount = async ({ userId, discountId, connection }) => {
+  const foundDiscount = await fetchDiscountById({ discountId, connection });
   if (foundDiscount) {
-    return { message: 'Discount removed' };
+    return { message: "Discount removed" };
   }
-  throw createError(400, 'Discount not found');
+  throw createError(400, "Discount not found");
 };

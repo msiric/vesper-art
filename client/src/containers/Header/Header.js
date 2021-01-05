@@ -227,7 +227,7 @@ const Header = ({ socket, history }) => {
         type: "UPDATE_NOTIFICATIONS",
         notifications: {
           items: eventsStore.notifications.items.map((notification) =>
-            notification._id === id
+            notification.id === id
               ? { ...notification, read: true }
               : notification
           ),
@@ -253,7 +253,7 @@ const Header = ({ socket, history }) => {
         type: "UPDATE_NOTIFICATIONS",
         notifications: {
           items: eventsStore.notifications.items.map((notification) =>
-            notification._id === id
+            notification.id === id
               ? { ...notification, read: false }
               : notification
           ),
@@ -269,7 +269,7 @@ const Header = ({ socket, history }) => {
   const handleRedirectClick = (notification, link) => {
     handleNotificationsMenuClose();
     history.push(link);
-    if (!notification.read) handleReadClick(notification._id);
+    if (!notification.read) handleReadClick(notification.id);
   };
 
   const loadMore = async () => {

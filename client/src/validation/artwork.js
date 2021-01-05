@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { pricing } from "../../../common/constants";
 
 export const artworkValidation = Yup.object().shape({
   /*   artworkMedia: Yup.mixed()
@@ -42,8 +43,8 @@ export const artworkValidation = Yup.object().shape({
       then: Yup.number()
         .positive("Artwork price cannot be negative")
         .integer()
-        .min(10)
-        .max(100000)
+        .min(pricing.minimumPrice)
+        .max(pricing.maximumPrice)
         .required("Artwork price is required"),
     }),
   artworkUse: Yup.string()
@@ -65,8 +66,8 @@ export const artworkValidation = Yup.object().shape({
       then: Yup.number()
         .positive("Commercial license cannot be negative")
         .integer()
-        .min(5)
-        .max(100000)
+        .min(pricing.minimumPrice)
+        .max(pricing.maximumPrice)
         .required("Commercial license is required"),
     }),
   artworkCategory: "",

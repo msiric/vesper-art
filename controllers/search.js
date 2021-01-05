@@ -1,5 +1,7 @@
-import createError from "http-errors";
-import { fetchArtworkResults, fetchUserResults } from "../services/search.js";
+import {
+  fetchArtworkResults,
+  fetchUserResults,
+} from "../services/postgres/search.js";
 import { formatParams, sanitizeData } from "../utils/helpers.js";
 import searchValidator from "../validation/search.js";
 
@@ -8,9 +10,9 @@ export const getResults = async ({
   searchType,
   dataCursor,
   dataCeiling,
+  connection,
 }) => {
   const { error } = searchValidator(sanitizeData({ searchQuery, searchType }));
-  if (error) throw createError(400, error);
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   let foundResults = [];
   let foundType = null;
@@ -19,10 +21,16 @@ export const getResults = async ({
       searchQuery,
       dataSkip,
       dataLimit,
+      connection,
     });
     foundType = "artwork";
   } else if (searchType === "users") {
-    foundResults = await fetchUserResults({ searchQuery, dataSkip, dataLimit });
+    foundResults = await fetchUserResults({
+      searchQuery,
+      dataSkip,
+      dataLimit,
+      connection,
+    });
     foundType = "users";
   }
   return {

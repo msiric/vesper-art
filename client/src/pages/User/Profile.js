@@ -7,12 +7,12 @@ import ProfileArtwork from "../../containers/ProfileArtwork/index.js";
 import ProfileInfo from "../../containers/ProfileInfo/index.js";
 import { useTracked as useUserContext } from "../../contexts/User.js";
 import { getArtwork } from "../../services/artwork.js";
-import { getSaves, getUser } from "../../services/user.js";
+import { getFavorites, getUser } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 
 const initialState = {
   loading: true,
-  user: { artwork: {}, savedArtwork: [] },
+  user: { artwork: {}, favorites: [], avatar: {} },
   tabs: { value: 0, revealed: false, loading: true },
   scroll: {
     artwork: {
@@ -20,7 +20,7 @@ const initialState = {
       dataCursor: 0,
       dataCeiling: 20,
     },
-    saves: {
+    favorites: {
       hasMore: true,
       dataCursor: 0,
       dataCeiling: 20,
@@ -50,24 +50,24 @@ const Profile = ({ match, location }) => {
       // const {
       //   data: { artwork },
       // } = await ax.get(
-      //   `/api/user/${user._id}/artwork?dataCursor=${state.dataCursor}&dataCeiling=${state.dataCeiling}`
+      //   `/api/user/${user.id}/artwork?dataCursor=${state.dataCursor}&dataCeiling=${state.dataCeiling}`
       // );
-      if (userStore.id === data.user._id) {
+      if (userStore.id === data.user.id) {
         setState((prevState) => ({
           ...prevState,
           loading: false,
           user: {
             ...data.user,
             editable: true,
-            artwork: data.artwork.filter((item) => item.current !== null),
-            savedArtwork: [],
+            artwork: data.user.artwork.filter((item) => item.current !== null),
+            favorites: [],
           },
           scroll: {
             ...prevState.scroll,
             artwork: {
               ...prevState.scroll.artwork,
               hasMore:
-                data.artwork.length < prevState.scroll.artwork.dataCeiling
+                data.user.artwork.length < prevState.scroll.artwork.dataCeiling
                   ? false
                   : true,
               dataCursor:
@@ -83,15 +83,15 @@ const Profile = ({ match, location }) => {
           user: {
             ...data.user,
             editable: false,
-            artwork: data.artwork.filter((item) => item.current !== null),
-            savedArtwork: [],
+            artwork: data.user.artwork.filter((item) => item.current !== null),
+            favorites: [],
           },
           scroll: {
             ...prevState.scroll,
             artwork: {
               ...prevState.scroll.artwork,
               hasMore:
-                data.artwork.length < prevState.scroll.artwork.dataCeiling
+                data.user.artwork.length < prevState.scroll.artwork.dataCeiling
                   ? false
                   : true,
               dataCursor:
@@ -109,7 +109,7 @@ const Profile = ({ match, location }) => {
   const loadMoreArtwork = async () => {
     try {
       const { data } = await getArtwork.request({
-        userId: state.user._id,
+        userId: state.user.id,
         dataCursor: state.scroll.artwork.dataCursor,
         dataCeiling: state.scroll.artwork.dataCeiling,
       });
@@ -117,14 +117,14 @@ const Profile = ({ match, location }) => {
         ...prevState,
         user: {
           ...prevState.user,
-          artwork: [...prevState.user.artwork].concat(data.artwork),
+          artwork: [...prevState.user.artwork].concat(data.user.artwork),
         },
         scroll: {
           ...state.scroll,
           artwork: {
             ...state.scroll.artwork,
             hasMore:
-              data.artwork.length < state.scroll.artwork.dataCeiling
+              data.user.artwork.length < state.scroll.artwork.dataCeiling
                 ? false
                 : true,
             dataCursor:
@@ -138,32 +138,35 @@ const Profile = ({ match, location }) => {
     }
   };
 
-  const loadMoreSaves = async (newValue) => {
+  const loadMoreFavorites = async (newValue) => {
     try {
       setState((prevState) => ({
         ...prevState,
         tabs: { ...prevState.tabs, value: newValue, revealed: true },
       }));
-      const { data } = await getSaves.request({
-        userId: state.user._id,
-        dataCursor: state.scroll.saves.dataCursor,
-        dataCeiling: state.scroll.saves.dataCeiling,
+      const { data } = await getFavorites.request({
+        userId: state.user.id,
+        dataCursor: state.scroll.favorites.dataCursor,
+        dataCeiling: state.scroll.favorites.dataCeiling,
       });
       setState((prevState) => ({
         ...prevState,
         user: {
           ...prevState.user,
-          savedArtwork: [...prevState.user.savedArtwork].concat(data.saves),
+          favorites: [...prevState.user.favorites].concat(data.favorites),
         },
         tabs: { ...prevState.tabs, loading: false },
         scroll: {
           ...state.scroll,
-          saves: {
-            ...state.scroll.saves,
+          favorites: {
+            ...state.scroll,
             hasMore:
-              data.saves.length < state.scroll.saves.dataCeiling ? false : true,
+              data.favorites.length < state.scroll.favorites.dataCeiling
+                ? false
+                : true,
             dataCursor:
-              state.scroll.saves.dataCursor + state.scroll.saves.dataCeiling,
+              state.scroll.favorites.dataCursor +
+              state.scroll.favorites.dataCeiling,
           },
         },
       }));
@@ -200,7 +203,7 @@ const Profile = ({ match, location }) => {
   };
 
   const handleTabsChange = (e, newValue) => {
-    if (!state.tabs.revealed) loadMoreSaves(newValue);
+    if (!state.tabs.revealed) loadMoreFavorites(newValue);
     else
       setState((prevState) => ({
         ...prevState,
@@ -219,7 +222,9 @@ const Profile = ({ match, location }) => {
     fetchUser();
   }, [location]);
 
-  return state.loading || state.user._id ? (
+  console.log(state);
+
+  return state.loading || state.user.id ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <>
@@ -232,7 +237,7 @@ const Profile = ({ match, location }) => {
             tabs={state.tabs}
             user={state.user}
             loadMoreArtwork={loadMoreArtwork}
-            loadMoreSaves={loadMoreSaves}
+            loadMoreFavorites={loadMoreFavorites}
             handleTabsChange={handleTabsChange}
             handleChangeIndex={handleChangeIndex}
             loading={state.loading}

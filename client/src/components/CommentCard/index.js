@@ -50,24 +50,24 @@ const CommentCard = ({
 
   const onSubmit = async (values) => {
     await patchComment.request({
-      artworkId: artwork._id,
-      commentId: comment._id,
+      artworkId: artwork.id,
+      commentId: comment.id,
       data: values,
     });
-    handleCommentEdit(comment._id, values.commentContent);
+    handleCommentEdit(comment.id, values.commentContent);
   };
 
   const history = useHistory();
   const classes = commentCardStyles();
 
-  const isHighlight = () => queryRef && queryRef === comment._id;
+  const isHighlight = () => queryRef && queryRef === comment.id;
 
   useEffect(() => {
     reset(setDefaultValues());
   }, [comment.content]);
 
   return (
-    <Box ref={isHighlight() ? highlightRef : null} key={comment._id}>
+    <Box ref={isHighlight() ? highlightRef : null} key={comment.id}>
       <ListItem
         alignItems="flex-start"
         disableGutters
@@ -83,7 +83,7 @@ const CommentCard = ({
           >
             <Avatar
               alt={comment.owner.name}
-              src={comment.owner.photo}
+              src={comment.owner.avatar}
               component={Link}
               to={`/user/${comment.owner.name}`}
               className={classes.noLink}
@@ -92,7 +92,7 @@ const CommentCard = ({
         </ListItemAvatar>
         <ListItemText
           primary={
-            edits[comment._id] ? null : (
+            edits[comment.id] ? null : (
               <SkeletonWrapper variant="text" loading={loading}>
                 <Typography
                   component={Link}
@@ -114,7 +114,7 @@ const CommentCard = ({
             )
           }
           secondary={
-            edits[comment._id] ? (
+            edits[comment.id] ? (
               <FormProvider control={control}>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <AddCommentForm errors={errors} loading={loading} />
@@ -133,7 +133,7 @@ const CommentCard = ({
                     type="button"
                     variant="outlined"
                     color="warning"
-                    onClick={() => handleCommentClose(comment._id)}
+                    onClick={() => handleCommentClose(comment.id)}
                   >
                     Cancel
                   </Button>
@@ -148,10 +148,10 @@ const CommentCard = ({
             )
           }
         />
-        {edits[comment._id] || comment.owner._id !== userStore.id ? null : (
+        {edits[comment.id] || comment.owner.id !== userStore.id ? null : (
           <ListItemSecondaryAction>
             <IconButton
-              onClick={(e) => handlePopoverOpen(e, comment._id)}
+              onClick={(e) => handlePopoverOpen(e, comment.id)}
               edge="end"
               aria-label="More"
             >

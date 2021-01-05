@@ -1,8 +1,7 @@
-import createError from "http-errors";
-import { addNewTicket } from "../services/ticket.js";
+import { ticketValidation } from "../common/validation";
+import { addNewTicket } from "../services/postgres/ticket.js";
 import { sendEmail } from "../utils/email.js";
-import { sanitizeData } from "../utils/helpers.js";
-import ticketValidator from "../validation/ticket.js";
+import { generateUuids, sanitizeData } from "../utils/helpers.js";
 
 // how to handle transactions?
 // treba sredit
@@ -11,19 +10,23 @@ export const postTicket = async ({
   userEmail,
   ticketTitle,
   ticketBody,
+  connection,
 }) => {
-  const { error } = ticketValidator(sanitizeData({ ticketTitle, ticketBody }));
-  if (error) throw createError(400, error);
-  await addNewTicket({
+  await ticketValidation.validate(sanitizeData({ ticketTitle, ticketBody }));
+  const { ticketId } = generateUuids({
+    ticketId: null,
+  });
+  const savedTicket = await addNewTicket({
+    ticketId,
     userId,
     ticketTitle,
     ticketBody,
+    connection,
   });
-  const ticketId = savedTicket._id;
   await sendEmail({
     emailReceiver: userEmail,
-    emailSubject: `Support ticket (#${ticketId}): ${ticketTitle}`,
+    emailSubject: `Support ticket (#${savedTicket.id}): ${ticketTitle}`,
     emailContent: ticketBody,
   });
-  return { message: "Ticket successfully sent" };
+  return { message: "Ticket successfully created" };
 };

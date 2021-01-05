@@ -18,7 +18,7 @@ const router = express.Router();
 
 // $TODO Bolje to treba
 router.route("/hooks", bodyParser.raw({ type: "application/json" })).post(
-  handler(receiveWebhookEvent, true, (req, res, next) => ({
+  handler(receiveWebhookEvent, (req, res, next) => ({
     stripeSignature: req.headers["stripe-signature"],
     stripeBody: req.rawBody,
   }))
@@ -26,14 +26,14 @@ router.route("/hooks", bodyParser.raw({ type: "application/json" })).post(
 
 router.route("/account/:accountId").get(
   isAuthenticated,
-  handler(getStripeUser, false, (req, res, next) => ({
+  handler(getStripeUser, (req, res, next) => ({
     ...req.params,
   }))
 );
 
 router.route("/intent/:versionId").post(
   isAuthenticated,
-  handler(managePaymentIntent, true, (req, res, next) => ({
+  handler(managePaymentIntent, (req, res, next) => ({
     ...req.params,
     ...req.body,
   }))
@@ -41,7 +41,7 @@ router.route("/intent/:versionId").post(
 
 router.route("/dashboard/:accountId").get(
   isAuthenticated,
-  handler(redirectToStripe, false, (req, res, next) => ({
+  handler(redirectToStripe, (req, res, next) => ({
     ...req.params,
     userOnboarded: res.locals.user ? res.locals.user.onboarded : null,
   }))
@@ -50,7 +50,7 @@ router.route("/dashboard/:accountId").get(
 // $TODO Bolje treba sredit
 router.route("/authorize").post(
   isAuthenticated,
-  handler(onboardUser, false, (req, res, next) => ({
+  handler(onboardUser, (req, res, next) => ({
     sessionData: req.session,
     responseData: res.locals,
     ...req.body,
@@ -58,7 +58,7 @@ router.route("/authorize").post(
 );
 
 router.route("/token").get(
-  handler(assignStripeId, false, (req, res, next) => ({
+  handler(assignStripeId, (req, res, next) => ({
     responseObject: res,
     sessionData: req.session,
     queryData: req.query,
@@ -67,7 +67,7 @@ router.route("/token").get(
 
 router.route("/payout").post(
   isAuthenticated,
-  handler(createPayout, false, (req, res, next) => ({}))
+  handler(createPayout, (req, res, next) => ({}))
 );
 
 export default router;

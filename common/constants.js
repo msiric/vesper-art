@@ -1,12 +1,23 @@
+const TRANSFORMED_WIDTH = 640;
+
 export const app = {
   name: "Diagon",
+};
+
+export const pricing = {
+  minimumPrice: 10,
+  maximumPrice: 100000,
 };
 
 export const upload = {
   artwork: {
     fileSize: 10 * 1024 * 1024,
     fileDimensions: { height: 1200, width: 1200 },
-    fileTransform: { width: 640 },
+    fileTransform: {
+      width: TRANSFORMED_WIDTH,
+      height: (fileHeight, fileWidth) =>
+        fileHeight / (fileWidth / TRANSFORMED_WIDTH),
+    },
     mimeTypes: ["image/jpg", "image/jpeg", "image/gif", "image/png"],
   },
   user: {
