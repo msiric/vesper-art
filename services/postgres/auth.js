@@ -1,4 +1,3 @@
-import { getConnection } from "typeorm";
 import { User } from "../../entities/User";
 import { sendRefreshToken, updateAccessToken } from "../../utils/auth.js";
 
@@ -9,6 +8,7 @@ export const addNewUser = async ({
   userUsername,
   hashedPassword,
   verificationToken,
+  connection,
 }) => {
   /*   const newUser = new User();
   newUser.email = userEmail;
@@ -18,7 +18,7 @@ export const addNewUser = async ({
   newUser.verificationToken = verificationToken;
   return await User.save(newUser); */
 
-  const savedUser = await getConnection()
+  const savedUser = await connection
     .createQueryBuilder()
     .insert()
     .into(User)
@@ -47,14 +47,14 @@ export const refreshAccessToken = async (req, res, next) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const revokeAccessToken = async ({ userId }) => {
+export const revokeAccessToken = async ({ userId, connection }) => {
   /*   return await User.increment(
     { where: [{ id: userId, active: true }] },
     "jwtVersion",
     1
   );
  */
-  const updatedUser = await getConnection()
+  const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({ jwtVersion: () => "jwtVersion + 1" }) // One hour
@@ -69,7 +69,11 @@ export const revokeAccessToken = async ({ userId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const editUserResetToken = async ({ userEmail, resetToken }) => {
+export const editUserResetToken = async ({
+  userEmail,
+  resetToken,
+  connection,
+}) => {
   /*   const foundUser = await User.findOne({
     where: [{ email: userEmail, active: true }],
   });
@@ -77,7 +81,7 @@ export const editUserResetToken = async ({ userEmail, resetToken }) => {
   foundUser.resetExpiry = Date.now() + 3600000;
   return await User.save(foundUser); */
 
-  const updatedUser = await getConnection()
+  const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({ resetToken, resetExpiry: Date.now() + 3600000 }) // One hour
@@ -92,7 +96,11 @@ export const editUserResetToken = async ({ userEmail, resetToken }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const resetUserPassword = async ({ tokenId, hashedPassword }) => {
+export const resetUserPassword = async ({
+  tokenId,
+  hashedPassword,
+  connection,
+}) => {
   /*   const foundUser = await User.findOne({
     where: [{ resetToken: tokenId, resetExpiry: MoreThan(Date.now()) }],
   });
@@ -101,7 +109,7 @@ export const resetUserPassword = async ({ tokenId, hashedPassword }) => {
   foundUser.resetExpiry = "";
   return await User.save(foundUser); */
 
-  const updatedUser = await getConnection()
+  const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({ password: hashedPassword, resetToken: "", resetExpiry: "" })
@@ -120,7 +128,7 @@ export const resetUserPassword = async ({ tokenId, hashedPassword }) => {
 };
 
 // $Done (mongo -> postgres)
-export const resetRegisterToken = async ({ tokenId }) => {
+export const resetRegisterToken = async ({ tokenId, connection }) => {
   /*   const foundUser = await User.findOne({
     where: [{ verificationToken: tokenId }],
   });
@@ -128,7 +136,7 @@ export const resetRegisterToken = async ({ tokenId }) => {
   foundUser.verified = true;
   return await User.save(foundUser); */
 
-  const updatedUser = await getConnection()
+  const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({ verificationToken: "", verified: true })

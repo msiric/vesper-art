@@ -12,7 +12,7 @@ router
   // $TODO not tested
   .post(
     isAuthenticated,
-    handler(postTicket, (req, res, next) => ({
+    handler(postTicket, true, (req, res, next) => ({
       userEmail: res.locals.user ? res.locals.user.email : null,
     }))
   );

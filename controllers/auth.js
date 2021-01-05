@@ -36,7 +36,7 @@ export const postSignUp = async ({
   userUsername,
   userPassword,
   userConfirm,
-  session,
+  connection,
 }) => {
   await signupValidation.validate(
     sanitizeData({
@@ -46,7 +46,11 @@ export const postSignUp = async ({
       userConfirm,
     })
   );
-  const userId = await fetchUserIdByName({ userUsername, includeEmail: true });
+  const userId = await fetchUserIdByName({
+    userUsername,
+    includeEmail: true,
+    connection,
+  });
   if (userId) {
     throw createError(400, "Account with that email/username already exists");
   } else {
@@ -62,7 +66,7 @@ export const postSignUp = async ({
       userUsername,
       hashedPassword,
       verificationToken,
-      session,
+      connection,
     });
     await sendEmail({
       emailReceiver: userEmail,
@@ -80,12 +84,16 @@ export const postLogIn = async ({
   userUsername,
   userPassword,
   res,
-  session,
+  connection,
 }) => {
   await loginValidation.validate(sanitizeData({ userUsername, userPassword }));
 
-  const userId = await fetchUserIdByName({ userUsername, includeEmail: true });
-  const foundUser = await fetchUserByAuth({ userId });
+  const userId = await fetchUserIdByName({
+    userUsername,
+    includeEmail: true,
+    connection,
+  });
+  const foundUser = await fetchUserByAuth({ userId, connection });
   if (!foundUser) {
     throw createError(400, "Account with provided credentials does not exist");
   } else if (!foundUser.active) {
@@ -153,11 +161,11 @@ export const verifyRegisterToken = async ({ tokenId }) => {
   return { message: "Token successfully verified" };
 };
 
-export const forgotPassword = async ({ userEmail, session }) => {
+export const forgotPassword = async ({ userEmail, connection }) => {
   await emailValidation.validate(sanitizeData({ userEmail }));
   crypto.randomBytes(20, async function (err, buf) {
     const resetToken = buf.toString("hex");
-    await editUserResetToken({ userEmail, resetToken, session });
+    await editUserResetToken({ userEmail, resetToken, connection });
     await sendEmail({
       emailReceiver: userEmail,
       emailSubject: "Reset your password",
@@ -175,14 +183,14 @@ export const resetPassword = async ({
   tokenId,
   userPassword,
   userConfirm,
-  session,
+  connection,
 }) => {
   await resetValidation.validate(sanitizeData({ userPassword, userConfirm }));
   const hashedPassword = await argon2.hash(userPassword);
   const updatedUser = await resetUserPassword({
     tokenId,
     hashedPassword,
-    session,
+    connection,
   });
   await sendEmail({
     emailReceiver: updatedUser.email,

@@ -1,4 +1,3 @@
-import { getConnection } from "typeorm";
 import { upload } from "../../common/constants";
 import { Artwork } from "../../entities/Artwork";
 import { Comment } from "../../entities/Comment";
@@ -10,13 +9,13 @@ import { Version } from "../../entities/Version";
 const ARTWORK_ACTIVE_STATUS = true;
 
 // Only used when inserting comment
-export const fetchArtworkById = async ({ artworkId }) => {
+export const fetchArtworkById = async ({ artworkId, connection }) => {
   /*   return await Artwork.findOne({
     where: [{ id: artworkId }, { active: true }],
     relations: ["owner"],
   }); */
 
-  const foundArtwork = await getConnection()
+  const foundArtwork = await connection
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.owner", "owner")
@@ -30,14 +29,18 @@ export const fetchArtworkById = async ({ artworkId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchActiveArtworks = async ({ dataSkip, dataLimit }) => {
+export const fetchActiveArtworks = async ({
+  dataSkip,
+  dataLimit,
+  connection,
+}) => {
   // return await Artwork.find({
   //   where: [{ active: true }],
   //   relations: ["owner", "current"],
   //   skip: dataSkip,
   //   take: dataLimit,
   // });
-  const foundArtwork = await getConnection()
+  const foundArtwork = await connection
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.current", "version")
@@ -53,12 +56,12 @@ export const fetchActiveArtworks = async ({ dataSkip, dataLimit }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchVersionDetails = async ({ versionId }) => {
+export const fetchVersionDetails = async ({ versionId, connection }) => {
   // return await Version.findOne({
   //   where: [{ id: versionId }],
   //   relations: ["artwork", "artwork.owner"],
   // });
-  const foundVersion = await getConnection()
+  const foundVersion = await connection
     .getRepository(Version)
     .createQueryBuilder("version")
     .leftJoinAndSelect("version.artwork", "artwork")
@@ -77,6 +80,7 @@ export const fetchArtworkDetails = async ({
   artworkId,
   dataSkip,
   dataLimit,
+  connection,
 }) => {
   // const foundArtwork = await Artwork.findOne({
   //   where: [{ id: artworkId, active: true }],
@@ -85,7 +89,7 @@ export const fetchArtworkDetails = async ({
   // return foundArtwork;
 
   // $TODO find count of favorites
-  const foundArtwork = await getConnection()
+  const foundArtwork = await connection
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.owner", "owner")
@@ -121,6 +125,7 @@ export const fetchArtworkComments = async ({
   artworkId,
   dataSkip,
   dataLimit,
+  connection,
 }) => {
   // return await Comment.find({
   //   where: [{ artwork: artworkId }],
@@ -128,7 +133,7 @@ export const fetchArtworkComments = async ({
   //   skip: dataSkip,
   //   take: dataLimit,
   // });
-  const foundComments = await getConnection()
+  const foundComments = await connection
     .getRepository(Comment)
     .createQueryBuilder("comment")
     .leftJoinAndSelect("comment.owner", "owner")
@@ -141,14 +146,19 @@ export const fetchArtworkComments = async ({
   return foundComments;
 };
 
-export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
+export const fetchUserArtworks = async ({
+  userId,
+  dataSkip,
+  dataLimit,
+  connection,
+}) => {
   // return await Artwork.find({
   //   where: [{ owner: userId, active: true }],
   //   relations: ["current"],
   //   skip: dataSkip,
   //   take: dataLimit,
   // });
-  const foundArtwork = await getConnection()
+  const foundArtwork = await connection
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.owner", "owner")
@@ -173,7 +183,7 @@ export const fetchUserArtworks = async ({ userId, dataSkip, dataLimit }) => {
 //   });
 // };
 
-export const addNewCover = async ({ coverId, artworkUpload }) => {
+export const addNewCover = async ({ coverId, artworkUpload, connection }) => {
   /*   const newCover = new Cover();
   newCover.source = artworkUpload.fileCover;
   newCover.dominant = artworkUpload.fileDominant;
@@ -185,7 +195,7 @@ export const addNewCover = async ({ coverId, artworkUpload }) => {
   newCover.width = upload.artwork.fileTransform.width;
   return newCover; */
 
-  const savedCover = await getConnection()
+  const savedCover = await connection
     .createQueryBuilder()
     .insert()
     .into(Cover)
@@ -207,7 +217,7 @@ export const addNewCover = async ({ coverId, artworkUpload }) => {
   return savedCover;
 };
 
-export const addNewMedia = async ({ mediaId, artworkUpload }) => {
+export const addNewMedia = async ({ mediaId, artworkUpload, connection }) => {
   /*   const newMedia = new Media();
   newMedia.source = artworkUpload.fileMedia;
   newMedia.dominant = artworkUpload.fileDominant;
@@ -216,7 +226,7 @@ export const addNewMedia = async ({ mediaId, artworkUpload }) => {
   newMedia.width = artworkUpload.fileWidth;
   return newMedia; */
 
-  const savedMedia = await getConnection()
+  const savedMedia = await connection
     .createQueryBuilder()
     .insert()
     .into(Media)
@@ -245,6 +255,7 @@ export const addNewVersion = async ({
   prevArtwork,
   artworkData,
   artworkUpload,
+  connection,
 }) => {
   /*   const newVersion = new Version();
   newVersion.cover = savedCover;
@@ -263,7 +274,7 @@ export const addNewVersion = async ({
   if (prevArtwork.artwork) newVersion.artwork = prevArtwork.artwork;
   return newVersion; */
 
-  const savedVersion = await getConnection()
+  const savedVersion = await connection
     .createQueryBuilder()
     .insert()
     .into(Version)
@@ -293,7 +304,12 @@ export const addNewVersion = async ({
 
 // $Needs testing (mongo -> postgres)
 // probably not working as intended
-export const addNewArtwork = async ({ artworkId, versionId, userId }) => {
+export const addNewArtwork = async ({
+  artworkId,
+  versionId,
+  userId,
+  connection,
+}) => {
   /*   const newArtwork = new Artwork();
   newArtwork.owner = userId;
   newArtwork.current = savedVersion.id;
@@ -301,7 +317,7 @@ export const addNewArtwork = async ({ artworkId, versionId, userId }) => {
   newArtwork.generated = false;
   return newArtwork; */
 
-  const savedArtwork = await getConnection()
+  const savedArtwork = await connection
     .createQueryBuilder()
     .insert()
     .into(Artwork)
@@ -319,13 +335,18 @@ export const addNewArtwork = async ({ artworkId, versionId, userId }) => {
   return savedArtwork;
 };
 
-export const addNewFavorite = async ({ favoriteId, userId, artworkId }) => {
+export const addNewFavorite = async ({
+  favoriteId,
+  userId,
+  artworkId,
+  connection,
+}) => {
   /*   const newFavorite = new Favorite();
   newFavorite.ownerId = userId;
   newFavorite.artworkId = artworkId;
   return await Favorite.save(newFavorite); */
 
-  const savedFavorite = await getConnection()
+  const savedFavorite = await connection
     .createQueryBuilder()
     .insert()
     .into(Favorite)
@@ -341,8 +362,8 @@ export const addNewFavorite = async ({ favoriteId, userId, artworkId }) => {
   return savedFavorite;
 };
 
-export const removeExistingFavorite = async ({ favoriteId }) => {
-  const deletedFavorite = await getConnection()
+export const removeExistingFavorite = async ({ favoriteId, connection }) => {
+  const deletedFavorite = await connection
     .createQueryBuilder()
     .delete()
     .from(Favorite)
@@ -352,13 +373,17 @@ export const removeExistingFavorite = async ({ favoriteId }) => {
   return deletedFavorite;
 };
 
-export const fetchFavoriteByParents = async ({ userId, artworkId }) => {
+export const fetchFavoriteByParents = async ({
+  userId,
+  artworkId,
+  connection,
+}) => {
   // const foundFavorite = await Favorite.findOne({
   //   where: [{ ownerId: userId, artworkId }],
   // });
   // return foundFavorite;
 
-  const foundFavorite = await getConnection()
+  const foundFavorite = await connection
     .getRepository(Favorite)
     .createQueryBuilder("favorite")
     .where("favorite.ownerId = :ownerId AND favorite.artworkId = :artworkId", {
@@ -372,10 +397,10 @@ export const fetchFavoriteByParents = async ({ userId, artworkId }) => {
 
 // $Needs testing (mongo -> postgres)
 // check if cascade works correctly
-export const removeArtworkVersion = async ({ versionId }) => {
+export const removeArtworkVersion = async ({ versionId, connection }) => {
   // const foundVersion = await Version.findOne({ id: versionId });
   // await Version.remove(foundVersion);
-  const deletedVersion = await getConnection()
+  const deletedVersion = await connection
     .createQueryBuilder()
     .delete()
     .from(Version)
@@ -397,14 +422,14 @@ export const removeArtworkVersion = async ({ versionId }) => {
 // };
 
 // $Needs testing (mongo -> postgres)
-export const deactivateExistingArtwork = async ({ artworkId }) => {
+export const deactivateExistingArtwork = async ({ artworkId, connection }) => {
   /*   const foundArtwork = Artwork.findOne({
     where: [{ id: artworkId, active: true }],
   });
   foundArtwork.active = false;
   return await Artwork.save(foundArtwork); */
 
-  const updatedArtwork = await getConnection()
+  const updatedArtwork = await connection
     .createQueryBuilder()
     .update(Artwork)
     .set({ active: false })

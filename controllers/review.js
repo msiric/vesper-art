@@ -10,17 +10,24 @@ import { addNewReview } from "../services/postgres/review.js";
 import { generateUuids, sanitizeData } from "../utils/helpers.js";
 
 // needs transaction (done)
-export const postReview = async ({ userId, reviewRating, orderId }) => {
+export const postReview = async ({
+  userId,
+  reviewRating,
+  orderId,
+  connection,
+}) => {
   await reviewValidation.validate(sanitizeData({ reviewRating }));
   if (reviewRating) {
     const foundOrder = await fetchUserPurchase({
       orderId,
       userId,
+      connection,
     });
     if (foundOrder) {
       if (!foundOrder.artwork.review) {
-        const { reviewId } = generateUuids({
+        const { reviewId, notificationId } = generateUuids({
           reviewId: null,
+          notificationId: null,
         });
         // $TODO should this be saved or just returned?
         const savedReview = await addNewReview({
@@ -29,6 +36,7 @@ export const postReview = async ({ userId, reviewRating, orderId }) => {
           reviewerId: userId,
           revieweeId: foundOrder.seller,
           reviewRating,
+          connection,
         });
         /*         const numerator = currency(foundOrder.seller.rating)
           .multiply(foundOrder.seller.reviews)
@@ -39,9 +47,7 @@ export const postReview = async ({ userId, reviewRating, orderId }) => {
           savedReview,
           orderId,
           userId,
-        });
-        const { notificationId } = generateUuids({
-          notificationId: null,
+          connection,
         });
         // new start
         await addNewNotification({
@@ -50,6 +56,7 @@ export const postReview = async ({ userId, reviewRating, orderId }) => {
           notificationRef: savedReview.id,
           notificationType: "review",
           notificationReceiver: foundOrder.seller,
+          connection,
         });
         socketApi.sendNotification(foundOrder.seller, foundOrder.id);
         // new end

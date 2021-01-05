@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import createError from "http-errors";
-import { licenseValidation } from "../common/validation";
+import { licenseValidation, orderValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
 import License from "../models/license.js";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
@@ -8,10 +8,9 @@ import { addNewNotification } from "../services/postgres/notification.js";
 import { addNewOrder } from "../services/postgres/order.js";
 import { fetchUserById } from "../services/postgres/user.js";
 import { generateUuids, sanitizeData } from "../utils/helpers.js";
-import orderValidator from "../validation/order.js";
 
-export const getCheckout = async ({ userId, versionId }) => {
-  const foundVersion = await fetchVersionDetails({ versionId });
+export const getCheckout = async ({ userId, versionId, connection }) => {
+  const foundVersion = await fetchVersionDetails({ versionId, connection });
   if (foundVersion && foundVersion.artwork.active) {
     return {
       version: foundVersion,
@@ -27,9 +26,9 @@ export const postDownload = async ({
   licenseAssignee,
   licenseCompany,
   licenseType,
-  session,
+  connection,
 }) => {
-  const foundVersion = await fetchVersionDetails({ versionId });
+  const foundVersion = await fetchVersionDetails({ versionId, connection });
   if (foundVersion && foundVersion.artwork.active) {
     // $TODO Bolje sredit validaciju licence
     const licensePrice =
@@ -41,10 +40,10 @@ export const postDownload = async ({
     if (licensePrice !== -1) {
       if (licensePrice === 0) {
         // $TODO Treba li dohvacat usera?
-        const foundUser = await fetchUserById({ userId, session });
+        const foundUser = await fetchUserById({ userId, connection });
         if (!foundVersion.artwork.owner.id === foundUser.id) {
           if (foundUser && foundUser.active) {
-            const { licenseError } = await licenseValidation.validate(
+            await licenseValidation.validate(
               sanitizeData({
                 licenseOwner: foundUser.id,
                 licenseArtwork: foundVersion.artwork.id,
@@ -54,7 +53,6 @@ export const postDownload = async ({
                 licensePrice,
               })
             );
-            if (licenseError) throw createError(400, licenseError);
             const newLicense = new License();
             newLicense.owner = foundUser.id;
             newLicense.artwork = foundVersion.artwork.id;
@@ -65,7 +63,7 @@ export const postDownload = async ({
             newLicense.active = true;
             newLicense.price = licensePrice;
             const savedLicense = await License.save(newLicense);
-            const { orderError } = orderValidator(
+            await orderValidation.validate(
               sanitizeData({
                 orderBuyer: foundUser.id,
                 orderSeller: foundVersion.artwork.owner.id,
@@ -79,7 +77,6 @@ export const postDownload = async ({
                 orderIntent: null,
               })
             );
-            if (orderError) throw createError(400, orderError);
             const orderObject = {
               buyerId: foundUser.id,
               sellerId: foundVersion.artwork.owner.id,
@@ -95,16 +92,14 @@ export const postDownload = async ({
               status: "completed",
               intentId: null,
             };
-            const { orderId } = generateUuids({
+            const { orderId, notificationId } = generateUuids({
               orderId: null,
+              notificationId: null,
             });
             const savedOrder = await addNewOrder({
               orderId,
               orderData: orderObject,
-              session,
-            });
-            const { notificationId } = generateUuids({
-              notificationId: null,
+              connection,
             });
             // new start
             await addNewNotification({
@@ -113,7 +108,7 @@ export const postDownload = async ({
               notificationRef: "",
               notificationType: "order",
               notificationReceiver: foundVersion.artwork.owner.id,
-              session,
+              connection,
             });
             socketApi.sendNotification(
               foundVersion.artwork.owner.id,

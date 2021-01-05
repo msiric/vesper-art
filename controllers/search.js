@@ -10,6 +10,7 @@ export const getResults = async ({
   searchType,
   dataCursor,
   dataCeiling,
+  connection,
 }) => {
   const { error } = searchValidator(sanitizeData({ searchQuery, searchType }));
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
@@ -20,10 +21,16 @@ export const getResults = async ({
       searchQuery,
       dataSkip,
       dataLimit,
+      connection,
     });
     foundType = "artwork";
   } else if (searchType === "users") {
-    foundResults = await fetchUserResults({ searchQuery, dataSkip, dataLimit });
+    foundResults = await fetchUserResults({
+      searchQuery,
+      dataSkip,
+      dataLimit,
+      connection,
+    });
     foundType = "users";
   }
   return {

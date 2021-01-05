@@ -21,6 +21,7 @@ export const createAccessToken = ({ userData }) => {
   );
 };
 
+// $TODO getConnection needs to come from one of the services
 export const updateAccessToken = async (req, res, next) => {
   const token = req.cookies.jid;
   if (!token) return { ok: false, accessToken: "" };

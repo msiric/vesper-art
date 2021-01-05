@@ -1,4 +1,3 @@
-import { getConnection } from "typeorm";
 import { Artwork } from "../../entities/Artwork";
 import { Avatar } from "../../entities/Avatar";
 import { Favorite } from "../../entities/Favorite";
@@ -34,8 +33,12 @@ const USER_VERIFICATION_INFO = [
 ];
 const USER_AUTH_INFO = ["user.password", "user.jwtVersion"];
 
-export const fetchUserIdByName = async ({ userUsername, includeEmail }) => {
-  const foundUser = await getConnection()
+export const fetchUserIdByName = async ({
+  userUsername,
+  includeEmail,
+  connection,
+}) => {
+  const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
     .select("user.id")
@@ -51,8 +54,8 @@ export const fetchUserIdByName = async ({ userUsername, includeEmail }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchUserById = async ({ userId }) => {
-  const foundUser = await getConnection()
+export const fetchUserById = async ({ userId, connection }) => {
+  const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
@@ -71,8 +74,8 @@ export const fetchUserById = async ({ userId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchUserByEmail = async ({ userEmail }) => {
-  const foundUser = await getConnection()
+export const fetchUserByEmail = async ({ userEmail, connection }) => {
+  const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
@@ -92,11 +95,11 @@ export const fetchUserByEmail = async ({ userEmail }) => {
 
 // $TODO convert to query builder
 // $TODO not used?
-export const fetchUserByToken = async ({ tokenId }) => {
+export const fetchUserByToken = async ({ tokenId, connection }) => {
   // return await User.findOne({
   //   where: [{ resetToken: tokenId, resetExpiry: { $gt: Date.now() } }],
   // });
-  const foundUser = await getConnection()
+  const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
     .select([...USER_ESSENTIAL_INFO, ...USER_VERIFICATION_INFO])
@@ -113,8 +116,8 @@ export const fetchUserByToken = async ({ tokenId }) => {
 };
 
 // $Done (mongo -> postgres)
-export const fetchUserByAuth = async ({ userId }) => {
-  const foundUser = await getConnection()
+export const fetchUserByAuth = async ({ userId, connection }) => {
+  const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
     .leftJoinAndMapMany(
@@ -145,14 +148,19 @@ export const fetchUserByAuth = async ({ userId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchUserPurchases = async ({ userId, dataSkip, dataLimit }) => {
+export const fetchUserPurchases = async ({
+  userId,
+  dataSkip,
+  dataLimit,
+  connection,
+}) => {
   // return await Order.find({
   //   where: [{ buyerId: userId }],
   //   relations: ["seller", "version", "review"],
   //   skip: dataSkip,
   //   take: dataLimit,
   // });
-  await getConnection()
+  await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.seller", "seller")
@@ -165,14 +173,19 @@ export const fetchUserPurchases = async ({ userId, dataSkip, dataLimit }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchUserSales = async ({ userId, dataSkip, dataLimit }) => {
+export const fetchUserSales = async ({
+  userId,
+  dataSkip,
+  dataLimit,
+  connection,
+}) => {
   // return await Order.find({
   //   where: [{ sellerId: userId }],
   //   relations: ["buyer", "version", "review"],
   //   skip: dataSkip,
   //   take: dataLimit,
   // });
-  await getConnection()
+  await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.buyer", "buyer")
@@ -185,12 +198,12 @@ export const fetchUserSales = async ({ userId, dataSkip, dataLimit }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const editUserStripe = async ({ userId, stripeId }) => {
+export const editUserStripe = async ({ userId, stripeId, connection }) => {
   /*   const foundUser = await User.findOne({ where: [{ id: userId }] });
   foundUser.stripeId = stripeId;
   return await User.save(foundUser); */
 
-  const updatedUser = await getConnection()
+  const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({ stripeId })
@@ -209,8 +222,9 @@ export const fetchUserProfile = async ({
   userId,
   dataSkip,
   dataLimit,
+  connection,
 }) => {
-  const foundUser = await getConnection()
+  const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
     .select(USER_ESSENTIAL_INFO)
@@ -240,7 +254,12 @@ export const fetchUserProfile = async ({
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
+export const fetchUserArtwork = async ({
+  userId,
+  dataCursor,
+  dataCeiling,
+  connection,
+}) => {
   // const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   // return await Artwork.find({
   //   where: [{ owner: userId, active: true }],
@@ -249,7 +268,7 @@ export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
   //   take: dataLimit,
   // });
 
-  const foundArtwork = await getConnection()
+  const foundArtwork = await connection
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.current", "version")
@@ -264,7 +283,12 @@ export const fetchUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchuserFavorites = async ({ userId, dataSkip, dataLimit }) => {
+export const fetchuserFavorites = async ({
+  userId,
+  dataSkip,
+  dataLimit,
+  connection,
+}) => {
   // return await Favorite.find({
   //   where: [{ ownerId: userId }],
   //   relations: ["artwork", "artwork.owner", "artwork.current"],
@@ -272,7 +296,7 @@ export const fetchuserFavorites = async ({ userId, dataSkip, dataLimit }) => {
   //   take: dataLimit,
   // });
 
-  const foundFavorites = await getConnection()
+  const foundFavorites = await connection
     .getRepository(Favorite)
     .createQueryBuilder("favorite")
     .leftJoinAndSelect("favorite.artwork", "artwork")
@@ -288,7 +312,7 @@ export const fetchuserFavorites = async ({ userId, dataSkip, dataLimit }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchUserStatistics = async ({ userId }) => {
+export const fetchUserStatistics = async ({ userId, connection }) => {
   // return await User.findOne({
   //   where: [{ id: userId, active: true }],
   //   relations: [
@@ -301,7 +325,7 @@ export const fetchUserStatistics = async ({ userId }) => {
   //   ],
   // });
 
-  const foundStatistics = await getConnection()
+  const foundStatistics = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.version", "version")
@@ -320,7 +344,12 @@ export const fetchUserStatistics = async ({ userId }) => {
 
 // $Needs testing (mongo -> postgres)
 // $TODO needs work
-export const addUserAvatar = async ({ avatarId, userId, avatarUpload }) => {
+export const addUserAvatar = async ({
+  avatarId,
+  userId,
+  avatarUpload,
+  connection,
+}) => {
   // const newAvatar = new Avatar();
   // newAvatar.source = avatarUpload.fileMedia;
   // newAvatar.dominant = avatarUpload.fileDominant;
@@ -329,7 +358,7 @@ export const addUserAvatar = async ({ avatarId, userId, avatarUpload }) => {
   // newAvatar.width = avatarUpload.fileWidth;
   // return newAvatar;
 
-  const savedAvatar = await getConnection()
+  const savedAvatar = await connection
     .createQueryBuilder()
     .insert()
     .into(Avatar)
@@ -351,7 +380,7 @@ export const addUserAvatar = async ({ avatarId, userId, avatarUpload }) => {
 
 // $Needs testing (mongo -> postgres)
 // $TODO needs work
-export const editUserAvatar = async ({ userId, avatarUpload }) => {
+export const editUserAvatar = async ({ userId, avatarUpload, connection }) => {
   // foundUser.avatar.source = avatarUpload.fileMedia;
   // foundUser.avatar.dominant = avatarUpload.fileDominant;
   // foundUser.avatar.orientation = avatarUpload.fileOrientation;
@@ -359,7 +388,7 @@ export const editUserAvatar = async ({ userId, avatarUpload }) => {
   // foundUser.avatar.width = avatarUpload.fileWidth;
   // return foundUser.avatar;
 
-  const updatedAvatar = await getConnection()
+  const updatedAvatar = await connection
     .createQueryBuilder()
     .update(Avatar)
     .set({
@@ -381,14 +410,19 @@ export const editUserAvatar = async ({ userId, avatarUpload }) => {
 
 // $Needs testing (mongo -> postgres)
 // $TODO how to conditionally update?
-export const editUserProfile = async ({ foundUser, userData, avatarId }) => {
+export const editUserProfile = async ({
+  foundUser,
+  userData,
+  avatarId,
+  connection,
+}) => {
   // if (savedAvatar) foundUser.avatar = savedAvatar;
   // if (userData.userDescription)
   //   foundUser.description = userData.userDescription;
   // if (userData.userCountry) foundUser.country = userData.userCountry;
   // return await User.save(foundUser);
 
-  const updatedUser = await getConnection()
+  const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({
@@ -412,6 +446,7 @@ export const fetchUserNotifications = async ({
   userId,
   dataSkip,
   dataLimit,
+  connection,
 }) => {
   // return await Notification.find({
   //   where: [{ receiver: userId }],
@@ -423,7 +458,7 @@ export const fetchUserNotifications = async ({
   //   },
   // });
 
-  const foundNotifications = await getConnection()
+  const foundNotifications = await connection
     .getRepository(Notification)
     .createQueryBuilder("notification")
     .where("notification.receiverId = :userId", {
@@ -440,6 +475,7 @@ export const editUserEmail = async ({
   userId,
   userEmail,
   verificationToken,
+  connection,
 }) => {
   /*   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
@@ -449,7 +485,7 @@ export const editUserEmail = async ({
   foundUser.verified = false;
   return await User.save(foundUser); */
 
-  const updatedUser = await getConnection()
+  const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({ email: userEmail, verificationToken, verified: false })
@@ -463,14 +499,18 @@ export const editUserEmail = async ({
 };
 
 // $Needs testing (mongo -> postgres)
-export const editUserPassword = async ({ userId, hashedPassword }) => {
+export const editUserPassword = async ({
+  userId,
+  hashedPassword,
+  connection,
+}) => {
   /*   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });
   foundUser.password = hashedPassword;
   return await User.save(foundUser); */
 
-  const updatedUser = await getConnection()
+  const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({ password: hashedPassword })
@@ -484,14 +524,18 @@ export const editUserPassword = async ({ userId, hashedPassword }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const editUserPreferences = async ({ userId, userFavorites }) => {
+export const editUserPreferences = async ({
+  userId,
+  userFavorites,
+  connection,
+}) => {
   /*   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
   });
   foundUser.displayFavorites = userFavorites;
   return await User.save(foundUser); */
 
-  const updatedUser = await getConnection()
+  const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({ displayFavorites: userFavorites })
@@ -506,7 +550,12 @@ export const editUserPreferences = async ({ userId, userFavorites }) => {
 
 // $Needs testing (mongo -> postgres)
 // $TODO needs to be saved to intents instead of user
-export const addNewIntent = async ({ userId, versionId, intentId }) => {
+export const addNewIntent = async ({
+  userId,
+  versionId,
+  intentId,
+  connection,
+}) => {
   const foundUser = await User.findOne({
     where: [{ id: userId }],
   });
@@ -519,7 +568,7 @@ export const addNewIntent = async ({ userId, versionId, intentId }) => {
 export const removeExistingIntent = async ({
   userId,
   intentId,
-  session = null,
+  connection,
 }) => {
   const foundUser = await User.findOne({
     where: [{ id: userId, active: true }],
@@ -529,11 +578,15 @@ export const removeExistingIntent = async ({
 };
 
 // $Needs testing (mongo -> postgres)
-export const editUserOrigin = async ({ foundUser, userBusinessAddress }) => {
+export const editUserOrigin = async ({
+  foundUser,
+  userBusinessAddress,
+  connection,
+}) => {
   /*   if (userBusinessAddress) foundUser.businessAddress = userBusinessAddress;
   return await User.save(foundUser); */
 
-  const updatedUser = await getConnection()
+  const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({ businessAddress: userBusinessAddress })
@@ -550,7 +603,7 @@ export const editUserOrigin = async ({ foundUser, userBusinessAddress }) => {
 // not tested
 // needs transaction (not tested)
 // $Needs testing (mongo -> postgres)
-export const deactivateExistingUser = async ({ userId }) => {
+export const deactivateExistingUser = async ({ userId, connection }) => {
   /*   const foundUser = await User.findOne({ where: [{ id: userId }] });
   foundUser.email = "";
   foundUser.name = "";
@@ -565,7 +618,7 @@ export const deactivateExistingUser = async ({ userId }) => {
   foundUser.active = false;
   return await User.save(foundUser); */
 
-  const updatedUser = await getConnection()
+  const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({

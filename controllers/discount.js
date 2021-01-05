@@ -8,12 +8,12 @@ import { sanitizeData } from "../utils/helpers.js";
 
 // needs transaction (done)
 // treba sredit
-export const postDiscount = async ({ userId, discountCode, session }) => {
+export const postDiscount = async ({ userId, discountCode, connection }) => {
   await discountValidation.validate(sanitizeData({ discountCode }));
 
   const foundDiscount = await fetchDiscountByCode({
     discountCode,
-    session,
+    connection,
   });
   if (foundDiscount) {
     if (foundDiscount.active) {
@@ -25,8 +25,8 @@ export const postDiscount = async ({ userId, discountCode, session }) => {
 };
 
 // needs transaction (done)
-export const deleteDiscount = async ({ userId, discountId, session }) => {
-  const foundDiscount = await fetchDiscountById({ discountId, session });
+export const deleteDiscount = async ({ userId, discountId, connection }) => {
+  const foundDiscount = await fetchDiscountById({ discountId, connection });
   if (foundDiscount) {
     return { message: "Discount removed" };
   }

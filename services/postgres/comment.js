@@ -1,14 +1,17 @@
-import { getConnection } from "typeorm";
 import { Comment } from "../../entities/Comment";
 
 // $Needs testing (mongo -> postgres)
-export const fetchCommentById = async ({ artworkId, commentId }) => {
+export const fetchCommentById = async ({
+  artworkId,
+  commentId,
+  connection,
+}) => {
   // return await Comment.findOne({
   //   where: [{ id: commentId, artwork: artworkId }],
   //   relations: ["owner"],
   // });
 
-  const foundComment = await getConnection()
+  const foundComment = await connection
     .getRepository(Comment)
     .createQueryBuilder("comment")
     .leftJoinAndSelect("comment.owner", "owner")
@@ -28,6 +31,7 @@ export const addNewComment = async ({
   artworkId,
   userId,
   commentContent,
+  connection,
 }) => {
   /*   const newComment = new Comment();
   newComment.artwork = artworkId;
@@ -37,7 +41,7 @@ export const addNewComment = async ({
   newComment.generated = false;
   return await Comment.save(newComment); */
 
-  const savedComment = await getConnection()
+  const savedComment = await connection
     .createQueryBuilder()
     .insert()
     .into(Comment)
@@ -62,6 +66,7 @@ export const editExistingComment = async ({
   artworkId,
   userId,
   commentContent,
+  connection,
 }) => {
   /*   const foundComment = await Comment.findOne({
     where: [{ id: commentId, artwork: artworkId, owner: userId }],
@@ -70,7 +75,7 @@ export const editExistingComment = async ({
   foundComment.modified = true;
   return await Comment.save(foundComment); */
 
-  const updatedComment = await getConnection()
+  const updatedComment = await connection
     .createQueryBuilder()
     .update(Comment)
     .set({ content: commentContent, modified: true })
@@ -89,13 +94,14 @@ export const removeExistingComment = async ({
   commentId,
   artworkId,
   userId,
+  connection,
 }) => {
   /*   const foundComment = await Comment.findOne({
     where: [{ id: commentId, artwork: artworkId, owner: userId }],
   });
   return await Comment.remove(foundComment); */
 
-  const deletedComment = await getConnection()
+  const deletedComment = await connection
     .createQueryBuilder()
     .delete()
     .from(Comment)

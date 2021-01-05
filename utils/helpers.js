@@ -2,6 +2,7 @@ import currency from "currency.js";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
+import { getConnection } from "typeorm";
 import {
   v4 as uuidv4,
   validate as validateUuid,
@@ -9,7 +10,7 @@ import {
 } from "uuid";
 import { uuid } from "../config/secret";
 
-export const requestHandler = (promise, params) => async (req, res, next) => {
+/* export const requestHandler = (promise, params) => async (req, res, next) => {
   const boundParams = params ? params(req, res, next) : {};
   const userId = res.locals.user ? res.locals.user.id : null;
   try {
@@ -18,6 +19,43 @@ export const requestHandler = (promise, params) => async (req, res, next) => {
   } catch (error) {
     console.log(error);
     next(error);
+  }
+}; */
+
+export const requestHandler = (promise, transaction, params) => async (
+  req,
+  res,
+  next
+) => {
+  const boundParams = params ? params(req, res, next) : {};
+  const userId = res.locals.user ? res.locals.user.id : null;
+  if (transaction) {
+    await getConnection().transaction(async (transactionalEntityManager) => {
+      try {
+        const result = await promise({
+          userId,
+          connection: transactionalEntityManager,
+          ...boundParams,
+        });
+        return res.json(result || { message: "OK" });
+      } catch (error) {
+        console.log(error);
+        next(error);
+      }
+    });
+  } else {
+    try {
+      const connection = getConnection();
+      const result = await promise({
+        userId,
+        connection,
+        ...boundParams,
+      });
+      return res.json(result || { message: "OK" });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
   }
 };
 

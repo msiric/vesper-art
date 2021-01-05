@@ -1,12 +1,12 @@
 import { Discount } from "../../entities/Discount";
 
 // $Needs testing (mongo -> postgres)
-export const fetchDiscountByCode = async ({ discountCode }) => {
+export const fetchDiscountByCode = async ({ discountCode, connection }) => {
   // return await Discount.findOne({
   //   where: [{ name: discountCode }],
   // });
 
-  const foundDiscount = await getConnection()
+  const foundDiscount = await connection
     .getRepository(Discount)
     .createQueryBuilder("discount")
     .where("discount.name = :name", {
@@ -18,12 +18,12 @@ export const fetchDiscountByCode = async ({ discountCode }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchDiscountById = async ({ discountId }) => {
+export const fetchDiscountById = async ({ discountId, connection }) => {
   // return await Discount.findOne({
   //   where: [{ id: discountId }],
   // });
 
-  const foundDiscount = await getConnection()
+  const foundDiscount = await connection
     .getRepository(Discount)
     .createQueryBuilder("discount")
     .where("discount.id = :id", {

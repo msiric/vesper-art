@@ -13,7 +13,7 @@ router
   // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
-    handler(getCheckout, (req, res, next) => ({
+    handler(getCheckout, false, (req, res, next) => ({
       ...req.params,
     }))
   );
@@ -24,7 +24,7 @@ router
   // $TODO not tested
   .post(
     [isAuthenticated, checkParamsId],
-    handler(postDownload, (req, res, next) => ({
+    handler(postDownload, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))

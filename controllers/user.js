@@ -7,6 +7,7 @@ import {
   originValidation,
   passwordValidation,
   preferencesValidation,
+  rangeValidation,
 } from "../common/validation";
 import { server } from "../config/secret.js";
 import { fetchArtworkByOwner } from "../services/postgres/artwork.js";
@@ -39,7 +40,6 @@ import {
 import { sendEmail } from "../utils/email.js";
 import { formatParams, generateUuids, sanitizeData } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
-import rangeValidator from "../validation/range.js";
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,
@@ -51,79 +51,127 @@ export const getUserProfile = async ({
   userUsername,
   dataCursor,
   dataCeiling,
+  connection,
 }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const userId = await fetchUserIdByName({
     userUsername,
     includeEmail: false,
+    connection,
   });
   const foundUser = await fetchUserProfile({
     userUsername,
     userId,
     dataSkip,
     dataLimit,
+    connection,
   });
   if (foundUser) return { user: foundUser };
   throw createError(400, "User not found");
 };
 
-export const getUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
+export const getUserArtwork = async ({
+  userId,
+  dataCursor,
+  dataCeiling,
+  connection,
+}) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundArtwork = await fetchUserArtwork({
     userId,
     dataSkip,
     dataLimit,
+    connection,
   });
   return { artwork: foundArtwork };
 };
 
-export const getUserOwnership = async ({ userId, dataCursor, dataCeiling }) => {
+export const getUserOwnership = async ({
+  userId,
+  dataCursor,
+  dataCeiling,
+  connection,
+}) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundPurchases = await fetchUserPurchases({
     userId,
     dataSkip,
     dataLimit,
+    connection,
   });
   return { purchases: foundPurchases.purchases };
 };
 
-export const getUserFavorites = async ({ userId, dataCursor, dataCeiling }) => {
+export const getUserFavorites = async ({
+  userId,
+  dataCursor,
+  dataCeiling,
+  connection,
+}) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
-  const foundUser = await fetchuserFavorites({ userId, dataSkip, dataLimit });
+  const foundUser = await fetchuserFavorites({
+    userId,
+    dataSkip,
+    dataLimit,
+    connection,
+  });
   return { favorites: foundUser.favorites };
 };
 
-export const getUserStatistics = async ({ userId }) => {
+export const getUserStatistics = async ({ userId, connection }) => {
   // brisanje accounta
   /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
     }); */
-  const foundUser = await fetchUserStatistics({ userId });
-  const balance = await fetchStripeBalance({ stripeId: foundUser.stripeId });
+  const foundUser = await fetchUserStatistics({ userId, connection });
+  const balance = await fetchStripeBalance({
+    stripeId: foundUser.stripeId,
+    connection,
+  });
   const { amount } = balance.available[0];
   return { statistics: foundUser, amount: amount };
 };
 
-export const getUserSales = async ({ userId, rangeFrom, rangeTo }) => {
-  const { error } = rangeValidator(sanitizeData({ rangeFrom, rangeTo }));
-  const foundOrders = await fetchOrdersBySeller({ userId, rangeFrom, rangeTo });
+export const getUserSales = async ({
+  userId,
+  rangeFrom,
+  rangeTo,
+  connection,
+}) => {
+  await rangeValidation.validate(sanitizeData({ rangeFrom, rangeTo }));
+  const foundOrders = await fetchOrdersBySeller({
+    userId,
+    rangeFrom,
+    rangeTo,
+    connection,
+  });
   return { statistics: foundOrders };
 };
 
-export const getUserPurchases = async ({ userId, rangeFrom, rangeTo }) => {
-  const { error } = rangeValidator(sanitizeData({ rangeFrom, rangeTo }));
-  const foundOrders = await fetchOrdersByBuyer({ userId, rangeFrom, rangeTo });
+export const getUserPurchases = async ({
+  userId,
+  rangeFrom,
+  rangeTo,
+  connection,
+}) => {
+  await rangeValidation.validate(sanitizeData({ rangeFrom, rangeTo }));
+  const foundOrders = await fetchOrdersByBuyer({
+    userId,
+    rangeFrom,
+    rangeTo,
+    connection,
+  });
   return { statistics: foundOrders };
 };
 
 export const updateUserOrigin = async ({
   userId,
   userBusinessAddress,
-  session,
+  connection,
 }) => {
   await originValidation.validate(sanitizeData({ userBusinessAddress }));
-  const foundUser = await fetchUserById({ userId, session });
+  const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
-    await editUserOrigin({ foundUser, userBusinessAddress });
+    await editUserOrigin({ foundUser, userBusinessAddress, connection });
     return { message: "User business address updated" };
   }
   throw createError(400, "User not found");
@@ -135,6 +183,7 @@ export const updateUserProfile = async ({
   userFilename,
   userMimetype,
   userData,
+  connection,
 }) => {
   // $TODO Validate data passed to upload
   const avatarUpload = await finalizeMediaUpload({
@@ -145,11 +194,11 @@ export const updateUserProfile = async ({
   });
   await profileValidation.validate(sanitizeData(userData));
   // $TODO Find or fail? Minimize overhead
-  const foundUser = await fetchUserById({ userId });
+  const foundUser = await fetchUserById({ userId, connection });
   let avatarId;
   if (avatarUpload.fileMedia) {
     if (foundUser.avatar) {
-      await editUserAvatar({ userId: foundUser.id, avatarUpload });
+      await editUserAvatar({ userId: foundUser.id, avatarUpload, connection });
     } else {
       ({ avatarId } = generateUuids({
         avatarId: null,
@@ -158,6 +207,7 @@ export const updateUserProfile = async ({
         avatarId,
         userId: foundUser.id,
         avatarUpload,
+        connection,
       });
     }
   }
@@ -165,13 +215,14 @@ export const updateUserProfile = async ({
     foundUser,
     userData,
     avatarId,
+    connection,
   });
   return { message: "User details updated" };
 };
 
-export const getUserSettings = async ({ userId }) => {
+export const getUserSettings = async ({ userId, connection }) => {
   // $TODO Minimize overhead
-  const foundUser = await fetchUserById({ userId });
+  const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
     return { user: foundUser };
   }
@@ -182,43 +233,52 @@ export const getUserNotifications = async ({
   userId,
   dataCursor,
   dataCeiling,
+  connection,
 }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundNotifications = await fetchUserNotifications({
     userId,
     dataSkip,
     dataLimit,
+    connection,
   });
   return { notifications: foundNotifications };
 };
 
-export const createUserIntent = async ({ userId, versionId, intentId }) => {
+export const createUserIntent = async ({
+  userId,
+  versionId,
+  intentId,
+  connection,
+}) => {
   await addNewIntent({
     userId,
     versionId,
     intentId,
+    connection,
   });
   return { message: "Intent successfully saved" };
 };
 
-export const deleteUserIntent = async ({ userId, intentId }) => {
+export const deleteUserIntent = async ({ userId, intentId, connection }) => {
   await removeExistingIntent({
     userId,
     intentId,
+    connection,
   });
   return { message: "Intent successfully deleted" };
 };
 
 // $TODO Update context with new data
-export const updateUserEmail = async ({ userId, userEmail, session }) => {
+export const updateUserEmail = async ({ userId, userEmail, connection }) => {
   await emailValidation.validate(sanitizeData({ userEmail }));
-  const foundUser = await fetchUserByEmail({ userEmail, session });
+  const foundUser = await fetchUserByEmail({ userEmail, connection });
   if (foundUser) {
     throw createError(400, "User with entered email already exists");
   } else {
     const verificationToken = randomString.generate();
     const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
-    await editUserEmail({ userId, userEmail, verificationToken, session });
+    await editUserEmail({ userId, userEmail, verificationToken, connection });
     await sendEmail(
       server.appName,
       userEmail,
@@ -238,6 +298,7 @@ export const updateUserPassword = async ({
   userCurrent,
   userPassword,
   userConfirm,
+  connection,
 }) => {
   await passwordValidation.validate(
     sanitizeData({
@@ -247,15 +308,19 @@ export const updateUserPassword = async ({
     })
   );
   const hashedPassword = await argon2.hash(userPassword);
-  await editUserPassword({ userId, hashedPassword });
+  await editUserPassword({ userId, hashedPassword, connection });
   return { message: "Password updated successfully" };
 };
 
 // needs transaction (done)
 // $TODO Update context with new data
-export const updateUserPreferences = async ({ userId, userFavorites }) => {
+export const updateUserPreferences = async ({
+  userId,
+  userFavorites,
+  connection,
+}) => {
   await preferencesValidation.validate(sanitizeData({ userFavorites }));
-  await editUserPreferences({ userId, userFavorites });
+  await editUserPreferences({ userId, userFavorites, connection });
   return { message: "Preferences updated successfully" };
 };
 
@@ -307,7 +372,7 @@ export const updateUserPreferences = async ({ userId, userFavorites }) => {
       );
       if (updatedUser) {
         req.logout();
-        req.session.destroy(function(err) {
+        req.connection.destroy(function(err) {
           res.json('/');
         });
       } else {
@@ -325,18 +390,18 @@ export const updateUserPreferences = async ({ userId, userFavorites }) => {
 // needs testing (better way to update already found user)
 // not tested
 // needs transaction (not tested)
-export const deactivateUser = async ({ userId, session }) => {
-  const foundUser = await fetchUserById({ userId, session });
+export const deactivateUser = async ({ userId, connection }) => {
+  const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
     const foundArtwork = await fetchUserArtwork({
       userId,
-      session,
+      connection,
     });
     for (let artwork of foundArtwork) {
       const foundOrder = await fetchOrderByVersion({
         artworkId: artwork.id,
         versionId: artwork.current.id,
-        session,
+        connection,
       });
       if (!foundOrder.length) {
         await deleteS3Object({
@@ -351,18 +416,18 @@ export const deactivateUser = async ({ userId, session }) => {
 
         await removeArtworkVersion({
           versionId: artwork.current.id,
-          session,
+          connection,
         });
       }
-      await deactivateExistingArtwork({ artworkId: artwork.id, session });
+      await deactivateExistingArtwork({ artworkId: artwork.id, connection });
     }
     await deleteS3Object({
       fileLink: foundUser.avatar,
       folderName: "profilePhotos/",
     });
-    await deactivateExistingUser({ userId: foundUser.id, session });
+    await deactivateExistingUser({ userId: foundUser.id, connection });
     req.logout();
-    req.session.destroy(function (err) {
+    req.connection.destroy(function (err) {
       res.json("/");
     });
     return { message: "User deactivated" };
@@ -370,10 +435,11 @@ export const deactivateUser = async ({ userId, session }) => {
   throw createError(400, "User not found");
 };
 
-export const getUserMedia = async ({ userId, artworkId }) => {
+export const getUserMedia = async ({ userId, artworkId, connection }) => {
   const foundArtwork = await fetchArtworkByOwner({
     userId,
     artworkId,
+    connection,
   });
   if (foundArtwork) {
     const s3 = new aws.S3({ signatureVersion: "v4" });

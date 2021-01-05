@@ -6,6 +6,7 @@ export const addNewTicket = async ({
   userId,
   ticketTitle,
   ticketBody,
+  connection,
 }) => {
   /*   const newTicket = new Ticket();
   newTicket.owner = userId;
@@ -15,7 +16,7 @@ export const addNewTicket = async ({
   newTicket.status = "In progress";
   return await Ticket.save(newTicket); */
 
-  const savedTicket = await getConnection()
+  const savedTicket = await connection
     .createQueryBuilder()
     .insert()
     .into(Ticket)

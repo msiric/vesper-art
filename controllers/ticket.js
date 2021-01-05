@@ -10,6 +10,7 @@ export const postTicket = async ({
   userEmail,
   ticketTitle,
   ticketBody,
+  connection,
 }) => {
   await ticketValidation.validate(sanitizeData({ ticketTitle, ticketBody }));
   const { ticketId } = generateUuids({
@@ -20,6 +21,7 @@ export const postTicket = async ({
     userId,
     ticketTitle,
     ticketBody,
+    connection,
   });
   await sendEmail({
     emailReceiver: userEmail,

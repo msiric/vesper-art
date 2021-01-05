@@ -1,7 +1,7 @@
 import { Order } from "../../entities/Order";
 
 // $Needs testing (mongo -> postgres)
-export const addNewOrder = async ({ orderId, orderData }) => {
+export const addNewOrder = async ({ orderId, orderData, connection }) => {
   /*   const newOrder = new Order();
   newOrder.buyer = orderData.buyerId;
   newOrder.seller = orderData.sellerId;
@@ -18,7 +18,7 @@ export const addNewOrder = async ({ orderId, orderData }) => {
   newOrder.intent = orderData.intentId;
   return await Order.save(newOrder); */
 
-  const savedOrder = await getConnection()
+  const savedOrder = await connection
     .createQueryBuilder()
     .insert()
     .into(Order)
@@ -46,12 +46,16 @@ export const addNewOrder = async ({ orderId, orderData }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchOrderByVersion = async ({ artworkId, versionId }) => {
+export const fetchOrderByVersion = async ({
+  artworkId,
+  versionId,
+  connection,
+}) => {
   // return await Order.findOne({
   //   where: [{ artwork: artworkId, version: versionId }],
   // });
 
-  const foundOrder = await getConnection()
+  const foundOrder = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.buyer", "buyer")
@@ -75,7 +79,7 @@ export const fetchOrderByVersion = async ({ artworkId, versionId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchOrderDetails = async ({ userId, orderId }) => {
+export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
   // return await Order.findOne({
   //   where: [
   //     { buyer: userId, id: orderId },
@@ -93,7 +97,7 @@ export const fetchOrderDetails = async ({ userId, orderId }) => {
   //   ],
   // });
 
-  const foundOrder = await getConnection()
+  const foundOrder = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.buyer", "buyer")
@@ -119,13 +123,13 @@ export const fetchOrderDetails = async ({ userId, orderId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchUserPurchase = async ({ orderId, userId }) => {
+export const fetchUserPurchase = async ({ orderId, userId, connection }) => {
   // return await Order.findOne({
   //   where: [{ buyer: userId, id: orderId }],
   //   relations: ["buyer", "seller", "artwork", "artwork.review"],
   // });
 
-  const foundOrder = await getConnection()
+  const foundOrder = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.seller", "seller")
@@ -140,14 +144,19 @@ export const fetchUserPurchase = async ({ orderId, userId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const addOrderReview = async ({ orderId, userId, savedReview }) => {
+export const addOrderReview = async ({
+  orderId,
+  userId,
+  savedReview,
+  connection,
+}) => {
   /*   const foundOrder = await Order.findOne({
     where: [{ buyer: userId, id: orderId }],
   });
   foundOrder.review = savedReview;
   return await Order.save(foundOrder); */
 
-  const updatedOrder = await getConnection()
+  const updatedOrder = await connection
     .createQueryBuilder()
     .update(Order)
     .set({ reviewId: savedReview })
@@ -162,7 +171,12 @@ export const addOrderReview = async ({ orderId, userId, savedReview }) => {
 
 // $Needs testing (mongo -> postgres)
 // $TODO does created get filtered correctly?
-export const fetchOrdersBySeller = async ({ userId, rangeFrom, rangeTo }) => {
+export const fetchOrdersBySeller = async ({
+  userId,
+  rangeFrom,
+  rangeTo,
+  connection,
+}) => {
   // return rangeFrom && rangeTo
   //   ? await Order.find({
   //       where: [
@@ -184,7 +198,7 @@ export const fetchOrdersBySeller = async ({ userId, rangeFrom, rangeTo }) => {
   //       relations: ["review", "version", "license"],
   //     });
 
-  const foundOrders = await getConnection()
+  const foundOrders = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.buyer", "buyer")
@@ -200,7 +214,12 @@ export const fetchOrdersBySeller = async ({ userId, rangeFrom, rangeTo }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchOrdersByBuyer = async ({ userId, rangeFrom, rangeTo }) => {
+export const fetchOrdersByBuyer = async ({
+  userId,
+  rangeFrom,
+  rangeTo,
+  connection,
+}) => {
   // return rangeFrom && rangeTo
   //   ? await Order.find({
   //       where: [
@@ -222,7 +241,7 @@ export const fetchOrdersByBuyer = async ({ userId, rangeFrom, rangeTo }) => {
   //       relations: ["review", "version", "license"],
   //     });
 
-  const foundOrders = await getConnection()
+  const foundOrders = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.seller", "seller")

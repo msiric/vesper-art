@@ -1,7 +1,11 @@
 import { Notification } from "../../entities/Notification";
 
-export const fetchNotificationById = async ({ userId, notificationId }) => {
-  const foundNotification = await getConnection()
+export const fetchNotificationById = async ({
+  userId,
+  notificationId,
+  connection,
+}) => {
+  const foundNotification = await connection
     .getRepository(Notification)
     .createQueryBuilder("notification")
     .where(
@@ -23,6 +27,7 @@ export const addNewNotification = async ({
   notificationRef,
   notificationType,
   notificationReceiver,
+  connection,
 }) => {
   // const newNotification = new Notification();
   // newNotification.receiver = notificationReceiver;
@@ -32,7 +37,7 @@ export const addNewNotification = async ({
   // newNotification.read = false;
   // return await Notification.save(newNotification);
 
-  const savedNotification = await getConnection()
+  const savedNotification = await connection
     .createQueryBuilder()
     .insert()
     .into(Notification)
@@ -52,7 +57,7 @@ export const addNewNotification = async ({
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchExistingNotifications = async ({ userId }) => {
+export const fetchExistingNotifications = async ({ userId, connection }) => {
   // return await Notification.find({
   //   where: [{ receiver: userId }],
   //   order: {
@@ -60,7 +65,7 @@ export const fetchExistingNotifications = async ({ userId }) => {
   //   },
   // });
 
-  const foundNotifications = await getConnection()
+  const foundNotifications = await connection
     .getRepository(Notification)
     .createQueryBuilder("notification")
     .where("notification.receiverId = :id", {
@@ -73,14 +78,18 @@ export const fetchExistingNotifications = async ({ userId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const editReadNotification = async ({ userId, notificationId }) => {
+export const editReadNotification = async ({
+  userId,
+  notificationId,
+  connection,
+}) => {
   /*   const foundNotification = await Notification.findOne({
     where: [{ id: notificationId, receiver: userId }],
   });
   foundNotification.read = true;
   return await Notification.save(foundNotification); */
 
-  const updatedNotification = await getConnection()
+  const updatedNotification = await connection
     .createQueryBuilder()
     .update(Notification)
     .set({ read: true })
@@ -94,14 +103,18 @@ export const editReadNotification = async ({ userId, notificationId }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const editUnreadNotification = async ({ userId, notificationId }) => {
+export const editUnreadNotification = async ({
+  userId,
+  notificationId,
+  connection,
+}) => {
   /*   const foundNotification = await Notification.findOne({
     where: [{ id: notificationId, receiver: userId }],
   });
   foundNotification.read = false;
   return await Notification.save(foundNotification); */
 
-  const updatedNotification = await getConnection()
+  const updatedNotification = await connection
     .createQueryBuilder()
     .update(Notification)
     .set({ read: false })

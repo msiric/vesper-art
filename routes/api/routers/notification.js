@@ -17,7 +17,7 @@ router
   // $TODO not tested
   .get(
     isAuthenticated,
-    handler(getNotifications, (req, res, next) => ({}))
+    handler(getNotifications, false, (req, res, next) => ({}))
   );
 
 router
@@ -25,14 +25,14 @@ router
   // $TODO not tested
   .post(
     [isAuthenticated, checkParamsId],
-    handler(readNotification, (req, res, next) => ({
+    handler(readNotification, true, (req, res, next) => ({
       ...req.params,
     }))
   )
   // $TODO not tested
   .delete(
     [isAuthenticated, checkParamsId],
-    handler(unreadNotification, (req, res, next) => ({
+    handler(unreadNotification, true, (req, res, next) => ({
       ...req.params,
     }))
   );

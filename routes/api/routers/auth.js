@@ -23,7 +23,7 @@ router
   // $DONE works
   .post(
     isNotAuthenticated,
-    handler(postSignUp, (req, res, next) => ({
+    handler(postSignUp, true, (req, res, next) => ({
       ...req.body,
     }))
   );
@@ -33,7 +33,7 @@ router
   // $DONE works
   .post(
     isNotAuthenticated,
-    handler(postLogIn, (req, res, next) => ({
+    handler(postLogIn, true, (req, res, next) => ({
       res,
       ...req.body,
     }))
@@ -45,7 +45,7 @@ router
   // $DONE works
   .post(
     isAuthenticated,
-    handler(postLogOut, (req, res, next) => ({
+    handler(postLogOut, true, (req, res, next) => ({
       res,
     }))
   );
@@ -55,7 +55,7 @@ router
   .route("/refresh_token")
   // $DONE works
   .post(
-    handler(postRefreshToken, (req, res, next) => ({
+    handler(postRefreshToken, true, (req, res, next) => ({
       req,
       res,
       next,
@@ -67,7 +67,7 @@ router
   // $TODO not tested
   .post(
     checkParamsId,
-    handler(postRevokeToken, (req, res, next) => ({}))
+    handler(postRevokeToken, true, (req, res, next) => ({}))
   );
 
 router
@@ -75,7 +75,7 @@ router
   // $DONE works
   .get(
     isNotAuthenticated,
-    handler(verifyRegisterToken, (req, res, next) => ({
+    handler(verifyRegisterToken, true, (req, res, next) => ({
       ...req.params,
     }))
   );
@@ -85,7 +85,7 @@ router
   // $TODO not tested
   .post(
     isNotAuthenticated,
-    handler(forgotPassword, (req, res, next) => ({
+    handler(forgotPassword, true, (req, res, next) => ({
       ...req.body,
     }))
   );
@@ -95,7 +95,7 @@ router
   // $TODO not tested
   .post(
     [isNotAuthenticated, checkParamsId],
-    handler(resetPassword, (req, res, next) => ({
+    handler(resetPassword, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))

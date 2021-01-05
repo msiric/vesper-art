@@ -28,14 +28,14 @@ router
   .route("/artwork")
   // $DONE works
   .get(
-    handler(getArtwork, (req, res, next) => ({
+    handler(getArtwork, false, (req, res, next) => ({
       ...req.query,
     }))
   )
   // $DONE works
   .post(
     [isAuthenticated, multerApi.uploadArtworkLocal],
-    handler(postNewArtwork, (req, res, next) => ({
+    handler(postNewArtwork, true, (req, res, next) => ({
       artworkPath: req.file ? req.file.path : "",
       artworkFilename: req.file ? req.file.filename : "",
       artworkMimetype: req.file ? req.file.mimetype : "",
@@ -48,7 +48,7 @@ router
   // $DONE works (NOTE needs to return number of favorites instead of array)
   .get(
     checkParamsId,
-    handler(getArtworkDetails, (req, res, next) => ({
+    handler(getArtworkDetails, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -56,7 +56,7 @@ router
   // $TODO not tested
   .patch(
     [isAuthenticated, checkParamsId, multerApi.uploadArtworkLocal],
-    handler(updateArtwork, (req, res, next) => ({
+    handler(updateArtwork, true, (req, res, next) => ({
       ...req.params,
       artworkPath: req.file ? req.file.path : "",
       artworkFilename: req.file ? req.file.filename : "",
@@ -67,7 +67,7 @@ router
   // $TODO not tested
   .delete(
     [isAuthenticated, checkParamsId],
-    handler(deleteArtwork, (req, res, next) => ({
+    handler(deleteArtwork, true, (req, res, next) => ({
       ...req.params,
     }))
   );
@@ -77,7 +77,7 @@ router
   // $TODO not tested
   .get(
     checkParamsId,
-    handler(getArtworkComments, (req, res, next) => ({
+    handler(getArtworkComments, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -85,7 +85,7 @@ router
   // $DONE works
   .post(
     [isAuthenticated, checkParamsId],
-    handler(postComment, (req, res, next) => ({
+    handler(postComment, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))
@@ -96,14 +96,14 @@ router
   // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
-    handler(getComment, (req, res, next) => ({
+    handler(getComment, false, (req, res, next) => ({
       ...req.params,
     }))
   )
   // $DONE works
   .patch(
     [isAuthenticated, checkParamsId],
-    handler(patchComment, (req, res, next) => ({
+    handler(patchComment, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))
@@ -111,7 +111,7 @@ router
   // $DONE works
   .delete(
     [isAuthenticated, checkParamsId],
-    handler(deleteComment, (req, res, next) => ({
+    handler(deleteComment, true, (req, res, next) => ({
       ...req.params,
     }))
   );
@@ -121,14 +121,14 @@ router
   // $DONE works
   .post(
     [isAuthenticated, checkParamsId],
-    handler(favoriteArtwork, (req, res, next) => ({
+    handler(favoriteArtwork, true, (req, res, next) => ({
       ...req.params,
     }))
   )
   // $DONE works
   .delete(
     [isAuthenticated, checkParamsId],
-    handler(unfavoriteArtwork, (req, res, next) => ({
+    handler(unfavoriteArtwork, true, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))

@@ -12,20 +12,21 @@ aws.config.update({
   region: process.env.S3_REGION,
 });
 
-export const getSoldOrders = async ({ userId }) => {
-  const foundUser = await fetchUserSales({ userId });
+export const getSoldOrders = async ({ userId, connection }) => {
+  const foundUser = await fetchUserSales({ userId, connection });
   return { sales: foundUser.sales };
 };
 
-export const getBoughtOrders = async ({ userId }) => {
-  const foundUser = await fetchUserPurchases({ userId });
+export const getBoughtOrders = async ({ userId, connection }) => {
+  const foundUser = await fetchUserPurchases({ userId, connection });
   return { purchases: foundUser.purchases };
 };
 
-export const getOrderDetails = async ({ userId, orderId }) => {
+export const getOrderDetails = async ({ userId, orderId, connection }) => {
   const foundOrder = await fetchOrderDetails({
     userId,
     orderId,
+    connection,
   });
   if (foundOrder) {
     // let decreaseNotif = false;
@@ -62,10 +63,11 @@ export const getOrderDetails = async ({ userId, orderId }) => {
   throw createError(400, "Order not found");
 };
 
-export const downloadOrderArtwork = async ({ userId, orderId }) => {
+export const downloadOrderArtwork = async ({ userId, orderId, connection }) => {
   const foundOrder = await fetchOrderDetails({
     userId,
     orderId,
+    connection,
   });
   if (foundOrder) {
     const s3 = new aws.S3({ signatureVersion: "v4" });

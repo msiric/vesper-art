@@ -5,20 +5,16 @@ export const fetchArtworkResults = async ({
   searchQuery,
   dataSkip,
   dataLimit,
-  session = null,
+  connection,
 }) => {
-  return await Version.fuzzySearch(searchQuery)
-    .deepPopulate("artwork.owner")
-    .session(session);
+  return await Version.fuzzySearch(searchQuery).deepPopulate("artwork.owner");
 };
 
 export const fetchUserResults = async ({
   searchQuery,
   dataSkip,
   dataLimit,
-  session = null,
+  connection,
 }) => {
-  return await User.fuzzySearch(searchQuery)
-    .deepPopulate("artwork.owner")
-    .session(session);
+  return await User.fuzzySearch(searchQuery).deepPopulate("artwork.owner");
 };

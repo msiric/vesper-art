@@ -34,7 +34,7 @@ router
   // $DONE works
   .get(
     checkParamsUsername,
-    handler(getUserProfile, (req, res, next) => ({
+    handler(getUserProfile, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -45,7 +45,7 @@ router
   // $DONE works
   .patch(
     [isAuthenticated, checkParamsId, multerApi.uploadUserLocal],
-    handler(updateUserProfile, (req, res, next) => ({
+    handler(updateUserProfile, true, (req, res, next) => ({
       ...req.params,
       userPath: req.file ? req.file.path : "",
       userFilename: req.file ? req.file.filename : "",
@@ -56,7 +56,7 @@ router
   // $TODO not tested
   .delete(
     [isAuthenticated, checkParamsId],
-    handler(deactivateUser, (req, res, next) => ({
+    handler(deactivateUser, true, (req, res, next) => ({
       ...req.params,
     }))
   );
@@ -66,7 +66,7 @@ router
   // $TODO not tested
   .get(
     checkParamsId,
-    handler(getUserArtwork, (req, res, next) => ({
+    handler(getUserArtwork, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -77,7 +77,7 @@ router
   // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
-    handler(getUserMedia, (req, res, next) => ({
+    handler(getUserMedia, false, (req, res, next) => ({
       ...req.params,
     }))
   );
@@ -87,7 +87,7 @@ router
   // $TODO not tested
   .get(
     checkParamsId,
-    handler(getUserOwnership, (req, res, next) => ({
+    handler(getUserOwnership, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -98,7 +98,7 @@ router
   // $TODO not tested
   .get(
     checkParamsId,
-    handler(getUserFavorites, (req, res, next) => ({
+    handler(getUserFavorites, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -109,7 +109,7 @@ router
   // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
-    handler(getUserStatistics, (req, res, next) => ({
+    handler(getUserStatistics, false, (req, res, next) => ({
       ...req.params,
     }))
   );
@@ -119,7 +119,7 @@ router
   // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
-    handler(getUserSales, (req, res, next) => ({
+    handler(getUserSales, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -130,7 +130,7 @@ router
   // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
-    handler(getUserPurchases, (req, res, next) => ({
+    handler(getUserPurchases, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -141,7 +141,7 @@ router
   // $DONE works
   .get(
     [isAuthenticated, checkParamsId],
-    handler(getUserSettings, (req, res, next) => ({
+    handler(getUserSettings, false, (req, res, next) => ({
       ...req.params,
     }))
   );
@@ -151,7 +151,7 @@ router
   // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
-    handler(getUserNotifications, (req, res, next) => ({
+    handler(getUserNotifications, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -162,7 +162,7 @@ router
   // $TODO not tested
   .patch(
     [isAuthenticated, checkParamsId],
-    handler(updateUserOrigin, (req, res, next) => ({
+    handler(updateUserOrigin, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))
@@ -173,7 +173,7 @@ router
   // $TODO not tested
   .patch(
     [isAuthenticated, checkParamsId],
-    handler(updateUserPreferences, (req, res, next) => ({
+    handler(updateUserPreferences, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))
@@ -184,7 +184,7 @@ router
   // $TODO not tested
   .patch(
     [isAuthenticated, checkParamsId],
-    handler(updateUserEmail, (req, res, next) => ({
+    handler(updateUserEmail, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))
@@ -195,7 +195,7 @@ router
   // $TODO not tested
   .patch(
     [isAuthenticated, checkParamsId],
-    handler(updateUserPassword, (req, res, next) => ({
+    handler(updateUserPassword, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))
@@ -206,7 +206,7 @@ router
   // $TODO not tested
   .post(
     [isAuthenticated, checkParamsId],
-    handler(createUserIntent, (req, res, next) => ({
+    handler(createUserIntent, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
     }))
@@ -217,7 +217,7 @@ router
   // $TODO not tested
   .delete(
     [isAuthenticated, checkParamsId],
-    handler(deleteUserIntent, (req, res, next) => ({
+    handler(deleteUserIntent, true, (req, res, next) => ({
       ...req.params,
     }))
   );

@@ -7,6 +7,7 @@ export const addNewReview = async ({
   reviewRating,
   reviewerId,
   revieweeId,
+  connection,
 }) => {
   /*   const newReview = new Review();
   newReview.order = orderData.id;
@@ -16,7 +17,7 @@ export const addNewReview = async ({
   newReview.rating = reviewRating;
   return newReview; */
 
-  const savedReview = await getConnection()
+  const savedReview = await connection
     .createQueryBuilder()
     .insert()
     .into(Review)

@@ -29,9 +29,13 @@ import {
 } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 
-export const getArtwork = async ({ dataCursor, dataCeiling }) => {
+export const getArtwork = async ({ dataCursor, dataCeiling, connection }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
-  const foundArtwork = await fetchActiveArtworks({ dataSkip, dataLimit });
+  const foundArtwork = await fetchActiveArtworks({
+    dataSkip,
+    dataLimit,
+    connection,
+  });
   return { artwork: foundArtwork };
 };
 
@@ -40,12 +44,14 @@ export const getArtworkDetails = async ({
   artworkId,
   dataCursor,
   dataCeiling,
+  connection,
 }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundArtwork = await fetchArtworkDetails({
     artworkId,
     dataSkip,
     dataLimit,
+    connection,
   });
   if (foundArtwork) return { artwork: foundArtwork };
   throw createError(400, "Artwork not found");
@@ -55,32 +61,41 @@ export const getArtworkComments = async ({
   artworkId,
   dataCursor,
   dataCeiling,
+  connection,
 }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundComments = await fetchArtworkComments({
     artworkId,
     dataSkip,
     dataLimit,
+    connection,
   });
   if (foundComments) return { comments: foundComments };
   throw createError(400, "Artwork not found");
 };
 
 // $TODO handle in user controller?
-export const getUserArtwork = async ({ userId, dataCursor, dataCeiling }) => {
+export const getUserArtwork = async ({
+  userId,
+  dataCursor,
+  dataCeiling,
+  connection,
+}) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundArtwork = await fetchUserArtworks({
     userId,
     dataSkip,
     dataLimit,
+    connection,
   });
   return { artwork: foundArtwork };
 };
 
-export const editArtwork = async ({ userId, artworkId }) => {
+export const editArtwork = async ({ userId, artworkId, connection }) => {
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,
+    connection,
   });
   if (foundArtwork) return { artwork: foundArtwork };
   throw createError(400, "Artwork not found");
@@ -92,7 +107,7 @@ export const postNewArtwork = async ({
   artworkFilename,
   artworkMimetype,
   artworkData,
-  session,
+  connection,
 }) => {
   // $TODO Validate data passed to upload
   const artworkUpload = await finalizeMediaUpload({
@@ -114,7 +129,7 @@ export const postNewArtwork = async ({
     if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
       const foundUser = await fetchUserById({
         userId,
-        session,
+        connection,
       });
       if (!foundUser) throw createError(400, "User not found");
       if (!foundUser.stripeId)
@@ -145,10 +160,12 @@ export const postNewArtwork = async ({
     await addNewCover({
       coverId,
       artworkUpload,
+      connection,
     });
     await addNewMedia({
       mediaId,
       artworkUpload,
+      connection,
     });
     await addNewVersion({
       versionId,
@@ -159,11 +176,13 @@ export const postNewArtwork = async ({
       prevArtwork: { cover: null, media: null, artwork: null },
       artworkData: formattedData,
       artworkUpload,
+      connection,
     });
     await addNewArtwork({
       artworkId,
       versionId,
       userId,
+      connection,
     });
     return { redirect: "/my_artwork" };
   }
@@ -180,7 +199,7 @@ export const updateArtwork = async ({
   artworkPath,
   artworkFilename,
   artworkData,
-  session,
+  connection,
 }) => {
   // $TODO Validate data passed to upload
   const artworkUpload = await finalizeMediaUpload({
@@ -194,13 +213,13 @@ export const updateArtwork = async ({
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,
-    session,
+    connection,
   });
   if (foundArtwork) {
     if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
       const foundUser = await fetchUserById({
         userId,
-        session,
+        connection,
       });
       if (!foundUser) throw createError(400, "User not found");
       if (!foundUser.stripeId)
@@ -226,11 +245,13 @@ export const updateArtwork = async ({
     const savedCover = artworkUpload.fileCover
       ? await addNewCover({
           artworkUpload,
+          connection,
         })
       : foundArtwork.current.cover;
     const savedMedia = artworkUpload.fileMedia
       ? await addNewMedia({
           artworkUpload,
+          connection,
         })
       : foundArtwork.current.media;
     const savedVersion = await addNewVersion({
@@ -239,11 +260,12 @@ export const updateArtwork = async ({
       artworkUpload,
       savedCover,
       savedMedia,
+      connection,
     });
     const foundOrder = await fetchOrderByVersion({
       artworkId: foundArtwork.id,
       versionId: foundArtwork.current.id,
-      session,
+      connection,
     });
     if (!foundOrder) {
       if (formattedData.artworkCover && formattedData.artworkMedia) {
@@ -259,7 +281,7 @@ export const updateArtwork = async ({
       }
       await removeArtworkVersion({
         versionId: foundArtwork.current.id,
-        session,
+        connection,
       });
     } else {
       foundArtwork.versions.push(foundArtwork.current.id);
@@ -275,10 +297,16 @@ export const updateArtwork = async ({
 // $TODO
 // does it work in all cases?
 // needs testing
-export const deleteArtwork = async ({ userId, artworkId, data }) => {
+export const deleteArtwork = async ({
+  userId,
+  artworkId,
+  data,
+  connection,
+}) => {
   const foundArtwork = await fetchArtworkByOwner({
     artworkId,
     userId,
+    connection,
   });
   if (foundArtwork) {
     // $TODO Check that artwork wasn't updated in the meantime (current === version)
@@ -286,7 +314,7 @@ export const deleteArtwork = async ({ userId, artworkId, data }) => {
       const foundOrder = await fetchOrderByVersion({
         artworkId: foundArtwork.id,
         versionId: foundArtwork.current.id,
-        session,
+        connection,
       });
       if (!foundOrder) {
         await deleteS3Object({
@@ -301,10 +329,10 @@ export const deleteArtwork = async ({ userId, artworkId, data }) => {
 
         await removeArtworkVersion({
           versionId: foundArtwork.current.id,
-          session,
+          connection,
         });
       }
-      await deactivateExistingArtwork({ artworkId, session });
+      await deactivateExistingArtwork({ artworkId, connection });
       return { redirect: "my_artwork" };
     }
     throw createError(400, "Artwork has a newer version");
@@ -313,13 +341,14 @@ export const deleteArtwork = async ({ userId, artworkId, data }) => {
 };
 
 // needs transaction (done)
-export const favoriteArtwork = async ({ userId, artworkId }) => {
+export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
   const [foundFavorite, foundArtwork] = await Promise.all([
     fetchFavoriteByParents({
       userId,
       artworkId,
+      connection,
     }),
-    fetchArtworkById({ artworkId }),
+    fetchArtworkById({ artworkId, connection }),
   ]);
   if (foundArtwork.owner.id !== userId) {
     if (!foundFavorite) {
@@ -330,6 +359,7 @@ export const favoriteArtwork = async ({ userId, artworkId }) => {
         favoriteId,
         userId,
         artworkId,
+        connection,
       });
       return { message: "Artwork favorited" };
     }
@@ -338,17 +368,21 @@ export const favoriteArtwork = async ({ userId, artworkId }) => {
   throw createError(400, "Cannot favorite your own artwork");
 };
 
-export const unfavoriteArtwork = async ({ userId, artworkId }) => {
+export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
   const [foundFavorite, foundArtwork] = await Promise.all([
     fetchFavoriteByParents({
       userId,
       artworkId,
+      connection,
     }),
-    fetchArtworkById({ artworkId }),
+    fetchArtworkById({ artworkId, connection }),
   ]);
   if (foundArtwork.owner.id !== userId) {
     if (foundFavorite) {
-      await removeExistingFavorite({ favoriteId: foundFavorite.id });
+      await removeExistingFavorite({
+        favoriteId: foundFavorite.id,
+        connection,
+      });
       return { message: "Artwork unfavorited" };
     }
     throw createError(400, "Artwork has already been unfavorited");
@@ -358,8 +392,13 @@ export const unfavoriteArtwork = async ({ userId, artworkId }) => {
 
 // needs transaction (done)
 // $TODO validacija licenci?
-export const saveLicense = async ({ userId, artworkId, license }) => {
-  const foundArtwork = await fetchArtworkDetails({ artworkId });
+export const saveLicense = async ({
+  userId,
+  artworkId,
+  license,
+  connection,
+}) => {
+  const foundArtwork = await fetchArtworkDetails({ artworkId, connection });
   if (foundArtwork) {
     const { licenseId } = generateUuids({
       licenseId: null,
@@ -369,6 +408,7 @@ export const saveLicense = async ({ userId, artworkId, license }) => {
       artworkData: foundArtwork,
       licenseData: license,
       userId,
+      connection,
     });
     return { message: "License saved", license: license };
   }

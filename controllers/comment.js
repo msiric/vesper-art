@@ -11,40 +11,45 @@ import {
 import { addNewNotification } from "../services/postgres/notification.js";
 import { generateUuids, sanitizeData } from "../utils/helpers.js";
 
-export const getComment = async ({ artworkId, commentId, session }) => {
+export const getComment = async ({ artworkId, commentId, connection }) => {
   const foundComment = await fetchCommentById({
     artworkId,
     commentId,
-    session,
+    connection,
   });
   return { comment: foundComment };
 };
 
-export const postComment = async ({ userId, artworkId, commentContent }) => {
+export const postComment = async ({
+  userId,
+  artworkId,
+  commentContent,
+  connection,
+}) => {
   await commentValidation.validate(sanitizeData({ commentContent }));
-  const foundArtwork = await fetchArtworkById({ artworkId });
+  const foundArtwork = await fetchArtworkById({ artworkId, connection });
   if (!foundArtwork) {
     throw createError(400, "Artwork not found");
   } else {
-    const { commentId } = generateUuids({
+    const { commentId, notificationId } = generateUuids({
       commentId: null,
+      notificationId: null,
     });
     const savedComment = await addNewComment({
       commentId,
       artworkId,
       userId,
       commentContent,
+      connection,
     });
     if (!savedComment.owner === foundArtwork.owner.id) {
-      const { notificationId } = generateUuids({
-        notificationId: null,
-      });
       const savedNotification = await addNewNotification({
         notificationId,
         notificationLink: foundArtwork.id,
         notificationRef: savedComment.id,
         notificationType: "comment",
         notificationReceiver: foundArtwork.owner.id,
+        connection,
       });
       socketApi.sendNotification(foundArtwork.owner.id, savedNotification);
     }
@@ -60,7 +65,7 @@ export const patchComment = async ({
   artworkId,
   commentId,
   commentContent,
-  session,
+  connection,
 }) => {
   await commentValidation.validate(sanitizeData({ commentContent }));
   await editExistingComment({
@@ -68,7 +73,7 @@ export const patchComment = async ({
     artworkId,
     userId,
     commentContent,
-    session,
+    connection,
   });
   return { message: "Comment updated successfully" };
 };

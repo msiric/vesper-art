@@ -33,7 +33,7 @@ import { generateUuids, sanitizeData } from "../utils/helpers.js";
 export const receiveWebhookEvent = async ({
   stripeSignature,
   stripeBody,
-  session,
+  connection,
 }) => {
   const stripeSecret = process.env.STRIPE_WEBHOOK;
   let stripeEvent;
@@ -54,7 +54,7 @@ export const receiveWebhookEvent = async ({
     case "payment_intent.succeeded":
       console.log("Payment success");
       const paymentIntent = stripeEvent.data.object;
-      await processTransaction({ stripeIntent: paymentIntent, session });
+      await processTransaction({ stripeIntent: paymentIntent, connection });
       break;
     case "payment_intent.failed":
       console.log("Failed payment");
@@ -85,16 +85,16 @@ export const managePaymentIntent = async ({
   intentId,
   discountId,
   artworkLicense,
-  session,
+  connection,
 }) => {
   // $TODO Treba li dohvacat usera?
-  const foundUser = await fetchUserById({ userId, session });
+  const foundUser = await fetchUserById({ userId, connection });
   if (foundUser && foundUser.active) {
     // $TODO Check that discount is valid/active (moze i bolje)
     const foundDiscount = discountId
-      ? await fetchDiscountById({ discountId, session })
+      ? await fetchDiscountById({ discountId, connection })
       : null;
-    const foundVersion = await fetchVersionDetails({ versionId, session });
+    const foundVersion = await fetchVersionDetails({ versionId, connection });
     if (foundVersion) {
       if (foundVersion.id === foundVersion.artwork.current) {
         if (!foundVersion.artwork.owner.id === foundUser.id) {
@@ -175,7 +175,7 @@ export const managePaymentIntent = async ({
                   intentFee: platformTotal.intValue,
                   orderData: orderData,
                   intentId,
-                  session,
+                  connection,
                 })
               : await constructStripeIntent({
                   intentMethod: "card",
@@ -184,7 +184,7 @@ export const managePaymentIntent = async ({
                   intentFee: platformTotal.intValue,
                   sellerId: foundVersion.artwork.owner.stripeId,
                   orderData: orderData,
-                  session,
+                  connection,
                 });
             return {
               intent: {
@@ -204,7 +204,11 @@ export const managePaymentIntent = async ({
   throw createError(400, "User not found");
 };
 
-export const redirectToStripe = async ({ accountId, userOnboarded }) => {
+export const redirectToStripe = async ({
+  accountId,
+  userOnboarded,
+  connection,
+}) => {
   if (!userOnboarded)
     throw createError(
       400,
@@ -223,6 +227,7 @@ export const onboardUser = async ({
   responseData,
   userBusinessAddress,
   userEmail,
+  connection,
 }) => {
   sessionData.state = Math.random().toString(36).slice(2);
   sessionData.id = responseData.user.id;
@@ -261,7 +266,7 @@ export const assignStripeId = async ({
   responseObject,
   sessionData,
   queryData,
-  session,
+  connection,
 }) => {
   if (sessionData.state != queryData.state)
     throw createError(500, "There was an error in the onboarding process");
@@ -281,7 +286,7 @@ export const assignStripeId = async ({
   await editUserStripe({
     userId: sessionData.id,
     stripeId: expressAuthorized.data.stripe_user_id,
-    session,
+    connection,
   });
 
   const username = sessionData.name;
@@ -293,12 +298,12 @@ export const assignStripeId = async ({
   return responseObject.redirect(`http://localhost:3000/users/${username}`);
 };
 
-export const createPayout = async ({ userId, session }) => {
-  const foundUser = await fetchUserById({ userId, session });
+export const createPayout = async ({ userId, connection }) => {
+  const foundUser = await fetchUserById({ userId, connection });
   if (foundUser.stripeId) {
     const balance = await fetchStripeBalance({
       stripeId: foundUser.stripeId,
-      session,
+      connection,
     });
     const { amount, currency } = balance.available[0];
     await constructStripePayout({
@@ -306,7 +311,7 @@ export const createPayout = async ({ userId, session }) => {
       payoutCurrency: currency,
       payoutDescriptor: server.appName,
       stripeId: foundUser.stripeId,
-      session,
+      connection,
     });
     return {
       message: "Payout successfully created",
@@ -316,7 +321,7 @@ export const createPayout = async ({ userId, session }) => {
 };
 
 // $TODO not good
-const processTransaction = async ({ stripeIntent, session }) => {
+const processTransaction = async ({ stripeIntent, connection }) => {
   const orderData = JSON.parse(stripeIntent.metadata.orderData);
   const buyerId = mongoose.Types.ObjectId(orderData.buyerId);
   const sellerId = mongoose.Types.ObjectId(orderData.sellerId);
@@ -381,18 +386,16 @@ const processTransaction = async ({ stripeIntent, session }) => {
     status: "completed",
     intentId: intentId,
   };
-  const { orderId } = generateUuids({
+  const { orderId, notificationId } = generateUuids({
     orderId: null,
+    notificationId: null,
   });
   const savedOrder = await addNewOrder({
     orderId,
     orderData: orderObject,
-    session,
+    connection,
   });
-  await removeExistingIntent({ userId: sellerId, intentId, session });
-  const { notificationId } = generateUuids({
-    notificationId: null,
-  });
+  await removeExistingIntent({ userId: sellerId, intentId, connection });
   // new start
   await addNewNotification({
     notificationId,
@@ -400,7 +403,7 @@ const processTransaction = async ({ stripeIntent, session }) => {
     notificationRef: "",
     notificationType: "order",
     notificationReceiver: sellerId,
-    session,
+    connection,
   });
   socketApi.sendNotification(sellerId, savedOrder.id);
   // new end

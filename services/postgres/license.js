@@ -1,16 +1,18 @@
-import { getConnection } from "typeorm";
 import { License } from "../../entities/License";
 
 const LICENSE_ACTIVE_STATUS = true;
 
 // $Needs testing (mongo -> postgres)
-export const fetchLicenseByFingerprint = async ({ licenseFingerprint }) => {
+export const fetchLicenseByFingerprint = async ({
+  licenseFingerprint,
+  connection,
+}) => {
   // return await License.findOne({
   //   where: [{ fingerprint: licenseFingerprint, active: true }],
   //   relations: ["artwork"],
   // });
 
-  const foundLicense = await getConnection()
+  const foundLicense = await connection
     .getRepository(License)
     .createQueryBuilder("license")
     .where("license.fingerprint = :fingerprint AND license.active = :active", {
@@ -28,6 +30,7 @@ export const addNewLicense = async ({
   userId,
   artworkData,
   licenseData,
+  connection,
 }) => {
   /*   const newLicense = new License();
   newLicense.owner = userId;
@@ -40,7 +43,7 @@ export const addNewLicense = async ({
   newLicense.price = artworkData.current[licenseData.licenseType];
   return newLicense; */
 
-  const savedLicense = await getConnection()
+  const savedLicense = await connection
     .createQueryBuilder()
     .insert()
     .into(License)

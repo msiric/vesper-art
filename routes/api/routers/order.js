@@ -19,7 +19,7 @@ router
   // $TODO not tested
   .get(
     isAuthenticated,
-    handler(getSoldOrders, (req, res, next) => ({}))
+    handler(getSoldOrders, false, (req, res, next) => ({}))
   );
 
 router
@@ -27,7 +27,7 @@ router
   // $TODO not tested
   .get(
     isAuthenticated,
-    handler(getBoughtOrders, (req, res, next) => ({}))
+    handler(getBoughtOrders, false, (req, res, next) => ({}))
   );
 
 router
@@ -35,7 +35,7 @@ router
   // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
-    handler(getOrderDetails, (req, res, next) => ({
+    handler(getOrderDetails, false, (req, res, next) => ({
       ...req.params,
     }))
   );
@@ -46,7 +46,7 @@ router
   // $TODO not tested
   .post(
     [isAuthenticated, checkParamsId],
-    handler(postReview, (req, res, next) => ({
+    handler(postReview, true, (req, res, next) => ({
       ...req.body,
       ...req.params,
     }))
@@ -57,7 +57,7 @@ router
   // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
-    handler(downloadOrderArtwork, (req, res, next) => ({
+    handler(downloadOrderArtwork, true, (req, res, next) => ({
       ...req.params,
       response: res,
     }))

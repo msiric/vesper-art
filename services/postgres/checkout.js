@@ -5,7 +5,7 @@ import Artwork from "../../models/artwork.js";
 export const fetchCheckoutArtwork = async ({
   userId,
   artworkId,
-  session = null,
+  connection,
 }) => {
   const foundArtwork = await Artwork.findOne({
     $and: [{ id: artworkId }, { active: true }],

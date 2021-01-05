@@ -8,7 +8,7 @@ router
   .route("/verifier")
   // $TODO not tested
   .post(
-    handler(verifyLicense, (req, res, next) => ({
+    handler(verifyLicense, true, (req, res, next) => ({
       ...req.body,
     }))
   );

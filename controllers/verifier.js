@@ -3,9 +3,12 @@ import { fingerprintValidation } from "../common/validation";
 import { fetchLicenseByFingerprint } from "../services/postgres/license.js";
 import { sanitizeData } from "../utils/helpers.js";
 
-export const verifyLicense = async ({ licenseFingerprint }) => {
+export const verifyLicense = async ({ licenseFingerprint, connection }) => {
   await fingerprintValidation.validate(sanitizeData({ licenseFingerprint }));
-  const foundLicense = await fetchLicenseByFingerprint({ licenseFingerprint });
+  const foundLicense = await fetchLicenseByFingerprint({
+    licenseFingerprint,
+    connection,
+  });
   if (foundLicense) {
     return { license: foundLicense };
   }
