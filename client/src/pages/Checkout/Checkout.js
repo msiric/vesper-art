@@ -31,7 +31,6 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
@@ -44,9 +43,8 @@ import { useTracked as useUserContext } from "../../contexts/User.js";
 import BillingForm from "../../forms/BillingForm/index.js";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import PaymentForm from "../../forms/PaymentForm/index.js";
-import { getCheckout, postDiscount } from "../../services/checkout.js";
+import { getCheckout, getDiscount } from "../../services/checkout.js";
 import { postIntent } from "../../services/stripe.js";
-import { postCheckout } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 import { billingValidation } from "../../validation/billing.js";
 import { licenseValidation } from "../../validation/license.js";
@@ -60,7 +58,7 @@ const STEPS = [
 const initialState = {
   secret: null,
   artwork: { version: {} },
-  version: { artwork: { owner: {} } },
+  version: { artwork: { owner: {} }, cover: {}, media: {} },
   license: "",
   discount: null,
   intent: null,
@@ -109,10 +107,11 @@ const StepperIcons = ({ active, completed, icon }) => {
 
   return (
     <div
-      className={clsx(classes.root, {
+      /*       className={clsx(classes.root, {
         [classes.active]: active,
         [classes.completed]: completed,
-      })}
+      })} */
+      className={classes.root}
     >
       {icons[String(icon)]}
     </div>
@@ -271,7 +270,7 @@ const Processor = ({ match, location, stripe }) => {
       const {
         data: { payload },
       } = values
-        ? await postDiscount.request({ data: values })
+        ? await getDiscount.request({ data: values })
         : { data: { payload: null } };
       if (intentId) {
         await postIntent.request({
@@ -309,7 +308,7 @@ const Processor = ({ match, location, stripe }) => {
         discountId: state.discount ? state.discount.id : null,
         intentId,
       });
-      if (!intentId) {
+      /*       if (!intentId) {
         try {
           await postCheckout.request({
             userId: userStore.id,
@@ -328,7 +327,7 @@ const Processor = ({ match, location, stripe }) => {
         } catch (err) {
           console.log(err);
         }
-      }
+      } */
       setState((prevState) => ({
         ...prevState,
         secret: data.intent.secret,

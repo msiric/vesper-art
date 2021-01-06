@@ -70,8 +70,8 @@ export const fetchOrderByVersion = async ({
     .leftJoinAndSelect("order.license", "license")
     .leftJoinAndSelect("order.license", "license")
     .where("order.artworkId = :artworkId AND order.versionId = :versionId", {
-      artworkId: artworkId,
-      versionId: versionId,
+      artworkId,
+      versionId,
     })
     .getOne();
   console.log(foundOrder);
@@ -113,8 +113,8 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
     .where(
       "(order.buyerId = :userId AND order.id = :orderId) OR (order.sellerId = :userId AND order.id = :orderId)",
       {
-        userId: userId,
-        orderId: orderId,
+        userId,
+        orderId,
       }
     )
     .getOne();
@@ -135,8 +135,8 @@ export const fetchUserPurchase = async ({ orderId, userId, connection }) => {
     .leftJoinAndSelect("order.seller", "seller")
     .leftJoinAndSelect("order.review", "review")
     .where("order.buyerId = :userId AND order.id = :orderId", {
-      userId: userId,
-      orderId: orderId,
+      userId,
+      orderId,
     })
     .getOne();
   console.log(foundOrder);
@@ -206,7 +206,7 @@ export const fetchOrdersBySeller = async ({
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("order.license", "license")
     .where("order.sellerId = :userId", {
-      userId: userId,
+      userId,
     })
     .getMany();
   console.log(foundOrders);
@@ -249,7 +249,7 @@ export const fetchOrdersByBuyer = async ({
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("order.license", "license")
     .where("order.buyerId = :userId", {
-      userId: userId,
+      userId,
     })
     .getMany();
   console.log(foundOrders);

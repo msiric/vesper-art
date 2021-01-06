@@ -6,15 +6,17 @@ import {
   JoinColumn,
   ManyToOne,
   OneToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "./User";
 import { Version } from "./Version";
 
+// $TODO status === 'pending' | 'succeeded' | 'canceled'
+
 @Entity()
 export class Intent extends BaseEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn()
   id: string;
 
   @ManyToOne(() => User)
@@ -31,7 +33,7 @@ export class Intent extends BaseEntity {
   versionId: string;
 
   @Column()
-  uuid: string;
+  status: string;
 
   @CreateDateColumn()
   created: Date;

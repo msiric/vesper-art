@@ -66,6 +66,7 @@ export const fetchVersionDetails = async ({ versionId, connection }) => {
     .createQueryBuilder("version")
     .leftJoinAndSelect("version.artwork", "artwork")
     .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("artwork.current", "current")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .leftJoinAndSelect("version.cover", "cover")
     .where("version.id = :versionId", {
@@ -398,9 +399,9 @@ export const fetchFavoriteByParents = async ({
   const foundFavorite = await connection
     .getRepository(Favorite)
     .createQueryBuilder("favorite")
-    .where("favorite.ownerId = :ownerId AND favorite.artworkId = :artworkId", {
-      ownerId: userId,
-      artworkId: artworkId,
+    .where("favorite.ownerId = :userId AND favorite.artworkId = :artworkId", {
+      userId,
+      artworkId,
     })
     .getOne();
   console.log(foundFavorite);

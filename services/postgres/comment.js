@@ -17,8 +17,8 @@ export const fetchCommentById = async ({
     .leftJoinAndSelect("comment.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .where("comment.id = :commentId AND comment.artworkId = :artworkId", {
-      commentId: commentId,
-      artworkId: artworkId,
+      commentId,
+      artworkId,
     })
     .getOne();
   console.log(foundComment);

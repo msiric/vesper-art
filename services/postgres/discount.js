@@ -9,8 +9,10 @@ export const fetchDiscountByCode = async ({ discountCode, connection }) => {
   const foundDiscount = await connection
     .getRepository(Discount)
     .createQueryBuilder("discount")
-    .where("discount.name = :name", {
+    .where("discount.name = :name AND discount.active = :active", {
       name: discountCode,
+      // $TODO replace with a constant
+      active: true,
     })
     .getOne();
   console.log(foundDiscount);
@@ -26,8 +28,10 @@ export const fetchDiscountById = async ({ discountId, connection }) => {
   const foundDiscount = await connection
     .getRepository(Discount)
     .createQueryBuilder("discount")
-    .where("discount.id = :discountId", {
+    .where("discount.id = :discountId AND discount.active = :active", {
       discountId,
+      // $TODO replace with a constant
+      active: true,
     })
     .getOne();
   console.log(foundDiscount);

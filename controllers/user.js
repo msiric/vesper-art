@@ -7,6 +7,7 @@ import {
   originValidation,
   passwordValidation,
   preferencesValidation,
+  profileValidation,
   rangeValidation,
 } from "../common/validation";
 import { server } from "../config/secret.js";
@@ -29,7 +30,7 @@ import {
   fetchUserArtwork,
   fetchUserByEmail,
   fetchUserById,
-  fetchuserFavorites,
+  fetchUserFavorites,
   fetchUserIdByName,
   fetchUserNotifications,
   fetchUserProfile,
@@ -109,7 +110,7 @@ export const getUserFavorites = async ({
   connection,
 }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
-  const foundUser = await fetchuserFavorites({
+  const foundUser = await fetchUserFavorites({
     userId,
     dataSkip,
     dataLimit,

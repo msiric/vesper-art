@@ -10,14 +10,16 @@ const CheckoutCard = ({ version, loading }) => {
 
   const { r, g, b } = loading
     ? { r: null, g: null, b: null }
-    : hexToRgb(version.dominant);
+    : hexToRgb(version.cover.dominant);
+
+  console.log("VERSION", version);
 
   return (
     <Grid container p={0} my={2}>
       <Grid
         item
         xs={12}
-        md={version.orientation === "portrait" ? 2 : 5}
+        md={version.cover.orientation === "portrait" ? 2 : 5}
         style={{ display: "flex" }}
       >
         <Box
@@ -30,7 +32,7 @@ const CheckoutCard = ({ version, loading }) => {
           <SkeletonWrapper loading={loading} height="100px" width="100%">
             <CardMedia
               className={classes.media}
-              image={version.cover}
+              image={version.cover.source}
               title={version.title}
             />
           </SkeletonWrapper>
@@ -39,7 +41,7 @@ const CheckoutCard = ({ version, loading }) => {
       <Grid
         item
         xs={12}
-        md={version.orientation === "portrait" ? 10 : 7}
+        md={version.cover.orientation === "portrait" ? 10 : 7}
         className={classes.actions}
       >
         <Box display="flex" flexDirection="column">

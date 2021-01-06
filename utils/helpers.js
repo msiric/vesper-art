@@ -10,18 +10,6 @@ import {
 } from "uuid";
 import { uuid } from "../config/secret";
 
-/* export const requestHandler = (promise, params) => async (req, res, next) => {
-  const boundParams = params ? params(req, res, next) : {};
-  const userId = res.locals.user ? res.locals.user.id : null;
-  try {
-    const result = await promise({ userId, ...boundParams });
-    return res.json(result || { message: "OK" });
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-}; */
-
 export const requestHandler = (promise, transaction, params) => async (
   req,
   res,

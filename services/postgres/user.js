@@ -287,7 +287,7 @@ export const fetchUserArtwork = async ({
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchuserFavorites = async ({
+export const fetchUserFavorites = async ({
   userId,
   dataSkip,
   dataLimit,
@@ -337,7 +337,7 @@ export const fetchUserStatistics = async ({ userId, connection }) => {
     .where(
       "order.buyerId = :userId AND order.active = :active) OR (order.sellerId = :userId AND order.active = :active)",
       {
-        userId: userId,
+        userId,
         active: true,
       }
     )
@@ -374,7 +374,7 @@ export const addUserAvatar = async ({
         orientation: avatarUpload.fileOrientation,
         height: avatarUpload.fileHeight,
         width: avatarUpload.fileWidth,
-        userId,
+        ownerId: userId,
       },
     ])
     .execute();
@@ -401,9 +401,9 @@ export const editUserAvatar = async ({ userId, avatarUpload, connection }) => {
       orientation: avatarUpload.fileOrientation,
       height: avatarUpload.fileHeight,
       width: avatarUpload.fileWidth,
-      userId,
+      ownerId: userId,
     })
-    .where("userId = :userId", {
+    .where("ownerId = :userId", {
       userId,
     })
     .returning("id")
@@ -466,7 +466,7 @@ export const fetchUserNotifications = async ({
     .getRepository(Notification)
     .createQueryBuilder("notification")
     .where("notification.receiverId = :userId", {
-      userId: userId,
+      userId,
     })
     .addOrderBy("notification.created", "DESC")
     .getMany();
@@ -552,33 +552,102 @@ export const editUserPreferences = async ({
   return updatedUser;
 };
 
-// $Needs testing (mongo -> postgres)
-// $TODO needs to be saved to intents instead of user
-export const addNewIntent = async ({
+export const fetchIntentByCreds = async ({
+  intentId,
   userId,
   versionId,
-  intentId,
+  status,
   connection,
 }) => {
-  const foundUser = await User.findOne({
-    where: [{ id: userId }],
-  });
-  foundUser.intents.push(intentId);
-  return await User.save(foundUser);
+  const foundIntent = await connection
+    .getRepository(Intent)
+    .createQueryBuilder("intent")
+    .where(
+      "intent.id = :intentId AND intent.ownerId = :userId AND intent.versionId = :versionId AND intent.status = :status",
+      {
+        intentId,
+        userId,
+        versionId,
+        status,
+      }
+    )
+    .getOne();
+  console.log(foundIntent);
+  return foundIntent;
+};
+
+export const fetchIntentByParents = async ({
+  userId,
+  versionId,
+  status,
+  connection,
+}) => {
+  const foundIntent = await connection
+    .getRepository(Intent)
+    .createQueryBuilder("intent")
+    .where(
+      "intent.ownerId = :userId AND intent.versionId = :versionId AND intent.status = :status",
+      {
+        userId,
+        versionId,
+        status,
+      }
+    )
+    .getOne();
+  console.log(foundIntent);
+  return foundIntent;
+};
+
+// $Needs testing (mongo -> postgres)
+export const addNewIntent = async ({
+  intentId,
+  userId,
+  versionId,
+  status,
+  connection,
+}) => {
+  console.log("INTENT CREATION", intentId, userId, versionId, status);
+  const savedIntent = await connection
+    .createQueryBuilder()
+    .insert()
+    .into(Intent)
+    .values([
+      {
+        id: intentId,
+        ownerId: userId,
+        versionId,
+        status,
+      },
+    ])
+    .execute();
+  console.log(savedIntent);
+  return savedIntent;
 };
 
 // $TODO probably not how it's done
 // $TODO needs to be removed from intents instead of user
-export const removeExistingIntent = async ({
-  userId,
+export const editExistingIntent = async ({
   intentId,
+  userId,
+  versionId,
+  status,
   connection,
 }) => {
-  const foundUser = await User.findOne({
-    where: [{ id: userId, active: true }],
-  });
-  foundUser.intents.filter((intent) => intent !== intentId);
-  return await User.save(foundUser);
+  const updatedIntent = await connection
+    .createQueryBuilder()
+    .update(Intent)
+    .set({ status: status })
+    .where(
+      "intent.id = :intentId AND intent.ownerId = :userId AND intent.versionId = :versionId",
+      {
+        intentId,
+        userId,
+        versionId,
+      }
+    )
+    .execute();
+  console.log(updatedIntent);
+  return updatedIntent;
 };
 
 // $Needs testing (mongo -> postgres)

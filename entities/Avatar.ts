@@ -14,10 +14,10 @@ export class Avatar extends BaseEntity {
   id: string;
 
   @OneToOne(() => User)
-  user: User;
+  owner: User;
 
   @Column()
-  userId: string;
+  ownerId: string;
 
   @Column()
   source: string;
