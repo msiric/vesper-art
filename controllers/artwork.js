@@ -13,6 +13,7 @@ import {
   fetchArtworkComments,
   fetchArtworkDetails,
   fetchFavoriteByParents,
+  fetchFavoritesCount,
   fetchUserArtworks,
   removeArtworkVersion,
   removeExistingFavorite,
@@ -338,6 +339,14 @@ export const deleteArtwork = async ({
     throw createError(400, "Artwork has a newer version");
   }
   throw createError(400, "Artwork not found");
+};
+
+export const fetchArtworkFavorites = async ({ artworkId, connection }) => {
+  const foundFavorites = await fetchFavoritesCount({
+    artworkId,
+    connection,
+  });
+  return { favorites: foundFavorites };
 };
 
 // needs transaction (done)

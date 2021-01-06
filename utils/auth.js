@@ -1,9 +1,5 @@
 import jwt from "jsonwebtoken";
-import { getConnection } from "typeorm";
-import { Favorite } from "../entities/Favorite";
-import { Intent } from "../entities/Intent";
-import { Notification } from "../entities/Notification";
-import { User } from "../entities/User";
+import { fetchUserByAuth } from "../services/postgres/user";
 
 export const createAccessToken = ({ userData }) => {
   return jwt.sign(
@@ -22,7 +18,7 @@ export const createAccessToken = ({ userData }) => {
 };
 
 // $TODO getConnection needs to come from one of the services
-export const updateAccessToken = async (req, res, next) => {
+export const updateAccessToken = async (req, res, next, connection) => {
   const token = req.cookies.jid;
   if (!token) return { ok: false, accessToken: "" };
 
@@ -39,33 +35,10 @@ export const updateAccessToken = async (req, res, next) => {
   //   relations: ["avatar", "favorites", "favorites.artwork", "intents"],
   // });
 
-  const foundUser = await getConnection()
-    .getRepository(User)
-    .createQueryBuilder("user")
-    .leftJoinAndMapMany(
-      "user.intents",
-      Intent,
-      "intent",
-      "intent.ownerId = :id",
-      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
-    )
-    .leftJoinAndMapMany(
-      "user.notifications",
-      Notification,
-      "notification",
-      "notification.receiverId = :id",
-      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
-    )
-    .leftJoinAndMapMany(
-      "user.favorites",
-      Favorite,
-      "favorite",
-      "favorite.ownerId = :id",
-      { id: "4348b023-ab73-48d0-8129-72b2d1dfa641" }
-    )
-    .where("user.id = :id", { id: payload.userId })
-    .andWhere("user.active = :active", { active: true })
-    .getOne();
+  const foundUser = await fetchUserByAuth({
+    userId: payload.userId,
+    connection,
+  });
 
   if (!foundUser) {
     return { ok: false, accessToken: "" };

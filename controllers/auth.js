@@ -142,22 +142,22 @@ export const postLogIn = async ({
   };
 };
 
-export const postLogOut = ({ res }) => {
+export const postLogOut = ({ res, connection }) => {
   return logUserOut(res);
 };
 
-export const postRefreshToken = async ({ req, res, next }) => {
-  return await refreshAccessToken(req, res, next);
+export const postRefreshToken = async ({ req, res, next, connection }) => {
+  return await refreshAccessToken(req, res, next, connection);
 };
 
-export const postRevokeToken = async ({ userId }) => {
-  await revokeAccessToken({ userId });
+export const postRevokeToken = async ({ userId, connection }) => {
+  await revokeAccessToken({ userId, connection });
   return { message: "Token successfully revoked" };
 };
 
 // needs transaction (not tested)
-export const verifyRegisterToken = async ({ tokenId }) => {
-  await resetRegisterToken({ tokenId });
+export const verifyRegisterToken = async ({ tokenId, connection }) => {
+  await resetRegisterToken({ tokenId, connection });
   return { message: "Token successfully verified" };
 };
 

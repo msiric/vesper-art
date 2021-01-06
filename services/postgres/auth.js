@@ -42,8 +42,8 @@ export const logUserOut = (res) => {
   return { accessToken: "", user: "" };
 };
 
-export const refreshAccessToken = async (req, res, next) => {
-  return await updateAccessToken(req, res, next);
+export const refreshAccessToken = async (req, res, next, connection) => {
+  return await updateAccessToken(req, res, next, connection);
 };
 
 // $Needs testing (mongo -> postgres)

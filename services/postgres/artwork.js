@@ -19,8 +19,8 @@ export const fetchArtworkById = async ({ artworkId, connection }) => {
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.owner", "owner")
-    .where("artwork.id = :id AND artwork.active = :active", {
-      id: artworkId,
+    .where("artwork.id = :artworkId AND artwork.active = :active", {
+      artworkId,
       active: ARTWORK_ACTIVE_STATUS,
     })
     .getOne();
@@ -68,8 +68,8 @@ export const fetchVersionDetails = async ({ versionId, connection }) => {
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .leftJoinAndSelect("version.cover", "cover")
-    .where("version.id = :id", {
-      id: versionId,
+    .where("version.id = :versionId", {
+      versionId,
     })
     .getOne();
   console.log(foundVersion);
@@ -100,8 +100,8 @@ export const fetchArtworkDetails = async ({
       "artwork.comments",
       Comment,
       "comment",
-      "comment.artworkId = :id",
-      { id: artworkId }
+      "comment.artworkId = :artworkId",
+      { artworkId }
     )
     .leftJoinAndSelect("comment.owner", "commentOwner")
     .leftJoinAndSelect("commentOwner.avatar", "commentAvatar")
@@ -109,11 +109,11 @@ export const fetchArtworkDetails = async ({
       "artwork.favorites",
       Favorite,
       "favorite",
-      "favorite.artworkId = :id",
-      { id: artworkId }
+      "favorite.artworkId = :artworkId",
+      { artworkId }
     )
-    .where("artwork.id = :id AND artwork.active = :active", {
-      id: artworkId,
+    .where("artwork.id = :artworkId AND artwork.active = :active", {
+      artworkId,
       active: ARTWORK_ACTIVE_STATUS,
     })
     .getOne();
@@ -138,8 +138,8 @@ export const fetchArtworkComments = async ({
     .createQueryBuilder("comment")
     .leftJoinAndSelect("comment.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
-    .where("comment.artworkId = :id", {
-      id: artworkId,
+    .where("comment.artworkId = :artworkId", {
+      artworkId,
     })
     .getMany();
   console.log(foundComments);
@@ -165,8 +165,8 @@ export const fetchUserArtworks = async ({
     .leftJoinAndSelect("owner.avatar", "avatar")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
-    .where("artwork.ownerId = :id AND artwork.active = :active", {
-      id: userId,
+    .where("artwork.ownerId = :userId AND artwork.active = :active", {
+      userId,
       active: ARTWORK_ACTIVE_STATUS,
     })
     .getMany();
@@ -367,10 +367,22 @@ export const removeExistingFavorite = async ({ favoriteId, connection }) => {
     .createQueryBuilder()
     .delete()
     .from(Favorite)
-    .where("id = :id", { id: favoriteId })
+    .where("id = :favoriteId", { favoriteId })
     .execute();
   console.log(deletedFavorite);
   return deletedFavorite;
+};
+
+export const fetchFavoritesCount = async ({ artworkId, connection }) => {
+  const foundFavorites = await connection
+    .getRepository(Favorite)
+    .createQueryBuilder("favorite")
+    .where("favorite.artworkId = :artworkId", {
+      artworkId,
+    })
+    .getCount();
+  console.log(foundFavorites);
+  return foundFavorites;
 };
 
 export const fetchFavoriteByParents = async ({
@@ -404,7 +416,7 @@ export const removeArtworkVersion = async ({ versionId, connection }) => {
     .createQueryBuilder()
     .delete()
     .from(Version)
-    .where("id = :id", { id: versionId })
+    .where("id = :versionId", { versionId })
     .execute();
   console.log(deletedVersion);
   return deletedVersion;
@@ -433,8 +445,8 @@ export const deactivateExistingArtwork = async ({ artworkId, connection }) => {
     .createQueryBuilder()
     .update(Artwork)
     .set({ active: false })
-    .where("id = :id AND active = :active", {
-      id: artworkId,
+    .where("id = :artworkId AND active = :active", {
+      artworkId,
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
