@@ -579,7 +579,7 @@ export const removeExistingIntent = async ({
 
 // $Needs testing (mongo -> postgres)
 export const editUserOrigin = async ({
-  foundUser,
+  userId,
   userBusinessAddress,
   connection,
 }) => {

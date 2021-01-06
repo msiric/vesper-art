@@ -262,6 +262,7 @@ export const onboardUser = async ({
   };
 };
 
+// $TODO cannot send headers (treba dobro testat)
 export const assignStripeId = async ({
   responseObject,
   sessionData,

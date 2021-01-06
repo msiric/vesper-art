@@ -171,7 +171,11 @@ export const updateUserOrigin = async ({
   await originValidation.validate(sanitizeData({ userBusinessAddress }));
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
-    await editUserOrigin({ foundUser, userBusinessAddress, connection });
+    await editUserOrigin({
+      userId: foundUser.id,
+      userBusinessAddress,
+      connection,
+    });
     return { message: "User business address updated" };
   }
   throw createError(400, "User not found");
