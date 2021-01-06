@@ -27,6 +27,6 @@ export class Discount extends BaseEntity {
 
   @AfterLoad()
   correctAmount() {
-    this.discount = formatAmount(this.discount).intValue;
+    this.discount = formatAmount(this.discount).value;
   }
 }

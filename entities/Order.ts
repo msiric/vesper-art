@@ -101,8 +101,8 @@ export class Order extends BaseEntity {
 
   @AfterLoad()
   correctAmount() {
-    this.spent = formatAmount(this.spent).intValue;
-    this.earned = formatAmount(this.earned).intValue;
-    this.fee = formatAmount(this.fee).intValue;
+    this.spent = formatAmount(this.spent).value;
+    this.earned = formatAmount(this.earned).value;
+    this.fee = formatAmount(this.fee).value;
   }
 }

@@ -96,7 +96,7 @@ export const postFavorite = {
 };
 export const deleteFavorite = {
   request: async ({ artworkId }) =>
-    await ax(`/api/artwork/${artworkId}/favorites`),
+    await ax.delete(`/api/artwork/${artworkId}/favorites`),
   success: { message: "Artwork successfully unsaved", variant: "success" },
   error: { message: "Failed to unsaved artwork", variant: "error" },
 };

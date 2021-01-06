@@ -58,6 +58,6 @@ export class License extends BaseEntity {
 
   @AfterLoad()
   correctAmount() {
-    this.price = formatAmount(this.price).intValue;
+    this.price = formatAmount(this.price).value;
   }
 }

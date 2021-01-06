@@ -77,7 +77,7 @@ export class Version extends BaseEntity {
 
   @AfterLoad()
   correctAmount() {
-    this.personal = formatAmount(this.personal).intValue;
-    this.commercial = formatAmount(this.commercial).intValue;
+    this.personal = formatAmount(this.personal).value;
+    this.commercial = formatAmount(this.commercial).value;
   }
 }
