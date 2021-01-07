@@ -19,6 +19,8 @@ import { Review } from "./Review";
 import { User } from "./User";
 import { Version } from "./Version";
 
+// $TODO order status === 'processing' (only if intents are saved on the last step of the form when the order is placed) | 'completed' | 'canceled'
+
 @Entity()
 export class Order extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")

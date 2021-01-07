@@ -4,7 +4,6 @@ import {
   CardCvcElement,
   CardExpiryElement,
   CardNumberElement,
-  useStripe,
 } from "@stripe/react-stripe-js";
 import React, { useState } from "react"; //, {useState }
 import { useHistory } from "react-router-dom";
@@ -151,7 +150,7 @@ const PaymentForm = ({ secret, version }) => {
   const [state, setState] = useState({ elementError: {} });
   const classes = PaymentFormStyles();
 
-  const stripe = useStripe();
+  // const stripe = useStripe();
   const history = useHistory();
 
   const cardsLogo = [
@@ -236,7 +235,7 @@ const PaymentForm = ({ secret, version }) => {
         <Grid item xs={12} sm={3}>
           <Typography variant="h6">Payment Data</Typography>
         </Grid>
-        <Grid container item xs={12} sm={9} justify="space-between">
+        {/* <Grid container item xs={12} sm={9} justify="space-between">
           {cardsLogo.map((card) => (
             <img
               key={card}
@@ -247,7 +246,7 @@ const PaymentForm = ({ secret, version }) => {
               style={{ padding: "0 5px" }}
             />
           ))}
-        </Grid>
+        </Grid> */}
       </Grid>
       <Grid item xs={12}>
         <StripeTextField

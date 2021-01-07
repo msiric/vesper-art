@@ -9,6 +9,8 @@ import {
 } from "typeorm";
 import { User } from "./User";
 
+// $TODO ticket status === 'pending' | 'resolved'
+
 @Entity()
 export class Ticket extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")

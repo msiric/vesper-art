@@ -405,6 +405,7 @@ const Processor = ({ match, location, stripe }) => {
   };
 
   const onSubmit = (values, actions) => {
+    console.log("VALUES", values);
     const isFirstStep = state.step.current === 0;
     const isLastStep = state.step.current === state.step.length - 1;
     if (isLastStep) {
@@ -414,7 +415,7 @@ const Processor = ({ match, location, stripe }) => {
     } else {
       handleStepChange(1);
     }
-    reset(getValues());
+    // reset(getValues());
   };
 
   const renderForm = (step) => {
@@ -452,7 +453,6 @@ const Processor = ({ match, location, stripe }) => {
 
   const fetchData = async () => {
     try {
-      console.log(location.state.license);
       setState({
         ...initialState,
         license: location.state.license || initialState.license,
