@@ -5,6 +5,15 @@ export const getUser = {
   success: { message: "Account successfully fetched", variant: "success" },
   error: { message: "Failed to fetch account", variant: "error" },
 };
+export const patchIntent = {
+  request: async ({ versionId, discountCode, licenseType }) =>
+    await ax.patch(`/stripe/intent/${versionId}`, {
+      discountCode,
+      licenseType,
+    }),
+  success: { message: "Intent successfully saved", variant: "success" },
+  error: { message: "Failed to save intent", variant: "error" },
+};
 export const postIntent = {
   request: async ({ versionId, artworkLicense, intentId, discountId }) =>
     await ax.post(`/stripe/intent/${versionId}`, {

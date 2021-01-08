@@ -124,7 +124,7 @@ export const applyDiscount = async ({
                 earned: sellerTotal,
                 fee: platformTotal,
               };
-              await updateStripeIntent({
+              const paymentIntent = await updateStripeIntent({
                 intentAmount: buyerTotal,
                 intentFee: platformTotal,
                 intentId: foundIntent.id,
@@ -156,15 +156,15 @@ export const applyDiscount = async ({
 export const managePaymentIntent = async ({
   userId,
   versionId,
-  // discountId,
+  /*   discountId, */
   artworkLicense,
   connection,
 }) => {
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
-    // const foundDiscount = discountId
-    //   ? await fetchDiscountById({ discountId, connection })
-    //   : null;
+    /*     const foundDiscount = discountId
+      ? await fetchDiscountById({ discountId, connection })
+      : null; */
     const foundDiscount = null;
     const foundVersion = await fetchVersionDetails({ versionId, connection });
     const licenseData = {

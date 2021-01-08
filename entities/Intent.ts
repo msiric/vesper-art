@@ -5,7 +5,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -25,7 +24,7 @@ export class Intent extends BaseEntity {
   @Column()
   ownerId: string;
 
-  @OneToOne(() => Version)
+  @ManyToOne(() => Version)
   @JoinColumn()
   version: Version;
 

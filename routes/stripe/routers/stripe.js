@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import express from "express";
 import {
+  applyDiscount,
   assignStripeId,
   createPayout,
   getStripeUser,
@@ -31,13 +32,22 @@ router.route("/account/:accountId").get(
   }))
 );
 
-router.route("/intent/:versionId").post(
-  isAuthenticated,
-  handler(managePaymentIntent, true, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
+router
+  .route("/intent/:versionId")
+  .patch(
+    isAuthenticated,
+    handler(applyDiscount, true, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
+    }))
+  )
+  .post(
+    isAuthenticated,
+    handler(managePaymentIntent, true, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
+    }))
+  );
 
 router.route("/dashboard/:accountId").get(
   isAuthenticated,

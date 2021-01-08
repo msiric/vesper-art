@@ -43,8 +43,8 @@ import { useTracked as useUserContext } from "../../contexts/User.js";
 import BillingForm from "../../forms/BillingForm/index.js";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import PaymentForm from "../../forms/PaymentForm/index.js";
-import { getCheckout, getDiscount } from "../../services/checkout.js";
-import { postIntent } from "../../services/stripe.js";
+import { getCheckout } from "../../services/checkout.js";
+import { patchIntent, postIntent } from "../../services/stripe.js";
 import globalStyles from "../../styles/global.js";
 import { billingValidation } from "../../validation/billing.js";
 import { licenseValidation } from "../../validation/license.js";
@@ -270,7 +270,12 @@ const Processor = ({ match, location, stripe }) => {
       const {
         data: { payload },
       } = values
-        ? await getDiscount.request({ discountCode: values.discountCode })
+        ? /* await getDiscount.request({ discountCode: values.discountCode }) */
+          await patchIntent.request({
+            versionId: state.version.id,
+            discountCode: values.discountCode,
+            licenseType: state.license,
+          })
         : { data: { payload: null } };
       if (intentId) {
         await postIntent.request({
