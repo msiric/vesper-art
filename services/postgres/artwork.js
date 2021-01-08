@@ -283,8 +283,8 @@ export const addNewVersion = async ({
       {
         id: versionId,
         title: artworkData.artworkTitle,
-        type: artworkData.artworkType,
         availability: artworkData.artworkAvailability,
+        type: artworkData.artworkType,
         license: artworkData.artworkLicense,
         use: artworkData.artworkUse,
         personal: artworkData.artworkPersonal,
