@@ -6,6 +6,8 @@ export const fetchDiscountByCode = async ({ discountCode, connection }) => {
   //   where: [{ name: discountCode }],
   // });
 
+  console.log("DISCOUNT", discountCode);
+
   const foundDiscount = await connection
     .getRepository(Discount)
     .createQueryBuilder("discount")
@@ -36,4 +38,22 @@ export const fetchDiscountById = async ({ discountId, connection }) => {
     .getOne();
   console.log(foundDiscount);
   return foundDiscount;
+};
+
+export const addNewDiscount = async ({ discountData, connection }) => {
+  const savedDiscount = await connection
+    .createQueryBuilder()
+    .insert()
+    .into(Discount)
+    .values([
+      {
+        id: discountData.id,
+        name: discountData.name,
+        discount: discountData.amount,
+        active: discountData.active,
+      },
+    ])
+    .execute();
+  console.log(savedDiscount);
+  return savedDiscount;
 };

@@ -270,7 +270,7 @@ const Processor = ({ match, location, stripe }) => {
       const {
         data: { payload },
       } = values
-        ? await getDiscount.request({ data: values })
+        ? await getDiscount.request({ discountCode: values.discountCode })
         : { data: { payload: null } };
       if (intentId) {
         await postIntent.request({

@@ -6,7 +6,8 @@ export const getCheckout = {
   error: { message: "Failed to fetch checkout", variant: "error" },
 };
 export const getDiscount = {
-  request: async ({ data }) => await ax.post("/api/discounts", data),
+  request: async ({ discountCode }) =>
+    await ax.get(`/api/discounts/${discountCode}`),
   success: { message: "Discount successfully applied", variant: "success" },
   error: { message: "Failed to apply discount", variant: "error" },
 };

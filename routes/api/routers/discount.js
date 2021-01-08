@@ -1,5 +1,5 @@
 import express from "express";
-import { getDiscount } from "../../../controllers/discount.js";
+import { getDiscount, postDiscount } from "../../../controllers/discount.js";
 import {
   isAuthenticated,
   requestHandler as handler,
@@ -7,16 +7,20 @@ import {
 
 const router = express.Router();
 
-// $TODO wat?
+// $TODO not tested
+router.route("/discounts/:discountCode").get(
+  isAuthenticated,
+  handler(getDiscount, false, (req, res, next) => ({
+    ...req.params,
+  }))
+);
 
-router
-  .route("/discounts")
-  // $TODO not tested
-  .post(
-    isAuthenticated,
-    handler(getDiscount, false, (req, res, next) => ({
-      ...req.body,
-    }))
-  );
+// $TODO REMOVE (ONLY FOR DEV)
+router.route("/discounts").post(
+  isAuthenticated,
+  handler(postDiscount, true, (req, res, next) => ({
+    ...req.body,
+  }))
+);
 
 export default router;
