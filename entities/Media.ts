@@ -7,9 +7,9 @@ import {
 } from "typeorm";
 
 export enum MediaOrientation {
-  SQUARE = "square",
-  PORTRAIT = "portrait",
-  LANDSCAPE = "landscape",
+  square = "square",
+  portrait = "portrait",
+  landscape = "landscape",
 }
 
 @Entity()

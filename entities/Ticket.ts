@@ -11,9 +11,9 @@ import { User } from "./User";
 
 // $TODO ticket status === 'pending' | 'resolved'
 export enum TicketType {
-  PENDING = "pending",
-  RESOLVED = "resolved",
-  CLOSED = "closed",
+  pending = "pending",
+  resolved = "resolved",
+  closed = "closed",
 }
 
 @Entity()

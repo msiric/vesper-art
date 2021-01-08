@@ -10,9 +10,9 @@ import {
 import { User } from "./User";
 
 export enum NotificationType {
-  ORDER = "order",
-  REVIEW = "review",
-  COMMENT = "comment",
+  order = "order",
+  review = "review",
+  comment = "comment",
 }
 
 @Entity()

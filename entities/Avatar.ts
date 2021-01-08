@@ -9,9 +9,9 @@ import {
 import { User } from "./User";
 
 export enum AvatarOrientation {
-  SQUARE = "square",
-  PORTRAIT = "portrait",
-  LANDSCAPE = "landscape",
+  square = "square",
+  portrait = "portrait",
+  landscape = "landscape",
 }
 
 @Entity()

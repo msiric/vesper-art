@@ -15,8 +15,8 @@ import { Artwork } from "./Artwork";
 import { User } from "./User";
 
 export enum LicenseType {
-  PERSONAL = "personal",
-  COMMERCIAL = "commercial",
+  personal = "personal",
+  commercial = "commercial",
 }
 
 @Entity()

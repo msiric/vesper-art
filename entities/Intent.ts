@@ -11,7 +11,11 @@ import {
 import { User } from "./User";
 import { Version } from "./Version";
 
-// $TODO status === 'pending' | 'succeeded' | 'canceled'
+export enum IntentStatus {
+  pending = "pending",
+  succeeded = "succeeded",
+  canceled = "canceled",
+}
 
 @Entity()
 export class Intent extends BaseEntity {
@@ -31,8 +35,11 @@ export class Intent extends BaseEntity {
   @Column()
   versionId: string;
 
-  @Column()
-  status: string;
+  @Column({
+    type: "enum",
+    enum: IntentStatus,
+  })
+  status: IntentStatus;
 
   @CreateDateColumn()
   created: Date;

@@ -18,26 +18,26 @@ import { Media } from "./Media";
 import { Tag } from "./Tag";
 
 export enum VersionAvailability {
-  AVAILABLE = "available",
-  UNAVAILABLE = "unavailable",
+  available = "available",
+  unavailable = "unavailable",
 }
 
 export enum VersionType {
-  FREE = "free",
-  COMMERCIAL = "commercial",
-  UNAVAILABLE = "unavailable",
+  free = "free",
+  commercial = "commercial",
+  unavailable = "unavailable",
 }
 
 export enum VersionLicense {
-  PERSONAL = "personal",
-  COMMERCIAL = "commercial",
-  UNAVAILABLE = "unavailable",
+  personal = "personal",
+  commercial = "commercial",
+  unavailable = "unavailable",
 }
 
 export enum VersionUse {
-  SEPARATE = "separate",
-  INCLUDED = "included",
-  UNAVAILABLE = "unavailable",
+  separate = "separate",
+  included = "included",
+  unavailable = "unavailable",
 }
 
 @Entity()

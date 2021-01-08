@@ -20,13 +20,13 @@ import { User } from "./User";
 import { Version } from "./Version";
 
 export enum OrderType {
-  FREE = "free",
-  COMMERCIAL = "commercial",
+  free = "free",
+  commercial = "commercial",
 }
 
 export enum OrderStatus {
-  COMPLETED = "completed",
-  CANCELED = "canceled",
+  completed = "completed",
+  canceled = "canceled",
   /*   PROCESSING = "processing", */
 }
 
