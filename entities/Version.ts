@@ -17,6 +17,29 @@ import { Cover } from "./Cover";
 import { Media } from "./Media";
 import { Tag } from "./Tag";
 
+export enum VersionAvailability {
+  AVAILABLE = "available",
+  UNAVAILABLE = "unavailable",
+}
+
+export enum VersionType {
+  FREE = "free",
+  COMMERCIAL = "commercial",
+  UNAVAILABLE = "unavailable",
+}
+
+export enum VersionLicense {
+  PERSONAL = "personal",
+  COMMERCIAL = "commercial",
+  UNAVAILABLE = "unavailable",
+}
+
+export enum VersionUse {
+  SEPARATE = "separate",
+  INCLUDED = "included",
+  UNAVAILABLE = "unavailable",
+}
+
 @Entity()
 export class Version extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -31,6 +54,7 @@ export class Version extends BaseEntity {
   @Column()
   title: string;
 
+  // $TODO not implemented
   @Column({ nullable: true })
   category: string;
 
@@ -42,20 +66,35 @@ export class Version extends BaseEntity {
   @Column()
   description: string;
 
-  @Column()
-  license: string;
+  @Column({
+    type: "enum",
+    enum: VersionAvailability,
+  })
+  availability: VersionAvailability;
 
-  @Column()
-  use: string;
+  @Column({
+    type: "enum",
+    enum: VersionType,
+  })
+  type: VersionType;
+
+  @Column({
+    type: "enum",
+    enum: VersionLicense,
+  })
+  license: VersionLicense;
+
+  @Column({
+    type: "enum",
+    enum: VersionUse,
+  })
+  use: VersionUse;
 
   @Column()
   personal: number;
 
   @Column()
   commercial: number;
-
-  @Column()
-  availability: string;
 
   @ManyToOne(() => Cover)
   cover: Cover;

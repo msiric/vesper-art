@@ -14,6 +14,11 @@ import { formatAmount } from "../common/helpers";
 import { Artwork } from "./Artwork";
 import { User } from "./User";
 
+export enum LicenseType {
+  PERSONAL = "personal",
+  COMMERCIAL = "commercial",
+}
+
 @Entity()
 export class License extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -41,8 +46,11 @@ export class License extends BaseEntity {
   @Column()
   company: string;
 
-  @Column()
-  type: string;
+  @Column({
+    type: "enum",
+    enum: LicenseType,
+  })
+  type: LicenseType;
 
   @Column()
   active: boolean;

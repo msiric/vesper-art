@@ -19,7 +19,16 @@ import { Review } from "./Review";
 import { User } from "./User";
 import { Version } from "./Version";
 
-// $TODO order status === 'processing' (only if intents are saved on the last step of the form when the order is placed) | 'completed' | 'canceled'
+export enum OrderType {
+  FREE = "free",
+  COMMERCIAL = "commercial",
+}
+
+export enum OrderStatus {
+  COMPLETED = "completed",
+  CANCELED = "canceled",
+  /*   PROCESSING = "processing", */
+}
 
 @Entity()
 export class Order extends BaseEntity {
@@ -89,11 +98,17 @@ export class Order extends BaseEntity {
   @Column()
   fee: number;
 
-  @Column()
-  type: string;
+  @Column({
+    type: "enum",
+    enum: OrderType,
+  })
+  type: OrderType;
 
-  @Column()
-  status: string;
+  @Column({
+    type: "enum",
+    enum: OrderStatus,
+  })
+  status: OrderStatus;
 
   @CreateDateColumn()
   created: Date;

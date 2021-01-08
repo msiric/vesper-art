@@ -8,6 +8,12 @@ import {
 } from "typeorm";
 import { User } from "./User";
 
+export enum AvatarOrientation {
+  SQUARE = "square",
+  PORTRAIT = "portrait",
+  LANDSCAPE = "landscape",
+}
+
 @Entity()
 export class Avatar extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -22,8 +28,11 @@ export class Avatar extends BaseEntity {
   @Column()
   source: string;
 
-  @Column()
-  orientation: string;
+  @Column({
+    type: "enum",
+    enum: AvatarOrientation,
+  })
+  orientation: AvatarOrientation;
 
   @Column()
   dominant: string;

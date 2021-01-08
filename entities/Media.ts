@@ -6,6 +6,12 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 
+export enum MediaOrientation {
+  SQUARE = "square",
+  PORTRAIT = "portrait",
+  LANDSCAPE = "landscape",
+}
+
 @Entity()
 export class Media extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -14,8 +20,11 @@ export class Media extends BaseEntity {
   @Column()
   source: string;
 
-  @Column()
-  orientation: string;
+  @Column({
+    type: "enum",
+    enum: MediaOrientation,
+  })
+  orientation: MediaOrientation;
 
   @Column()
   dominant: string;

@@ -9,6 +9,12 @@ import {
 } from "typeorm";
 import { User } from "./User";
 
+export enum NotificationType {
+  ORDER = "order",
+  REVIEW = "review",
+  COMMENT = "comment",
+}
+
 @Entity()
 export class Notification extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -26,8 +32,11 @@ export class Notification extends BaseEntity {
   @Column()
   ref: string;
 
-  @Column()
-  type: string;
+  @Column({
+    type: "enum",
+    enum: NotificationType,
+  })
+  type: NotificationType;
 
   @Column()
   read: boolean;

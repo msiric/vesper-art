@@ -10,6 +10,11 @@ import {
 import { User } from "./User";
 
 // $TODO ticket status === 'pending' | 'resolved'
+export enum TicketType {
+  PENDING = "pending",
+  RESOLVED = "resolved",
+  CLOSED = "closed",
+}
 
 @Entity()
 export class Ticket extends BaseEntity {
@@ -31,8 +36,11 @@ export class Ticket extends BaseEntity {
   @Column()
   attachment: string;
 
-  @Column()
-  status: string;
+  @Column({
+    type: "enum",
+    enum: TicketType,
+  })
+  status: TicketType;
 
   @CreateDateColumn()
   created: Date;

@@ -6,6 +6,12 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 
+export enum CoverOrientation {
+  SQUARE = "square",
+  PORTRAIT = "portrait",
+  LANDSCAPE = "landscape",
+}
+
 @Entity()
 export class Cover extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -14,8 +20,11 @@ export class Cover extends BaseEntity {
   @Column()
   source: string;
 
-  @Column()
-  orientation: string;
+  @Column({
+    type: "enum",
+    enum: CoverOrientation,
+  })
+  orientation: CoverOrientation;
 
   @Column()
   dominant: string;
