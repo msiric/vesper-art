@@ -4,13 +4,14 @@ import FormData from "form-data";
 import createError from "http-errors";
 import mongoose from "mongoose";
 import querystring from "querystring";
+import * as Yup from "yup";
 import { isObjectEmpty } from "../common/helpers";
 import { licenseValidation, orderValidation } from "../common/validation";
 import { server, stripe as processor } from "../config/secret.js";
 import socketApi from "../lib/socket.js";
 import License from "../models/license.js";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
-import { fetchDiscountById } from "../services/postgres/discount.js";
+import { fetchDiscountByCode } from "../services/postgres/discount.js";
 import { addNewNotification } from "../services/postgres/notification.js";
 import { addNewOrder } from "../services/postgres/order.js";
 import {
@@ -80,19 +81,91 @@ export const getStripeUser = async ({ accountId }) => {
   };
 };
 
+// $TODO just inserted needs heavy testing
+export const applyDiscount = async ({
+  userId,
+  versionId,
+  discountCode,
+  licenseType,
+  connection,
+}) => {
+  const foundUser = await fetchUserById({ userId, connection });
+  if (foundUser) {
+    const foundDiscount = await fetchDiscountByCode({
+      discountCode,
+      connection,
+    });
+    const foundVersion = await fetchVersionDetails({ versionId, connection });
+    await Yup.reach(licenseValidation, "licenseType").validate(licenseType);
+    if (foundVersion) {
+      if (foundVersion.artwork.active) {
+        if (foundVersion.id === foundVersion.artwork.currentId) {
+          if (foundVersion.artwork.owner.id !== foundUser.id) {
+            const foundIntent = await fetchIntentByParents({
+              userId: foundUser.id,
+              versionId: foundVersion.id,
+              status: "pending",
+              connection,
+            });
+            if (!isObjectEmpty(foundIntent)) {
+              const {
+                buyerTotal,
+                sellerTotal,
+                platformTotal,
+                licensePrice,
+              } = calculateTotalCharge({
+                foundVersion,
+                foundDiscount,
+                licenseType,
+              });
+              const orderData = {
+                discountId: foundDiscount.id,
+                spent: buyerTotal,
+                earned: sellerTotal,
+                fee: platformTotal,
+              };
+              await updateStripeIntent({
+                intentAmount: buyerTotal,
+                intentFee: platformTotal,
+                intentId: foundIntent.id,
+                orderData,
+                connection,
+              });
+              return {
+                intent: {
+                  id: paymentIntent.id,
+                  secret: paymentIntent.client_secret,
+                  discount: foundDiscount,
+                },
+              };
+            }
+            throw createError(400, "Could not apply discount");
+          }
+          throw createError(400, "You are the owner of this artwork");
+        }
+        throw createError(400, "Artwork version is obsolete");
+      }
+      throw createError(400, "Artwork is no longer active");
+    }
+    throw createError(400, "Artwork not found");
+  }
+  throw createError(400, "User not found");
+};
+
 // $TODO validacija licenci
 export const managePaymentIntent = async ({
   userId,
   versionId,
-  discountId,
+  // discountId,
   artworkLicense,
   connection,
 }) => {
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
-    const foundDiscount = discountId
-      ? await fetchDiscountById({ discountId, connection })
-      : null;
+    // const foundDiscount = discountId
+    //   ? await fetchDiscountById({ discountId, connection })
+    //   : null;
+    const foundDiscount = null;
     const foundVersion = await fetchVersionDetails({ versionId, connection });
     const licenseData = {
       licenseAssignee: artworkLicense.assignee,
@@ -101,86 +174,91 @@ export const managePaymentIntent = async ({
     };
     // $TODO Bolje sredit validaciju licence
     // $TODO Sredit validnu licencu (npr, ako je "use": "included", ne moze bit odabran personal license)
+    // e.g. isArtworkFree(), isArtworkForSale(), isValidPersonalLicense(), isValidCommercialLicense()
     await licenseValidation.validate(
       sanitizeData({
         ...licenseData,
       })
     );
     if (foundVersion) {
-      if (foundVersion.id === foundVersion.artwork.currentId) {
-        if (foundVersion.artwork.owner.id !== foundUser.id) {
-          const foundIntent = await fetchIntentByParents({
-            userId: foundUser.id,
-            versionId: foundVersion.id,
-            status: "pending",
-            connection,
-          });
-          const {
-            buyerTotal,
-            sellerTotal,
-            platformTotal,
-            licensePrice,
-          } = calculateTotalCharge({
-            foundVersion,
-            foundDiscount,
-            artworkLicense,
-          });
-          const orderData = {
-            ...(isObjectEmpty(foundIntent) && { buyerId: foundUser.id }),
-            ...(isObjectEmpty(foundIntent) && {
-              sellerId: foundVersion.artwork.owner.id,
-            }),
-            ...(isObjectEmpty(foundIntent) && {
-              artworkId: foundVersion.artwork.id,
-            }),
-            ...(isObjectEmpty(foundIntent) && { versionId: foundVersion.id }),
-            discountId:
-              foundDiscount && foundDiscount.active ? foundDiscount.id : null,
-            spent: buyerTotal,
-            earned: sellerTotal,
-            fee: platformTotal,
-            licenseData: {
-              ...licenseData,
-              licensePrice: licensePrice,
-            },
-          };
-          const paymentIntent = isObjectEmpty(foundIntent)
-            ? await constructStripeIntent({
-                intentMethod: "card",
-                intentAmount: buyerTotal,
-                intentCurrency: "usd",
-                intentFee: platformTotal,
-                sellerId: foundVersion.artwork.owner.stripeId,
-                orderData,
-                connection,
-              })
-            : await updateStripeIntent({
-                intentAmount: buyerTotal,
-                intentFee: platformTotal,
-                intentId: foundIntent.id,
-                orderData,
-                connection,
-              });
-          const savedIntent =
-            isObjectEmpty(foundIntent) &&
-            (await addNewIntent({
-              intentId: paymentIntent.id,
+      if (foundVersion.artwork.active) {
+        if (foundVersion.id === foundVersion.artwork.currentId) {
+          if (foundVersion.artwork.owner.id !== foundUser.id) {
+            const foundIntent = await fetchIntentByParents({
               userId: foundUser.id,
               versionId: foundVersion.id,
               status: "pending",
               connection,
-            }));
-          return {
-            intent: {
-              id: paymentIntent.id,
-              secret: paymentIntent.client_secret,
-            },
-          };
-          throw createError(400, "License type is not valid");
+            });
+            const {
+              buyerTotal,
+              sellerTotal,
+              platformTotal,
+              licensePrice,
+            } = calculateTotalCharge({
+              foundVersion,
+              foundDiscount,
+              licenseType: licenseData.licenseType,
+            });
+            const orderData = {
+              ...(isObjectEmpty(foundIntent) && { buyerId: foundUser.id }),
+              ...(isObjectEmpty(foundIntent) && {
+                sellerId: foundVersion.artwork.owner.id,
+              }),
+              ...(isObjectEmpty(foundIntent) && {
+                artworkId: foundVersion.artwork.id,
+              }),
+              ...(isObjectEmpty(foundIntent) && { versionId: foundVersion.id }),
+              discountId: !isObjectEmpty(foundDiscount)
+                ? foundDiscount.id
+                : null,
+              spent: buyerTotal,
+              earned: sellerTotal,
+              fee: platformTotal,
+              licenseData: {
+                ...licenseData,
+                licensePrice: licensePrice,
+              },
+            };
+            const paymentIntent = isObjectEmpty(foundIntent)
+              ? await constructStripeIntent({
+                  intentMethod: "card",
+                  intentAmount: buyerTotal,
+                  intentCurrency: "usd",
+                  intentFee: platformTotal,
+                  sellerId: foundVersion.artwork.owner.stripeId,
+                  orderData,
+                  connection,
+                })
+              : await updateStripeIntent({
+                  intentAmount: buyerTotal,
+                  intentFee: platformTotal,
+                  intentId: foundIntent.id,
+                  orderData,
+                  connection,
+                });
+            const savedIntent =
+              isObjectEmpty(foundIntent) &&
+              (await addNewIntent({
+                intentId: paymentIntent.id,
+                userId: foundUser.id,
+                versionId: foundVersion.id,
+                status: "pending",
+                connection,
+              }));
+            return {
+              intent: {
+                id: paymentIntent.id,
+                secret: paymentIntent.client_secret,
+              },
+            };
+            throw createError(400, "License type is not valid");
+          }
+          throw createError(400, "You are the owner of this artwork");
         }
-        throw createError(400, "You are the owner of this artwork");
+        throw createError(400, "Artwork version is obsolete");
       }
-      throw createError(400, "Artwork version is obsolete");
+      throw createError(400, "Artwork is no longer active");
     }
     throw createError(400, "Artwork not found");
   }
