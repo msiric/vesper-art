@@ -34,7 +34,6 @@ import { loadStripe } from "@stripe/stripe-js";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import * as Yup from "yup";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
@@ -47,6 +46,7 @@ import { getCheckout } from "../../services/checkout.js";
 import { patchIntent, postIntent } from "../../services/stripe.js";
 import globalStyles from "../../styles/global.js";
 import { billingValidation } from "../../validation/billing.js";
+import { emptyValidation } from "../../validation/empty.js";
 import { licenseValidation } from "../../validation/license.js";
 
 const STEPS = [
@@ -69,11 +69,11 @@ const initialState = {
   loading: true,
 };
 
-const checkoutValidation = [licenseValidation, billingValidation, null];
-
-const validationSchema = Yup.object().shape({
-  discountCode: Yup.string().trim().required("Discount cannot be empty"),
-});
+const checkoutValidation = [
+  licenseValidation,
+  billingValidation,
+  emptyValidation,
+];
 
 const iconsStyle = makeStyles((theme) => ({
   root: {
@@ -210,6 +210,7 @@ const Processor = ({ match, location, stripe }) => {
       billingCountry: "",
     },
     resolver: yupResolver(checkoutValidation[state.step.current]),
+    shouldUnregister: false,
   });
 
   const licenseType = watch("licenseType");
@@ -358,6 +359,8 @@ const Processor = ({ match, location, stripe }) => {
       console.log(state.secret, stripe, elements);
       // $TODO Enqueue error;
     }
+
+    console.log("SUBMITTING", values);
     const cardElement = elements.getElement(CardNumberElement);
     const stripeData = {
       payment_method: {
@@ -410,9 +413,9 @@ const Processor = ({ match, location, stripe }) => {
   };
 
   const onSubmit = (values, actions) => {
-    console.log("VALUES", values);
     const isFirstStep = state.step.current === 0;
     const isLastStep = state.step.current === state.step.length - 1;
+    console.log("first", isFirstStep, "last", isLastStep);
     if (isLastStep) {
       submitForm(values);
     } else if (isFirstStep) {

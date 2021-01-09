@@ -245,3 +245,5 @@ export const ticketValidation = Yup.object().shape({
 export const fingerprintValidation = Yup.object().shape({
   licenseFingerprint: Yup.string().trim().required(),
 });
+
+export const emptyValidation = Yup.object().shape({});

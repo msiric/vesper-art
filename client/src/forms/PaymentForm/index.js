@@ -6,7 +6,6 @@ import {
   CardNumberElement,
 } from "@stripe/react-stripe-js";
 import React, { useState } from "react"; //, {useState }
-import { useHistory } from "react-router-dom";
 const PaymentFormStyles = makeStyles((muiTheme) => ({
   fixed: {
     height: "100%",
@@ -149,9 +148,6 @@ export const StripeTextField = (props) => {
 const PaymentForm = ({ secret, version }) => {
   const [state, setState] = useState({ elementError: {} });
   const classes = PaymentFormStyles();
-
-  // const stripe = useStripe();
-  const history = useHistory();
 
   const cardsLogo = [
     "amex",
