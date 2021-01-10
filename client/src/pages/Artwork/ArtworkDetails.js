@@ -32,7 +32,7 @@ import { licenseValidation } from "../../validation/license.js";
 
 const initialState = {
   loading: true,
-  artwork: { comments: [] },
+  artwork: { comments: [], favorites: [] },
   license: null,
   height: 400,
   modal: {

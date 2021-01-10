@@ -8,7 +8,7 @@ import { useTracked as useUserContext } from "../../contexts/User.js";
 import { CardContent } from "../../styles/theme.js";
 import artworkActionsStyles from "./styles.js";
 
-const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
+const ArtworkActions = ({ artwork, handleArtworkSave, loading }) => {
   const [userStore] = useUserContext();
   const classes = artworkActionsStyles();
 
@@ -44,7 +44,7 @@ const ArtworkActions = ({ artwork = {}, handleArtworkSave, loading }) => {
                 }}
               />
               <Typography style={{ fontSize: 34 }} align="center">
-                {artwork.favorites}
+                {artwork.favorites.length}
               </Typography>
             </Box>
           </Box>
