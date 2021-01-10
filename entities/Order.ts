@@ -48,14 +48,14 @@ export class Order extends BaseEntity {
   @Column()
   sellerId: string;
 
-  @OneToOne(() => Artwork)
+  @ManyToOne(() => Artwork)
   @JoinColumn()
   artwork: Artwork;
 
   @Column()
   artworkId: string;
 
-  @OneToOne(() => Version)
+  @ManyToOne(() => Version)
   @JoinColumn()
   version: Version;
 
@@ -69,7 +69,7 @@ export class Order extends BaseEntity {
   @Column()
   licenseId: string;
 
-  @OneToOne(() => Discount)
+  @ManyToOne(() => Discount)
   @JoinColumn()
   discount: Discount;
 
