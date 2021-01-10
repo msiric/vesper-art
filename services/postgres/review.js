@@ -25,7 +25,7 @@ export const addNewReview = async ({
       {
         id: reviewId,
         orderId: orderData.id,
-        artworkId: orderData.artwork.id,
+        artworkId: orderData.artworkId,
         reviewerId: reviewerId,
         revieweeId: revieweeId,
         rating: reviewRating,

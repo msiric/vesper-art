@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { isObjectEmpty } from "../common/helpers";
 import { reviewValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
 import { addNewNotification } from "../services/postgres/notification.js";
@@ -24,7 +25,7 @@ export const postReview = async ({
       connection,
     });
     if (foundOrder) {
-      if (!foundOrder.artwork.review) {
+      if (isObjectEmpty(foundOrder.review)) {
         const { reviewId, notificationId } = generateUuids({
           reviewId: null,
           notificationId: null,
@@ -34,7 +35,7 @@ export const postReview = async ({
           reviewId,
           orderData: foundOrder,
           reviewerId: userId,
-          revieweeId: foundOrder.seller,
+          revieweeId: foundOrder.sellerId,
           reviewRating,
           connection,
         });
