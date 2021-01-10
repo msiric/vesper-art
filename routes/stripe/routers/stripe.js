@@ -4,6 +4,7 @@ import {
   applyDiscount,
   assignStripeId,
   createPayout,
+  fetchIntentById,
   getStripeUser,
   managePaymentIntent,
   onboardUser,
@@ -28,6 +29,14 @@ router.route("/hooks", bodyParser.raw({ type: "application/json" })).post(
 router.route("/account/:accountId").get(
   isAuthenticated,
   handler(getStripeUser, false, (req, res, next) => ({
+    ...req.params,
+  }))
+);
+
+// ovo je test za novi checkout (trenutno delayed)
+router.route("/intent/:intentId").get(
+  isAuthenticated,
+  handler(fetchIntentById, false, (req, res, next) => ({
     ...req.params,
   }))
 );

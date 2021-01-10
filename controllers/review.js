@@ -44,7 +44,7 @@ export const postReview = async ({
         const denominator = currency(foundOrder.seller.reviews).add(1);
         const newRating = currency(numerator).divide(denominator); */
         const updatedOrder = await addOrderReview({
-          savedReview,
+          reviewId,
           orderId,
           userId,
           connection,
@@ -53,7 +53,7 @@ export const postReview = async ({
         await addNewNotification({
           notificationId,
           notificationLink: foundOrder.id,
-          notificationRef: savedReview.id,
+          notificationRef: reviewId,
           notificationType: "review",
           notificationReceiver: foundOrder.seller,
           connection,

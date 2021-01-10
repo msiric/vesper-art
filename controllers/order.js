@@ -12,6 +12,18 @@ aws.config.update({
   region: process.env.S3_REGION,
 });
 
+// ovo je test za novi checkout (trenutno delayed)
+// $TODO validacija licenci
+export const addNewOrder = async ({
+  userId,
+  versionId,
+  /*   discountId, */
+  artworkLicense,
+  connection,
+}) => {
+  // $TODO call retrieve paymentintent and create new order
+};
+
 export const getSoldOrders = async ({ userId, connection }) => {
   const foundUser = await fetchUserSales({ userId, connection });
   return { sales: foundUser.sales };

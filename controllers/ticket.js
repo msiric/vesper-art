@@ -25,7 +25,7 @@ export const postTicket = async ({
   });
   await sendEmail({
     emailReceiver: userEmail,
-    emailSubject: `Support ticket (#${savedTicket.id}): ${ticketTitle}`,
+    emailSubject: `Support ticket (#${ticketId}): ${ticketTitle}`,
     emailContent: ticketBody,
   });
   return { message: "Ticket successfully created" };

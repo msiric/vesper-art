@@ -1,5 +1,4 @@
 import axios from "axios";
-import crypto from "crypto";
 import FormData from "form-data";
 import createError from "http-errors";
 import mongoose from "mongoose";
@@ -9,9 +8,9 @@ import { isObjectEmpty } from "../common/helpers";
 import { licenseValidation, orderValidation } from "../common/validation";
 import { server, stripe as processor } from "../config/secret.js";
 import socketApi from "../lib/socket.js";
-import License from "../models/license.js";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
 import { fetchDiscountByCode } from "../services/postgres/discount.js";
+import { addNewLicense } from "../services/postgres/license";
 import { addNewNotification } from "../services/postgres/notification.js";
 import { addNewOrder } from "../services/postgres/order.js";
 import {
@@ -21,6 +20,7 @@ import {
   constructStripePayout,
   fetchStripeAccount,
   fetchStripeBalance,
+  retrieveStripeIntent,
   updateStripeIntent,
 } from "../services/postgres/stripe.js";
 import {
@@ -360,6 +360,16 @@ export const assignStripeId = async ({
   return responseObject.redirect(`http://localhost:3000/users/${username}`);
 };
 
+export const fetchIntentById = async ({ userId, intentId, connection }) => {
+  const foundIntent = await retrieveStripeIntent({ intentId, connection });
+  if (!isObjectEmpty(foundIntent)) {
+    return {
+      intent: foundIntent,
+    };
+  }
+  throw createError(400, "Could not fetch intent");
+};
+
 export const createPayout = async ({ userId, connection }) => {
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser.stripeId) {
@@ -407,17 +417,18 @@ const processTransaction = async ({ stripeIntent, connection }) => {
       licenseType,
     })
   );
-  // $TODO use appropriate service to create new license
-  const newLicense = new License();
-  newLicense.owner = buyerId;
-  newLicense.artwork = artworkId;
-  newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
-  newLicense.assignee = licenseAssignee;
-  newLicense.company = licenseCompany;
-  newLicense.type = licenseType;
-  newLicense.active = true;
-  newLicense.price = licensePrice;
-  const savedLicense = await License.save(newLicense);
+  const { licenseId, orderId, notificationId } = generateUuids({
+    licenseId: null,
+    orderId: null,
+    notificationId: null,
+  });
+  const savedLicense = await addNewLicense({
+    licenseId,
+    artworkId: foundArtwork.id,
+    licenseData: { licenseAssignee, licenseCompany, licenseType, licensePrice },
+    userId: buyerId,
+    connection,
+  });
   await orderValidation.validate(
     sanitizeData({
       orderBuyer: buyerId,
@@ -425,7 +436,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
       orderArtwork: artworkId,
       orderVersion: versionId,
       orderDiscount: discountId,
-      orderLicense: savedLicense.id,
+      orderLicense: licenseId,
       orderSpent: orderData.spent,
       orderEarned: orderData.earned,
       orderFee: orderData.fee,
@@ -438,7 +449,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     artworkId,
     versionId,
     discountId,
-    licenseId: savedLicense.id,
+    licenseId,
     review: null,
     spent: orderData.spent,
     earned: orderData.earned,
@@ -447,10 +458,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     status: "completed",
     intentId,
   };
-  const { orderId, notificationId } = generateUuids({
-    orderId: null,
-    notificationId: null,
-  });
+
   const savedOrder = await addNewOrder({
     orderId,
     orderData: orderObject,
@@ -466,13 +474,13 @@ const processTransaction = async ({ stripeIntent, connection }) => {
   // new start
   await addNewNotification({
     notificationId,
-    notificationLink: savedOrder.id,
+    notificationLink: orderId,
     notificationRef: "",
     notificationType: "order",
     notificationReceiver: sellerId,
     connection,
   });
-  socketApi.sendNotification(sellerId, savedOrder.id);
+  socketApi.sendNotification(sellerId, orderId);
   // new end
   return { message: "Order processed successfully" };
 };

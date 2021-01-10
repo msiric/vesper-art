@@ -18,7 +18,6 @@ import {
   removeArtworkVersion,
   removeExistingFavorite,
 } from "../services/postgres/artwork.js";
-import { addNewLicense } from "../services/postgres/license.js";
 import { fetchOrderByVersion } from "../services/postgres/order.js";
 import { fetchStripeAccount } from "../services/postgres/stripe.js";
 import { fetchUserById } from "../services/postgres/user.js";
@@ -401,25 +400,27 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
 
 // needs transaction (done)
 // $TODO validacija licenci?
-export const saveLicense = async ({
-  userId,
-  artworkId,
-  license,
-  connection,
-}) => {
-  const foundArtwork = await fetchArtworkDetails({ artworkId, connection });
-  if (foundArtwork) {
-    const { licenseId } = generateUuids({
-      licenseId: null,
-    });
-    const savedLicense = await addNewLicense({
-      licenseId,
-      artworkData: foundArtwork,
-      licenseData: license,
-      userId,
-      connection,
-    });
-    return { message: "License saved", license: license };
-  }
-  throw createError(400, "Artwork not found");
-};
+
+// Not used?
+// export const saveLicense = async ({
+//   userId,
+//   artworkId,
+//   license,
+//   connection,
+// }) => {
+//   const foundArtwork = await fetchArtworkDetails({ artworkId, connection });
+//   if (foundArtwork) {
+//     const { licenseId } = generateUuids({
+//       licenseId: null,
+//     });
+//     const savedLicense = await addNewLicense({
+//       licenseId,
+//       artworkId: foundArtwork.ic,
+//       licenseData: license,
+//       userId,
+//       connection,
+//     });
+//     return { message: "License saved", license: license };
+//   }
+//   throw createError(400, "Artwork not found");
+// };

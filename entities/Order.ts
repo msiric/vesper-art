@@ -27,7 +27,7 @@ export enum OrderType {
 export enum OrderStatus {
   completed = "completed",
   canceled = "canceled",
-  /*   PROCESSING = "processing", */
+  PROCESSING = "processing",
 }
 
 @Entity()

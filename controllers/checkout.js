@@ -54,8 +54,13 @@ export const postDownload = async ({
             const savedLicense = await addNewLicense({
               licenseId,
               userId: foundUser.id,
-              artworkData: foundVersion.artwork,
-              licenseData: { licenseAssignee, licenseCompany, licenseType },
+              artworkId: foundVersion.artwork.id,
+              licenseData: {
+                licenseAssignee,
+                licenseCompany,
+                licenseType,
+                licensePrice,
+              },
               connection,
             });
             await orderValidation.validate(
@@ -95,16 +100,13 @@ export const postDownload = async ({
             // new start
             await addNewNotification({
               notificationId,
-              notificationLink: savedOrder.id,
+              notificationLink: orderId,
               notificationRef: "",
               notificationType: "order",
               notificationReceiver: foundVersion.artwork.owner.id,
               connection,
             });
-            socketApi.sendNotification(
-              foundVersion.artwork.owner.id,
-              savedOrder.id
-            );
+            socketApi.sendNotification(foundVersion.artwork.owner.id, orderId);
             // new end
             return { message: "Order completed successfully" };
           }

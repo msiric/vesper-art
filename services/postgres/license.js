@@ -28,7 +28,7 @@ export const fetchLicenseByFingerprint = async ({
 export const addNewLicense = async ({
   licenseId,
   userId,
-  artworkData,
+  artworkId,
   licenseData,
   connection,
 }) => {
@@ -51,13 +51,13 @@ export const addNewLicense = async ({
       {
         id: licenseId,
         ownerId: userId,
-        artworkId: artworkData.id,
+        artworkId,
         fingerprint: crypto.randomBytes(20).toString("hex"),
         assignee: licenseData.licenseAssignee,
         company: licenseData.licenseCompany,
         type: licenseData.licenseType,
+        price: licenseData.licensePrice,
         active: false,
-        price: artworkData.current[licenseData.licenseType],
       },
     ])
     .execute();

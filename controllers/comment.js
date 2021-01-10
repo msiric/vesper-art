@@ -42,11 +42,11 @@ export const postComment = async ({
       commentContent,
       connection,
     });
-    if (!savedComment.owner === foundArtwork.owner.id) {
+    if (!userId === foundArtwork.owner.id) {
       const savedNotification = await addNewNotification({
         notificationId,
         notificationLink: foundArtwork.id,
-        notificationRef: savedComment.id,
+        notificationRef: commentId,
         notificationType: "comment",
         notificationReceiver: foundArtwork.owner.id,
         connection,

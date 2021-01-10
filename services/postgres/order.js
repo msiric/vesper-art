@@ -147,7 +147,7 @@ export const fetchUserPurchase = async ({ orderId, userId, connection }) => {
 export const addOrderReview = async ({
   orderId,
   userId,
-  savedReview,
+  reviewId,
   connection,
 }) => {
   /*   const foundOrder = await Order.findOne({
@@ -159,7 +159,7 @@ export const addOrderReview = async ({
   const updatedOrder = await connection
     .createQueryBuilder()
     .update(Order)
-    .set({ reviewId: savedReview })
+    .set({ reviewId: reviewId })
     .where("id = :orderId AND buyerId = :userId", {
       orderId,
       userId,
