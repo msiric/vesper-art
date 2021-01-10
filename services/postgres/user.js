@@ -624,27 +624,14 @@ export const addNewIntent = async ({
   return savedIntent;
 };
 
-// $TODO probably not how it's done
-// $TODO needs to be removed from intents instead of user
-export const editExistingIntent = async ({
-  intentId,
-  userId,
-  versionId,
-  status,
-  connection,
-}) => {
+export const editExistingIntent = async ({ intentId, status, connection }) => {
   const updatedIntent = await connection
     .createQueryBuilder()
     .update(Intent)
     .set({ status: status })
-    .where(
-      "intent.id = :intentId AND intent.ownerId = :userId AND intent.versionId = :versionId",
-      {
-        intentId,
-        userId,
-        versionId,
-      }
-    )
+    .where("intent.id = :intentId", {
+      intentId,
+    })
     .execute();
   console.log(updatedIntent);
   return updatedIntent;

@@ -27,7 +27,8 @@ export enum OrderType {
 export enum OrderStatus {
   completed = "completed",
   canceled = "canceled",
-  PROCESSING = "processing",
+  // ovo je test za novi checkout (trenutno delayed)
+  processing = "processing",
 }
 
 @Entity()
@@ -72,14 +73,14 @@ export class Order extends BaseEntity {
   @JoinColumn()
   discount: Discount;
 
-  @Column()
+  @Column({ nullable: true })
   discountId: string;
 
   @OneToOne(() => Review)
   @JoinColumn()
   review: Review;
 
-  @Column()
+  @Column({ nullable: true })
   reviewId: string;
 
   @OneToOne(() => Intent)

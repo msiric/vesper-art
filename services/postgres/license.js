@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { License } from "../../entities/License";
 
 const LICENSE_ACTIVE_STATUS = true;

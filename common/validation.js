@@ -167,12 +167,12 @@ export const orderValidation = Yup.object().shape({
   orderSeller: Yup.string().uuid("Invalid UUID").required(),
   orderArtwork: Yup.string().uuid("Invalid UUID").required(),
   orderVersion: Yup.string().uuid("Invalid UUID").required(),
-  orderDiscount: Yup.string().uuid("Invalid UUID").required(),
+  orderDiscount: Yup.string().uuid("Invalid UUID").nullable(),
   orderLicense: Yup.string().uuid("Invalid UUID").required(),
   orderSpent: Yup.number().integer().required(),
   orderEarned: Yup.number().integer().required(),
   orderFee: Yup.number().integer().required(),
-  orderIntent: Yup.string().uuid("Invalid UUID").required(),
+  orderIntent: Yup.string("Invalid intent format").required(),
 });
 
 export const originValidation = Yup.object().shape({

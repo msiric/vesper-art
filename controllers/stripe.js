@@ -1,17 +1,14 @@
 import axios from "axios";
 import FormData from "form-data";
 import createError from "http-errors";
-import mongoose from "mongoose";
 import querystring from "querystring";
 import * as Yup from "yup";
 import { isObjectEmpty } from "../common/helpers";
 import { licenseValidation, orderValidation } from "../common/validation";
 import { server, stripe as processor } from "../config/secret.js";
-import socketApi from "../lib/socket.js";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
 import { fetchDiscountByCode } from "../services/postgres/discount.js";
 import { addNewLicense } from "../services/postgres/license";
-import { addNewNotification } from "../services/postgres/notification.js";
 import { addNewOrder } from "../services/postgres/order.js";
 import {
   constructStripeEvent,
@@ -397,13 +394,15 @@ export const createPayout = async ({ userId, connection }) => {
 // $TODO validacija license i pricea
 // vjerojatno najbolje fetchat svaki od ID-ova i verifyat data-u
 const processTransaction = async ({ stripeIntent, connection }) => {
+  console.log("PROCESS TRANSACTION STARTED");
   const orderData = JSON.parse(stripeIntent.metadata.orderData);
-  const buyerId = mongoose.Types.ObjectId(orderData.buyerId);
-  const sellerId = mongoose.Types.ObjectId(orderData.sellerId);
-  const artworkId = mongoose.Types.ObjectId(orderData.artworkId);
-  const versionId = mongoose.Types.ObjectId(orderData.versionId);
-  const discountId = mongoose.Types.ObjectId(orderData.discountId);
+  const buyerId = orderData.buyerId;
+  const sellerId = orderData.sellerId;
+  const artworkId = orderData.artworkId;
+  const versionId = orderData.versionId;
+  const discountId = orderData.discountId;
   const intentId = stripeIntent.id;
+  console.log("IDS DECODED");
   const {
     licenseAssignee,
     licenseCompany,
@@ -417,6 +416,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
       licenseType,
     })
   );
+  console.log("LICENSE VALIDATED");
   const { licenseId, orderId, notificationId } = generateUuids({
     licenseId: null,
     orderId: null,
@@ -424,11 +424,12 @@ const processTransaction = async ({ stripeIntent, connection }) => {
   });
   const savedLicense = await addNewLicense({
     licenseId,
-    artworkId: foundArtwork.id,
+    artworkId,
     licenseData: { licenseAssignee, licenseCompany, licenseType, licensePrice },
     userId: buyerId,
     connection,
   });
+  console.log("LICENSE SAVED");
   await orderValidation.validate(
     sanitizeData({
       orderBuyer: buyerId,
@@ -443,6 +444,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
       orderIntent: intentId,
     })
   );
+  console.log("ORDER VALIDATED");
   const orderObject = {
     buyerId,
     sellerId,
@@ -450,7 +452,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     versionId,
     discountId,
     licenseId,
-    review: null,
+    reviewId: null,
     spent: orderData.spent,
     earned: orderData.earned,
     fee: orderData.fee,
@@ -458,29 +460,28 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     status: "completed",
     intentId,
   };
-
   const savedOrder = await addNewOrder({
     orderId,
     orderData: orderObject,
     connection,
   });
+  console.log("ORDER SAVED");
   await editExistingIntent({
     intentId,
-    userId: buyerId,
-    versionId,
     status: "succeeded",
     connection,
   });
+  console.log("INTENT UPDATED");
   // new start
-  await addNewNotification({
-    notificationId,
-    notificationLink: orderId,
-    notificationRef: "",
-    notificationType: "order",
-    notificationReceiver: sellerId,
-    connection,
-  });
-  socketApi.sendNotification(sellerId, orderId);
+  // await addNewNotification({
+  //   notificationId,
+  //   notificationLink: orderId,
+  //   notificationRef: "",
+  //   notificationType: "order",
+  //   notificationReceiver: sellerId,
+  //   connection,
+  // });
+  // socketApi.sendNotification(sellerId, orderId);
   // new end
   return { message: "Order processed successfully" };
 };

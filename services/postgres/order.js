@@ -31,7 +31,7 @@ export const addNewOrder = async ({ orderId, orderData, connection }) => {
         versionId: orderData.versionId,
         licenseId: orderData.licenseId,
         discountId: orderData.discountId,
-        reviewId: orderData.review,
+        reviewId: orderData.reviewId,
         intentId: orderData.intentId,
         spent: orderData.spent,
         earned: orderData.earned,
