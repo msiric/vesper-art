@@ -255,3 +255,23 @@ export const fetchOrdersByBuyer = async ({
   console.log(foundOrders);
   return foundOrders;
 };
+
+export const fetchBuyerMedia = async ({ userId, orderId, connection }) => {
+  const foundOrder = await connection
+    .getRepository(Order)
+    .createQueryBuilder("order")
+    .leftJoinAndSelect("order.version", "version")
+    .leftJoinAndSelect("version.media", "media")
+    .where(
+      "order.id = :orderId AND order.status = :status AND order.buyerId = :userId",
+      {
+        orderId,
+        // $TODO to const
+        status: "completed",
+        userId,
+      }
+    )
+    .getOne();
+  console.log(foundOrder.version.media);
+  return foundOrder.version.media;
+};

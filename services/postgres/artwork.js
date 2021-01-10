@@ -177,12 +177,22 @@ export const fetchUserArtworks = async ({
 
 // $TODO isto kao i prethodni service samo bez skip i limit
 // $Needs testing (mongo -> postgres)
-// export const fetchArtworksByOwner = async ({ userId }) => {
-//   return await Artwork.find({
-//     where: [{ owner: userId, active: true }],
-//     relations: ["current"],
-//   });
-// };
+export const fetchArtworkByOwner = async ({ userId, connection }) => {
+  const foundArtwork = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .where("artwork.ownerId = :userId AND artwork.active = :active", {
+      userId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .getOne();
+  console.log(foundArtwork);
+  return foundArtwork;
+};
 
 export const addNewCover = async ({ coverId, artworkUpload, connection }) => {
   /*   const newCover = new Cover();

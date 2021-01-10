@@ -84,7 +84,10 @@ const Orders = () => {
                 name: "Artwork",
                 options: {
                   customBodyRender: (value, tableMeta, updateValue) => (
-                    <img style={{ width: "85%", maxWidth: 200 }} src={value} />
+                    <img
+                      style={{ width: "85%", maxWidth: 200 }}
+                      src={value.source}
+                    />
                   ),
                   sort: false,
                 },

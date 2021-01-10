@@ -1,6 +1,9 @@
 import aws from "aws-sdk";
 import createError from "http-errors";
-import { fetchOrderDetails } from "../services/postgres/order.js";
+import {
+  fetchBuyerMedia,
+  fetchOrderDetails,
+} from "../services/postgres/order.js";
 import {
   fetchUserPurchases,
   fetchUserSales,
@@ -25,13 +28,13 @@ export const addNewOrder = async ({
 };
 
 export const getSoldOrders = async ({ userId, connection }) => {
-  const foundUser = await fetchUserSales({ userId, connection });
-  return { sales: foundUser.sales };
+  const foundSales = await fetchUserSales({ userId, connection });
+  return { sales: foundSales };
 };
 
 export const getBoughtOrders = async ({ userId, connection }) => {
-  const foundUser = await fetchUserPurchases({ userId, connection });
-  return { purchases: foundUser.purchases };
+  const foundPurchases = await fetchUserPurchases({ userId, connection });
+  return { purchases: foundPurchases };
 };
 
 export const getOrderDetails = async ({ userId, orderId, connection }) => {
@@ -75,16 +78,15 @@ export const getOrderDetails = async ({ userId, orderId, connection }) => {
   throw createError(400, "Order not found");
 };
 
-export const downloadOrderArtwork = async ({ userId, orderId, connection }) => {
-  const foundOrder = await fetchOrderDetails({
+export const getOrderMedia = async ({ userId, orderId, connection }) => {
+  const foundMedia = await fetchBuyerMedia({
     userId,
     orderId,
     connection,
   });
-  if (foundOrder) {
+  if (foundMedia) {
     const s3 = new aws.S3({ signatureVersion: "v4" });
-
-    const file = foundOrder.version.media.split("/").pop();
+    const file = foundMedia.source.split("/").pop();
     const params = {
       Bucket: process.env.S3_BUCKET,
       Key: `artworkMedia/${file}`,

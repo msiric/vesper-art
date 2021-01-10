@@ -154,11 +154,12 @@ const Gallery = ({ match, location }) => {
               dataCursor: state.scroll.artwork.dataCursor,
               dataCeiling: state.scroll.artwork.dataCeiling,
             });
+      console.log("data", data);
       const newArtwork = data[state.display].reduce((object, item) => {
         object[
           state.display === "purchases"
-            ? item.version.cover
-            : item.current.cover
+            ? item.version.cover.source
+            : item.current.cover.source
         ] = {
           id: item.id,
           title:
@@ -169,21 +170,21 @@ const Gallery = ({ match, location }) => {
             state.display === "purchases" ? item.seller.name : userStore.name,
           cover:
             state.display === "purchases"
-              ? item.version.cover
-              : item.current.cover,
+              ? item.version.cover.source
+              : item.current.cover.source,
           media: null,
           dominant:
             state.display === "purchases"
-              ? item.version.dominant
-              : item.current.dominant,
+              ? item.version.cover.dominant
+              : item.current.cover.dominant,
           height:
             state.display === "purchases"
-              ? item.version.height
-              : item.current.height,
+              ? item.version.cover.height
+              : item.current.cover.height,
           width:
             state.display === "purchases"
-              ? item.version.width
-              : item.current.width,
+              ? item.version.cover.width
+              : item.current.cover.width,
         };
         return object;
       }, {});

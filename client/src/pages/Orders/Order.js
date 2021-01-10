@@ -16,7 +16,13 @@ import globalStyles from "../../styles/global.js";
 
 const initialState = {
   loading: true,
-  order: { version: {}, seller: {}, buyer: {}, license: {}, review: {} },
+  order: {
+    version: { cover: {} },
+    seller: {},
+    buyer: {},
+    license: {},
+    review: {},
+  },
   modal: {
     open: false,
   },

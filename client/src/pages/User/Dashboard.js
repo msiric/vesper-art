@@ -53,15 +53,21 @@ const Dashboard = ({ location }) => {
     try {
       setState({ ...initialState });
       const { data } = await getStatistics.request({ userId: userStore.id });
+      console.log(data);
       const currentStats = {
-        review: data.statistics.rating,
-        favorites: data.statistics.favoritedArtwork.length,
-        orders: data.statistics[state.display.type].length,
-        spent: data.statistics.purchases.length
-          ? data.statistics.purchases.reduce((a, b) => a + b.spent, 0)
+        review: data.statistics.length
+          ? data.statistics.reduce(
+              (a, b) => (a.review && b.review ? a + b.review.rating : 0),
+              0
+            )
           : 0,
-        earned: data.statistics.sales.length
-          ? data.statistics.sales.reduce((a, b) => a + b.earned, 0)
+        favorites: data.favorites.length,
+        orders: data.statistics.length,
+        spent: data.statistics.length
+          ? data.statistics.reduce((a, b) => a + b.spent, 0)
+          : 0,
+        earned: data.statistics.length
+          ? data.statistics.reduce((a, b) => a + b.earned, 0)
           : 0,
       };
       setState((prevState) => ({

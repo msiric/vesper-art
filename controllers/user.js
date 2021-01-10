@@ -11,7 +11,6 @@ import {
   rangeValidation,
 } from "../common/validation";
 import { server } from "../config/secret.js";
-import { fetchArtworkByOwner } from "../services/postgres/artwork.js";
 import {
   fetchOrdersByBuyer,
   fetchOrdersBySeller,
@@ -27,6 +26,7 @@ import {
   editUserPassword,
   editUserPreferences,
   editUserProfile,
+  fetchSellerMedia,
   fetchUserArtwork,
   fetchUserByEmail,
   fetchUserById,
@@ -100,7 +100,7 @@ export const getUserOwnership = async ({
     dataLimit,
     connection,
   });
-  return { purchases: foundPurchases.purchases };
+  return { purchases: foundPurchases };
 };
 
 export const getUserFavorites = async ({
@@ -123,13 +123,17 @@ export const getUserStatistics = async ({ userId, connection }) => {
   // brisanje accounta
   /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
     }); */
-  const foundUser = await fetchUserStatistics({ userId, connection });
+  const [foundUser, foundFavorites, foundOrders] = await Promise.all([
+    fetchUserById({ userId, connection }),
+    fetchUserFavorites({ userId, connection }),
+    fetchUserStatistics({ userId, connection }),
+  ]);
   const balance = await fetchStripeBalance({
     stripeId: foundUser.stripeId,
     connection,
   });
   const { amount } = balance.available[0];
-  return { statistics: foundUser, amount: amount };
+  return { statistics: foundOrders, amount: amount, favorites: foundFavorites };
 };
 
 export const getUserSales = async ({
@@ -441,14 +445,14 @@ export const deactivateUser = async ({ userId, connection }) => {
 };
 
 export const getUserMedia = async ({ userId, artworkId, connection }) => {
-  const foundArtwork = await fetchArtworkByOwner({
+  const foundMedia = await fetchSellerMedia({
     userId,
     artworkId,
     connection,
   });
-  if (foundArtwork) {
+  if (foundMedia) {
     const s3 = new aws.S3({ signatureVersion: "v4" });
-    const file = foundArtwork.current.media.split("/").pop();
+    const file = foundMedia.source.split("/").pop();
     const params = {
       Bucket: process.env.S3_BUCKET,
       Key: `artworkMedia/${file}`,

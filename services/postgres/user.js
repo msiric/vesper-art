@@ -147,6 +147,25 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
   return foundUser;
 };
 
+export const fetchSellerMedia = async ({ userId, artworkId, connection }) => {
+  const foundArtwork = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.media", "media")
+    .where(
+      "artwork.id = :artworkId AND artwork.active = :active AND artwork.ownerId = :userId",
+      {
+        artworkId,
+        active: ARTWORK_ACTIVE_STATUS,
+        userId,
+      }
+    )
+    .getOne();
+  console.log(foundArtwork.current.media);
+  return foundArtwork.current.media;
+};
+
 // $Needs testing (mongo -> postgres)
 export const fetchUserPurchases = async ({
   userId,
@@ -307,7 +326,7 @@ export const fetchUserFavorites = async ({
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
-    .where("artwork.ownerId = :userId", {
+    .where("favorite.ownerId = :userId", {
       userId,
     })
     .getMany();
@@ -332,13 +351,18 @@ export const fetchUserStatistics = async ({ userId, connection }) => {
   const foundStatistics = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
+    .leftJoinAndSelect("order.seller", "seller")
+    .leftJoinAndSelect("seller.avatar", "avatar")
     .leftJoinAndSelect("order.version", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("order.review", "review")
     .leftJoinAndSelect("order.license", "license")
     .where(
-      "order.buyerId = :userId AND order.active = :active) OR (order.sellerId = :userId AND order.active = :active)",
+      "order.buyerId = :userId AND order.status = :status OR order.sellerId = :userId AND order.status = :status",
       {
         userId,
-        active: true,
+        // $TODO to const
+        status: "completed",
       }
     )
     .getMany();

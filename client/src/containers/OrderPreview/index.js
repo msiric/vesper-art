@@ -14,7 +14,7 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
 
   const { r, g, b } = loading
     ? { r: null, g: null, b: null }
-    : hexToRgb(version.dominant);
+    : hexToRgb(version.cover.dominant);
 
   return (
     <Card className={classes.artworkPreviewCard}>
@@ -33,13 +33,14 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
             style={{ margin: 24 }}
           >
             <ImageWrapper
-              height={version.height}
-              width={version.width}
-              source={version.cover}
-              placeholder={version.dominant}
+              height={version.cover.height}
+              width={version.cover.width}
+              source={version.cover.source}
+              placeholder={version.cover.dominant}
               styles={{
                 boxShadow: `0px 0px 40px 15px rgba(${r},${g},${b},0.75)`,
-                maxWidth: 600 / (version.height / version.width) - 54,
+                maxWidth:
+                  600 / (version.cover.height / version.cover.width) - 54,
                 margin: "24px",
               }}
               loading={loading}

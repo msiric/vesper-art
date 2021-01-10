@@ -1,8 +1,8 @@
 import express from "express";
 import {
-  downloadOrderArtwork,
   getBoughtOrders,
   getOrderDetails,
+  getOrderMedia,
   getSoldOrders,
 } from "../../../controllers/order.js";
 import { postReview } from "../../../controllers/review.js";
@@ -57,7 +57,7 @@ router
   // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
-    handler(downloadOrderArtwork, true, (req, res, next) => ({
+    handler(getOrderMedia, true, (req, res, next) => ({
       ...req.params,
       response: res,
     }))
