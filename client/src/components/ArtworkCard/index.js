@@ -35,18 +35,11 @@ const ArtworkCard = ({
 
   const classes = artworkCardStyles();
 
+  console.log("ART", artwork);
+
   const item =
-    type !== "version"
+    type === "version"
       ? {
-          id: artwork.id ? artwork.id : "",
-          data: artwork.id ? artwork.current : {},
-          owner: artwork.id ? artwork.owner : {},
-          favorites: artwork.id ? artwork.favorites : [],
-          src: artwork.id ? artwork.current.cover.source : "",
-          height: artwork.id ? artwork.current.cover.height : "",
-          width: artwork.id ? artwork.current.cover.width : "",
-        }
-      : {
           id: artwork.id ? artwork.artwork.id : "",
           data: artwork.id ? artwork : {},
           owner: artwork.id ? artwork.artwork.owner : {},
@@ -54,6 +47,15 @@ const ArtworkCard = ({
           src: artwork.id ? artwork.cover.source : "",
           height: artwork.id ? artwork.cover.height : "",
           width: artwork.id ? artwork.cover.width : "",
+        }
+      : {
+          id: artwork.id ? artwork.id : "",
+          data: artwork.id ? artwork.current : {},
+          owner: artwork.id ? artwork.owner : {},
+          favorites: artwork.id ? artwork.favorites : [],
+          src: artwork.id ? artwork.current.cover.source : "",
+          height: artwork.id ? artwork.current.cover.height : "",
+          width: artwork.id ? artwork.current.cover.width : "",
         };
 
   return (

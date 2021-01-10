@@ -18,12 +18,8 @@ const USER_ESSENTIAL_INFO = [
   "user.active",
   "user.created",
 ];
-const USER_DETAILED_INFO = [
-  "user.businessAddress",
-  "user.customWork",
-  "user.displayFavorites",
-  "user.stripeId",
-];
+const USER_STRIPE_INFO = ["user.businessAddress", "user.stripeId"];
+const USER_DETAILED_INFO = ["user.customWork", "user.displayFavorites"];
 const USER_VERIFICATION_INFO = [
   "user.resetToken",
   "user.resetExpiry",
@@ -60,6 +56,7 @@ export const fetchUserById = async ({ userId, connection }) => {
     .createQueryBuilder("user")
     .select([
       ...USER_ESSENTIAL_INFO,
+      ...USER_STRIPE_INFO,
       ...USER_DETAILED_INFO,
       ...USER_VERIFICATION_INFO,
     ])
@@ -80,6 +77,7 @@ export const fetchUserByEmail = async ({ userEmail, connection }) => {
     .createQueryBuilder("user")
     .select([
       ...USER_ESSENTIAL_INFO,
+      ...USER_STRIPE_INFO,
       ...USER_DETAILED_INFO,
       ...USER_VERIFICATION_INFO,
     ])
@@ -250,7 +248,7 @@ export const fetchUserProfile = async ({
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
-    .select(USER_ESSENTIAL_INFO)
+    .select([...USER_ESSENTIAL_INFO, ...USER_DETAILED_INFO])
     .leftJoinAndSelect("user.avatar", "avatar")
     .leftJoinAndMapMany(
       "user.artwork",

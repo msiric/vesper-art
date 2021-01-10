@@ -16,6 +16,9 @@ export const fetchLicenseByFingerprint = async ({
   const foundLicense = await connection
     .getRepository(License)
     .createQueryBuilder("license")
+    .leftJoinAndSelect("license.owner", "buyer")
+    .leftJoinAndSelect("license.artwork", "artwork")
+    .leftJoinAndSelect("artwork.owner", "seller")
     .where("license.fingerprint = :fingerprint AND license.active = :active", {
       fingerprint: licenseFingerprint,
       active: LICENSE_ACTIVE_STATUS,
@@ -58,7 +61,7 @@ export const addNewLicense = async ({
         company: licenseData.licenseCompany,
         type: licenseData.licenseType,
         price: licenseData.licensePrice,
-        active: false,
+        active: true,
       },
     ])
     .execute();

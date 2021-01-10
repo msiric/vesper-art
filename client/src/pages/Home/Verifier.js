@@ -107,8 +107,8 @@ const Verifier = () => {
                   <tr>
                     <th>Fingerprint</th>
                     <th>Type</th>
-                    <th>Buyer ID</th>
-                    <th>Seller ID</th>
+                    <th>Buyer</th>
+                    <th>Seller</th>
                     <th>Price</th>
                     <th>Date</th>
                   </tr>
@@ -124,11 +124,13 @@ const Verifier = () => {
                       <span className="truncate">{state.license.type}</span>
                     </td>
                     <td className="w-64 text-right">
-                      <span className="truncate">{state.license.owner}</span>
+                      <span className="truncate">
+                        {state.license.owner.name}
+                      </span>
                     </td>
                     <td className="w-64 text-right">
                       <span className="truncate">
-                        {state.license.artwork.owner}
+                        {state.license.artwork.owner.name}
                       </span>
                     </td>
                     <td className="w-64 text-right">

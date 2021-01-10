@@ -29,7 +29,7 @@ const ProfileArtwork = ({
                 { display: true, label: "User artwork", props: {} },
                 {
                   display: user.displayFavorites,
-                  label: "Saved artwork",
+                  label: "Favorites",
                   props: {},
                 },
               ],
@@ -77,7 +77,9 @@ const ProfileArtwork = ({
                       }}
                     >
                       <ArtworkPanel
-                        elements={user.favorites}
+                        elements={user.favorites.map((item) => ({
+                          ...item.artwork,
+                        }))}
                         hasMore={null}
                         loadMore={loadMoreFavorites}
                         type="artwork"
@@ -109,7 +111,7 @@ const ProfileArtwork = ({
                 { display: true, label: "User artwork", props: {} },
                 {
                   display: user.displayFavorites,
-                  label: "Saved artwork",
+                  label: "Favorites",
                   props: {},
                 },
               ],
@@ -157,7 +159,9 @@ const ProfileArtwork = ({
                       }}
                     >
                       <ArtworkPanel
-                        elements={user.favorites}
+                        elements={user.favorites.map((item) => ({
+                          ...item.artwork,
+                        }))}
                         hasMore={null}
                         loadMore={loadMoreFavorites}
                         type="artwork"

@@ -110,13 +110,13 @@ export const getUserFavorites = async ({
   connection,
 }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
-  const foundUser = await fetchUserFavorites({
+  const foundFavorites = await fetchUserFavorites({
     userId,
     dataSkip,
     dataLimit,
     connection,
   });
-  return { favorites: foundUser.favorites };
+  return { favorites: foundFavorites };
 };
 
 export const getUserStatistics = async ({ userId, connection }) => {

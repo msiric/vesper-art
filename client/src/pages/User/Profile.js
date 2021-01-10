@@ -222,8 +222,6 @@ const Profile = ({ match, location }) => {
     fetchUser();
   }, [location]);
 
-  console.log(state);
-
   return state.loading || state.user.id ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
