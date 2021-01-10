@@ -92,59 +92,62 @@ export const applyDiscount = async ({
       discountCode,
       connection,
     });
-    const foundVersion = await fetchVersionDetails({ versionId, connection });
-    await Yup.reach(licenseValidation, "licenseType").validate(licenseType);
-    if (foundVersion) {
-      if (foundVersion.artwork.active) {
-        if (foundVersion.id === foundVersion.artwork.currentId) {
-          if (foundVersion.artwork.owner.id !== foundUser.id) {
-            const foundIntent = await fetchIntentByParents({
-              userId: foundUser.id,
-              versionId: foundVersion.id,
-              status: "pending",
-              connection,
-            });
-            if (!isObjectEmpty(foundIntent)) {
-              const {
-                buyerTotal,
-                sellerTotal,
-                platformTotal,
-                licensePrice,
-              } = calculateTotalCharge({
-                foundVersion,
-                foundDiscount,
-                licenseType,
-              });
-              const orderData = {
-                discountId: foundDiscount.id,
-                spent: buyerTotal,
-                earned: sellerTotal,
-                fee: platformTotal,
-              };
-              const paymentIntent = await updateStripeIntent({
-                intentAmount: buyerTotal,
-                intentFee: platformTotal,
-                intentId: foundIntent.id,
-                orderData,
+    if (!isObjectEmpty(foundDiscount)) {
+      const foundVersion = await fetchVersionDetails({ versionId, connection });
+      await Yup.reach(licenseValidation, "licenseType").validate(licenseType);
+      if (foundVersion) {
+        if (foundVersion.artwork.active) {
+          if (foundVersion.id === foundVersion.artwork.currentId) {
+            if (foundVersion.artwork.owner.id !== foundUser.id) {
+              const foundIntent = await fetchIntentByParents({
+                userId: foundUser.id,
+                versionId: foundVersion.id,
+                status: "pending",
                 connection,
               });
-              return {
-                intent: {
-                  id: paymentIntent.id,
-                  secret: paymentIntent.client_secret,
-                  discount: foundDiscount,
-                },
-              };
+              if (!isObjectEmpty(foundIntent)) {
+                const {
+                  buyerTotal,
+                  sellerTotal,
+                  platformTotal,
+                  licensePrice,
+                } = calculateTotalCharge({
+                  foundVersion,
+                  foundDiscount,
+                  licenseType,
+                });
+                const orderData = {
+                  discountId: foundDiscount.id,
+                  spent: buyerTotal,
+                  earned: sellerTotal,
+                  fee: platformTotal,
+                };
+                const paymentIntent = await updateStripeIntent({
+                  intentAmount: buyerTotal,
+                  intentFee: platformTotal,
+                  intentId: foundIntent.id,
+                  orderData,
+                  connection,
+                });
+                return {
+                  intent: {
+                    id: paymentIntent.id,
+                    secret: paymentIntent.client_secret,
+                    discount: foundDiscount,
+                  },
+                };
+              }
+              throw createError(400, "Could not apply discount");
             }
-            throw createError(400, "Could not apply discount");
+            throw createError(400, "You are the owner of this artwork");
           }
-          throw createError(400, "You are the owner of this artwork");
+          throw createError(400, "Artwork version is obsolete");
         }
-        throw createError(400, "Artwork version is obsolete");
+        throw createError(400, "Artwork is no longer active");
       }
-      throw createError(400, "Artwork is no longer active");
+      throw createError(400, "Artwork not found");
     }
-    throw createError(400, "Artwork not found");
+    throw createError(400, "Discount not found");
   }
   throw createError(400, "User not found");
 };
