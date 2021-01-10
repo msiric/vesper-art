@@ -6,7 +6,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -30,7 +29,7 @@ export class License extends BaseEntity {
   @Column()
   ownerId: string;
 
-  @OneToOne(() => Artwork)
+  @ManyToOne(() => Artwork)
   @JoinColumn()
   artwork: Artwork;
 
