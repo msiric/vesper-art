@@ -78,7 +78,6 @@ router.route("/authorize").post(
 
 router.route("/token").get(
   handler(assignStripeId, true, (req, res, next) => ({
-    responseObject: res,
     sessionData: req.session,
     queryData: req.query,
   }))

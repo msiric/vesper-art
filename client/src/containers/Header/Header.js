@@ -2,7 +2,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import {
   AppBar,
   Avatar,
-  Badge,
   Button,
   Divider,
   IconButton,
@@ -19,7 +18,6 @@ import {
   ExitToAppRounded as LogoutIcon,
   ImageRounded as ArtworkIcon,
   MoreVertRounded as MoreIcon,
-  NotificationsRounded as NotificationsIcon,
   PermIdentityRounded as ProfileIcon,
   SettingsRounded as SettingsIcon,
   ShoppingBasketRounded as OrdersIcon,
@@ -427,11 +425,11 @@ const Header = ({ socket, history }) => {
         <p>Messages</p>
       </MenuItem> */}
       <MenuItem onClick={handleNotificationsMenuOpen}>
-        <IconButton aria-label="Show notifications" color="inherit">
+        {/*         <IconButton aria-label="Show notifications" color="inherit">
           <Badge badgeContent={eventsStore.notifications.count} color="primary">
             <NotificationsIcon />
           </Badge>
-        </IconButton>
+        </IconButton> */}
         <p>Notifications</p>
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
@@ -510,12 +508,12 @@ const Header = ({ socket, history }) => {
                   aria-label="Show notifications"
                   color="inherit"
                 >
-                  <Badge
+                  {/*                   <Badge
                     badgeContent={eventsStore.notifications.count}
                     color="primary"
                   >
                     <NotificationsIcon />
-                  </Badge>
+                  </Badge> */}
                 </IconButton>
                 <IconButton
                   edge="end"
@@ -539,12 +537,12 @@ const Header = ({ socket, history }) => {
                   aria-label="Show notifications"
                   color="inherit"
                 >
-                  <Badge
+                  {/*                   <Badge
                     badgeContent={eventsStore.notifications.count}
                     color="primary"
                   >
                     <NotificationsIcon />
-                  </Badge>
+                  </Badge> */}
                 </IconButton>
                 <IconButton
                   edge="end"

@@ -314,10 +314,6 @@ export const onboardUser = async ({
   // 'stripe_user[zip]': req.user.postalCode || undefined,
   // 'stripe_user[state]': req.user.city || undefined,
 
-  /* return res.json({
-      url: `${processor.authorizeUri}?${querystring.stringify(parameters)}`,
-    }); */
-
   return {
     url: `${processor.authorizeUri}?${querystring.stringify(parameters)}`,
   };
@@ -325,7 +321,6 @@ export const onboardUser = async ({
 
 // $TODO cannot send headers (treba dobro testat)
 export const assignStripeId = async ({
-  responseObject,
   sessionData,
   queryData,
   connection,
@@ -357,7 +352,7 @@ export const assignStripeId = async ({
   sessionData.id = null;
   sessionData.name = null;
 
-  return responseObject.redirect(`http://localhost:3000/users/${username}`);
+  return { redirect: `${server.clientDomain}/user/${username}` };
 };
 
 export const fetchIntentById = async ({ userId, intentId, connection }) => {

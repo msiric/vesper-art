@@ -17,6 +17,17 @@ export const requestHandler = (promise, transaction, params) => async (
 ) => {
   const boundParams = params ? params(req, res, next) : {};
   const userId = res.locals.user ? res.locals.user.id : null;
+  const handleRequest = (result) => {
+    if (result) {
+      if (result.redirect) {
+        return res.redirect(result.redirect);
+      } else {
+        return res.json(result);
+      }
+    } else {
+      return res.json({ message: "OK" });
+    }
+  };
   if (transaction) {
     await getConnection().transaction(async (transactionalEntityManager) => {
       try {
@@ -25,7 +36,8 @@ export const requestHandler = (promise, transaction, params) => async (
           connection: transactionalEntityManager,
           ...boundParams,
         });
-        return res.json(result || { message: "OK" });
+        /*  return await handleRequest(result); */
+        return handleRequest(result);
       } catch (error) {
         console.log(error);
         next(error);
@@ -39,7 +51,7 @@ export const requestHandler = (promise, transaction, params) => async (
         connection,
         ...boundParams,
       });
-      return res.json(result || { message: "OK" });
+      return handleRequest(result);
     } catch (error) {
       console.log(error);
       next(error);
