@@ -115,6 +115,7 @@ const Interceptor = ({ children }) => {
       },
       async (error) => {
         console.log(error);
+        console.error(error);
         if (error.response.status !== 401) {
           return new Promise((resolve, reject) => {
             reject(error);

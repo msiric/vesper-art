@@ -184,7 +184,7 @@ export const postNewArtwork = async ({
       userId,
       connection,
     });
-    return { redirect: "/my_artwork" };
+    return { message: "Artwork published successfully" };
   }
   throw createError(400, "Please attach an artwork media before submitting");
 };
@@ -288,7 +288,7 @@ export const updateArtwork = async ({
     }
     foundArtwork.current = savedVersion;
     await Artwork.save(foundArtwork);
-    return { redirect: "my_artwork" };
+    return { message: "Artwork updated successfully" };
   } else {
     throw createError(400, "Artwork not found");
   }
@@ -333,7 +333,7 @@ export const deleteArtwork = async ({
         });
       }
       await deactivateExistingArtwork({ artworkId, connection });
-      return { redirect: "my_artwork" };
+      return { message: "Artwork deleted successfully" };
     }
     throw createError(400, "Artwork has a newer version");
   }

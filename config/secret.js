@@ -27,6 +27,7 @@ export const server = {
   appName: process.env.APP,
   clientDomain: process.env.DOMAIN || "http://localhost:3000",
   serverDomain: process.env.DOMAIN || "http://localhost:5000",
+  stripeDomain: "https://connect.stripe.com",
   port: process.env.PORT || 5000,
 };
 

@@ -11,7 +11,7 @@ import morgan from "morgan";
 import path from "path";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
-import { mongo, postgres } from "./config/secret.js";
+import { mongo, postgres, server } from "./config/secret.js";
 import api from "./routes/api/index.js";
 import stripe from "./routes/stripe/index.js";
 import { rateLimiter } from "./utils/limiter.js";
@@ -24,7 +24,7 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: server.clientDomain,
     credentials: true,
   })
 );

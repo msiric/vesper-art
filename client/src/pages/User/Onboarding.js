@@ -61,7 +61,6 @@ const Onboarding = () => {
           userBusinessAddress: values.userBusinessAddress,
           userEmail: userStore.email,
         });
-
         window.location.href = data.url;
       }
     } catch (err) {
