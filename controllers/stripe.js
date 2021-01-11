@@ -130,10 +130,10 @@ export const applyDiscount = async ({
                   connection,
                 });
                 return {
+                  discount: foundDiscount,
                   intent: {
                     id: paymentIntent.id,
                     secret: paymentIntent.client_secret,
-                    discount: foundDiscount,
                   },
                 };
               }
