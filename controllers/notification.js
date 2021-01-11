@@ -11,7 +11,7 @@ export const getNotifications = async ({ userId, connection }) => {
     userId,
     connection,
   });
-  return { notification: foundNotifications };
+  return { notifications: foundNotifications };
 };
 
 export const readNotification = async ({

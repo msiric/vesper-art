@@ -100,6 +100,7 @@ export const getUserOwnership = async ({
     dataLimit,
     connection,
   });
+  // $TODO change name
   return { purchases: foundPurchases };
 };
 
@@ -119,6 +120,7 @@ export const getUserFavorites = async ({
   return { favorites: foundFavorites };
 };
 
+// $TODO ne valja nista
 export const getUserStatistics = async ({ userId, connection }) => {
   // brisanje accounta
   /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
@@ -149,6 +151,7 @@ export const getUserSales = async ({
     rangeTo,
     connection,
   });
+  // $TODO change name
   return { statistics: foundOrders };
 };
 
@@ -165,6 +168,7 @@ export const getUserPurchases = async ({
     rangeTo,
     connection,
   });
+  // $TODO change name
   return { statistics: foundOrders };
 };
 
@@ -233,6 +237,7 @@ export const getUserSettings = async ({ userId, connection }) => {
   // $TODO Minimize overhead
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
+    // $TODO change name
     return { user: foundUser };
   }
   throw createError(400, "User not found");
