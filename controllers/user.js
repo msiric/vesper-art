@@ -28,6 +28,7 @@ import {
   editUserProfile,
   fetchSellerMedia,
   fetchUserArtwork,
+  fetchUserByAuth,
   fetchUserByEmail,
   fetchUserById,
   fetchUserFavorites,
@@ -314,6 +315,12 @@ export const updateUserPassword = async ({
   userConfirm,
   connection,
 }) => {
+  const foundUser = await fetchUserByAuth({ userId, connection });
+  const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
+  if (!isCurrentValid) throw createError(400, "Current password is incorrect");
+  const isPasswordValid = await argon2.verify(foundUser.password, userPassword);
+  if (isPasswordValid)
+    throw createError(400, "New password cannot be identical to the old one");
   await passwordValidation.validate(
     sanitizeData({
       userCurrent,

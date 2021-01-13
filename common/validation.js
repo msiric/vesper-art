@@ -186,7 +186,7 @@ export const passwordValidation = Yup.object().shape({
     .required("Enter new password"),
   userConfirm: Yup.string()
     .required("Confirm your password")
-    .oneOf([Yup.ref("password")], "Passwords do not match"),
+    .oneOf([Yup.ref("userPassword")], "Passwords do not match"),
 });
 
 export const preferencesValidation = Yup.object().shape({
@@ -210,7 +210,7 @@ export const resetValidation = Yup.object().shape({
     .required("Enter your password"),
   userConfirm: Yup.string()
     .required("Confirm your password")
-    .oneOf([Yup.ref("password"), null], "Passwords must match"),
+    .oneOf([Yup.ref("userPassword"), null], "Passwords must match"),
 });
 
 export const reviewValidation = Yup.object().shape({

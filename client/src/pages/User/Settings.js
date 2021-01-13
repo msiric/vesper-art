@@ -100,12 +100,12 @@ const Settings = ({ location }) => {
     }));
   };
 
-  const handleUpdatePassword = async (values, actions) => {
+  const handleUpdatePassword = async (values, reset) => {
     await patchPassword.request({
       userId: userStore.id,
       data: values,
     });
-    actions.resetForm();
+    reset();
   };
 
   const handleModalOpen = () => {

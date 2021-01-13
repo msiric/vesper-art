@@ -10,7 +10,7 @@ import { passwordValidation } from "../../validation/password.js";
 import settingsSecurityStyles from "./styles.js";
 
 const SettingsSecurity = ({ handleUpdatePassword, loading }) => {
-  const { handleSubmit, formState, errors, control } = useForm({
+  const { handleSubmit, formState, errors, control, reset } = useForm({
     defaultValues: {
       userCurrent: "",
       userPassword: "",
@@ -19,7 +19,7 @@ const SettingsSecurity = ({ handleUpdatePassword, loading }) => {
     resolver: yupResolver(passwordValidation),
   });
 
-  const onSubmit = async (values) => await handleUpdatePassword(values);
+  const onSubmit = async (values) => await handleUpdatePassword(values, reset);
 
   const classes = settingsSecurityStyles();
 
