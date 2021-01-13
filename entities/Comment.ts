@@ -36,9 +36,9 @@ export class Comment extends BaseEntity {
   @Column()
   generated: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamptz" })
   updated: Date;
 }

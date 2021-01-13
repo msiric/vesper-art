@@ -38,7 +38,7 @@ export const getComment = {
 };
 export const deleteComment = {
   request: async ({ artworkId, commentId }) =>
-    await ax(`/api/artwork/${artworkId}/comments/${commentId}`),
+    await ax.delete(`/api/artwork/${artworkId}/comments/${commentId}`),
   success: { message: "Comment successfully deleted", variant: "success" },
   error: { message: "Failed to delete comment", variant: "error" },
 };

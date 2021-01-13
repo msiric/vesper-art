@@ -42,9 +42,9 @@ export class Ticket extends BaseEntity {
   })
   status: TicketType;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamptz" })
   updated: Date;
 }

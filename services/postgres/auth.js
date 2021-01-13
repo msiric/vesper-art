@@ -1,3 +1,4 @@
+import { addHours, formatISO } from "date-fns";
 import { User } from "../../entities/User";
 import { sendRefreshToken, updateAccessToken } from "../../utils/auth.js";
 
@@ -58,7 +59,7 @@ export const revokeAccessToken = async ({ userId, connection }) => {
   const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
-    .set({ jwtVersion: () => "jwtVersion + 1" }) // One hour
+    .set({ jwtVersion: () => "jwtVersion + 1" })
     .where("id = :userId AND active = :active", {
       userId,
       // $TODO add constant
@@ -85,7 +86,7 @@ export const editUserResetToken = async ({
   const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
-    .set({ resetToken, resetExpiry: Date.now() + 3600000 }) // One hour
+    .set({ resetToken, resetExpiry: formatISO(addHours(new Date(), 1)) })
     .where("email = :userEmail AND active = :active", {
       userEmail,
       // $TODO add constant
@@ -118,7 +119,7 @@ export const resetUserPassword = async ({
       "resetToken = :tokenId AND resetExpiry > :dateNow AND active = :active",
       {
         tokenId,
-        dateNow: Date.now(),
+        dateNow: formatISO(new Date()),
         // $TODO add constant
         active: true,
       }

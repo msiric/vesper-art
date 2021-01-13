@@ -1,3 +1,4 @@
+import { formatISO } from "date-fns";
 import { Artwork } from "../../entities/Artwork";
 import { Avatar } from "../../entities/Avatar";
 import { Favorite } from "../../entities/Favorite";
@@ -102,12 +103,10 @@ export const fetchUserByToken = async ({ tokenId, connection }) => {
     .createQueryBuilder("user")
     .select([...USER_ESSENTIAL_INFO, ...USER_VERIFICATION_INFO])
     .leftJoinAndSelect("user.avatar", "avatar")
-    .where(
-      "user.resetToken = :token AND user.resetExpiry = MoreThan(Date.now())",
-      {
-        token: tokenId,
-      }
-    )
+    .where("user.resetToken = :token AND user.resetExpiry > :dateNow", {
+      token: tokenId,
+      dateNow: formatISO(new Date()),
+    })
     .getOne();
   console.log(foundUser);
   return foundUser;

@@ -26,6 +26,6 @@ export class Favorite extends BaseEntity {
   @Column()
   artworkId: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 }

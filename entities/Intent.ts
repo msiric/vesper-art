@@ -41,9 +41,9 @@ export class Intent extends BaseEntity {
   })
   status: IntentStatus;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamptz" })
   updated: Date;
 }

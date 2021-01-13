@@ -172,7 +172,7 @@ export const forgotPassword = async ({ userEmail, connection }) => {
       emailContent: `You are receiving this because you have requested to reset the password for your account.
           Please click on the following link, or paste this into your browser to complete the process:
           
-          <a href="${server.clientDomain}/reset_password/${token}"</a>`,
+          <a href="${server.clientDomain}/reset_password/${resetToken}"</a>`,
     });
     return { message: "Password reset" };
   });

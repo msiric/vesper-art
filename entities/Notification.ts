@@ -41,9 +41,9 @@ export class Notification extends BaseEntity {
   @Column()
   read: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamptz" })
   updated: Date;
 }

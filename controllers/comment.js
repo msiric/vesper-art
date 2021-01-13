@@ -78,11 +78,17 @@ export const patchComment = async ({
   return { message: "Comment updated successfully" };
 };
 
-export const deleteComment = async ({ userId, artworkId, commentId }) => {
+export const deleteComment = async ({
+  userId,
+  artworkId,
+  commentId,
+  connection,
+}) => {
   await removeExistingComment({
     commentId,
     artworkId,
     userId,
+    connection,
   });
   return { message: "Comment deleted successfully" };
 };

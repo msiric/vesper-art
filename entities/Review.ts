@@ -43,6 +43,6 @@ export class Review extends BaseEntity {
   @Column()
   rating: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 }

@@ -61,7 +61,7 @@ const routes = [
     path: "/reset_password/:id",
     Component: lazy(() => import("../../pages/Auth/ResetPassword")),
     exact: true,
-    type: "auth",
+    type: "public",
   },
   // Conversations router
   // {

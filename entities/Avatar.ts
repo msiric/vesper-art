@@ -43,6 +43,6 @@ export class Avatar extends BaseEntity {
   @Column()
   width: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 }

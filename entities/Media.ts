@@ -35,6 +35,6 @@ export class Media extends BaseEntity {
   @Column()
   width: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 }

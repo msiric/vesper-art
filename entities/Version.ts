@@ -108,10 +108,10 @@ export class Version extends BaseEntity {
   @Column()
   mediaId: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamptz" })
   updated: Date;
 
   @AfterLoad()

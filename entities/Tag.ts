@@ -21,6 +21,6 @@ export class Tag extends BaseEntity {
   @Column()
   title: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 }

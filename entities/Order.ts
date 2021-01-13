@@ -111,10 +111,10 @@ export class Order extends BaseEntity {
   })
   status: OrderStatus;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamptz" })
   updated: Date;
 
   @AfterLoad()

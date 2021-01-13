@@ -22,7 +22,7 @@ export class Discount extends BaseEntity {
   @Column()
   active: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
   @AfterLoad()

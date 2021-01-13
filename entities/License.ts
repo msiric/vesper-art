@@ -57,10 +57,10 @@ export class License extends BaseEntity {
   @Column()
   price: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamptz" })
   updated: Date;
 
   @AfterLoad()
