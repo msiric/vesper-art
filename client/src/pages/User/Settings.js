@@ -8,6 +8,7 @@ import SettingsActions from "../../containers/SettingsActions/index.js";
 import SettingsPreferences from "../../containers/SettingsPreferences/index.js";
 import SettingsProfile from "../../containers/SettingsProfile/index.js";
 import SettingsSecurity from "../../containers/SettingsSecurity/index.js";
+import { useTracked as useEventsContext } from "../../contexts/Events.js";
 import { useTracked as useUserContext } from "../../contexts/User.js";
 import {
   deleteUser,
@@ -16,6 +17,7 @@ import {
   patchPassword,
   patchPreferences,
   patchUser,
+  postLogout,
 } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 import { deleteEmptyValues } from "../../utils/helpers.js";
@@ -27,8 +29,10 @@ const initialState = {
   isDeactivating: false,
 };
 
-const Settings = ({ location }) => {
-  const [userStore] = useUserContext();
+const Settings = ({ location, socket }) => {
+  const [userStore, userDispatch] = useUserContext();
+  const [eventsStore, eventsDispatch] = useEventsContext();
+
   const [state, setState] = useState({
     ...initialState,
   });
@@ -48,6 +52,19 @@ const Settings = ({ location }) => {
     } catch (err) {
       setState((prevState) => ({ ...prevState, loading: false }));
     }
+  };
+
+  const handleLogout = async () => {
+    await postLogout.request();
+    userDispatch({
+      type: "RESET_USER",
+    });
+    eventsDispatch({
+      type: "RESET_EVENTS",
+    });
+    // $TODO verify that socket is defined
+    socket.disconnect();
+    history.push("/login");
   };
 
   const handleUpdateProfile = async (values) => {
@@ -77,14 +94,16 @@ const Settings = ({ location }) => {
       userId: userStore.id,
       data: values,
     });
-    setState((prevState) => ({
+    await handleLogout();
+
+    /*     setState((prevState) => ({
       ...prevState,
       user: {
         ...prevState.user,
         email: values.email,
         verified: false,
       },
-    }));
+    })); */
   };
 
   const handleUpdatePreferences = async (values) => {
@@ -107,7 +126,7 @@ const Settings = ({ location }) => {
       userId: userStore.id,
       data: values,
     });
-    reset();
+    await handleLogout();
   };
 
   const handleModalOpen = () => {

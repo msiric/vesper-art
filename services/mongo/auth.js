@@ -94,7 +94,7 @@ export const resetUserPassword = async ({
 };
 
 // needs transaction (not tested)
-export const resetRegisterToken = async ({ tokenId }) => {
+export const resetVerificationToken = async ({ tokenId }) => {
   return await User.updateOne(
     {
       verificationToken: tokenId,

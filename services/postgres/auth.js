@@ -9,6 +9,7 @@ export const addNewUser = async ({
   userUsername,
   hashedPassword,
   verificationToken,
+  verificationExpiry,
   connection,
 }) => {
   /*   const newUser = new User();
@@ -31,7 +32,8 @@ export const addNewUser = async ({
         password: hashedPassword,
         // $TODO should be avatarId?
         avatar: null,
-        verificationToken: verificationToken,
+        verificationToken,
+        verificationExpiry,
       },
     ])
     .execute();
@@ -130,7 +132,7 @@ export const resetUserPassword = async ({
 };
 
 // $Done (mongo -> postgres)
-export const resetRegisterToken = async ({ tokenId, connection }) => {
+export const resetVerificationToken = async ({ tokenId, connection }) => {
   /*   const foundUser = await User.findOne({
     where: [{ verificationToken: tokenId }],
   });
@@ -141,12 +143,16 @@ export const resetRegisterToken = async ({ tokenId, connection }) => {
   const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
-    .set({ verificationToken: "", verified: true })
-    .where("verificationToken = :tokenId AND active = :active", {
-      tokenId,
-      // $TODO add constant
-      active: true,
-    })
+    .set({ verificationToken: "", verificationExpiry: null, verified: true })
+    .where(
+      "verificationToken = :tokenId AND verificationExpiry > :dateNow AND active = :active",
+      {
+        tokenId,
+        dateNow: formatISO(new Date()),
+        // $TODO add constant
+        active: true,
+      }
+    )
     .execute();
   console.log(updatedUser);
   return updatedUser;

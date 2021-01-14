@@ -295,15 +295,14 @@ export const updateUserEmail = async ({ userId, userEmail, connection }) => {
     const verificationToken = randomString.generate();
     const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
     await editUserEmail({ userId, userEmail, verificationToken, connection });
-    await sendEmail(
-      server.appName,
-      userEmail,
-      "Please confirm your email",
-      `Hello,
+    await sendEmail({
+      emailReceiver: userEmail,
+      emailSubject: "Please confirm your email",
+      emailContent: `Hello,
         Please click on the link to verify your email:
 
-        <a href=${verificationLink}>Click here to verify</a>`
-    );
+        <a href=${verificationLink}>Click here to verify</a>`,
+    });
     return { message: "Email successfully updated" };
   }
 };

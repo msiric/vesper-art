@@ -1,4 +1,4 @@
-import { formatISO } from "date-fns";
+import { addHours, formatISO } from "date-fns";
 import { Artwork } from "../../entities/Artwork";
 import { Avatar } from "../../entities/Avatar";
 import { Favorite } from "../../entities/Favorite";
@@ -26,6 +26,7 @@ const USER_VERIFICATION_INFO = [
   "user.resetExpiry",
   "user.jwtVersion",
   "user.verificationToken",
+  "user.verificationExpiry",
   "user.verified",
 ];
 const USER_AUTH_INFO = ["user.password", "user.jwtVersion"];
@@ -515,7 +516,12 @@ export const editUserEmail = async ({
   const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
-    .set({ email: userEmail, verificationToken, verified: false })
+    .set({
+      email: userEmail,
+      verificationToken,
+      verificationExpiry: formatISO(addHours(new Date(), 1)),
+      verified: false,
+    })
     .where("id = :userId AND active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
@@ -715,6 +721,7 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
       resetToken: "",
       resetExpiry: null,
       verificationToken: "",
+      verificationExpiry: null,
       active: false,
     })
     .where("id = :userId AND active = :active", {

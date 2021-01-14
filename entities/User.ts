@@ -63,6 +63,9 @@ export class User extends BaseEntity {
   @Column({ default: "" })
   verificationToken: string;
 
+  @CreateDateColumn({ type: "timestamptz", nullable: true, default: null })
+  verificationExpiry: Date;
+
   @Column({ default: false })
   verified: boolean;
 

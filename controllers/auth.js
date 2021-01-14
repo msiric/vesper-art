@@ -15,8 +15,8 @@ import {
   editUserResetToken,
   logUserOut,
   refreshAccessToken,
-  resetRegisterToken,
   resetUserPassword,
+  resetVerificationToken,
   revokeAccessToken,
 } from "../services/postgres/auth.js";
 import {
@@ -159,7 +159,7 @@ export const postRevokeToken = async ({ userId, connection }) => {
 
 // needs transaction (not tested)
 export const verifyRegisterToken = async ({ tokenId, connection }) => {
-  await resetRegisterToken({ tokenId, connection });
+  await resetVerificationToken({ tokenId, connection });
   return { message: "Token successfully verified" };
 };
 

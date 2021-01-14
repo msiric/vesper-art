@@ -103,8 +103,8 @@ export const isAuthenticated = async (req, res, next) => {
 
 export const isNotAuthenticated = async (req, res, next) => {
   const authentication = req.headers["authorization"];
-  // $TODO
-  if (authentication) return console.log("REDIRECT");
+  // $TODO ovo treba handleat tako da ne stucka frontend
+  if (authentication) throw createError(400, "Already authenticated");
 
   return next();
 };
