@@ -49,7 +49,7 @@ const routes = [
     path: "/verify_token/:id",
     Component: lazy(() => import("../../pages/Auth/VerifyToken")),
     exact: true,
-    type: "auth",
+    type: "public",
   },
   {
     path: "/forgot_password",
