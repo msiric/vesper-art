@@ -92,8 +92,6 @@ export const fetchUserByEmail = async ({ userEmail, connection }) => {
   return foundUser;
 };
 
-// $TODO convert to query builder
-// $TODO not used?
 export const fetchUserByToken = async ({ tokenId, connection }) => {
   // return await User.findOne({
   //   where: [{ resetToken: tokenId, resetExpiry: { $gt: Date.now() } }],
@@ -101,7 +99,11 @@ export const fetchUserByToken = async ({ tokenId, connection }) => {
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
-    .select([...USER_ESSENTIAL_INFO, ...USER_VERIFICATION_INFO])
+    .select([
+      ...USER_ESSENTIAL_INFO,
+      ...USER_AUTH_INFO,
+      ...USER_VERIFICATION_INFO,
+    ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where("user.resetToken = :token AND user.resetExpiry > :dateNow", {
       token: tokenId,

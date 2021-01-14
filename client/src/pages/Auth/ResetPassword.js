@@ -13,9 +13,9 @@ import { KeyboardRounded as ResetAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
-import ResetPasswordForm from "../../forms/ResetForm/index.js";
+import EditPasswordForm from "../../forms/PasswordForm/index.js";
 import { postReset } from "../../services/auth.js";
-import { resetValidation } from "../../validation/reset.js";
+import { passwordValidation } from "../../validation/password.js";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -42,10 +42,11 @@ const ResetPassword = ({ match }) => {
     watch,
   } = useForm({
     defaultValues: {
+      userCurrent: "",
       userPassword: "",
       userConfirm: "",
     },
-    resolver: yupResolver(resetValidation),
+    resolver: yupResolver(passwordValidation),
   });
 
   const history = useHistory();
@@ -54,16 +55,13 @@ const ResetPassword = ({ match }) => {
 
   const onSubmit = async (values) => {
     try {
-      await postReset.request({ userId: match.params.id, data: values });
+      await postReset.request({ resetToken: match.params.id, data: values });
       history.push({
         pathname: "/login",
         state: { message: "Password successfully changed" },
       });
     } catch (err) {
-      history.push({
-        pathname: "/",
-        state: { message: "An error occurred" },
-      });
+      console.log(err);
     }
   };
 
@@ -80,7 +78,7 @@ const ResetPassword = ({ match }) => {
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent>
-              <ResetPasswordForm
+              <EditPasswordForm
                 errors={errors}
                 setValue={setValue}
                 trigger={trigger}

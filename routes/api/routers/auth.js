@@ -93,8 +93,8 @@ router
 router
   .route("/reset_password/:tokenId")
   // $TODO not tested
+  // implement check params token middleware?
   .post(
-    [isNotAuthenticated, checkParamsId],
     handler(resetPassword, true, (req, res, next) => ({
       ...req.params,
       ...req.body,

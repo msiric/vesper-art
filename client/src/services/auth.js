@@ -11,8 +11,8 @@ export const postLogin = {
   error: { message: "Failed to log in user", variant: "error" },
 };
 export const postReset = {
-  request: async ({ userId, data }) =>
-    await ax.post(`/api/auth/reset_password/${userId}`, data),
+  request: async ({ resetToken, data }) =>
+    await ax.post(`/api/auth/reset_password/${resetToken}`, data),
   success: { message: "Password successfully reset", variant: "success" },
   error: { message: "Failed to reset password", variant: "error" },
 };

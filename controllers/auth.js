@@ -2,10 +2,11 @@ import argon2 from "argon2";
 import crypto from "crypto";
 import createError from "http-errors";
 import randomString from "randomstring";
+import { isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
   loginValidation,
-  resetValidation,
+  passwordValidation,
   signupValidation,
 } from "../common/validation";
 import { server } from "../config/secret.js";
@@ -15,11 +16,12 @@ import {
   logUserOut,
   refreshAccessToken,
   resetRegisterToken,
-  resetUserPassword,
   revokeAccessToken,
 } from "../services/postgres/auth.js";
 import {
+  editUserPassword,
   fetchUserByAuth,
+  fetchUserByToken,
   fetchUserIdByName,
 } from "../services/postgres/user.js";
 import {
@@ -181,23 +183,37 @@ export const forgotPassword = async ({ userEmail, connection }) => {
 // needs transaction (not tested)
 export const resetPassword = async ({
   tokenId,
+  userCurrent,
   userPassword,
   userConfirm,
   connection,
 }) => {
-  await resetValidation.validate(sanitizeData({ userPassword, userConfirm }));
-  const hashedPassword = await argon2.hash(userPassword);
-  const updatedUser = await resetUserPassword({
-    tokenId,
-    hashedPassword,
-    connection,
-  });
-  await sendEmail({
-    emailReceiver: updatedUser.email,
-    emailSubject: "Password change",
-    emailContent: `You are receiving this because you just changed your password.
-        
-      If you did not request this, please contact us immediately.`,
-  });
-  return { message: "Password reset" };
+  const foundUser = await fetchUserByToken({ tokenId, connection });
+  console.log("FOUND USER", foundUser);
+  if (!isObjectEmpty(foundUser)) {
+    const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
+    if (!isCurrentValid)
+      throw createError(400, "Current password is incorrect");
+    const isPasswordValid = await argon2.verify(
+      foundUser.password,
+      userPassword
+    );
+    if (isPasswordValid)
+      throw createError(400, "New password cannot be identical to the old one");
+    await passwordValidation.validate(
+      sanitizeData({
+        userCurrent,
+        userPassword,
+        userConfirm,
+      })
+    );
+    const hashedPassword = await argon2.hash(userPassword);
+    await editUserPassword({
+      userId: foundUser.id,
+      hashedPassword,
+      connection,
+    });
+    return { message: "Password updated successfully" };
+  }
+  throw createError(400, "Reset token is invalid or has expired");
 };

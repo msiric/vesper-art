@@ -2,6 +2,7 @@ import argon2 from "argon2";
 import aws from "aws-sdk";
 import createError from "http-errors";
 import randomString from "randomstring";
+import { isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
   originValidation,
@@ -316,21 +317,28 @@ export const updateUserPassword = async ({
   connection,
 }) => {
   const foundUser = await fetchUserByAuth({ userId, connection });
-  const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
-  if (!isCurrentValid) throw createError(400, "Current password is incorrect");
-  const isPasswordValid = await argon2.verify(foundUser.password, userPassword);
-  if (isPasswordValid)
-    throw createError(400, "New password cannot be identical to the old one");
-  await passwordValidation.validate(
-    sanitizeData({
-      userCurrent,
-      userPassword,
-      userConfirm,
-    })
-  );
-  const hashedPassword = await argon2.hash(userPassword);
-  await editUserPassword({ userId, hashedPassword, connection });
-  return { message: "Password updated successfully" };
+  if (!isObjectEmpty(foundUser)) {
+    const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
+    if (!isCurrentValid)
+      throw createError(400, "Current password is incorrect");
+    const isPasswordValid = await argon2.verify(
+      foundUser.password,
+      userPassword
+    );
+    if (isPasswordValid)
+      throw createError(400, "New password cannot be identical to the old one");
+    await passwordValidation.validate(
+      sanitizeData({
+        userCurrent,
+        userPassword,
+        userConfirm,
+      })
+    );
+    const hashedPassword = await argon2.hash(userPassword);
+    await editUserPassword({ userId, hashedPassword, connection });
+    return { message: "Password updated successfully" };
+  }
+  throw createError(400, "User not found");
 };
 
 // needs transaction (done)
