@@ -71,6 +71,7 @@ const Settings = ({ location }) => {
     }));
   };
 
+  // $TODO LOG USER OUT AFTER EMAIL UPDATE
   const handleUpdateEmail = async (values) => {
     await patchEmail.request({
       userId: userStore.id,
@@ -100,6 +101,7 @@ const Settings = ({ location }) => {
     }));
   };
 
+  // $TODO LOG USER OUT AFTER PASSWORD UPDATE
   const handleUpdatePassword = async (values, reset) => {
     await patchPassword.request({
       userId: userStore.id,
