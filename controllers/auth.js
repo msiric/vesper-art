@@ -16,10 +16,10 @@ import {
   logUserOut,
   refreshAccessToken,
   resetRegisterToken,
+  resetUserPassword,
   revokeAccessToken,
 } from "../services/postgres/auth.js";
 import {
-  editUserPassword,
   fetchUserByAuth,
   fetchUserByToken,
   fetchUserIdByName,
@@ -189,7 +189,6 @@ export const resetPassword = async ({
   connection,
 }) => {
   const foundUser = await fetchUserByToken({ tokenId, connection });
-  console.log("FOUND USER", foundUser);
   if (!isObjectEmpty(foundUser)) {
     const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
     if (!isCurrentValid)
@@ -208,11 +207,7 @@ export const resetPassword = async ({
       })
     );
     const hashedPassword = await argon2.hash(userPassword);
-    await editUserPassword({
-      userId: foundUser.id,
-      hashedPassword,
-      connection,
-    });
+    await resetUserPassword({ tokenId, hashedPassword, connection });
     return { message: "Password updated successfully" };
   }
   throw createError(400, "Reset token is invalid or has expired");

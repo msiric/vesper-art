@@ -51,7 +51,7 @@ export class User extends BaseEntity {
   @Column({ default: "" })
   resetToken: string;
 
-  @CreateDateColumn({ type: "timestamptz" })
+  @CreateDateColumn({ type: "timestamptz", nullable: true, default: null })
   resetExpiry: Date;
 
   @Column({ default: 0 })

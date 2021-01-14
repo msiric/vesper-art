@@ -114,7 +114,7 @@ export const resetUserPassword = async ({
   const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
-    .set({ password: hashedPassword, resetToken: "", resetExpiry: "" })
+    .set({ password: hashedPassword, resetToken: "", resetExpiry: null })
     .where(
       "resetToken = :tokenId AND resetExpiry > :dateNow AND active = :active",
       {
