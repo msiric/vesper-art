@@ -79,11 +79,14 @@ export const editExistingComment = async ({
     .createQueryBuilder()
     .update(Comment)
     .set({ content: commentContent, modified: true })
-    .where("id = :commentId AND artworkId = :artworkId AND ownerId = :userId", {
-      commentId,
-      artworkId,
-      userId,
-    })
+    .where(
+      "comment.id = :commentId AND comment.artworkId = :artworkId AND comment.ownerId = :userId",
+      {
+        commentId,
+        artworkId,
+        userId,
+      }
+    )
     .execute();
   console.log(updatedComment);
   return updatedComment;
@@ -105,11 +108,14 @@ export const removeExistingComment = async ({
     .createQueryBuilder()
     .delete()
     .from(Comment)
-    .where("id = :commentId AND artworkId = :artworkId AND ownerId = :userId", {
-      commentId,
-      artworkId,
-      userId,
-    })
+    .where(
+      "comment.id = :commentId AND comment.artworkId = :artworkId AND comment.ownerId = :userId",
+      {
+        commentId,
+        artworkId,
+        userId,
+      }
+    )
     .execute();
   console.log(deletedComment);
   return deletedComment;

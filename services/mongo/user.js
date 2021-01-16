@@ -16,7 +16,7 @@ export const fetchUserByEmail = async ({ userEmail, session = null }) => {
 };
 
 // $CHECKED NOT USED (Can be left as is)
-export const fetchUserByToken = async ({ tokenId, session = null }) => {
+export const fetchUserByResetToken = async ({ tokenId, session = null }) => {
   return await User.findOne({
     resetToken: tokenId,
     resetExpiry: { $gt: Date.now() },

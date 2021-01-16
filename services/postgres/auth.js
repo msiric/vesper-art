@@ -62,7 +62,7 @@ export const revokeAccessToken = async ({ userId, connection }) => {
     .createQueryBuilder()
     .update(User)
     .set({ jwtVersion: () => "jwtVersion + 1" })
-    .where("id = :userId AND active = :active", {
+    .where("user.id = :userId AND user.active = :active", {
       userId,
       // $TODO add constant
       active: true,
@@ -89,7 +89,7 @@ export const editUserResetToken = async ({
     .createQueryBuilder()
     .update(User)
     .set({ resetToken, resetExpiry: formatISO(addHours(new Date(), 1)) })
-    .where("email = :userEmail AND active = :active", {
+    .where("user.email = :userEmail AND user.active = :active", {
       userEmail,
       // $TODO add constant
       active: true,
@@ -118,7 +118,7 @@ export const resetUserPassword = async ({
     .update(User)
     .set({ password: hashedPassword, resetToken: "", resetExpiry: null })
     .where(
-      "resetToken = :tokenId AND resetExpiry > :dateNow AND active = :active",
+      "user.resetToken = :tokenId AND user.resetExpiry > :dateNow AND user.active = :active",
       {
         tokenId,
         dateNow: formatISO(new Date()),
@@ -145,7 +145,7 @@ export const resetVerificationToken = async ({ tokenId, connection }) => {
     .update(User)
     .set({ verificationToken: "", verificationExpiry: null, verified: true })
     .where(
-      "verificationToken = :tokenId AND verificationExpiry > :dateNow AND active = :active",
+      "user.verificationToken = :tokenId AND user.verificationExpiry > :dateNow AND user.active = :active",
       {
         tokenId,
         dateNow: formatISO(new Date()),

@@ -60,13 +60,13 @@ export const getUserProfile = async ({
   connection,
 }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
-  const userId = await fetchUserIdByUsername({
+  const foundId = await fetchUserIdByUsername({
     userUsername,
     connection,
   });
   const foundUser = await fetchUserProfile({
     userUsername,
-    userId,
+    userId: foundId,
     dataSkip,
     dataLimit,
     connection,
@@ -290,8 +290,8 @@ export const deleteUserIntent = async ({ userId, intentId, connection }) => {
 // $TODO Update user context with new data
 export const updateUserEmail = async ({ userId, userEmail, connection }) => {
   await emailValidation.validate(sanitizeData({ userEmail }));
-  const foundId = await fetchUserIdByEmail({ userEmail, connection });
-  if (foundId) {
+  const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
+  if (emailUsed) {
     throw createError(400, "User with provided email already exists");
   } else {
     const { verificationToken, verificationLink } = generateToken();

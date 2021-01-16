@@ -73,6 +73,28 @@ export const fetchUserIdByEmail = async ({ userEmail, connection }) => {
   return foundUser ? foundUser.id : null;
 };
 
+export const fetchUserIdByVerificationToken = async ({
+  tokenId,
+  connection,
+}) => {
+  const foundUser = await connection
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .select("user.id")
+    .where(
+      "user.verificationToken = :tokenId AND user.verificationExpiry > :dateNow AND user.active = :active",
+      {
+        tokenId,
+        dateNow: formatISO(new Date()),
+        // $TODO add constant
+        active: true,
+      }
+    )
+    .getOne();
+  console.log(foundUser);
+  return foundUser ? foundUser.id : null;
+};
+
 // $Needs testing (mongo -> postgres)
 export const fetchUserById = async ({ userId, connection }) => {
   const foundUser = await connection
@@ -115,7 +137,7 @@ export const fetchUserByEmail = async ({ userEmail, connection }) => {
   return foundUser;
 };
 
-export const fetchUserByToken = async ({ tokenId, connection }) => {
+export const fetchUserByResetToken = async ({ tokenId, connection }) => {
   // return await User.findOne({
   //   where: [{ resetToken: tokenId, resetExpiry: { $gt: Date.now() } }],
   // });
@@ -252,7 +274,7 @@ export const editUserStripe = async ({ userId, stripeId, connection }) => {
     .createQueryBuilder()
     .update(User)
     .set({ stripeId })
-    .where("id = :userId AND active = :active", {
+    .where("user.id = :userId AND user.active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -449,7 +471,7 @@ export const editUserAvatar = async ({ userId, avatarUpload, connection }) => {
       width: avatarUpload.fileWidth,
       ownerId: userId,
     })
-    .where("ownerId = :userId", {
+    .where("avatar.ownerId = :userId", {
       userId,
     })
     .returning("id")
@@ -482,7 +504,7 @@ export const editUserProfile = async ({
         : foundUser.description,
       country: userData.userCountry ? userData.userCountry : foundUser.country,
     })
-    .where("id = :userId AND active = :active", {
+    .where("user.id = :userId AND user.active = :active", {
       userId: foundUser.id,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -544,7 +566,7 @@ export const editUserEmail = async ({
       verificationExpiry: formatISO(addHours(new Date(), 1)),
       verified: false,
     })
-    .where("id = :userId AND active = :active", {
+    .where("user.id = :userId AND user.active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -569,7 +591,7 @@ export const editUserPassword = async ({
     .createQueryBuilder()
     .update(User)
     .set({ password: hashedPassword })
-    .where("id = :userId AND active = :active", {
+    .where("user.id = :userId AND user.active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -594,7 +616,7 @@ export const editUserPreferences = async ({
     .createQueryBuilder()
     .update(User)
     .set({ displayFavorites: userFavorites })
-    .where("id = :userId AND active = :active", {
+    .where("user.id = :userId AND user.active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -701,7 +723,7 @@ export const editUserOrigin = async ({
     .createQueryBuilder()
     .update(User)
     .set({ businessAddress: userBusinessAddress })
-    .where("id = :userId AND active = :active", {
+    .where("user.id = :userId AND user.active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -746,7 +768,7 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
       verificationExpiry: null,
       active: false,
     })
-    .where("id = :userId AND active = :active", {
+    .where("user.id = :userId AND user.active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })

@@ -93,10 +93,13 @@ export const editReadNotification = async ({
     .createQueryBuilder()
     .update(Notification)
     .set({ read: true })
-    .where("id = :notificationId AND receiverId = :userId", {
-      notificationId,
-      userId,
-    })
+    .where(
+      "notification.id = :notificationId AND notification.receiverId = :userId",
+      {
+        notificationId,
+        userId,
+      }
+    )
     .execute();
   console.log(updatedNotification);
   return updatedNotification;
@@ -118,10 +121,13 @@ export const editUnreadNotification = async ({
     .createQueryBuilder()
     .update(Notification)
     .set({ read: false })
-    .where("id = :notificationId AND receiverId = :userId", {
-      notificationId,
-      userId,
-    })
+    .where(
+      "notification.id = :notificationId AND notification.receiverId = :userId",
+      {
+        notificationId,
+        userId,
+      }
+    )
     .execute();
   console.log(updatedNotification);
   return updatedNotification;

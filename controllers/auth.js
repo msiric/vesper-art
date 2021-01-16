@@ -23,10 +23,11 @@ import {
   editUserEmail,
   fetchUserByAuth,
   fetchUserByEmail,
-  fetchUserByToken,
+  fetchUserByResetToken,
   fetchUserIdByCreds,
   fetchUserIdByEmail,
   fetchUserIdByUsername,
+  fetchUserIdByVerificationToken,
 } from "../services/postgres/user.js";
 import {
   createAccessToken,
@@ -56,11 +57,11 @@ export const postSignUp = async ({
       userConfirm,
     })
   );
-  const userId = await fetchUserIdByCreds({
+  const foundId = await fetchUserIdByCreds({
     userUsername,
     connection,
   });
-  if (userId) {
+  if (foundId) {
     throw createError(400, "Account with that email/username already exists");
   } else {
     const { verificationToken, verificationLink } = generateToken();
@@ -96,11 +97,11 @@ export const postLogIn = async ({
 }) => {
   await loginValidation.validate(sanitizeData({ userUsername, userPassword }));
 
-  const userId = await fetchUserIdByUsername({
+  const foundId = await fetchUserIdByUsername({
     userUsername,
     connection,
   });
-  const foundUser = await fetchUserByAuth({ userId, connection });
+  const foundUser = await fetchUserByAuth({ userId: foundId, connection });
 
   if (isObjectEmpty(foundUser)) {
     throw createError(400, "Account with provided credentials does not exist");
@@ -165,8 +166,12 @@ export const postRevokeToken = async ({ userId, connection }) => {
 
 // needs transaction (not tested)
 export const verifyRegisterToken = async ({ tokenId, connection }) => {
-  await resetVerificationToken({ tokenId, connection });
-  return { message: "Token successfully verified" };
+  const foundId = await fetchUserIdByVerificationToken({ tokenId, connection });
+  if (foundId) {
+    await resetVerificationToken({ tokenId, connection });
+    return { message: "Token successfully verified" };
+  }
+  throw createError(400, "Verification token is invalid or has expired");
 };
 
 export const forgotPassword = async ({ userEmail, connection }) => {
@@ -194,7 +199,7 @@ export const resetPassword = async ({
   userConfirm,
   connection,
 }) => {
-  const foundUser = await fetchUserByToken({ tokenId, connection });
+  const foundUser = await fetchUserByResetToken({ tokenId, connection });
   if (!isObjectEmpty(foundUser)) {
     const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
     if (!isCurrentValid)
@@ -232,7 +237,12 @@ export const resendToken = async ({ userEmail, connection }) => {
   if (!isObjectEmpty(foundUser)) {
     if (!foundUser.verified) {
       const { verificationToken, verificationLink } = generateToken();
-      await editUserEmail({ userId, userEmail, verificationToken, connection });
+      await editUserEmail({
+        userId: foundUser.id,
+        userEmail,
+        verificationToken,
+        connection,
+      });
       await sendEmail({
         emailReceiver: userEmail,
         emailSubject: "Please confirm your email",
@@ -261,11 +271,11 @@ export const updateEmail = async ({
       userPassword,
     })
   );
-  const userId = await fetchUserIdByUsername({
+  const foundId = await fetchUserIdByUsername({
     userUsername,
     connection,
   });
-  const foundUser = await fetchUserByAuth({ userId, connection });
+  const foundUser = await fetchUserByAuth({ userId: foundId, connection });
 
   if (isObjectEmpty(foundUser)) {
     throw createError(400, "Account with provided credentials does not exist");
@@ -284,12 +294,17 @@ export const updateEmail = async ({
     }
   }
 
-  const foundId = await fetchUserIdByEmail({ userEmail, connection });
-  if (foundId) {
+  const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
+  if (emailUsed) {
     throw createError(400, "User with provided email already exists");
   } else {
     const { verificationToken, verificationLink } = generateToken();
-    await editUserEmail({ userId, userEmail, verificationToken, connection });
+    await editUserEmail({
+      userId: foundId,
+      userEmail,
+      verificationToken,
+      connection,
+    });
     await sendEmail({
       emailReceiver: userEmail,
       emailSubject: "Please confirm your email",
