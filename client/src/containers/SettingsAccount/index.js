@@ -5,7 +5,7 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import AsyncButton from "../../components/AsyncButton/index.js";
-import EditEmailForm from "../../forms/EmailForm/index.js";
+import EmailForm from "../../forms/EmailForm/index.js";
 import { emailValidation } from "../../validation/email.js";
 import settingsAccountStyles from "./styles.js";
 
@@ -32,7 +32,7 @@ const SettingsAccount = ({ user, handleUpdateEmail, loading }) => {
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
-            <EditEmailForm errors={errors} />
+            <EmailForm errors={errors} />
           </CardContent>
           <CardActions
             style={{ display: "flex", justifyContent: "space-between" }}

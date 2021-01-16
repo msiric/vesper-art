@@ -2,22 +2,20 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Avatar,
   Box,
-  Button,
-  CardActions,
-  CardContent,
   Container,
   Grid,
   Link,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { VpnKeyRounded as RecoveryAvatar } from "@material-ui/icons";
+import { MailOutlineRounded as EmailAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import EmailForm from "../../forms/EmailForm/index.js";
-import { postRecover } from "../../services/auth.js";
-import { emailValidation } from "../../validation/email.js";
+import AsyncButton from "../../components/AsyncButton/index.js";
+import RecoveryForm from "../../forms/RecoveryForm/index.js";
+import { postSignup } from "../../services/auth.js";
+import { signupValidation } from "../../validation/signup.js";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,62 +30,57 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ForgotPassword = () => {
+const UpdateEmail = () => {
   const { handleSubmit, formState, errors, control } = useForm({
-    defaultValues: {
-      userEmail: "",
-    },
-    resolver: yupResolver(emailValidation),
+    resolver: yupResolver(signupValidation),
   });
-
-  const history = useHistory();
-  const classes = useStyles();
 
   const onSubmit = async (values) => {
     try {
-      await postRecover.request({ data: values });
-      history.push({
-        pathname: "/login",
-        state: { message: "Reset link sent to your email" },
-      });
+      await postSignup.request({ data: values });
+      /*         enqueueSnackbar('Verification email sent', {
+          variant: 'success',
+          autoHideDuration: 1000,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center',
+          },
+        }); */
     } catch (err) {
       history.push({
-        pathname: "/",
+        pathname: "/login",
         state: { message: "An error occurred" },
       });
     }
   };
 
+  const history = useHistory();
+  const classes = useStyles();
+
   return (
     <Container component="main" maxWidth="xs">
       <Box className={classes.paper}>
         <Avatar className={classes.avatar}>
-          <RecoveryAvatar />
+          <EmailAvatar />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Recover your password
+          Update email
         </Typography>
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <CardContent>
-              <EmailForm errors={errors} />
-            </CardContent>
-            <CardActions
-              style={{ display: "flex", justifyContent: "space-between" }}
+            <RecoveryForm errors={errors} />
+            <AsyncButton
+              type="submit"
+              fullWidth
+              variant="outlined"
+              color="primary"
+              padding
+              loading={formState.isSubmitting}
             >
-              <Button
-                type="submit"
-                fullWidth
-                variant="outlined"
-                color="primary"
-                className={classes.submit}
-                disabled={formState.isSubmitting}
-              >
-                Send recovery link
-              </Button>
-            </CardActions>
+              Update email
+            </AsyncButton>
             <Grid container>
-              <Grid item xs>
+              <Grid item>
                 <Link
                   component={RouterLink}
                   to="/account_restoration"
@@ -104,4 +97,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default UpdateEmail;

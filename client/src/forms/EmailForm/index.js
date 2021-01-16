@@ -5,12 +5,7 @@ import TextInput from "../../controls/TextInput";
 const EditEmailForm = ({ errors }) => {
   return (
     <Box>
-      <TextInput
-        name="userEmail"
-        type="text"
-        label="Email address"
-        errors={errors}
-      />
+      <TextInput name="userEmail" type="text" label="Email" errors={errors} />
     </Box>
   );
 };

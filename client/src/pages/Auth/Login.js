@@ -118,10 +118,10 @@ const Login = () => {
               <Grid item xs>
                 <Link
                   component={RouterLink}
-                  to="/forgot_password"
+                  to="/account_restoration"
                   variant="body2"
                 >
-                  Forgot password?
+                  Trouble logging in?
                 </Link>
               </Grid>
               <Grid item>

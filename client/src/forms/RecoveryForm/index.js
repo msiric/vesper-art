@@ -1,31 +1,30 @@
 import { Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
-import { useHistory } from "react-router-dom";
-import TextInput from "../../controls/TextInput";
+import TextInput from "../../controls/TextInput/index.js";
 
-const useStyles = makeStyles((theme) => ({
-  form: {
-    width: "100%",
-    marginTop: theme.spacing(1),
-  },
-}));
-
-const ForgotPasswordForm = ({ errors }) => {
-  const history = useHistory();
-
-  const classes = useStyles();
-
+const RecoveryForm = ({ errors }) => {
   return (
     <Box>
       <TextInput
+        name="userUsername"
+        type="text"
+        label="Username"
+        errors={errors}
+      />
+      <TextInput
+        name="userPassword"
+        type="password"
+        label="Password"
+        errors={errors}
+      />
+      <TextInput
         name="userEmail"
         type="text"
-        label="Enter your email"
+        label="New email"
         errors={errors}
       />
     </Box>
   );
 };
 
-export default ForgotPasswordForm;
+export default RecoveryForm;

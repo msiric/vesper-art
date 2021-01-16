@@ -46,6 +46,18 @@ const routes = [
     type: "auth",
   },
   {
+    path: "/account_restoration",
+    Component: lazy(() => import("../../pages/Auth/AccountRestoration")),
+    exact: true,
+    type: "auth",
+  },
+  {
+    path: "/resend_token",
+    Component: lazy(() => import("../../pages/Auth/ResendToken")),
+    exact: true,
+    type: "auth",
+  },
+  {
     path: "/verify_token/:id",
     Component: lazy(() => import("../../pages/Auth/VerifyToken")),
     exact: true,
@@ -62,6 +74,12 @@ const routes = [
     Component: lazy(() => import("../../pages/Auth/ResetPassword")),
     exact: true,
     type: "public",
+  },
+  {
+    path: "/update_email",
+    Component: lazy(() => import("../../pages/Auth/UpdateEmail")),
+    exact: true,
+    type: "auth",
   },
   // Conversations router
   // {

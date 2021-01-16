@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { VpnKeyRounded as RecoveryAvatar } from "@material-ui/icons";
+import { LinkRounded as TokenAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ForgotPassword = () => {
+const ResendToken = () => {
   const { handleSubmit, formState, errors, control } = useForm({
     defaultValues: {
       userEmail: "",
@@ -48,7 +48,7 @@ const ForgotPassword = () => {
       await postRecover.request({ data: values });
       history.push({
         pathname: "/login",
-        state: { message: "Reset link sent to your email" },
+        state: { message: "Verification link sent to your email" },
       });
     } catch (err) {
       history.push({
@@ -62,10 +62,10 @@ const ForgotPassword = () => {
     <Container component="main" maxWidth="xs">
       <Box className={classes.paper}>
         <Avatar className={classes.avatar}>
-          <RecoveryAvatar />
+          <TokenAvatar />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Recover your password
+          Resend verification token
         </Typography>
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -83,7 +83,7 @@ const ForgotPassword = () => {
                 className={classes.submit}
                 disabled={formState.isSubmitting}
               >
-                Send recovery link
+                Send verification token
               </Button>
             </CardActions>
             <Grid container>
@@ -104,4 +104,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default ResendToken;
