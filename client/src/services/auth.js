@@ -35,3 +35,11 @@ export const postResend = {
   },
   error: { message: "Failed to send verification token", variant: "error" },
 };
+export const postEmail = {
+  request: async ({ data }) => await ax.post("/api/auth/update_email", data),
+  success: {
+    message: "Email successfully updated",
+    variant: "success",
+  },
+  error: { message: "Failed to update email", variant: "error" },
+};

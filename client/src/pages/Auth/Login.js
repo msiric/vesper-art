@@ -40,6 +40,10 @@ const Login = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const { handleSubmit, formState, errors, control } = useForm({
+    defaultValues: {
+      userUsername: "",
+      userPassword: "",
+    },
     resolver: yupResolver(loginValidation),
   });
 

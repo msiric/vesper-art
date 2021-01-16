@@ -8,6 +8,7 @@ import {
   postSignUp,
   resendToken,
   resetPassword,
+  updateEmail,
   verifyRegisterToken,
 } from "../../../controllers/auth.js";
 import {
@@ -103,6 +104,12 @@ router
 
 router.route("/resend_token").post(
   handler(resendToken, true, (req, res, next) => ({
+    ...req.body,
+  }))
+);
+
+router.route("/update_email").post(
+  handler(updateEmail, true, (req, res, next) => ({
     ...req.body,
   }))
 );

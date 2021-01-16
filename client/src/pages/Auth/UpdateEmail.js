@@ -14,8 +14,8 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import RecoveryForm from "../../forms/RecoveryForm/index.js";
-import { postSignup } from "../../services/auth.js";
-import { signupValidation } from "../../validation/signup.js";
+import { postEmail } from "../../services/auth.js";
+import { recoveryValidation } from "../../validation/recovery.js";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,12 +32,17 @@ const useStyles = makeStyles((theme) => ({
 
 const UpdateEmail = () => {
   const { handleSubmit, formState, errors, control } = useForm({
-    resolver: yupResolver(signupValidation),
+    defaultValues: {
+      userUsername: "",
+      userPassword: "",
+      userEmail: "",
+    },
+    resolver: yupResolver(recoveryValidation),
   });
 
   const onSubmit = async (values) => {
     try {
-      await postSignup.request({ data: values });
+      await postEmail.request({ data: values });
       /*         enqueueSnackbar('Verification email sent', {
           variant: 'success',
           autoHideDuration: 1000,
@@ -47,10 +52,7 @@ const UpdateEmail = () => {
           },
         }); */
     } catch (err) {
-      history.push({
-        pathname: "/login",
-        state: { message: "An error occurred" },
-      });
+      console.log(err);
     }
   };
 

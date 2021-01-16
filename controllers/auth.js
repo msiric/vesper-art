@@ -6,6 +6,7 @@ import {
   emailValidation,
   loginValidation,
   passwordValidation,
+  recoveryValidation,
   signupValidation,
 } from "../common/validation";
 import { server } from "../config/secret.js";
@@ -24,6 +25,7 @@ import {
   fetchUserByEmail,
   fetchUserByToken,
   fetchUserIdByCreds,
+  fetchUserIdByEmail,
   fetchUserIdByUsername,
 } from "../services/postgres/user.js";
 import {
@@ -99,16 +101,17 @@ export const postLogIn = async ({
     connection,
   });
   const foundUser = await fetchUserByAuth({ userId, connection });
-  if (!foundUser) {
+
+  if (isObjectEmpty(foundUser)) {
     throw createError(400, "Account with provided credentials does not exist");
   } else if (!foundUser.active) {
-    throw createError(400, "This account is no longer active");
+    throw createError(400, "Account is no longer active");
   } else if (!foundUser.verified) {
     throw createError(400, "Please verify your account");
   } else {
-    const valid = await argon2.verify(foundUser.password, userPassword);
+    const isValid = await argon2.verify(foundUser.password, userPassword);
 
-    if (!valid) {
+    if (!isValid) {
       throw createError(
         400,
         "Account with provided credentials does not exist"
@@ -243,4 +246,58 @@ export const resendToken = async ({ userEmail, connection }) => {
     throw createError(400, "Account is already verified");
   }
   throw createError(400, "Account with provided email does not exist");
+};
+
+export const updateEmail = async ({
+  userEmail,
+  userUsername,
+  userPassword,
+  connection,
+}) => {
+  await recoveryValidation.validate(
+    sanitizeData({
+      userEmail,
+      userUsername,
+      userPassword,
+    })
+  );
+  const userId = await fetchUserIdByUsername({
+    userUsername,
+    connection,
+  });
+  const foundUser = await fetchUserByAuth({ userId, connection });
+
+  if (isObjectEmpty(foundUser)) {
+    throw createError(400, "Account with provided credentials does not exist");
+  } else if (!foundUser.active) {
+    throw createError(400, "Account is no longer active");
+  } else if (foundUser.verified) {
+    throw createError(400, "Account is already verified");
+  } else {
+    const isValid = await argon2.verify(foundUser.password, userPassword);
+
+    if (!isValid) {
+      throw createError(
+        400,
+        "Account with provided credentials does not exist"
+      );
+    }
+  }
+
+  const foundId = await fetchUserIdByEmail({ userEmail, connection });
+  if (foundId) {
+    throw createError(400, "User with provided email already exists");
+  } else {
+    const { verificationToken, verificationLink } = generateToken();
+    await editUserEmail({ userId, userEmail, verificationToken, connection });
+    await sendEmail({
+      emailReceiver: userEmail,
+      emailSubject: "Please confirm your email",
+      emailContent: `Hello,
+        Please click on the link to verify your email:
+  
+        <a href=${verificationLink}>Click here to verify</a>`,
+    });
+    return { message: "Email successfully updated" };
+  }
 };

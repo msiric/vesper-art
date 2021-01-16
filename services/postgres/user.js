@@ -64,7 +64,7 @@ export const fetchUserIdByEmail = async ({ userEmail, connection }) => {
     .getRepository(User)
     .createQueryBuilder("user")
     .select("user.id")
-    .where("user.email = :name AND user.active = :active", {
+    .where("user.email = :email AND user.active = :active", {
       email: userEmail,
       active: USER_ACTIVE_STATUS,
     })

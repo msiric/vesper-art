@@ -32,6 +32,12 @@ const useStyles = makeStyles((theme) => ({
 
 const Signup = () => {
   const { handleSubmit, formState, errors, control } = useForm({
+    defaultValues: {
+      userUsername: "",
+      userEmail: "",
+      userPassword: "",
+      userConfirm: "",
+    },
     resolver: yupResolver(signupValidation),
   });
 
