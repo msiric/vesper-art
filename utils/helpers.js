@@ -2,13 +2,14 @@ import currency from "currency.js";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
+import randomString from "randomstring";
 import { getConnection } from "typeorm";
 import {
   v4 as uuidv4,
   validate as validateUuid,
   version as validateVersion,
 } from "uuid";
-import { uuid } from "../config/secret";
+import { server, uuid } from "../config/secret";
 
 export const requestHandler = (promise, transaction, params) => async (
   req,
@@ -174,4 +175,10 @@ export const generateUuids = ({ ...args }) => {
     generatedUuids[item] = uuidv4();
   }
   return generatedUuids;
+};
+
+export const generateToken = () => {
+  const verificationToken = randomString.generate();
+  const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
+  return { verificationToken, verificationLink };
 };

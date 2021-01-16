@@ -59,6 +59,20 @@ export const fetchUserIdByUsername = async ({ userUsername, connection }) => {
   return foundUser ? foundUser.id : null;
 };
 
+export const fetchUserIdByEmail = async ({ userEmail, connection }) => {
+  const foundUser = await connection
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .select("user.id")
+    .where("user.email = :name AND user.active = :active", {
+      email: userEmail,
+      active: USER_ACTIVE_STATUS,
+    })
+    .getOne();
+  console.log(foundUser);
+  return foundUser ? foundUser.id : null;
+};
+
 // $Needs testing (mongo -> postgres)
 export const fetchUserById = async ({ userId, connection }) => {
   const foundUser = await connection

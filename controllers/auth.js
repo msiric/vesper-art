@@ -1,7 +1,6 @@
 import argon2 from "argon2";
 import crypto from "crypto";
 import createError from "http-errors";
-import randomString from "randomstring";
 import { isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
@@ -20,7 +19,9 @@ import {
   revokeAccessToken,
 } from "../services/postgres/auth.js";
 import {
+  editUserEmail,
   fetchUserByAuth,
+  fetchUserByEmail,
   fetchUserByToken,
   fetchUserIdByCreds,
   fetchUserIdByUsername,
@@ -31,7 +32,11 @@ import {
   sendRefreshToken,
 } from "../utils/auth.js";
 import { sendEmail } from "../utils/email.js";
-import { generateUuids, sanitizeData } from "../utils/helpers.js";
+import {
+  generateToken,
+  generateUuids,
+  sanitizeData,
+} from "../utils/helpers.js";
 
 // needs transaction (not tested)
 export const postSignUp = async ({
@@ -56,8 +61,7 @@ export const postSignUp = async ({
   if (userId) {
     throw createError(400, "Account with that email/username already exists");
   } else {
-    const verificationToken = randomString.generate();
-    const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
+    const { verificationToken, verificationLink } = generateToken();
     const hashedPassword = await argon2.hash(userPassword);
     const { userId } = generateUuids({
       userId: null,
@@ -210,4 +214,33 @@ export const resetPassword = async ({
     return { message: "Password updated successfully" };
   }
   throw createError(400, "Reset token is invalid or has expired");
+};
+
+export const resendToken = async ({ userEmail, connection }) => {
+  await emailValidation.validate(
+    sanitizeData({
+      userEmail,
+    })
+  );
+  const foundUser = await fetchUserByEmail({
+    userEmail,
+    connection,
+  });
+  if (!isObjectEmpty(foundUser)) {
+    if (!foundUser.verified) {
+      const { verificationToken, verificationLink } = generateToken();
+      await editUserEmail({ userId, userEmail, verificationToken, connection });
+      await sendEmail({
+        emailReceiver: userEmail,
+        emailSubject: "Please confirm your email",
+        emailContent: `Hello,
+          Please click on the link to verify your email:
+  
+          <a href=${verificationLink}>Click here to verify</a>`,
+      });
+      return { message: "Verification link successfully sent" };
+    }
+    throw createError(400, "Account is already verified");
+  }
+  throw createError(400, "Account with provided email does not exist");
 };

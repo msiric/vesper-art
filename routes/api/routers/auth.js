@@ -6,6 +6,7 @@ import {
   postRefreshToken,
   postRevokeToken,
   postSignUp,
+  resendToken,
   resetPassword,
   verifyRegisterToken,
 } from "../../../controllers/auth.js";
@@ -99,5 +100,11 @@ router
       ...req.body,
     }))
   );
+
+router.route("/resend_token").post(
+  handler(resendToken, true, (req, res, next) => ({
+    ...req.body,
+  }))
+);
 
 export default router;

@@ -27,3 +27,11 @@ export const getToken = {
   success: { message: "Token successfully verified", variant: "success" },
   error: { message: "Failed to verify token", variant: "error" },
 };
+export const postResend = {
+  request: async ({ data }) => await ax.post("/api/auth/resend_token", data),
+  success: {
+    message: "Verification token successfully sent",
+    variant: "success",
+  },
+  error: { message: "Failed to send verification token", variant: "error" },
+};

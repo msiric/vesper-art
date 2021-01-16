@@ -1,7 +1,6 @@
 import argon2 from "argon2";
 import aws from "aws-sdk";
 import createError from "http-errors";
-import randomString from "randomstring";
 import { isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
@@ -11,7 +10,6 @@ import {
   profileValidation,
   rangeValidation,
 } from "../common/validation";
-import { server } from "../config/secret.js";
 import {
   fetchOrdersByBuyer,
   fetchOrdersBySeller,
@@ -30,9 +28,9 @@ import {
   fetchSellerMedia,
   fetchUserArtwork,
   fetchUserByAuth,
-  fetchUserByEmail,
   fetchUserById,
   fetchUserFavorites,
+  fetchUserIdByEmail,
   fetchUserIdByUsername,
   fetchUserNotifications,
   fetchUserProfile,
@@ -41,7 +39,12 @@ import {
   removeExistingIntent,
 } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
-import { formatParams, generateUuids, sanitizeData } from "../utils/helpers.js";
+import {
+  formatParams,
+  generateToken,
+  generateUuids,
+  sanitizeData,
+} from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 
 aws.config.update({
@@ -284,15 +287,14 @@ export const deleteUserIntent = async ({ userId, intentId, connection }) => {
   return { message: "Intent successfully deleted" };
 };
 
-// $TODO Update context with new data
+// $TODO Update user context with new data
 export const updateUserEmail = async ({ userId, userEmail, connection }) => {
   await emailValidation.validate(sanitizeData({ userEmail }));
-  const foundUser = await fetchUserByEmail({ userEmail, connection });
-  if (foundUser) {
-    throw createError(400, "User with entered email already exists");
+  const foundId = await fetchUserIdByEmail({ userEmail, connection });
+  if (foundId) {
+    throw createError(400, "User with provided email already exists");
   } else {
-    const verificationToken = randomString.generate();
-    const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
+    const { verificationToken, verificationLink } = generateToken();
     await editUserEmail({ userId, userEmail, verificationToken, connection });
     await sendEmail({
       emailReceiver: userEmail,

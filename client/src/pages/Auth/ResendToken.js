@@ -16,7 +16,7 @@ import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import EmailForm from "../../forms/EmailForm/index.js";
-import { postRecover } from "../../services/auth.js";
+import { postResend } from "../../services/auth.js";
 import { emailValidation } from "../../validation/email.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -45,16 +45,13 @@ const ResendToken = () => {
 
   const onSubmit = async (values) => {
     try {
-      await postRecover.request({ data: values });
+      await postResend.request({ data: values });
       history.push({
         pathname: "/login",
         state: { message: "Verification link sent to your email" },
       });
     } catch (err) {
-      history.push({
-        pathname: "/",
-        state: { message: "An error occurred" },
-      });
+      console.log(err);
     }
   };
 
