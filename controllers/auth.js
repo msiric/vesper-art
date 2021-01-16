@@ -22,7 +22,8 @@ import {
 import {
   fetchUserByAuth,
   fetchUserByToken,
-  fetchUserIdByName,
+  fetchUserIdByCreds,
+  fetchUserIdByUsername,
 } from "../services/postgres/user.js";
 import {
   createAccessToken,
@@ -48,9 +49,8 @@ export const postSignUp = async ({
       userConfirm,
     })
   );
-  const userId = await fetchUserIdByName({
+  const userId = await fetchUserIdByCreds({
     userUsername,
-    includeEmail: true,
     connection,
   });
   if (userId) {
@@ -90,9 +90,8 @@ export const postLogIn = async ({
 }) => {
   await loginValidation.validate(sanitizeData({ userUsername, userPassword }));
 
-  const userId = await fetchUserIdByName({
+  const userId = await fetchUserIdByUsername({
     userUsername,
-    includeEmail: true,
     connection,
   });
   const foundUser = await fetchUserByAuth({ userId, connection });

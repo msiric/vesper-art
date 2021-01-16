@@ -8,7 +8,7 @@ const LoginForm = ({ errors }) => {
       <TextInput
         name="userUsername"
         type="text"
-        label="Username or email"
+        label="Username"
         errors={errors}
       />
       <TextInput

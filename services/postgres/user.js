@@ -31,21 +31,29 @@ const USER_VERIFICATION_INFO = [
 ];
 const USER_AUTH_INFO = ["user.password", "user.jwtVersion"];
 
-export const fetchUserIdByName = async ({
-  userUsername,
-  includeEmail,
-  connection,
-}) => {
+export const fetchUserIdByCreds = async ({ userUsername, connection }) => {
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
     .select("user.id")
     .where(
-      includeEmail
-        ? "(user.name = :name OR user.email = :name) AND user.active = :active"
-        : "user.name = :name AND user.active = :active",
+      "(user.name = :name OR user.email = :name) AND user.active = :active",
       { name: userUsername, active: USER_ACTIVE_STATUS }
     )
+    .getOne();
+  console.log(foundUser);
+  return foundUser ? foundUser.id : null;
+};
+
+export const fetchUserIdByUsername = async ({ userUsername, connection }) => {
+  const foundUser = await connection
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .select("user.id")
+    .where("user.name = :name AND user.active = :active", {
+      name: userUsername,
+      active: USER_ACTIVE_STATUS,
+    })
     .getOne();
   console.log(foundUser);
   return foundUser ? foundUser.id : null;

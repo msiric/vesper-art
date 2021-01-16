@@ -33,7 +33,7 @@ import {
   fetchUserByEmail,
   fetchUserById,
   fetchUserFavorites,
-  fetchUserIdByName,
+  fetchUserIdByUsername,
   fetchUserNotifications,
   fetchUserProfile,
   fetchUserPurchases,
@@ -57,9 +57,8 @@ export const getUserProfile = async ({
   connection,
 }) => {
   const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
-  const userId = await fetchUserIdByName({
+  const userId = await fetchUserIdByUsername({
     userUsername,
-    includeEmail: false,
     connection,
   });
   const foundUser = await fetchUserProfile({
