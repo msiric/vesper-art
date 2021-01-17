@@ -30,20 +30,25 @@ export const requestHandler = (promise, transaction, params) => async (
     }
   };
   if (transaction) {
-    await getConnection().transaction(async (transactionalEntityManager) => {
-      try {
-        const result = await promise({
-          userId,
-          connection: transactionalEntityManager,
-          ...boundParams,
-        });
-        /*  return await handleRequest(result); */
-        return handleRequest(result);
-      } catch (error) {
-        console.log(error);
-        next(error);
-      }
-    });
+    const queryRunner = getConnection().createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const result = await promise({
+        userId,
+        connection: queryRunner.manager,
+        ...boundParams,
+      });
+      /*  return await handleRequest(result); */
+      await queryRunner.commitTransaction();
+      return handleRequest(result);
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.log(error);
+      next(error);
+    } finally {
+      await queryRunner.release();
+    }
   } else {
     try {
       const connection = getConnection();

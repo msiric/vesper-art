@@ -18,7 +18,6 @@ router
     }))
   );
 
-// $TODO wat? not used?
 router
   .route("/download/:versionId")
   // $TODO not tested

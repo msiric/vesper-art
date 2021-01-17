@@ -96,6 +96,7 @@ router
   // $TODO not tested
   // implement check params token middleware?
   .post(
+    isNotAuthenticated,
     handler(resetPassword, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
@@ -103,12 +104,14 @@ router
   );
 
 router.route("/resend_token").post(
+  isNotAuthenticated,
   handler(resendToken, true, (req, res, next) => ({
     ...req.body,
   }))
 );
 
 router.route("/update_email").post(
+  isNotAuthenticated,
   handler(updateEmail, true, (req, res, next) => ({
     ...req.body,
   }))
