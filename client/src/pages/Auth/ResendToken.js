@@ -15,9 +15,9 @@ import { LinkRounded as TokenAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { emailValidation } from "../../../../common/validation";
 import EmailForm from "../../forms/EmailForm/index.js";
 import { postResend } from "../../services/auth.js";
-import { emailValidation } from "../../validation/email.js";
 
 const useStyles = makeStyles((theme) => ({
   paper: {

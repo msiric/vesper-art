@@ -4,9 +4,9 @@ import Card from "@material-ui/core/Card";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { emailValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import EmailForm from "../../forms/EmailForm/index.js";
-import { emailValidation } from "../../validation/email.js";
 import settingsAccountStyles from "./styles.js";
 
 const SettingsAccount = ({ user, handleUpdateEmail, loading }) => {

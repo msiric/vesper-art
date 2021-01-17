@@ -12,10 +12,10 @@ import { MeetingRoomRounded as SignupAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { signupValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import SignupForm from "../../forms/SignupForm/index.js";
 import { postSignup } from "../../services/auth.js";
-import { signupValidation } from "../../validation/signup.js";
 
 const useStyles = makeStyles((theme) => ({
   paper: {

@@ -10,6 +10,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { upload } from "../../../../common/constants.js";
+import { licenseValidation } from "../../../../common/validation";
 import EmptySection from "../../components/EmptySection/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
 import ArtistSection from "../../containers/ArtistSection/index.js";
@@ -28,7 +29,6 @@ import {
 import { postDownload } from "../../services/checkout.js";
 import globalStyles from "../../styles/global.js";
 import { Popover } from "../../styles/theme.js";
-import { licenseValidation } from "../../validation/license.js";
 
 const initialState = {
   loading: true,

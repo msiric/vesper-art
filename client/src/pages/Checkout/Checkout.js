@@ -34,6 +34,11 @@ import { loadStripe } from "@stripe/stripe-js";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
+import {
+  billingValidation,
+  emptyValidation,
+  licenseValidation,
+} from "../../../../common/validation";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
@@ -45,9 +50,6 @@ import PaymentForm from "../../forms/PaymentForm/index.js";
 import { getCheckout } from "../../services/checkout.js";
 import { patchIntent, postIntent } from "../../services/stripe.js";
 import globalStyles from "../../styles/global.js";
-import { billingValidation } from "../../validation/billing.js";
-import { emptyValidation } from "../../validation/empty.js";
-import { licenseValidation } from "../../validation/license.js";
 
 const STEPS = [
   "License information",

@@ -5,6 +5,7 @@ import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useHistory } from "react-router-dom";
+import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import CommentCard from "../../components/CommentCard/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
@@ -13,7 +14,6 @@ import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import AddCommentForm from "../../forms/CommentForm/index.js";
 import { postComment } from "../../services/artwork.js";
 import { List, Typography } from "../../styles/theme.js";
-import { commentValidation } from "../../validation/comment.js";
 import commentSectionStyles from "./styles.js";
 
 const CommentSection = ({

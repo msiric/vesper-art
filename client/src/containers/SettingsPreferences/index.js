@@ -4,9 +4,9 @@ import Card from "@material-ui/core/Card";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { preferencesValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import EditPreferencesForm from "../../forms/PreferencesForm/index.js";
-import { preferencesValidation } from "../../validation/preferences.js";
 import settingsPreferencesStyles from "./styles.js";
 
 const SettingsPreferences = ({ user, handleUpdatePreferences, loading }) => {

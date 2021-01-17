@@ -26,7 +26,7 @@ const ProfileArtwork = ({
               hasMore: "",
               type: "artwork",
               headings: [
-                { display: true, label: "User artwork", props: {} },
+                { display: true, label: "Artwork", props: {} },
                 {
                   display: user.displayFavorites,
                   label: "Favorites",
@@ -108,7 +108,7 @@ const ProfileArtwork = ({
               value: tabs.value,
               hasMore: "",
               headings: [
-                { display: true, label: "User artwork", props: {} },
+                { display: true, label: "Artwork", props: {} },
                 {
                   display: user.displayFavorites,
                   label: "Favorites",

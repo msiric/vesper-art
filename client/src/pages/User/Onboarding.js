@@ -14,6 +14,7 @@ import {
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { countries } from "../../../../common/constants.js";
+import { originValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import { useTracked as useUserContext } from "../../contexts/User.js";
@@ -28,7 +29,6 @@ import {
   Grid,
   Typography,
 } from "../../styles/theme.js";
-import { originValidation } from "../../validation/origin.js";
 
 const Onboarding = () => {
   const [userStore] = useUserContext();

@@ -12,10 +12,10 @@ import { MailOutlineRounded as EmailAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { recoveryValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import RecoveryForm from "../../forms/RecoveryForm/index.js";
 import { postEmail } from "../../services/auth.js";
-import { recoveryValidation } from "../../validation/recovery.js";
 
 const useStyles = makeStyles((theme) => ({
   paper: {

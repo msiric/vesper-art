@@ -4,10 +4,9 @@ import Card from "@material-ui/core/Card";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { patchAvatar, profileValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import EditUserForm from "../../forms/UserForm/index.js";
-import { patchAvatar } from "../../validation/media.js";
-import { profileValidation } from "../../validation/profile.js";
 import settingsProfileStyles from "./styles.js";
 
 const SettingsProfile = ({ user, handleUpdateProfile, loading }) => {

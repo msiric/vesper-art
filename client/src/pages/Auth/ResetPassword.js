@@ -13,9 +13,9 @@ import { KeyboardRounded as ResetAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
+import { passwordValidation } from "../../../../common/validation";
 import EditPasswordForm from "../../forms/PasswordForm/index.js";
 import { postReset } from "../../services/auth.js";
-import { passwordValidation } from "../../validation/password.js";
 
 const useStyles = makeStyles((theme) => ({
   paper: {

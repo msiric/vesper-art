@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { pricing } from "../../../../common/constants.js";
+import { addArtwork, artworkValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
@@ -15,8 +16,6 @@ import { getUser } from "../../services/stripe.js";
 import globalStyles from "../../styles/global.js";
 import { Card } from "../../styles/theme.js";
 import { deleteEmptyValues, formatValues } from "../../utils/helpers.js";
-import { artworkValidation } from "../../validation/artwork.js";
-import { addArtwork } from "../../validation/media.js";
 
 const initialState = { loading: false, capabilities: {} };
 

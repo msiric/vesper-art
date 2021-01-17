@@ -4,9 +4,9 @@ import Card from "@material-ui/core/Card";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { passwordValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import EditPasswordForm from "../../forms/PasswordForm/index.js";
-import { passwordValidation } from "../../validation/password.js";
 import settingsSecurityStyles from "./styles.js";
 
 const SettingsSecurity = ({ handleUpdatePassword, loading }) => {
