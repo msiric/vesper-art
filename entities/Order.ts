@@ -87,7 +87,7 @@ export class Order extends BaseEntity {
   @JoinColumn()
   intent: Intent;
 
-  @Column()
+  @Column({ nullable: true })
   intentId: string;
 
   @Column()

@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import { licenseValidation, orderValidation } from "../common/validation";
+import { downloadValidation, licenseValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
 import { addNewLicense } from "../services/postgres/license";
@@ -19,6 +19,7 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
 };
 
 // $TODO not good
+// transaction is not working correctly???
 export const postDownload = async ({
   userId,
   versionId,
@@ -44,7 +45,7 @@ export const postDownload = async ({
     const foundUser = await fetchUserById({ userId, connection });
     if (foundVersion.artwork.active) {
       if (foundVersion.id === foundVersion.artwork.currentId) {
-        if (!foundVersion.artwork.owner.id === foundUser.id) {
+        if (foundVersion.artwork.owner.id !== foundUser.id) {
           if (foundUser && foundUser.active) {
             const { licenseId, orderId, notificationId } = generateUuids({
               licenseId: null,
@@ -63,7 +64,7 @@ export const postDownload = async ({
               },
               connection,
             });
-            await orderValidation.validate(
+            await downloadValidation.validate(
               sanitizeData({
                 orderBuyer: foundUser.id,
                 orderSeller: foundVersion.artwork.owner.id,
@@ -74,7 +75,6 @@ export const postDownload = async ({
                 orderSpent: 0,
                 orderEarned: 0,
                 orderFee: 0,
-                orderIntent: null,
               })
             );
             const orderObject = {

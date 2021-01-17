@@ -175,6 +175,18 @@ export const orderValidation = Yup.object().shape({
   orderIntent: Yup.string("Invalid intent format").required(),
 });
 
+export const downloadValidation = Yup.object().shape({
+  orderBuyer: Yup.string().uuid("Invalid UUID").required(),
+  orderSeller: Yup.string().uuid("Invalid UUID").required(),
+  orderArtwork: Yup.string().uuid("Invalid UUID").required(),
+  orderVersion: Yup.string().uuid("Invalid UUID").required(),
+  orderDiscount: Yup.string().uuid("Invalid UUID").nullable(),
+  orderLicense: Yup.string().uuid("Invalid UUID").required(),
+  orderSpent: Yup.number().integer().required(),
+  orderEarned: Yup.number().integer().required(),
+  orderFee: Yup.number().integer().required(),
+});
+
 export const originValidation = Yup.object().shape({
   userBusinessAddress: Yup.string().trim().required("Country cannot be empty"),
 });
