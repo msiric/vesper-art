@@ -3,6 +3,8 @@ import {
   createUserIntent,
   deactivateUser,
   deleteUserIntent,
+  getBuyerStatistics,
+  getSellerStatistics,
   getUserArtwork,
   getUserFavorites,
   getUserMedia,
@@ -12,7 +14,6 @@ import {
   getUserPurchases,
   getUserSales,
   getUserSettings,
-  getUserStatistics,
   updateUserEmail,
   updateUserOrigin,
   updateUserPassword,
@@ -105,11 +106,21 @@ router
   );
 
 router
-  .route("/users/:userId/statistics")
+  .route("/users/:userId/statistics/sales")
   // $TODO not tested
   .get(
     [isAuthenticated, checkParamsId],
-    handler(getUserStatistics, false, (req, res, next) => ({
+    handler(getSellerStatistics, false, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
+
+router
+  .route("/users/:userId/statistics/purchases")
+  // $TODO not tested
+  .get(
+    [isAuthenticated, checkParamsId],
+    handler(getBuyerStatistics, false, (req, res, next) => ({
       ...req.params,
     }))
   );

@@ -9,8 +9,8 @@ export const getUser = {
   error: { message: "Failed to fetch user", variant: "error" },
 };
 export const getStatistics = {
-  request: async ({ userId }) =>
-    await ax.get(`/api/users/${userId}/statistics`),
+  request: async ({ userId, display }) =>
+    await ax.get(`/api/users/${userId}/statistics/${display}`),
   success: { message: "Statistics successfully fetched", variant: "success" },
   error: { message: "Failed to fetch statistics", variant: "error" },
 };

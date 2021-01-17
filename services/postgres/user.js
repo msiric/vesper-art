@@ -5,6 +5,7 @@ import { Favorite } from "../../entities/Favorite";
 import { Intent } from "../../entities/Intent";
 import { Notification } from "../../entities/Notification";
 import { Order } from "../../entities/Order";
+import { Review } from "../../entities/Review";
 import { User } from "../../entities/User";
 
 const USER_ACTIVE_STATUS = true;
@@ -262,6 +263,18 @@ export const fetchUserSales = async ({
     .getMany();
   console.log(foundSales);
   return foundSales;
+};
+
+export const fetchUserReviews = async ({ userId, connection }) => {
+  const foundReviews = await connection
+    .getRepository(Review)
+    .createQueryBuilder("review")
+    .where("review.revieweeId = :userId", {
+      userId,
+    })
+    .getMany();
+  console.log(foundReviews);
+  return foundReviews;
 };
 
 // $Needs testing (mongo -> postgres)

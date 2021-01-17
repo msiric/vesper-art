@@ -24,8 +24,8 @@ const initialState = {
   graphData: [
     {
       date: null,
-      pl: 4000,
-      cl: 2400,
+      pl: 0,
+      cl: 0,
     },
   ],
   currentStats: {},
@@ -51,23 +51,24 @@ const Dashboard = ({ location }) => {
 
   const fetchCurrentData = async () => {
     try {
-      setState({ ...initialState });
-      const { data } = await getStatistics.request({ userId: userStore.id });
-      console.log(data);
+      setState((prevState) => ({ ...prevState, loading: true }));
+      const { data } = await getStatistics.request({
+        userId: userStore.id,
+        display: state.display.type,
+      });
       const currentStats = {
-        review: data.statistics.length
-          ? data.statistics.reduce(
-              (a, b) => (a.review && b.review ? a + b.review.rating : 0),
+        rating:
+          data.reviews && data.reviews.length
+            ? data.reviews.reduce((a, b) => a + b.rating, 0) /
+              data.reviews.length
+            : 0,
+        favorites: data.favorites ? data.favorites.length : 0,
+        orders: data[state.display.type].length,
+        [state.display.label]: data[state.display.type].length
+          ? data[state.display.type].reduce(
+              (a, b) => a + b[state.display.label],
               0
             )
-          : 0,
-        favorites: data.favorites.length,
-        orders: data.statistics.length,
-        spent: data.statistics.length
-          ? data.statistics.reduce((a, b) => a + b.spent, 0)
-          : 0,
-        earned: data.statistics.length
-          ? data.statistics.reduce((a, b) => a + b.earned, 0)
           : 0,
       };
       setState((prevState) => ({
@@ -80,6 +81,7 @@ const Dashboard = ({ location }) => {
         },
       }));
     } catch (err) {
+      console.log(err);
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -93,13 +95,13 @@ const Dashboard = ({ location }) => {
 
   const fetchSelectedData = async (from, to) => {
     try {
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         selectedStats: {
-          ...state.selectedStats,
+          ...prevState.selectedStats,
           loading: true,
         },
-      });
+      }));
       const { data } = await getSelection.request({
         userId: userStore.id,
         displayType: state.display.type,
@@ -201,7 +203,7 @@ const Dashboard = ({ location }) => {
 
   useEffect(() => {
     fetchCurrentData();
-  }, [location]);
+  }, [location, state.display.type]);
 
   useEffect(() => {
     if (state.dates[0] && state.dates[1]) {
@@ -231,7 +233,7 @@ const Dashboard = ({ location }) => {
                 data:
                   state.display.type === "purchases"
                     ? state.currentStats.favorites
-                    : state.currentStats.review || "/",
+                    : state.currentStats.rating || "/",
                 label:
                   state.display.type === "purchases" ? "Favorites" : "Rating",
                 currency: false,

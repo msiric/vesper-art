@@ -35,7 +35,8 @@ import {
   fetchUserNotifications,
   fetchUserProfile,
   fetchUserPurchases,
-  fetchUserStatistics,
+  fetchUserReviews,
+  fetchUserSales,
   removeExistingIntent,
 } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
@@ -125,21 +126,38 @@ export const getUserFavorites = async ({
 };
 
 // $TODO ne valja nista
-export const getUserStatistics = async ({ userId, connection }) => {
+export const getBuyerStatistics = async ({ userId, connection }) => {
   // brisanje accounta
   /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
     }); */
-  const [foundUser, foundFavorites, foundOrders] = await Promise.all([
+  const [foundUser, foundFavorites, foundPurchases] = await Promise.all([
     fetchUserById({ userId, connection }),
     fetchUserFavorites({ userId, connection }),
-    fetchUserStatistics({ userId, connection }),
+    fetchUserPurchases({ userId, connection }),
+  ]);
+  console.log("aaa", foundUser, foundFavorites, foundPurchases);
+  return {
+    purchases: foundPurchases,
+    favorites: foundFavorites,
+  };
+};
+
+export const getSellerStatistics = async ({ userId, connection }) => {
+  // brisanje accounta
+  /*     stripe.accounts.del('acct_1Gi3zvL1KEMAcOES', function (err, confirmation) {
+    }); */
+  const [foundUser, foundReviews, foundSales] = await Promise.all([
+    fetchUserById({ userId, connection }),
+    fetchUserReviews({ userId, connection }),
+    fetchUserSales({ userId, connection }),
   ]);
   const balance = await fetchStripeBalance({
     stripeId: foundUser.stripeId,
     connection,
   });
+  console.log("aaa", foundUser, foundReviews, foundSales);
   const { amount } = balance.available[0];
-  return { statistics: foundOrders, amount: amount, favorites: foundFavorites };
+  return { sales: foundSales, amount, reviews: foundReviews };
 };
 
 export const getUserSales = async ({

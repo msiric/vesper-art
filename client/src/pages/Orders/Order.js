@@ -99,7 +99,7 @@ const Order = ({ match, location }) => {
 
   const handleRatingSubmit = async (values) => {
     await postReview.request({
-      artworkId: state.order.id,
+      orderId: state.order.id,
       reviewRating: values.artistRating,
     });
     setState((prevState) => ({
