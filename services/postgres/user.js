@@ -287,7 +287,7 @@ export const editUserStripe = async ({ userId, stripeId, connection }) => {
     .createQueryBuilder()
     .update(User)
     .set({ stripeId })
-    .where("user.id = :userId AND user.active = :active", {
+    .where("id = :userId AND active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -484,10 +484,9 @@ export const editUserAvatar = async ({ userId, avatarUpload, connection }) => {
       width: avatarUpload.fileWidth,
       ownerId: userId,
     })
-    .where("avatar.ownerId = :userId", {
+    .where('"ownerId" = :userId', {
       userId,
     })
-    .returning("id")
     .execute();
   console.log(updatedAvatar);
   return updatedAvatar;
@@ -517,7 +516,7 @@ export const editUserProfile = async ({
         : foundUser.description,
       country: userData.userCountry ? userData.userCountry : foundUser.country,
     })
-    .where("user.id = :userId AND user.active = :active", {
+    .where("id = :userId AND active = :active", {
       userId: foundUser.id,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -579,7 +578,7 @@ export const editUserEmail = async ({
       verificationExpiry: formatISO(addHours(new Date(), 1)),
       verified: false,
     })
-    .where("user.id = :userId AND user.active = :active", {
+    .where("id = :userId AND active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -604,7 +603,7 @@ export const editUserPassword = async ({
     .createQueryBuilder()
     .update(User)
     .set({ password: hashedPassword })
-    .where("user.id = :userId AND user.active = :active", {
+    .where("id = :userId AND active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -629,7 +628,7 @@ export const editUserPreferences = async ({
     .createQueryBuilder()
     .update(User)
     .set({ displayFavorites: userFavorites })
-    .where("user.id = :userId AND user.active = :active", {
+    .where("id = :userId AND active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -715,7 +714,7 @@ export const editExistingIntent = async ({ intentId, status, connection }) => {
     .createQueryBuilder()
     .update(Intent)
     .set({ status: status })
-    .where("intent.id = :intentId", {
+    .where("id = :intentId", {
       intentId,
     })
     .execute();
@@ -736,7 +735,7 @@ export const editUserOrigin = async ({
     .createQueryBuilder()
     .update(User)
     .set({ businessAddress: userBusinessAddress })
-    .where("user.id = :userId AND user.active = :active", {
+    .where("id = :userId AND active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })
@@ -781,7 +780,7 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
       verificationExpiry: null,
       active: false,
     })
-    .where("user.id = :userId AND user.active = :active", {
+    .where("id = :userId AND active = :active", {
       userId,
       active: ARTWORK_ACTIVE_STATUS,
     })

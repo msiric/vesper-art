@@ -235,9 +235,9 @@ export const updateUserProfile = async ({
     if (foundUser.avatar) {
       await editUserAvatar({ userId: foundUser.id, avatarUpload, connection });
     } else {
-      ({ avatarId } = generateUuids({
+      const { avatarId } = generateUuids({
         avatarId: null,
-      }));
+      });
       await addUserAvatar({
         avatarId,
         userId: foundUser.id,

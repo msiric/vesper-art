@@ -378,7 +378,7 @@ export const removeExistingFavorite = async ({ favoriteId, connection }) => {
     .createQueryBuilder()
     .delete()
     .from(Favorite)
-    .where("favorite.id = :favoriteId", { favoriteId })
+    .where("id = :favoriteId", { favoriteId })
     .execute();
   console.log(deletedFavorite);
   return deletedFavorite;
@@ -427,7 +427,7 @@ export const removeArtworkVersion = async ({ versionId, connection }) => {
     .createQueryBuilder()
     .delete()
     .from(Version)
-    .where("version.id = :versionId", { versionId })
+    .where("id = :versionId", { versionId })
     .execute();
   console.log(deletedVersion);
   return deletedVersion;
@@ -456,7 +456,7 @@ export const deactivateExistingArtwork = async ({ artworkId, connection }) => {
     .createQueryBuilder()
     .update(Artwork)
     .set({ active: false })
-    .where("artwork.id = :artworkId AND artwork.active = :active", {
+    .where("id = :artworkId AND active = :active", {
       artworkId,
       active: ARTWORK_ACTIVE_STATUS,
     })

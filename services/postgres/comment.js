@@ -80,7 +80,7 @@ export const editExistingComment = async ({
     .update(Comment)
     .set({ content: commentContent, modified: true })
     .where(
-      "comment.id = :commentId AND comment.artworkId = :artworkId AND comment.ownerId = :userId",
+      'id = :commentId AND "artworkId" = :artworkId AND "ownerId" = :userId',
       {
         commentId,
         artworkId,
@@ -109,7 +109,7 @@ export const removeExistingComment = async ({
     .delete()
     .from(Comment)
     .where(
-      "comment.id = :commentId AND comment.artworkId = :artworkId AND comment.ownerId = :userId",
+      'id = :commentId AND "artworkId" = :artworkId AND "ownerId" = :userId',
       {
         commentId,
         artworkId,

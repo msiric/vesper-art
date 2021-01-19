@@ -160,7 +160,7 @@ export const addOrderReview = async ({
     .createQueryBuilder()
     .update(Order)
     .set({ reviewId: reviewId })
-    .where("order.id = :orderId AND order.buyerId = :userId", {
+    .where('id = :orderId AND "buyerId" = :userId', {
       orderId,
       userId,
     })

@@ -3,12 +3,14 @@ import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { getConnection } from "typeorm";
-import {
-  v4 as uuidv4,
-  validate as validateUuid,
-  version as validateVersion,
-} from "uuid";
+import * as uuidJs from "uuid";
 import { server, uuid } from "../config/secret";
+// this way of importing allows specifying the uuid version in the config file only once and gets propagated everywhere
+const {
+  validate: validateUuid,
+  version: validateVersion,
+  [uuid.import]: genUuid,
+} = uuidJs;
 
 export const requestHandler = (promise, transaction, params) => async (
   req,
@@ -176,13 +178,13 @@ export const checkImageOrientation = (width, height) => {
 export const generateUuids = ({ ...args }) => {
   const generatedUuids = {};
   for (let item in args) {
-    generatedUuids[item] = uuidv4();
+    generatedUuids[item] = genUuid();
   }
   return generatedUuids;
 };
 
 export const generateToken = () => {
-  const verificationToken = uuidv4();
+  const verificationToken = genUuid();
   const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
   return { verificationToken, verificationLink };
 };
