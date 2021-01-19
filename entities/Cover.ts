@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   PrimaryGeneratedColumn,
 } from "typeorm";
 
@@ -16,6 +17,10 @@ export enum CoverOrientation {
 export class Cover extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @Column()
   source: string;

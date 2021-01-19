@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -44,6 +45,10 @@ export enum VersionUse {
 export class Version extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @OneToOne(() => Artwork, (artwork) => artwork.current)
   artwork: Artwork;

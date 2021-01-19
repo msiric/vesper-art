@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -14,6 +15,10 @@ import { Avatar } from "./Avatar";
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @Column({ unique: true })
   email: string;

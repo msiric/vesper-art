@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -19,6 +20,10 @@ export enum NotificationType {
 export class Notification extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @ManyToOne(() => User)
   receiver: User;

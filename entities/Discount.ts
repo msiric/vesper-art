@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { formatAmount } from "../common/helpers";
@@ -12,6 +13,10 @@ import { formatAmount } from "../common/helpers";
 export class Discount extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @Column()
   name: string;

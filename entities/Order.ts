@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   JoinColumn,
   ManyToOne,
   OneToOne,
@@ -35,6 +36,10 @@ export enum OrderStatus {
 export class Order extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @ManyToOne(() => User)
   buyer: User;

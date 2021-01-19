@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   JoinColumn,
   ManyToOne,
   PrimaryColumn,
@@ -21,6 +22,10 @@ export enum IntentStatus {
 export class Intent extends BaseEntity {
   @PrimaryColumn()
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @ManyToOne(() => User)
   owner: User;

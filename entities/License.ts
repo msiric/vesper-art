@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -22,6 +23,10 @@ export enum LicenseType {
 export class License extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @ManyToOne(() => User)
   owner: User;

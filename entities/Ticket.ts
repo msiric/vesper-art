@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -20,6 +21,10 @@ export enum TicketType {
 export class Ticket extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @ManyToOne(() => User)
   owner: User;

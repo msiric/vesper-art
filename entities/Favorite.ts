@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -13,6 +14,10 @@ import { User } from "./User";
 export class Favorite extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @ManyToOne(() => User, (user) => user)
   owner: User;

@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -14,6 +15,10 @@ import { User } from "./User";
 export class Comment extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @ManyToOne(() => User)
   owner: User;

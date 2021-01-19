@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   ManyToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -12,6 +13,10 @@ import { Version } from "./Version";
 export class Tag extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @ManyToMany(() => Version, (version) => version.tags, {
     onDelete: "CASCADE",

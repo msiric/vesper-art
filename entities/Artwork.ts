@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   JoinColumn,
   ManyToOne,
   OneToOne,
@@ -16,6 +17,10 @@ import { Version } from "./Version";
 export class Artwork extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @ManyToOne(() => User)
   owner: User;

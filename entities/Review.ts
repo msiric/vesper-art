@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -15,6 +16,10 @@ import { User } from "./User";
 export class Review extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @OneToOne(() => Order)
   order: Order;

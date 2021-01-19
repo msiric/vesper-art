@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -18,6 +19,10 @@ export enum AvatarOrientation {
 export class Avatar extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column()
+  @Generated("increment")
+  serial: number;
 
   @OneToOne(() => User)
   owner: User;
