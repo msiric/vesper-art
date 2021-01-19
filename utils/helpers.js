@@ -2,7 +2,6 @@ import currency from "currency.js";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
-import randomString from "randomstring";
 import { getConnection } from "typeorm";
 import {
   v4 as uuidv4,
@@ -183,7 +182,7 @@ export const generateUuids = ({ ...args }) => {
 };
 
 export const generateToken = () => {
-  const verificationToken = randomString.generate();
+  const verificationToken = uuidv4();
   const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
   return { verificationToken, verificationLink };
 };

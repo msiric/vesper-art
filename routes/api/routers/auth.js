@@ -76,6 +76,7 @@ router
   .route("/verify_token/:tokenId")
   // $DONE works
   .get(
+    checkParamsId,
     handler(verifyRegisterToken, true, (req, res, next) => ({
       ...req.params,
     }))
@@ -96,7 +97,7 @@ router
   // $TODO not tested
   // implement check params token middleware?
   .post(
-    isNotAuthenticated,
+    [isNotAuthenticated, checkParamsId],
     handler(resetPassword, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
