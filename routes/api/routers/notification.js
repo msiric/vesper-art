@@ -5,7 +5,6 @@ import {
   unreadNotification,
 } from "../../../controllers/notification.js";
 import {
-  checkParamsId,
   isAuthenticated,
   requestHandler as handler,
 } from "../../../utils/helpers.js";
@@ -24,14 +23,14 @@ router
   .route("/notifications/:notificationId")
   // $TODO not tested
   .post(
-    [isAuthenticated, checkParamsId],
+    [isAuthenticated],
     handler(readNotification, true, (req, res, next) => ({
       ...req.params,
     }))
   )
   // $TODO not tested
   .delete(
-    [isAuthenticated, checkParamsId],
+    [isAuthenticated],
     handler(unreadNotification, true, (req, res, next) => ({
       ...req.params,
     }))

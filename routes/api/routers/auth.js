@@ -12,7 +12,6 @@ import {
   verifyRegisterToken,
 } from "../../../controllers/auth.js";
 import {
-  checkParamsId,
   isAuthenticated,
   isNotAuthenticated,
   requestHandler as handler,
@@ -67,16 +66,12 @@ router
 router
   .route("/revoke_token/:userId")
   // $TODO not tested
-  .post(
-    checkParamsId,
-    handler(postRevokeToken, true, (req, res, next) => ({}))
-  );
+  .post(handler(postRevokeToken, true, (req, res, next) => ({})));
 
 router
   .route("/verify_token/:tokenId")
   // $DONE works
   .get(
-    checkParamsId,
     handler(verifyRegisterToken, true, (req, res, next) => ({
       ...req.params,
     }))
@@ -97,7 +92,7 @@ router
   // $TODO not tested
   // implement check params token middleware?
   .post(
-    [isNotAuthenticated, checkParamsId],
+    [isNotAuthenticated],
     handler(resetPassword, true, (req, res, next) => ({
       ...req.params,
       ...req.body,

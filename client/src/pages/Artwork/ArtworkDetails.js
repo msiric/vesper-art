@@ -50,8 +50,8 @@ const initialState = {
   scroll: {
     comments: {
       hasMore: true,
-      dataCursor: 0,
-      dataCeiling: 10,
+      dataCursor: null,
+      dataCeiling: 5,
     },
   },
   highlight: {
@@ -165,8 +165,8 @@ const ArtworkDetails = ({ match, location, socket }) => {
                 ? false
                 : true,
             dataCursor:
-              prevState.scroll.comments.dataCursor +
-              prevState.scroll.comments.dataCeiling,
+              data.artwork.comments[data.artwork.comments.length - 1] &&
+              data.artwork.comments[data.artwork.comments.length - 1].id,
           },
         },
         highlight: foundHighlight
@@ -362,10 +362,11 @@ const ArtworkDetails = ({ match, location, socket }) => {
   const loadMoreComments = async () => {
     try {
       const { data } = await getComments.request({
-        artworkId: state.artwork.id,
+        artworkId: match.params.id,
         dataCursor: state.scroll.comments.dataCursor,
         dataCeiling: state.scroll.comments.dataCeiling,
       });
+      console.log("NEW COMMENTS", data);
       const foundHighlight =
         !state.highlight.found && query.notif === "comment" && query.ref
           ? !!data.artwork.comments.filter(
@@ -390,8 +391,8 @@ const ArtworkDetails = ({ match, location, socket }) => {
                 ? false
                 : true,
             dataCursor:
-              state.scroll.comments.dataCursor +
-              state.scroll.comments.dataCeiling,
+              data.artwork.comments[data.artwork.comments.length - 1] &&
+              data.artwork.comments[data.artwork.comments.length - 1].id,
           },
         },
         highlight: foundHighlight
@@ -409,7 +410,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
   const isSeller = () => userStore.id === state.artwork.owner.id;
 
   useEffect(() => {
-    fetchArtwork();
+    loadMoreComments();
   }, [location]);
 
   useEffect(() => {

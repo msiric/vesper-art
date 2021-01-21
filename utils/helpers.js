@@ -12,6 +12,30 @@ const {
   [uuid.import]: genUuid,
 } = uuidJs;
 
+const VALID_PARAMS = {
+  // better validation for stripeId?
+  accountId: { isValid: (value) => isValidString(value) },
+  artworkId: { isValid: (value) => isValidUuid(value) },
+  commentId: { isValid: (value) => isValidUuid(value) },
+  intentId: { isValid: (value) => isValidUuid(value) },
+  orderId: { isValid: (value) => isValidUuid(value) },
+  tokenId: { isValid: (value) => isValidUuid(value) },
+  userId: { isValid: (value) => isValidUuid(value) },
+  versionId: { isValid: (value) => isValidUuid(value) },
+  userUsername: { isValid: (value) => isValidString(value) },
+  discountCode: { isValid: (value) => isValidString(value) },
+  cursor: { isValid: (value) => isValidUuid(value) },
+  limit: { isValid: (value) => isPositiveInteger(value) },
+};
+
+export const isValidUuid = (value) =>
+  validateUuid(value) && validateVersion(value) === uuid.version;
+
+export const isPositiveInteger = (value) =>
+  Number.isInteger(value) && value > 0;
+
+export const isValidString = (value) => typeof value === "string";
+
 export const requestHandler = (promise, transaction, params) => async (
   req,
   res,
@@ -117,33 +141,18 @@ export const isNotAuthenticated = async (req, res, next) => {
 };
 
 export const formatParams = ({ dataCursor, dataCeiling }) => {
-  const dataSkip =
-    dataCursor && /^\d+$/.test(dataCursor) ? Number(dataCursor) : 0;
-  const dataLimit =
-    dataCeiling && /^\d+$/.test(dataCeiling) ? Number(dataCeiling) : 0;
+  const dataSkip = dataCursor; /* && /^\d+$/.test(dataCursor) ? Number(dataCursor) : 0; */
+  const dataLimit = dataCeiling; /* && /^\d+$/.test(dataCeiling) ? Number(dataCeiling) : 0; */
   return { dataSkip, dataLimit };
 };
 
-export const checkParamsUsername = (req, res, next) => {
+export const validateParams = (req, res, next) => {
   let isValid = true;
   for (let param in req.params) {
     const value = req.params[param];
     if (!value) isValid = false;
-    else if (typeof value !== "string") isValid = false;
-  }
-  if (isValid) return next();
-  throw createError(400, "Invalid route parameter");
-};
-
-export const isValidUuid = (value) =>
-  validateUuid(value) && validateVersion(value) === uuid.version;
-
-export const checkParamsId = (req, res, next) => {
-  let isValid = true;
-  for (let param in req.params) {
-    const value = req.params[param];
-    if (!value) isValid = false;
-    else if (!isValidUuid(value)) isValid = false;
+    else if (VALID_PARAMS[param] && !VALID_PARAMS[param].isValid(value))
+      isValid = false;
   }
   if (isValid) return next();
   throw createError(400, "Invalid route parameter");

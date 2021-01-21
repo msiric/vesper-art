@@ -14,6 +14,7 @@ import { createConnection } from "typeorm";
 import { mongo, postgres, server } from "./config/secret.js";
 import api from "./routes/api/index.js";
 import stripe from "./routes/stripe/index.js";
+import { validateParams } from "./utils/helpers.js";
 import { rateLimiter } from "./utils/limiter.js";
 
 const app = express();
@@ -82,8 +83,8 @@ app.use(express.static(path.join(dirname, "public")));
 
 app.use(rateLimiter);
 
-app.use("/api", api);
-app.use("/stripe", stripe);
+app.use("/api", validateParams, api);
+app.use("/stripe", validateParams, stripe);
 
 app.use((req, res, next) => {
   createError(404);

@@ -7,7 +7,6 @@ import {
 } from "../../../controllers/order.js";
 import { postReview } from "../../../controllers/review.js";
 import {
-  checkParamsId,
   isAuthenticated,
   requestHandler as handler,
 } from "../../../utils/helpers.js";
@@ -34,7 +33,7 @@ router
   .route("/orders/:orderId")
   // $TODO not tested
   .get(
-    [isAuthenticated, checkParamsId],
+    [isAuthenticated],
     handler(getOrderDetails, false, (req, res, next) => ({
       ...req.params,
     }))
@@ -45,7 +44,7 @@ router
   .route("/orders/:orderId/reviews")
   // $TODO not tested
   .post(
-    [isAuthenticated, checkParamsId],
+    [isAuthenticated],
     handler(postReview, true, (req, res, next) => ({
       ...req.body,
       ...req.params,
@@ -56,7 +55,7 @@ router
   .route("/orders/:orderId/download")
   // $TODO not tested
   .get(
-    [isAuthenticated, checkParamsId],
+    [isAuthenticated],
     handler(getOrderMedia, true, (req, res, next) => ({
       ...req.params,
       response: res,

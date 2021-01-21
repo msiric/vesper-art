@@ -128,20 +128,38 @@ export const fetchArtworkComments = async ({
   dataLimit,
   connection,
 }) => {
+  console.log("id", artworkId, "skip", dataSkip, "limit", dataLimit);
   // return await Comment.find({
   //   where: [{ artwork: artworkId }],
   //   relations: ["owner"],
   //   skip: dataSkip,
   //   take: dataLimit,
   // });
-  const foundComments = await connection
+  const qb = await connection
     .getRepository(Comment)
-    .createQueryBuilder("comment")
+    .createQueryBuilder("comment");
+
+  const foundComments = await qb
     .leftJoinAndSelect("comment.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
-    .where("comment.artworkId = :artworkId", {
-      artworkId,
-    })
+    .where(
+      `comment.artworkId = :artworkId AND comment.serial > 
+        ${
+          dataSkip !== "null"
+            ? qb
+                .subQuery()
+                .select("comment.serial")
+                .from(Comment, "comment")
+                .where("comment.id = :commentId", { commentId: dataSkip })
+                .getQuery()
+            : -1
+        }`,
+      {
+        artworkId,
+      }
+    )
+    .orderBy("comment.serial", "ASC")
+    .limit(dataLimit)
     .getMany();
   console.log(foundComments);
   return foundComments;

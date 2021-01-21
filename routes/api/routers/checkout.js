@@ -1,7 +1,6 @@
 import express from "express";
 import { getCheckout, postDownload } from "../../../controllers/checkout.js";
 import {
-  checkParamsId,
   isAuthenticated,
   requestHandler as handler,
 } from "../../../utils/helpers.js";
@@ -12,7 +11,7 @@ router
   .route("/checkout/:versionId")
   // $TODO not tested
   .get(
-    [isAuthenticated, checkParamsId],
+    [isAuthenticated],
     handler(getCheckout, false, (req, res, next) => ({
       ...req.params,
     }))
@@ -22,7 +21,7 @@ router
   .route("/download/:versionId")
   // $TODO not tested
   .post(
-    [isAuthenticated, checkParamsId],
+    [isAuthenticated],
     handler(postDownload, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
