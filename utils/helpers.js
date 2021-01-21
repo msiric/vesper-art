@@ -200,3 +200,13 @@ export const generateToken = () => {
   const verificationLink = `${server.clientDomain}/verify_token/${verificationToken}`;
   return { verificationToken, verificationLink };
 };
+
+export const resolveSubQuery = (queryBuilder, alias, entity, cursor) =>
+  cursor
+    ? queryBuilder
+        .subQuery()
+        .select(`${alias}.serial`)
+        .from(entity, alias)
+        .where(`${alias}.id = :id`, { id: cursor })
+        .getQuery()
+    : -1;

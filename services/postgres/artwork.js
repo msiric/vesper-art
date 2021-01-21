@@ -5,6 +5,7 @@ import { Cover } from "../../entities/Cover";
 import { Favorite } from "../../entities/Favorite";
 import { Media } from "../../entities/Media";
 import { Version } from "../../entities/Version";
+import { resolveSubQuery } from "../../utils/helpers";
 
 const ARTWORK_ACTIVE_STATUS = true;
 
@@ -36,16 +37,23 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
   //   skip: cursor,
   //   take: limit,
   // });
-  const foundArtwork = await connection
+  const queryBuilder = await connection
     .getRepository(Artwork)
-    .createQueryBuilder("artwork")
+    .createQueryBuilder("artwork");
+  const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
-    .where("artwork.active = :active", {
-      active: ARTWORK_ACTIVE_STATUS,
-    })
+    .where(
+      `artwork.active = :active AND artwork.serial > 
+      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor)}`,
+      {
+        active: ARTWORK_ACTIVE_STATUS,
+      }
+    )
+    .orderBy("artwork.serial", "ASC")
+    .limit(limit)
     .getMany();
   console.log(foundArtwork);
   return foundArtwork;
@@ -124,32 +132,21 @@ export const fetchArtworkComments = async ({
   limit,
   connection,
 }) => {
-  console.log("id", artworkId, "skip", cursor, "limit", limit);
   // return await Comment.find({
   //   where: [{ artwork: artworkId }],
   //   relations: ["owner"],
   //   skip: cursor,
   //   take: limit,
   // });
-  const qb = await connection
+  const queryBuilder = await connection
     .getRepository(Comment)
     .createQueryBuilder("comment");
-
-  const foundComments = await qb
+  const foundComments = await queryBuilder
     .leftJoinAndSelect("comment.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .where(
       `comment.artworkId = :artworkId AND comment.serial > 
-        ${
-          cursor !== "null"
-            ? qb
-                .subQuery()
-                .select("comment.serial")
-                .from(Comment, "comment")
-                .where("comment.id = :commentId", { commentId: cursor })
-                .getQuery()
-            : -1
-        }`,
+      ${resolveSubQuery(queryBuilder, "comment", Comment, cursor)}`,
       {
         artworkId,
       }
@@ -173,17 +170,24 @@ export const fetchUserArtworks = async ({
   //   skip: cursor,
   //   take: limit,
   // });
-  const foundArtwork = await connection
+  const queryBuilder = await connection
     .getRepository(Artwork)
-    .createQueryBuilder("artwork")
+    .createQueryBuilder("artwork");
+  const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
-    .where("artwork.ownerId = :userId AND artwork.active = :active", {
-      userId,
-      active: ARTWORK_ACTIVE_STATUS,
-    })
+    .where(
+      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
+    ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor)}`,
+      {
+        userId,
+        active: ARTWORK_ACTIVE_STATUS,
+      }
+    )
+    .orderBy("artwork.serial", "ASC")
+    .limit(limit)
     .getMany();
   console.log(foundArtwork);
   return foundArtwork;

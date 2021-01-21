@@ -50,7 +50,7 @@ const initialState = {
   scroll: {
     comments: {
       hasMore: true,
-      cursor: null,
+      cursor: "",
       limit: 5,
     },
   },

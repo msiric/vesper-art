@@ -7,6 +7,7 @@ import { Notification } from "../../entities/Notification";
 import { Order } from "../../entities/Order";
 import { Review } from "../../entities/Review";
 import { User } from "../../entities/User";
+import { resolveSubQuery } from "../../utils/helpers";
 
 const USER_ACTIVE_STATUS = true;
 const ARTWORK_ACTIVE_STATUS = true;
@@ -224,15 +225,23 @@ export const fetchUserPurchases = async ({
   //   skip: cursor,
   //   take: limit,
   // });
-  const foundPurchases = await connection
+
+  const queryBuilder = await connection
     .getRepository(Order)
-    .createQueryBuilder("order")
+    .createQueryBuilder("order");
+  const foundPurchases = await queryBuilder
     .leftJoinAndSelect("order.seller", "seller")
     .leftJoinAndSelect("seller.avatar", "avatar")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
-    .where("order.buyerId = :userId", { userId })
+    .where(
+      `order.buyerId = :userId AND order.serial > 
+      ${resolveSubQuery(queryBuilder, "order", Order, cursor)}`,
+      { userId }
+    )
+    .orderBy("order.serial", "ASC")
+    .limit(limit)
     .getMany();
   console.log(foundPurchases);
   return foundPurchases;
@@ -246,15 +255,23 @@ export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
   //   skip: cursor,
   //   take: limit,
   // });
-  const foundSales = await connection
+
+  const queryBuilder = await connection
     .getRepository(Order)
-    .createQueryBuilder("order")
+    .createQueryBuilder("order");
+  const foundSales = await queryBuilder
     .leftJoinAndSelect("order.buyer", "buyer")
     .leftJoinAndSelect("buyer.avatar", "avatar")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
-    .where("order.sellerId = :userId", { userId })
+    .where(
+      `order.sellerId = :userId AND order.serial > 
+      ${resolveSubQuery(queryBuilder, "order", Order, cursor)}`,
+      { userId }
+    )
+    .orderBy("order.serial", "ASC")
+    .limit(limit)
     .getMany();
   console.log(foundSales);
   return foundSales;
@@ -343,15 +360,22 @@ export const fetchUserArtwork = async ({
   //   take: limit,
   // });
 
-  const foundArtwork = await connection
+  const queryBuilder = await connection
     .getRepository(Artwork)
-    .createQueryBuilder("artwork")
+    .createQueryBuilder("artwork");
+  const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
-    .where("artwork.ownerId = :userId AND artwork.active = :active", {
-      userId,
-      active: USER_ACTIVE_STATUS,
-    })
+    .where(
+      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
+      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor)}`,
+      {
+        userId,
+        active: USER_ACTIVE_STATUS,
+      }
+    )
+    .orderBy("artwork.serial", "ASC")
+    .limit(limit)
     .getMany();
   console.log(foundArtwork);
   return foundArtwork;
@@ -371,16 +395,23 @@ export const fetchUserFavorites = async ({
   //   take: limit,
   // });
 
-  const foundFavorites = await connection
+  const queryBuilder = await connection
     .getRepository(Favorite)
-    .createQueryBuilder("favorite")
+    .createQueryBuilder("favorite");
+  const foundFavorites = await queryBuilder
     .leftJoinAndSelect("favorite.artwork", "artwork")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
-    .where("favorite.ownerId = :userId", {
-      userId,
-    })
+    .where(
+      `favorite.ownerId = :userId AND favorite.serial > 
+      ${resolveSubQuery(queryBuilder, "favorite", Favorite, cursor)}`,
+      {
+        userId,
+      }
+    )
+    .orderBy("favorite.serial", "ASC")
+    .limit(limit)
     .getMany();
   console.log(foundFavorites);
   return foundFavorites;
@@ -537,13 +568,19 @@ export const fetchUserNotifications = async ({
   //   },
   // });
 
-  const foundNotifications = await connection
+  const queryBuilder = await connection
     .getRepository(Notification)
-    .createQueryBuilder("notification")
-    .where("notification.receiverId = :userId", {
-      userId,
-    })
-    .addOrderBy("notification.created", "DESC")
+    .createQueryBuilder("notification");
+  const foundNotifications = await queryBuilder
+    .where(
+      `notification.receiverId = :userId AND notification.serial > 
+      ${resolveSubQuery(queryBuilder, "notification", Notification, cursor)}`,
+      {
+        userId,
+      }
+    )
+    .orderBy("notification.serial", "ASC")
+    .limit(limit)
     .getMany();
   console.log(foundNotifications);
   return foundNotifications;

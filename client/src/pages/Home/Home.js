@@ -10,7 +10,7 @@ const initialState = {
   alerts: [],
   artwork: [],
   hasMore: true,
-  cursor: 0,
+  cursor: "",
   limit: 50,
 };
 
@@ -32,7 +32,7 @@ const Home = ({ location }) => {
         loading: false,
         artwork: data.artwork,
         hasMore: data.artwork.length < prevState.limit ? false : true,
-        cursor: prevState.cursor + prevState.limit,
+        cursor: data.artwork[data.artwork.length - 1].id,
       }));
 
       // MOCK DATA
@@ -89,7 +89,7 @@ const Home = ({ location }) => {
         ...prevState,
         artwork: [prevState.artwork].concat(data.artwork),
         hasMore: data.artwork.length >= prevState.limit,
-        cursor: prevState.cursor + prevState.limit,
+        cursor: data.artwork[data.artwork.length - 1].id,
       }));
     } catch (err) {
       console.log(err);
