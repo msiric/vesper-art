@@ -1,4 +1,5 @@
 import currency from "currency.js";
+import { isAfter, isBefore, isValid } from "date-fns";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
@@ -26,6 +27,8 @@ const VALID_PARAMS = {
   discountCode: { isValid: (value) => isValidString(value) },
   cursor: { isValid: (value) => isValidUuid(value) },
   limit: { isValid: (value) => isPositiveInteger(value) },
+  start: { isValid: (value) => isPastDate(value) },
+  end: { isValid: (value) => isFutureDate(value) },
 };
 
 export const isValidUuid = (value) =>
@@ -35,6 +38,12 @@ export const isPositiveInteger = (value) =>
   Number.isInteger(value) && value > 0;
 
 export const isValidString = (value) => typeof value === "string";
+
+export const isPastDate = (value) =>
+  isValid(new Date(value)) && isBefore(new Date(value), new Date());
+
+export const isFutureDate = (value) =>
+  isValid(new Date(value)) && isAfter(new Date(value), new Date());
 
 export const requestHandler = (promise, transaction, params) => async (
   req,
