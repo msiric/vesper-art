@@ -173,18 +173,18 @@ export const addOrderReview = async ({
 // $TODO does created get filtered correctly?
 export const fetchOrdersBySeller = async ({
   userId,
-  rangeFrom,
-  rangeTo,
+  start,
+  end,
   connection,
 }) => {
-  // return rangeFrom && rangeTo
+  // return start && end
   //   ? await Order.find({
   //       where: [
   //         {
   //           seller: userId,
   //           created:
-  //             MoreThanOrEqual(new Date(rangeFrom)) &&
-  //             LessThan(new Date(rangeTo)),
+  //             MoreThanOrEqual(new Date(start)) &&
+  //             LessThan(new Date(end)),
   //         },
   //       ],
   //       relations: ["review", "version", "license"],
@@ -216,18 +216,18 @@ export const fetchOrdersBySeller = async ({
 // $Needs testing (mongo -> postgres)
 export const fetchOrdersByBuyer = async ({
   userId,
-  rangeFrom,
-  rangeTo,
+  start,
+  end,
   connection,
 }) => {
-  // return rangeFrom && rangeTo
+  // return start && end
   //   ? await Order.find({
   //       where: [
   //         {
   //           buyer: userId,
   //           created:
-  //             MoreThanOrEqual(new Date(rangeFrom)) &&
-  //             LessThan(new Date(rangeTo)),
+  //             MoreThanOrEqual(new Date(start)) &&
+  //             LessThan(new Date(end)),
   //         },
   //       ],
   //       relations: ["review", "version", "license"],

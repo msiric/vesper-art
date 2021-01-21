@@ -8,7 +8,6 @@ import {
   passwordValidation,
   preferencesValidation,
   profileValidation,
-  rangeValidation,
 } from "../common/validation";
 import {
   fetchOrdersByBuyer,
@@ -41,7 +40,6 @@ import {
 } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
 import {
-  formatParams,
   generateToken,
   generateUuids,
   sanitizeData,
@@ -56,11 +54,10 @@ aws.config.update({
 
 export const getUserProfile = async ({
   userUsername,
-  dataCursor,
-  dataCeiling,
+  cursor,
+  limit,
   connection,
 }) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundId = await fetchUserIdByUsername({
     userUsername,
     connection,
@@ -68,25 +65,19 @@ export const getUserProfile = async ({
   const foundUser = await fetchUserProfile({
     userUsername,
     userId: foundId,
-    dataSkip,
-    dataLimit,
+    cursor,
+    limit,
     connection,
   });
   if (foundUser) return { user: foundUser };
   throw createError(400, "User not found");
 };
 
-export const getUserArtwork = async ({
-  userId,
-  dataCursor,
-  dataCeiling,
-  connection,
-}) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
+export const getUserArtwork = async ({ userId, cursor, limit, connection }) => {
   const foundArtwork = await fetchUserArtwork({
     userId,
-    dataSkip,
-    dataLimit,
+    cursor,
+    limit,
     connection,
   });
   return { artwork: foundArtwork };
@@ -94,15 +85,14 @@ export const getUserArtwork = async ({
 
 export const getUserOwnership = async ({
   userId,
-  dataCursor,
-  dataCeiling,
+  cursor,
+  limit,
   connection,
 }) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundPurchases = await fetchUserPurchases({
     userId,
-    dataSkip,
-    dataLimit,
+    cursor,
+    limit,
     connection,
   });
   // $TODO change name
@@ -111,15 +101,14 @@ export const getUserOwnership = async ({
 
 export const getUserFavorites = async ({
   userId,
-  dataCursor,
-  dataCeiling,
+  cursor,
+  limit,
   connection,
 }) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundFavorites = await fetchUserFavorites({
     userId,
-    dataSkip,
-    dataLimit,
+    cursor,
+    limit,
     connection,
   });
   return { favorites: foundFavorites };
@@ -160,34 +149,22 @@ export const getSellerStatistics = async ({ userId, connection }) => {
   return { sales: foundSales, amount, reviews: foundReviews };
 };
 
-export const getUserSales = async ({
-  userId,
-  rangeFrom,
-  rangeTo,
-  connection,
-}) => {
-  await rangeValidation.validate(sanitizeData({ rangeFrom, rangeTo }));
+export const getUserSales = async ({ userId, start, end, connection }) => {
   const foundOrders = await fetchOrdersBySeller({
     userId,
-    rangeFrom,
-    rangeTo,
+    start,
+    end,
     connection,
   });
   // $TODO change name
   return { statistics: foundOrders };
 };
 
-export const getUserPurchases = async ({
-  userId,
-  rangeFrom,
-  rangeTo,
-  connection,
-}) => {
-  await rangeValidation.validate(sanitizeData({ rangeFrom, rangeTo }));
+export const getUserPurchases = async ({ userId, start, end, connection }) => {
   const foundOrders = await fetchOrdersByBuyer({
     userId,
-    rangeFrom,
-    rangeTo,
+    start,
+    end,
     connection,
   });
   // $TODO change name
@@ -267,15 +244,14 @@ export const getUserSettings = async ({ userId, connection }) => {
 
 export const getUserNotifications = async ({
   userId,
-  dataCursor,
-  dataCeiling,
+  cursor,
+  limit,
   connection,
 }) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundNotifications = await fetchUserNotifications({
     userId,
-    dataSkip,
-    dataLimit,
+    cursor,
+    limit,
     connection,
   });
   return { notifications: foundNotifications };

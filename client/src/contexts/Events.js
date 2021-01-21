@@ -13,8 +13,8 @@ export const eventsStore = {
     opened: false,
     limit: 50,
     hasMore: true,
-    dataCursor: 0,
-    dataCeiling: 10,
+    cursor: 0,
+    limit: 10,
     isSubmitting: false,
   },
   search: "artwork",
@@ -54,14 +54,14 @@ export const eventsReducer = (state, action) => {
             typeof action.notifications.hasMore !== "undefined"
               ? action.notifications.hasMore
               : state.notifications.hasMore,
-          dataCursor:
-            typeof action.notifications.dataCursor !== "undefined"
-              ? action.notifications.dataCursor
-              : state.notifications.dataCursor,
-          dataCeiling:
-            typeof action.notifications.dataCeiling !== "undefined"
-              ? action.notifications.dataCeiling
-              : state.notifications.dataCeiling,
+          cursor:
+            typeof action.notifications.cursor !== "undefined"
+              ? action.notifications.cursor
+              : state.notifications.cursor,
+          limit:
+            typeof action.notifications.limit !== "undefined"
+              ? action.notifications.limit
+              : state.notifications.limit,
           isSubmitting:
             typeof action.notifications.isSubmitting !== "undefined"
               ? action.notifications.isSubmitting
@@ -84,8 +84,8 @@ export const eventsReducer = (state, action) => {
           opened: false,
           limit: 50,
           hasMore: true,
-          dataCursor: 0,
-          dataCeiling: 10,
+          cursor: 0,
+          limit: 10,
           isSubmitting: false,
         },
         search: "artwork",
@@ -126,14 +126,14 @@ export const eventsReducer = (state, action) => {
             typeof action.notifications.hasMore !== "undefined"
               ? action.notifications.hasMore
               : state.notifications.hasMore,
-          dataCursor:
-            typeof action.notifications.dataCursor !== "undefined"
-              ? action.notifications.dataCursor
-              : state.notifications.dataCursor,
-          dataCeiling:
-            typeof action.notifications.dataCeiling !== "undefined"
-              ? action.notifications.dataCeiling
-              : state.notifications.dataCeiling,
+          cursor:
+            typeof action.notifications.cursor !== "undefined"
+              ? action.notifications.cursor
+              : state.notifications.cursor,
+          limit:
+            typeof action.notifications.limit !== "undefined"
+              ? action.notifications.limit
+              : state.notifications.limit,
           isSubmitting:
             typeof action.notifications.isSubmitting !== "undefined"
               ? action.notifications.isSubmitting
@@ -172,14 +172,14 @@ export const eventsReducer = (state, action) => {
             typeof action.notifications.hasMore !== "undefined"
               ? action.notifications.hasMore
               : state.notifications.hasMore,
-          dataCursor:
-            typeof action.notifications.dataCursor !== "undefined"
-              ? action.notifications.dataCursor
-              : state.notifications.dataCursor,
-          dataCeiling:
-            typeof action.notifications.dataCeiling !== "undefined"
-              ? action.notifications.dataCeiling
-              : state.notifications.dataCeiling,
+          cursor:
+            typeof action.notifications.cursor !== "undefined"
+              ? action.notifications.cursor
+              : state.notifications.cursor,
+          limit:
+            typeof action.notifications.limit !== "undefined"
+              ? action.notifications.limit
+              : state.notifications.limit,
           isSubmitting:
             typeof action.notifications.isSubmitting !== "undefined"
               ? action.notifications.isSubmitting
@@ -195,7 +195,7 @@ export const eventsReducer = (state, action) => {
           ...state.notifications,
           items: [action.notification].concat(state.notifications.items),
           count: state.notifications.count + 1,
-          dataCursor: state.notifications.dataCursor + 1,
+          cursor: state.notifications.cursor + 1,
         },
       };
     case "UPDATE_SEARCH":

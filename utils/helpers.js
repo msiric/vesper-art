@@ -149,12 +149,6 @@ export const isNotAuthenticated = async (req, res, next) => {
   return next();
 };
 
-export const formatParams = ({ dataCursor, dataCeiling }) => {
-  const dataSkip = dataCursor; /* && /^\d+$/.test(dataCursor) ? Number(dataCursor) : 0; */
-  const dataLimit = dataCeiling; /* && /^\d+$/.test(dataCeiling) ? Number(dataCeiling) : 0; */
-  return { dataSkip, dataLimit };
-};
-
 export const validateParams = (req, res, next) => {
   let isValid = true;
   for (let param in req.params) {

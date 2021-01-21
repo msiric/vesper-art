@@ -17,13 +17,13 @@ const initialState = {
   scroll: {
     artwork: {
       hasMore: true,
-      dataCursor: 0,
-      dataCeiling: 20,
+      cursor: 0,
+      limit: 20,
     },
     favorites: {
       hasMore: true,
-      dataCursor: 0,
-      dataCeiling: 20,
+      cursor: 0,
+      limit: 20,
     },
   },
 };
@@ -44,13 +44,13 @@ const Profile = ({ match, location }) => {
       setState({ ...initialState });
       const { data } = await getUser.request({
         userUsername: match.params.id,
-        dataCursor: state.scroll.artwork.dataCursor,
-        dataCeiling: state.scroll.artwork.dataCeiling,
+        cursor: state.scroll.artwork.cursor,
+        limit: state.scroll.artwork.limit,
       });
       // const {
       //   data: { artwork },
       // } = await ax.get(
-      //   `/api/user/${user.id}/artwork?dataCursor=${state.dataCursor}&dataCeiling=${state.dataCeiling}`
+      //   `/api/user/${user.id}/artwork?cursor=${state.cursor}&limit=${state.limit}`
       // );
       if (userStore.id === data.user.id) {
         setState((prevState) => ({
@@ -67,12 +67,12 @@ const Profile = ({ match, location }) => {
             artwork: {
               ...prevState.scroll.artwork,
               hasMore:
-                data.user.artwork.length < prevState.scroll.artwork.dataCeiling
+                data.user.artwork.length < prevState.scroll.artwork.limit
                   ? false
                   : true,
-              dataCursor:
-                prevState.scroll.artwork.dataCursor +
-                prevState.scroll.artwork.dataCeiling,
+              cursor:
+                prevState.scroll.artwork.cursor +
+                prevState.scroll.artwork.limit,
             },
           },
         }));
@@ -91,12 +91,12 @@ const Profile = ({ match, location }) => {
             artwork: {
               ...prevState.scroll.artwork,
               hasMore:
-                data.user.artwork.length < prevState.scroll.artwork.dataCeiling
+                data.user.artwork.length < prevState.scroll.artwork.limit
                   ? false
                   : true,
-              dataCursor:
-                prevState.scroll.artwork.dataCursor +
-                prevState.scroll.artwork.dataCeiling,
+              cursor:
+                prevState.scroll.artwork.cursor +
+                prevState.scroll.artwork.limit,
             },
           },
         }));
@@ -110,8 +110,8 @@ const Profile = ({ match, location }) => {
     try {
       const { data } = await getArtwork.request({
         userId: state.user.id,
-        dataCursor: state.scroll.artwork.dataCursor,
-        dataCeiling: state.scroll.artwork.dataCeiling,
+        cursor: state.scroll.artwork.cursor,
+        limit: state.scroll.artwork.limit,
       });
       setState((prevState) => ({
         ...prevState,
@@ -124,12 +124,10 @@ const Profile = ({ match, location }) => {
           artwork: {
             ...state.scroll.artwork,
             hasMore:
-              data.user.artwork.length < state.scroll.artwork.dataCeiling
+              data.user.artwork.length < state.scroll.artwork.limit
                 ? false
                 : true,
-            dataCursor:
-              state.scroll.artwork.dataCursor +
-              state.scroll.artwork.dataCeiling,
+            cursor: state.scroll.artwork.cursor + state.scroll.artwork.limit,
           },
         },
       }));
@@ -146,8 +144,8 @@ const Profile = ({ match, location }) => {
       }));
       const { data } = await getFavorites.request({
         userId: state.user.id,
-        dataCursor: state.scroll.favorites.dataCursor,
-        dataCeiling: state.scroll.favorites.dataCeiling,
+        cursor: state.scroll.favorites.cursor,
+        limit: state.scroll.favorites.limit,
       });
       setState((prevState) => ({
         ...prevState,
@@ -161,12 +159,11 @@ const Profile = ({ match, location }) => {
           favorites: {
             ...state.scroll,
             hasMore:
-              data.favorites.length < state.scroll.favorites.dataCeiling
+              data.favorites.length < state.scroll.favorites.limit
                 ? false
                 : true,
-            dataCursor:
-              state.scroll.favorites.dataCursor +
-              state.scroll.favorites.dataCeiling,
+            cursor:
+              state.scroll.favorites.cursor + state.scroll.favorites.limit,
           },
         },
       }));

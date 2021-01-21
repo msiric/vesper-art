@@ -10,13 +10,13 @@ export const fetchArtworkById = async ({ artworkId, session = null }) => {
 };
 
 export const fetchActiveArtworks = async ({
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await Artwork.find({ active: true }, undefined, {
-    skip: dataSkip,
-    limit: dataLimit,
+    skip: cursor,
+    limit: limit,
   })
     .populate("owner")
     .populate(
@@ -31,20 +31,20 @@ export const fetchVersionDetails = async ({ versionId, session = null }) => {
 
 export const fetchArtworkDetails = async ({
   artworkId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await Artwork.findOne({
     $and: [{ id: artworkId }, { active: true }],
   })
     .populate(
-      dataSkip !== undefined && dataLimit !== undefined
+      cursor !== undefined && limit !== undefined
         ? {
             path: "comments",
             options: {
-              skip: dataSkip,
-              limit: dataLimit,
+              skip: cursor,
+              limit: limit,
             },
             populate: {
               path: "owner",
@@ -66,8 +66,8 @@ export const fetchArtworkDetails = async ({
 
 export const fetchArtworkComments = async ({
   artworkId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await Artwork.findOne({
@@ -76,8 +76,8 @@ export const fetchArtworkComments = async ({
     .populate({
       path: "comments",
       options: {
-        skip: dataSkip,
-        limit: dataLimit,
+        skip: cursor,
+        limit: limit,
       },
       populate: {
         path: "owner",
@@ -92,8 +92,8 @@ export const fetchArtworkComments = async ({
 
 export const fetchArtworkReviews = async ({
   artworkId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await Artwork.findOne({
@@ -102,8 +102,8 @@ export const fetchArtworkReviews = async ({
     .populate({
       path: "reviews",
       options: {
-        skip: dataSkip,
-        limit: dataLimit,
+        skip: cursor,
+        limit: limit,
       },
       populate: {
         path: "owner",
@@ -118,8 +118,8 @@ export const fetchArtworkReviews = async ({
 
 export const fetchUserArtworks = async ({
   userId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await Artwork.find(
@@ -128,8 +128,8 @@ export const fetchUserArtworks = async ({
     },
     undefined,
     {
-      skip: dataSkip,
-      limit: dataLimit,
+      skip: cursor,
+      limit: limit,
     }
   ).populate(
     "current",

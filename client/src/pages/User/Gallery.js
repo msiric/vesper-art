@@ -39,8 +39,8 @@ const initialState = {
   scroll: {
     artwork: {
       hasMore: true,
-      dataCursor: 0,
-      dataCeiling: 10,
+      cursor: 0,
+      limit: 10,
     },
   },
 };
@@ -146,13 +146,13 @@ const Gallery = ({ match, location }) => {
         state.display === "purchases"
           ? await getOwnership.request({
               userId: userStore.id,
-              dataCursor: state.scroll.artwork.dataCursor,
-              dataCeiling: state.scroll.artwork.dataCeiling,
+              cursor: state.scroll.artwork.cursor,
+              limit: state.scroll.artwork.limit,
             })
           : await getArtwork.request({
               userId: userStore.id,
-              dataCursor: state.scroll.artwork.dataCursor,
-              dataCeiling: state.scroll.artwork.dataCeiling,
+              cursor: state.scroll.artwork.cursor,
+              limit: state.scroll.artwork.limit,
             });
       console.log("data", data);
       const newArtwork = data[state.display].reduce((object, item) => {
@@ -201,22 +201,22 @@ const Gallery = ({ match, location }) => {
           //   artwork: {
           //     ...prevState.scroll.artwork,
           //     hasMore:
-          //       data.artwork.length < prevState.scroll.artwork.dataCeiling
+          //       data.artwork.length < prevState.scroll.artwork.limit
           //         ? false
           //         : true,
-          //     dataCursor:
-          //       prevState.scroll.artwork.dataCursor +
-          //       prevState.scroll.artwork.dataCeiling,
+          //     cursor:
+          //       prevState.scroll.artwork.cursor +
+          //       prevState.scroll.artwork.limit,
           //   },
           //   purchases: {
           //     ...prevState.scroll.artwork,
           //     hasMore:
-          //       data.artwork.length < prevState.scroll.artwork.dataCeiling
+          //       data.artwork.length < prevState.scroll.artwork.limit
           //         ? false
           //         : true,
-          //     dataCursor:
-          //       prevState.scroll.artwork.dataCursor +
-          //       prevState.scroll.artwork.dataCeiling,
+          //     cursor:
+          //       prevState.scroll.artwork.cursor +
+          //       prevState.scroll.artwork.limit,
           //   },
         },
       }));
@@ -229,8 +229,8 @@ const Gallery = ({ match, location }) => {
     try {
       const { data } = await getArtwork.request({
         userId: state.user.id,
-        dataCursor: state.scroll.artwork.dataCursor,
-        dataCeiling: state.scroll.artwork.dataCeiling,
+        cursor: state.scroll.artwork.cursor,
+        limit: state.scroll.artwork.limit,
       });
       setState((prevState) => ({
         ...prevState,
@@ -240,12 +240,8 @@ const Gallery = ({ match, location }) => {
           artwork: {
             ...state.scroll.artwork,
             hasMore:
-              data.artwork.length < state.scroll.artwork.dataCeiling
-                ? false
-                : true,
-            dataCursor:
-              state.scroll.artwork.dataCursor +
-              state.scroll.artwork.dataCeiling,
+              data.artwork.length < state.scroll.artwork.limit ? false : true,
+            cursor: state.scroll.artwork.cursor + state.scroll.artwork.limit,
           },
         },
       }));

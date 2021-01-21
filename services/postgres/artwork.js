@@ -29,16 +29,12 @@ export const fetchArtworkById = async ({ artworkId, connection }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchActiveArtworks = async ({
-  dataSkip,
-  dataLimit,
-  connection,
-}) => {
+export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
   // return await Artwork.find({
   //   where: [{ active: true }],
   //   relations: ["owner", "current"],
-  //   skip: dataSkip,
-  //   take: dataLimit,
+  //   skip: cursor,
+  //   take: limit,
   // });
   const foundArtwork = await connection
     .getRepository(Artwork)
@@ -79,8 +75,8 @@ export const fetchVersionDetails = async ({ versionId, connection }) => {
 
 export const fetchArtworkDetails = async ({
   artworkId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   connection,
 }) => {
   // const foundArtwork = await Artwork.findOne({
@@ -124,16 +120,16 @@ export const fetchArtworkDetails = async ({
 
 export const fetchArtworkComments = async ({
   artworkId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   connection,
 }) => {
-  console.log("id", artworkId, "skip", dataSkip, "limit", dataLimit);
+  console.log("id", artworkId, "skip", cursor, "limit", limit);
   // return await Comment.find({
   //   where: [{ artwork: artworkId }],
   //   relations: ["owner"],
-  //   skip: dataSkip,
-  //   take: dataLimit,
+  //   skip: cursor,
+  //   take: limit,
   // });
   const qb = await connection
     .getRepository(Comment)
@@ -145,12 +141,12 @@ export const fetchArtworkComments = async ({
     .where(
       `comment.artworkId = :artworkId AND comment.serial > 
         ${
-          dataSkip !== "null"
+          cursor !== "null"
             ? qb
                 .subQuery()
                 .select("comment.serial")
                 .from(Comment, "comment")
-                .where("comment.id = :commentId", { commentId: dataSkip })
+                .where("comment.id = :commentId", { commentId: cursor })
                 .getQuery()
             : -1
         }`,
@@ -159,7 +155,7 @@ export const fetchArtworkComments = async ({
       }
     )
     .orderBy("comment.serial", "ASC")
-    .limit(dataLimit)
+    .limit(limit)
     .getMany();
   console.log(foundComments);
   return foundComments;
@@ -167,15 +163,15 @@ export const fetchArtworkComments = async ({
 
 export const fetchUserArtworks = async ({
   userId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   connection,
 }) => {
   // return await Artwork.find({
   //   where: [{ owner: userId, active: true }],
   //   relations: ["current"],
-  //   skip: dataSkip,
-  //   take: dataLimit,
+  //   skip: cursor,
+  //   take: limit,
   // });
   const foundArtwork = await connection
     .getRepository(Artwork)

@@ -1,10 +1,8 @@
 import { ax } from "../containers/Interceptor/Interceptor.js";
 
 export const getUser = {
-  request: async ({ userUsername, dataCursor, dataCeiling }) =>
-    await ax.get(
-      `/api/users/${userUsername}?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
-    ),
+  request: async ({ userUsername, cursor, limit }) =>
+    await ax.get(`/api/users/${userUsername}?cursor=${cursor}&limit=${limit}`),
   success: { message: "User successfully fetched", variant: "success" },
   error: { message: "Failed to fetch user", variant: "error" },
 };
@@ -15,9 +13,9 @@ export const getStatistics = {
   error: { message: "Failed to fetch statistics", variant: "error" },
 };
 export const getSelection = {
-  request: async ({ userId, displayType, rangeFrom, rangeTo }) =>
+  request: async ({ userId, displayType, start, end }) =>
     await ax.get(
-      `/api/users/${userId}/${displayType}?rangeFrom=${rangeFrom}&rangeTo=${rangeTo}`
+      `/api/users/${userId}/${displayType}?start=${start}&end=${end}`
     ),
   success: { message: "Selection successfully fetched", variant: "success" },
   error: { message: "Failed to fetch selection", variant: "error" },
@@ -43,17 +41,17 @@ export const postMedia = {
   error: { message: "Failed to upload avatar", variant: "error" },
 };
 export const getArtwork = {
-  request: async ({ userId, dataCursor, dataCeiling }) =>
+  request: async ({ userId, cursor, limit }) =>
     await ax.get(
-      `/api/users/${userId}/artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+      `/api/users/${userId}/artwork?cursor=${cursor}&limit=${limit}`
     ),
   success: { message: "User artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch user artwork", variant: "error" },
 };
 export const getOwnership = {
-  request: async ({ userId, dataCursor, dataCeiling }) =>
+  request: async ({ userId, cursor, limit }) =>
     await ax.get(
-      `/api/users/${userId}/ownership?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+      `/api/users/${userId}/ownership?cursor=${cursor}&limit=${limit}`
     ),
   success: {
     message: "User purchases successfully fetched",
@@ -62,9 +60,9 @@ export const getOwnership = {
   error: { message: "Failed to fetch user purchases", variant: "error" },
 };
 export const getFavorites = {
-  request: async ({ userId, dataCursor, dataCeiling }) =>
+  request: async ({ userId, cursor, limit }) =>
     await ax.get(
-      `/api/users/${userId}/favorites?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+      `/api/users/${userId}/favorites?cursor=${cursor}&limit=${limit}`
     ),
   success: { message: "Favorites successfully fetched", variant: "success" },
   error: { message: "Failed to fetch favorites", variant: "error" },
@@ -107,9 +105,9 @@ export const patchBilling = {
   error: { message: "Failed to update billing information", variant: "error" },
 };
 export const getNotifications = {
-  request: async ({ userId, dataCursor, dataCeiling }) =>
+  request: async ({ userId, cursor, limit }) =>
     await ax.get(
-      `/api/users/${userId}/notifications?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+      `/api/users/${userId}/notifications?cursor=${cursor}&limit=${limit}`
     ),
   success: {
     message: "Notifications successfully fetched",

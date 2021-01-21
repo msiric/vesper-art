@@ -23,17 +23,15 @@ import { fetchStripeAccount } from "../services/postgres/stripe.js";
 import { fetchUserById } from "../services/postgres/user.js";
 import {
   formatArtworkValues,
-  formatParams,
   generateUuids,
   sanitizeData,
 } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 
-export const getArtwork = async ({ dataCursor, dataCeiling, connection }) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
+export const getArtwork = async ({ cursor, limit, connection }) => {
   const foundArtwork = await fetchActiveArtworks({
-    dataSkip,
-    dataLimit,
+    cursor,
+    limit,
     connection,
   });
   return { artwork: foundArtwork };
@@ -42,15 +40,14 @@ export const getArtwork = async ({ dataCursor, dataCeiling, connection }) => {
 // $TODO how to handle limiting comments?
 export const getArtworkDetails = async ({
   artworkId,
-  dataCursor,
-  dataCeiling,
+  cursor,
+  limit,
   connection,
 }) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundArtwork = await fetchArtworkDetails({
     artworkId,
-    dataSkip,
-    dataLimit,
+    cursor,
+    limit,
     connection,
   });
   if (foundArtwork) return { artwork: foundArtwork };
@@ -59,15 +56,14 @@ export const getArtworkDetails = async ({
 
 export const getArtworkComments = async ({
   artworkId,
-  dataCursor,
-  dataCeiling,
+  cursor,
+  limit,
   connection,
 }) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   const foundComments = await fetchArtworkComments({
     artworkId,
-    dataSkip,
-    dataLimit,
+    cursor,
+    limit,
     connection,
   });
   if (foundComments) return { comments: foundComments };
@@ -75,17 +71,11 @@ export const getArtworkComments = async ({
 };
 
 // $TODO handle in user controller?
-export const getUserArtwork = async ({
-  userId,
-  dataCursor,
-  dataCeiling,
-  connection,
-}) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
+export const getUserArtwork = async ({ userId, cursor, limit, connection }) => {
   const foundArtwork = await fetchUserArtworks({
     userId,
-    dataSkip,
-    dataLimit,
+    cursor,
+    limit,
     connection,
   });
   return { artwork: foundArtwork };

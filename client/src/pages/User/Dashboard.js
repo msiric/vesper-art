@@ -105,8 +105,8 @@ const Dashboard = ({ location }) => {
       const { data } = await getSelection.request({
         userId: userStore.id,
         displayType: state.display.type,
-        rangeFrom: from,
-        rangeTo: to,
+        start: from,
+        end: to,
       });
       const selectedStats = {
         [state.display.label]: data.statistics.length

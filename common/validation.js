@@ -210,11 +210,6 @@ export const profileValidation = Yup.object().shape({
   userCountry: Yup.string().trim(),
 });
 
-export const rangeValidation = Yup.object().shape({
-  rangeFrom: Yup.string().trim().required(),
-  rangeTo: Yup.string().trim().required(),
-});
-
 export const resetValidation = Yup.object().shape({
   // $TODO Add proper password validation
   userPassword: Yup.string()

@@ -50,8 +50,8 @@ const initialState = {
   scroll: {
     comments: {
       hasMore: true,
-      dataCursor: null,
-      dataCeiling: 5,
+      cursor: null,
+      limit: 5,
     },
   },
   highlight: {
@@ -134,8 +134,8 @@ const ArtworkDetails = ({ match, location, socket }) => {
       setState({ ...initialState });
       const { data } = await getDetails.request({
         artworkId: match.params.id,
-        dataCursor: initialState.scroll.comments.dataCursor,
-        dataCeiling: initialState.scroll.comments.dataCeiling,
+        cursor: initialState.scroll.comments.cursor,
+        limit: initialState.scroll.comments.limit,
       });
       console.log(data);
       const { foundHighlight, fetchedHighlight } = await resolveHighlight(
@@ -160,11 +160,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
           comments: {
             ...prevState.scroll.comments,
             hasMore:
-              data.artwork.comments.length <
-              prevState.scroll.comments.dataCeiling
+              data.artwork.comments.length < prevState.scroll.comments.limit
                 ? false
                 : true,
-            dataCursor:
+            cursor:
               data.artwork.comments[data.artwork.comments.length - 1] &&
               data.artwork.comments[data.artwork.comments.length - 1].id,
           },
@@ -363,8 +362,8 @@ const ArtworkDetails = ({ match, location, socket }) => {
     try {
       const { data } = await getComments.request({
         artworkId: match.params.id,
-        dataCursor: state.scroll.comments.dataCursor,
-        dataCeiling: state.scroll.comments.dataCeiling,
+        cursor: state.scroll.comments.cursor,
+        limit: state.scroll.comments.limit,
       });
       console.log("NEW COMMENTS", data);
       const foundHighlight =
@@ -387,10 +386,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
           comments: {
             ...state.scroll.comments,
             hasMore:
-              data.artwork.comments.length < state.scroll.comments.dataCeiling
+              data.artwork.comments.length < state.scroll.comments.limit
                 ? false
                 : true,
-            dataCursor:
+            cursor:
               data.artwork.comments[data.artwork.comments.length - 1] &&
               data.artwork.comments[data.artwork.comments.length - 1].id,
           },

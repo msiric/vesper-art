@@ -214,15 +214,15 @@ export const fetchSellerMedia = async ({ userId, artworkId, connection }) => {
 // $Needs testing (mongo -> postgres)
 export const fetchUserPurchases = async ({
   userId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   connection,
 }) => {
   // return await Order.find({
   //   where: [{ buyerId: userId }],
   //   relations: ["seller", "version", "review"],
-  //   skip: dataSkip,
-  //   take: dataLimit,
+  //   skip: cursor,
+  //   take: limit,
   // });
   const foundPurchases = await connection
     .getRepository(Order)
@@ -239,17 +239,12 @@ export const fetchUserPurchases = async ({
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchUserSales = async ({
-  userId,
-  dataSkip,
-  dataLimit,
-  connection,
-}) => {
+export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
   // return await Order.find({
   //   where: [{ sellerId: userId }],
   //   relations: ["buyer", "version", "review"],
-  //   skip: dataSkip,
-  //   take: dataLimit,
+  //   skip: cursor,
+  //   take: limit,
   // });
   const foundSales = await connection
     .getRepository(Order)
@@ -300,8 +295,8 @@ export const editUserStripe = async ({ userId, stripeId, connection }) => {
 export const fetchUserProfile = async ({
   userUsername,
   userId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   connection,
 }) => {
   const foundUser = await connection
@@ -336,16 +331,16 @@ export const fetchUserProfile = async ({
 // $Needs testing (mongo -> postgres)
 export const fetchUserArtwork = async ({
   userId,
-  dataCursor,
-  dataCeiling,
+  cursor,
+  limit,
   connection,
 }) => {
-  // const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
+  //
   // return await Artwork.find({
   //   where: [{ owner: userId, active: true }],
   //   relations: ["current"],
-  //   skip: dataSkip,
-  //   take: dataLimit,
+  //   skip: cursor,
+  //   take: limit,
   // });
 
   const foundArtwork = await connection
@@ -365,15 +360,15 @@ export const fetchUserArtwork = async ({
 // $Needs testing (mongo -> postgres)
 export const fetchUserFavorites = async ({
   userId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   connection,
 }) => {
   // return await Favorite.find({
   //   where: [{ ownerId: userId }],
   //   relations: ["artwork", "artwork.owner", "artwork.current"],
-  //   skip: dataSkip,
-  //   take: dataLimit,
+  //   skip: cursor,
+  //   take: limit,
   // });
 
   const foundFavorites = await connection
@@ -528,14 +523,14 @@ export const editUserProfile = async ({
 // $Needs testing (mongo -> postgres)
 export const fetchUserNotifications = async ({
   userId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   connection,
 }) => {
   // return await Notification.find({
   //   where: [{ receiver: userId }],
-  //   skip: dataSkip,
-  //   take: dataLimit,
+  //   skip: cursor,
+  //   take: limit,
   //   relations: ["user"],
   //   order: {
   //     created: "DESC",

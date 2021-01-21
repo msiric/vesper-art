@@ -10,8 +10,8 @@ const initialState = {
   alerts: [],
   artwork: [],
   hasMore: true,
-  dataCursor: 0,
-  dataCeiling: 50,
+  cursor: 0,
+  limit: 50,
 };
 
 const Home = ({ location }) => {
@@ -24,15 +24,15 @@ const Home = ({ location }) => {
       setState({ ...initialState });
       // DATABASE DATA
       const { data } = await getArtwork.request({
-        dataCursor: initialState.dataCursor,
-        dataCeiling: initialState.dataCeiling,
+        cursor: initialState.cursor,
+        limit: initialState.limit,
       });
       setState((prevState) => ({
         ...prevState,
         loading: false,
         artwork: data.artwork,
-        hasMore: data.artwork.length < prevState.dataCeiling ? false : true,
-        dataCursor: prevState.dataCursor + prevState.dataCeiling,
+        hasMore: data.artwork.length < prevState.limit ? false : true,
+        cursor: prevState.cursor + prevState.limit,
       }));
 
       // MOCK DATA
@@ -67,8 +67,8 @@ const Home = ({ location }) => {
       //   ...state,
       //   loading: false,
       //   artwork: formattedArtwork,
-      //   hasMore: formattedArtwork.length < prevState.dataCeiling ? false : true,
-      //   dataCursor: prevState.dataCursor + prevState.dataCeiling,
+      //   hasMore: formattedArtwork.length < prevState.limit ? false : true,
+      //   cursor: prevState.cursor + prevState.limit,
       // }));
     } catch (err) {
       setState((prevState) => ({ ...prevState, loading: false }));
@@ -82,14 +82,14 @@ const Home = ({ location }) => {
   const loadMore = async () => {
     try {
       const { data } = await getArtwork.request({
-        dataCursor: state.dataCursor,
-        dataCeiling: state.dataCeiling,
+        cursor: state.cursor,
+        limit: state.limit,
       });
       setState((prevState) => ({
         ...prevState,
         artwork: [prevState.artwork].concat(data.artwork),
-        hasMore: data.artwork.length >= prevState.dataCeiling,
-        dataCursor: prevState.dataCursor + prevState.dataCeiling,
+        hasMore: data.artwork.length >= prevState.limit,
+        cursor: prevState.cursor + prevState.limit,
       }));
     } catch (err) {
       console.log(err);

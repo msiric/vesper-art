@@ -21,8 +21,8 @@ const MyArtwork = ({ location }) => {
     loading: true,
     artwork: [],
     hasMore: true,
-    dataCursor: 0,
-    dataCeiling: 20,
+    cursor: 0,
+    limit: 20,
     modal: {
       id: null,
       open: false,
@@ -37,8 +37,8 @@ const MyArtwork = ({ location }) => {
     try {
       const { data } = await getGallery.request({
         userId: userStore.id,
-        dataCursor: state.dataCursor,
-        dataCeiling: state.dataCeiling,
+        cursor: state.cursor,
+        limit: state.limit,
       });
       setState((prevState) => ({
         ...prevState,

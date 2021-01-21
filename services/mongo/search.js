@@ -3,8 +3,8 @@ import Version from "../../models/version.js";
 
 export const fetchArtworkResults = async ({
   searchQuery,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await Version.fuzzySearch(searchQuery)
@@ -14,8 +14,8 @@ export const fetchArtworkResults = async ({
 
 export const fetchUserResults = async ({
   searchQuery,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await User.fuzzySearch(searchQuery)

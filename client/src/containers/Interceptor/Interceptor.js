@@ -73,8 +73,8 @@ const Interceptor = ({ children }) => {
               items: [],
               count: data.user.notifications,
               hasMore: true,
-              dataCursor: 0,
-              dataCeiling: 10,
+              cursor: 0,
+              limit: 10,
             },
           });
           appDispatch({

@@ -33,8 +33,8 @@ const SearchResults = ({ match, location, history }) => {
         }));
       const { data } = await getSearch.request({
         searchQuery: location.search,
-        dataCursor: initialState.cursor,
-        dataCeiling: initialState.ceiling,
+        cursor: initialState.cursor,
+        limit: initialState.ceiling,
       });
       setState((prevState) => ({
         ...prevState,

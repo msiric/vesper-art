@@ -34,19 +34,19 @@ export const fetchUserByAuth = async ({ userUsername, session = null }) => {
 
 export const fetchUserPurchases = async ({
   userId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await User.findOne({
     $and: [{ id: userId }, { active: true }],
   }).populate(
-    dataSkip !== undefined && dataLimit !== undefined
+    cursor !== undefined && limit !== undefined
       ? {
           path: "purchases",
           options: {
-            limit: dataLimit,
-            skip: dataSkip,
+            limit: limit,
+            skip: cursor,
           },
           populate: {
             path: "seller version review",
@@ -63,19 +63,19 @@ export const fetchUserPurchases = async ({
 
 export const fetchUserSales = async ({
   userId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await User.findOne({
     $and: [{ id: userId }, { active: true }],
   }).populate(
-    dataSkip !== undefined && dataLimit !== undefined
+    cursor !== undefined && limit !== undefined
       ? {
           path: "sales",
           options: {
-            limit: dataLimit,
-            skip: dataSkip,
+            limit: limit,
+            skip: cursor,
           },
           populate: {
             path: "buyer version review",
@@ -110,20 +110,20 @@ export const editUserSale = async ({ userId, orderId, session = null }) => {
 
 export const fetchUserProfile = async ({
   userUsername,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await User.findOne({
     $and: [{ name: userUsername }, { active: true }],
   }).populate(
-    dataSkip !== undefined && dataLimit !== undefined
+    cursor !== undefined && limit !== undefined
       ? {
           path: "artwork",
           match: { active: true },
           options: {
-            limit: dataLimit,
-            skip: dataSkip,
+            limit: limit,
+            skip: cursor,
           },
           populate: {
             path: "owner current",
@@ -141,27 +141,26 @@ export const fetchUserProfile = async ({
 
 export const fetchUserArtwork = async ({
   userId,
-  dataCursor,
-  dataCeiling,
+  cursor,
+  limit,
   session = null,
 }) => {
-  const { dataSkip, dataLimit } = formatParams({ dataCursor, dataCeiling });
   return await Artwork.find(
     {
       $and: [{ owner: userId }, { active: true }],
     },
     undefined,
     {
-      skip: dataSkip,
-      limit: dataLimit,
+      skip: cursor,
+      limit: limit,
     }
   );
 };
 
 export const fetchuserFavorites = async ({
   userId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await User.findOne(
@@ -170,14 +169,14 @@ export const fetchuserFavorites = async ({
     },
     undefined,
     {
-      skip: dataSkip,
-      limit: dataLimit,
+      skip: cursor,
+      limit: limit,
     }
   ).populate({
     path: "favorites",
     options: {
-      skip: dataSkip,
-      limit: dataLimit,
+      skip: cursor,
+      limit: limit,
     },
     populate: {
       path: "current",
@@ -219,13 +218,13 @@ export const editUserProfile = async ({
 
 export const fetchUserNotifications = async ({
   userId,
-  dataSkip,
-  dataLimit,
+  cursor,
+  limit,
   session = null,
 }) => {
   return await Notification.find({ receiver: userId }, undefined, {
-    skip: dataSkip,
-    limit: dataLimit,
+    skip: cursor,
+    limit: limit,
   })
     .populate("user")
     .sort({ created: -1 });

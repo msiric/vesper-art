@@ -11,20 +11,18 @@ export const postArtwork = {
   error: { message: "Failed to publish artwork", variant: "error" },
 };
 export const getArtwork = {
-  request: async ({ dataCursor = null, dataCeiling = null }) =>
-    typeof dataCursor !== null && typeof dataCeiling !== null
-      ? await ax.get(
-          `/api/artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
-        )
+  request: async ({ cursor = null, limit = null }) =>
+    typeof cursor !== null && typeof limit !== null
+      ? await ax.get(`/api/artwork?cursor=${cursor}&limit=${limit}`)
       : await ax.get(`/api/artwork`),
   success: { message: "Artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch artwork", variant: "error" },
 };
 export const getDetails = {
-  request: async ({ artworkId, dataCursor = null, dataCeiling = null }) =>
-    typeof dataCursor !== null && typeof dataCeiling !== null
+  request: async ({ artworkId, cursor = null, limit = null }) =>
+    typeof cursor !== null && typeof limit !== null
       ? await ax.get(
-          `/api/artwork/${artworkId}?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+          `/api/artwork/${artworkId}?cursor=${cursor}&limit=${limit}`
         )
       : await ax.get(`/api/artwork/${artworkId}`),
   success: { message: "Artwork successfully fetched", variant: "success" },
@@ -43,9 +41,9 @@ export const deleteComment = {
   error: { message: "Failed to delete comment", variant: "error" },
 };
 export const getComments = {
-  request: async ({ artworkId, dataCursor = null, dataCeiling = null }) =>
+  request: async ({ artworkId, cursor = null, limit = null }) =>
     await ax.get(
-      `/api/artwork/${artworkId}/comments?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+      `/api/artwork/${artworkId}/comments?cursor=${cursor}&limit=${limit}`
     ),
   success: { message: "Comments successfully fetched", variant: "success" },
   error: { message: "Failed to fetch comments", variant: "error" },
@@ -79,10 +77,10 @@ export const patchArtwork = {
   error: { message: "Failed to update artwork", variant: "error" },
 };
 export const getGallery = {
-  request: async ({ userId, dataCursor = null, dataCeiling = null }) =>
-    typeof dataCursor !== null && typeof dataCeiling !== null
+  request: async ({ userId, cursor = null, limit = null }) =>
+    typeof cursor !== null && typeof limit !== null
       ? await ax.get(
-          `/api/users/${userId}/artwork?dataCursor=${dataCursor}&dataCeiling=${dataCeiling}`
+          `/api/users/${userId}/artwork?cursor=${cursor}&limit=${limit}`
         )
       : await ax.get(`/api/users/${userId}/artwork`),
   success: { message: "Artwork successfully fetched", variant: "success" },

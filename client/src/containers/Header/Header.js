@@ -130,8 +130,8 @@ const Header = ({ socket, history }) => {
         try {
           const { data } = await getNotifications.request({
             userId: userStore.id,
-            dataCursor: eventsStore.notifications.dataCursor,
-            dataCeiling: eventsStore.notifications.dataCeiling,
+            cursor: eventsStore.notifications.cursor,
+            limit: eventsStore.notifications.limit,
           });
           eventsDispatch({
             type: "UPDATE_NOTIFICATIONS",
@@ -140,13 +140,12 @@ const Header = ({ socket, history }) => {
                 data.notifications
               ),
               hasMore:
-                data.notifications.length <
-                eventsStore.notifications.dataCeiling
+                data.notifications.length < eventsStore.notifications.limit
                   ? false
                   : true,
-              dataCursor:
-                eventsStore.notifications.dataCursor +
-                eventsStore.notifications.dataCeiling,
+              cursor:
+                eventsStore.notifications.cursor +
+                eventsStore.notifications.limit,
               opened: true,
             },
           });
@@ -274,8 +273,8 @@ const Header = ({ socket, history }) => {
     try {
       const { data } = await getNotifications.request({
         userId: userStore.id,
-        dataCursor: eventsStore.notifications.dataCursor,
-        dataCeiling: eventsStore.notifications.dataCeiling,
+        cursor: eventsStore.notifications.cursor,
+        limit: eventsStore.notifications.limit,
       });
       eventsDispatch({
         type: "UPDATE_NOTIFICATIONS",
@@ -284,12 +283,11 @@ const Header = ({ socket, history }) => {
             data.notifications
           ),
           hasMore:
-            data.notifications.length < eventsStore.notifications.dataCeiling
+            data.notifications.length < eventsStore.notifications.limit
               ? false
               : true,
-          dataCursor:
-            eventsStore.notifications.dataCursor +
-            eventsStore.notifications.dataCeiling,
+          cursor:
+            eventsStore.notifications.cursor + eventsStore.notifications.limit,
         },
       });
     } catch (err) {
