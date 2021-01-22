@@ -21,7 +21,7 @@ const MyArtwork = ({ location }) => {
     loading: true,
     artwork: [],
     hasMore: true,
-    cursor: 0,
+    cursor: "",
     limit: 20,
     modal: {
       id: null,

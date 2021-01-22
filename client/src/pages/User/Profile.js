@@ -17,12 +17,12 @@ const initialState = {
   scroll: {
     artwork: {
       hasMore: true,
-      cursor: 0,
+      cursor: "",
       limit: 20,
     },
     favorites: {
       hasMore: true,
-      cursor: 0,
+      cursor: "",
       limit: 20,
     },
   },
@@ -71,8 +71,8 @@ const Profile = ({ match, location }) => {
                   ? false
                   : true,
               cursor:
-                prevState.scroll.artwork.cursor +
-                prevState.scroll.artwork.limit,
+                data.user.artwork[data.user.artwork.length - 1] &&
+                data.user.artwork[data.user.artwork.length - 1].id,
             },
           },
         }));
@@ -95,8 +95,8 @@ const Profile = ({ match, location }) => {
                   ? false
                   : true,
               cursor:
-                prevState.scroll.artwork.cursor +
-                prevState.scroll.artwork.limit,
+                data.user.artwork[data.user.artwork.length - 1] &&
+                data.user.artwork[data.user.artwork.length - 1].id,
             },
           },
         }));
@@ -127,7 +127,9 @@ const Profile = ({ match, location }) => {
               data.user.artwork.length < state.scroll.artwork.limit
                 ? false
                 : true,
-            cursor: state.scroll.artwork.cursor + state.scroll.artwork.limit,
+            cursor:
+              data.user.artwork[data.user.artwork.length - 1] &&
+              data.user.artwork[data.user.artwork.length - 1].id,
           },
         },
       }));
@@ -163,7 +165,8 @@ const Profile = ({ match, location }) => {
                 ? false
                 : true,
             cursor:
-              state.scroll.favorites.cursor + state.scroll.favorites.limit,
+              data.favorites[data.favorites.length - 1] &&
+              data.favorites[data.favorites.length - 1].id,
           },
         },
       }));

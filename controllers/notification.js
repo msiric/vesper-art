@@ -1,9 +1,7 @@
 import {
-  decrementUserNotification,
   editReadNotification,
   editUnreadNotification,
   fetchExistingNotifications,
-  incrementUserNotification,
 } from "../services/postgres/notification.js";
 
 export const getNotifications = async ({ userId, connection }) => {
@@ -24,7 +22,7 @@ export const readNotification = async ({
     notificationId,
     connection,
   });
-  await decrementUserNotification({ userId, connection });
+  /*   await decrementUserNotification({ userId, connection }); */
   return { message: "Notification read" };
 };
 
@@ -38,6 +36,6 @@ export const unreadNotification = async ({
     notificationId,
     connection,
   });
-  await incrementUserNotification({ userId, connection });
+  /*   await incrementUserNotification({ userId, connection }); */
   return { message: "Notification read" };
 };

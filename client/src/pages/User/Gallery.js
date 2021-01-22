@@ -39,7 +39,7 @@ const initialState = {
   scroll: {
     artwork: {
       hasMore: true,
-      cursor: 0,
+      cursor: "",
       limit: 10,
     },
   },
@@ -241,7 +241,9 @@ const Gallery = ({ match, location }) => {
             ...state.scroll.artwork,
             hasMore:
               data.artwork.length < state.scroll.artwork.limit ? false : true,
-            cursor: state.scroll.artwork.cursor + state.scroll.artwork.limit,
+            cursor:
+              data.artwork[data.artwork.length - 1] &&
+              data.artwork[data.artwork.length - 1].id,
           },
         },
       }));

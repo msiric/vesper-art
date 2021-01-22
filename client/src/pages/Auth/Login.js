@@ -82,7 +82,7 @@ const Login = () => {
             items: [],
             count: data.user.notifications,
             hasMore: true,
-            cursor: 0,
+            cursor: "",
             limit: 10,
           },
         });

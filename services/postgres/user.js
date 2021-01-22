@@ -189,6 +189,8 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
     )
     .where("user.id = :userId", { userId })
     .getOne();
+  // temporary hacky solution
+  foundUser.notifications = foundUser.notifications.length;
   console.log(foundUser);
   return foundUser;
 };

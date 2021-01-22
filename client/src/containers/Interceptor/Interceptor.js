@@ -73,7 +73,9 @@ const Interceptor = ({ children }) => {
               items: [],
               count: data.user.notifications,
               hasMore: true,
-              cursor: 0,
+              cursor:
+                data.user.notifications[data.user.notifications.length - 1] &&
+                data.user.notifications[data.user.notifications.length - 1].id,
               limit: 10,
             },
           });

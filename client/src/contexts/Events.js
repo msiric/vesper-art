@@ -13,7 +13,7 @@ export const eventsStore = {
     opened: false,
     limit: 50,
     hasMore: true,
-    cursor: 0,
+    cursor: "",
     limit: 10,
     isSubmitting: false,
   },
@@ -84,7 +84,7 @@ export const eventsReducer = (state, action) => {
           opened: false,
           limit: 50,
           hasMore: true,
-          cursor: 0,
+          cursor: "",
           limit: 10,
           isSubmitting: false,
         },
@@ -193,9 +193,12 @@ export const eventsReducer = (state, action) => {
         ...state,
         notifications: {
           ...state.notifications,
-          items: [action.notification].concat(state.notifications.items),
+          items: state.notifications.opened
+            ? [action.notification].concat(state.notifications.items)
+            : state.notifications.items,
           count: state.notifications.count + 1,
-          cursor: state.notifications.cursor + 1,
+          // $TODO still not implemented
+          cursor: action.cursor,
         },
       };
     case "UPDATE_SEARCH":
