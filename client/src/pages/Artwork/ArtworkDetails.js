@@ -20,6 +20,7 @@ import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
 import CommentSection from "../../containers/CommentSection/index.js";
 import { useTracked as useUserContext } from "../../contexts/User.js";
 import LicenseForm from "../../forms/LicenseForm/index.js";
+import useOnScreen from "../../hooks/useOnScreen.js";
 import {
   deleteComment,
   getComment,
@@ -63,6 +64,8 @@ const initialState = {
 const ArtworkDetails = ({ match, location, socket }) => {
   const [userStore] = useUserContext();
   const [state, setState] = useState({ ...initialState });
+  const commentsRef = useRef();
+  const isVisible = useOnScreen(commentsRef);
 
   const setDefaultValues = () => ({
     licenseType: state.license,
@@ -409,7 +412,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
   const isSeller = () => userStore.id === state.artwork.owner.id;
 
   useEffect(() => {
-    loadMoreComments();
+    fetchArtwork();
   }, [location]);
 
   useEffect(() => {
@@ -417,6 +420,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
   }, [state.license]);
 
   console.log(state.artwork);
+  console.log("IS VISIBLE", isVisible);
 
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
@@ -431,6 +435,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
               />
               <br />
               <CommentSection
+                commentsRef={commentsRef}
                 artwork={state.artwork}
                 edits={state.edits}
                 scroll={state.scroll}

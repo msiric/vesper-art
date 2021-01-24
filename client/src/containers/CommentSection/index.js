@@ -17,6 +17,7 @@ import { List, Typography } from "../../styles/theme.js";
 import commentSectionStyles from "./styles.js";
 
 const CommentSection = ({
+  commentsRef,
   artwork = {},
   edits = {},
   scroll = {},
@@ -87,6 +88,7 @@ const CommentSection = ({
             loader={<LoadingSpinner />}
           >
             <List
+              ref={commentsRef}
               p={0}
               style={{ display: "flex", flexDirection: "column-reverse" }}
               disablePadding
