@@ -42,7 +42,7 @@ export const postComment = async ({
       commentContent,
       connection,
     });
-    if (!userId === foundArtwork.owner.id) {
+    if (userId !== foundArtwork.owner.id) {
       const savedNotification = await addNewNotification({
         notificationId,
         notificationLink: foundArtwork.id,
@@ -51,7 +51,11 @@ export const postComment = async ({
         notificationReceiver: foundArtwork.owner.id,
         connection,
       });
-      socketApi.sendNotification(foundArtwork.owner.id, savedNotification);
+      socketApi.sendNotification(
+        foundArtwork.owner.id,
+        // moze bolje?
+        savedNotification.raw[0]
+      );
     }
     return {
       message: "Comment posted successfully",

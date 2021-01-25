@@ -191,6 +191,7 @@ const Interceptor = ({ children }) => {
     eventsDispatch({
       type: "ADD_NOTIFICATION",
       notification: data,
+      cursor: data.id,
     });
     playNotification();
   };

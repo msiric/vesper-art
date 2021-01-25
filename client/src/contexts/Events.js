@@ -198,7 +198,7 @@ export const eventsReducer = (state, action) => {
             : state.notifications.items,
           count: state.notifications.count + 1,
           // $TODO still not implemented
-          cursor: action.cursor,
+          cursor: state.notifications.opened ? action.cursor : "",
         },
       };
     case "UPDATE_SEARCH":

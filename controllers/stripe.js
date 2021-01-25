@@ -6,9 +6,11 @@ import * as Yup from "yup";
 import { isObjectEmpty } from "../common/helpers";
 import { licenseValidation, orderValidation } from "../common/validation";
 import { server, stripe as processor } from "../config/secret.js";
+import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
 import { fetchDiscountByCode } from "../services/postgres/discount.js";
 import { addNewLicense } from "../services/postgres/license";
+import { addNewNotification } from "../services/postgres/notification";
 import { addNewOrder } from "../services/postgres/order.js";
 import {
   constructStripeEvent,
@@ -471,15 +473,15 @@ const processTransaction = async ({ stripeIntent, connection }) => {
   });
   console.log("INTENT UPDATED");
   // new start
-  // await addNewNotification({
-  //   notificationId,
-  //   notificationLink: orderId,
-  //   notificationRef: "",
-  //   notificationType: "order",
-  //   notificationReceiver: sellerId,
-  //   connection,
-  // });
-  // socketApi.sendNotification(sellerId, orderId);
+  await addNewNotification({
+    notificationId,
+    notificationLink: orderId,
+    notificationRef: "",
+    notificationType: "order",
+    notificationReceiver: sellerId,
+    connection,
+  });
+  socketApi.sendNotification(sellerId, orderId);
   // new end
   return { message: "Order processed successfully" };
 };
