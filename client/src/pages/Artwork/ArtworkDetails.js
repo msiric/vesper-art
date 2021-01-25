@@ -228,7 +228,6 @@ const ArtworkDetails = ({ match, location, socket }) => {
       artwork: {
         ...prevState.artwork,
         comments: [
-          ...prevState.artwork.comments,
           {
             ...comment,
             owner: {
@@ -237,7 +236,15 @@ const ArtworkDetails = ({ match, location, socket }) => {
               avatar: userStore.avatar,
             },
           },
+          ...prevState.artwork.comments,
         ],
+      },
+      scroll: {
+        ...prevState.scroll,
+        comments: {
+          ...prevState.scroll.comments,
+          cursor: comment.id,
+        },
       },
     }));
   };
