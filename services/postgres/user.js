@@ -575,13 +575,13 @@ export const fetchUserNotifications = async ({
     .createQueryBuilder("notification");
   const foundNotifications = await queryBuilder
     .where(
-      `notification.receiverId = :userId AND notification.serial > 
+      `notification.receiverId = :userId AND notification.serial < 
       ${resolveSubQuery(queryBuilder, "notification", Notification, cursor)}`,
       {
         userId,
       }
     )
-    .orderBy("notification.serial", "ASC")
+    .orderBy("notification.serial", "DESC")
     .limit(limit)
     .getMany();
   console.log(foundNotifications);
