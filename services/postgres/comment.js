@@ -55,6 +55,7 @@ export const addNewComment = async ({
         generated: false,
       },
     ])
+    .returning("*")
     .execute();
   console.log(savedComment);
   return savedComment;

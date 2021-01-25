@@ -46,7 +46,8 @@ const CommentSection = ({
       artworkId: artwork.id,
       data: values,
     });
-    handleCommentAdd(data.payload);
+    // $TODO maybe this can be done better
+    handleCommentAdd(data.payload.raw[0]);
     reset();
   };
 

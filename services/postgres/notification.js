@@ -51,6 +51,7 @@ export const addNewNotification = async ({
         read: false,
       },
     ])
+    .returning("*")
     .execute();
   console.log(savedNotification);
   return savedNotification;
