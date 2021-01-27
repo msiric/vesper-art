@@ -5,7 +5,7 @@ import {
   SearchRounded as SearchIcon,
 } from "@material-ui/icons";
 import React from "react";
-import { useTracked as useEventsContext } from "../../contexts/Events.js";
+import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
 import InputBase from "../../controls/InputBase";
 
 const SearchForm = ({

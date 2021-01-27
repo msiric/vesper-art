@@ -11,7 +11,7 @@ import { SnackbarProvider } from "notistack";
 import React, { createRef } from "react";
 import SimpleReactLightbox from "simple-react-lightbox";
 import Router from "../../containers/Router/Router.js";
-import { useTracked as useAppContext } from "../../contexts/App.js";
+import { useTracked as useAppContext } from "../../contexts/global/App.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const useStyles = makeStyles(() => ({

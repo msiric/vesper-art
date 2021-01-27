@@ -2,7 +2,7 @@ import { Box, Divider, Grid, List, Menu, Typography } from "@material-ui/core";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
-import { useTracked as useEventsContext } from "../../contexts/Events.js";
+import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
 import NotificationItem from "./NotificationItem.js";
 import NotificationsMenuStyles from "./NotificationsMenu.style.js";
 

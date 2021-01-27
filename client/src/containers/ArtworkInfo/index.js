@@ -3,7 +3,7 @@ import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import PricingCard from "../../components/PricingCard/index.js";
 import SwipeCard from "../../components/SwipeCard/index.js";
-import { useTracked as useUserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import { CardContent, Typography } from "../../styles/theme.js";
 import artworkInfoStyles from "./styles.js";
 

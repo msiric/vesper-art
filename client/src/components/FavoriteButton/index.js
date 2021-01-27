@@ -4,7 +4,7 @@ import {
   FavoriteRounded as FavoritedIcon,
 } from "@material-ui/icons";
 import React, { useState } from "react";
-import { useTracked as useUserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import { deleteFavorite, postFavorite } from "../../services/artwork.js";
 import favoriteButtonStyles from "./styles.js";
 

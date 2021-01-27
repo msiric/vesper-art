@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import DashboardStatistics from "../../containers/DashboardStatistics/index.js";
 import DashboardToolbar from "../../containers/DashboardToolbar/index.js";
 import DashboardVisualization from "../../containers/DashboardVisualization/index.js";
-import { useTracked as useUserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import RangeInput from "../../controls/RangeInput/index.js";
 import { getDashboard } from "../../services/stripe.js";
 import { getSelection, getStatistics } from "../../services/user.js";

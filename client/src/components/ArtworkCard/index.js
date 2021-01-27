@@ -7,7 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { EditRounded as EditIcon } from "@material-ui/icons";
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { useTracked as useUserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import FavoriteButton from "../FavoriteButton/index.js";
 import ImageWrapper from "../ImageWrapper/index.js";
 import ShareButton from "../ShareButton/index.js";

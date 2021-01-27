@@ -18,7 +18,7 @@ import ArtworkActions from "../../containers/ArtworkActions/index.js";
 import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
 import CommentSection from "../../containers/CommentSection/index.js";
-import { useTracked as useUserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import useOnScreen from "../../hooks/useOnScreen.js";
 import {

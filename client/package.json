@@ -36,7 +36,8 @@
     "simple-react-lightbox": "^3.3.4-1",
     "socket.io-client": "^2.3.0",
     "use-sound": "^1.0.2",
-    "yup": "^0.28.3"
+    "yup": "^0.28.3",
+    "zustand": "^3.3.1"
   },
   "scripts": {
     "start": "react-app-rewired start",

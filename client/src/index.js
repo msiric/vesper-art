@@ -5,17 +5,17 @@ import {
   appReducer,
   appStore,
   Provider as AppProvider,
-} from "./contexts/App.js";
+} from "./contexts/global/App.js";
 import {
   eventsReducer,
   eventsStore,
   Provider as EventsProvider,
-} from "./contexts/Events.js";
+} from "./contexts/global/Events.js";
 import {
   Provider as UserProvider,
   userReducer,
   userStore,
-} from "./contexts/User.js";
+} from "./contexts/global/User.js";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker.js";
 

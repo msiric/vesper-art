@@ -5,9 +5,9 @@ import openSocket from "socket.io-client";
 import useSound from "use-sound";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { useTracked as useAppContext } from "../../contexts/App.js";
-import { useTracked as useEventsContext } from "../../contexts/Events.js";
-import { useTracked as useUserContext } from "../../contexts/User.js";
+import { useTracked as useAppContext } from "../../contexts/global/App.js";
+import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
+import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import App from "../../pages/App/App.js";
 import { postLogout } from "../../services/user.js";
 

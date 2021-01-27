@@ -4,7 +4,7 @@ import React from "react";
 import FavoriteButton from "../../components/FavoriteButton/index.js";
 import ShareButton from "../../components/ShareButton/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import { useTracked as useUserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import { CardContent } from "../../styles/theme.js";
 import artworkActionsStyles from "./styles.js";
 

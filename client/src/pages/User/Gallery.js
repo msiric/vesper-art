@@ -20,7 +20,7 @@ import EmptySection from "../../components/EmptySection/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import GalleryPanel from "../../containers/GalleryPanel/index.js";
-import { useTracked as useUserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import { getDownload } from "../../services/orders.js";
 import { getArtwork, getMedia, getOwnership } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";

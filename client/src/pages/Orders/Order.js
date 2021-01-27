@@ -10,7 +10,7 @@ import RatingModal from "../../components/RatingModal/index.js";
 import LicenseCard from "../../containers/LicenseCard/index.js";
 import OrderPreview from "../../containers/OrderPreview/index.js";
 import ReviewCard from "../../containers/ReviewCard/index.js";
-import { useTracked as useUserContext } from "../../contexts/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import { getDownload, getOrder, postReview } from "../../services/orders.js";
 import globalStyles from "../../styles/global.js";
 

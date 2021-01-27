@@ -15,8 +15,8 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { loginValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
-import { useTracked as useEventsContext } from "../../contexts/Events.js";
-import { useTracked as useUserContext } from "../../contexts/User.js";
+import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
+import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import LoginForm from "../../forms/LoginForm/index.js";
 import { postLogin } from "../../services/auth.js";
 
