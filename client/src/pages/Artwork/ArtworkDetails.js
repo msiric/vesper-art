@@ -9,6 +9,7 @@ import queryString from "query-string";
 import React, { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
+import shallow from "zustand/shallow";
 import { upload } from "../../../../common/constants.js";
 import { licenseValidation } from "../../../../common/validation";
 import EmptySection from "../../components/EmptySection/index.js";
@@ -19,6 +20,7 @@ import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
 import CommentSection from "../../containers/CommentSection/index.js";
 import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useArtworkStore } from "../../contexts/local/Artwork";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import useOnScreen from "../../hooks/useOnScreen.js";
 import {
@@ -62,6 +64,10 @@ const initialState = {
 };
 
 const ArtworkDetails = ({ match, location, socket }) => {
+  const { artwork } = useArtworkStore(
+    (state) => ({ artwork: state.artwork }),
+    shallow
+  );
   const [userStore] = useUserContext();
   const [state, setState] = useState({ ...initialState });
   const commentsRef = useRef();

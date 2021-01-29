@@ -31,3 +31,15 @@ export const formatValues = (data) => {
         : "",
   };
 };
+
+export const resolvePaginationId = (data) => {
+  return data[data.length - 1] && data[data.length - 1].id;
+};
+
+export const displayValidLicense = (use, license) => {
+  return use !== "included"
+    ? "personal"
+    : license === "commercial"
+    ? "commercial"
+    : null;
+};

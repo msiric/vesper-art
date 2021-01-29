@@ -47,7 +47,7 @@ const CommentSection = ({
       data: values,
     });
     // $TODO maybe this can be done better
-    handleCommentAdd(data.payload.raw[0]);
+    handleCommentAdd(data.payload);
     reset();
   };
 
