@@ -12,7 +12,11 @@ import { postDownload } from "../../services/checkout";
 import { displayValidLicense } from "../../utils/helpers";
 
 const initialState = {
-  artwork: { data: {}, loading: true, error: false },
+  artwork: {
+    data: { owner: {}, current: { cover: {} } },
+    loading: true,
+    error: false,
+  },
   comments: { data: [], loading: true, error: false },
   favorites: { data: 0, loading: true, error: false },
   license: null,

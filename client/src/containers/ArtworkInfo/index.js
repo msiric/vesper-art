@@ -1,27 +1,34 @@
 import { Box, Button, Card } from "@material-ui/core";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
+import shallow from "zustand/shallow";
 import PricingCard from "../../components/PricingCard/index.js";
 import SwipeCard from "../../components/SwipeCard/index.js";
 import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useArtworkStore } from "../../contexts/local/Artwork";
 import { CardContent, Typography } from "../../styles/theme.js";
 import artworkInfoStyles from "./styles.js";
 
-const ArtworkInfo = ({
-  artwork = {},
-  license = {},
-  tabs = {},
-  handleTabsChange,
-  handleChangeIndex,
-  handlePurchase,
-  handleModalOpen,
-  match,
-  loading,
-}) => {
+const ArtworkInfo = () => {
+  const { artwork, license, loading } = useArtworkStore(
+    (state) => ({
+      artwork: state.artwork.data,
+      license: state.license,
+      loading: state.artwork.loading,
+    }),
+    shallow
+  );
   const [userStore] = useUserContext();
   const classes = artworkInfoStyles();
 
   const isSeller = () => userStore.id === artwork.owner.id;
+
+  let tabs = { value: 0 };
+  let handlePurchase;
+  let handleModalClose;
+  let handleModalOpen;
+  let handleTabsChange;
+  let handleChangeIndex;
 
   return (
     <Card className={classes.root} loading={loading}>

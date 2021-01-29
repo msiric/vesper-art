@@ -1,14 +1,31 @@
 import { Box, Card, CardActions, Divider, Typography } from "@material-ui/core";
 import { FavoriteRounded as FavoritedIcon } from "@material-ui/icons";
 import React from "react";
+import shallow from "zustand/shallow";
 import FavoriteButton from "../../components/FavoriteButton/index.js";
 import ShareButton from "../../components/ShareButton/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useArtworkStore } from "../../contexts/local/Artwork";
+import { useFavoritesStore } from "../../contexts/local/favorites.js";
 import { CardContent } from "../../styles/theme.js";
 import artworkActionsStyles from "./styles.js";
 
-const ArtworkActions = ({ artwork, handleArtworkSave, loading }) => {
+const ArtworkActions = () => {
+  const { artwork } = useArtworkStore(
+    (state) => ({
+      artwork: state.artwork.data,
+    }),
+    shallow
+  );
+  const { favorites, loading, toggleFavorite } = useFavoritesStore(
+    (state) => ({
+      favorites: state.favorites.data,
+      loading: state.favorites.loading,
+      toggleFavorite: state.toggleFavorite,
+    }),
+    shallow
+  );
   const [userStore] = useUserContext();
   const classes = artworkActionsStyles();
 
@@ -44,7 +61,7 @@ const ArtworkActions = ({ artwork, handleArtworkSave, loading }) => {
                 }}
               />
               <Typography style={{ fontSize: 34 }} align="center">
-                {artwork.favorites.length}
+                {favorites}
               </Typography>
             </Box>
           </Box>
@@ -66,7 +83,7 @@ const ArtworkActions = ({ artwork, handleArtworkSave, loading }) => {
                 artwork={artwork}
                 favorited={userStore.favorites[artwork.id]}
                 labeled
-                handleCallback={handleArtworkSave}
+                handleCallback={toggleFavorite}
               />
             )}
             <ShareButton link="" type="artwork" labeled />

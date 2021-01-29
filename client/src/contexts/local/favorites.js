@@ -31,7 +31,7 @@ const initActions = (set) => ({
   },
 });
 
-export const useArtworkStore = create((set) => ({
+export const useFavoritesStore = create((set) => ({
   ...initState(),
   ...initActions(set),
 }));

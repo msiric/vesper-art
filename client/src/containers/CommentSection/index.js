@@ -1,55 +1,82 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Card, CardContent, Divider } from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
-import React from "react";
+import queryString from "query-string";
+import React, { useRef } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
+import shallow from "zustand/shallow";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import CommentCard from "../../components/CommentCard/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useArtworkStore } from "../../contexts/local/Artwork";
+import { useCommentsStore } from "../../contexts/local/comments";
 import AddCommentForm from "../../forms/CommentForm/index.js";
-import { postComment } from "../../services/artwork.js";
 import { List, Typography } from "../../styles/theme.js";
 import commentSectionStyles from "./styles.js";
 
-const CommentSection = ({
-  commentsRef,
-  artwork = {},
-  edits = {},
-  scroll = {},
-  queryRef,
-  highlight,
-  highlightRef,
-  loadMoreComments,
-  handleCommentAdd,
-  handleCommentEdit,
-  handleCommentClose,
-  handlePopoverOpen,
-  loading,
-}) => {
+const CommentSection = ({}) => {
+  const { artworkId } = useArtworkStore(
+    (state) => ({
+      artworkId: state.artwork.data.id,
+    }),
+    shallow
+  );
+  const {
+    comments,
+    loading,
+    edits,
+    highlight,
+    scroll,
+    fetchComments,
+    addComment,
+    updateComment,
+    deleteComment,
+    openComment,
+    closeComment,
+  } = useCommentsStore(
+    (state) => ({
+      comments: state.comments.data,
+      loading: state.comments.loading,
+      edits: state.edits,
+      highlight: state.highlight,
+      scroll: state.scroll,
+      fetchComments: state.fetchComments,
+      addComment: state.addComment,
+      updateComment: state.updateComment,
+      deleteComment: state.deleteComment,
+      openComment: state.openComment,
+      closeComment: state.closeComment,
+    }),
+    shallow
+  );
+  const [userStore] = useUserContext();
+
+  const commentsRef = useRef(null);
+  const highlightRef = useRef(null);
+  const location = useLocation();
   const history = useHistory();
+  const query = queryString.parse(location.search);
   const classes = commentSectionStyles();
 
-  const { handleSubmit, formState, errors, control, reset } = useForm({
+  const {
+    getValues,
+    handleSubmit,
+    formState,
+    errors,
+    control,
+    reset,
+  } = useForm({
     defaultValues: {
       commentContent: "",
     },
     resolver: yupResolver(commentValidation),
   });
-
-  const onSubmit = async (values) => {
-    const { data } = await postComment.request({
-      artworkId: artwork.id,
-      data: values,
-    });
-    // $TODO maybe this can be done better
-    handleCommentAdd(data.payload);
-    reset();
-  };
 
   return (
     <Card className={classes.root}>
@@ -61,7 +88,20 @@ const CommentSection = ({
         </SkeletonWrapper>
         <Divider />
         <FormProvider control={control}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form
+            onSubmit={handleSubmit(() =>
+              addComment({
+                artworkId,
+                userData: {
+                  id: userStore.id,
+                  name: userStore.name,
+                  avatar: userStore.avatar,
+                },
+                values: getValues(),
+                reset,
+              })
+            )}
+          >
             <AddCommentForm errors={errors} loading={loading} />
             <AsyncButton
               type="submit"
@@ -79,13 +119,13 @@ const CommentSection = ({
 
         <br />
         <Divider />
-        {loading || artwork.comments.length ? (
+        {loading || comments.length ? (
           <InfiniteScroll
             style={{ overflow: "hidden" }}
             className={classes.scroller}
-            dataLength={artwork.comments ? artwork.comments.length : 0}
-            next={loadMoreComments}
-            hasMore={scroll.comments ? scroll.comments.hasMore : null}
+            dataLength={comments ? comments.length : 0}
+            next={fetchComments}
+            hasMore={scroll.comments ? scroll.hasMore : null}
             loader={<LoadingSpinner />}
           >
             <List
@@ -95,30 +135,30 @@ const CommentSection = ({
               disablePadding
             >
               <Box>
-                {artwork.comments.map((comment) => (
+                {comments.map((comment) => (
                   <CommentCard
-                    artwork={artwork}
-                    comment={comment}
+                    artworkId={artworkId}
+                    comment={highlight.element}
                     edits={edits}
-                    queryRef={queryRef}
+                    queryRef={query ? query.ref : null}
                     highlightRef={highlightRef}
-                    handleCommentClose={handleCommentClose}
-                    handleCommentEdit={handleCommentEdit}
-                    handlePopoverOpen={handlePopoverOpen}
+                    handleCommentClose={closeComment}
+                    handleCommentEdit={updateComment}
+                    handlePopoverOpen={() => null}
                     loading={loading}
                   />
                 ))}
               </Box>
               {highlight.element && (
                 <CommentCard
-                  artwork={artwork}
+                  artworkId={artworkId}
                   comment={highlight.element}
                   edits={edits}
-                  queryRef={queryRef}
+                  queryRef={query ? query.ref : null}
                   highlightRef={highlightRef}
-                  handleCommentClose={handleCommentClose}
-                  handleCommentEdit={handleCommentEdit}
-                  handlePopoverOpen={handlePopoverOpen}
+                  handleCommentClose={closeComment}
+                  handleCommentEdit={updateComment}
+                  handlePopoverOpen={() => null}
                   loading={loading}
                 />
               )}

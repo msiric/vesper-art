@@ -83,7 +83,7 @@ const initActions = (set) => ({
       loading: false,
     }));
   },
-  addComment: async ({ artworkId, userData, values }) => {
+  addComment: async ({ artworkId, userData, values, reset }) => {
     try {
       const { data } = await postComment.request({
         artworkId,
@@ -110,6 +110,7 @@ const initActions = (set) => ({
           },
         },
       }));
+      reset();
     } catch (err) {}
   },
   updateComment: async ({ artworkId, commentId, values }) => {
