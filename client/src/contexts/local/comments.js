@@ -3,23 +3,13 @@ import {
   deleteComment,
   getComment,
   getComments,
-  getDetails,
-  getFavorites,
   patchComment,
   postComment,
 } from "../../services/artwork";
-import { postDownload } from "../../services/checkout";
-import { displayValidLicense } from "../../utils/helpers";
 
 const initialState = {
-  artwork: { data: {}, loading: true, error: false },
   comments: { data: [], loading: true, error: false },
-  favorites: { data: 0, loading: true, error: false },
-  license: null,
   edits: {},
-  modal: {
-    open: false,
-  },
   popover: {
     id: null,
     anchorEl: null,
@@ -73,21 +63,7 @@ const initState = () => ({
 });
 
 const initActions = (set) => ({
-  fetchArtwork: async ({ artworkId }) => {
-    const { data } = await getDetails.request({
-      artworkId,
-    });
-    set((state) => ({
-      ...state,
-      artwork: { data: data.artwork, loading: false, error: false },
-      license: displayValidLicense(
-        data.artwork.current.use,
-        data.artwork.current.license
-      ),
-    }));
-  },
   fetchComments: async ({
-    set,
     artworkId,
     query,
     scrollToHighlight,
@@ -106,49 +82,6 @@ const initActions = (set) => ({
     set((state) => ({
       loading: false,
     }));
-  },
-  fetchFavorites: async ({ artworkId }) => {
-    // Not implemented
-    const { data } = await getFavorites.request({
-      artworkId,
-    });
-    set((state) => ({
-      loading: false,
-    }));
-  },
-  toggleFavorite: async ({ incrementBy }) => {
-    set((state) => ({
-      ...state,
-      favorites: {
-        ...state.favorites,
-        data: state.favorites.data + incrementBy,
-      },
-    }));
-  },
-  downloadArtwork: async ({ versionId, values }) => {
-    try {
-      await postDownload.request({
-        versionId,
-        data: values,
-      });
-      set((state) => ({
-        ...state,
-        modal: {
-          ...state.modal,
-          open: false,
-        },
-      }));
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  purchaseArtwork: ({ history, versionId, license }) => {
-    history.push({
-      pathname: `/checkout/${versionId}`,
-      state: {
-        license,
-      },
-    });
   },
   addComment: async ({ artworkId, userData, values }) => {
     try {
@@ -248,7 +181,7 @@ const initActions = (set) => ({
   },
 });
 
-export const useArtworkStore = create((set) => ({
+export const useCommentsStore = create((set) => ({
   ...initState(),
   ...initActions(set),
 }));

@@ -22,7 +22,7 @@ const routes = [
   },
   {
     path: "/artwork/:id",
-    Component: lazy(() => import("../../pages/Artwork/ArtworkDetails")),
+    Component: lazy(() => import("../../pages/Artwork/ArtworkDetailsTest")),
     exact: true,
     type: "public",
   },

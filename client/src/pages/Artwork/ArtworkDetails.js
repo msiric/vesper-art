@@ -72,6 +72,13 @@ const ArtworkDetails = ({ match, location, socket }) => {
   const [state, setState] = useState({ ...initialState });
   const commentsRef = useRef();
   const isVisible = useOnScreen(commentsRef);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const history = useHistory();
+  const globalClasses = globalStyles();
+
+  const highlightRef = useRef(null);
+  const query = queryString.parse(location.search);
 
   const setDefaultValues = () => ({
     licenseType: state.license,
@@ -93,14 +100,6 @@ const ArtworkDetails = ({ match, location, socket }) => {
     defaultValues: setDefaultValues(),
     resolver: yupResolver(licenseValidation),
   });
-
-  const { enqueueSnackbar } = useSnackbar();
-
-  const history = useHistory();
-  const globalClasses = globalStyles();
-
-  const highlightRef = useRef(null);
-  const query = queryString.parse(location.search);
 
   const scrollToHighlight = () => {
     if (highlightRef.current)
