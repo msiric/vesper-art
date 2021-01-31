@@ -239,7 +239,7 @@ export const fetchUserPurchases = async ({
     .leftJoinAndSelect("order.review", "review")
     .where(
       `order.buyerId = :userId AND order.serial > 
-      ${resolveSubQuery(queryBuilder, "order", Order, cursor)}`,
+      ${resolveSubQuery(queryBuilder, "order", Order, cursor, -1)}`,
       { userId }
     )
     .orderBy("order.serial", "ASC")
@@ -269,7 +269,7 @@ export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
     .leftJoinAndSelect("order.review", "review")
     .where(
       `order.sellerId = :userId AND order.serial > 
-      ${resolveSubQuery(queryBuilder, "order", Order, cursor)}`,
+      ${resolveSubQuery(queryBuilder, "order", Order, cursor, -1)}`,
       { userId }
     )
     .orderBy("order.serial", "ASC")
@@ -370,7 +370,7 @@ export const fetchUserArtwork = async ({
     .leftJoinAndSelect("version.cover", "cover")
     .where(
       `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
-      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor)}`,
+      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
       {
         userId,
         active: USER_ACTIVE_STATUS,
@@ -407,7 +407,7 @@ export const fetchUserFavorites = async ({
     .leftJoinAndSelect("version.cover", "cover")
     .where(
       `favorite.ownerId = :userId AND favorite.serial > 
-      ${resolveSubQuery(queryBuilder, "favorite", Favorite, cursor)}`,
+      ${resolveSubQuery(queryBuilder, "favorite", Favorite, cursor, -1)}`,
       {
         userId,
       }
@@ -576,7 +576,13 @@ export const fetchUserNotifications = async ({
   const foundNotifications = await queryBuilder
     .where(
       `notification.receiverId = :userId AND notification.serial < 
-      ${resolveSubQuery(queryBuilder, "notification", Notification, cursor)}`,
+      ${resolveSubQuery(
+        queryBuilder,
+        "notification",
+        Notification,
+        cursor,
+        Number.MAX_VALUE
+      )}`,
       {
         userId,
       }

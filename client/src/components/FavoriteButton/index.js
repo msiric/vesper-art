@@ -24,7 +24,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
           [id]: true,
         },
       });
-      if (handleCallback) handleCallback(1);
+      if (handleCallback) handleCallback({ incrementBy: 1 });
     } catch (err) {
       console.log(err);
     } finally {
@@ -42,7 +42,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
           [id]: false,
         },
       });
-      if (handleCallback) handleCallback(-1);
+      if (handleCallback) handleCallback({ incrementBy: -1 });
     } catch (err) {
       console.log(err);
     } finally {

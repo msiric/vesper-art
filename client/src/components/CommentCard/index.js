@@ -14,6 +14,7 @@ import {
   AddCircleRounded as UploadIcon,
   MoreVertRounded as MoreIcon,
 } from "@material-ui/icons";
+import { formatDistance } from "date-fns";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
@@ -27,6 +28,7 @@ import commentCardStyles from "./styles.js";
 
 const CommentCard = ({
   artworkId,
+  artworkOwnerId,
   comment = { content: "" },
   edits = {},
   queryRef,
@@ -97,15 +99,26 @@ const CommentCard = ({
                   style={{ textDecoration: "none" }}
                   color="text.primary"
                 >
-                  {comment.owner.name || "Could not load user"}
+                  {comment.owner.id === artworkOwnerId
+                    ? `${comment.owner.name} 👤`
+                    : comment.owner.name}
                 </Typography>
                 <Typography
                   component="span"
                   color="text.secondary"
-                  fontStyle="oblique"
                   style={{ marginLeft: 6 }}
                 >
-                  {comment.modified ? "edited" : null}
+                  {`${formatDistance(
+                    new Date(comment.created),
+                    new Date()
+                  )} ago`}
+                </Typography>
+                <Typography
+                  component="span"
+                  color="text.secondary"
+                  style={{ marginLeft: 6 }}
+                >
+                  {comment.modified ? "(edited)" : null}
                 </Typography>
               </SkeletonWrapper>
             )

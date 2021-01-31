@@ -21,9 +21,10 @@ import { List, Typography } from "../../styles/theme.js";
 import commentSectionStyles from "./styles.js";
 
 const CommentSection = ({ commentsRef }) => {
-  const { artworkId } = useArtworkStore(
+  const { artworkId, artworkOwnerId } = useArtworkStore(
     (state) => ({
       artworkId: state.artwork.data.id,
+      artworkOwnerId: state.artwork.data.owner.id,
     }),
     shallow
   );
@@ -143,6 +144,7 @@ const CommentSection = ({ commentsRef }) => {
                 {comments.map((comment) => (
                   <CommentCard
                     artworkId={artworkId}
+                    artworkOwnerId={artworkOwnerId}
                     comment={comment}
                     edits={edits}
                     queryRef={query ? query.ref : null}

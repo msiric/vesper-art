@@ -47,7 +47,7 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
     .leftJoinAndSelect("owner.avatar", "avatar")
     .where(
       `artwork.active = :active AND artwork.serial > 
-      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor)}`,
+      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
       {
         active: ARTWORK_ACTIVE_STATUS,
       }
@@ -145,13 +145,19 @@ export const fetchArtworkComments = async ({
     .leftJoinAndSelect("comment.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .where(
-      `comment.artworkId = :artworkId AND comment.serial > 
-      ${resolveSubQuery(queryBuilder, "comment", Comment, cursor)}`,
+      `comment.artworkId = :artworkId AND comment.serial < 
+      ${resolveSubQuery(
+        queryBuilder,
+        "comment",
+        Comment,
+        cursor,
+        Number.MAX_VALUE
+      )}`,
       {
         artworkId,
       }
     )
-    .orderBy("comment.serial", "ASC")
+    .orderBy("comment.serial", "DESC")
     .limit(limit)
     .getMany();
   console.log(foundComments);
@@ -180,7 +186,7 @@ export const fetchUserArtworks = async ({
     .leftJoinAndSelect("version.cover", "cover")
     .where(
       `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
-    ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor)}`,
+    ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
       {
         userId,
         active: ARTWORK_ACTIVE_STATUS,
