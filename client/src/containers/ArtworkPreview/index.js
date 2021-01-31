@@ -24,6 +24,8 @@ const ArtworkPreview = () => {
     ? { r: null, g: null, b: null }
     : hexToRgb(version.cover.dominant);
 
+  console.log("PREVIEW RENDER");
+
   return (
     <Card
       className={classes.artworkPreviewCard}

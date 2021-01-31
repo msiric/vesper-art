@@ -15,6 +15,8 @@ const ArtistSection = () => {
   );
   const classes = artistSectionStyles();
 
+  console.log("ARTIST RENDER");
+
   return (
     <ProfileCard
       user={owner}

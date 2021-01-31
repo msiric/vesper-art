@@ -29,6 +29,8 @@ const ArtworkActions = () => {
   const [userStore] = useUserContext();
   const classes = artworkActionsStyles();
 
+  console.log("ACTIONS RENDER");
+
   return (
     <Card className={classes.root} loading={loading}>
       <CardContent

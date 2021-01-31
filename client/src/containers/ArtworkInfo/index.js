@@ -1,34 +1,78 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Button, Card } from "@material-ui/core";
-import React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import React, { useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import shallow from "zustand/shallow";
+import { licenseValidation } from "../../../../common/validation";
 import PricingCard from "../../components/PricingCard/index.js";
+import PromptModal from "../../components/PromptModal/index.js";
 import SwipeCard from "../../components/SwipeCard/index.js";
 import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import { useArtworkStore } from "../../contexts/local/Artwork";
+import LicenseForm from "../../forms/LicenseForm/index.js";
 import { CardContent, Typography } from "../../styles/theme.js";
 import artworkInfoStyles from "./styles.js";
 
 const ArtworkInfo = () => {
-  const { artwork, license, loading } = useArtworkStore(
+  const {
+    artwork,
+    license,
+    tabs,
+    modal,
+    loading,
+    downloadArtwork,
+    purchaseArtwork,
+    openModal,
+    closeModal,
+    changeTab,
+  } = useArtworkStore(
     (state) => ({
       artwork: state.artwork.data,
+      tabs: state.tabs,
+      modal: state.modal,
       license: state.license,
       loading: state.artwork.loading,
+      downloadArtwork: state.downloadArtwork,
+      purchaseArtwork: state.purchaseArtwork,
+      openModal: state.openModal,
+      closeModal: state.closeModal,
+      changeTab: state.changeTab,
     }),
     shallow
   );
+  const history = useHistory();
   const [userStore] = useUserContext();
   const classes = artworkInfoStyles();
 
+  const setDefaultValues = () => ({
+    licenseType: license,
+    licenseAssignee: "",
+    licenseCompany: "",
+  });
+
+  const {
+    getValues,
+    handleSubmit,
+    formState,
+    errors,
+    control,
+    setValue,
+    trigger,
+    watch,
+    reset,
+  } = useForm({
+    defaultValues: setDefaultValues(),
+    resolver: yupResolver(licenseValidation),
+  });
+
   const isSeller = () => userStore.id === artwork.owner.id;
 
-  let tabs = { value: 0 };
-  let handlePurchase;
-  let handleModalClose;
-  let handleModalOpen;
-  let handleTabsChange;
-  let handleChangeIndex;
+  useEffect(() => {
+    reset(setDefaultValues());
+  }, [license]);
+
+  console.log("INFO RENDER");
 
   return (
     <Card className={classes.root} loading={loading}>
@@ -64,8 +108,10 @@ const ArtworkInfo = () => {
                   non commercial activities"
                       list={[]}
                       license="personal"
-                      handlePurchase={handlePurchase}
-                      handleModalOpen={handleModalOpen}
+                      handlePurchase={({ versionId, license }) =>
+                        purchaseArtwork({ history, versionId, license })
+                      }
+                      handleModalOpen={openModal}
                     />
                   ),
                   error: null,
@@ -84,8 +130,10 @@ const ArtworkInfo = () => {
                       heading="Commercial license. Use anywhere in the world for unlimited projects with no expiration dates"
                       list={[]}
                       license="commercial"
-                      handlePurchase={handlePurchase}
-                      handleModalOpen={handleModalOpen}
+                      handlePurchase={({ versionId, license }) =>
+                        purchaseArtwork({ history, versionId, license })
+                      }
+                      handleModalOpen={openModal}
                     />
                   ),
                   error: null,
@@ -93,8 +141,8 @@ const ArtworkInfo = () => {
                 },
               ],
             }}
-            handleTabsChange={handleTabsChange}
-            handleChangeIndex={handleChangeIndex}
+            handleTabsChange={(e, index) => changeTab({ index })}
+            handleChangeIndex={(e, index) => changeTab({ index })}
             margin="0px -16px"
             loading={loading}
           />
@@ -141,13 +189,45 @@ const ArtworkInfo = () => {
                 },
               ],
             }}
-            handleTabsChange={handleTabsChange}
-            handleChangeIndex={handleChangeIndex}
+            handleTabsChange={(e, index) => changeTab({ index })}
+            handleChangeIndex={(e, index) => changeTab({ index })}
             margin="0px -16px"
             loading={loading}
           />
         )}
       </CardContent>
+      <PromptModal
+        open={modal.open}
+        handleConfirm={handleSubmit(() =>
+          downloadArtwork({
+            versionId: artwork.current.id,
+            values: getValues(),
+          })
+        )}
+        handleClose={closeModal}
+        ariaLabel="License information"
+        promptTitle="License information"
+        promptConfirm="Download"
+        promptCancel="Close"
+        isSubmitting={formState.isSubmitting}
+      >
+        <FormProvider control={control}>
+          <form
+            onSubmit={handleSubmit(() =>
+              downloadArtwork({
+                versionId: artwork.current.id,
+                values: getValues(),
+              })
+            )}
+          >
+            <LicenseForm
+              version={artwork.current}
+              errors={errors}
+              loading={loading}
+            />
+          </form>
+        </FormProvider>
+      </PromptModal>
     </Card>
   );
 };

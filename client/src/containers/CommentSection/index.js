@@ -82,6 +82,8 @@ const CommentSection = ({ commentsRef, highlightRef, query }) => {
     resolver: yupResolver(commentValidation),
   });
 
+  console.log("COMMENTS RENDER");
+
   return (
     <Card className={classes.root}>
       <CardContent>

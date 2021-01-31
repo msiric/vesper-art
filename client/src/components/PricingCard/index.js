@@ -80,7 +80,7 @@ const PricingCard = ({
               color="primary"
               variant="outlined"
               startIcon={<PurchaseIcon />}
-              onClick={() => handlePurchase(versionId, license)}
+              onClick={() => handlePurchase({ versionId, license })}
             >
               Purchase
             </Button>
