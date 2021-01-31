@@ -6,6 +6,7 @@ import {
   patchComment,
   postComment,
 } from "../../services/artwork";
+import { resolvePaginationId } from "../../utils/helpers";
 
 const initialState = {
   comments: { data: [], loading: true, error: false },
@@ -15,13 +16,10 @@ const initialState = {
     anchorEl: null,
     open: false,
   },
-  tabs: {
-    value: 0,
-  },
   scroll: {
     hasMore: true,
     cursor: "",
-    limit: 5,
+    limit: 10,
     retry: false,
   },
   highlight: {
@@ -62,26 +60,67 @@ const initState = () => ({
   ...initialState,
 });
 
-const initActions = (set) => ({
+const initActions = (set, get) => ({
   fetchComments: async ({
     artworkId,
     query,
     scrollToHighlight,
     enqueueSnackbar,
   }) => {
-    const { data } = await getComments.request({
-      artworkId,
-      cursor: initialState.scroll.comments.cursor,
-      limit: initialState.scroll.comments.limit,
-    });
-    const { foundHighlight, fetchedHighlight } = await resolveHighlight(
-      data.comments,
-      query,
-      enqueueSnackbar
-    );
-    set((state) => ({
-      loading: false,
-    }));
+    try {
+      set((state) => ({
+        ...state,
+        comments: { ...state.comments, loading: true, error: false },
+        scroll: {
+          ...state.scroll,
+          retry: false,
+        },
+      }));
+      const { cursor, limit } = get().scroll;
+      const { data } = await getComments.request({
+        artworkId,
+        cursor: cursor,
+        limit: limit,
+      });
+      /*     const { foundHighlight, fetchedHighlight } = await resolveHighlight(
+        data.comments,
+        query,
+        enqueueSnackbar
+      ); */
+      set((state) => ({
+        ...state,
+        comments: {
+          data: [...state.comments.data, ...data.comments],
+          loading: false,
+          error: false,
+        },
+        scroll: {
+          ...state.scroll,
+          hasMore: data.comments.length < state.scroll.limit ? false : true,
+          cursor: resolvePaginationId(data.comments),
+          retry: false,
+        },
+      }));
+    } catch (err) {
+      if (get().comments.data.length) {
+        set((state) => ({
+          ...state,
+          scroll: {
+            ...state.scroll,
+            retry: true,
+          },
+        }));
+      } else {
+        set((state) => ({
+          ...state,
+          comments: {
+            ...state.comments,
+            loading: false,
+            error: true,
+          },
+        }));
+      }
+    }
   },
   addComment: async ({ artworkId, userData, values, reset }) => {
     try {
@@ -91,23 +130,23 @@ const initActions = (set) => ({
       });
       set((state) => ({
         ...state,
-        comments: [
-          {
-            ...data.payload,
-            owner: {
-              id: userData.id,
-              name: userData.name,
-              avatar: userData.avatar,
-            },
-          },
+        comments: {
           ...state.comments,
-        ],
+          data: [
+            {
+              ...data.payload,
+              owner: {
+                id: userData.id,
+                name: userData.name,
+                avatar: userData.avatar,
+              },
+            },
+            ...state.comments.data,
+          ],
+        },
         scroll: {
           ...state.scroll,
-          comments: {
-            ...state.scroll,
-            cursor: data.payload.id,
-          },
+          cursor: data.payload.id,
         },
       }));
       reset();
@@ -122,9 +161,9 @@ const initActions = (set) => ({
       });
       set((state) => ({
         ...state,
-        artwork: {
-          ...state.artwork,
-          comments: state.comments.map((item) =>
+        comments: {
+          ...state.comments,
+          data: state.comments.data.map((item) =>
             item.id === commentId
               ? {
                   ...item,
@@ -149,9 +188,9 @@ const initActions = (set) => ({
       });
       set((state) => ({
         ...state,
-        artwork: {
-          ...state.state,
-          comments: state.artwork.comments.filter(
+        comments: {
+          ...state.comments,
+          data: state.comments.data.filter(
             (comment) => comment.id !== commentId
           ),
         },
@@ -180,9 +219,32 @@ const initActions = (set) => ({
       edits: { ...state.edits, [commentId]: false },
     }));
   },
+  openPopover: ({ commentId, commentTarget }) => {
+    set((state) => ({
+      ...state,
+      popover: {
+        id: commentId,
+        anchorEl: commentTarget,
+        open: true,
+      },
+    }));
+  },
+  closePopover: () => {
+    set((state) => ({
+      ...state,
+      popover: {
+        id: null,
+        anchorEl: null,
+        open: false,
+      },
+    }));
+  },
+  resetComments: () => {
+    set({ ...initialState });
+  },
 });
 
-export const useCommentsStore = create((set) => ({
+export const useCommentsStore = create((set, get) => ({
   ...initState(),
-  ...initActions(set),
+  ...initActions(set, get),
 }));

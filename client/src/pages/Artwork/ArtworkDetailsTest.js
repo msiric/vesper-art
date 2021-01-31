@@ -17,34 +17,46 @@ import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import { useArtworkStore } from "../../contexts/local/Artwork";
 import { useCommentsStore } from "../../contexts/local/comments";
 import { useFavoritesStore } from "../../contexts/local/favorites";
+import useOnScreen from "../../hooks/useOnScreen";
 import globalStyles from "../../styles/global.js";
 
 const ArtworkDetails = ({ match, location, socket }) => {
-  const { artworkId, loading, license, fetchArtwork } = useArtworkStore(
+  const {
+    artworkId,
+    loading,
+    license,
+    fetchArtwork,
+    resetArtwork,
+  } = useArtworkStore(
     (state) => ({
       artworkId: state.artwork.data.id,
       loading: state.artwork.loading,
       license: state.license,
       fetchArtwork: state.fetchArtwork,
+      resetArtwork: state.resetArtwork,
     }),
     shallow
   );
-  const { fetchFavorites } = useFavoritesStore(
+  const { fetchFavorites, resetFavorites } = useFavoritesStore(
     (state) => ({
       fetchFavorites: state.fetchFavorites,
+      resetFavorites: state.resetFavorites,
     }),
     shallow
   );
-  const { fetchComments } = useCommentsStore(
+  const { fetchComments, resetComments } = useCommentsStore(
     (state) => ({
       fetchComments: state.fetchComments,
+      resetComments: state.resetComments,
     }),
     shallow
   );
   const [userStore] = useUserContext();
+  const paramId = match.params.id;
+  const commentsFetched = useRef(false);
   const commentsRef = useRef(null);
   const highlightRef = useRef(null);
-  /*   const isVisible = useOnScreen(commentsRef); */
+  const isVisible = useOnScreen(commentsRef);
   const history = useHistory();
   const globalClasses = globalStyles();
   const { enqueueSnackbar } = useSnackbar();
@@ -81,8 +93,9 @@ const ArtworkDetails = ({ match, location, socket }) => {
   };
 
   useEffect(() => {
-    const paramId = match.params.id;
-    /* if (isVisible) loadMoreComments() */
+    resetArtwork();
+    resetFavorites();
+    resetComments();
     Promise.all([
       fetchArtwork({ artworkId: paramId }),
       fetchFavorites({ artworkId: paramId }),
@@ -93,6 +106,13 @@ const ArtworkDetails = ({ match, location, socket }) => {
     reset(setDefaultValues());
   }, [license]);
 
+  useEffect(() => {
+    if (!commentsFetched.current && isVisible) {
+      fetchComments({ artworkId: paramId });
+      commentsFetched.current = true;
+    }
+  }, [isVisible]);
+
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
@@ -101,11 +121,7 @@ const ArtworkDetails = ({ match, location, socket }) => {
             <Grid item sm={12} md={8}>
               <ArtworkPreview />
               <br />
-              <CommentSection
-                commentsRef={commentsRef}
-                queryRef={query ? query.ref : null}
-                highlightRef={highlightRef}
-              />
+              <CommentSection commentsRef={commentsRef} />
             </Grid>
             <Grid item sm={12} md={4}>
               <ArtistSection />
@@ -119,7 +135,6 @@ const ArtworkDetails = ({ match, location, socket }) => {
           <EmptySection label="Artwork not found" page />
         )}
       </Grid>
-      {/* $TODO Separate component */}
     </Container>
   );
 };

@@ -201,8 +201,9 @@ export const generateToken = () => {
   return { verificationToken, verificationLink };
 };
 
-export const resolveSubQuery = (queryBuilder, alias, entity, cursor) =>
-  cursor
+export const resolveSubQuery = (queryBuilder, alias, entity, cursor) => {
+  console.log("CURSOR", cursor, typeof cursor);
+  return cursor
     ? queryBuilder
         .subQuery()
         .select(`${alias}.serial`)
@@ -210,3 +211,4 @@ export const resolveSubQuery = (queryBuilder, alias, entity, cursor) =>
         .where(`${alias}.id = :id`, { id: cursor })
         .getQuery()
     : -1;
+};

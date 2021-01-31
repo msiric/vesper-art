@@ -250,6 +250,9 @@ const initActions = (set) => ({
       edits: { ...state.edits, [commentId]: false },
     }));
   },
+  resetArtwork: () => {
+    set({ ...initialState });
+  },
 });
 
 export const useArtworkStore = create((set) => ({

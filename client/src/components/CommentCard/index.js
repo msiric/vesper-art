@@ -21,13 +21,12 @@ import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import AddCommentForm from "../../forms/CommentForm/index.js";
-import { patchComment } from "../../services/artwork.js";
 import { Typography } from "../../styles/theme.js";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import commentCardStyles from "./styles.js";
 
 const CommentCard = ({
-  artwork = {},
+  artworkId,
   comment = { content: "" },
   edits = {},
   queryRef,
@@ -43,19 +42,17 @@ const CommentCard = ({
     commentContent: comment.content,
   });
 
-  const { handleSubmit, formState, errors, control, reset } = useForm({
+  const {
+    getValues,
+    handleSubmit,
+    formState,
+    errors,
+    control,
+    reset,
+  } = useForm({
     defaultValues: setDefaultValues(),
     resolver: yupResolver(commentValidation),
   });
-
-  const onSubmit = async (values) => {
-    await patchComment.request({
-      artworkId: artwork.id,
-      commentId: comment.id,
-      data: values,
-    });
-    handleCommentEdit(comment.id, values.commentContent);
-  };
 
   const history = useHistory();
   const classes = commentCardStyles();
@@ -116,7 +113,15 @@ const CommentCard = ({
           secondary={
             edits[comment.id] ? (
               <FormProvider control={control}>
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form
+                  onSubmit={handleSubmit(() =>
+                    handleCommentEdit({
+                      artworkId,
+                      commentId: comment.id,
+                      values: getValues(),
+                    })
+                  )}
+                >
                   <AddCommentForm errors={errors} loading={loading} />
                   <AsyncButton
                     type="submit"
@@ -133,7 +138,9 @@ const CommentCard = ({
                     type="button"
                     variant="outlined"
                     color="warning"
-                    onClick={() => handleCommentClose(comment.id)}
+                    onClick={() =>
+                      handleCommentClose({ commentId: comment.id })
+                    }
                   >
                     Cancel
                   </Button>
@@ -151,7 +158,12 @@ const CommentCard = ({
         {edits[comment.id] || comment.owner.id !== userStore.id ? null : (
           <ListItemSecondaryAction>
             <IconButton
-              onClick={(e) => handlePopoverOpen(e, comment.id)}
+              onClick={(e) =>
+                handlePopoverOpen({
+                  commentId: comment.id,
+                  commentTarget: e.currentTarget,
+                })
+              }
               edge="end"
               aria-label="More"
             >

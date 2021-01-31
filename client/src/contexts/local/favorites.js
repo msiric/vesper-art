@@ -29,6 +29,9 @@ const initActions = (set) => ({
       },
     }));
   },
+  resetFavorites: () => {
+    set({ ...initialState });
+  },
 });
 
 export const useFavoritesStore = create((set) => ({
