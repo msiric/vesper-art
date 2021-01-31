@@ -1,16 +1,11 @@
 import { Box, Typography } from "@material-ui/core";
 import React from "react";
-import { hexToRgb } from "../../../../common/helpers.js";
 import { CardHeader, CardMedia, Grid } from "../../styles/theme.js";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import checkoutCardStyles from "./styles.js";
 
 const CheckoutCard = ({ version, loading }) => {
   const classes = checkoutCardStyles();
-
-  const { r, g, b } = loading
-    ? { r: null, g: null, b: null }
-    : hexToRgb(version.cover.dominant);
 
   console.log("VERSION", version);
 
@@ -22,13 +17,7 @@ const CheckoutCard = ({ version, loading }) => {
         md={version.cover.orientation === "portrait" ? 2 : 5}
         style={{ display: "flex" }}
       >
-        <Box
-          display="flex"
-          py={0}
-          style={{
-            boxShadow: `0px 0px 20px 5px rgba(${r},${g},${b},0.75)`,
-          }}
-        >
+        <Box display="flex" py={0}>
           <SkeletonWrapper loading={loading} height="100px" width="100%">
             <CardMedia
               className={classes.media}

@@ -2,10 +2,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Card, CardContent, Divider } from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import { useSnackbar } from "notistack";
-import React from "react";
+import queryString from "query-string";
+import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
-import shallow from "zustand/shallow";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import CommentCard from "../../components/CommentCard/index.js";
@@ -17,55 +17,42 @@ import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import { useArtworkStore } from "../../contexts/local/Artwork";
 import { useCommentsStore } from "../../contexts/local/comments";
 import AddCommentForm from "../../forms/CommentForm/index.js";
+import useOnScreen from "../../hooks/useOnScreen";
 import { List, Typography } from "../../styles/theme.js";
 import commentSectionStyles from "./styles.js";
 
-const CommentSection = ({ commentsRef, highlightRef, query }) => {
-  const { artworkId, artworkOwnerId } = useArtworkStore(
-    (state) => ({
-      artworkId: state.artwork.data.id,
-      artworkOwnerId: state.artwork.data.owner.id,
-    }),
-    shallow
+const CommentSection = ({
+  paramId,
+  commentsRef,
+  highlightRef,
+  commentsFetched,
+}) => {
+  const artworkId = useArtworkStore((state) => state.artwork.data.id);
+  const artworkOwnerId = useArtworkStore(
+    (state) => state.artwork.data.owner.id
   );
-  const {
-    comments,
-    loading,
-    edits,
-    popover,
-    highlight,
-    scroll,
-    fetchComments,
-    addComment,
-    updateComment,
-    deleteComment,
-    openComment,
-    closeComment,
-    openPopover,
-    closePopover,
-  } = useCommentsStore(
-    (state) => ({
-      comments: state.comments.data,
-      loading: state.comments.loading,
-      edits: state.edits,
-      popover: state.popover,
-      highlight: state.highlight,
-      scroll: state.scroll,
-      fetchComments: state.fetchComments,
-      addComment: state.addComment,
-      updateComment: state.updateComment,
-      deleteComment: state.deleteComment,
-      openComment: state.openComment,
-      closeComment: state.closeComment,
-      openPopover: state.openPopover,
-      closePopover: state.closePopover,
-    }),
-    shallow
-  );
+
+  const comments = useCommentsStore((state) => state.comments.data);
+  const loading = useCommentsStore((state) => state.comments.loading);
+  const edits = useCommentsStore((state) => state.edits);
+  const popover = useCommentsStore((state) => state.popover);
+  const highlight = useCommentsStore((state) => state.highlight);
+  const scroll = useCommentsStore((state) => state.scroll);
+  const fetchComments = useCommentsStore((state) => state.fetchComments);
+  const addComment = useCommentsStore((state) => state.addComment);
+  const updateComment = useCommentsStore((state) => state.updateComment);
+  const deleteComment = useCommentsStore((state) => state.deleteComment);
+  const openComment = useCommentsStore((state) => state.openComment);
+  const closeComment = useCommentsStore((state) => state.closeComment);
+  const openPopover = useCommentsStore((state) => state.openPopover);
+  const closePopover = useCommentsStore((state) => state.closePopover);
+
   const [userStore] = useUserContext();
 
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
+  const isVisible = useOnScreen(commentsRef);
+  const query = queryString.parse(location.search);
   const classes = commentSectionStyles();
 
   const {
@@ -82,7 +69,20 @@ const CommentSection = ({ commentsRef, highlightRef, query }) => {
     resolver: yupResolver(commentValidation),
   });
 
-  console.log("COMMENTS RENDER");
+  useEffect(() => {
+    if (
+      (!commentsFetched.current && isVisible) ||
+      (!commentsFetched.current && query.notif === "comment" && query.ref)
+    ) {
+      fetchComments({
+        artworkId: paramId,
+        query,
+        highlightRef,
+        enqueueSnackbar,
+      });
+      commentsFetched.current = true;
+    }
+  }, [isVisible]);
 
   return (
     <Card className={classes.root}>

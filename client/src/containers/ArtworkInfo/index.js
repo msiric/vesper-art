@@ -3,7 +3,6 @@ import { Box, Button, Card } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import shallow from "zustand/shallow";
 import { licenseValidation } from "../../../../common/validation";
 import PricingCard from "../../components/PricingCard/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
@@ -15,32 +14,17 @@ import { CardContent, Typography } from "../../styles/theme.js";
 import artworkInfoStyles from "./styles.js";
 
 const ArtworkInfo = () => {
-  const {
-    artwork,
-    license,
-    tabs,
-    modal,
-    loading,
-    downloadArtwork,
-    purchaseArtwork,
-    openModal,
-    closeModal,
-    changeTab,
-  } = useArtworkStore(
-    (state) => ({
-      artwork: state.artwork.data,
-      tabs: state.tabs,
-      modal: state.modal,
-      license: state.license,
-      loading: state.artwork.loading,
-      downloadArtwork: state.downloadArtwork,
-      purchaseArtwork: state.purchaseArtwork,
-      openModal: state.openModal,
-      closeModal: state.closeModal,
-      changeTab: state.changeTab,
-    }),
-    shallow
-  );
+  const artwork = useArtworkStore((state) => state.artwork.data);
+  const license = useArtworkStore((state) => state.license);
+  const tabs = useArtworkStore((state) => state.tabs);
+  const modal = useArtworkStore((state) => state.modal);
+  const loading = useArtworkStore((state) => state.artwork.loading);
+  const downloadArtwork = useArtworkStore((state) => state.downloadArtwork);
+  const purchaseArtwork = useArtworkStore((state) => state.purchaseArtwork);
+  const openModal = useArtworkStore((state) => state.openModal);
+  const closeModal = useArtworkStore((state) => state.closeModal);
+  const changeTab = useArtworkStore((state) => state.changeTab);
+
   const history = useHistory();
   const [userStore] = useUserContext();
   const classes = artworkInfoStyles();
@@ -71,8 +55,6 @@ const ArtworkInfo = () => {
   useEffect(() => {
     reset(setDefaultValues());
   }, [license]);
-
-  console.log("INFO RENDER");
 
   return (
     <Card className={classes.root} loading={loading}>

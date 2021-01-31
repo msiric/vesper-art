@@ -1,30 +1,23 @@
 import { Box, Card, Divider } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import shallow from "zustand/shallow";
-import { hexToRgb } from "../../../../common/helpers.js";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useArtworkStore } from "../../contexts/local/Artwork";
 import { Typography } from "../../styles/theme.js";
 import artworkPreviewStyles from "./styles.js";
 
-const ArtworkPreview = () => {
-  const { version, loading } = useArtworkStore(
-    (state) => ({
-      version: state.artwork.data.current,
-      loading: state.artwork.loading,
-    }),
-    shallow
-  );
+const ArtworkPreview = ({ paramId }) => {
+  const version = useArtworkStore((state) => state.artwork.data.current);
+  const loading = useArtworkStore((state) => state.artwork.loading);
+  const fetchArtwork = useArtworkStore((state) => state.fetchArtwork);
+
   const history = useHistory();
   const classes = artworkPreviewStyles();
 
-  const { r, g, b } = loading
-    ? { r: null, g: null, b: null }
-    : hexToRgb(version.cover.dominant);
-
-  console.log("PREVIEW RENDER");
+  useEffect(() => {
+    fetchArtwork({ artworkId: paramId });
+  }, []);
 
   return (
     <Card
@@ -68,7 +61,6 @@ const ArtworkPreview = () => {
             source={version.cover.source}
             placeholder={version.dominant}
             styles={{
-              boxShadow: `0px 0px 40px 15px rgba(${r},${g},${b},0.75)`,
               maxWidth: 700 / (version.height / version.width) - 54,
               margin: "24px",
             }}

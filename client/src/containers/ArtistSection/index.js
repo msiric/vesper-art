@@ -1,21 +1,14 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
-import shallow from "zustand/shallow";
 import ProfileCard from "../../components/ProfileCard/index.js";
 import { useArtworkStore } from "../../contexts/local/Artwork";
 import artistSectionStyles from "./styles.js";
 
 const ArtistSection = () => {
-  const { owner, loading } = useArtworkStore(
-    (state) => ({
-      owner: state.artwork.data.owner,
-      loading: state.artwork.loading,
-    }),
-    shallow
-  );
-  const classes = artistSectionStyles();
+  const owner = useArtworkStore((state) => state.artwork.data.owner);
+  const loading = useArtworkStore((state) => state.artwork.loading);
 
-  console.log("ARTIST RENDER");
+  const classes = artistSectionStyles();
 
   return (
     <ProfileCard
