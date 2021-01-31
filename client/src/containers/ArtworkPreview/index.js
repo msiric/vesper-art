@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import { useArtworkStore } from "../../contexts/local/Artwork";
+import { useArtworkStore } from "../../contexts/local/artwork";
 import { Typography } from "../../styles/theme.js";
 import artworkPreviewStyles from "./styles.js";
 
@@ -13,6 +13,7 @@ const ArtworkPreview = ({ paramId }) => {
   const fetchArtwork = useArtworkStore((state) => state.fetchArtwork);
 
   const history = useHistory();
+
   const classes = artworkPreviewStyles();
 
   useEffect(() => {

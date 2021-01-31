@@ -14,7 +14,7 @@ import EmptySection from "../../components/EmptySection/index.js";
 import InfiniteList from "../../components/InfiniteList";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { useTracked as useUserContext } from "../../contexts/global/User.js";
-import { useArtworkStore } from "../../contexts/local/Artwork";
+import { useArtworkStore } from "../../contexts/local/artwork";
 import { useCommentsStore } from "../../contexts/local/comments";
 import AddCommentForm from "../../forms/CommentForm/index.js";
 import useOnScreen from "../../hooks/useOnScreen";

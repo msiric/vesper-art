@@ -6,7 +6,7 @@ import IncrementCounter from "../../components/IncrementCounter";
 import ShareButton from "../../components/ShareButton/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useTracked as useUserContext } from "../../contexts/global/User.js";
-import { useArtworkStore } from "../../contexts/local/Artwork";
+import { useArtworkStore } from "../../contexts/local/artwork";
 import { useFavoritesStore } from "../../contexts/local/favorites.js";
 import { CardContent } from "../../styles/theme.js";
 import artworkActionsStyles from "./styles.js";

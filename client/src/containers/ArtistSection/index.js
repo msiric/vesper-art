@@ -1,7 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import ProfileCard from "../../components/ProfileCard/index.js";
-import { useArtworkStore } from "../../contexts/local/Artwork";
+import { useArtworkStore } from "../../contexts/local/artwork";
 import artistSectionStyles from "./styles.js";
 
 const ArtistSection = () => {

@@ -8,7 +8,7 @@ import PricingCard from "../../components/PricingCard/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
 import SwipeCard from "../../components/SwipeCard/index.js";
 import { useTracked as useUserContext } from "../../contexts/global/User.js";
-import { useArtworkStore } from "../../contexts/local/Artwork";
+import { useArtworkStore } from "../../contexts/local/artwork";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import { CardContent, Typography } from "../../styles/theme.js";
 import artworkInfoStyles from "./styles.js";
