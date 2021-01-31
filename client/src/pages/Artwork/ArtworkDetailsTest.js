@@ -84,15 +84,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
     resolver: yupResolver(licenseValidation),
   });
 
-  const scrollToHighlight = () => {
-    if (highlightRef.current)
-      highlightRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-  };
-
   useEffect(() => {
+    commentsFetched.current = false;
+    commentsRef.current = null;
+    highlightRef.current = null;
     resetArtwork();
     resetFavorites();
     resetComments();
@@ -107,11 +102,19 @@ const ArtworkDetails = ({ match, location, socket }) => {
   }, [license]);
 
   useEffect(() => {
-    if (!commentsFetched.current && isVisible) {
-      fetchComments({ artworkId: paramId });
+    if (
+      (!commentsFetched.current && isVisible) ||
+      (!commentsFetched.current && query.notif === "comment" && query.ref)
+    ) {
+      fetchComments({
+        artworkId: paramId,
+        query,
+        highlightRef,
+        enqueueSnackbar,
+      });
       commentsFetched.current = true;
     }
-  }, [isVisible]);
+  }, [isVisible, location]);
 
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
@@ -121,7 +124,11 @@ const ArtworkDetails = ({ match, location, socket }) => {
             <Grid item sm={12} md={8}>
               <ArtworkPreview />
               <br />
-              <CommentSection commentsRef={commentsRef} />
+              <CommentSection
+                commentsRef={commentsRef}
+                highlightRef={highlightRef}
+                query={query}
+              />
             </Grid>
             <Grid item sm={12} md={4}>
               <ArtistSection />

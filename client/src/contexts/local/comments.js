@@ -1,4 +1,5 @@
 import create from "zustand";
+import { isObjectEmpty } from "../../../../common/helpers";
 import {
   deleteComment,
   getComment,
@@ -23,9 +24,18 @@ const initialState = {
     retry: false,
   },
   highlight: {
-    found: false,
+    retrieved: false,
+    fetched: false,
     element: null,
   },
+};
+
+const scrollToHighlight = (highlightRef) => {
+  if (highlightRef.current)
+    highlightRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
 };
 
 const fetchHighlight = async (artworkId, commentId) => {
@@ -40,20 +50,43 @@ const fetchHighlight = async (artworkId, commentId) => {
   }
 };
 
-const resolveHighlight = async (comments, query, enqueueSnackbar) => {
+const resolveHighlight = async (
+  artworkId,
+  comments,
+  data,
+  query,
+  highlight,
+  enqueueSnackbar
+) => {
+  let highlightData = {};
   let foundHighlight = false;
-  let fetchedHighlight = {};
+  let fetchedHighlight = { ...highlight };
   if (query.notif === "comment" && query.ref) {
-    foundHighlight =
-      !!comments.filter((comment) => comment.id === query.ref)[0] || false;
-    fetchedHighlight = !foundHighlight ? await fetchHighlight(query.ref) : {};
-    if (!foundHighlight) {
-      enqueueSnackbar("Comment not found", {
-        variant: "error",
-      });
+    if (comments.length) {
+      foundHighlight = highlight.fetched
+        ? !!data.find((comment) => comment.id === query.ref)
+        : false;
+      highlightData = foundHighlight
+        ? { ...initialState.highlight, found: false, fetched: false }
+        : { ...highlight };
+    } else {
+      foundHighlight = !!data.find((comment) => comment.id === query.ref);
+      fetchedHighlight = !foundHighlight
+        ? await fetchHighlight(artworkId, query.ref)
+        : {};
+      if (!foundHighlight && isObjectEmpty(fetchedHighlight)) {
+        enqueueSnackbar("Comment not found", {
+          variant: "error",
+        });
+      }
+      highlightData = foundHighlight
+        ? { ...initialState.highlight, found: true, fetched: false }
+        : fetchedHighlight && fetchedHighlight.comment
+        ? { found: false, fetched: true, element: fetchedHighlight.comment }
+        : { ...initialState.highlight };
     }
   }
-  return { foundHighlight, fetchedHighlight };
+  return { highlightData, foundHighlight, fetchedHighlight };
 };
 
 const initState = () => ({
@@ -64,7 +97,7 @@ const initActions = (set, get) => ({
   fetchComments: async ({
     artworkId,
     query,
-    scrollToHighlight,
+    highlightRef,
     enqueueSnackbar,
   }) => {
     try {
@@ -76,17 +109,26 @@ const initActions = (set, get) => ({
           retry: false,
         },
       }));
-      const { cursor, limit } = get().scroll;
+      const comments = get().comments.data;
+      const scroll = get().scroll;
+      const highlight = get().highlight;
       const { data } = await getComments.request({
         artworkId,
-        cursor: cursor,
-        limit: limit,
+        cursor: scroll.cursor,
+        limit: scroll.limit,
       });
-      /*     const { foundHighlight, fetchedHighlight } = await resolveHighlight(
+      const {
+        highlightData,
+        foundHighlight,
+        fetchedHighlight,
+      } = await resolveHighlight(
+        artworkId,
+        comments,
         data.comments,
         query,
+        highlight,
         enqueueSnackbar
-      ); */
+      );
       set((state) => ({
         ...state,
         comments: {
@@ -100,7 +142,11 @@ const initActions = (set, get) => ({
           cursor: resolvePaginationId(data.comments),
           retry: false,
         },
+        highlight: { ...highlightData },
       }));
+      if (foundHighlight || fetchedHighlight) {
+        scrollToHighlight(highlightRef);
+      }
     } catch (err) {
       if (get().comments.data.length) {
         set((state) => ({

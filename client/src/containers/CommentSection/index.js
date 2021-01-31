@@ -1,10 +1,10 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Card, CardContent, Divider } from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
-import queryString from "query-string";
-import React, { useRef } from "react";
+import { useSnackbar } from "notistack";
+import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import shallow from "zustand/shallow";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
@@ -20,7 +20,7 @@ import AddCommentForm from "../../forms/CommentForm/index.js";
 import { List, Typography } from "../../styles/theme.js";
 import commentSectionStyles from "./styles.js";
 
-const CommentSection = ({ commentsRef }) => {
+const CommentSection = ({ commentsRef, highlightRef, query }) => {
   const { artworkId, artworkOwnerId } = useArtworkStore(
     (state) => ({
       artworkId: state.artwork.data.id,
@@ -64,10 +64,8 @@ const CommentSection = ({ commentsRef }) => {
   );
   const [userStore] = useUserContext();
 
-  const highlightRef = useRef(null);
   const location = useLocation();
-  const history = useHistory();
-  const query = queryString.parse(location.search);
+  const { enqueueSnackbar } = useSnackbar();
   const classes = commentSectionStyles();
 
   const {
@@ -128,7 +126,9 @@ const CommentSection = ({ commentsRef }) => {
             style={{ overflow: "hidden" }}
             className={classes.scroller}
             dataLength={comments ? comments.length : 0}
-            next={() => fetchComments({ artworkId })}
+            next={() =>
+              fetchComments({ artworkId, query, highlightRef, enqueueSnackbar })
+            }
             hasMore={scroll.hasMore}
             loading={loading}
             loader={<LoadingSpinner />}
@@ -159,6 +159,7 @@ const CommentSection = ({ commentsRef }) => {
               {highlight.element && (
                 <CommentCard
                   artworkId={artworkId}
+                  artworkOwnerId={artworkOwnerId}
                   comment={highlight.element}
                   edits={edits}
                   queryRef={query ? query.ref : null}
