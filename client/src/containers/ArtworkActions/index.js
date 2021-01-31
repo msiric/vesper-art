@@ -36,14 +36,14 @@ const ArtworkActions = ({ paramId }) => {
           alignItems: "center",
         }}
       >
-        <SkeletonWrapper loading={loading} width="100%">
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <SkeletonWrapper loading={loading} width="100%">
             <Box
               style={{
                 display: "flex",
@@ -59,11 +59,11 @@ const ArtworkActions = ({ paramId }) => {
               />
               <IncrementCounter newValue={favorites}></IncrementCounter>
             </Box>
-          </Box>
-        </SkeletonWrapper>
+          </SkeletonWrapper>
+        </Box>
       </CardContent>
       <Divider />
-      <CardActions style={{ padding: "14px 0" }}>
+      <CardActions style={{ padding: "14px" }}>
         <SkeletonWrapper loading={loading} width="100%">
           <Box
             style={{
@@ -81,7 +81,9 @@ const ArtworkActions = ({ paramId }) => {
                 handleCallback={toggleFavorite}
               />
             )}
-            <ShareButton link="" type="artwork" labeled />
+            <SkeletonWrapper loading={loading} width="100%">
+              <ShareButton link="" type="artwork" labeled />
+            </SkeletonWrapper>
           </Box>
         </SkeletonWrapper>
       </CardActions>

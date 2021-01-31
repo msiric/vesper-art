@@ -15,10 +15,10 @@ import artworkInfoStyles from "./styles.js";
 
 const ArtworkInfo = () => {
   const artwork = useArtworkStore((state) => state.artwork.data);
+  const loading = useArtworkStore((state) => state.artwork.loading);
   const license = useArtworkStore((state) => state.license);
   const tabs = useArtworkStore((state) => state.tabs);
   const modal = useArtworkStore((state) => state.modal);
-  const loading = useArtworkStore((state) => state.artwork.loading);
   const downloadArtwork = useArtworkStore((state) => state.downloadArtwork);
   const purchaseArtwork = useArtworkStore((state) => state.purchaseArtwork);
   const openModal = useArtworkStore((state) => state.openModal);
