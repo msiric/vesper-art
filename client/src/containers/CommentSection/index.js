@@ -51,7 +51,7 @@ const CommentSection = ({
 
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
-  const isVisible = useOnScreen(commentsRef);
+  const isVisible = useOnScreen(commentsRef, commentsFetched.current);
   const query = queryString.parse(location.search);
   const classes = commentSectionStyles();
 

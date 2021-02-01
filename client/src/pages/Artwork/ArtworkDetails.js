@@ -20,7 +20,7 @@ import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
 import CommentSection from "../../containers/CommentSection/index.js";
 import { useTracked as useUserContext } from "../../contexts/global/User.js";
-import { useArtworkStore } from "../../contexts/local/Artwork";
+import { useArtworkStore } from "../../contexts/local/artwork";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import useOnScreen from "../../hooks/useOnScreen.js";
 import {
