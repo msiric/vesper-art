@@ -225,7 +225,11 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
           return (
             <AuthLayout>
               <Suspense fallback={<LoadingSpinner />}>
-                <Component key={props.location.key} {...props} />
+                <Component
+                  key={props.location.key}
+                  socket={rest.socket}
+                  {...props}
+                />
               </Suspense>
             </AuthLayout>
           );
@@ -260,8 +264,8 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
           <Suspense fallback={<LoadingSpinner />}>
             <Component
               key={props.location.key}
-              {...props}
               socket={rest.socket}
+              {...props}
             />
           </Suspense>
         </MainLayout>

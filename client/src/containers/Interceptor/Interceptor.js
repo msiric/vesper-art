@@ -220,10 +220,11 @@ const Interceptor = ({ children }) => {
           return object;
         }, {}),
       });
-      socket.emit("authenticateUser", {
-        token: `Bearer ${data.accessToken}`,
-        data: payload,
-      });
+      // not needed because of useEffect?
+      // socket.emit("authenticateUser", {
+      //   token: `Bearer ${data.accessToken}`,
+      //   data: payload,
+      // });
     } catch (err) {
       userDispatch({
         type: "RESET_USER",

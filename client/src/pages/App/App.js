@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const App = React.memo(({ socket }) => {
+const App = ({ socket }) => {
   const [appStore, appDispatch] = useAppContext();
 
   const notistackRef = createRef();
@@ -110,6 +110,6 @@ const App = React.memo(({ socket }) => {
       </SnackbarProvider>
     </ThemeProvider>
   );
-});
+};
 
 export default App;
