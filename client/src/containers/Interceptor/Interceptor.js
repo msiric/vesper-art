@@ -6,8 +6,8 @@ import useSound from "use-sound";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useAppStore } from "../../contexts/global/app.js";
-import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useTracked as useEventsContext } from "../../contexts/global/events.js";
+import { useTracked as useUserContext } from "../../contexts/global/user.js";
 import App from "../../pages/App/App.js";
 import { postLogout } from "../../services/user.js";
 

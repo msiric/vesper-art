@@ -5,12 +5,12 @@ import {
   eventsReducer,
   eventsStore,
   Provider as EventsProvider,
-} from "./contexts/global/Events.js";
+} from "./contexts/global/events.js";
 import {
   Provider as UserProvider,
   userReducer,
   userStore,
-} from "./contexts/global/User.js";
+} from "./contexts/global/user.js";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker.js";
 

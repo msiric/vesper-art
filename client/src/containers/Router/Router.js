@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { Redirect, Route, Router, Switch } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/user.js";
 import AuthLayout from "../../layouts/AuthLayout.js";
 import MainLayout from "../../layouts/MainLayout.js";
 import history from "../../utils/history.js";

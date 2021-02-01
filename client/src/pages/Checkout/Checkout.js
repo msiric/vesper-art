@@ -43,7 +43,7 @@ import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import CheckoutSummary from "../../containers/CheckoutSummary/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/user.js";
 import BillingForm from "../../forms/BillingForm/index.js";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import PaymentForm from "../../forms/PaymentForm/index.js";

@@ -20,7 +20,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/user.js";
 import AddCommentForm from "../../forms/CommentForm/index.js";
 import { Typography } from "../../styles/theme.js";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";

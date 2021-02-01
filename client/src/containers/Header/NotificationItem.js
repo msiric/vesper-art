@@ -18,7 +18,7 @@ import {
 import React from "react";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
-import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
+import { useTracked as useEventsContext } from "../../contexts/global/events.js";
 import { artepunktTheme } from "../../styles/theme.js";
 import NotificationItemStyles from "./NotificationItem.style.js";
 

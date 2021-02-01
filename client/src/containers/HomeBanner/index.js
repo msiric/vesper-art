@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/user.js";
 import homeBannerStyles from "./styles";
 
 const HomeBanner = () => {

@@ -9,7 +9,7 @@ import { addArtwork, artworkValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/user.js";
 import ArtworkForm from "../../forms/ArtworkForm/index.js";
 import { postArtwork } from "../../services/artwork.js";
 import { getUser } from "../../services/stripe.js";

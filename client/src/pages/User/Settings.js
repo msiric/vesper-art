@@ -8,8 +8,8 @@ import SettingsActions from "../../containers/SettingsActions/index.js";
 import SettingsPreferences from "../../containers/SettingsPreferences/index.js";
 import SettingsProfile from "../../containers/SettingsProfile/index.js";
 import SettingsSecurity from "../../containers/SettingsSecurity/index.js";
-import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useTracked as useEventsContext } from "../../contexts/global/events.js";
+import { useTracked as useUserContext } from "../../contexts/global/user.js";
 import {
   deleteUser,
   getSettings,

@@ -17,7 +17,7 @@ import { countries } from "../../../../common/constants.js";
 import { originValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useTracked as useUserContext } from "../../contexts/global/user.js";
 import OnboardingForm from "../../forms/OnboardingForm/index.js";
 import { postAuthorize } from "../../services/stripe.js";
 import { patchOrigin } from "../../services/user.js";
