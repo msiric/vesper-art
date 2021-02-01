@@ -11,7 +11,7 @@ import { SnackbarProvider } from "notistack";
 import React, { createRef } from "react";
 import SimpleReactLightbox from "simple-react-lightbox";
 import Router from "../../containers/Router/Router.js";
-import { useTracked as useAppContext } from "../../contexts/global/App.js";
+import { useAppStore } from "../../contexts/global/app.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const useStyles = makeStyles(() => ({
@@ -22,7 +22,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const App = ({ socket }) => {
-  const [appStore, appDispatch] = useAppContext();
+  const theme = useAppStore((state) => state.theme);
 
   const notistackRef = createRef();
 
@@ -36,7 +36,7 @@ const App = ({ socket }) => {
     <ThemeProvider
       theme={{
         ...artepunktTheme,
-        palette: { ...artepunktTheme.palette, type: appStore.theme },
+        palette: { ...artepunktTheme.palette, type: theme },
       }}
     >
       <SnackbarProvider

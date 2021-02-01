@@ -1,45 +1,30 @@
-import { useReducer } from "react";
-import { createContainer } from "react-tracked";
+import create from "zustand";
 
-export const appStore = {
+const initialState = {
   loading: true,
   error: false,
   theme: "dark",
 };
 
-export const appReducer = (state, action) => {
-  switch (action.type) {
-    case "SET_APP":
-      return {
-        ...state,
-        loading: action.loading,
-        error: action.error,
-        theme: action.theme,
-      };
-    default:
-      return state;
-  }
-};
+const initState = () => ({
+  ...initialState,
+});
 
-const useValue = ({ reducer, store }) => useReducer(reducer, store);
-export const { Provider, useTracked } = createContainer(useValue);
+const initActions = (set, get) => ({
+  setApp: ({ loading, error, theme }) => {
+    set((state) => ({
+      ...state,
+      loading,
+      error,
+      theme,
+    }));
+  },
+  resetApp: () => {
+    set({ ...initialState });
+  },
+});
 
-// const App = ({ children, definedState }) => {
-//   const [state, dispatch] = useReducer(
-//     reducer,
-//     definedState ? definedState : store
-//   );
-
-//   return (
-//     <AppContext.Provider value={[state, dispatch]}>
-//       {children}
-//     </AppContext.Provider>
-//   );
-// };
-
-// export const AppContext = createContext({
-//   appStore: store,
-//   appDispatch: reducer,
-// });
-
-// export default App;
+export const useAppStore = create((set, get) => ({
+  ...initState(),
+  ...initActions(set, get),
+}));

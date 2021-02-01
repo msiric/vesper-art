@@ -5,7 +5,7 @@ import openSocket from "socket.io-client";
 import useSound from "use-sound";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { useTracked as useAppContext } from "../../contexts/global/App.js";
+import { useAppStore } from "../../contexts/global/app.js";
 import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
 import { useTracked as useUserContext } from "../../contexts/global/User.js";
 import App from "../../pages/App/App.js";
@@ -17,7 +17,9 @@ const ax = axios.create();
 let socket = openSocket(ENDPOINT);
 
 const Interceptor = ({ children }) => {
-  const [appStore, appDispatch] = useAppContext();
+  const theme = useAppStore((state) => state.theme);
+  const loading = useAppStore((state) => state.loading);
+  const setApp = useAppStore((state) => state.setApp);
   const [userStore, userDispatch] = useUserContext();
   const [eventsStore, eventsDispatch] = useEventsContext();
 
@@ -30,12 +32,7 @@ const Interceptor = ({ children }) => {
   const getRefreshToken = async () => {
     try {
       if (!userStore.token) {
-        appDispatch({
-          type: "SET_APP",
-          loading: true,
-          error: false,
-          theme: appStore.theme,
-        });
+        setApp({ loading: true, error: false, theme });
 
         const { data } = await axios.post("/api/auth/refresh_token", {
           headers: {
@@ -79,28 +76,13 @@ const Interceptor = ({ children }) => {
               limit: 10,
             },
           });
-          appDispatch({
-            type: "SET_APP",
-            loading: false,
-            error: false,
-            theme: appStore.theme,
-          });
+          setApp({ loading: false, error: false, theme });
         } else {
-          appDispatch({
-            type: "SET_APP",
-            loading: false,
-            error: false,
-            theme: appStore.theme,
-          });
+          setApp({ loading: false, error: false, theme });
         }
       }
     } catch (err) {
-      appDispatch({
-        type: "SET_APP",
-        loading: false,
-        error: true,
-        theme: appStore.theme,
-      });
+      setApp({ loading: false, error: err, theme });
     }
   };
 
@@ -258,7 +240,7 @@ const Interceptor = ({ children }) => {
     };
   }, [userStore.token]);
 
-  return appStore.loading ? <LoadingSpinner /> : <App socket={socket} />;
+  return loading ? <LoadingSpinner /> : <App socket={socket} />;
 };
 
 export { ax };

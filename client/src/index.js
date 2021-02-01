@@ -2,11 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Interceptor from "./containers/Interceptor/Interceptor.js";
 import {
-  appReducer,
-  appStore,
-  Provider as AppProvider,
-} from "./contexts/global/App.js";
-import {
   eventsReducer,
   eventsStore,
   Provider as EventsProvider,
@@ -21,13 +16,11 @@ import * as serviceWorker from "./serviceWorker.js";
 
 ReactDOM.render(
   <React.StrictMode>
-    <AppProvider reducer={appReducer} store={appStore}>
-      <UserProvider reducer={userReducer} store={userStore}>
-        <EventsProvider reducer={eventsReducer} store={eventsStore}>
-          <Interceptor />
-        </EventsProvider>
-      </UserProvider>
-    </AppProvider>
+    <UserProvider reducer={userReducer} store={userStore}>
+      <EventsProvider reducer={eventsReducer} store={eventsStore}>
+        <Interceptor />
+      </EventsProvider>
+    </UserProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
