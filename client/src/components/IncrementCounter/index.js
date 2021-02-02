@@ -8,6 +8,12 @@ const IncrementCounter = ({ newValue = 0 }) => {
 
   const classes = incrementCounterStyles();
 
+  const handleInitialization = () => {
+    setAnimationValue("hide");
+    setTimeout(() => setAnimationValue("waitDown"), 70);
+    setTimeout(() => setAnimationValue("initial"), 150);
+  };
+
   const handleIncrement = () => {
     setTimeout(() => setAnimationValue("goUp"), 0);
     setTimeout(() => setValue(value + 1), 100);
@@ -21,6 +27,10 @@ const IncrementCounter = ({ newValue = 0 }) => {
     setTimeout(() => setAnimationValue("goUp"), 100);
     setTimeout(() => setAnimationValue("initial"), 200);
   };
+
+  useEffect(() => {
+    handleInitialization();
+  }, []);
 
   useEffect(() => {
     if (newValue < value) handleDecrement();

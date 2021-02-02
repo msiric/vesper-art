@@ -51,6 +51,9 @@ const ArtworkActions = ({ paramId }) => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                minWidth: 58,
+                height: 55,
+                width: "100%",
               }}
             >
               <FavoritedIcon

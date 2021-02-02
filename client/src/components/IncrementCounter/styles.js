@@ -1,6 +1,9 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const incrementCounter = makeStyles((muiTheme) => ({
+  hide: {
+    display: "none",
+  },
   goUp: {
     display: "inline-flex",
     opacity: 0,
