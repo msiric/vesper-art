@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { Redirect, Route, Router, Switch } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import AuthLayout from "../../layouts/AuthLayout.js";
 import MainLayout from "../../layouts/MainLayout.js";
 import history from "../../utils/history.js";
@@ -275,7 +275,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
 );
 
 const AppRouter = ({ socket }) => {
-  const [userStore] = useUserContext();
+  const userToken = useUserStore((state) => state.token);
 
   return (
     <Router history={history}>
@@ -287,7 +287,7 @@ const AppRouter = ({ socket }) => {
               {routes.map(({ path, Component, exact, type }) => (
                 <AppRoute
                   socket={socket}
-                  token={userStore.token}
+                  token={userToken}
                   type={type}
                   path={path}
                   key={path}

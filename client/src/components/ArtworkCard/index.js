@@ -7,7 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { EditRounded as EditIcon } from "@material-ui/icons";
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import FavoriteButton from "../FavoriteButton/index.js";
 import ImageWrapper from "../ImageWrapper/index.js";
 import ShareButton from "../ShareButton/index.js";
@@ -30,7 +30,8 @@ const ArtworkCard = ({
   handleArtworkSave,
   loading,
 }) => {
-  const [userStore] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+  const userFavorites = useUserStore((state) => state.favorites);
   const [state, setState] = useState({ favorited: false });
 
   const classes = artworkCardStyles();
@@ -115,7 +116,7 @@ const ArtworkCard = ({
       <CardActions disableSpacing className={classes.artworkFooter}>
         <SkeletonWrapper loading={loading}>
           <Box style={{ display: "flex" }}>
-            {item.owner.id === userStore.id ? (
+            {item.owner.id === userId ? (
               <IconButton
                 aria-label={"Edit artwork"}
                 component={RouterLink}
@@ -128,7 +129,7 @@ const ArtworkCard = ({
               [
                 <FavoriteButton
                   artwork={artwork}
-                  favorited={userStore.favorites[item.id]}
+                  favorited={userFavorites[item.id]}
                   handleCallback={handleArtworkSave}
                 />,
                 <ShareButton link={`artwork/${artwork.id}`} type="artwork" />,

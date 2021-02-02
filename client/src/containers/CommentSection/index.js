@@ -13,7 +13,7 @@ import CommentPopover from "../../components/CommentPopover";
 import EmptySection from "../../components/EmptySection/index.js";
 import InfiniteList from "../../components/InfiniteList";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user";
 import { useArtworkStore } from "../../contexts/local/artwork";
 import { useCommentsStore } from "../../contexts/local/comments";
 import AddCommentForm from "../../forms/CommentForm/index.js";
@@ -47,7 +47,9 @@ const CommentSection = ({
   const openPopover = useCommentsStore((state) => state.openPopover);
   const closePopover = useCommentsStore((state) => state.closePopover);
 
-  const [userStore] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+  const userUsername = useUserStore((state) => state.name);
+  const userAvatar = useUserStore((state) => state.avatar);
 
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
@@ -97,9 +99,9 @@ const CommentSection = ({
               addComment({
                 artworkId,
                 userData: {
-                  id: userStore.id,
-                  name: userStore.name,
-                  avatar: userStore.avatar,
+                  id: userId,
+                  name: userUsername,
+                  avatar: userAvatar,
                 },
                 values: getValues(),
                 reset,

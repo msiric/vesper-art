@@ -8,11 +8,11 @@ import {
 } from "@material-ui/core";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import homeBannerStyles from "./styles";
 
 const HomeBanner = () => {
-  const [userStore] = useUserContext();
+  const authenticated = useUserStore((state) => state.authenticated);
 
   const classes = homeBannerStyles();
 
@@ -58,7 +58,7 @@ const HomeBanner = () => {
               width: "100%",
             }}
           >
-            {!userStore.authenticated && (
+            {!authenticated && (
               <Button
                 component={RouterLink}
                 to="/signup"

@@ -10,12 +10,13 @@ import { formatDate } from "../../../../common/helpers.js";
 import Datatable from "../../components/DataTable/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import { deleteArtwork, getGallery } from "../../services/artwork.js";
 import globalStyles from "../../styles/global.js";
 
 const MyArtwork = ({ location }) => {
-  const [userStore] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+
   const [state, setState] = useState({
     isDeleting: false,
     loading: true,
@@ -36,7 +37,7 @@ const MyArtwork = ({ location }) => {
   const fetchArtwork = async () => {
     try {
       const { data } = await getGallery.request({
-        userId: userStore.id,
+        userId,
         cursor: state.cursor,
         limit: state.limit,
       });

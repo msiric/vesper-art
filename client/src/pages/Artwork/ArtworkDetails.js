@@ -19,7 +19,7 @@ import ArtworkActions from "../../containers/ArtworkActions/index.js";
 import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
 import CommentSection from "../../containers/CommentSection/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import { useArtworkStore } from "../../contexts/local/artwork";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import useOnScreen from "../../hooks/useOnScreen.js";
@@ -68,7 +68,10 @@ const ArtworkDetails = ({ match, location, socket }) => {
     (state) => ({ artwork: state.artwork }),
     shallow
   );
-  const [userStore] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+  const userUsername = useUserStore((state) => state.name);
+  const userAvatar = useUserStore((state) => state.avatar);
+
   const [state, setState] = useState({ ...initialState });
   const commentsRef = useRef();
   const isVisible = useOnScreen(commentsRef);
@@ -236,9 +239,9 @@ const ArtworkDetails = ({ match, location, socket }) => {
           {
             ...comment,
             owner: {
-              id: userStore.id,
-              name: userStore.name,
-              avatar: userStore.avatar,
+              id: userId,
+              name: userUsername,
+              avatar: userAvatar,
             },
           },
           ...prevState.artwork.comments,

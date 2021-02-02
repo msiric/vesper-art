@@ -22,7 +22,7 @@ import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import ArtworkForm from "../../forms/ArtworkForm/index.js";
 import {
   deleteArtwork,
@@ -61,7 +61,8 @@ const initialState = {
 };
 
 const EditArtwork = ({ match, location }) => {
-  const [userStore] = useUserContext();
+  const stripeId = useUserStore((state) => state.stripeId);
+
   const [state, setState] = useState({
     ...initialState,
   });
@@ -114,8 +115,8 @@ const EditArtwork = ({ match, location }) => {
       } = await editArtwork.request({ artworkId: match.params.id });
       const {
         data: { capabilities },
-      } = userStore.stripeId
-        ? await getUser.request({ stripeId: userStore.stripeId })
+      } = stripeId
+        ? await getUser.request({ stripeId: stripeId })
         : { data: { capabilities: {} } };
       setState((prevState) => ({
         ...prevState,
@@ -204,7 +205,7 @@ const EditArtwork = ({ match, location }) => {
               className={globalClasses.mainHeading}
             />
             <Card width="100%">
-              {!userStore.stripeId ? (
+              {!stripeId ? (
                 <HelpBox
                   type="alert"
                   label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'

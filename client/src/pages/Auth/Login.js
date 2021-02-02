@@ -16,7 +16,7 @@ import { Link as RouterLink, useHistory } from "react-router-dom";
 import { loginValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import { useTracked as useEventsContext } from "../../contexts/global/events.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import LoginForm from "../../forms/LoginForm/index.js";
 import { postLogin } from "../../services/auth.js";
 
@@ -34,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = () => {
-  const [userStore, userDispatch] = useUserContext();
+  const setUser = useUserStore((state) => state.setUser);
+
   const [eventsStore, eventsDispatch] = useEventsContext();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -55,8 +56,7 @@ const Login = () => {
       const { data } = await postLogin.request({ data: values });
 
       if (data.user) {
-        userDispatch({
-          type: "SET_USER",
+        setUser({
           authenticated: true,
           token: data.accessToken,
           id: data.user.id,

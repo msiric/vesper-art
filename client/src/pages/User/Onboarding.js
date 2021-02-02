@@ -17,7 +17,7 @@ import { countries } from "../../../../common/constants.js";
 import { originValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import OnboardingForm from "../../forms/OnboardingForm/index.js";
 import { postAuthorize } from "../../services/stripe.js";
 import { patchOrigin } from "../../services/user.js";
@@ -31,7 +31,10 @@ import {
 } from "../../styles/theme.js";
 
 const Onboarding = () => {
-  const [userStore] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+  const userEmail = useUserStore((state) => state.email);
+  const userAddress = useUserStore((state) => state.businessAddress);
+  const stripeId = useUserStore((state) => state.stripeId);
 
   const {
     handleSubmit,
@@ -49,9 +52,9 @@ const Onboarding = () => {
 
   const onSubmit = async (values) => {
     try {
-      if (!userStore.stripeId) {
+      if (!stripeId) {
         await patchOrigin.request({
-          userId: userStore.id,
+          userId,
           data: {
             ...values,
             userBusinessAddress: values.userBusinessAddress,
@@ -59,7 +62,7 @@ const Onboarding = () => {
         });
         const { data } = await postAuthorize.request({
           userBusinessAddress: values.userBusinessAddress,
-          userEmail: userStore.email,
+          userEmail,
         });
         window.location.href = data.url;
       }
@@ -88,7 +91,7 @@ const Onboarding = () => {
                 margin={4}
               />
               <MonetizationIcon style={{ fontSize: 150 }} />
-              {userStore.stripeId ? (
+              {stripeId ? (
                 <Typography variant="subtitle1" mb={4}>
                   You already went through the onboarding process
                 </Typography>
@@ -134,9 +137,9 @@ const Onboarding = () => {
                     </ListItem>
                   </List>
                   {/* $TODO Refactor supportedCountries */}
-                  {userStore.businessAddress ? (
-                    countries[userStore.businessAddress] &&
-                    countries[userStore.businessAddress].supported ? (
+                  {userAddress ? (
+                    countries[userAddress] &&
+                    countries[userAddress].supported ? (
                       <Typography
                         color="textSecondary"
                         style={{ alignSelf: "flex-start" }}

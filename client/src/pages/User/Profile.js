@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import EmptySection from "../../components/EmptySection/index.js";
 import ProfileArtwork from "../../containers/ProfileArtwork/index.js";
 import ProfileInfo from "../../containers/ProfileInfo/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import { getArtwork } from "../../services/artwork.js";
 import { getFavorites, getUser } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
@@ -29,7 +29,8 @@ const initialState = {
 };
 
 const Profile = ({ match, location }) => {
-  const [userStore] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+
   const [state, setState] = useState({
     ...initialState,
   });
@@ -52,7 +53,7 @@ const Profile = ({ match, location }) => {
       // } = await ax.get(
       //   `/api/user/${user.id}/artwork?cursor=${state.cursor}&limit=${state.limit}`
       // );
-      if (userStore.id === data.user.id) {
+      if (userId === data.user.id) {
         setState((prevState) => ({
           ...prevState,
           loading: false,

@@ -1,7 +1,7 @@
 import { Box } from "@material-ui/core";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import ImageInput from "../../controls/ImageInput/index.js";
 import PriceInput from "../../controls/PriceInput/index.js";
 import SelectInput from "../../controls/SelectInput/index.js";
@@ -20,7 +20,7 @@ const ArtworkForm = ({
   watch,
   loading,
 }) => {
-  const [userStore] = useUserContext();
+  const stripeId = useUserStore((state) => state.stripeId);
 
   const artworkAvailability = watch("artworkAvailability");
   const artworkType = watch("artworkType");
@@ -78,7 +78,7 @@ const ArtworkForm = ({
                 value: "commercial",
                 text: "Commercial",
                 disabled:
-                  userStore.stripeId &&
+                  stripeId &&
                   capabilities.cardPayments === "active" &&
                   capabilities.platformPayments === "active"
                     ? false
@@ -123,7 +123,7 @@ const ArtworkForm = ({
                   value: "separate",
                   text: "Charge commercial license separately",
                   disabled:
-                    userStore.stripeId &&
+                    stripeId &&
                     capabilities.cardPayments === "active" &&
                     capabilities.platformPayments === "active"
                       ? false

@@ -10,7 +10,7 @@ import RatingModal from "../../components/RatingModal/index.js";
 import LicenseCard from "../../containers/LicenseCard/index.js";
 import OrderPreview from "../../containers/OrderPreview/index.js";
 import ReviewCard from "../../containers/ReviewCard/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import { getDownload, getOrder, postReview } from "../../services/orders.js";
 import globalStyles from "../../styles/global.js";
 
@@ -29,7 +29,8 @@ const initialState = {
 };
 
 const Order = ({ match, location }) => {
-  const [userStore] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+
   const [state, setState] = useState({ ...initialState });
   const globalClasses = globalStyles();
 
@@ -109,7 +110,7 @@ const Order = ({ match, location }) => {
         review: {
           order: prevState.order.id,
           artwork: prevState.order.artwork.id,
-          owner: userStore.id,
+          owner: userId,
           rating: values.artistRating,
         },
       },
@@ -121,13 +122,9 @@ const Order = ({ match, location }) => {
     return format(new Date(date), type);
   };
 
-  const isSeller = () =>
-    state.order.id &&
-    userStore.id.toString() === state.order.seller.id.toString();
+  const isSeller = () => state.order.id && userId === state.order.seller.id;
 
-  const isBuyer = () =>
-    state.order.id &&
-    userStore.id.toString() === state.order.buyer.id.toString();
+  const isBuyer = () => state.order.id && userId === state.order.buyer.id;
 
   useEffect(() => {
     fetchOrder();

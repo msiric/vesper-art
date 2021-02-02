@@ -20,7 +20,7 @@ import EmptySection from "../../components/EmptySection/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import GalleryPanel from "../../containers/GalleryPanel/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import { getDownload } from "../../services/orders.js";
 import { getArtwork, getMedia, getOwnership } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
@@ -64,7 +64,9 @@ const galleryStyles = makeStyles({
 });
 
 const Gallery = ({ match, location }) => {
-  const [userStore] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+  const userUsername = useUserStore((state) => state.name);
+
   const [state, setState] = useState({
     ...initialState,
   });
@@ -145,12 +147,12 @@ const Gallery = ({ match, location }) => {
       const { data } =
         state.display === "purchases"
           ? await getOwnership.request({
-              userId: userStore.id,
+              userId,
               cursor: state.scroll.artwork.cursor,
               limit: state.scroll.artwork.limit,
             })
           : await getArtwork.request({
-              userId: userStore.id,
+              userId,
               cursor: state.scroll.artwork.cursor,
               limit: state.scroll.artwork.limit,
             });
@@ -167,7 +169,7 @@ const Gallery = ({ match, location }) => {
               ? item.version.title
               : item.current.title,
           owner:
-            state.display === "purchases" ? item.seller.name : userStore.name,
+            state.display === "purchases" ? item.seller.name : userUsername,
           cover:
             state.display === "purchases"
               ? item.version.cover.source
@@ -271,7 +273,7 @@ const Gallery = ({ match, location }) => {
         state.display === "purchases"
           ? await getDownload.request({ orderId: identifier })
           : await getMedia.request({
-              userId: userStore.id,
+              userId,
               artworkId: identifier,
             });
       const newArtwork = {
@@ -343,7 +345,7 @@ const Gallery = ({ match, location }) => {
     }));
   };
 
-  return state.loading || userStore.id ? (
+  return state.loading || userId ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Card

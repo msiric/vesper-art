@@ -7,7 +7,7 @@ import { licenseValidation } from "../../../../common/validation";
 import PricingCard from "../../components/PricingCard/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
 import SwipeCard from "../../components/SwipeCard/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user";
 import { useArtworkStore } from "../../contexts/local/artwork";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import { CardContent, Typography } from "../../styles/theme.js";
@@ -25,8 +25,9 @@ const ArtworkInfo = () => {
   const closeModal = useArtworkStore((state) => state.closeModal);
   const changeTab = useArtworkStore((state) => state.changeTab);
 
+  const userId = useUserStore((state) => state.id);
+
   const history = useHistory();
-  const [userStore] = useUserContext();
   const classes = artworkInfoStyles();
 
   const setDefaultValues = () => ({
@@ -50,7 +51,7 @@ const ArtworkInfo = () => {
     resolver: yupResolver(licenseValidation),
   });
 
-  const isSeller = () => userStore.id === artwork.owner.id;
+  const isSeller = () => userId === artwork.owner.id;
 
   useEffect(() => {
     reset(setDefaultValues());

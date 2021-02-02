@@ -43,7 +43,7 @@ import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import CheckoutSummary from "../../containers/CheckoutSummary/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import BillingForm from "../../forms/BillingForm/index.js";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import PaymentForm from "../../forms/PaymentForm/index.js";
@@ -176,7 +176,8 @@ const Checkout = ({ match, location }) => {
 };
 
 const Processor = ({ match, location, stripe }) => {
-  const [userStore, userDispatch] = useUserContext();
+  const userIntents = useUserStore((state) => state.intents);
+
   const [state, setState] = useState({
     ...initialState,
     license:
@@ -269,7 +270,7 @@ const Processor = ({ match, location, stripe }) => {
   const handleDiscountChange = async (values, actions) => {
     try {
       // $TODO REMOVE INTENT AND FETCH FROM API
-      const intentId = userStore.intents[state.version.id] || null;
+      const intentId = userIntents[state.version.id] || null;
       const {
         data: { payload },
       } = values
@@ -305,7 +306,7 @@ const Processor = ({ match, location, stripe }) => {
   const saveIntent = async (values) => {
     try {
       // $TODO REMOVE INTENT AND FETCH FROM API
-      const intentId = userStore.intents[state.version.id] || null;
+      const intentId = userIntents[state.version.id] || null;
       const { data } = await postIntent.request({
         versionId: state.version.id,
         artworkLicense: {

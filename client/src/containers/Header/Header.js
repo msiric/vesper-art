@@ -32,7 +32,7 @@ import * as Yup from "yup";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import LogoMobile from "../../assets/images/logo/logo-mobile.svg";
 import { useTracked as useEventsContext } from "../../contexts/global/events.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import SearchForm from "../../forms/SearchForm";
 import {
   getNotifications,
@@ -48,7 +48,12 @@ const searchValidation = Yup.object().shape({
 });
 
 const Header = ({ socket, history }) => {
-  const [userStore, userDispatch] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+  const userUsername = useUserStore((state) => state.name);
+  const stripeId = useUserStore((state) => state.stripeId);
+  const authenticated = useUserStore((state) => state.authenticated);
+  const resetUser = useUserStore((state) => state.resetUser);
+
   const [eventsStore, eventsDispatch] = useEventsContext();
   const [state, setState] = useState({
     profile: { anchorEl: null, mobileAnchorEl: null },
@@ -131,7 +136,7 @@ const Header = ({ socket, history }) => {
         }));
         try {
           const { data } = await getNotifications.request({
-            userId: userStore.id,
+            userId,
             cursor: eventsStore.notifications.cursor,
             limit: eventsStore.notifications.limit,
           });
@@ -196,9 +201,7 @@ const Header = ({ socket, history }) => {
     try {
       await postLogout.request();
 
-      userDispatch({
-        type: "RESET_USER",
-      });
+      resetUser();
       eventsDispatch({
         type: "RESET_EVENTS",
       });
@@ -274,7 +277,7 @@ const Header = ({ socket, history }) => {
   const loadMore = async () => {
     try {
       const { data } = await getNotifications.request({
-        userId: userStore.id,
+        userId,
         cursor: eventsStore.notifications.cursor,
         limit: eventsStore.notifications.limit,
       });
@@ -326,7 +329,7 @@ const Header = ({ socket, history }) => {
       keepMounted
     >
       <Divider />
-      {!userStore.stripeId && (
+      {!stripeId && (
         <>
           <MenuItem component={Link} to="/onboarding" disableRipple>
             <ListItemAvatar>
@@ -339,13 +342,13 @@ const Header = ({ socket, history }) => {
           <Divider />
         </>
       )}
-      <MenuItem component={Link} to={`/user/${userStore.name}`} disableRipple>
+      <MenuItem component={Link} to={`/user/${userUsername}`} disableRipple>
         <ListItemAvatar>
           <Avatar>
             <ProfileIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary={userStore.name} />
+        <ListItemText primary={userUsername} />
       </MenuItem>
       <Divider />
       <MenuItem component={Link} to="/dashboard" disableRipple>
@@ -496,7 +499,7 @@ const Header = ({ socket, history }) => {
             </FormProvider>
           </div>
           <div className={classes.grow} />
-          {userStore.authenticated ? (
+          {authenticated ? (
             <>
               <div className={classes.sectionDesktop}>
                 {/*                 <IconButton aria-label="Show messages" color="inherit">
@@ -593,7 +596,7 @@ const Header = ({ socket, history }) => {
           )}
         </Toolbar>
       </AppBar>
-      {userStore.authenticated ? renderAuthMobileMenu : renderUnauthMobileMenu}
+      {authenticated ? renderAuthMobileMenu : renderUnauthMobileMenu}
       {renderProfileMenu}
       <NotificationsMenu
         anchorEl={state.notifications.anchorEl}

@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import DashboardStatistics from "../../containers/DashboardStatistics/index.js";
 import DashboardToolbar from "../../containers/DashboardToolbar/index.js";
 import DashboardVisualization from "../../containers/DashboardVisualization/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import RangeInput from "../../controls/RangeInput/index.js";
 import { getDashboard } from "../../services/stripe.js";
 import { getSelection, getStatistics } from "../../services/user.js";
@@ -42,7 +42,9 @@ const initialState = {
 };
 
 const Dashboard = ({ location }) => {
-  const [userStore] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+  const stripeId = useUserStore((state) => state.stripeId);
+
   const [state, setState] = useState({
     ...initialState,
   });
@@ -53,7 +55,7 @@ const Dashboard = ({ location }) => {
     try {
       setState((prevState) => ({ ...prevState, loading: true }));
       const { data } = await getStatistics.request({
-        userId: userStore.id,
+        userId,
         display: state.display.type,
       });
       const currentStats = {
@@ -103,7 +105,7 @@ const Dashboard = ({ location }) => {
         },
       }));
       const { data } = await getSelection.request({
-        userId: userStore.id,
+        userId,
         displayType: state.display.type,
         start: from,
         end: to,
@@ -196,7 +198,7 @@ const Dashboard = ({ location }) => {
 
   const handleStripeRedirect = async () => {
     const { data } = await getDashboard.request({
-      stripeId: userStore.stripeId,
+      stripeId,
     });
     window.location.href = data.url;
   };
@@ -221,7 +223,7 @@ const Dashboard = ({ location }) => {
             display={state.display}
             handleSelectChange={handleSelectChange}
           />
-          {userStore.stripeId && (
+          {stripeId && (
             <Button variant="outlined" onClick={handleStripeRedirect}>
               Stripe dashboard
             </Button>

@@ -9,7 +9,7 @@ import SettingsPreferences from "../../containers/SettingsPreferences/index.js";
 import SettingsProfile from "../../containers/SettingsProfile/index.js";
 import SettingsSecurity from "../../containers/SettingsSecurity/index.js";
 import { useTracked as useEventsContext } from "../../contexts/global/events.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import {
   deleteUser,
   getSettings,
@@ -30,7 +30,9 @@ const initialState = {
 };
 
 const Settings = ({ location, socket }) => {
-  const [userStore, userDispatch] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+  const resetUser = useUserStore((state) => state.resetUser);
+
   const [eventsStore, eventsDispatch] = useEventsContext();
 
   const [state, setState] = useState({
@@ -43,7 +45,7 @@ const Settings = ({ location, socket }) => {
   const fetchSettings = async () => {
     try {
       setState({ ...initialState });
-      const { data } = await getSettings.request({ userId: userStore.id });
+      const { data } = await getSettings.request({ userId });
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -56,9 +58,7 @@ const Settings = ({ location, socket }) => {
 
   const handleLogout = async () => {
     await postLogout.request();
-    userDispatch({
-      type: "RESET_USER",
-    });
+    resetUser();
     eventsDispatch({
       type: "RESET_EVENTS",
     });
@@ -74,7 +74,7 @@ const Settings = ({ location, socket }) => {
       formData.append(value, data[value]);
     }
     await patchUser.request({
-      userId: userStore.id,
+      userId,
       data: formData,
     });
     setState((prevState) => ({
@@ -91,7 +91,7 @@ const Settings = ({ location, socket }) => {
   // $TODO LOG USER OUT AFTER EMAIL UPDATE
   const handleUpdateEmail = async (values) => {
     await patchEmail.request({
-      userId: userStore.id,
+      userId,
       data: values,
     });
     await handleLogout();
@@ -108,7 +108,7 @@ const Settings = ({ location, socket }) => {
 
   const handleUpdatePreferences = async (values) => {
     await patchPreferences.request({
-      userId: userStore.id,
+      userId,
       data: values,
     });
     setState((prevState) => ({
@@ -123,7 +123,7 @@ const Settings = ({ location, socket }) => {
   // $TODO LOG USER OUT AFTER PASSWORD UPDATE
   const handleUpdatePassword = async (values, reset) => {
     await patchPassword.request({
-      userId: userStore.id,
+      userId,
       data: values,
     });
     await handleLogout();
@@ -146,7 +146,7 @@ const Settings = ({ location, socket }) => {
   const handleDeactivateUser = async () => {
     try {
       setState((prevState) => ({ ...prevState, isDeactivating: true }));
-      await deleteUser.request({ userId: userStore.id });
+      await deleteUser.request({ userId });
     } catch (err) {
     } finally {
       setState((prevState) => ({ ...prevState, isDeactivating: false }));

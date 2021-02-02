@@ -1,7 +1,6 @@
-import { useReducer } from "react";
-import { createContainer } from "react-tracked";
+import create from "zustand";
 
-export const userStore = {
+const initialState = {
   authenticated: false,
   token: null,
   id: null,
@@ -16,85 +15,75 @@ export const userStore = {
   intents: {},
 };
 
-export const userReducer = (state, action) => {
-  console.log(action);
+const initState = () => ({
+  ...initialState,
+});
 
-  switch (action.type) {
-    case "SET_USER":
-      return {
-        ...state,
-        authenticated: action.authenticated,
-        token: action.token,
-        id: action.id,
-        name: action.name,
-        email: action.email,
-        avatar: action.avatar,
-        stripeId: action.stripeId,
-        country: action.country,
-        favorites: action.favorites,
-        intents: action.intents,
-      };
-    case "UPDATE_USER":
-      return {
-        ...state,
-        token: action.token,
-        email: action.email,
-        avatar: action.avatar,
-        stripeId: action.stripeId,
-        country: action.country,
-        favorites: action.favorites,
-        intents: action.intents,
-      };
-    case "RESET_USER":
-      return {
-        ...state,
-        authenticated: false,
-        token: null,
-        id: null,
-        name: null,
-        email: null,
-        avatar: null,
-        height: null,
-        width: null,
-        stripeId: null,
-        country: null,
-        favorites: {},
-        intents: {},
-      };
-    case "UPDATE_TOKEN":
-      return {
-        ...state,
-        token: action.token,
-      };
-    case "UPDATE_FAVORITES":
-      return {
-        ...state,
-        favorites: { ...state.favorites, ...action.favorites },
-      };
-    default:
-      return state;
-  }
-};
+const initActions = (set, get) => ({
+  setUser: ({
+    authenticated,
+    token,
+    id,
+    name,
+    email,
+    avatar,
+    stripeId,
+    country,
+    favorites,
+    intents,
+  }) => {
+    set((state) => ({
+      ...state,
+      authenticated,
+      token,
+      id,
+      name,
+      email,
+      avatar,
+      stripeId,
+      country,
+      favorites,
+      intents,
+    }));
+  },
+  updateUser: ({
+    token,
+    email,
+    avatar,
+    stripeId,
+    country,
+    favorites,
+    intents,
+  }) => {
+    set((state) => ({
+      ...state,
+      token,
+      email,
+      avatar,
+      stripeId,
+      country,
+      favorites,
+      intents,
+    }));
+  },
+  updateToken: ({ token }) => {
+    set((state) => ({
+      ...state,
+      token,
+    }));
+  },
+  updateFavorites: ({ favorites }) => {
+    set((state) => ({
+      ...state,
+      favorites: { ...state.favorites, ...favorites },
+    }));
+  },
+  resetUser: () => {
+    set({ ...initialState });
+  },
+});
 
-const useValue = ({ reducer, store }) => useReducer(reducer, store);
-export const { Provider, useTracked } = createContainer(useValue);
-
-// const User = ({ children, definedState }) => {
-//   const [state, dispatch] = useReducer(
-//     reducer,
-//     definedState ? definedState : store
-//   );
-
-//   return (
-//     <UserContext.Provider value={[state, dispatch]}>
-//       {children}
-//     </UserContext.Provider>
-//   );
-// };
-
-// export const UserContext = createContext({
-//   userStore: store,
-//   userDispatch: reducer,
-// });
-
-// export default User;
+export const useUserStore = create((set, get) => ({
+  ...initState(),
+  ...initActions(set, get),
+}));

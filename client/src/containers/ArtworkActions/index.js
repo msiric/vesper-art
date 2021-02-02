@@ -5,7 +5,7 @@ import FavoriteButton from "../../components/FavoriteButton/index.js";
 import IncrementCounter from "../../components/IncrementCounter";
 import ShareButton from "../../components/ShareButton/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import { useArtworkStore } from "../../contexts/local/artwork";
 import { useFavoritesStore } from "../../contexts/local/favorites.js";
 import { CardContent } from "../../styles/theme.js";
@@ -19,7 +19,9 @@ const ArtworkActions = ({ paramId }) => {
   const fetchFavorites = useFavoritesStore((state) => state.fetchFavorites);
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
 
-  const [userStore] = useUserContext();
+  const userId = useUserStore((state) => state.id);
+  const userFavorites = useUserStore((state) => state.favorites);
+
   const classes = artworkActionsStyles();
 
   useEffect(() => {
@@ -73,10 +75,10 @@ const ArtworkActions = ({ paramId }) => {
               alignItems: "center",
             }}
           >
-            {artwork.owner && artwork.owner.id !== userStore.id && (
+            {artwork.owner && artwork.owner.id !== userId && (
               <FavoriteButton
                 artwork={artwork}
-                favorited={userStore.favorites[artwork.id]}
+                favorited={userFavorites[artwork.id]}
                 labeled
                 handleCallback={toggleFavorite}
               />

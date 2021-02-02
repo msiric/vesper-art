@@ -7,7 +7,7 @@ import notificationSound from "../../assets/sounds/notification-sound.wav";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useAppStore } from "../../contexts/global/app.js";
 import { useTracked as useEventsContext } from "../../contexts/global/events.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import App from "../../pages/App/App.js";
 import { postLogout } from "../../services/user.js";
 
@@ -20,7 +20,12 @@ const Interceptor = ({ children }) => {
   const theme = useAppStore((state) => state.theme);
   const loading = useAppStore((state) => state.loading);
   const setApp = useAppStore((state) => state.setApp);
-  const [userStore, userDispatch] = useUserContext();
+
+  const userToken = useUserStore((state) => state.token);
+  const setUser = useUserStore((state) => state.setUser);
+  const updateUser = useUserStore((state) => state.updateUser);
+  const resetUser = useUserStore((state) => state.resetUser);
+
   const [eventsStore, eventsDispatch] = useEventsContext();
 
   const [playNotification] = useSound(notificationSound);
@@ -31,7 +36,7 @@ const Interceptor = ({ children }) => {
 
   const getRefreshToken = async () => {
     try {
-      if (!userStore.token) {
+      if (!userToken) {
         setApp({ loading: true, error: false, theme });
 
         const { data } = await axios.post("/api/auth/refresh_token", {
@@ -41,8 +46,7 @@ const Interceptor = ({ children }) => {
         });
 
         if (data.user) {
-          userDispatch({
-            type: "SET_USER",
+          setUser({
             authenticated: true,
             token: data.accessToken,
             id: data.user.id,
@@ -111,9 +115,7 @@ const Interceptor = ({ children }) => {
           error.response.message === "Forbidden"
         ) {
           await postLogout.request();
-          userDispatch({
-            type: "RESET_USER",
-          });
+          resetUser();
           history.push("/login");
 
           return new Promise((resolve, reject) => {
@@ -126,9 +128,7 @@ const Interceptor = ({ children }) => {
             credentials: "include",
           },
         });
-
-        userDispatch({
-          type: "UPDATE_USER",
+        updateUser({
           token: data.accessToken,
           email: data.user.email,
           avatar: data.user.avatar,
@@ -143,7 +143,6 @@ const Interceptor = ({ children }) => {
             return object;
           }, {}),
         });
-
         eventsDispatch({
           type: "UPDATE_EVENTS",
           messages: { items: [], count: data.user.messages },
@@ -185,9 +184,7 @@ const Interceptor = ({ children }) => {
           credentials: "include",
         },
       });
-
-      userDispatch({
-        type: "UPDATE_USER",
+      updateUser({
         token: data.accessToken,
         email: data.user.email,
         avatar: data.user.avatar,
@@ -208,9 +205,7 @@ const Interceptor = ({ children }) => {
       //   data: payload,
       // });
     } catch (err) {
-      userDispatch({
-        type: "RESET_USER",
-      });
+      resetUser();
     }
   };
 
@@ -233,12 +228,12 @@ const Interceptor = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    interceptTraffic(userStore.token);
+    interceptTraffic(userToken);
     return () => {
       axios.interceptors.request.eject(ax);
       axios.interceptors.response.eject(ax);
     };
-  }, [userStore.token]);
+  }, [userToken]);
 
   return loading ? <LoadingSpinner /> : <App socket={socket} />;
 };

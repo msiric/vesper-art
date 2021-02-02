@@ -20,7 +20,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import AddCommentForm from "../../forms/CommentForm/index.js";
 import { Typography } from "../../styles/theme.js";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";
@@ -38,7 +38,7 @@ const CommentCard = ({
   handlePopoverOpen,
   loading,
 }) => {
-  const [userStore, userDispatch] = useUserContext();
+  const userId = useUserStore((state) => state.id);
 
   const setDefaultValues = () => ({
     commentContent: comment.content,
@@ -168,7 +168,7 @@ const CommentCard = ({
             )
           }
         />
-        {edits[comment.id] || comment.owner.id !== userStore.id ? null : (
+        {edits[comment.id] || comment.owner.id !== userId ? null : (
           <ListItemSecondaryAction>
             <IconButton
               onClick={(e) =>

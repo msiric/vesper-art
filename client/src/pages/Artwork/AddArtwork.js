@@ -9,7 +9,7 @@ import { addArtwork, artworkValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import ArtworkForm from "../../forms/ArtworkForm/index.js";
 import { postArtwork } from "../../services/artwork.js";
 import { getUser } from "../../services/stripe.js";
@@ -20,7 +20,8 @@ import { deleteEmptyValues, formatValues } from "../../utils/helpers.js";
 const initialState = { loading: false, capabilities: {} };
 
 const AddArtwork = () => {
-  const [userStore] = useUserContext();
+  const stripeId = useUserStore((state) => state.stripeId);
+
   const [state, setState] = useState({ ...initialState });
 
   const {
@@ -56,7 +57,7 @@ const AddArtwork = () => {
   const fetchAccount = async () => {
     try {
       setState({ ...initialState, loading: true });
-      const { data } = await getUser.request({ stripeId: userStore.stripeId });
+      const { data } = await getUser.request({ stripeId: stripeId });
       setState((prevState) => ({
         ...prevState,
         loading: false,
@@ -89,7 +90,7 @@ const AddArtwork = () => {
   };
 
   useEffect(() => {
-    if (userStore.stripeId) fetchAccount();
+    if (stripeId) fetchAccount();
   }, []);
 
   return (
@@ -101,7 +102,7 @@ const AddArtwork = () => {
             className={globalClasses.mainHeading}
           />
           <Card width="100%">
-            {!userStore.stripeId ? (
+            {!stripeId ? (
               <HelpBox
                 type="alert"
                 label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'

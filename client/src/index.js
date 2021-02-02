@@ -6,21 +6,14 @@ import {
   eventsStore,
   Provider as EventsProvider,
 } from "./contexts/global/events.js";
-import {
-  Provider as UserProvider,
-  userReducer,
-  userStore,
-} from "./contexts/global/user.js";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker.js";
 
 ReactDOM.render(
   <React.StrictMode>
-    <UserProvider reducer={userReducer} store={userStore}>
-      <EventsProvider reducer={eventsReducer} store={eventsStore}>
-        <Interceptor />
-      </EventsProvider>
-    </UserProvider>
+    <EventsProvider reducer={eventsReducer} store={eventsStore}>
+      <Interceptor />
+    </EventsProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

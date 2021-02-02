@@ -4,13 +4,13 @@ import {
   FavoriteRounded as FavoritedIcon,
 } from "@material-ui/icons";
 import React, { useState } from "react";
-import { useTracked as useUserContext } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import { deleteFavorite, postFavorite } from "../../services/artwork.js";
 import favoriteButtonStyles from "./styles.js";
 
 const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
   const [state, setState] = useState({ loading: false });
-  const [userStore, userDispatch] = useUserContext();
+  const updateFavorites = useUserStore((state) => state.updateFavorites);
 
   const classes = favoriteButtonStyles();
 
@@ -18,8 +18,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
     try {
       setState({ loading: true });
       await postFavorite.request({ artworkId: id });
-      userDispatch({
-        type: "UPDATE_FAVORITES",
+      updateFavorites({
         favorites: {
           [id]: true,
         },
@@ -36,8 +35,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
     try {
       setState({ loading: true });
       await deleteFavorite.request({ artworkId: id });
-      userDispatch({
-        type: "UPDATE_FAVORITES",
+      updateFavorites({
         favorites: {
           [id]: false,
         },
