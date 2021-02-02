@@ -29,12 +29,9 @@ const IncrementCounter = ({ newValue = 0 }) => {
   };
 
   useEffect(() => {
-    handleInitialization();
-  }, []);
-
-  useEffect(() => {
     if (newValue < value) handleDecrement();
     if (newValue > value) handleIncrement();
+    if (newValue === value) handleInitialization();
   }, [newValue]);
 
   return (
