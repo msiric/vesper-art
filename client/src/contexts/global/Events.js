@@ -32,9 +32,10 @@ const initActions = (set, get) => ({
           typeof notifications.count !== "undefined"
             ? notifications.count
             : state.notifications.count,
-        opened: typeof notifications.opened
-          ? notifications.opened
-          : state.notifications.opened,
+        opened:
+          typeof notifications.opened !== "undefined"
+            ? notifications.opened
+            : state.notifications.opened,
         hasMore:
           typeof notifications.hasMore !== "undefined"
             ? notifications.hasMore
@@ -68,9 +69,10 @@ const initActions = (set, get) => ({
           typeof notifications.count !== "undefined"
             ? notifications.count
             : state.notifications.count,
-        opened: typeof notifications.opened
-          ? notifications.opened
-          : state.notifications.opened,
+        opened:
+          typeof notifications.opened !== "undefined"
+            ? notifications.opened
+            : state.notifications.opened,
         hasMore:
           typeof notifications.hasMore !== "undefined"
             ? notifications.hasMore
@@ -103,9 +105,10 @@ const initActions = (set, get) => ({
           typeof notifications.count !== "undefined"
             ? notifications.count
             : state.notifications.count,
-        opened: typeof notifications.opened
-          ? notifications.opened
-          : state.notifications.opened,
+        opened:
+          typeof notifications.opened !== "undefined"
+            ? notifications.opened
+            : state.notifications.opened,
         hasMore:
           typeof notifications.hasMore !== "undefined"
             ? notifications.hasMore
@@ -127,18 +130,28 @@ const initActions = (set, get) => ({
     }));
   },
   incrementNotification: ({ notification, cursor }) => {
-    set((state) => ({
-      ...state,
-      notifications: {
-        ...state.notifications,
-        items: state.notifications.opened
-          ? [notification].concat(state.notifications.items)
-          : state.notifications.items,
-        count: state.notifications.count + 1,
-        // $TODO still not implemented
-        cursor: state.notifications.opened ? cursor : "",
-      },
-    }));
+    set((state) => {
+      console.log(
+        "INCREMENT",
+        state.notifications,
+        notification,
+        state.notifications.items,
+        [notification].concat(state.notifications.items)
+      );
+
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
+          items: state.notifications.opened
+            ? [notification].concat(state.notifications.items)
+            : state.notifications.items,
+          count: state.notifications.count + 1,
+          // $TODO still not implemented
+          cursor: state.notifications.opened ? cursor : "",
+        },
+      };
+    });
   },
   updateSearch: ({ search }) => {
     set((state) => ({
