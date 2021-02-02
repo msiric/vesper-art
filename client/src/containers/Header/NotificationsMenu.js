@@ -2,7 +2,7 @@ import { Box, Divider, Grid, List, Menu, Typography } from "@material-ui/core";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
-import { useTracked as useEventsContext } from "../../contexts/global/events.js";
+import { useEventsStore } from "../../contexts/global/events.js";
 import NotificationItem from "./NotificationItem.js";
 import NotificationsMenuStyles from "./NotificationsMenu.style.js";
 
@@ -15,7 +15,8 @@ const NotificationsMenu = ({
   handleUnreadClick,
   loadMore,
 }) => {
-  const [eventsStore] = useEventsContext();
+  const notifications = useEventsStore((state) => state.notifications);
+
   const classes = NotificationsMenuStyles();
 
   return (
@@ -32,12 +33,11 @@ const NotificationsMenu = ({
       <InfiniteScroll
         height={400}
         className={classes.scroller}
-        dataLength={eventsStore.notifications.items.length}
+        dataLength={notifications.items.length}
         next={loadMore}
         hasMore={
-          eventsStore.notifications.hasMore &&
-          eventsStore.notifications.items.length <
-            eventsStore.notifications.limit
+          notifications.hasMore &&
+          notifications.items.length < notifications.limit
         }
         loader={
           <Grid item xs={12} className={classes.loader}>
@@ -45,15 +45,13 @@ const NotificationsMenu = ({
           </Grid>
         }
       >
-        {loading ||
-        (eventsStore.notifications.items &&
-          eventsStore.notifications.items.length) ? (
+        {loading || (notifications.items && notifications.items.length) ? (
           <List
             className={classes.root}
             style={{ width: "100%" }}
             disablePadding
           >
-            {eventsStore.notifications.items.map((notification, index) => (
+            {notifications.items.map((notification, index) => (
               <>
                 <Divider />
                 <NotificationItem
@@ -65,7 +63,7 @@ const NotificationsMenu = ({
                 <Divider />
               </>
             ))}
-            {eventsStore.notifications.items.length >= 50 && (
+            {notifications.items.length >= 50 && (
               <Box
                 style={{
                   display: "flex",

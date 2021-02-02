@@ -8,7 +8,7 @@ import SettingsActions from "../../containers/SettingsActions/index.js";
 import SettingsPreferences from "../../containers/SettingsPreferences/index.js";
 import SettingsProfile from "../../containers/SettingsProfile/index.js";
 import SettingsSecurity from "../../containers/SettingsSecurity/index.js";
-import { useTracked as useEventsContext } from "../../contexts/global/events.js";
+import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import {
   deleteUser,
@@ -33,7 +33,7 @@ const Settings = ({ location, socket }) => {
   const userId = useUserStore((state) => state.id);
   const resetUser = useUserStore((state) => state.resetUser);
 
-  const [eventsStore, eventsDispatch] = useEventsContext();
+  const resetEvents = useEventsStore((state) => state.resetEvents);
 
   const [state, setState] = useState({
     ...initialState,
@@ -59,9 +59,7 @@ const Settings = ({ location, socket }) => {
   const handleLogout = async () => {
     await postLogout.request();
     resetUser();
-    eventsDispatch({
-      type: "RESET_EVENTS",
-    });
+    resetEvents();
     // $TODO verify that socket is defined
     socket.disconnect();
     history.push("/login");

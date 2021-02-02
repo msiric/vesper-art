@@ -31,7 +31,7 @@ import { Link, withRouter } from "react-router-dom";
 import * as Yup from "yup";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import LogoMobile from "../../assets/images/logo/logo-mobile.svg";
-import { useTracked as useEventsContext } from "../../contexts/global/events.js";
+import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import SearchForm from "../../forms/SearchForm";
 import {
@@ -54,7 +54,15 @@ const Header = ({ socket, history }) => {
   const authenticated = useUserStore((state) => state.authenticated);
   const resetUser = useUserStore((state) => state.resetUser);
 
-  const [eventsStore, eventsDispatch] = useEventsContext();
+  const notifications = useEventsStore((state) => state.notifications);
+  const search = useEventsStore((state) => state.search);
+  const updateNotifications = useEventsStore(
+    (state) => state.updateNotifications
+  );
+  const updateLoading = useEventsStore((state) => state.updateLoading);
+  const updateSearch = useEventsStore((state) => state.updateSearch);
+  const resetEvents = useEventsStore((state) => state.resetEvents);
+
   const [state, setState] = useState({
     profile: { anchorEl: null, mobileAnchorEl: null },
     notifications: {
@@ -121,11 +129,8 @@ const Header = ({ socket, history }) => {
 
   const handleNotificationsMenuOpen = async (e) => {
     const target = e.currentTarget;
-    console.log(eventsStore);
-    if (
-      eventsStore.notifications.items.length < eventsStore.notifications.limit
-    ) {
-      if (!eventsStore.notifications.opened) {
+    if (notifications.items.length < notifications.limit) {
+      if (!notifications.opened) {
         setState((prevState) => ({
           ...prevState,
           notifications: {
@@ -137,19 +142,14 @@ const Header = ({ socket, history }) => {
         try {
           const { data } = await getNotifications.request({
             userId,
-            cursor: eventsStore.notifications.cursor,
-            limit: eventsStore.notifications.limit,
+            cursor: notifications.cursor,
+            limit: notifications.limit,
           });
-          eventsDispatch({
-            type: "UPDATE_NOTIFICATIONS",
+          updateNotifications({
             notifications: {
-              items: [...eventsStore.notifications.items].concat(
-                data.notifications
-              ),
+              items: [...notifications.items].concat(data.notifications),
               hasMore:
-                data.notifications.length < eventsStore.notifications.limit
-                  ? false
-                  : true,
+                data.notifications.length < notifications.limit ? false : true,
               cursor:
                 data.notifications[data.notifications.length - 1] &&
                 data.notifications[data.notifications.length - 1].id,
@@ -157,7 +157,7 @@ const Header = ({ socket, history }) => {
             },
           });
         } catch (err) {
-          console.log("error");
+          console.log("error", err);
         } finally {
           setState((prevState) => ({
             ...prevState,
@@ -202,9 +202,7 @@ const Header = ({ socket, history }) => {
       await postLogout.request();
 
       resetUser();
-      eventsDispatch({
-        type: "RESET_EVENTS",
-      });
+      resetEvents();
 
       socket.disconnect();
 
@@ -218,23 +216,21 @@ const Header = ({ socket, history }) => {
 
   const handleReadClick = async (id) => {
     try {
-      eventsDispatch({
-        type: "NOTIFICATION_SUBMITTING",
+      updateLoading({
         notifications: {
-          isSubmitting: true,
+          isLoading: true,
         },
       });
       await patchRead.request({ notificationId: id });
-      eventsDispatch({
-        type: "UPDATE_NOTIFICATIONS",
+      updateNotifications({
         notifications: {
-          items: eventsStore.notifications.items.map((notification) =>
+          items: notifications.items.map((notification) =>
             notification.id === id
               ? { ...notification, read: true }
               : notification
           ),
-          count: eventsStore.notifications.count - 1,
-          isSubmitting: false,
+          count: notifications.count - 1,
+          isLoading: false,
         },
       });
     } catch (err) {
@@ -244,23 +240,21 @@ const Header = ({ socket, history }) => {
 
   const handleUnreadClick = async (id) => {
     try {
-      eventsDispatch({
-        type: "NOTIFICATION_SUBMITTING",
+      updateLoading({
         notifications: {
-          isSubmitting: true,
+          isLoading: true,
         },
       });
       await patchUnread.request({ notificationId: id });
-      eventsDispatch({
-        type: "UPDATE_NOTIFICATIONS",
+      updateNotifications({
         notifications: {
-          items: eventsStore.notifications.items.map((notification) =>
+          items: notifications.items.map((notification) =>
             notification.id === id
               ? { ...notification, read: false }
               : notification
           ),
-          count: eventsStore.notifications.count + 1,
-          isSubmitting: false,
+          count: notifications.count + 1,
+          isLoading: false,
         },
       });
     } catch (err) {
@@ -278,19 +272,14 @@ const Header = ({ socket, history }) => {
     try {
       const { data } = await getNotifications.request({
         userId,
-        cursor: eventsStore.notifications.cursor,
-        limit: eventsStore.notifications.limit,
+        cursor: notifications.cursor,
+        limit: notifications.limit,
       });
-      eventsDispatch({
-        type: "UPDATE_NOTIFICATIONS",
+      updateNotifications({
         notifications: {
-          items: [...eventsStore.notifications.items].concat(
-            data.notifications
-          ),
+          items: [...notifications.items].concat(data.notifications),
           hasMore:
-            data.notifications.length < eventsStore.notifications.limit
-              ? false
-              : true,
+            data.notifications.length < notifications.limit ? false : true,
           cursor:
             data.notifications[data.notifications.length - 1] &&
             data.notifications[data.notifications.length - 1].id,
@@ -302,15 +291,14 @@ const Header = ({ socket, history }) => {
   };
 
   const handleToggle = () => {
-    eventsDispatch({
-      type: "UPDATE_SEARCH",
-      search: eventsStore.search === "artwork" ? "users" : "artwork",
+    updateSearch({
+      search: search === "artwork" ? "users" : "artwork",
     });
   };
 
   const onSubmit = async (values) => {
     try {
-      history.push(`/search?q=${values.searchInput}&t=${eventsStore.search}`);
+      history.push(`/search?q=${values.searchInput}&t=${search}`);
     } catch (err) {
       console.log(err);
     }
@@ -430,7 +418,7 @@ const Header = ({ socket, history }) => {
       </MenuItem> */}
       <MenuItem onClick={handleNotificationsMenuOpen}>
         <IconButton aria-label="Show notifications" color="inherit">
-          <Badge badgeContent={eventsStore.notifications.count} color="primary">
+          <Badge badgeContent={notifications.count} color="primary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -512,10 +500,7 @@ const Header = ({ socket, history }) => {
                   aria-label="Show notifications"
                   color="inherit"
                 >
-                  <Badge
-                    badgeContent={eventsStore.notifications.count}
-                    color="primary"
-                  >
+                  <Badge badgeContent={notifications.count} color="primary">
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
@@ -541,10 +526,7 @@ const Header = ({ socket, history }) => {
                   aria-label="Show notifications"
                   color="inherit"
                 >
-                  <Badge
-                    badgeContent={eventsStore.notifications.count}
-                    color="primary"
-                  >
+                  <Badge badgeContent={notifications.count} color="primary">
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>

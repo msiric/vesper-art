@@ -1,19 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Interceptor from "./containers/Interceptor/Interceptor.js";
-import {
-  eventsReducer,
-  eventsStore,
-  Provider as EventsProvider,
-} from "./contexts/global/events.js";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker.js";
 
 ReactDOM.render(
   <React.StrictMode>
-    <EventsProvider reducer={eventsReducer} store={eventsStore}>
-      <Interceptor />
-    </EventsProvider>
+    <Interceptor />
   </React.StrictMode>,
   document.getElementById("root")
 );

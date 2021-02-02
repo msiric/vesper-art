@@ -6,7 +6,7 @@ import useSound from "use-sound";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useAppStore } from "../../contexts/global/app.js";
-import { useTracked as useEventsContext } from "../../contexts/global/events.js";
+import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import App from "../../pages/App/App.js";
 import { postLogout } from "../../services/user.js";
@@ -26,7 +26,11 @@ const Interceptor = ({ children }) => {
   const updateUser = useUserStore((state) => state.updateUser);
   const resetUser = useUserStore((state) => state.resetUser);
 
-  const [eventsStore, eventsDispatch] = useEventsContext();
+  const setEvents = useEventsStore((state) => state.setEvents);
+  const updateEvents = useEventsStore((state) => state.updateEvents);
+  const incrementNotification = useEventsStore(
+    (state) => state.incrementNotification
+  );
 
   const [playNotification] = useSound(notificationSound);
 
@@ -64,12 +68,7 @@ const Interceptor = ({ children }) => {
               return object;
             }, {}),
           });
-          eventsDispatch({
-            type: "SET_EVENTS",
-            messages: {
-              items: [],
-              count: data.user.messages,
-            },
+          setEvents({
             notifications: {
               items: [],
               count: data.user.notifications,
@@ -143,12 +142,9 @@ const Interceptor = ({ children }) => {
             return object;
           }, {}),
         });
-        eventsDispatch({
-          type: "UPDATE_EVENTS",
-          messages: { items: [], count: data.user.messages },
+        updateEvents({
           notifications: { count: data.user.notifications },
         });
-
         const config = error.config;
         config.headers["Authorization"] = `Bearer ${data.accessToken}`;
 
@@ -169,11 +165,7 @@ const Interceptor = ({ children }) => {
   };
 
   const handleSocketNotification = (data) => {
-    eventsDispatch({
-      type: "ADD_NOTIFICATION",
-      notification: data,
-      cursor: data.id,
-    });
+    incrementNotification({ notification: data, cursor: data.id });
     playNotification();
   };
 

@@ -18,7 +18,7 @@ import {
 import React from "react";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
-import { useTracked as useEventsContext } from "../../contexts/global/events.js";
+import { useEventsStore } from "../../contexts/global/events.js";
 import { artepunktTheme } from "../../styles/theme.js";
 import NotificationItemStyles from "./NotificationItem.style.js";
 
@@ -28,7 +28,8 @@ const NotificationItem = ({
   handleReadClick,
   handleUnreadClick,
 }) => {
-  const [eventsStore] = useEventsContext();
+  const notifications = useEventsStore((state) => state.notifications);
+
   const classes = NotificationItemStyles();
 
   const data = {
@@ -97,7 +98,7 @@ const NotificationItem = ({
             }
             edge="end"
             aria-label={notification.read ? "Mark unread" : "Mark read"}
-            disabled={eventsStore.notifications.isSubmitting}
+            disabled={notifications.isLoading}
           >
             {notification.read ? <ReadIcon /> : <UnreadIcon />}
           </IconButton>

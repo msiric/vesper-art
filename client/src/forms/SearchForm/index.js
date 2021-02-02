@@ -5,7 +5,7 @@ import {
   SearchRounded as SearchIcon,
 } from "@material-ui/icons";
 import React from "react";
-import { useTracked as useEventsContext } from "../../contexts/global/events.js";
+import { useEventsStore } from "../../contexts/global/events.js";
 import InputBase from "../../controls/InputBase";
 
 const SearchForm = ({
@@ -16,22 +16,21 @@ const SearchForm = ({
   errors,
   other,
 }) => {
-  const [eventsStore, eventsDispatch] = useEventsContext();
+  const search = useEventsStore((state) => state.search);
+
   /* const classes = AddArtworkStyles(); */
   const classes = {};
 
   return (
     <Box>
       <IconButton
-        title={
-          eventsStore.search === "artwork" ? "Search artwork" : "Search users"
-        }
+        title={search === "artwork" ? "Search artwork" : "Search users"}
         onClick={handleToggle}
         className={classes.typeIcon}
         disableFocusRipple
         disableRipple
       >
-        {eventsStore.search === "artwork" ? <ArtworkIcon /> : <UserIcon />}
+        {search === "artwork" ? <ArtworkIcon /> : <UserIcon />}
       </IconButton>
       <InputBase
         name="searchInput"

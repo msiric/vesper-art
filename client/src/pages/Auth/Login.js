@@ -15,7 +15,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { loginValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
-import { useTracked as useEventsContext } from "../../contexts/global/events.js";
+import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import LoginForm from "../../forms/LoginForm/index.js";
 import { postLogin } from "../../services/auth.js";
@@ -36,7 +36,8 @@ const useStyles = makeStyles((theme) => ({
 const Login = () => {
   const setUser = useUserStore((state) => state.setUser);
 
-  const [eventsStore, eventsDispatch] = useEventsContext();
+  const notifications = useEventsStore((state) => state.notifications);
+  const setEvents = useEventsStore((state) => state.setEvents);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -74,11 +75,9 @@ const Login = () => {
             return object;
           }, {}),
         });
-        eventsDispatch({
-          type: "SET_EVENTS",
-          messages: { items: [], count: data.user.messages },
+        setEvents({
           notifications: {
-            ...eventsStore.notifications,
+            ...notifications,
             items: [],
             count: data.user.notifications,
             hasMore: true,
