@@ -10,7 +10,7 @@ import { useCommentsStore } from "../../contexts/local/comments";
 import { useFavoritesStore } from "../../contexts/local/favorites";
 import globalStyles from "../../styles/global.js";
 
-const ArtworkDetails = ({ match, location, socket }) => {
+const ArtworkDetails = ({ match, location }) => {
   const resetArtwork = useArtworkStore((state) => state.resetArtwork);
   const resetFavorites = useFavoritesStore((state) => state.resetFavorites);
   const resetComments = useCommentsStore((state) => state.resetComments);

@@ -14,7 +14,7 @@ import { postLogout } from "../../services/user.js";
 const ENDPOINT = "http://localhost:5000";
 
 const ax = axios.create();
-export let socket;
+export const socket = { instance: null, payload: null };
 
 const Interceptor = () => {
   const theme = useAppStore((state) => state.theme);
@@ -170,6 +170,7 @@ const Interceptor = () => {
   };
 
   const handleSocketRefresh = async (payload) => {
+    console.log("SOCKETT REFRESH");
     try {
       const { data } = await axios.post(`/api/auth/refresh_token`, {
         headers: {
@@ -196,26 +197,29 @@ const Interceptor = () => {
       //   token: `Bearer ${data.accessToken}`,
       //   data: payload,
       // });
+      socket.payload = payload;
     } catch (err) {
       resetUser();
     }
   };
 
   const handleSocket = (token) => {
-    socket = openSocket(ENDPOINT);
+    socket.instance = openSocket(ENDPOINT);
 
-    socket.emit("authenticateUser", {
+    socket.instance.emit("authenticateUser", {
       token: token ? `Bearer ${token}` : null,
+      data: socket.payload,
     });
-    socket.on("sendNotification", handleSocketNotification);
-    socket.on("expiredToken", handleSocketRefresh);
+    socket.payload = null;
+    socket.instance.on("sendNotification", handleSocketNotification);
+    socket.instance.on("expiredToken", handleSocketRefresh);
   };
 
   useEffect(() => {
     getRefreshToken();
     return () => {
-      socket.off("sendNotification", handleSocketNotification);
-      socket.off("expiredToken", handleSocketRefresh);
+      socket.instance.off("sendNotification", handleSocketNotification);
+      socket.instance.off("expiredToken", handleSocketRefresh);
     };
   }, []);
 
@@ -227,7 +231,7 @@ const Interceptor = () => {
     };
   }, [userToken]);
 
-  return loading ? <LoadingSpinner /> : <App socket={socket} />;
+  return loading ? <LoadingSpinner /> : <App />;
 };
 
 export { ax };

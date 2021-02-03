@@ -205,7 +205,7 @@ const Header = ({ history }) => {
       resetUser();
       resetEvents();
 
-      socket.disconnect();
+      socket.instance.disconnect();
 
       handleMenuClose();
 
