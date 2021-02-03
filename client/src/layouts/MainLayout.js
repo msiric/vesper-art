@@ -5,7 +5,7 @@ import Header from "../containers/Header/Header.js";
 import { useAppStore } from "../contexts/global/app.js";
 import MainLayoutStyles from "./MainLayout.style.js";
 
-const MainLayout = ({ socket, children }) => {
+const MainLayout = ({ children }) => {
   const loading = useAppStore((state) => state.loading);
 
   const classes = MainLayoutStyles();
@@ -18,7 +18,7 @@ const MainLayout = ({ socket, children }) => {
         </Backdrop>
       ) : (
         [
-          <Header socket={socket} />,
+          <Header />,
           <Box className={classes.appContainer}>{children}</Box>,
           <Footer />,
         ]

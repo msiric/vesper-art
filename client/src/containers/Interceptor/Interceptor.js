@@ -14,9 +14,9 @@ import { postLogout } from "../../services/user.js";
 const ENDPOINT = "http://localhost:5000";
 
 const ax = axios.create();
-let socket;
+export let socket;
 
-const Interceptor = ({ children }) => {
+const Interceptor = () => {
   const theme = useAppStore((state) => state.theme);
   const loading = useAppStore((state) => state.loading);
   const setApp = useAppStore((state) => state.setApp);

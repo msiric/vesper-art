@@ -40,6 +40,7 @@ import {
   patchUnread,
   postLogout,
 } from "../../services/user.js";
+import { socket } from "../Interceptor/Interceptor";
 import HeaderStyles from "./Header.style.js";
 import NotificationsMenu from "./NotificationsMenu.js";
 
@@ -47,7 +48,7 @@ const searchValidation = Yup.object().shape({
   searchInput: Yup.string().trim().required("Search input is required"),
 });
 
-const Header = ({ socket, history }) => {
+const Header = ({ history }) => {
   const userId = useUserStore((state) => state.id);
   const userUsername = useUserStore((state) => state.name);
   const stripeId = useUserStore((state) => state.stripeId);
