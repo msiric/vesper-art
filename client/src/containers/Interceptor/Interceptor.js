@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import useSound from "use-sound";
+import { global } from "../../../../common/constants";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useAppStore } from "../../contexts/global/app.js";
@@ -10,8 +11,6 @@ import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import App from "../../pages/App/App.js";
 import { postLogout } from "../../services/user.js";
-
-const ENDPOINT = "http://localhost:5000";
 
 const ax = axios.create();
 export const socket = { instance: null, payload: null };
@@ -204,7 +203,7 @@ const Interceptor = () => {
   };
 
   const handleSocket = (token) => {
-    socket.instance = openSocket(ENDPOINT);
+    socket.instance = openSocket(global.serverDomain);
 
     socket.instance.emit("authenticateUser", {
       token: token ? `Bearer ${token}` : null,

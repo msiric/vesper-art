@@ -23,14 +23,6 @@ export const postgres = {
   database: process.env.PG_DEV_DB_URL,
 };
 
-export const server = {
-  appName: process.env.APP,
-  clientDomain: process.env.DOMAIN || "http://localhost:3000",
-  serverDomain: process.env.DOMAIN || "http://localhost:5000",
-  stripeDomain: "https://connect.stripe.com",
-  port: process.env.PORT || 5000,
-};
-
 export const stripe = {
   secretKey: process.env.STRIPE_SECRET,
   publishableKey: process.env.STRIPE_PUBLISH,

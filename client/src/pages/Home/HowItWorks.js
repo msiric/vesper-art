@@ -1,6 +1,6 @@
 import { Button, Card, Container, Grid, Typography } from "@material-ui/core";
 import React from "react";
-import { app } from "../../../../common/constants.js";
+import { global } from "../../../../common/constants";
 import { ReactComponent as ArtworkGallery } from "../../assets/images/illustrations/artwork_gallery.svg";
 import { ReactComponent as BrowseArtwork } from "../../assets/images/illustrations/browse_artwork.svg";
 import { ReactComponent as DisplayCollection } from "../../assets/images/illustrations/display_collection.svg";
@@ -104,9 +104,9 @@ const HowItWorks = () => {
         <Grid item sm={12}>
           <MainHeading text="How it works" />
           <Typography>
-            {`${app.name} is a digital art marketplace that allows art lovers to view, download and purchase art from other artists while protecting both sides 
+            {`${global.appName} is a digital art marketplace that allows art lovers to view, download and purchase art from other artists while protecting both sides 
             by utilizing a system based on licenses as a means of transparency and non-repudiation while maintaining user anonymity.
-            Get up to speed with how ${app.name} works in six simple steps from the perspective of both parties involved`}
+            Get up to speed with how ${global.appName} works in six simple steps from the perspective of both parties involved`}
           </Typography>
         </Grid>
         <Grid item sm={12} md={6}>
@@ -139,8 +139,8 @@ const HowItWorks = () => {
           <Typography>
             Want to learn more? Click on one of the pages below
           </Typography>
-          <Button variant="outlined">{`Selling on ${app.name}`}</Button>
-          <Button variant="outlined">{`Buying on ${app.name}`}</Button>
+          <Button variant="outlined">{`Selling on ${global.appName}`}</Button>
+          <Button variant="outlined">{`Buying on ${global.appName}`}</Button>
         </Grid>
       </Grid>
     </Container>

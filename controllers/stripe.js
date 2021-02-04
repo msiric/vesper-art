@@ -3,9 +3,10 @@ import FormData from "form-data";
 import createError from "http-errors";
 import querystring from "querystring";
 import * as Yup from "yup";
+import { global } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
 import { licenseValidation, orderValidation } from "../common/validation";
-import { server, stripe as processor } from "../config/secret.js";
+import { stripe as processor } from "../config/secret.js";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
 import { fetchDiscountByCode } from "../services/postgres/discount.js";
@@ -279,7 +280,7 @@ export const redirectToStripe = async ({
     );
   const loginLink = await constructStripeLink({
     accountId,
-    serverDomain: server.serverDomain,
+    serverDomain: global.serverDomain,
   });
 
   return { url: loginLink.url };
@@ -299,7 +300,7 @@ export const onboardUser = async ({
   const parameters = {
     client_id: processor.clientId,
     state: sessionData.state,
-    redirect_uri: `${server.serverDomain}/stripe/token`,
+    redirect_uri: `${global.serverDomain}/stripe/token`,
     "stripe_user[business_type]": "individual",
     "stripe_user[business_name]": undefined,
     "stripe_user[first_name]": undefined,
@@ -354,7 +355,7 @@ export const assignStripeId = async ({
   sessionData.id = null;
   sessionData.name = null;
 
-  return { redirect: `${server.clientDomain}/user/${username}` };
+  return { redirect: `${global.clientDomain}/user/${username}` };
 };
 
 export const fetchIntentById = async ({ userId, intentId, connection }) => {
@@ -378,7 +379,7 @@ export const createPayout = async ({ userId, connection }) => {
     await constructStripePayout({
       payoutAmount: amount,
       payoutCurrency: currency,
-      payoutDescriptor: server.appName,
+      payoutDescriptor: global.appName,
       stripeId: foundUser.stripeId,
       connection,
     });
