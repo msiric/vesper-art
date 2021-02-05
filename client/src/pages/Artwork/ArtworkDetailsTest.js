@@ -30,7 +30,7 @@ const ArtworkDetails = ({ match, location }) => {
   };
 
   useEffect(() => {
-    return function cleanup() {
+    return () => {
       reinitializeState();
     };
   }, [location]);
