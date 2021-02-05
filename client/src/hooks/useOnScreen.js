@@ -10,9 +10,9 @@ const useOnScreen = (ref, shouldStop) => {
   useEffect(() => {
     if (ref.current) {
       observer.observe(ref.current);
-    }
-    if (shouldStop) {
-      observer.unobserve(ref.current);
+      if (shouldStop) {
+        observer.unobserve(ref.current);
+      }
     }
     return () => {
       observer.disconnect();

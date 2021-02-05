@@ -63,7 +63,7 @@ const initialState = {
   },
 };
 
-const ArtworkDetails = ({ match, location, socket }) => {
+const ArtworkDetails = ({ match, location }) => {
   const { artwork } = useArtworkStore(
     (state) => ({ artwork: state.artwork }),
     shallow

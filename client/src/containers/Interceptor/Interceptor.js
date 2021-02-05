@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import useSound from "use-sound";
+import { global } from "../../../../common/constants";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useAppStore } from "../../contexts/global/app.js";
@@ -11,12 +12,10 @@ import { useUserStore } from "../../contexts/global/user.js";
 import App from "../../pages/App/App.js";
 import { postLogout } from "../../services/user.js";
 
-const ENDPOINT = "http://localhost:5000";
-
 const ax = axios.create();
-let socket = openSocket(ENDPOINT);
+export const socket = { instance: null, payload: null };
 
-const Interceptor = ({ children }) => {
+const Interceptor = () => {
   const theme = useAppStore((state) => state.theme);
   const loading = useAppStore((state) => state.loading);
   const setApp = useAppStore((state) => state.setApp);
@@ -170,6 +169,7 @@ const Interceptor = ({ children }) => {
   };
 
   const handleSocketRefresh = async (payload) => {
+    console.log("SOCKETT REFRESH");
     try {
       const { data } = await axios.post(`/api/auth/refresh_token`, {
         headers: {
@@ -196,26 +196,29 @@ const Interceptor = ({ children }) => {
       //   token: `Bearer ${data.accessToken}`,
       //   data: payload,
       // });
+      socket.payload = payload;
     } catch (err) {
       resetUser();
     }
   };
 
   const handleSocket = (token) => {
-    socket = openSocket(ENDPOINT);
+    socket.instance = openSocket(global.serverDomain);
 
-    socket.emit("authenticateUser", {
+    socket.instance.emit("authenticateUser", {
       token: token ? `Bearer ${token}` : null,
+      data: socket.payload,
     });
-    socket.on("sendNotification", handleSocketNotification);
-    socket.on("expiredToken", handleSocketRefresh);
+    socket.payload = null;
+    socket.instance.on("sendNotification", handleSocketNotification);
+    socket.instance.on("expiredToken", handleSocketRefresh);
   };
 
   useEffect(() => {
     getRefreshToken();
     return () => {
-      socket.off("sendNotification", handleSocketNotification);
-      socket.off("expiredToken", handleSocketRefresh);
+      socket.instance.off("sendNotification", handleSocketNotification);
+      socket.instance.off("expiredToken", handleSocketRefresh);
     };
   }, []);
 
@@ -227,7 +230,7 @@ const Interceptor = ({ children }) => {
     };
   }, [userToken]);
 
-  return loading ? <LoadingSpinner /> : <App socket={socket} />;
+  return loading ? <LoadingSpinner /> : <App />;
 };
 
 export { ax };

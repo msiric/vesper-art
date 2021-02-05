@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import React from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import { app } from "../../../../common/constants.js";
+import { global } from "../../../../common/constants";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import footerStyles from "./styles.js";
 
@@ -81,14 +81,14 @@ const Footer = () => {
                     className={classes.footerLink}
                     component={RouterLink}
                     to="/start_selling"
-                  >{`Selling on ${app.name}`}</Typography>
+                  >{`Selling on ${global.appName}`}</Typography>
                 </ListItem>
                 <ListItem disableGutters>
                   <Typography
                     className={classes.footerLink}
                     component={RouterLink}
                     to="/start_buying"
-                  >{`Buying on ${app.name}`}</Typography>
+                  >{`Buying on ${global.appName}`}</Typography>
                 </ListItem>
                 <ListItem disableGutters>
                   <Typography

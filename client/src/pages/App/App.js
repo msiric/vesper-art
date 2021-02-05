@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const App = ({ socket }) => {
+const App = () => {
   const theme = useAppStore((state) => state.theme);
 
   const notistackRef = createRef();
@@ -105,7 +105,7 @@ const App = ({ socket }) => {
       >
         <SimpleReactLightbox>
           <CssBaseline />
-          <Router socket={socket} />
+          <Router />
         </SimpleReactLightbox>
       </SnackbarProvider>
     </ThemeProvider>

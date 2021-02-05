@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
+import { socket } from "../../containers/Interceptor/Interceptor";
 import SettingsAccount from "../../containers/SettingsAccount/index.js";
 import SettingsActions from "../../containers/SettingsActions/index.js";
 import SettingsPreferences from "../../containers/SettingsPreferences/index.js";
@@ -29,7 +30,7 @@ const initialState = {
   isDeactivating: false,
 };
 
-const Settings = ({ location, socket }) => {
+const Settings = ({ location }) => {
   const userId = useUserStore((state) => state.id);
   const resetUser = useUserStore((state) => state.resetUser);
 
@@ -61,7 +62,7 @@ const Settings = ({ location, socket }) => {
     resetUser();
     resetEvents();
     // $TODO verify that socket is defined
-    socket.disconnect();
+    socket.instance.disconnect();
     history.push("/login");
   };
 

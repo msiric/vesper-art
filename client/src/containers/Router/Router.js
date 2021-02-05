@@ -225,11 +225,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
           return (
             <AuthLayout>
               <Suspense fallback={<LoadingSpinner />}>
-                <Component
-                  key={props.location.key}
-                  socket={rest.socket}
-                  {...props}
-                />
+                <Component key={props.location.key} {...props} />
               </Suspense>
             </AuthLayout>
           );
@@ -260,13 +256,9 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
         }
       }
       return (
-        <MainLayout socket={rest.socket}>
+        <MainLayout>
           <Suspense fallback={<LoadingSpinner />}>
-            <Component
-              key={props.location.key}
-              socket={rest.socket}
-              {...props}
-            />
+            <Component key={props.location.key} {...props} />
           </Suspense>
         </MainLayout>
       );
@@ -274,7 +266,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   />
 );
 
-const AppRouter = ({ socket }) => {
+const AppRouter = () => {
   const userToken = useUserStore((state) => state.token);
 
   return (
@@ -286,7 +278,6 @@ const AppRouter = ({ socket }) => {
             <Switch location={location}>
               {routes.map(({ path, Component, exact, type }) => (
                 <AppRoute
-                  socket={socket}
                   token={userToken}
                   type={type}
                   path={path}

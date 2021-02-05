@@ -1,6 +1,7 @@
 import { Container, Grid, Typography } from "@material-ui/core";
 import React from "react";
-import { app, payment } from "../../../../common/constants.js";
+import { global } from "../../../../common/constants";
+import { payment } from "../../../../common/constants.js";
 import MainHeading from "../../components/MainHeading";
 import globalStyles from "../../styles/global.js";
 
@@ -15,7 +16,9 @@ const TrustAndSafety = () => {
           <Typography>Signing Up</Typography>
           <Typography>
             {`Signing up is free and required for users to start downloading and purchasing
-            art on ${app.name}. When you sign up, you will be able to download, 
+            art on ${
+              global.appName
+            }. When you sign up, you will be able to download, 
             purchase and upload your own artwork. 
             Your art can be published as preview only (users can only view without 
             downloading or purchasing), commercially available or free to download.
