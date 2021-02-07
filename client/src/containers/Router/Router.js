@@ -179,7 +179,7 @@ const routes = [
   // User router
   {
     path: "/user/:id",
-    Component: lazy(() => import("../../pages/User/Profile")),
+    Component: lazy(() => import("../../pages/User/ProfileTest")),
     exact: true,
     type: "public",
   },
