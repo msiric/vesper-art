@@ -43,8 +43,8 @@ const ArtworkDetails = ({ match, location }) => {
           <br />
           <CommentSection
             paramId={paramId}
-            commentsRef={commentsRef}
             highlightRef={highlightRef}
+            commentsRef={commentsRef}
             commentsFetched={commentsFetched}
           />
         </Grid>

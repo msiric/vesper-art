@@ -1,5 +1,5 @@
 import create from "zustand";
-import { getArtwork } from "../../services/user";
+import { getArtwork, getFavorites } from "../../services/user";
 import { resolvePaginationId } from "../../utils/helpers";
 
 const initialState = {
@@ -11,13 +11,35 @@ const initialState = {
     cursor: "",
     limit: 10,
   },
+  favorites: {
+    data: [],
+    loading: true,
+    error: false,
+    hasMore: true,
+    cursor: "",
+    limit: 10,
+  },
+  tabs: {
+    value: 0,
+    revealed: false,
+    loading: true,
+  },
 };
 
 const initState = () => ({ ...initialState });
 
-const initActions = (set) => ({
-  fetchArtwork: async ({ userId, cursor, limit }) => {
-    const { data } = await getArtwork.request({ userId, cursor, limit });
+const initActions = (set, get) => ({
+  fetchArtwork: async ({ userId }) => {
+    set((state) => ({
+      ...state,
+      artwork: { ...state.artwork, loading: true, error: false },
+    }));
+    const artwork = get().artwork;
+    const { data } = await getArtwork.request({
+      userId,
+      cursor: artwork.cursor,
+      limit: artwork.limit,
+    });
     set((state) => ({
       ...state,
       artwork: {
@@ -30,12 +52,43 @@ const initActions = (set) => ({
       },
     }));
   },
+  fetchFavorites: async ({ userId }) => {
+    set((state) => ({
+      ...state,
+      favorites: { ...state.favorites, loading: true, error: false },
+      tabs: { ...state.tabs, revealed: true },
+    }));
+    const favorites = get().favorites;
+    const { data } = await getFavorites.request({
+      userId,
+      cursor: favorites.cursor,
+      limit: favorites.limit,
+    });
+    set((state) => ({
+      ...state,
+      favorites: {
+        ...state.favorites,
+        data: [...state.favorites.data, ...data.favorites],
+        loading: false,
+        error: false,
+        hasMore: data.favorites.length < state.favorites.limit ? false : true,
+        cursor: resolvePaginationId(data.favorites),
+      },
+      tabs: { ...state.tabs, loading: false },
+    }));
+  },
+  changeTab: ({ index }) => {
+    set((state) => ({
+      ...state,
+      tabs: { ...state.tabs, value: index },
+    }));
+  },
   resetArtwork: () => {
     set({ ...initialState });
   },
 });
 
-export const useUserArtwork = create((set) => ({
+export const useUserArtwork = create((set, get) => ({
   ...initState(),
-  ...initActions(set),
+  ...initActions(set, get),
 }));

@@ -16,7 +16,7 @@ import ShareButton from "../ShareButton/index.js";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import profileBannerStyles from "./styles.js";
 
-const ProfileBanner = ({ user, andleModalOpen, loading }) => {
+const ProfileBanner = ({ profile, loading }) => {
   const classes = profileBannerStyles();
 
   return (
@@ -49,9 +49,9 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
           >
             <SkeletonWrapper loading={loading} variant="circle">
               <Avatar
-                alt={user.name}
-                src={user.source}
-                title={user.name}
+                alt={profile.name}
+                src={profile.source}
+                title={profile.name}
                 width={130}
                 height={130}
                 border={6}
@@ -79,7 +79,7 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
                 color="inherit"
                 style={{ fontWeight: "bold" }}
               >
-                {user.name}
+                {profile.name}
               </Typography>
             </SkeletonWrapper>
             <SkeletonWrapper loading={loading} height="20px" width="200px">
@@ -91,7 +91,7 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
                   marginTop: "-12px",
                 }}
               >
-                {user.rating > 0 && (
+                {profile.rating > 0 && (
                   <Box
                     style={{
                       display: "flex",
@@ -112,11 +112,11 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
                       component="p"
                       align="center"
                     >
-                      {user.rating}
+                      {profile.rating}
                     </Typography>
                   </Box>
                 )}
-                {user.country && (
+                {profile.country && (
                   <Box
                     style={{
                       display: "flex",
@@ -137,7 +137,7 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
                       component="p"
                       align="center"
                     >
-                      {user.country}
+                      {profile.country}
                     </Typography>
                   </Box>
                 )}
@@ -160,7 +160,7 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
                     component="p"
                     align="center"
                   >
-                    {!loading && formatDate(user.created, "MMM yy")}
+                    {!loading && formatDate(profile.created, "MMM yy")}
                   </Typography>
                 </Box>
               </Box>
@@ -173,7 +173,7 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
             marginTop="6px"
             flexGrow="1"
           >
-            <ShareButton link="" type="user" />
+            <ShareButton link="" type="profile" />
           </Box>
         </Box>
         <Box
@@ -199,7 +199,7 @@ const ProfileBanner = ({ user, andleModalOpen, loading }) => {
             height="40px"
           >
             <Typography variant="body2" color="inherit">
-              {user.description || "Nothing here yet"}
+              {profile.description || "Nothing here yet"}
             </Typography>
           </SkeletonWrapper>
         </Box>

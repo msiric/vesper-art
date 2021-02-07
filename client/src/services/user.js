@@ -1,8 +1,8 @@
 import { ax } from "../containers/Interceptor/Interceptor.js";
 
 export const getUser = {
-  request: async ({ userUsername, cursor, limit }) =>
-    await ax.get(`/api/users/${userUsername}?cursor=${cursor}&limit=${limit}`),
+  request: async ({ userUsername }) =>
+    await ax.get(`/api/users/${userUsername}`),
   success: { message: "User successfully fetched", variant: "success" },
   error: { message: "Failed to fetch user", variant: "error" },
 };
