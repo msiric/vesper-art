@@ -62,6 +62,7 @@ router
 router
   .route("/users/:userId/artwork")
   // $TODO not tested
+  // $TODO needs authentication when going to my_artwork
   .get(
     handler(getUserArtwork, false, (req, res, next) => ({
       ...req.params,

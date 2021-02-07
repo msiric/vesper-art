@@ -16,6 +16,12 @@ const initialState = {
   tabs: {
     value: 0,
   },
+  scroll: {
+    hasMore: true,
+    cursor: "",
+    limit: 10,
+    retry: false,
+  },
 };
 
 const initState = () => ({

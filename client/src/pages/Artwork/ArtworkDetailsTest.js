@@ -7,7 +7,7 @@ import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
 import CommentSection from "../../containers/CommentSection/index.js";
 import { useArtworkStore } from "../../contexts/local/artwork";
 import { useCommentsStore } from "../../contexts/local/comments";
-import { useFavoritesStore } from "../../contexts/local/favorites";
+import { useArtworkFavorites as useFavoritesStore } from "../../contexts/local/favorites";
 import globalStyles from "../../styles/global.js";
 
 const ArtworkDetails = ({ match, location }) => {

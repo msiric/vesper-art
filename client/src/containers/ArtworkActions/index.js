@@ -7,7 +7,7 @@ import ShareButton from "../../components/ShareButton/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useArtworkStore } from "../../contexts/local/artwork";
-import { useFavoritesStore } from "../../contexts/local/favorites.js";
+import { useArtworkFavorites as useFavoritesStore } from "../../contexts/local/favorites";
 import { CardContent } from "../../styles/theme.js";
 import artworkActionsStyles from "./styles.js";
 
