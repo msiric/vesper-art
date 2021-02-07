@@ -3,14 +3,14 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import { useArtworkStore } from "../../contexts/local/artwork";
+import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import { Typography } from "../../styles/theme.js";
 import artworkPreviewStyles from "./styles.js";
 
 const ArtworkPreview = ({ paramId }) => {
-  const version = useArtworkStore((state) => state.artwork.data.current);
-  const loading = useArtworkStore((state) => state.artwork.loading);
-  const fetchArtwork = useArtworkStore((state) => state.fetchArtwork);
+  const version = useArtworkDetails((state) => state.artwork.data.current);
+  const loading = useArtworkDetails((state) => state.artwork.loading);
+  const fetchArtwork = useArtworkDetails((state) => state.fetchArtwork);
 
   const history = useHistory();
 

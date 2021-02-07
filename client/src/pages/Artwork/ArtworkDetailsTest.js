@@ -5,13 +5,13 @@ import ArtworkActions from "../../containers/ArtworkActions/index.js";
 import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
 import CommentSection from "../../containers/CommentSection/index.js";
-import { useArtworkStore } from "../../contexts/local/artwork";
+import { useArtworkDetails } from "../../contexts/local/artworkDetails";
+import { useArtworkFavorites as useFavoritesStore } from "../../contexts/local/artworkFavorites";
 import { useCommentsStore } from "../../contexts/local/comments";
-import { useArtworkFavorites as useFavoritesStore } from "../../contexts/local/favorites";
 import globalStyles from "../../styles/global.js";
 
 const ArtworkDetails = ({ match, location }) => {
-  const resetArtwork = useArtworkStore((state) => state.resetArtwork);
+  const resetArtwork = useArtworkDetails((state) => state.resetArtwork);
   const resetFavorites = useFavoritesStore((state) => state.resetFavorites);
   const resetComments = useCommentsStore((state) => state.resetComments);
   const paramId = match.params.id;

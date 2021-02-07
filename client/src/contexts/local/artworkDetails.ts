@@ -16,17 +16,9 @@ const initialState = {
   tabs: {
     value: 0,
   },
-  scroll: {
-    hasMore: true,
-    cursor: "",
-    limit: 10,
-    retry: false,
-  },
 };
 
-const initState = () => ({
-  ...initialState,
-});
+const initState = () => ({ ...initialState });
 
 const initActions = (set) => ({
   fetchArtwork: async ({ artworkId }) => {
@@ -96,7 +88,7 @@ const initActions = (set) => ({
   },
 });
 
-export const useArtworkStore = create((set) => ({
+export const useArtworkDetails = create((set) => ({
   ...initState(),
   ...initActions(set),
 }));

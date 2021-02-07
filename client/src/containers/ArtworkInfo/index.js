@@ -8,22 +8,22 @@ import PricingCard from "../../components/PricingCard/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
 import SwipeCard from "../../components/SwipeCard/index.js";
 import { useUserStore } from "../../contexts/global/user";
-import { useArtworkStore } from "../../contexts/local/artwork";
+import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import { CardContent, Typography } from "../../styles/theme.js";
 import artworkInfoStyles from "./styles.js";
 
 const ArtworkInfo = () => {
-  const artwork = useArtworkStore((state) => state.artwork.data);
-  const loading = useArtworkStore((state) => state.artwork.loading);
-  const license = useArtworkStore((state) => state.license);
-  const tabs = useArtworkStore((state) => state.tabs);
-  const modal = useArtworkStore((state) => state.modal);
-  const downloadArtwork = useArtworkStore((state) => state.downloadArtwork);
-  const purchaseArtwork = useArtworkStore((state) => state.purchaseArtwork);
-  const openModal = useArtworkStore((state) => state.openModal);
-  const closeModal = useArtworkStore((state) => state.closeModal);
-  const changeTab = useArtworkStore((state) => state.changeTab);
+  const artwork = useArtworkDetails((state) => state.artwork.data);
+  const loading = useArtworkDetails((state) => state.artwork.loading);
+  const license = useArtworkDetails((state) => state.license);
+  const tabs = useArtworkDetails((state) => state.tabs);
+  const modal = useArtworkDetails((state) => state.modal);
+  const downloadArtwork = useArtworkDetails((state) => state.downloadArtwork);
+  const purchaseArtwork = useArtworkDetails((state) => state.purchaseArtwork);
+  const openModal = useArtworkDetails((state) => state.openModal);
+  const closeModal = useArtworkDetails((state) => state.closeModal);
+  const changeTab = useArtworkDetails((state) => state.changeTab);
 
   const userId = useUserStore((state) => state.id);
 

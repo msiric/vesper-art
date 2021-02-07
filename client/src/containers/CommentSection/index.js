@@ -14,7 +14,7 @@ import EmptySection from "../../components/EmptySection/index.js";
 import InfiniteList from "../../components/InfiniteList";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { useUserStore } from "../../contexts/global/user";
-import { useArtworkStore } from "../../contexts/local/artwork";
+import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import { useCommentsStore } from "../../contexts/local/comments";
 import AddCommentForm from "../../forms/CommentForm/index.js";
 import useOnScreen from "../../hooks/useOnScreen";
@@ -27,8 +27,8 @@ const CommentSection = ({
   highlightRef,
   commentsFetched,
 }) => {
-  const artworkId = useArtworkStore((state) => state.artwork.data.id);
-  const artworkOwnerId = useArtworkStore(
+  const artworkId = useArtworkDetails((state) => state.artwork.data.id);
+  const artworkOwnerId = useArtworkDetails(
     (state) => state.artwork.data.owner.id
   );
 

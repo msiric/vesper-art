@@ -6,13 +6,13 @@ import IncrementCounter from "../../components/IncrementCounter";
 import ShareButton from "../../components/ShareButton/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
-import { useArtworkStore } from "../../contexts/local/artwork";
-import { useArtworkFavorites as useFavoritesStore } from "../../contexts/local/favorites";
+import { useArtworkDetails } from "../../contexts/local/artworkDetails";
+import { useArtworkFavorites as useFavoritesStore } from "../../contexts/local/artworkFavorites";
 import { CardContent } from "../../styles/theme.js";
 import artworkActionsStyles from "./styles.js";
 
 const ArtworkActions = ({ paramId }) => {
-  const artwork = useArtworkStore((state) => state.artwork.data);
+  const artwork = useArtworkDetails((state) => state.artwork.data);
 
   const favorites = useFavoritesStore((state) => state.favorites.data);
   const loading = useFavoritesStore((state) => state.favorites.loading);

@@ -1,12 +1,12 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import ProfileCard from "../../components/ProfileCard/index.js";
-import { useArtworkStore } from "../../contexts/local/artwork";
+import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import artistSectionStyles from "./styles.js";
 
 const ArtistSection = () => {
-  const owner = useArtworkStore((state) => state.artwork.data.owner);
-  const loading = useArtworkStore((state) => state.artwork.loading);
+  const owner = useArtworkDetails((state) => state.artwork.data.owner);
+  const loading = useArtworkDetails((state) => state.artwork.loading);
 
   const classes = artistSectionStyles();
 

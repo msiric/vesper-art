@@ -20,7 +20,7 @@ import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
 import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
 import CommentSection from "../../containers/CommentSection/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
-import { useArtworkStore } from "../../contexts/local/artwork";
+import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import useOnScreen from "../../hooks/useOnScreen.js";
 import {
@@ -64,7 +64,7 @@ const initialState = {
 };
 
 const ArtworkDetails = ({ match, location }) => {
-  const { artwork } = useArtworkStore(
+  const { artwork } = useArtworkDetails(
     (state) => ({ artwork: state.artwork }),
     shallow
   );
