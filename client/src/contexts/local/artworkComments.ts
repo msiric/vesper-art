@@ -290,7 +290,7 @@ const initActions = (set, get) => ({
   },
 });
 
-export const useCommentsStore = create((set, get) => ({
+export const useArtworkComments = create((set, get) => ({
   ...initState(),
   ...initActions(set, get),
 }));

@@ -14,8 +14,8 @@ import EmptySection from "../../components/EmptySection/index.js";
 import InfiniteList from "../../components/InfiniteList";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { useUserStore } from "../../contexts/global/user";
+import { useArtworkComments } from "../../contexts/local/artworkComments";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
-import { useCommentsStore } from "../../contexts/local/comments";
 import AddCommentForm from "../../forms/CommentForm/index.js";
 import useOnScreen from "../../hooks/useOnScreen";
 import { List, Typography } from "../../styles/theme.js";
@@ -32,20 +32,20 @@ const CommentSection = ({
     (state) => state.artwork.data.owner.id
   );
 
-  const comments = useCommentsStore((state) => state.comments.data);
-  const loading = useCommentsStore((state) => state.comments.loading);
-  const edits = useCommentsStore((state) => state.edits);
-  const popover = useCommentsStore((state) => state.popover);
-  const highlight = useCommentsStore((state) => state.highlight);
-  const scroll = useCommentsStore((state) => state.scroll);
-  const fetchComments = useCommentsStore((state) => state.fetchComments);
-  const addComment = useCommentsStore((state) => state.addComment);
-  const updateComment = useCommentsStore((state) => state.updateComment);
-  const deleteComment = useCommentsStore((state) => state.deleteComment);
-  const openComment = useCommentsStore((state) => state.openComment);
-  const closeComment = useCommentsStore((state) => state.closeComment);
-  const openPopover = useCommentsStore((state) => state.openPopover);
-  const closePopover = useCommentsStore((state) => state.closePopover);
+  const comments = useArtworkComments((state) => state.comments.data);
+  const loading = useArtworkComments((state) => state.comments.loading);
+  const edits = useArtworkComments((state) => state.edits);
+  const popover = useArtworkComments((state) => state.popover);
+  const highlight = useArtworkComments((state) => state.highlight);
+  const scroll = useArtworkComments((state) => state.scroll);
+  const fetchComments = useArtworkComments((state) => state.fetchComments);
+  const addComment = useArtworkComments((state) => state.addComment);
+  const updateComment = useArtworkComments((state) => state.updateComment);
+  const deleteComment = useArtworkComments((state) => state.deleteComment);
+  const openComment = useArtworkComments((state) => state.openComment);
+  const closeComment = useArtworkComments((state) => state.closeComment);
+  const openPopover = useArtworkComments((state) => state.openPopover);
+  const closePopover = useArtworkComments((state) => state.closePopover);
 
   const userId = useUserStore((state) => state.id);
   const userUsername = useUserStore((state) => state.name);
