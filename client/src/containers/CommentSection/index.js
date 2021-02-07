@@ -34,10 +34,11 @@ const CommentSection = ({
 
   const comments = useArtworkComments((state) => state.comments.data);
   const loading = useArtworkComments((state) => state.comments.loading);
+  const error = useArtworkComments((state) => state.comments.error);
   const edits = useArtworkComments((state) => state.edits);
   const popover = useArtworkComments((state) => state.popover);
   const highlight = useArtworkComments((state) => state.highlight);
-  const scroll = useArtworkComments((state) => state.scroll);
+  const hasMore = useArtworkComments((state) => state.comments.hasMore);
   const fetchComments = useArtworkComments((state) => state.fetchComments);
   const addComment = useArtworkComments((state) => state.addComment);
   const updateComment = useArtworkComments((state) => state.updateComment);
@@ -125,7 +126,7 @@ const CommentSection = ({
 
         <br />
         <Divider />
-        {loading || comments.length ? (
+        {loading || error || comments.length ? (
           <InfiniteList
             style={{ overflow: "hidden" }}
             className={classes.scroller}
@@ -133,10 +134,10 @@ const CommentSection = ({
             next={() =>
               fetchComments({ artworkId, query, highlightRef, enqueueSnackbar })
             }
-            hasMore={scroll.hasMore}
+            hasMore={hasMore}
             loading={loading}
             loader={<LoadingSpinner />}
-            error={scroll.retry}
+            error={error}
           >
             <List
               ref={commentsRef}

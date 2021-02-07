@@ -10,18 +10,19 @@ import {
 import { resolvePaginationId } from "../../utils/helpers";
 
 const initialState = {
-  comments: { data: [], loading: true, error: false },
+  comments: {
+    data: [],
+    loading: true,
+    error: false,
+    hasMore: true,
+    cursor: "",
+    limit: 10,
+  },
   edits: {},
   popover: {
     id: null,
     anchorEl: null,
     open: false,
-  },
-  scroll: {
-    hasMore: true,
-    cursor: "",
-    limit: 10,
-    retry: false,
   },
   highlight: {
     retrieved: false,
@@ -62,7 +63,7 @@ const resolveHighlight = async (
   let foundHighlight = false;
   let fetchedHighlight = { ...highlight };
   if (query.notif === "comment" && query.ref) {
-    if (comments.length) {
+    if (comments.data.length) {
       foundHighlight = highlight.fetched
         ? !!data.find((comment) => comment.id === query.ref)
         : false;
@@ -104,18 +105,13 @@ const initActions = (set, get) => ({
       set((state) => ({
         ...state,
         comments: { ...state.comments, loading: true, error: false },
-        scroll: {
-          ...state.scroll,
-          retry: false,
-        },
       }));
-      const comments = get().comments.data;
-      const scroll = get().scroll;
+      const comments = get().comments;
       const highlight = get().highlight;
       const { data } = await getComments.request({
         artworkId,
-        cursor: scroll.cursor,
-        limit: scroll.limit,
+        cursor: comments.cursor,
+        limit: comments.limit,
       });
       const {
         highlightData,
@@ -132,15 +128,12 @@ const initActions = (set, get) => ({
       set((state) => ({
         ...state,
         comments: {
+          ...state.comments,
           data: [...state.comments.data, ...data.comments],
           loading: false,
           error: false,
-        },
-        scroll: {
-          ...state.scroll,
-          hasMore: data.comments.length < state.scroll.limit ? false : true,
+          hasMore: data.comments.length < state.comments.limit ? false : true,
           cursor: resolvePaginationId(data.comments),
-          retry: false,
         },
         highlight: { ...highlightData },
       }));
@@ -148,24 +141,14 @@ const initActions = (set, get) => ({
         scrollToHighlight(highlightRef);
       }
     } catch (err) {
-      if (get().comments.data.length) {
-        set((state) => ({
-          ...state,
-          scroll: {
-            ...state.scroll,
-            retry: true,
-          },
-        }));
-      } else {
-        set((state) => ({
-          ...state,
-          comments: {
-            ...state.comments,
-            loading: false,
-            error: true,
-          },
-        }));
-      }
+      set((state) => ({
+        ...state,
+        comments: {
+          ...state.comments,
+          loading: false,
+          error: true,
+        },
+      }));
     }
   },
   addComment: async ({ artworkId, userData, values, reset }) => {
@@ -189,9 +172,6 @@ const initActions = (set, get) => ({
             },
             ...state.comments.data,
           ],
-        },
-        scroll: {
-          ...state.scroll,
           cursor: data.payload.id,
         },
       }));
