@@ -3,9 +3,19 @@ import { formatDate } from "../../../../common/helpers.js";
 import Datatable from "../../components/DataTable/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import SubHeading from "../../components/SubHeading/index.js";
+import { useUserStore } from "../../contexts/global/user.js";
+import { useOrderDetails } from "../../contexts/local/orderDetails";
 import orderCardStyles from "./styles.js";
 
-const OrderCard = ({ order, isSeller, loading }) => {
+const OrderCard = () => {
+  const userId = useUserStore((state) => state.id);
+
+  const order = useOrderDetails((state) => state.order.data);
+  const seller = useOrderDetails((state) => state.order.data.seller);
+  const loading = useOrderDetails((state) => state.order.loading);
+
+  const isSeller = () => seller.id === userId;
+
   const classes = orderCardStyles();
 
   return (

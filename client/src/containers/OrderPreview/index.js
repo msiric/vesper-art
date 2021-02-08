@@ -4,10 +4,21 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import { useUserStore } from "../../contexts/global/user.js";
+import { useOrderDetails } from "../../contexts/local/orderDetails";
 import { Typography } from "../../styles/theme.js";
 import orderPreviewStyles from "./styles.js";
 
-const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
+const OrderPreview = ({ paramId }) => {
+  const userId = useUserStore((state) => state.id);
+
+  const buyer = useOrderDetails((state) => state.order.data.buyer);
+  const version = useOrderDetails((state) => state.order.data.version);
+  const loading = useOrderDetails((state) => state.order.loading);
+  const downloadArtwork = useOrderDetails((state) => state.downloadArtwork);
+
+  const shouldDownload = () => userId === buyer.id;
+
   const history = useHistory();
   const classes = orderPreviewStyles();
 
@@ -55,7 +66,7 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
           </Typography>
         </SkeletonWrapper>
       </Box>
-      {shouldDownload && (
+      {shouldDownload() && (
         <Box>
           <Divider />
           <Box p={2} display="flex" justifyContent="space-between">
@@ -66,7 +77,7 @@ const OrderPreview = ({ version, handleDownload, shouldDownload, loading }) => {
               <Button
                 variant="outlined"
                 startIcon={<DownloadIcon />}
-                onClick={handleDownload}
+                onClick={() => downloadArtwork({ orderId: paramId, userId })}
               >
                 Download
               </Button>

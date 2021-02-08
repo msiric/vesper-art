@@ -11,18 +11,24 @@ import {
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
+import { useUserStore } from "../../contexts/global/user.js";
+import { useOrderDetails } from "../../contexts/local/orderDetails";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import profileCardStyles from "./styles.js";
 
-const ProfileCard = ({ user, styles, loading }) => {
+const ProfileCard = () => {
+  const userId = useUserStore((state) => state.id);
+
+  const buyer = useOrderDetails((state) => state.order.data.buyer);
+  const seller = useOrderDetails((state) => state.order.data.seller);
+  const loading = useOrderDetails((state) => state.order.loading);
+
+  const user = buyer.id === userId ? buyer : seller;
+
   const classes = profileCardStyles();
 
   return (
-    <Card
-      className={classes.profileCardContainer}
-      style={{ ...styles }}
-      loading={loading}
-    >
+    <Card className={classes.profileCardContainer} loading={loading}>
       <SkeletonWrapper
         loading={loading}
         variant="circle"

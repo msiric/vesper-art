@@ -18,10 +18,18 @@ const initialState = {
   },
 };
 
+const scrollToHighlight = (highlightRef) => {
+  if (highlightRef.current)
+    highlightRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+};
+
 const initState = () => ({ ...initialState });
 
 const initActions = (set, get) => ({
-  fetchOrder: async ({ orderId }) => {
+  fetchOrder: async ({ orderId, query, highlightRef }) => {
     const { data } = await getOrder.request({
       orderId,
     });
@@ -29,6 +37,9 @@ const initActions = (set, get) => ({
       ...state,
       order: { data: data.order, loading: false, error: false },
     }));
+    if (query && query.notif === "review") {
+      scrollToHighlight(highlightRef);
+    }
   },
   downloadArtwork: async ({ orderId }) => {
     const { data } = await getDownload.request({ orderId });
