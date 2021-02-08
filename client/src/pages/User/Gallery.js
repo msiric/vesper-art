@@ -22,7 +22,12 @@ import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import GalleryPanel from "../../containers/GalleryPanel/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { getDownload } from "../../services/orders.js";
-import { getArtwork, getMedia, getOwnership } from "../../services/user.js";
+import {
+  getArtwork,
+  getMedia,
+  getOwnership,
+  getUploads,
+} from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
@@ -151,7 +156,7 @@ const Gallery = ({ match, location }) => {
               cursor: state.scroll.artwork.cursor,
               limit: state.scroll.artwork.limit,
             })
-          : await getArtwork.request({
+          : await getUploads.request({
               userId,
               cursor: state.scroll.artwork.cursor,
               limit: state.scroll.artwork.limit,

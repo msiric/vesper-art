@@ -29,14 +29,14 @@ const initialState = {
 const initState = () => ({ ...initialState });
 
 const initActions = (set, get) => ({
-  fetchArtwork: async ({ userId }) => {
+  fetchArtwork: async ({ userUsername }) => {
     set((state) => ({
       ...state,
       artwork: { ...state.artwork, loading: true, error: false },
     }));
     const artwork = get().artwork;
     const { data } = await getArtwork.request({
-      userId,
+      userUsername,
       cursor: artwork.cursor,
       limit: artwork.limit,
     });
@@ -52,7 +52,7 @@ const initActions = (set, get) => ({
       },
     }));
   },
-  fetchFavorites: async ({ userId }) => {
+  fetchFavorites: async ({ userUsername }) => {
     set((state) => ({
       ...state,
       favorites: { ...state.favorites, loading: true, error: false },
@@ -60,7 +60,7 @@ const initActions = (set, get) => ({
     }));
     const favorites = get().favorites;
     const { data } = await getFavorites.request({
-      userId,
+      userUsername,
       cursor: favorites.cursor,
       limit: favorites.limit,
     });

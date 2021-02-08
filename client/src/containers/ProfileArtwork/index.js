@@ -12,9 +12,9 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const profile = useUserProfile((state) => state.profile.data);
   const tabs = useUserArtwork((state) => state.tabs);
   const artwork = useUserArtwork((state) => state.artwork.data);
-  const artworkLoading = useUserArtwork((state) => state.artwork.data);
+  const artworkLoading = useUserArtwork((state) => state.artwork.loading);
   const favorites = useUserArtwork((state) => state.favorites.data);
-  const favoritesLoading = useUserArtwork((state) => state.favorites.data);
+  const favoritesLoading = useUserArtwork((state) => state.favorites.loading);
   const fetchArtwork = useUserArtwork((state) => state.fetchArtwork);
   const fetchFavorites = useUserArtwork((state) => state.fetchFavorites);
   const changeTab = useUserArtwork((state) => state.changeTab);
@@ -25,7 +25,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   useEffect(() => {
     if (!artworkFetched.current && isVisible) {
       fetchArtwork({
-        userId: paramId,
+        userUsername: paramId,
       });
       artworkFetched.current = true;
     }
@@ -34,10 +34,12 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   useEffect(() => {
     if (!tabs.revealed && tabs.value === 1) {
       fetchFavorites({
-        userId: paramId,
+        userUsername: paramId,
       });
     }
   }, [tabs.value]);
+
+  console.log("ARTORKKKK", artwork);
 
   return (
     <Grid item xs={12} className={classes.grid}>
@@ -129,8 +131,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
             ],
           }}
           handleTabsChange={changeTab}
-          handleChangeIndex={changeTab}
-          loading={favoritesLoading}
+          loading={artworkLoading}
         />
       </Paper>
     </Grid>

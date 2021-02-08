@@ -118,6 +118,26 @@ export const fetchUserById = async ({ userId, connection }) => {
   return foundUser;
 };
 
+export const fetchUserByUsername = async ({ userUsername, connection }) => {
+  const foundUser = await connection
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .select([
+      ...USER_ESSENTIAL_INFO,
+      ...USER_STRIPE_INFO,
+      ...USER_DETAILED_INFO,
+      ...USER_VERIFICATION_INFO,
+    ])
+    .leftJoinAndSelect("user.avatar", "avatar")
+    .where("user.name = :userUsername AND user.active = :active", {
+      userUsername,
+      active: USER_ACTIVE_STATUS,
+    })
+    .getOne();
+  console.log(foundUser);
+  return foundUser;
+};
+
 // $Needs testing (mongo -> postgres)
 export const fetchUserByEmail = async ({ userEmail, connection }) => {
   const foundUser = await connection
@@ -367,6 +387,7 @@ export const fetchUserArtwork = async ({
     .createQueryBuilder("artwork");
   const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("version.cover", "cover")
     .where(
       `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 

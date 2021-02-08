@@ -5,13 +5,7 @@ import LoadingSpinner from "../LoadingSpinner";
 import SkeletonWrapper from "../SkeletonWrapper/index";
 import swipeCardStyles from "./styles";
 
-const SwipeCard = ({
-  tabs,
-  handleTabsChange,
-  handleChangeIndex,
-  margin,
-  loading,
-}) => {
+const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
   const classes = swipeCardStyles();
 
   return (
@@ -24,7 +18,7 @@ const SwipeCard = ({
         <SkeletonWrapper loading={loading} width="100%" height="100%">
           <Tabs
             value={tabs.value}
-            onChange={handleTabsChange}
+            onChange={(e, value) => handleTabsChange({ index: value })}
             indicatorColor="primary"
             textColor="primary"
             variant="fullWidth"
@@ -43,7 +37,7 @@ const SwipeCard = ({
         <SwipeableViews
           axis="x"
           index={tabs.value}
-          onChangeIndex={handleChangeIndex}
+          onChangeIndex={(value) => handleTabsChange({ index: value })}
         >
           {tabs.items
             .filter((tab) => tab.display === true)

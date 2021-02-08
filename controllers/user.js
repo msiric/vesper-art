@@ -28,6 +28,7 @@ import {
   fetchUserArtwork,
   fetchUserByAuth,
   fetchUserById,
+  fetchUserByUsername,
   fetchUserFavorites,
   fetchUserIdByEmail,
   fetchUserIdByUsername,
@@ -73,7 +74,26 @@ export const getUserProfile = async ({
   throw createError(400, "User not found");
 };
 
-export const getUserArtwork = async ({ userId, cursor, limit, connection }) => {
+export const getUserArtwork = async ({
+  userUsername,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundId = await fetchUserIdByUsername({
+    userUsername,
+    connection,
+  });
+  const foundArtwork = await fetchUserArtwork({
+    userId: foundId,
+    cursor,
+    limit,
+    connection,
+  });
+  return { artwork: foundArtwork };
+};
+
+export const getUserUploads = async ({ userId, cursor, limit, connection }) => {
   const foundArtwork = await fetchUserArtwork({
     userId,
     cursor,
@@ -100,18 +120,25 @@ export const getUserOwnership = async ({
 };
 
 export const getUserFavorites = async ({
-  userId,
+  userUsername,
   cursor,
   limit,
   connection,
 }) => {
-  const foundFavorites = await fetchUserFavorites({
-    userId,
-    cursor,
-    limit,
+  const foundUser = await fetchUserByUsername({
+    userUsername,
     connection,
   });
-  return { favorites: foundFavorites };
+  if (foundUser.displayFavorites) {
+    const foundFavorites = await fetchUserFavorites({
+      userId: foundUser.id,
+      cursor,
+      limit,
+      connection,
+    });
+    return { favorites: foundFavorites };
+  }
+  throw createError(400, "User keeps favorites private");
 };
 
 // $TODO ne valja nista
