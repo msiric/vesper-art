@@ -1,5 +1,5 @@
 import create from "zustand";
-import { getOrder } from "../../services/orders.js";
+import { getDownload, getOrder, postReview } from "../../services/orders.js";
 
 const initialState = {
   order: {
@@ -20,7 +20,7 @@ const initialState = {
 
 const initState = () => ({ ...initialState });
 
-const initActions = (set) => ({
+const initActions = (set, get) => ({
   fetchOrder: async ({ orderId }) => {
     const { data } = await getOrder.request({
       orderId,
@@ -30,12 +30,52 @@ const initActions = (set) => ({
       order: { data: data.order, loading: false, error: false },
     }));
   },
+  downloadArtwork: async ({ orderId }) => {
+    const { data } = await getDownload.request({ orderId });
+    const link = document.createElement("a");
+    link.href = data.url;
+    link.setAttribute("download", data.file);
+    document.body.appendChild(link);
+    link.click();
+  },
+  submitRating: async ({ orderId, userId, values }) => {
+    await postReview.request({
+      orderId,
+      reviewRating: values.artistRating,
+    });
+    const order = get().order.data;
+    set((state) => ({
+      ...state,
+      order: {
+        ...state.order,
+        data: {
+          ...state.order.data,
+          review: {
+            order: order.id,
+            artwork: order.artwork.id,
+            owner: userId,
+            rating: values.artistRating,
+          },
+        },
+      },
+      modal: {
+        ...state.modal,
+        open: false,
+      },
+    }));
+  },
+  toggleModal: () => {
+    set((state) => ({
+      ...state,
+      modal: { ...state.modal, open: !state.modal.open },
+    }));
+  },
   resetOrder: () => {
     set({ ...initialState });
   },
 });
 
-export const useOrderDetails = create((set) => ({
+export const useOrderDetails = create((set, get) => ({
   ...initState(),
-  ...initActions(set),
+  ...initActions(set, get),
 }));
