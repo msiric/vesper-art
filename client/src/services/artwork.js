@@ -66,7 +66,8 @@ export const editArtwork = {
   error: { message: "Failed to fetch artwork", variant: "error" },
 };
 export const deleteArtwork = {
-  request: async ({ artworkId }) => await ax(`/api/artwork/${artworkId}`),
+  request: async ({ artworkId }) =>
+    await ax.delete(`/api/artwork/${artworkId}`),
   success: { message: "Artwork successfully deleted", variant: "success" },
   error: { message: "Failed to delete artwork", variant: "error" },
 };

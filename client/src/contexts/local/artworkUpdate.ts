@@ -78,7 +78,7 @@ const initActions = (set, get) => ({
       data: formData,
     });
   },
-  deleteArtwork: async ({ artworkId }) => {
+  removeArtwork: async ({ artworkId }) => {
     set((state) => ({ ...state, isDeleting: true }));
     await deleteArtwork.request({
       artworkId,

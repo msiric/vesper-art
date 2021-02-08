@@ -6,6 +6,7 @@ import MainHeading from "../../components/MainHeading/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
 import ArtworkModifier from "../../containers/ArtworkModifier";
 import { useArtworkUpdate } from "../../contexts/local/artworkUpdate";
+import { deleteArtwork } from "../../services/artwork.js";
 import globalStyles from "../../styles/global.js";
 
 const EditArtwork = ({ location, match }) => {
@@ -16,7 +17,7 @@ const EditArtwork = ({ location, match }) => {
   );
   const modal = useArtworkUpdate((state) => state.modal);
   const isDeleting = useArtworkUpdate((state) => state.isDeleting);
-  const deleteArtwork = useArtworkUpdate((state) => state.deleteArtwork);
+  const removeArtwork = useArtworkUpdate((state) => state.removeArtwork);
   const toggleModal = useArtworkUpdate((state) => state.toggleModal);
   const paramId = match.params.id;
 
@@ -26,7 +27,7 @@ const EditArtwork = ({ location, match }) => {
   const globalClasses = globalStyles();
 
   const handleDeleteArtwork = async () => {
-    await deleteArtwork({ artworkId: artwork.id });
+    await removeArtwork({ artworkId: artwork.id });
     history.push("/");
     enqueueSnackbar(deleteArtwork.success.message, {
       variant: deleteArtwork.success.variant,
