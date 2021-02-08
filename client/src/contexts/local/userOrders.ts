@@ -17,12 +17,7 @@ const initialState = {
 const initState = () => ({ ...initialState });
 
 const initActions = (set, get) => ({
-  fetchOrders: async () => {
-    set((state) => ({
-      ...state,
-      orders: { ...state.orders, loading: true, error: false },
-    }));
-    const display = get().display;
+  fetchOrders: async ({ display }) => {
     const { data } = await getOrders.request({
       display,
     });
@@ -30,17 +25,18 @@ const initActions = (set, get) => ({
       ...state,
       orders: {
         ...state.artwork,
-        data: [...state.orders.data, ...data.orders],
+        data: [...state.orders.data, ...data[display]],
         loading: false,
         error: false,
-        hasMore: data.orders.length < state.orders.limit ? false : true,
-        cursor: resolvePaginationId(data.orders),
+        hasMore: data[display].length < state.orders.limit ? false : true,
+        cursor: resolvePaginationId(data[display]),
       },
     }));
   },
-  changeSelection: (selection) => {
+  changeSelection: ({ selection }) => {
     set((state) => ({
       ...state,
+      orders: { ...state.orders, data: [], loading: true, error: false },
       display: selection,
     }));
   },
