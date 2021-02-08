@@ -9,7 +9,7 @@ const initState = () => ({ ...initialState });
 
 const initActions = (set) => ({
   fetchToken: async ({ tokenId }) => {
-    const { data } = await getToken.request({ tokenId });
+    await getToken.request({ tokenId });
     set((state) => ({
       ...state,
       token: { data: true, loading: false, error: false },
