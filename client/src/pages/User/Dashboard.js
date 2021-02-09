@@ -110,6 +110,7 @@ const Dashboard = ({ location }) => {
         start: from,
         end: to,
       });
+      console.log("DATA", data);
       const selectedStats = {
         [state.display.label]: data.statistics.length
           ? data.statistics.reduce((a, b) => a + b[state.display.label], 0)
