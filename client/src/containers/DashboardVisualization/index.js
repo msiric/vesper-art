@@ -1,7 +1,8 @@
 import { Box, Grid } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
-import { compose, typography } from "@material-ui/system";
-import React from "react";
+import { compose, flexbox, spacing, typography } from "@material-ui/system";
+import { format } from "date-fns";
+import React, { useEffect } from "react";
 import {
   Legend,
   Line,
@@ -11,19 +12,52 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import DashboardCard from "../../components/DashboardCard/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import { useUserStore } from "../../contexts/global/user.js";
+import { useUserStats } from "../../contexts/local/userStats";
 import { artepunktTheme, Card } from "../../styles/theme.js";
-import DashboardStatistics from "../DashboardStatistics/index.js";
 import dashboardVisualizationStyles from "./styles.js";
 
+const GridContainer = styled(Grid)(compose(spacing, flexbox));
 const GridItem = styled(Grid)(compose(typography));
 
-const DashboardVisualization = ({
-  display,
-  graphData,
-  selectedStats,
-  loading,
-}) => {
+const DashboardVisualization = () => {
+  const userId = useUserStore((state) => state.id);
+
+  const selectedStats = useUserStats((state) => state.selectedStats.data);
+  const loading = useUserStats((state) => state.selectedStats.loading);
+  const graphData = useUserStats((state) => state.graphData);
+  const display = useUserStats((state) => state.display);
+  const range = useUserStats((state) => state.range);
+  const fetchSelectedData = useUserStats((state) => state.fetchSelectedData);
+
+  const cards = [
+    {
+      data: selectedStats[display.label],
+      label: display.label,
+      currency: true,
+    },
+    {
+      data: selectedStats.licenses.personal,
+      label: "Personal licenses",
+      currency: false,
+    },
+    {
+      data: selectedStats.licenses.commercial,
+      label: "Commercial licenses",
+      currency: false,
+    },
+  ];
+
+  useEffect(() => {
+    if (range[0] && range[1]) {
+      const dateFrom = format(new Date(range[0]), "MM/dd/yyyy");
+      const dateTo = format(new Date(range[1]), "MM/dd/yyyy");
+      fetchSelectedData({ userId, display, dateFrom, dateTo });
+    }
+  }, [range, display.type]);
+
   const classes = dashboardVisualizationStyles();
 
   return (
@@ -69,27 +103,23 @@ const DashboardVisualization = ({
         </Box>
       </GridItem>
       <GridItem item xs={12} md={4} className={classes.grid}>
-        <DashboardStatistics
-          loading={loading}
-          cards={[
-            {
-              data: selectedStats[display.label],
-              label: display.label,
-              currency: true,
-            },
-            {
-              data: selectedStats.licenses.personal,
-              label: "Personal licenses",
-              currency: false,
-            },
-            {
-              data: selectedStats.licenses.commercial,
-              label: "Commercial licenses",
-              currency: false,
-            },
-          ]}
-          layout="column"
-        />
+        <GridContainer
+          container
+          mb={artepunktTheme.margin.spacing}
+          display="flex"
+          flexDirection="row"
+        >
+          {cards.map((card) => (
+            <GridItem item xs={12} md={12}>
+              <DashboardCard
+                currency={card.currency}
+                data={card.data}
+                label={card.label}
+                loading={loading}
+              />
+            </GridItem>
+          ))}
+        </GridContainer>
       </GridItem>
     </Grid>
   );

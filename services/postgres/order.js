@@ -205,9 +205,14 @@ export const fetchOrdersBySeller = async ({
     .leftJoinAndSelect("order.review", "review")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("order.license", "license")
-    .where("order.sellerId = :userId", {
-      userId,
-    })
+    .where(
+      "order.sellerId = :userId AND order.created >= :startDate AND order.created <= :endDate",
+      {
+        userId,
+        startDate: start,
+        endDate: end,
+      }
+    )
     .getMany();
   console.log(foundOrders);
   return foundOrders;
@@ -248,9 +253,14 @@ export const fetchOrdersByBuyer = async ({
     .leftJoinAndSelect("order.review", "review")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("order.license", "license")
-    .where("order.buyerId = :userId", {
-      userId,
-    })
+    .where(
+      "order.buyerId = :userId AND order.created >= :startDate AND order.created <= :endDate",
+      {
+        userId,
+        startDate: start,
+        endDate: end,
+      }
+    )
     .getMany();
   console.log(foundOrders);
   return foundOrders;

@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -10,12 +11,20 @@ import {
 import { styled } from "@material-ui/core/styles";
 import { compose, typography } from "@material-ui/system";
 import React from "react";
+import { useUserStore } from "../../contexts/global/user.js";
+import { useUserStats } from "../../contexts/local/userStats";
 import { artepunktTheme } from "../../styles/theme.js";
 import dashboardToolbarStyles from "./styles.js";
 
 const GridItem = styled(Grid)(compose(typography));
 
-const DashboardToolbar = ({ display, handleSelectChange }) => {
+const DashboardToolbar = () => {
+  const stripeId = useUserStore((state) => state.stripeId);
+
+  const display = useUserStats((state) => state.display);
+  const changeSelection = useUserStats((state) => state.changeSelection);
+  const redirectDashboard = useUserStats((state) => state.redirectDashboard);
+
   const classes = dashboardToolbarStyles();
 
   return (
@@ -24,6 +33,11 @@ const DashboardToolbar = ({ display, handleSelectChange }) => {
         <Typography style={{ textTransform: "capitalize" }} variant="h6">
           Dashboard
         </Typography>
+        {stripeId && (
+          <Button variant="outlined" onClick={redirectDashboard}>
+            Stripe dashboard
+          </Button>
+        )}
       </GridItem>
       <GridItem item xs={12} md={6} textAlign="right">
         <FormControl
@@ -35,7 +49,7 @@ const DashboardToolbar = ({ display, handleSelectChange }) => {
           <Select
             labelId="data-display"
             value={display.type}
-            onChange={handleSelectChange}
+            onChange={(e) => changeSelection({ selection: e.target.value })}
             label="Display"
             margin="dense"
           >

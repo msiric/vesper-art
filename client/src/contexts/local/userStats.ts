@@ -18,17 +18,12 @@ const initialState = {
     label: "spent",
   },
   range: [new Date(subDays(new Date(), 7)), new Date()],
-  visualization: false,
 };
 
 const initState = () => ({ ...initialState });
 
 const initActions = (set) => ({
   fetchAggregateStats: async ({ userId, display }) => {
-    set((state) => ({
-      ...state,
-      aggregateStats: { ...state.aggregateStats, loading: true, error: false },
-    }));
     const { data } = await getStatistics.request({
       userId,
       display: display.type,
@@ -47,21 +42,15 @@ const initActions = (set) => ({
     set((state) => ({
       ...state,
       aggregateStats: { data: aggregateStats, loading: false, error: false },
+      selectedStats: { ...state.selectedStats, loading: false },
     }));
   },
-  fetchSelectedData: async ({ userId, display, from, to }) => {
-    set((state) => ({
-      ...state,
-      selectedStats: {
-        ...state.selectedStats,
-        loading: true,
-      },
-    }));
+  fetchSelectedData: async ({ userId, display, dateFrom, dateTo }) => {
     const { data } = await getSelection.request({
       userId,
       displayType: display.type,
-      start: from,
-      end: to,
+      start: dateFrom,
+      end: dateTo,
     });
     const selectedStats = {
       [display.label]: data.statistics.length
@@ -73,8 +62,8 @@ const initActions = (set) => ({
       },
     };
     const datesArray = eachDayOfInterval({
-      start: new Date(from),
-      end: new Date(to),
+      start: new Date(dateFrom),
+      end: new Date(dateTo),
     });
     const graphData = {};
     for (let date of datesArray) {
@@ -83,8 +72,8 @@ const initActions = (set) => ({
         cl: 0,
       };
     }
-    data.statistics.map((item) => {
-      const formattedDate = format(item.created, "dd/MM/yyyy");
+    data.statistics.forEach((item) => {
+      const formattedDate = format(new Date(item.created), "dd/MM/yyyy");
       if (item.license.type === "personal") {
         selectedStats.licenses.personal++;
         if (graphData[formattedDate]) {
@@ -121,9 +110,7 @@ const initActions = (set) => ({
     set((state) => ({
       ...state,
       graphData: formattedGraphData,
-      visualization: true,
       selectedStats: {
-        ...state.selectedStats,
         data: { ...selectedStats },
         loading: false,
         error: false,
@@ -133,6 +120,12 @@ const initActions = (set) => ({
   changeSelection: ({ selection }) => {
     set((state) => ({
       ...state,
+      aggregateStats: { data: [], loading: true, error: false },
+      selectedStats: {
+        data: { licenses: {} },
+        loading: true,
+        error: false,
+      },
       display: {
         type: selection,
         label: selection === "purchases" ? "spent" : "earned",
@@ -140,7 +133,16 @@ const initActions = (set) => ({
     }));
   },
   changeRange: ({ range }) => {
-    set((state) => ({ ...state, range }));
+    set((state) => ({
+      ...state,
+      selectedStats: {
+        ...state.selectedStats,
+        data: { licenses: {} },
+        loading: true,
+        error: false,
+      },
+      range,
+    }));
   },
   redirectDashboard: async ({ stripeId }) => {
     const { data } = await getDashboard.request({
