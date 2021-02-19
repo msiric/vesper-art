@@ -102,7 +102,7 @@ const initActions = (set) => ({
         }
       }
     });
-    const formattedGraphData = Object.entries(graphData).map((item) => ({
+    const formattedGraphData = Object.entries(graphData).map((item: any) => ({
       date: item[0],
       pl: item[1].pl,
       cl: item[1].cl,
