@@ -6,10 +6,15 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { emailValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
+import { useUserSettings } from "../../contexts/local/userSettings";
 import EmailForm from "../../forms/EmailForm/index.js";
 import settingsAccountStyles from "./styles.js";
 
-const SettingsAccount = ({ user, handleUpdateEmail, loading }) => {
+const SettingsAccount = ({ handleLogout }) => {
+  const user = useUserSettings((state) => state.user.data);
+  const loading = useUserSettings((state) => state.user.loading);
+  const updateEmail = useUserSettings((state) => state.updateEmail);
+
   const setDefaultValues = () => ({
     userEmail: loading ? "" : user.email,
   });
@@ -19,7 +24,8 @@ const SettingsAccount = ({ user, handleUpdateEmail, loading }) => {
     resolver: yupResolver(emailValidation),
   });
 
-  const onSubmit = async (values) => await handleUpdateEmail(values);
+  const onSubmit = async (values) =>
+    await updateEmail({ userId: user.id, values, handleLogout });
 
   const classes = settingsAccountStyles();
 

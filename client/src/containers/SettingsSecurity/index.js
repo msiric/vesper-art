@@ -6,10 +6,14 @@ import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { passwordValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
+import { useUserSettings } from "../../contexts/local/userSettings";
 import EditPasswordForm from "../../forms/PasswordForm/index.js";
 import settingsSecurityStyles from "./styles.js";
 
-const SettingsSecurity = ({ handleUpdatePassword, loading }) => {
+const SettingsSecurity = ({ handleLogout }) => {
+  const userId = useUserSettings((state) => state.user.data.id);
+  const updatePassword = useUserSettings((state) => state.updatePassword);
+
   const { handleSubmit, formState, errors, control, reset } = useForm({
     defaultValues: {
       userCurrent: "",
@@ -19,7 +23,8 @@ const SettingsSecurity = ({ handleUpdatePassword, loading }) => {
     resolver: yupResolver(passwordValidation),
   });
 
-  const onSubmit = async (values) => await handleUpdatePassword(values, reset);
+  const onSubmit = async (values) =>
+    await updatePassword({ userId, values, handleLogout });
 
   const classes = settingsSecurityStyles();
 

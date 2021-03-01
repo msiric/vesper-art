@@ -6,10 +6,19 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { patchAvatar, profileValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
+import { useUserStore } from "../../contexts/global/user";
+import { useUserSettings } from "../../contexts/local/userSettings";
 import EditUserForm from "../../forms/UserForm/index.js";
 import settingsProfileStyles from "./styles.js";
 
-const SettingsProfile = ({ user, handleUpdateProfile, loading }) => {
+const SettingsProfile = () => {
+  const userId = useUserStore((state) => state.id);
+
+  const user = useUserSettings((state) => state.user.data);
+  const loading = useUserSettings((state) => state.user.loading);
+  const updateProfile = useUserSettings((state) => state.updateProfile);
+  const fetchSettings = useUserSettings((state) => state.fetchSettings);
+
   const setDefaultValues = () => ({
     userMedia: "",
     userDescription: loading ? "" : user.description || "",
@@ -30,9 +39,14 @@ const SettingsProfile = ({ user, handleUpdateProfile, loading }) => {
     resolver: yupResolver(profileValidation.concat(patchAvatar)),
   });
 
-  const onSubmit = async (values) => await handleUpdateProfile(values);
+  const onSubmit = async (values) =>
+    await updateProfile({ userId: user.id, values });
 
   const classes = settingsProfileStyles();
+
+  useEffect(() => {
+    fetchSettings({ userId });
+  }, []);
 
   useEffect(() => {
     reset(setDefaultValues());

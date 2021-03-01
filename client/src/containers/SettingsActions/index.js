@@ -7,9 +7,13 @@ import {
 import Card from "@material-ui/core/Card";
 import React from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import { useUserSettings } from "../../contexts/local/userSettings";
 import settingsActionsStyles from "./styles.js";
 
-const SettingsActions = ({ handleModalOpen, loading }) => {
+const SettingsActions = () => {
+  const loading = useUserSettings((state) => state.user.loading);
+  const toggleModal = useUserSettings((state) => state.toggleModal);
+
   const classes = settingsActionsStyles();
 
   return (
@@ -30,7 +34,7 @@ const SettingsActions = ({ handleModalOpen, loading }) => {
       </CardContent>
       <CardActions style={{ display: "flex", justifyContent: "flex-end" }}>
         <SkeletonWrapper loading={loading}>
-          <Button variant="outlined" onClick={handleModalOpen}>
+          <Button variant="outlined" onClick={toggleModal}>
             Deactivate
           </Button>
         </SkeletonWrapper>
