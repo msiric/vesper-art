@@ -14,20 +14,12 @@ import { useUserStore } from "../../contexts/global/user.js";
 import { postLogout } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 
-const initialState = {
-  loading: true,
-  user: { avatar: {} },
-  modal: { open: false },
-  isDeactivating: false,
-};
-
 const Settings = ({ location }) => {
   const resetUser = useUserStore((state) => state.resetUser);
 
   const resetEvents = useEventsStore((state) => state.resetEvents);
 
   const history = useHistory();
-
   const globalClasses = globalStyles();
 
   const handleLogout = async () => {
