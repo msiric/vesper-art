@@ -93,7 +93,7 @@ const routes = [
   // Home router
   {
     path: "/",
-    Component: lazy(() => import("../../pages/Home/Home")),
+    Component: lazy(() => import("../../pages/Home/HomeTest")),
     exact: true,
     type: "public",
   },
@@ -185,7 +185,7 @@ const routes = [
   },
   {
     path: "/gallery",
-    Component: lazy(() => import("../../pages/User/Gallery")),
+    Component: lazy(() => import("../../pages/User/GalleryTest")),
     exact: true,
     type: "protected",
   },

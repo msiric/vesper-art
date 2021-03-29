@@ -9,14 +9,14 @@ const initialState = {
     error: false,
     hasMore: true,
     cursor: "",
-    limit: 20,
+    limit: 50,
   },
 };
 
 const initState = () => ({ ...initialState });
 
 const initActions = (set, get) => ({
-  fetchArtwork: async ({ userId }) => {
+  fetchArtwork: async () => {
     set((state) => ({
       ...state,
       artwork: { ...state.artwork, loading: true, error: false },

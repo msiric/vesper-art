@@ -6,13 +6,19 @@ import {
   Grid,
   Typography,
 } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useUserStore } from "../../contexts/global/user.js";
+import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import homeBannerStyles from "./styles";
 
 const HomeBanner = () => {
   const authenticated = useUserStore((state) => state.authenticated);
+  const fetchArtwork = useHomeArtwork((state) => state.fetchArtwork);
+
+  useEffect(() => {
+    fetchArtwork();
+  }, []);
 
   const classes = homeBannerStyles();
 

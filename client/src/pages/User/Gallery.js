@@ -301,13 +301,13 @@ const Gallery = ({ match, location }) => {
     }
   };
 
-  useEffect(() => {
-    fetchUser();
-  }, [location, state.display]);
-
-  useEffect(() => {
-    if (state.index !== null) openLightbox(state.index);
-  }, [state[state.display]]);
+  const handleSelectChange = (e) => {
+    setState((prevState) => ({
+      ...prevState,
+      display: e.target.value,
+      index: null,
+    }));
+  };
 
   const callbacks = {
     onSlideChange: (slide) =>
@@ -342,13 +342,13 @@ const Gallery = ({ match, location }) => {
     },
   };
 
-  const handleSelectChange = (e) => {
-    setState((prevState) => ({
-      ...prevState,
-      display: e.target.value,
-      index: null,
-    }));
-  };
+  useEffect(() => {
+    fetchUser();
+  }, [location, state.display]);
+
+  useEffect(() => {
+    if (state.index !== null) openLightbox(state.index);
+  }, [state[state.display]]);
 
   return state.loading || userId ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
@@ -362,30 +362,21 @@ const Gallery = ({ match, location }) => {
           }}
         >
           <CardHeader
-            title={
-              <SkeletonWrapper variant="text" loading={state.loading}>
-                <MainHeading text="Gallery" />
-              </SkeletonWrapper>
-            }
+            title={<MainHeading text="Gallery" />}
             subheader={
-              <SkeletonWrapper loading={state.loading}>
-                <FormControl
-                  variant="outlined"
-                  style={{ marginBottom: "12px" }}
+              <FormControl variant="outlined" style={{ marginBottom: "12px" }}>
+                <InputLabel id="data-display">Display</InputLabel>
+                <Select
+                  labelId="data-display"
+                  value={state.display}
+                  onChange={handleSelectChange}
+                  label="Display"
+                  margin="dense"
                 >
-                  <InputLabel id="data-display">Display</InputLabel>
-                  <Select
-                    labelId="data-display"
-                    value={state.display}
-                    onChange={handleSelectChange}
-                    label="Display"
-                    margin="dense"
-                  >
-                    <MenuItem value="purchases">Purchases</MenuItem>
-                    <MenuItem value="artwork">Artwork</MenuItem>
-                  </Select>
-                </FormControl>
-              </SkeletonWrapper>
+                  <MenuItem value="purchases">Purchases</MenuItem>
+                  <MenuItem value="artwork">Artwork</MenuItem>
+                </Select>
+              </FormControl>
             }
             disableTypography
             classes={{

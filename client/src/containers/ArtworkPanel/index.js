@@ -4,6 +4,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Masonry from "react-masonry-css";
 import ArtworkCard from "../../components/ArtworkCard/index.js";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
+import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import artworkPanelStyles from "./styles.js";
 
 const breakpointColumns = {
@@ -13,14 +14,12 @@ const breakpointColumns = {
   500: 1,
 };
 
-const ArtworkPanel = ({
-  elements,
-  hasMore,
-  loadMore,
-  type,
-  fixed,
-  loading,
-}) => {
+const ArtworkPanel = ({ type, fixed }) => {
+  const elements = useHomeArtwork((state) => state.artwork.data);
+  const hasMore = useHomeArtwork((state) => state.artwork.hasMore);
+  const loading = useHomeArtwork((state) => state.artwork.loading);
+  const fetchArtwork = useHomeArtwork((state) => state.fetchArtwork);
+
   const classes = artworkPanelStyles();
 
   return (
@@ -28,7 +27,7 @@ const ArtworkPanel = ({
       <InfiniteScroll
         className={classes.scroller}
         dataLength={elements.length}
-        next={loadMore}
+        next={fetchArtwork}
         hasMore={hasMore}
         loader={<LoadingSpinner />}
       >
