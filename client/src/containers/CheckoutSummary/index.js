@@ -28,8 +28,6 @@ const validationSchema = Yup.object().shape({
 });
 
 const CheckoutSummary = ({
-  match,
-  location,
   version,
   license,
   discount,
