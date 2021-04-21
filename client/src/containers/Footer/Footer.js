@@ -37,7 +37,7 @@ const Footer = () => {
       <Toolbar>
         <Container>
           <Grid container className={classes.footerNav}>
-            <Grid item xs={12} sm={6} md={3} className={classes.footerItem}>
+            <Grid item className={classes.footerItem}>
               <Typography variant="h6" className={classes.footerHeading}>
                 Who are we
               </Typography>
@@ -71,7 +71,7 @@ const Footer = () => {
                 </ListItem>
               </List>
             </Grid>
-            <Grid item xs={12} sm={6} md={3} className={classes.footerItem}>
+            <Grid item className={classes.footerItem}>
               <Typography variant="h6" className={classes.footerHeading}>
                 Community
               </Typography>
@@ -101,7 +101,7 @@ const Footer = () => {
                 </ListItem>
               </List>
             </Grid>
-            <Grid item xs={12} sm={6} md={3} className={classes.footerItem}>
+            <Grid item className={classes.footerItem}>
               <Typography variant="h6" className={classes.footerHeading}>
                 Support
               </Typography>
@@ -126,7 +126,7 @@ const Footer = () => {
                 </ListItem>
               </List>
             </Grid>
-            <Grid item xs={12} sm={6} md={3} className={classes.footerItem}>
+            <Grid item className={classes.footerItem}>
               <Typography variant="h6" className={classes.footerHeading}>
                 Connect
               </Typography>

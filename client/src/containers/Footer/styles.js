@@ -14,10 +14,12 @@ const footerStyles = makeStyles((muiTheme) => ({
     display: "flex",
     flexDirection: "column",
     padding: "18px 0",
+    flex: "0 0 25%",
     [muiTheme.breakpoints.down("sm")]: {
-      "&:nth-of-type(even)": {
-        alignItems: "flex-end",
-      },
+      flex: "0 0 33.3333%",
+    },
+    [muiTheme.breakpoints.down("xs")]: {
+      flex: "0 0 50%",
     },
   },
   footerLink: {
@@ -41,6 +43,9 @@ const footerStyles = makeStyles((muiTheme) => ({
         marginLeft: 0,
       },
     },
+    [muiTheme.breakpoints.down("sm")]: {
+      justifyContent: "center",
+    },
   },
   logoDesktop: {
     width: 100,
@@ -56,6 +61,9 @@ const footerStyles = makeStyles((muiTheme) => ({
       "&:last-child": {
         marginRight: 0,
       },
+    },
+    [muiTheme.breakpoints.down("sm")]: {
+      justifyContent: "center",
     },
   },
 }));
