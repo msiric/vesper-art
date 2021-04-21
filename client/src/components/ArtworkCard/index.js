@@ -36,8 +36,6 @@ const ArtworkCard = ({
 
   const classes = artworkCardStyles();
 
-  console.log("ART", artwork);
-
   const item =
     type === "version"
       ? {
@@ -48,6 +46,16 @@ const ArtworkCard = ({
           src: artwork.id ? artwork.cover.source : "",
           height: artwork.id ? artwork.cover.height : "",
           width: artwork.id ? artwork.cover.width : "",
+        }
+      : type === "favorite"
+      ? {
+          id: artwork.id ? artwork.artwork.id : "",
+          data: artwork.id ? artwork.artwork.current : {},
+          owner: artwork.id ? artwork.artwork.owner : {},
+          favorites: artwork.id ? artwork.artwork.favorites : [],
+          src: artwork.id ? artwork.artwork.current.cover.source : "",
+          height: artwork.id ? artwork.artwork.current.cover.height : "",
+          width: artwork.id ? artwork.artwork.current.cover.width : "",
         }
       : {
           id: artwork.id ? artwork.id : "",

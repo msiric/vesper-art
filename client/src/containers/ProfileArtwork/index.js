@@ -5,11 +5,13 @@ import SwipeCard from "../../components/SwipeCard/index.js";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import { useUserProfile } from "../../contexts/local/userProfile";
 import useOnScreen from "../../hooks/useOnScreen.js";
-import ArtworkPanel from "../ArtworkPanel/index.js";
+import UserArtwork from "../UserArtwork/index.js";
+import UserFavorites from "../UserFavorites/index.js";
 import profileArtworkStyles from "./styles.js";
 
 const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const profile = useUserProfile((state) => state.profile.data);
+  const editable = useUserProfile((state) => state.editable);
   const tabs = useUserArtwork((state) => state.tabs);
   const artwork = useUserArtwork((state) => state.artwork.data);
   const artworkLoading = useUserArtwork((state) => state.artwork.loading);
@@ -38,8 +40,6 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
       });
     }
   }, [tabs.value]);
-
-  console.log("ARTORKKKK", artwork);
 
   return (
     <Grid item xs={12} className={classes.grid}>
@@ -70,7 +70,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                       padding: "0 32px",
                     }}
                   >
-                    <ArtworkPanel
+                    <UserArtwork
                       elements={artwork}
                       hasMore={null}
                       loadMore={fetchArtwork}
@@ -83,7 +83,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 error: (
                   <EmptySection
                     label={
-                      profile.editable
+                      editable
                         ? "You have no artwork to display"
                         : "This user has no artwork to display"
                     }
@@ -104,10 +104,8 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                       padding: "0 32px",
                     }}
                   >
-                    <ArtworkPanel
-                      elements={favorites.map((item) => ({
-                        ...item.artwork,
-                      }))}
+                    <UserFavorites
+                      elements={favorites}
                       hasMore={null}
                       loadMore={fetchFavorites}
                       type="artwork"
@@ -119,7 +117,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 error: (
                   <EmptySection
                     label={
-                      profile.editable
+                      editable
                         ? "You have no favorited artwork"
                         : "This user has no favorited artwork"
                     }
