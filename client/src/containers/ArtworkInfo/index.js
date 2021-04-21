@@ -124,8 +124,8 @@ const ArtworkInfo = () => {
                 },
               ],
             }}
-            handleTabsChange={(e, index) => changeTab({ index })}
-            handleChangeIndex={(e, index) => changeTab({ index })}
+            handleTabsChange={({ index }) => changeTab({ index })}
+            handleChangeIndex={({ index }) => changeTab({ index })}
             margin="0px -16px"
             loading={loading}
           />
@@ -172,8 +172,8 @@ const ArtworkInfo = () => {
                 },
               ],
             }}
-            handleTabsChange={(e, index) => changeTab({ index })}
-            handleChangeIndex={(e, index) => changeTab({ index })}
+            handleTabsChange={({ index }) => changeTab({ index })}
+            handleChangeIndex={({ index }) => changeTab({ index })}
             margin="0px -16px"
             loading={loading}
           />
