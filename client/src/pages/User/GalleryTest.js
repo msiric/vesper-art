@@ -1,12 +1,15 @@
 import { Box, Card, Container, Grid, Typography } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { hexToRgb } from "../../../../common/helpers.js";
 import GalleryPanel from "../../containers/GalleryPanel/index.js";
 import GalleryToolbar from "../../containers/GalleryToolbar/index.js";
+import { useUserGallery } from "../../contexts/local/userGallery";
 import globalStyles from "../../styles/global.js";
 
 const Gallery = () => {
+  const resetGallery = useUserGallery((state) => state.resetGallery);
+
   const globalClasses = globalStyles();
 
   const location = useLocation();
@@ -64,6 +67,16 @@ const Gallery = () => {
       captions: uniqueCaptions,
     };
   };
+
+  const reinitializeState = () => {
+    resetGallery();
+  };
+
+  useEffect(() => {
+    return () => {
+      reinitializeState();
+    };
+  }, []);
 
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>

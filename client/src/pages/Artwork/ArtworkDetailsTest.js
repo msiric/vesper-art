@@ -33,7 +33,7 @@ const ArtworkDetails = ({ match, location }) => {
     return () => {
       reinitializeState();
     };
-  }, [location]);
+  }, []);
 
   return (
     <Container className={globalClasses.gridContainer}>

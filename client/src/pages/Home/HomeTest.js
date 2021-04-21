@@ -1,10 +1,23 @@
 import { Grid } from "@material-ui/core";
 import { withSnackbar } from "notistack";
-import React from "react";
+import React, { useEffect } from "react";
 import ArtworkPanel from "../../containers/ArtworkPanel/index.js";
 import HomeBanner from "../../containers/HomeBanner";
+import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 
 const Home = () => {
+  const resetArtwork = useHomeArtwork((state) => state.resetArtwork);
+
+  const reinitializeState = () => {
+    resetArtwork();
+  };
+
+  useEffect(() => {
+    return () => {
+      reinitializeState();
+    };
+  }, []);
+
   return [
     <Grid
       container

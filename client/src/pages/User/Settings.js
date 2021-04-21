@@ -1,5 +1,5 @@
 import { Container, Grid } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/index.js";
 import SettingsWrapper from "../../components/SettingsWrapper/index.js";
@@ -11,6 +11,7 @@ import SettingsProfile from "../../containers/SettingsProfile/index.js";
 import SettingsSecurity from "../../containers/SettingsSecurity/index.js";
 import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
+import { useUserSettings } from "../../contexts/local/userSettings";
 import { postLogout } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 
@@ -18,6 +19,8 @@ const Settings = ({ location }) => {
   const resetUser = useUserStore((state) => state.resetUser);
 
   const resetEvents = useEventsStore((state) => state.resetEvents);
+
+  const resetSettings = useUserSettings((state) => state.resetSettings);
 
   const history = useHistory();
   const globalClasses = globalStyles();
@@ -30,6 +33,16 @@ const Settings = ({ location }) => {
     socket.instance.disconnect();
     history.push("/login");
   };
+
+  const reinitializeState = () => {
+    resetSettings();
+  };
+
+  useEffect(() => {
+    return () => {
+      reinitializeState();
+    };
+  }, []);
 
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>

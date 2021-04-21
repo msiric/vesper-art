@@ -1,6 +1,6 @@
 import { Container, Grid } from "@material-ui/core";
 import { useSnackbar } from "notistack";
-import React from "react";
+import React, { useEffect } from "react";
 import PromptModal from "../../components/PromptModal/index.js";
 import ArtworkDatatable from "../../containers/ArtworkDatatable/index.js";
 import { useUserUploads } from "../../contexts/local/userUploads";
@@ -12,6 +12,7 @@ const MyArtwork = ({ location }) => {
   const isDeleting = useUserUploads((state) => state.isDeleting);
   const closeModal = useUserUploads((state) => state.closeModal);
   const removeArtwork = useUserUploads((state) => state.removeArtwork);
+  const resetUploads = useUserUploads((state) => state.resetUploads);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -23,6 +24,16 @@ const MyArtwork = ({ location }) => {
       variant: deleteArtwork.success.variant,
     });
   };
+
+  const reinitializeState = () => {
+    resetUploads();
+  };
+
+  useEffect(() => {
+    return () => {
+      reinitializeState();
+    };
+  }, []);
 
   return (
     <Container className={globalClasses.gridContainer}>

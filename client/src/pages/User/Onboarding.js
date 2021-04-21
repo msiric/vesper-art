@@ -36,6 +36,8 @@ const Onboarding = () => {
   const userAddress = useUserStore((state) => state.businessAddress);
   const stripeId = useUserStore((state) => state.stripeId);
 
+  const globalClasses = globalStyles();
+
   const {
     handleSubmit,
     formState,
@@ -70,8 +72,6 @@ const Onboarding = () => {
       console.log(err);
     }
   };
-
-  const globalClasses = globalStyles();
 
   return (
     <Container className={globalClasses.gridContainer}>

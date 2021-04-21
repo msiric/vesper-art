@@ -1,6 +1,6 @@
 import { Container, Grid } from "@material-ui/core";
 import { useSnackbar } from "notistack";
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
@@ -19,6 +19,8 @@ const EditArtwork = ({ location, match }) => {
   const isDeleting = useArtworkUpdate((state) => state.isDeleting);
   const removeArtwork = useArtworkUpdate((state) => state.removeArtwork);
   const toggleModal = useArtworkUpdate((state) => state.toggleModal);
+  const resetArtwork = useArtworkUpdate((state) => state.resetArtwork);
+
   const paramId = match.params.id;
 
   const { enqueueSnackbar } = useSnackbar();
@@ -33,6 +35,16 @@ const EditArtwork = ({ location, match }) => {
       variant: deleteArtwork.success.variant,
     });
   };
+
+  const reinitializeState = () => {
+    resetArtwork();
+  };
+
+  useEffect(() => {
+    return () => {
+      reinitializeState();
+    };
+  }, []);
 
   return (
     <Container className={globalClasses.gridContainer}>
