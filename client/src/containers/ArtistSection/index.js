@@ -10,14 +10,7 @@ const ArtistSection = () => {
 
   const classes = artistSectionStyles();
 
-  return (
-    <ProfileCard
-      user={owner}
-      handleModalOpen={null}
-      height={410}
-      loading={loading}
-    />
-  );
+  return <ProfileCard user={owner} loading={loading} />;
 };
 
 export default withRouter(ArtistSection);

@@ -1,11 +1,11 @@
 import { Container, Grid } from "@material-ui/core";
 import React, { useEffect, useRef } from "react";
 import OrderCard from "../../components/OrderCard/index.js";
-import ProfileCard from "../../components/ProfileCard/index.js";
 import RatingWrapper from "../../components/RatingWrapper/index.js";
 import LicenseCard from "../../containers/LicenseCard/index.js";
 import OrderPreview from "../../containers/OrderPreview/index.js";
 import ReviewCard from "../../containers/ReviewCard/index.js";
+import UserSection from "../../containers/UserSection/index.js";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import globalStyles from "../../styles/global.js";
 
@@ -39,7 +39,7 @@ const Order = ({ match }) => {
           md={4}
           style={{ display: "flex", flexDirection: "column" }}
         >
-          <ProfileCard />
+          <UserSection />
           <br />
           <ReviewCard paramId={paramId} highlightRef={highlightRef} />
         </Grid>
