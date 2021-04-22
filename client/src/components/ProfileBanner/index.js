@@ -4,8 +4,10 @@ import {
   PersonRounded as MemberIcon,
   StarRounded as StarIcon,
 } from "@material-ui/icons";
+import clsx from "clsx";
 import React from "react";
 import { formatDate } from "../../../../common/helpers.js";
+import globalStyles from "../../styles/global.js";
 import {
   artepunktTheme,
   Avatar,
@@ -17,10 +19,11 @@ import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import profileBannerStyles from "./styles.js";
 
 const ProfileBanner = ({ profile, loading }) => {
+  const globalClasses = globalStyles();
   const classes = profileBannerStyles();
 
   return (
-    <Card>
+    <Card className={classes.profileContainer}>
       <Box
         height={240}
         p={3}
@@ -30,18 +33,12 @@ const ProfileBanner = ({ profile, loading }) => {
         bgcolor={artepunktTheme.palette.action.disabledBackground}
       ></Box>
       <Box
-        minHeight={150}
-        p={3}
-        display="flex"
-        justifyContent="center"
-        flexDirection="column"
+        className={clsx(
+          globalClasses.gridContainer,
+          classes.profileCardContainer
+        )}
       >
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="flex-start"
-          marginTop="-70px"
-        >
+        <Box className={classes.profileCardInfo}>
           <Box
             display="flex"
             alignItems="center"
@@ -57,17 +54,11 @@ const ProfileBanner = ({ profile, loading }) => {
                 border={6}
                 borderColor={artepunktTheme.palette.background.paper}
                 mb={1}
+                className={classes.profileCardAvatar}
               />
             </SkeletonWrapper>
           </Box>
-          <Box
-            display="flex"
-            alignItems="flex-start"
-            justifyContent="center"
-            flexDirection="column"
-            marginTop="36px"
-            marginLeft="12px"
-          >
+          <Box className={classes.profileCardAbout}>
             <SkeletonWrapper
               variant="text"
               loading={loading}
@@ -77,6 +68,7 @@ const ProfileBanner = ({ profile, loading }) => {
               <Typography
                 variant="h4"
                 color="inherit"
+                className={classes.profileCardName}
                 style={{ fontWeight: "bold" }}
               >
                 {profile.name}
@@ -181,7 +173,6 @@ const ProfileBanner = ({ profile, loading }) => {
           alignItems="flex-start"
           justifyContent="space-between"
           flexDirection="column"
-          height="50%"
         >
           <SkeletonWrapper variant="text" loading={loading}>
             <Typography
@@ -198,7 +189,11 @@ const ProfileBanner = ({ profile, loading }) => {
             width="100%"
             height="40px"
           >
-            <Typography variant="body2" color="inherit">
+            <Typography
+              variant="body2"
+              color="inherit"
+              className={classes.profileCardDescription}
+            >
               {profile.description || "Nothing here yet"}
             </Typography>
           </SkeletonWrapper>

@@ -89,11 +89,13 @@ export const artepunktTheme = createMuiTheme({
     },
   },
   padding: {
-    container: 24,
+    containerLg: 24,
+    containerSm: 12,
   },
   margin: {
     element: 2,
-    container: "12px auto",
+    containerLg: "12px auto",
+    containerSm: "6px auto",
   },
   props: {
     MuiButton: {

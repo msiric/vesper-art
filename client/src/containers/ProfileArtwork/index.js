@@ -5,6 +5,7 @@ import SwipeCard from "../../components/SwipeCard/index.js";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import { useUserProfile } from "../../contexts/local/userProfile";
 import useOnScreen from "../../hooks/useOnScreen.js";
+import globalStyles from "../../styles/global.js";
 import UserArtwork from "../UserArtwork/index.js";
 import UserFavorites from "../UserFavorites/index.js";
 import profileArtworkStyles from "./styles.js";
@@ -22,6 +23,8 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const changeTab = useUserArtwork((state) => state.changeTab);
 
   const isVisible = useOnScreen(artworkRef, artworkFetched.current);
+
+  const globalClasses = globalStyles();
   const classes = profileArtworkStyles();
 
   useEffect(() => {
@@ -101,8 +104,10 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                     style={{
                       width: "100%",
                       height: "100%",
-                      padding: "0 32px",
+                      paddingTop: 0,
+                      paddingBottom: 0,
                     }}
+                    className={globalClasses.gridContainer}
                   >
                     <UserFavorites
                       elements={favorites}

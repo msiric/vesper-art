@@ -14,13 +14,13 @@ const userFavoritesStyles = makeStyles((muiTheme) => ({
     width: "auto",
   },
   masonryColumn: {
-    paddingLeft: 30,
+    paddingLeft: 24,
     "&:first-child": {
       paddingLeft: 0,
     },
     backgroundClip: "padding-box",
     "&>div": {
-      marginBottom: 30,
+      marginBottom: 24,
     },
   },
 }));

@@ -3,8 +3,12 @@ import { artepunktTheme } from "./theme.js";
 
 const GlobalStyles = makeStyles((muiTheme) => ({
   gridContainer: {
-    padding: artepunktTheme.padding.container,
-    margin: artepunktTheme.margin.container,
+    padding: artepunktTheme.padding.containerLg,
+    margin: artepunktTheme.margin.containerLg,
+    [muiTheme.breakpoints.down("sm")]: {
+      padding: artepunktTheme.padding.containerSm,
+      margin: artepunktTheme.margin.containerSm,
+    },
   },
   mainHeading: {
     marginBottom: 24,

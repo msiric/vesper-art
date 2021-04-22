@@ -136,7 +136,7 @@ const ArtworkCard = ({
             ) : (
               [
                 <FavoriteButton
-                  artwork={artwork}
+                  artwork={item}
                   favorited={userFavorites[item.id]}
                   handleCallback={handleArtworkSave}
                 />,

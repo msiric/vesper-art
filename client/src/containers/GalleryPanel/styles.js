@@ -13,13 +13,13 @@ const galleryPanelStyles = makeStyles((muiTheme) => ({
     width: "auto",
   },
   masonryColumn: {
-    paddingLeft: 30,
+    paddingLeft: 24,
     "&:first-child": {
       paddingLeft: 0,
     },
     backgroundClip: "padding-box",
     "&>div": {
-      marginBottom: 30,
+      marginBottom: 24,
       cursor: "pointer",
       "&:hover": {
         boxShadow: "0px 0px 20px 5px rgba(0,0,0,0.75)",

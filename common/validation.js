@@ -211,7 +211,9 @@ export const preferencesValidation = Yup.object().shape({
 });
 
 export const profileValidation = Yup.object().shape({
-  userDescription: Yup.string().trim(),
+  userDescription: Yup.string()
+    .trim()
+    .max(250, "Description cannot contain more than 250 characters"),
   userCountry: Yup.string().trim(),
 });
 
