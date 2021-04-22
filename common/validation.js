@@ -109,7 +109,12 @@ export const licenseValidation = Yup.object().shape({
 });
 
 export const loginValidation = Yup.object().shape({
-  userUsername: Yup.string().trim().required("Username is required"),
+  userUsername: Yup.string()
+    .trim()
+    .min(5, "Username must contain at least 5 characters")
+    .max(20, "Username cannot contain more than 20 characters")
+    .lowercase()
+    .required("Username is required"),
   userPassword: Yup.string()
     .trim()
     .min(8, "Password must contain at least 8 characters")
@@ -232,7 +237,16 @@ export const searchValidation = Yup.object().shape({
 });
 
 export const signupValidation = Yup.object().shape({
-  userUsername: Yup.string().required("Username is required"),
+  userUsername: Yup.string()
+    .trim()
+    .matches(
+      /^([\w.]){0,}$/,
+      "Username can only contain letters, numbers, underscores and periods"
+    )
+    .min(5, "Username must contain at least 5 characters")
+    .max(20, "Username cannot contain more than 20 characters")
+    .lowercase()
+    .required("Username is required"),
   userEmail: Yup.string()
     .email("Enter a valid email")
     .required("Email is required"),
