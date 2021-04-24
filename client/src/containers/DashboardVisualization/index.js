@@ -61,12 +61,12 @@ const DashboardVisualization = () => {
   const classes = dashboardVisualizationStyles();
 
   return (
-    <Grid container className={classes.graphArea}>
+    <Grid container spacing={2} className={classes.graphArea}>
       <GridItem item xs={12} md={8} mb={artepunktTheme.margin.spacing}>
         <Box className={classes.graph}>
-          <Card m={1} p={2}>
+          <Card p={2}>
             <SkeletonWrapper loading={loading} width="100%">
-              <Box height={540}>
+              <Box className={classes.dashboardVisualizationChart}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={graphData}
@@ -108,6 +108,7 @@ const DashboardVisualization = () => {
           mb={artepunktTheme.margin.spacing}
           display="flex"
           flexDirection="row"
+          spacing={2}
         >
           {cards.map((card) => (
             <GridItem item xs={12} md={12}>

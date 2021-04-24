@@ -10,6 +10,12 @@ const GlobalStyles = makeStyles((muiTheme) => ({
       margin: artepunktTheme.margin.containerSm,
     },
   },
+  elementSpacing: {
+    margin: artepunktTheme.margin.elementLg,
+    [muiTheme.breakpoints.down("sm")]: {
+      margin: artepunktTheme.margin.elementSm,
+    },
+  },
   mainHeading: {
     marginBottom: 24,
   },

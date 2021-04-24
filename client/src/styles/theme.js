@@ -96,6 +96,9 @@ export const artepunktTheme = createMuiTheme({
     element: 2,
     containerLg: "12px auto",
     containerSm: "6px auto",
+    elementLg: "16px 0",
+    elementSm: "12px 0",
+    headingLg: 12,
   },
   props: {
     MuiButton: {
@@ -110,6 +113,15 @@ export const artepunktTheme = createMuiTheme({
     },
   },
 });
+
+artepunktTheme.overrides.MuiPickersDateRangePickerInput = {
+  root: {
+    "@media (max-width: 599.95px)": {
+      flexDirection: "row",
+      alignItems: "baseline",
+    },
+  },
+};
 
 artepunktTheme.overrides.MuiCardHeader = {
   title: {

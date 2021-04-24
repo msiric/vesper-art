@@ -54,6 +54,7 @@ const DashboardStatistics = ({ layout }) => {
       mb={artepunktTheme.margin.spacing}
       display="flex"
       flexDirection="row"
+      spacing={2}
     >
       {cards.map((card) => (
         <GridItem item xs={12} md={layout === "row" ? 12 / cards.length : 12}>

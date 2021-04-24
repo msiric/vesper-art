@@ -1,4 +1,4 @@
-import { Container, Divider, Grid } from "@material-ui/core";
+import { Container, Grid } from "@material-ui/core";
 import { LocalizationProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
 import React, { useEffect } from "react";
@@ -30,11 +30,8 @@ const Dashboard = ({ location }) => {
         <Grid container style={{ flexDirection: "column" }}>
           <DashboardToolbar />
           <DashboardStatistics layout="row" />
-          <Grid item md={12}>
-            <VisualizationToolbar />
-            <Divider />
-            <DashboardVisualization />
-          </Grid>
+          <VisualizationToolbar />
+          <DashboardVisualization />
         </Grid>
       </Container>
     </LocalizationProvider>

@@ -20,7 +20,7 @@ const DashboardCard = ({ currency, data, label, loading }) => {
       flexDirection="column"
       border={1}
       height={180}
-      m={1}
+      className={classes.dashboardCardContainer}
     >
       <CardItem
         style={{ display: "flex" }}

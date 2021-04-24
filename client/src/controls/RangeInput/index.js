@@ -4,9 +4,12 @@ import {
   DateRangePicker as RangePicker,
 } from "@material-ui/pickers";
 import * as React from "react";
+import rangeInputStyles from "./styles.js";
 
 // $TODO Treba sredit
 const RangeInput = ({ fromLabel, toLabel, selectedDate, handleChange }) => {
+  const classes = rangeInputStyles();
+
   return (
     <RangePicker
       startText={fromLabel}
@@ -16,9 +19,17 @@ const RangeInput = ({ fromLabel, toLabel, selectedDate, handleChange }) => {
       inputFormat="dd/MM/yyyy"
       renderInput={(startProps, endProps) => (
         <>
-          <TextField {...startProps} margin="dense" />
+          <TextField
+            {...startProps}
+            margin="dense"
+            className={classes.rangeInputField}
+          />
           <DateRangeDelimiter> to </DateRangeDelimiter>
-          <TextField {...endProps} margin="dense" />
+          <TextField
+            {...endProps}
+            margin="dense"
+            className={classes.rangeInputField}
+          />
         </>
       )}
     />

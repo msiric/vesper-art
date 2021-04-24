@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   FormControl,
   Grid,
@@ -8,15 +7,10 @@ import {
   Select,
   Typography,
 } from "@material-ui/core";
-import { styled } from "@material-ui/core/styles";
-import { compose, typography } from "@material-ui/system";
 import React from "react";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useUserStats } from "../../contexts/local/userStats";
-import { artepunktTheme } from "../../styles/theme.js";
 import dashboardToolbarStyles from "./styles.js";
-
-const GridItem = styled(Grid)(compose(typography));
 
 const DashboardToolbar = () => {
   const stripeId = useUserStore((state) => state.stripeId);
@@ -28,18 +22,24 @@ const DashboardToolbar = () => {
   const classes = dashboardToolbarStyles();
 
   return (
-    <Box display="flex" mb={artepunktTheme.margin.spacing} width="auto">
-      <GridItem item xs={12} md={6}>
+    <Grid container>
+      <Grid item className={classes.dashboardToolbarHeader}>
         <Typography style={{ textTransform: "capitalize" }} variant="h6">
           Dashboard
         </Typography>
         {stripeId && (
-          <Button variant="outlined" onClick={redirectDashboard}>
+          <Button
+            variant="outlined"
+            onClick={() => redirectDashboard({ stripeId })}
+          >
             Stripe dashboard
           </Button>
         )}
-      </GridItem>
-      <GridItem item xs={12} md={6} textAlign="right">
+      </Grid>
+      <Grid item className={classes.dashboardToolbarHeader}>
+        <Typography style={{ textTransform: "capitalize" }} variant="h6">
+          Total stats
+        </Typography>
         <FormControl
           variant="outlined"
           className={classes.formControl}
@@ -57,8 +57,8 @@ const DashboardToolbar = () => {
             <MenuItem value="sales">Sales</MenuItem>
           </Select>
         </FormControl>
-      </GridItem>
-    </Box>
+      </Grid>
+    </Grid>
   );
 };
 
