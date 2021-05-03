@@ -114,6 +114,17 @@ export const artepunktTheme = createMuiTheme({
   },
 });
 
+artepunktTheme.overrides.MUIDataTableHeadCell = {
+  contentWrapper: {
+    "& > .MuiButton-textPrimary": {
+      color: "white",
+      "&:hover": {
+        backgroundColor: "rgba(255, 255, 255, 0.08)",
+      },
+    },
+  },
+};
+
 artepunktTheme.overrides.MUIDataTableSearch = {
   searchIcon: {
     display: "none",
