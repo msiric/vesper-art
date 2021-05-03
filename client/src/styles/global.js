@@ -16,8 +16,16 @@ const GlobalStyles = makeStyles((muiTheme) => ({
       margin: artepunktTheme.margin.elementSm,
     },
   },
+  elementWidth: {
+    width: "100%",
+  },
   mainHeading: {
     marginBottom: 24,
+  },
+  dropdownOption: {
+    [muiTheme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
   },
   "@global": {
     ".illustrationPrimary": {

@@ -1,7 +1,7 @@
 import { IconButton, Tooltip } from "@material-ui/core";
 import { Add as AddIcon } from "@material-ui/icons";
 import MUIDataTable from "mui-datatables";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import LoadingSpinner from "../LoadingSpinner";
 
@@ -35,11 +35,16 @@ const DataTable = ({
   pagination,
   addOptions,
 }) => {
-  const [responsive, setResponsive] = useState("vertical");
+  const [displayedData, setDisplayedData] = useState([null]);
+  const [responsive, setResponsive] = useState("simple");
   const [tableBodyHeight, setTableBodyHeight] = useState("100%");
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
 
   const history = useHistory();
+
+  useEffect(() => {
+    setResponsive(data.length && displayedData.length ? "vertical" : "simple");
+  }, [data.length, displayedData.length]);
 
   const options = {
     filter: false,
@@ -55,9 +60,16 @@ const DataTable = ({
     tableBodyMaxHeight,
     customToolbar: () => <CustomToolbar addOptions={addOptions} />,
     onRowClick: (data) => redirect && history.push(`/${redirect}/${data[0]}`),
+    onTableChange: (_, data) =>
+      data.displayData.length !== displayedData.length &&
+      setDisplayedData(data.displayData),
     textLabels: {
       body: {
-        noMatch: loading ? <LoadingSpinner styles={{ padding: 154 }} /> : empty,
+        noMatch: loading ? (
+          <LoadingSpinner styles={{ padding: "154px 0" }} />
+        ) : (
+          empty
+        ),
       },
     },
   };

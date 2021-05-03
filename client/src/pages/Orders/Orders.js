@@ -23,7 +23,7 @@ const Orders = () => {
   return (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        <Grid item sm={12}>
+        <Grid item sm={12} className={globalClasses.elementWidth}>
           <OrdersToolbar />
           <OrdersDatatable />
         </Grid>

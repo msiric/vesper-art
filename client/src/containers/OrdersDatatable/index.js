@@ -11,8 +11,6 @@ const OrdersDatatable = () => {
   const display = useUserOrders((state) => state.display);
   const fetchOrders = useUserOrders((state) => state.fetchOrders);
 
-  console.log("current state", orders, loading, display);
-
   useEffect(() => {
     fetchOrders({ display });
   }, [display]);

@@ -43,7 +43,7 @@ const Order = ({ match }) => {
           <br />
           <ReviewCard paramId={paramId} highlightRef={highlightRef} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} className={globalClasses.elementWidth}>
           <OrderCard />
           <br />
           <LicenseCard />

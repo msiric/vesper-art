@@ -38,7 +38,7 @@ const MyArtwork = ({ location }) => {
   return (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        <Grid item sm={12}>
+        <Grid item sm={12} className={globalClasses.elementWidth}>
           <ArtworkDatatable />
         </Grid>
       </Grid>

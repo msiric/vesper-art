@@ -114,6 +114,12 @@ export const artepunktTheme = createMuiTheme({
   },
 });
 
+artepunktTheme.overrides.MUIDataTableSearch = {
+  searchIcon: {
+    display: "none",
+  },
+};
+
 artepunktTheme.overrides.MuiPickersDateRangePickerInput = {
   root: {
     "@media (max-width: 599.95px)": {
@@ -210,7 +216,6 @@ artepunktTheme.overrides.MuiTableBody = {
 
 artepunktTheme.overrides.MuiTableCell = {
   body: {
-    textTransform: "capitalize",
     cursor: "pointer",
   },
 };
