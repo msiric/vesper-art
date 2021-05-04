@@ -24,6 +24,7 @@ const profileCardStyles = makeStyles((muiTheme) => ({
     height: "100px",
     borderRadius: "50%",
     overflow: "hidden",
+    marginTop: 24,
   },
   profileCardAvatar: {
     textAlign: "center",

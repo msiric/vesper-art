@@ -37,7 +37,10 @@ const Order = ({ match }) => {
           item
           xs={12}
           md={4}
-          style={{ display: "flex", flexDirection: "column" }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+          }}
         >
           <UserSection />
           <br />
