@@ -31,6 +31,9 @@ const profileCardStyles = makeStyles((muiTheme) => ({
     width: "100%",
     height: "100%",
   },
+  profileCardDescription: {
+    wordBreak: "break-word",
+  },
 }));
 
 export default profileCardStyles;

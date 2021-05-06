@@ -49,7 +49,6 @@ const Settings = ({ location }) => {
       <Grid container spacing={2}>
         <Grid item sm={12}>
           <MainHeading text="Settings" className={globalClasses.mainHeading} />
-
           <Grid container p={0} my={4} spacing={2}>
             <Grid
               item

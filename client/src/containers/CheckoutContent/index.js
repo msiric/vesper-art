@@ -1,20 +1,17 @@
 import { Elements } from "@stripe/react-stripe-js";
-import React, { useEffect } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import React from "react";
+import { stripe } from "../../../../config/secret";
 import CheckoutProcessor from "../../containers/CheckoutProcessor";
-import { useOrderStripe } from "../../contexts/local/orderStripe";
 
-const CheckoutContent = ({ match }) => {
-  const stripe = useOrderStripe((state) => state.stripe.data);
-  const loading = useOrderStripe((state) => state.stripe.loading);
-  const fetchStripe = useOrderStripe((state) => state.fetchStripe);
+const stripePromise = loadStripe(
+  stripe.publishableKey || "pk_test_xi0qpLTPs3WI8YPUfTyeeyzt00tNwou20z"
+);
 
-  useEffect(() => {
-    fetchStripe();
-  }, []);
-
+const CheckoutContent = () => {
   return (
-    <Elements stripe={stripe}>
-      <CheckoutProcessor stripe={stripe} />
+    <Elements stripe={stripePromise}>
+      <CheckoutProcessor />
     </Elements>
   );
 };

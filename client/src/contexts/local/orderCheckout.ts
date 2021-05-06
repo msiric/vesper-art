@@ -19,6 +19,7 @@ const initialState = {
   license: "",
   discount: { data: null, loading: false, error: false },
   intent: { data: null, loading: false, error: false },
+  payment: { success: false, message: "" },
   step: {
     current: 0,
     length: STEPS.length,
@@ -56,11 +57,20 @@ const initActions = (set, get) => ({
       set((state) => ({ ...state }));
     }
   },
-  submitPayment: async ({ values, stripe, elements, history }) => {
+  submitPayment: async ({ values, stripe, elements, history, changeStep }) => {
     const secret = get().secret;
     if (!secret || !stripe || !elements) {
       console.log("nije dobro");
       console.log(secret, stripe, elements);
+      set((state) => ({
+        ...state,
+        payment: {
+          ...state.payment,
+          success: false,
+          message:
+            "Payment couldn't be processed because Stripe wasn't initialized. Please try again.",
+        },
+      }));
       // $TODO Enqueue error;
     }
 
@@ -92,6 +102,10 @@ const initActions = (set, get) => ({
     if (error) {
       console.log("fail");
       console.log(error);
+      set((state) => ({
+        ...state,
+        payment: { ...state.payment, success: false, message: error.message },
+      }));
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
       console.log("success");
       /*         enqueueSnackbar('Payment successful', {
@@ -110,10 +124,17 @@ const initActions = (set, get) => ({
               horizontal: 'center',
             },
           }); */
+      set((state) => ({
+        ...state,
+        payment: {
+          ...state.payment,
+          success: true,
+          message:
+            "Payment successful! Your order will appear in the Orders page soon.",
+        },
+      }));
     }
-    setTimeout(() => {
-      history.push("/orders");
-    }, 5000);
+    changeStep({ value: 1 });
   },
   changeStep: ({ value }) => {
     set((state) => ({
@@ -161,7 +182,7 @@ const initActions = (set, get) => ({
         ...state,
         secret: data.intent.secret,
       }));
-      changeStep(1);
+      changeStep({ value: 1 });
     } catch (err) {
       console.log(err);
     } finally {

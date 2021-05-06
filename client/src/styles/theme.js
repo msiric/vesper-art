@@ -114,6 +114,15 @@ export const artepunktTheme = createMuiTheme({
   },
 });
 
+artepunktTheme.overrides.MuiToolbar = {
+  gutters: {
+    "@media (min-width: 600px)": {
+      paddingLeft: 16,
+      paddingRight: 16,
+    },
+  },
+};
+
 artepunktTheme.overrides.MUIDataTableHeadCell = {
   contentWrapper: {
     "& > .MuiButton-textPrimary": {

@@ -24,15 +24,17 @@ import {
   ContactMailRounded as BillingIcon,
   PaymentRounded as PaymentIcon,
 } from "@material-ui/icons";
-import { useElements } from "@stripe/react-stripe-js";
-import React from "react";
+import { useElements, useStripe } from "@stripe/react-stripe-js";
+import clsx from "clsx";
+import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import {
   billingValidation,
   emptyValidation,
   licenseValidation,
 } from "../../../../common/validation";
+import CheckoutStatus from "../../components/CheckoutStatus";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import CheckoutSummary from "../../containers/CheckoutSummary/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
@@ -41,6 +43,7 @@ import BillingForm from "../../forms/BillingForm/index.js";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import PaymentForm from "../../forms/PaymentForm/index.js";
 import globalStyles from "../../styles/global.js";
+import checkoutProcessorStyles from "./styles.js";
 
 const checkoutValidation = [
   licenseValidation,
@@ -87,11 +90,10 @@ const StepperIcons = ({ active, completed, icon }) => {
 
   return (
     <div
-      /*       className={clsx(classes.root, {
-          [classes.active]: active,
-          [classes.completed]: completed,
-        })} */
-      className={classes.root}
+      className={clsx(classes.root, {
+        [classes.active]: active,
+        [classes.completed]: completed,
+      })}
     >
       {icons[String(icon)]}
     </div>
@@ -119,7 +121,9 @@ const iconsStyle = makeStyles((theme) => ({
   },
 }));
 
-const CheckoutProcessor = ({ stripe }) => {
+const CheckoutProcessor = () => {
+  const { id: versionId } = useParams();
+
   const userIntents = useUserStore((state) => state.intents);
   const version = useOrderCheckout((state) => state.version.data);
   const intent = useOrderCheckout((state) => state.intent.data);
@@ -127,19 +131,27 @@ const CheckoutProcessor = ({ stripe }) => {
   const license = useOrderCheckout((state) => state.license);
   const secret = useOrderCheckout((state) => state.secret);
   const step = useOrderCheckout((state) => state.step);
+  const paymentSuccess = useOrderCheckout((state) => state.payment.success);
+  const paymentMessage = useOrderCheckout((state) => state.payment.message);
   const versionLoading = useOrderCheckout((state) => state.version.loading);
   const intentLoading = useOrderCheckout((state) => state.intent.loading);
   const discountLoading = useOrderCheckout((state) => state.discount.loading);
   const changeDiscount = useOrderCheckout((state) => state.changeDiscount);
   const changeStep = useOrderCheckout((state) => state.changeStep);
+  const fetchCheckout = useOrderCheckout((state) => state.fetchCheckout);
   const saveIntent = useOrderCheckout((state) => state.saveIntent);
   const submitPayment = useOrderCheckout((state) => state.submitPayment);
 
+  const stripe = useStripe();
   const elements = useElements();
   const history = useHistory();
   const location = useLocation();
 
+  const licenseValue =
+    location.state && location.state.license ? location.state.license : license;
+
   const globalClasses = globalStyles();
+  const classes = checkoutProcessorStyles();
 
   const {
     handleSubmit,
@@ -153,10 +165,7 @@ const CheckoutProcessor = ({ stripe }) => {
     reset,
   } = useForm({
     defaultValues: {
-      licenseType:
-        location.state && location.state.license
-          ? location.state.license
-          : license,
+      licenseType: licenseValue,
       licenseAssignee: "",
       licenseCompany: "",
       billingName: "",
@@ -210,7 +219,7 @@ const CheckoutProcessor = ({ stripe }) => {
     const isLastStep = step.current === step.length - 1;
     console.log("first", isFirstStep, "last", isLastStep);
     if (isLastStep) {
-      submitPayment({ values, stripe, elements, history });
+      submitPayment({ values, stripe, elements, history, changeStep });
     } else if (isFirstStep) {
       saveIntent({ values, userIntents, changeStep });
     } else {
@@ -246,106 +255,123 @@ const CheckoutProcessor = ({ stripe }) => {
             loading={intentLoading}
           />
         );
+      case 3:
+        return (
+          <CheckoutStatus
+            success={paymentSuccess}
+            message={paymentMessage}
+            version={version}
+          />
+        );
 
       default:
         return <div>Not Found</div>;
     }
   };
 
+  useEffect(() => {
+    fetchCheckout({ license: licenseValue, versionId });
+  }, []);
+
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} style={{ margin: 0 }}>
       {versionLoading || (version.id && stripe) ? (
         <>
           <Grid item xs={12} md={8}>
             <FormProvider control={control}>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <Card elevation={5}>
-                  <CardContent>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className={classes.checkoutProcessorForm}
+              >
+                <Card elevation={5} className={classes.checkoutProcessorCard}>
+                  <CardContent className={classes.checkoutProcessorContent}>
                     {intentLoading || stripe ? (
-                      <Box>
-                        <SkeletonWrapper
-                          variant="text"
-                          loading={intentLoading}
-                          width="100%"
-                        >
-                          <Stepper
-                            alternativeLabel
-                            connector={<Connector />}
-                            activeStep={step.current}
+                      <Box className={classes.checkoutProcessorWrapper}>
+                        {step.current !== 3 && (
+                          <SkeletonWrapper
+                            variant="text"
+                            loading={intentLoading}
+                            width="100%"
                           >
-                            {STEPS.map((e) => (
-                              <Step key={e}>
-                                <StepLabel StepIconComponent={StepperIcons} />
-                              </Step>
-                            ))}
-                          </Stepper>
-                        </SkeletonWrapper>
-                        <Box>
-                          <Grid container spacing={3}>
-                            {renderForm(step.current)}
-                            {step.current === 0 && (
-                              <List
-                                component="nav"
-                                aria-label="Features"
-                                style={{ width: "100%" }}
-                                disablePadding
-                              >
-                                {licenseOptions.map((item) => (
-                                  <ListItem>
-                                    <SkeletonWrapper
-                                      variant="text"
-                                      loading={intentLoading}
-                                      style={{ marginRight: 10 }}
-                                    >
-                                      <ListItemIcon>
-                                        <CheckIcon />
-                                      </ListItemIcon>
-                                    </SkeletonWrapper>
-                                    <SkeletonWrapper
-                                      variant="text"
-                                      loading={intentLoading}
-                                    >
-                                      <ListItemText primary={item.label} />
-                                    </SkeletonWrapper>
-                                  </ListItem>
-                                ))}
-                              </List>
-                            )}
-                          </Grid>
+                            <Stepper
+                              alternativeLabel
+                              connector={<Connector />}
+                              activeStep={step.current}
+                            >
+                              {STEPS.map((e) => (
+                                <Step key={e}>
+                                  <StepLabel StepIconComponent={StepperIcons} />
+                                </Step>
+                              ))}
+                            </Stepper>
+                          </SkeletonWrapper>
+                        )}
+                        <Box className={classes.checkoutProcessorMultiform}>
+                          {renderForm(step.current)}
+                          {step.current === 0 && (
+                            <List
+                              component="nav"
+                              aria-label="Features"
+                              style={{ width: "100%" }}
+                              disablePadding
+                            >
+                              {licenseOptions.map((item) => (
+                                <ListItem>
+                                  <SkeletonWrapper
+                                    variant="text"
+                                    loading={intentLoading}
+                                    style={{ marginRight: 10 }}
+                                  >
+                                    <ListItemIcon>
+                                      <CheckIcon />
+                                    </ListItemIcon>
+                                  </SkeletonWrapper>
+                                  <SkeletonWrapper
+                                    variant="text"
+                                    loading={intentLoading}
+                                  >
+                                    <ListItemText primary={item.label} />
+                                  </SkeletonWrapper>
+                                </ListItem>
+                              ))}
+                            </List>
+                          )}
                         </Box>
                       </Box>
                     ) : null}
                   </CardContent>
-                  <CardActions
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <SkeletonWrapper loading={intentLoading}>
-                      <Button
-                        variant="outlined"
-                        disabled={step.current === 0}
-                        onClick={() => changeStep({ value: -1 })}
-                      >
-                        Back
-                      </Button>
-                    </SkeletonWrapper>
-                    <SkeletonWrapper loading={intentLoading}>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        type="submit"
-                        disabled={formState.isSubmitting}
-                      >
-                        {intentLoading ? (
-                          <CircularProgress color="secondary" size={24} />
-                        ) : (
-                          "Next"
-                        )}
-                      </Button>
-                    </SkeletonWrapper>
-                  </CardActions>
+                  {step.current !== 3 && (
+                    <CardActions
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <SkeletonWrapper loading={intentLoading}>
+                        <Button
+                          variant="outlined"
+                          disabled={step.current === 0}
+                          onClick={() => changeStep({ value: -1 })}
+                        >
+                          Back
+                        </Button>
+                      </SkeletonWrapper>
+                      <SkeletonWrapper loading={intentLoading}>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          type="submit"
+                          disabled={formState.isSubmitting}
+                        >
+                          {intentLoading ? (
+                            <CircularProgress color="secondary" size={24} />
+                          ) : (
+                            "Next"
+                          )}
+                        </Button>
+                      </SkeletonWrapper>
+                    </CardActions>
+                  )}
                 </Card>
               </form>
             </FormProvider>
@@ -357,6 +383,7 @@ const CheckoutProcessor = ({ stripe }) => {
               discount={discount}
               handleDiscountChange={changeDiscount}
               loading={discountLoading}
+              step={step}
             />
             <br />
           </Grid>

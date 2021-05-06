@@ -5,7 +5,8 @@ import {
   CardExpiryElement,
   CardNumberElement,
 } from "@stripe/react-stripe-js";
-import React, { useState } from "react"; //, {useState }
+import React, { useImperativeHandle, useState } from "react"; //, {useState }
+
 const PaymentFormStyles = makeStyles((muiTheme) => ({
   fixed: {
     height: "100%",
@@ -81,9 +82,9 @@ export const StripeInput = (props) => {
     ...other
   } = props;
   const theme = useTheme();
-  const [mountNode, setMountNode] = React.useState(null);
+  const [mountNode, setMountNode] = useState(null);
 
-  React.useImperativeHandle(
+  useImperativeHandle(
     inputRef,
     () => ({
       focus: () => mountNode.focus(),
@@ -147,6 +148,7 @@ export const StripeTextField = (props) => {
 
 const PaymentForm = ({ secret, version }) => {
   const [state, setState] = useState({ elementError: {} });
+
   const classes = PaymentFormStyles();
 
   const cardsLogo = [

@@ -1,5 +1,6 @@
 import { Container, Grid } from "@material-ui/core";
 import React, { useEffect, useRef } from "react";
+import DownloadCard from "../../components/DownloadCard/index.js";
 import OrderCard from "../../components/OrderCard/index.js";
 import RatingWrapper from "../../components/RatingWrapper/index.js";
 import LicenseCard from "../../containers/LicenseCard/index.js";
@@ -45,6 +46,8 @@ const Order = ({ match }) => {
           <UserSection />
           <br />
           <ReviewCard paramId={paramId} highlightRef={highlightRef} />
+          <br />
+          <DownloadCard />
         </Grid>
         <Grid item xs={12} className={globalClasses.elementWidth}>
           <OrderCard />

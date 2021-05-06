@@ -40,7 +40,6 @@ const orderPreviewStyles = makeStyles((muiTheme) => ({
     backgroundColor: muiTheme.palette.background.default,
   },
   artworkPreviewCard: {
-    height: "100%",
     width: "100%",
     backgroundColor: muiTheme.palette.background.paper,
     display: "flex",

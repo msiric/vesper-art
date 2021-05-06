@@ -73,7 +73,7 @@ const ReviewCard = ({ paramId, highlightRef }) => {
         )}
       </CardContent>
       <Divider />
-      <CardActions style={{ padding: "16px 0" }}>
+      <CardActions>
         <SkeletonWrapper loading={loading} width="100%">
           <Box
             style={{

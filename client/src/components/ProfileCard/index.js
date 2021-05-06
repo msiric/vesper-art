@@ -27,12 +27,8 @@ const ProfileCard = ({ user, loading }) => {
 
   return (
     <Card className={classes.profileCardContainer} loading={loading}>
-      <SkeletonWrapper
-        loading={loading}
-        variant="circle"
-        className={classes.profileCardWrapper}
-      >
-        <Box className={classes.profileCardWrapper}>
+      <Box className={classes.profileCardWrapper}>
+        <SkeletonWrapper loading={loading} variant="circle">
           <Avatar
             component={RouterLink}
             to={`/user/${user.name}`}
@@ -41,8 +37,8 @@ const ProfileCard = ({ user, loading }) => {
             title={user.name}
             className={classes.profileCardAvatar}
           />
-        </Box>
-      </SkeletonWrapper>
+        </SkeletonWrapper>
+      </Box>
       <CardContent
         style={{
           width: "100%",
@@ -143,6 +139,7 @@ const ProfileCard = ({ user, loading }) => {
             color="textSecondary"
             component="p"
             align="center"
+            className={classes.profileCardDescription}
           >
             {user.description || "Nothing here yet"}
           </Typography>
