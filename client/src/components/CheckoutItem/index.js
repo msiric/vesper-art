@@ -4,7 +4,15 @@ import NumberFormat from "react-number-format";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import checkoutItemStyles from "./styles.js";
 
-const CheckoutItem = ({ label, description, amount, price, key, loading }) => {
+const CheckoutItem = ({
+  label,
+  description,
+  prefix,
+  amount,
+  price,
+  key,
+  loading,
+}) => {
   const classes = checkoutItemStyles();
 
   return (
@@ -32,6 +40,7 @@ const CheckoutItem = ({ label, description, amount, price, key, loading }) => {
         secondary={
           <div className={classes.rightList}>
             <SkeletonWrapper variant="text" loading={loading}>
+              {prefix && <span>{prefix}</span>}
               <NumberFormat
                 value={price}
                 displayType={"text"}

@@ -12,6 +12,9 @@ const checkoutSummaryStyles = makeStyles((muiTheme) => ({
     flexDirection: "column",
     paddingBottom: 8,
   },
+  checkoutSummaryActions: {
+    width: "100%",
+  },
   checkoutSummaryForm: {
     width: "100%",
   },

@@ -1,6 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -56,7 +55,7 @@ const CheckoutSummary = ({
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = async (values) => await handleDiscountChange(values);
+  const onSubmit = async (values) => await handleDiscountChange({ values });
 
   const history = useHistory();
 
@@ -95,11 +94,23 @@ const CheckoutSummary = ({
             label={version.title}
             description={
               state.summary.license
-                ? `${license} license`
+                ? `${state.summary.license} license`
                 : "No license selected"
             }
             amount="Price"
             price={state.summary.license ? state.summary.amount : 0}
+          />
+          <Divider />
+          <CheckoutItem
+            label="Platform fee"
+            description="Fixed fee"
+            amount="Amount"
+            prefix="+"
+            price={
+              state.summary.amount
+                ? (state.summary.amount * 0.05 + 2.35).toFixed(2)
+                : 0
+            }
           />
           <Divider />
           {discount ? (
@@ -108,22 +119,12 @@ const CheckoutSummary = ({
                 label="Discount"
                 description={`${discount.name} (${discount.discount * 100}%)`}
                 amount="Amount"
+                prefix="-"
                 price={(state.summary.amount * discount.discount).toFixed(2)}
               />
               <Divider />
             </>
           ) : null}
-          <CheckoutItem
-            label="Platform fee"
-            description="Fixed fee"
-            amount="Amount"
-            price={
-              state.summary.amount
-                ? (state.summary.amount * 0.05 + 2.35).toFixed(2)
-                : 0
-            }
-          />
-          <Divider />
           <CheckoutItem
             label="Order"
             description={
@@ -135,9 +136,11 @@ const CheckoutSummary = ({
             price={
               state.summary.amount
                 ? discount
-                  ? state.summary.amount -
-                    state.summary.amount * discount.discount +
-                    (state.summary.amount * 0.05 + 2.35).toFixed(2)
+                  ? (
+                      state.summary.amount -
+                      state.summary.amount * discount.discount +
+                      (state.summary.amount * 0.05 + 2.35)
+                    ).toFixed(2)
                   : (
                       state.summary.amount +
                       (state.summary.amount * 0.05 + 2.35)
@@ -147,18 +150,21 @@ const CheckoutSummary = ({
           />
         </List>
       </CardContent>
-      {step.current !== 3 && (
-        <CardActions className={classes.actions}>
+      {step.current === 2 && (
+        <CardActions className={classes.checkoutSummaryActions}>
           {/* $TODO Update intent when discount changes */}
           {discount ? (
-            <Button
+            <AsyncButton
               type="button"
-              color="error"
-              onClick={() => handleDiscountChange(null)}
               fullWidth
+              variant="outlined"
+              color="error"
+              onClick={() =>
+                handleDiscountChange({ values: { discountCode: null } })
+              }
             >
               Remove discount
-            </Button>
+            </AsyncButton>
           ) : (
             <FormProvider control={control}>
               <form

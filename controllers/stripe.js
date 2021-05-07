@@ -9,7 +9,10 @@ import { licenseValidation, orderValidation } from "../common/validation";
 import { stripe as processor } from "../config/secret.js";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
-import { fetchDiscountByCode } from "../services/postgres/discount.js";
+import {
+  fetchDiscountByCode,
+  fetchDiscountById,
+} from "../services/postgres/discount.js";
 import { addNewLicense } from "../services/postgres/license";
 import { addNewNotification } from "../services/postgres/notification";
 import { addNewOrder } from "../services/postgres/order.js";
@@ -25,13 +28,17 @@ import {
 } from "../services/postgres/stripe.js";
 import {
   addNewIntent,
-  editExistingIntent,
   editUserStripe,
   fetchIntentByParents,
   fetchUserById,
+  removeExistingIntent,
 } from "../services/postgres/user.js";
 import { generateUuids, sanitizeData } from "../utils/helpers.js";
 import { calculateTotalCharge } from "../utils/payment";
+
+export const isIntentPending = (intent) => {
+  return intent.status !== "succeeded" && intent.status !== "canceled";
+};
 
 export const receiveWebhookEvent = async ({
   stripeSignature,
@@ -105,7 +112,6 @@ export const applyDiscount = async ({
               const foundIntent = await fetchIntentByParents({
                 userId: foundUser.id,
                 versionId: foundVersion.id,
-                status: "pending",
                 connection,
               });
               if (!isObjectEmpty(foundIntent)) {
@@ -159,103 +165,133 @@ export const applyDiscount = async ({
 export const managePaymentIntent = async ({
   userId,
   versionId,
-  /*   discountId, */
+  discountId,
   artworkLicense,
   connection,
 }) => {
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
-    /*     const foundDiscount = discountId
-      ? await fetchDiscountById({ discountId, connection })
-      : null; */
-    const foundDiscount = null;
     const foundVersion = await fetchVersionDetails({ versionId, connection });
-    const licenseData = {
-      licenseAssignee: artworkLicense.assignee,
-      licenseCompany: artworkLicense.company,
-      licenseType: artworkLicense.type,
-    };
-    // $TODO Bolje sredit validaciju licence
-    // $TODO Sredit validnu licencu (npr, ako je "use": "included", ne moze bit odabran personal license)
-    // e.g. isArtworkFree(), isArtworkForSale(), isValidPersonalLicense(), isValidCommercialLicense()
-    await licenseValidation.validate(
-      sanitizeData({
-        ...licenseData,
-      })
-    );
     if (foundVersion) {
       if (foundVersion.artwork.active) {
         if (foundVersion.id === foundVersion.artwork.currentId) {
           if (foundVersion.artwork.owner.id !== foundUser.id) {
-            const foundIntent = await fetchIntentByParents({
-              userId: foundUser.id,
-              versionId: foundVersion.id,
-              status: "pending",
-              connection,
-            });
-            const {
-              buyerTotal,
-              sellerTotal,
-              platformTotal,
-              licensePrice,
-            } = calculateTotalCharge({
-              foundVersion,
-              foundDiscount,
-              licenseType: licenseData.licenseType,
-            });
-            const orderData = {
-              ...(isObjectEmpty(foundIntent) && { buyerId: foundUser.id }),
-              ...(isObjectEmpty(foundIntent) && {
-                sellerId: foundVersion.artwork.owner.id,
-              }),
-              ...(isObjectEmpty(foundIntent) && {
-                artworkId: foundVersion.artwork.id,
-              }),
-              ...(isObjectEmpty(foundIntent) && { versionId: foundVersion.id }),
-              discountId: !isObjectEmpty(foundDiscount)
-                ? foundDiscount.id
-                : null,
-              spent: buyerTotal,
-              earned: sellerTotal,
-              fee: platformTotal,
-              licenseData: {
-                ...licenseData,
-                licensePrice: licensePrice,
-              },
-            };
-            const paymentIntent = isObjectEmpty(foundIntent)
-              ? await constructStripeIntent({
-                  intentMethod: "card",
-                  intentAmount: buyerTotal,
-                  intentCurrency: "usd",
-                  intentFee: platformTotal,
-                  sellerId: foundVersion.artwork.owner.stripeId,
-                  orderData,
-                  connection,
-                })
-              : await updateStripeIntent({
-                  intentAmount: buyerTotal,
-                  intentFee: platformTotal,
-                  intentId: foundIntent.id,
-                  orderData,
-                  connection,
-                });
-            const savedIntent =
-              isObjectEmpty(foundIntent) &&
-              (await addNewIntent({
-                intentId: paymentIntent.id,
+            const foundDiscount = discountId
+              ? await fetchDiscountById({ discountId, connection })
+              : {};
+            if (!(discountId && isObjectEmpty(foundDiscount))) {
+              const foundIntent = await fetchIntentByParents({
                 userId: foundUser.id,
                 versionId: foundVersion.id,
-                status: "pending",
                 connection,
-              }));
-            return {
-              intent: {
-                id: paymentIntent.id,
-                secret: paymentIntent.client_secret,
-              },
-            };
-            throw createError(400, "License type is not valid");
+              });
+              const verifiedIntent = !isObjectEmpty(foundIntent)
+                ? await retrieveStripeIntent({
+                    intentId: foundIntent.id,
+                    connection,
+                  })
+                : {};
+              const shouldReinitialize =
+                isObjectEmpty(verifiedIntent) ||
+                !isIntentPending(verifiedIntent);
+              if (!(shouldReinitialize && !isObjectEmpty(foundDiscount))) {
+                const licenseData = shouldReinitialize
+                  ? {
+                      licenseAssignee: artworkLicense.assignee,
+                      licenseCompany: artworkLicense.company,
+                      licenseType: artworkLicense.type,
+                    }
+                  : { licenseType: artworkLicense.type };
+                // $TODO Bolje sredit validaciju licence
+                // $TODO Sredit validnu licencu (npr, ako je "use": "included", ne moze bit odabran personal license)
+                // e.g. isArtworkFree(), isArtworkForSale(), isValidPersonalLicense(), isValidCommercialLicense()
+                shouldReinitialize
+                  ? await licenseValidation.validate(
+                      sanitizeData({
+                        ...licenseData,
+                      })
+                    )
+                  : await Yup.reach(licenseValidation, "licenseType").validate(
+                      licenseData.licenseType
+                    );
+                const {
+                  buyerTotal,
+                  sellerTotal,
+                  platformTotal,
+                  licensePrice,
+                } = calculateTotalCharge({
+                  foundVersion,
+                  foundDiscount,
+                  licenseType: licenseData.licenseType,
+                });
+                const orderData = {
+                  ...(shouldReinitialize && { buyerId: foundUser.id }),
+                  ...(shouldReinitialize && {
+                    sellerId: foundVersion.artwork.owner.id,
+                  }),
+                  ...(shouldReinitialize && {
+                    artworkId: foundVersion.artwork.id,
+                  }),
+                  ...(shouldReinitialize && {
+                    versionId: foundVersion.id,
+                  }),
+                  discountId: !isObjectEmpty(foundDiscount)
+                    ? foundDiscount.id
+                    : null,
+                  spent: buyerTotal,
+                  earned: sellerTotal,
+                  fee: platformTotal,
+                  licenseData: {
+                    ...licenseData,
+                    licensePrice: licensePrice,
+                  },
+                };
+                // remove succeeded/canceled intent
+                if (
+                  !isObjectEmpty(verifiedIntent) &&
+                  !isIntentPending(verifiedIntent)
+                ) {
+                  await removeExistingIntent({
+                    intentId: verifiedIntent.id,
+                    connection,
+                  });
+                }
+                const paymentIntent = shouldReinitialize
+                  ? await constructStripeIntent({
+                      intentMethod: "card",
+                      intentAmount: buyerTotal,
+                      intentCurrency: "usd",
+                      intentFee: platformTotal,
+                      sellerId: foundVersion.artwork.owner.stripeId,
+                      orderData,
+                      connection,
+                    })
+                  : await updateStripeIntent({
+                      intentAmount: buyerTotal,
+                      intentFee: platformTotal,
+                      intentData: verifiedIntent,
+                      orderData,
+                      connection,
+                    });
+                // $TODO delete intent in the db if it succeeded or got canceled already
+                const savedIntent =
+                  shouldReinitialize &&
+                  (await addNewIntent({
+                    intentId: paymentIntent.id,
+                    userId: foundUser.id,
+                    versionId: foundVersion.id,
+                    connection,
+                  }));
+                return {
+                  intent: {
+                    id: paymentIntent.id,
+                    secret: paymentIntent.client_secret,
+                  },
+                };
+              }
+              throw createError(400, "Could not process the payment");
+            }
+            throw createError(400, "Could not apply discount");
           }
           throw createError(400, "You are the owner of this artwork");
         }
@@ -467,12 +503,11 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     connection,
   });
   console.log("ORDER SAVED");
-  await editExistingIntent({
+  await removeExistingIntent({
     intentId,
-    status: "succeeded",
     connection,
   });
-  console.log("INTENT UPDATED");
+  console.log("INTENT DELETED");
   // new start
   await addNewNotification({
     notificationId,

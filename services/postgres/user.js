@@ -702,19 +702,17 @@ export const fetchIntentByCreds = async ({
   intentId,
   userId,
   versionId,
-  status,
   connection,
 }) => {
   const foundIntent = await connection
     .getRepository(Intent)
     .createQueryBuilder("intent")
     .where(
-      "intent.id = :intentId AND intent.ownerId = :userId AND intent.versionId = :versionId AND intent.status = :status",
+      "intent.id = :intentId AND intent.ownerId = :userId AND intent.versionId = :versionId",
       {
         intentId,
         userId,
         versionId,
-        status,
       }
     )
     .getOne();
@@ -725,20 +723,15 @@ export const fetchIntentByCreds = async ({
 export const fetchIntentByParents = async ({
   userId,
   versionId,
-  status,
   connection,
 }) => {
   const foundIntent = await connection
     .getRepository(Intent)
     .createQueryBuilder("intent")
-    .where(
-      "intent.ownerId = :userId AND intent.versionId = :versionId AND intent.status = :status",
-      {
-        userId,
-        versionId,
-        status,
-      }
-    )
+    .where("intent.ownerId = :userId AND intent.versionId = :versionId", {
+      userId,
+      versionId,
+    })
     .getOne();
   console.log(foundIntent);
   return foundIntent;
@@ -749,10 +742,9 @@ export const addNewIntent = async ({
   intentId,
   userId,
   versionId,
-  status,
   connection,
 }) => {
-  console.log("INTENT CREATION", intentId, userId, versionId, status);
+  console.log("INTENT CREATION", intentId, userId, versionId);
   const savedIntent = await connection
     .createQueryBuilder()
     .insert()
@@ -762,7 +754,6 @@ export const addNewIntent = async ({
         id: intentId,
         ownerId: userId,
         versionId,
-        status,
       },
     ])
     .execute();
@@ -770,17 +761,17 @@ export const addNewIntent = async ({
   return savedIntent;
 };
 
-export const editExistingIntent = async ({ intentId, status, connection }) => {
-  const updatedIntent = await connection
+export const removeExistingIntent = async ({ intentId, connection }) => {
+  const deletedIntent = await connection
     .createQueryBuilder()
-    .update(Intent)
-    .set({ status: status })
+    .delete()
+    .from(Intent)
     .where("id = :intentId", {
       intentId,
     })
     .execute();
-  console.log(updatedIntent);
-  return updatedIntent;
+  console.log(deletedIntent);
+  return deletedIntent;
 };
 
 // $Needs testing (mongo -> postgres)

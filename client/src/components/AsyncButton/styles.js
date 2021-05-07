@@ -3,6 +3,7 @@ import { artepunktTheme } from "../../styles/theme";
 
 const asyncButtonStyles = makeStyles((muiTheme) => ({
   buttonContainer: {
+    width: "100%",
     position: "relative",
     display: "flex",
     justifyContent: "center",

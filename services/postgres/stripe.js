@@ -89,23 +89,22 @@ export const constructStripeIntent = async ({
 };
 
 export const updateStripeIntent = async ({
-  intentId,
+  intentData,
   intentAmount,
   intentFee,
   orderData,
   connection,
 }) => {
-  console.log("update", intentId, intentAmount, intentFee, orderData);
-  const foundIntent = await stripe.paymentIntents.retrieve(intentId);
-  const foundOrder = JSON.parse(foundIntent.metadata.orderData);
-  for (let item in orderData) {
-    foundOrder[item] = orderData[item];
-  }
-  const updatedIntent = await stripe.paymentIntents.update(intentId, {
+  const foundOrder = JSON.parse(intentData.metadata.orderData);
+  const updatedIntent = await stripe.paymentIntents.update(intentData.id, {
     amount: intentAmount,
     application_fee_amount: intentFee,
     metadata: {
-      orderData: JSON.stringify(foundOrder),
+      orderData: JSON.stringify({
+        ...foundOrder,
+        ...orderData,
+        licenseData: { ...foundOrder.licenseData, ...orderData.licenseData },
+      }),
     },
   });
   return updatedIntent;

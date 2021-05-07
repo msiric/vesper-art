@@ -1,7 +1,8 @@
 import { CardNumberElement } from "@stripe/react-stripe-js";
 import create from "zustand";
-import { getCheckout } from "../../services/checkout";
-import { patchIntent, postIntent } from "../../services/stripe";
+import { isObjectEmpty } from "../../../../common/helpers";
+import { getCheckout, getDiscount } from "../../services/checkout";
+import { postIntent } from "../../services/stripe";
 
 const STEPS = [
   "License information",
@@ -51,7 +52,6 @@ const initActions = (set, get) => ({
         license: license || initialState.license,
         version: { data: data.version, loading: false, error: false },
         billing: billing,
-        discount: { data: data.discount, loading: false, error: false },
       }));
     } catch (err) {
       set((state) => ({ ...state }));
@@ -142,12 +142,11 @@ const initActions = (set, get) => ({
       step: { ...state.step, current: state.step.current + value },
     }));
   },
-  saveIntent: async ({ values, userIntents, changeStep }) => {
+  saveIntent: async ({ values, changeStep }) => {
     try {
       // $TODO REMOVE INTENT AND FETCH FROM API
       const version = get().version.data;
       const discount = get().discount.data;
-      const intentId = userIntents[version.id] || null;
       const { data } = await postIntent.request({
         versionId: version.id,
         artworkLicense: {
@@ -156,28 +155,8 @@ const initActions = (set, get) => ({
           type: values.licenseType,
         },
         discountId: discount ? discount.id : null,
-        intentId,
       });
-      /*       if (!intentId) {
-        try {
-          await postCheckout.request({
-            userId: userStore.id,
-            data: {
-              version: state.version.id,
-              intentId: data.intent.id,
-            },
-          });
-          // $TODO REMOVE INTENT AND FETCH FROM API
-          userDispatch({
-            type: "updateIntents",
-            intents: {
-              [state.version.id]: data.intent.id,
-            },
-          });
-        } catch (err) {
-          console.log(err);
-        }
-      } */
+
       set((state) => ({
         ...state,
         secret: data.intent.secret,
@@ -189,23 +168,14 @@ const initActions = (set, get) => ({
       set((state) => ({ ...set, intent: { ...state.intent, loading: false } }));
     }
   },
-  changeDiscount: async ({ values, actions, userIntents }) => {
+  changeDiscount: async ({ values }) => {
     try {
+      const discount = get().discount.data;
       const version = get().version.data;
       const license = get().license;
-      // $TODO REMOVE INTENT AND FETCH FROM API
-      const intentId = userIntents[version.id] || null;
-      const {
-        data: { payload },
-      } = values
-        ? /* await getDiscount.request({ discountCode: values.discountCode }) */
-          await patchIntent.request({
-            versionId: version.id,
-            discountCode: values.discountCode,
-            licenseType: license,
-          })
-        : { data: { payload: null } };
-      if (intentId) {
+      console.log("LICENSERINO ", license, discount);
+      if (discount && values.discountCode === null) {
+        console.log("REMOVEAS DISCOUNT");
         await postIntent.request({
           versionId: version.id,
           artworkLicense: {
@@ -213,15 +183,46 @@ const initActions = (set, get) => ({
             company: "",
             type: license,
           },
-          discountId: payload ? payload.id : null,
-          intentId,
+          discountId: null,
         });
+        set((state) => ({
+          ...set,
+          discount: {
+            ...state.discount,
+            data: null,
+            loading: false,
+            error: false,
+          },
+        }));
       }
-      set((state) => {
-        console.log(state);
-        return { ...state, discount: { ...state.discount, data: payload } };
-      });
-      actions && actions.setSubmitting(false);
+      if (!discount && values.discountCode) {
+        const { data } = await getDiscount.request({
+          discountCode: values.discountCode,
+        });
+        if (!isObjectEmpty(data.payload)) {
+          console.log("ADDAS DISCOUNT");
+          await postIntent.request({
+            versionId: version.id,
+            artworkLicense: {
+              assignee: "",
+              company: "",
+              type: license,
+            },
+            discountId: data.payload.id,
+          });
+          set((state) => ({
+            ...set,
+            discount: {
+              ...state.discount,
+              data: data.payload,
+              loading: false,
+              error: false,
+            },
+          }));
+        } else {
+          console.log("$TODO discount does not exist");
+        }
+      }
     } catch (err) {
       console.log(err);
     }
