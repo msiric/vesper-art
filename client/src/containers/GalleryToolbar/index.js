@@ -23,7 +23,7 @@ const GalleryToolbar = ({ formatArtwork, location }) => {
   }, [location, display]);
 
   return (
-    <Box style={{ height: "100%" }}>
+    <Box style={{ display: "flex", justifyContent: "space-between" }}>
       <MainHeading text="Gallery" />
       <FormControl variant="outlined" style={{ marginBottom: "12px" }}>
         <InputLabel id="data-display">Display</InputLabel>

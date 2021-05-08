@@ -80,13 +80,14 @@ const Gallery = () => {
 
   return (
     <Container key={location.key} className={globalClasses.gridContainer}>
-      <Grid container spacing={2}>
+      <Grid container>
         <Card
           style={{
             width: "100%",
             minHeight: "500px",
             display: "flex",
             flexDirection: "column",
+            padding: 24,
           }}
         >
           <GalleryToolbar formatArtwork={formatArtwork} />

@@ -1,11 +1,11 @@
 import { Box, Card } from "@material-ui/core";
 import React, { useEffect } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
 import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
 import { SRLWrapper, useLightbox } from "simple-react-lightbox";
 import EmptySection from "../../components/EmptySection/index.js";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
+import InfiniteList from "../../components/InfiniteList";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
@@ -23,16 +23,18 @@ const breakpointColumns = {
 
 const GalleryPanel = ({ formatArtwork }) => {
   const userId = useUserStore((state) => state.id);
+  const userUsername = useUserStore((state) => state.name);
 
   const display = useUserGallery((state) => state.display);
   const loading = useUserGallery((state) => state[display].loading);
+  const hasMore = useUserGallery((state) => state[display].hasMore);
+  const error = useUserGallery((state) => state[display].error);
   const selection = useUserGallery((state) => state[display]);
   const index = useUserGallery((state) => state.index);
   const media = useUserGallery((state) => state.media);
   const covers = useUserGallery((state) => state.covers);
   const fetching = useUserGallery((state) => state.fetching);
   const captions = useUserGallery((state) => state.captions);
-  const hasMore = useUserGallery((state) => state[display].hasMore);
   const fetchUser = useUserGallery((state) => state.fetchUser);
   const toggleGallery = useUserGallery((state) => state.toggleGallery);
 
@@ -86,15 +88,17 @@ const GalleryPanel = ({ formatArtwork }) => {
   }, [selection]);
 
   return (
-    <Box>
+    <Box style={{ height: "100%" }}>
       <SkeletonWrapper loading={loading} width="100%" height="100%">
         {covers.length ? (
-          <InfiniteScroll
+          <InfiniteList
             className={classes.scroller}
             dataLength={covers.length}
-            next={fetchUser}
+            next={() => fetchUser({ userId, userUsername, formatArtwork })}
             hasMore={hasMore}
+            loading={loading}
             loader={<LoadingSpinner />}
+            error={error}
           >
             <Masonry
               breakpointCols={breakpointColumns}
@@ -127,7 +131,7 @@ const GalleryPanel = ({ formatArtwork }) => {
                 </Card>
               ))}
             </Masonry>
-          </InfiniteScroll>
+          </InfiniteList>
         ) : (
           <EmptySection
             label={
