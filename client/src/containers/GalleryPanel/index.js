@@ -1,5 +1,5 @@
 import { Box, Card } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
@@ -24,16 +24,14 @@ const breakpointColumns = {
 const GalleryPanel = ({ formatArtwork }) => {
   const userId = useUserStore((state) => state.id);
 
-  const display = useUserGallery((state) => {
-    console.log(state);
-    return state.display;
-  });
+  const display = useUserGallery((state) => state.display);
   const loading = useUserGallery((state) => state[display].loading);
-  const fetching = useUserGallery((state) => state.fetching);
+  const selection = useUserGallery((state) => state[display]);
+  const index = useUserGallery((state) => state.index);
   const media = useUserGallery((state) => state.media);
   const covers = useUserGallery((state) => state.covers);
+  const fetching = useUserGallery((state) => state.fetching);
   const captions = useUserGallery((state) => state.captions);
-  const index = useUserGallery((state) => state.index);
   const hasMore = useUserGallery((state) => state[display].hasMore);
   const fetchUser = useUserGallery((state) => state.fetchUser);
   const toggleGallery = useUserGallery((state) => state.toggleGallery);
@@ -80,6 +78,12 @@ const GalleryPanel = ({ formatArtwork }) => {
       fillColor: artepunktTheme.palette.primary.main,
     },
   };
+
+  useEffect(() => {
+    if (index !== null) {
+      openLightbox(index);
+    }
+  }, [selection]);
 
   return (
     <Box>
