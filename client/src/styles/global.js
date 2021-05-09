@@ -31,6 +31,32 @@ const GlobalStyles = makeStyles((muiTheme) => ({
     ".illustrationPrimary": {
       fill: artepunktTheme.palette.primary.main,
     },
+    ".SRLElementWrapper": {
+      "&::after": {
+        display: (props) => (props ? "block" : "none"),
+        content: '""',
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        marginTop: -30,
+        marginLeft: -30,
+        width: 50,
+        height: 50,
+        borderRadius: 50,
+        border: "5px solid grey",
+        borderTopColor: "black",
+        animation: `$loading 2s linear infinite`,
+        zIndex: 10000,
+      },
+    },
+    "@keyframes loading": {
+      "0%": {
+        transform: "rotate(0deg)",
+      },
+      "100%": {
+        transform: "rotate(360deg)",
+      },
+    },
   },
 }));
 

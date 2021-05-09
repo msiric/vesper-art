@@ -40,7 +40,7 @@ const GalleryPanel = ({ formatArtwork }) => {
 
   const history = useHistory();
 
-  const globalClasses = globalStyles();
+  const globalClasses = globalStyles(fetching);
   const classes = galleryPanelStyles();
 
   const { openLightbox } = useLightbox();
@@ -125,7 +125,7 @@ const GalleryPanel = ({ formatArtwork }) => {
                       source={item.media ? item.media : item.cover}
                       cover={item.cover}
                       placeholder={item.dominant}
-                      loading={idx === index && loading ? true : false}
+                      loading={idx === index && fetching ? true : false}
                     />
                   }
                 </Card>
