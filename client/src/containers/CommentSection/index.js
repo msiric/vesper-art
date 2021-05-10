@@ -17,7 +17,7 @@ import { useUserStore } from "../../contexts/global/user";
 import { useArtworkComments } from "../../contexts/local/artworkComments";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import AddCommentForm from "../../forms/CommentForm/index.js";
-import useOnScreen from "../../hooks/useOnScreen";
+import useVisibleElement from "../../hooks/useVisibleElement";
 import { List, Typography } from "../../styles/theme.js";
 import commentSectionStyles from "./styles.js";
 
@@ -54,7 +54,7 @@ const CommentSection = ({
 
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
-  const isVisible = useOnScreen(commentsRef, commentsFetched.current);
+  const isVisible = useVisibleElement(commentsRef, commentsFetched.current);
   const query = queryString.parse(location.search);
   const classes = commentSectionStyles();
 

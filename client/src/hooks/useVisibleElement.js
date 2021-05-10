@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const useOnScreen = (ref, shouldStop) => {
+const useVisibleElement = (ref, shouldStop) => {
   const [isIntersecting, setIntersecting] = useState(false);
 
   const observer = new IntersectionObserver(([entry]) =>
@@ -22,4 +22,4 @@ const useOnScreen = (ref, shouldStop) => {
   return isIntersecting;
 };
 
-export default useOnScreen;
+export default useVisibleElement;

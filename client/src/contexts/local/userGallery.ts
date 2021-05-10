@@ -136,23 +136,29 @@ const initActions = (set, get) => ({
               userId,
               artworkId: identifier,
             });
-      const newArtwork = {
-        ...selection,
-        [item.cover]: {
-          ...selection[item.cover],
-          media: data.url,
-        },
+      let image: any = new Image();
+      image.src = data.url;
+      image.onload = () => {
+        const newArtwork = {
+          ...selection,
+          [item.cover]: {
+            ...selection[item.cover],
+            media: data.url,
+          },
+        };
+        const formattedArtwork = formatArtwork(newArtwork);
+        set((state) => ({
+          ...state,
+          [display]: { ...state[display], data: newArtwork },
+          covers: formattedArtwork.covers,
+          media: formattedArtwork.media,
+          captions: formattedArtwork.captions,
+          fetching: false,
+          index,
+        }));
+        image.onload = null;
+        image = null;
       };
-      const formattedArtwork = formatArtwork(newArtwork);
-      set((state) => ({
-        ...state,
-        [display]: { ...state[display], data: newArtwork },
-        covers: formattedArtwork.covers,
-        media: formattedArtwork.media,
-        captions: formattedArtwork.captions,
-        fetching: false,
-        index,
-      }));
     }
   },
   changeSelection: (e) => {

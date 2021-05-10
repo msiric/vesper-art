@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import ShareModal from "../ShareModal/index.js";
 import shareButtonStyles from "./styles.js";
 
-const ShareButton = ({ link, type, labeled }) => {
+const ShareButton = ({ link, type, labeled, ...props }) => {
   const [state, setState] = useState({
     modal: {
       open: false,
@@ -41,6 +41,7 @@ const ShareButton = ({ link, type, labeled }) => {
           color="primary"
           startIcon={<ShareIcon />}
           onClick={() => handleModalOpen()}
+          {...props}
         >
           Share
         </Button>
@@ -49,6 +50,7 @@ const ShareButton = ({ link, type, labeled }) => {
           aria-label="Share artwork"
           onClick={() => handleModalOpen()}
           className={classes.artworkColor}
+          {...props}
         >
           <ShareIcon />
         </IconButton>

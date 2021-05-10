@@ -8,7 +8,13 @@ import { useUserStore } from "../../contexts/global/user.js";
 import { deleteFavorite, postFavorite } from "../../services/artwork.js";
 import favoriteButtonStyles from "./styles.js";
 
-const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
+const FavoriteButton = ({
+  artwork,
+  favorited,
+  labeled,
+  handleCallback,
+  ...props
+}) => {
   const [state, setState] = useState({ loading: false });
   const updateFavorites = useUserStore((state) => state.updateFavorites);
 
@@ -59,6 +65,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
           ? handleUnsaveArtwork(artwork.id)
           : handleSaveArtwork(artwork.id)
       }
+      {...props}
     >
       {favorited ? "Unfavorite" : "Favorite"}
     </Button>
@@ -72,6 +79,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
           : handleSaveArtwork(artwork.id)
       }
       disabled={state.loading}
+      {...props}
     >
       {favorited ? <FavoritedIcon /> : <FavoriteIcon />}
     </IconButton>

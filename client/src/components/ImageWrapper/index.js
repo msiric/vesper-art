@@ -1,20 +1,9 @@
 import { Box } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link as RouterLink } from "react-router-dom";
+import useProgressiveImage from "../../hooks/useProgressiveImage";
 import LoadingSpinner from "../LoadingSpinner/index.js";
 import imageWrapperStyles from "./styles.js";
-
-export const useProgressiveImage = (source) => {
-  const [state, setState] = useState({ downloaded: false });
-
-  useEffect(() => {
-    const image = new Image();
-    image.src = source;
-    image.onload = () => setState({ downloaded: true });
-  }, [source]);
-
-  return state.downloaded;
-};
 
 const ImageWrapper = ({
   redirect,

@@ -11,36 +11,31 @@ import downloadCardStyles from "./styles.js";
 const DownloadCard = ({ paramId }) => {
   const userId = useUserStore((state) => state.id);
 
-  const buyer = useOrderDetails((state) => state.order.data.buyer);
   const loading = useOrderDetails((state) => state.order.loading);
   const downloadArtwork = useOrderDetails((state) => state.downloadArtwork);
-
-  const shouldDownload = userId === buyer.id;
 
   const history = useHistory();
   const classes = downloadCardStyles();
 
   return (
     <Card>
-      {shouldDownload || loading ? (
-        <Box className={classes.downloadCardWrapper}>
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography className={classes.downloadCardLabel}>
-              Download high resolution artwork
-            </Typography>
-          </SkeletonWrapper>
-          <SkeletonWrapper loading={loading}>
-            <Button
-              variant="outlined"
-              startIcon={<DownloadIcon />}
-              className={classes.downloadCardButton}
-              onClick={() => downloadArtwork({ orderId: paramId, userId })}
-            >
-              Download
-            </Button>
-          </SkeletonWrapper>
-        </Box>
-      ) : null}
+      <Box className={classes.downloadCardWrapper}>
+        <SkeletonWrapper variant="text" loading={loading}>
+          <Typography className={classes.downloadCardLabel}>
+            Download high resolution artwork
+          </Typography>
+        </SkeletonWrapper>
+        <SkeletonWrapper loading={loading}>
+          <Button
+            variant="outlined"
+            startIcon={<DownloadIcon />}
+            className={classes.downloadCardButton}
+            onClick={() => downloadArtwork({ orderId: paramId, userId })}
+          >
+            Download
+          </Button>
+        </SkeletonWrapper>
+      </Box>
     </Card>
   );
 };

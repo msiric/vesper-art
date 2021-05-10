@@ -5,7 +5,7 @@ import ImageWrapper from "../../components/ImageWrapper/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
-import { Typography } from "../../styles/theme.js";
+import { artepunktTheme, Typography } from "../../styles/theme.js";
 import orderPreviewStyles from "./styles.js";
 
 const OrderPreview = () => {
@@ -25,6 +25,7 @@ const OrderPreview = () => {
           display: "flex",
           justifyContent: "center",
           maxHeight: 700,
+          padding: artepunktTheme.padding.containerLg,
         }}
       >
         <SkeletonWrapper

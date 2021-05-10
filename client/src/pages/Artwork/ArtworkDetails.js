@@ -22,7 +22,7 @@ import CommentSection from "../../containers/CommentSection/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import LicenseForm from "../../forms/LicenseForm/index.js";
-import useOnScreen from "../../hooks/useOnScreen.js";
+import useVisibleElement from "../../hooks/useVisibleElement.js";
 import {
   deleteComment,
   getComment,
@@ -74,7 +74,7 @@ const ArtworkDetails = ({ match, location }) => {
 
   const [state, setState] = useState({ ...initialState });
   const commentsRef = useRef();
-  const isVisible = useOnScreen(commentsRef);
+  const isVisible = useVisibleElement(commentsRef);
   const { enqueueSnackbar } = useSnackbar();
 
   const history = useHistory();

@@ -4,7 +4,7 @@ import EmptySection from "../../components/EmptySection/index.js";
 import SwipeCard from "../../components/SwipeCard/index.js";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import { useUserProfile } from "../../contexts/local/userProfile";
-import useOnScreen from "../../hooks/useOnScreen.js";
+import useVisibleElement from "../../hooks/useVisibleElement.js";
 import globalStyles from "../../styles/global.js";
 import UserArtwork from "../UserArtwork/index.js";
 import UserFavorites from "../UserFavorites/index.js";
@@ -22,7 +22,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const fetchFavorites = useUserArtwork((state) => state.fetchFavorites);
   const changeTab = useUserArtwork((state) => state.changeTab);
 
-  const isVisible = useOnScreen(artworkRef, artworkFetched.current);
+  const isVisible = useVisibleElement(artworkRef, artworkFetched.current);
 
   const globalClasses = globalStyles();
   const classes = profileArtworkStyles();

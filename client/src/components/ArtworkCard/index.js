@@ -74,7 +74,7 @@ const ArtworkCard = ({
           <SkeletonWrapper variant="text" loading={loading}>
             <Typography
               noWrap
-              variant="h5"
+              variant="h6"
               component={RouterLink}
               to={`/artwork/${item.id}`}
               className={classes.artworkTitle}
