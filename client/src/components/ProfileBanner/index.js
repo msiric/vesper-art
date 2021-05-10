@@ -165,7 +165,7 @@ const ProfileBanner = ({ profile, loading }) => {
             marginTop="6px"
             flexGrow="1"
           >
-            <ShareButton link="" type="profile" />
+            <ShareButton link={`/user/${profile.name}`} type="profile" />
           </Box>
         </Box>
         <Box

@@ -134,15 +134,13 @@ const ArtworkCard = ({
                 <EditIcon />
               </IconButton>
             ) : (
-              [
-                <FavoriteButton
-                  artwork={item}
-                  favorited={userFavorites[item.id]}
-                  handleCallback={handleArtworkSave}
-                />,
-                <ShareButton link={`artwork/${artwork.id}`} type="artwork" />,
-              ]
+              <FavoriteButton
+                artwork={item}
+                favorited={userFavorites[item.id]}
+                handleCallback={handleArtworkSave}
+              />
             )}
+            <ShareButton link={`/artwork/${artwork.id}`} type="artwork" />
           </Box>
           <Box>
             <IconButton

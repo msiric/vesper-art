@@ -34,7 +34,7 @@ const ShareModal = ({
   const [state, setState] = useState({
     popper: { label: "", anchor: null },
   });
-  const url = `${window.location}${href}`;
+  const url = `${window.location.origin}${href}`;
   const title = "test"; // $TODO appStore.brand;
 
   const classes = shareModalStyles();

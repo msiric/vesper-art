@@ -87,7 +87,11 @@ const ArtworkActions = ({ paramId }) => {
               />
             )}
             <SkeletonWrapper loading={loading} width="100%">
-              <ShareButton link="" type="artwork" labeled />
+              <ShareButton
+                link={`/artwork/${artwork.id}`}
+                type="artwork"
+                labeled
+              />
             </SkeletonWrapper>
           </Box>
         </SkeletonWrapper>
