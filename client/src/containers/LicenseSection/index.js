@@ -1,7 +1,9 @@
-import { Typography } from "@material-ui/core";
 import { format } from "date-fns";
 import { withSnackbar } from "notistack";
 import React from "react";
+import DataTable from "../../components/DataTable";
+import EmptySection from "../../components/EmptySection";
+import SubHeading from "../../components/SubHeading";
 import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
 
 const LicenseSection = () => {
@@ -12,48 +14,74 @@ const LicenseSection = () => {
     return format(new Date(date), type);
   };
 
-  return !loading ? (
-    <div className="table-responsive">
-      <table className="simple">
-        <thead>
-          <tr>
-            <th>Fingerprint</th>
-            <th>Type</th>
-            <th>Buyer</th>
-            <th>Seller</th>
-            <th>Price</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr key={license.id}>
-            <td>
-              <Typography className="truncate">
-                {license.fingerprint}
-              </Typography>
-            </td>
-            <td className="w-64 text-right">
-              <span className="truncate">{license.type}</span>
-            </td>
-            <td className="w-64 text-right">
-              <span className="truncate">{license.owner.name}</span>
-            </td>
-            <td className="w-64 text-right">
-              <span className="truncate">{license.artwork.owner.name}</span>
-            </td>
-            <td className="w-64 text-right">
-              <span className="truncate">${license.price}</span>
-            </td>
-            <td className="w-64 text-right">
-              <span className="truncate">
-                {formatDate(license.created, "dd/MM/yyyy")}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  ) : null;
+  return loading || !license.id ? (
+    <EmptySection label="Enter license fingerprint to inspect the details" />
+  ) : (
+    <DataTable
+      title={<SubHeading text="License" loading={loading} />}
+      columns={[
+        {
+          name: "Id",
+          options: {
+            display: false,
+          },
+        },
+        {
+          name: "Fingerprint",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Type",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Assignee",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Value",
+          options: {
+            sort: false,
+            customBodyRender: (value, tableMeta, updateValue) =>
+              typeof value !== "undefined"
+                ? value
+                  ? `$${value}`
+                  : "Free"
+                : null,
+          },
+        },
+        {
+          name: "Date",
+          options: {
+            sort: false,
+          },
+        },
+      ]}
+      data={[
+        [
+          license.id,
+          license.fingerprint,
+          license.type,
+          license.assignee,
+          license.price,
+          license.created && formatDate(license.created, "dd/MM/yy HH:mm"),
+        ],
+      ]}
+      empty={<EmptySection label="License not found" loading={loading} />}
+      loading={loading}
+      redirect=""
+      selectable={false}
+      searchable={false}
+      pagination={false}
+      addOptions={{ enabled: false, title: "", route: "" }}
+    />
+  );
 };
 
 export default withSnackbar(LicenseSection);

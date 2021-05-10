@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CardActions, CardContent } from "@material-ui/core";
+import { Card, CardActions, CardContent } from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import { withSnackbar } from "notistack";
 import React from "react";
@@ -37,32 +37,34 @@ const VerifierCard = () => {
   });
 
   return (
-    <FormProvider control={control}>
-      <form
-        onSubmit={handleSubmit(() =>
-          fetchLicense({ licenseData: getValues() })
-        )}
-      >
-        <CardContent>
-          <VerifierForm errors={errors} loading={loading} />
-        </CardContent>
-        <CardActions
-          style={{ display: "flex", justifyContent: "space-between" }}
+    <Card>
+      <FormProvider control={control}>
+        <form
+          onSubmit={handleSubmit(() =>
+            fetchLicense({ licenseData: getValues() })
+          )}
         >
-          <AsyncButton
-            type="submit"
-            fullWidth
-            variant="outlined"
-            color="primary"
-            padding
-            loading={formState.isSubmitting}
-            startIcon={<UploadIcon />}
+          <CardContent>
+            <VerifierForm errors={errors} loading={loading} />
+          </CardContent>
+          <CardActions
+            style={{ display: "flex", justifyContent: "space-between" }}
           >
-            Verify
-          </AsyncButton>
-        </CardActions>
-      </form>
-    </FormProvider>
+            <AsyncButton
+              type="submit"
+              fullWidth
+              variant="outlined"
+              color="primary"
+              padding
+              loading={formState.isSubmitting}
+              startIcon={<UploadIcon />}
+            >
+              Verify
+            </AsyncButton>
+          </CardActions>
+        </form>
+      </FormProvider>
+    </Card>
   );
 };
 
