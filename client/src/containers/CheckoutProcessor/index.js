@@ -214,7 +214,7 @@ const CheckoutProcessor = () => {
           },
         ];
 
-  const onSubmit = (values, actions) => {
+  const onSubmit = (values) => {
     const isFirstStep = step.current === 0;
     const isLastStep = step.current === step.length - 1;
     console.log("first", isFirstStep, "last", isLastStep);
