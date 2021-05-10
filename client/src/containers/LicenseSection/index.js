@@ -76,7 +76,8 @@ const LicenseSection = () => {
       empty={<EmptySection label="License not found" loading={loading} />}
       loading={loading}
       redirect=""
-      selectable={false}
+      selectable="none"
+      hoverable={false}
       searchable={false}
       pagination={false}
       addOptions={{ enabled: false, title: "", route: "" }}

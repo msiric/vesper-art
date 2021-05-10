@@ -169,7 +169,8 @@ const ArtworkDatatable = () => {
       }
       loading={loading}
       redirect="artwork"
-      selectable={false}
+      selectable="none"
+      hoverable={true}
       searchable={true}
       pagination={true}
       addOptions={{

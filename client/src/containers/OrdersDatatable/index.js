@@ -115,7 +115,8 @@ const OrdersDatatable = () => {
       empty={<EmptySection label="You have no orders" loading={loading} />}
       loading={loading}
       redirect="orders"
-      selectable={false}
+      selectable="none"
+      hoverable={true}
       searchable={true}
       pagination={true}
       addOptions={{ enabled: false, title: "", route: "" }}

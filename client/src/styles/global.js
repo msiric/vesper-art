@@ -32,10 +32,10 @@ const GlobalStyles = makeStyles((muiTheme) => ({
       fill: artepunktTheme.palette.primary.main,
     },
     ".SRLElementWrapper": {
-      opacity: (props) => (props ? "0.3 !important" : "1 !important"),
+      opacity: ({ fetching }) => (fetching ? "0.3 !important" : "1 !important"),
       "&:last-of-type": {
         "&::after": {
-          display: (props) => (props ? "block" : "none"),
+          display: ({ fetching }) => (fetching ? "block" : "none"),
           content: '""',
           position: "absolute",
           top: "50%",
@@ -51,6 +51,9 @@ const GlobalStyles = makeStyles((muiTheme) => ({
           zIndex: 10000,
         },
       },
+    },
+    ".MuiTableCell-body": {
+      cursor: ({ hoverable }) => (hoverable ? "pointer" : "auto"),
     },
     "@keyframes loading": {
       "0%": {

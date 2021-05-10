@@ -3,6 +3,7 @@ import { Add as AddIcon } from "@material-ui/icons";
 import MUIDataTable from "mui-datatables";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import globalStyles from "../../styles/global";
 import LoadingSpinner from "../LoadingSpinner";
 
 const CustomToolbar = ({ addOptions }) => {
@@ -31,6 +32,7 @@ const DataTable = ({
   loading,
   redirect,
   selectable,
+  hoverable,
   searchable,
   pagination,
   addOptions,
@@ -39,6 +41,8 @@ const DataTable = ({
   const [responsive, setResponsive] = useState("simple");
   const [tableBodyHeight, setTableBodyHeight] = useState("100%");
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
+
+  const globalClasses = globalStyles({ hoverable });
 
   const history = useHistory();
 
@@ -53,6 +57,7 @@ const DataTable = ({
     viewColumns: false,
     filterType: "dropdown",
     selectableRows: selectable,
+    rowHover: hoverable,
     search: searchable,
     pagination,
     responsive,

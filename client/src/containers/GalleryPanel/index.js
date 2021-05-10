@@ -40,7 +40,7 @@ const GalleryPanel = ({ formatArtwork }) => {
 
   const history = useHistory();
 
-  const globalClasses = globalStyles(fetching);
+  const globalClasses = globalStyles({ fetching });
   const classes = galleryPanelStyles();
 
   const { openLightbox } = useLightbox();
