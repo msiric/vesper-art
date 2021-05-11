@@ -1,16 +1,26 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const userArtworkStyles = makeStyles((muiTheme) => ({
-  paper: {
-    minHeight: 300,
-    height: "100%",
+  artworkWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    maxWidth: 500,
+    height: "fit-content",
+    padding: 12,
   },
-  profileArtworkContainer: {
-    "&> div": {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      height: "100%",
+  masonryContainer: {
+    display: "flex",
+    width: "auto",
+  },
+  masonryColumn: {
+    paddingLeft: 24,
+    "&:first-child": {
+      paddingLeft: 0,
+    },
+    backgroundClip: "padding-box",
+    "&>div": {
+      marginBottom: 24,
     },
   },
 }));

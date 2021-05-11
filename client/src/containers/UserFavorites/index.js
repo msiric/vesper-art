@@ -14,7 +14,7 @@ const breakpointColumns = {
   500: 1,
 };
 
-const UserFavorites = ({ type, fixed }) => {
+const UserFavorites = ({ fixed }) => {
   const elements = useUserArtwork((state) => state.favorites.data);
   const hasMore = useUserArtwork((state) => state.favorites.hasMore);
   const loading = useUserArtwork((state) => state.favorites.loading);
