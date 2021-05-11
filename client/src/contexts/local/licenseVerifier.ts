@@ -9,11 +9,18 @@ const initState = () => ({ ...initialState });
 
 const initActions = (set) => ({
   fetchLicense: async ({ licenseData }) => {
-    const { data } = await postVerifier.request({ licenseData });
-    set((state) => ({
-      ...state,
-      license: { data: data.license, loading: false, error: false },
-    }));
+    try {
+      const { data } = await postVerifier.request({ licenseData });
+      set((state) => ({
+        ...state,
+        license: { data: data.license, loading: false, error: false },
+      }));
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        license: { data: {}, loading: false, error: true },
+      }));
+    }
   },
   resetToken: () => {
     set({ ...initialState });

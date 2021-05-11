@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { withSnackbar } from "notistack";
 import React from "react";
+import { isObjectEmpty } from "../../../../common/helpers";
 import DataTable from "../../components/DataTable";
 import EmptySection from "../../components/EmptySection";
 import SubHeading from "../../components/SubHeading";
@@ -14,8 +15,10 @@ const LicenseSection = () => {
     return format(new Date(date), type);
   };
 
-  return loading || !license.id ? (
+  return loading || !license ? (
     <EmptySection label="Enter license fingerprint to inspect the details" />
+  ) : isObjectEmpty(license) ? (
+    <EmptySection label="License not found" />
   ) : (
     <DataTable
       title={<SubHeading text="License" loading={loading} />}
