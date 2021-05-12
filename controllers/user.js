@@ -237,11 +237,16 @@ export const updateUserProfile = async ({
   let avatarId;
   if (avatarUpload.fileMedia) {
     if (foundUser.avatar) {
-      await editUserAvatar({ userId: foundUser.id, avatarUpload, connection });
-    } else {
-      const { avatarId } = generateUuids({
-        avatarId: null,
+      const updatedAvatar = await editUserAvatar({
+        userId: foundUser.id,
+        avatarUpload,
+        connection,
       });
+      avatarId = updatedAvatar.id;
+    } else {
+      ({ avatarId } = generateUuids({
+        avatarId: null,
+      }));
       await addUserAvatar({
         avatarId,
         userId: foundUser.id,
@@ -250,6 +255,7 @@ export const updateUserProfile = async ({
       });
     }
   }
+  // $TODO if there is not fileMedia but avatar exists, it needs to be deleted
   await editUserProfile({
     foundUser,
     userData,
