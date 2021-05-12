@@ -121,3 +121,16 @@ export const fetchStripeAccount = async ({ accountId, connection }) => {
   const retrievedAccount = await stripe.accounts.retrieve(accountId);
   return retrievedAccount;
 };
+
+export const issueStripeRefund = async ({ chargeData, connection }) => {
+  if (chargeData.length) {
+    const refundedCharge = await stripe.refunds.create({
+      charge: chargeData[0].id,
+      reverse_transfer: true,
+      refund_application_fee: true,
+    });
+    return refundedCharge;
+  } else {
+    return {};
+  }
+};

@@ -23,6 +23,7 @@ import {
   constructStripePayout,
   fetchStripeAccount,
   fetchStripeBalance,
+  issueStripeRefund,
   retrieveStripeIntent,
   updateStripeIntent,
 } from "../services/postgres/stripe.js";
@@ -115,16 +116,12 @@ export const applyDiscount = async ({
                 connection,
               });
               if (!isObjectEmpty(foundIntent)) {
-                const {
-                  buyerTotal,
-                  sellerTotal,
-                  platformTotal,
-                  licensePrice,
-                } = calculateTotalCharge({
-                  foundVersion,
-                  foundDiscount,
-                  licenseType,
-                });
+                const { buyerTotal, sellerTotal, platformTotal, licensePrice } =
+                  calculateTotalCharge({
+                    foundVersion,
+                    foundDiscount,
+                    licenseType,
+                  });
                 const orderData = {
                   discountId: foundDiscount.id,
                   spent: buyerTotal,
@@ -214,16 +211,12 @@ export const managePaymentIntent = async ({
                   : await Yup.reach(licenseValidation, "licenseType").validate(
                       licenseData.licenseType
                     );
-                const {
-                  buyerTotal,
-                  sellerTotal,
-                  platformTotal,
-                  licensePrice,
-                } = calculateTotalCharge({
-                  foundVersion,
-                  foundDiscount,
-                  licenseType: licenseData.licenseType,
-                });
+                const { buyerTotal, sellerTotal, platformTotal, licensePrice } =
+                  calculateTotalCharge({
+                    foundVersion,
+                    foundDiscount,
+                    licenseType: licenseData.licenseType,
+                  });
                 const orderData = {
                   ...(shouldReinitialize && { buyerId: foundUser.id }),
                   ...(shouldReinitialize && {
@@ -431,93 +424,108 @@ export const createPayout = async ({ userId, connection }) => {
 // $TODO validacija license i pricea
 // vjerojatno najbolje fetchat svaki od ID-ova i verifyat data-u
 const processTransaction = async ({ stripeIntent, connection }) => {
-  console.log("PROCESS TRANSACTION STARTED");
-  const orderData = JSON.parse(stripeIntent.metadata.orderData);
-  const buyerId = orderData.buyerId;
-  const sellerId = orderData.sellerId;
-  const artworkId = orderData.artworkId;
-  const versionId = orderData.versionId;
-  const discountId = orderData.discountId;
-  const intentId = stripeIntent.id;
-  console.log("IDS DECODED");
-  const {
-    licenseAssignee,
-    licenseCompany,
-    licenseType,
-    licensePrice,
-  } = orderData.licenseData;
-  await licenseValidation.validate(
-    sanitizeData({
-      licenseAssignee,
-      licenseCompany,
-      licenseType,
-    })
-  );
-  console.log("LICENSE VALIDATED");
-  const { licenseId, orderId, notificationId } = generateUuids({
-    licenseId: null,
-    orderId: null,
-    notificationId: null,
-  });
-  const savedLicense = await addNewLicense({
-    licenseId,
-    artworkId,
-    licenseData: { licenseAssignee, licenseCompany, licenseType, licensePrice },
-    userId: buyerId,
-    connection,
-  });
-  console.log("LICENSE SAVED");
-  await orderValidation.validate(
-    sanitizeData({
-      orderBuyer: buyerId,
-      orderSeller: sellerId,
-      orderArtwork: artworkId,
-      orderVersion: versionId,
-      orderDiscount: discountId,
-      orderLicense: licenseId,
-      orderSpent: orderData.spent,
-      orderEarned: orderData.earned,
-      orderFee: orderData.fee,
-      orderIntent: intentId,
-    })
-  );
-  console.log("ORDER VALIDATED");
-  const orderObject = {
-    buyerId,
-    sellerId,
-    artworkId,
-    versionId,
-    discountId,
-    licenseId,
-    reviewId: null,
-    spent: orderData.spent,
-    earned: orderData.earned,
-    fee: orderData.fee,
-    type: "commercial",
-    status: "completed",
-    intentId,
-  };
-  const savedOrder = await addNewOrder({
-    orderId,
-    orderData: orderObject,
-    connection,
-  });
-  console.log("ORDER SAVED");
-  await removeExistingIntent({
-    intentId,
-    connection,
-  });
-  console.log("INTENT DELETED");
-  // new start
-  await addNewNotification({
-    notificationId,
-    notificationLink: orderId,
-    notificationRef: "",
-    notificationType: "order",
-    notificationReceiver: sellerId,
-    connection,
-  });
-  socketApi.sendNotification(sellerId, orderId);
-  // new end
-  return { message: "Order processed successfully" };
+  try {
+    console.log("PROCESS TRANSACTION STARTED");
+    const orderData = JSON.parse(stripeIntent.metadata.orderData);
+    const buyerId = orderData.buyerId;
+    const sellerId = orderData.sellerId;
+    const artworkId = orderData.artworkId;
+    const versionId = orderData.versionId;
+    const discountId = orderData.discountId;
+    const intentId = stripeIntent.id;
+    console.log("IDS DECODED");
+    const { licenseAssignee, licenseCompany, licenseType, licensePrice } =
+      orderData.licenseData;
+    await licenseValidation.validate(
+      sanitizeData({
+        licenseAssignee,
+        licenseCompany,
+        licenseType,
+      })
+    );
+    console.log("LICENSE VALIDATED");
+    const { licenseId, orderId, notificationId } = generateUuids({
+      licenseId: null,
+      orderId: null,
+      notificationId: null,
+    });
+    const savedLicense = await addNewLicense({
+      licenseId,
+      artworkId,
+      licenseData: {
+        licenseAssignee,
+        licenseCompany,
+        licenseType,
+        licensePrice,
+      },
+      userId: buyerId,
+      connection,
+    });
+    console.log("LICENSE SAVED");
+    await orderValidation.validate(
+      sanitizeData({
+        orderBuyer: buyerId,
+        orderSeller: sellerId,
+        orderArtwork: artworkId,
+        orderVersion: versionId,
+        orderDiscount: discountId,
+        orderLicense: licenseId,
+        orderSpent: orderData.spent,
+        orderEarned: orderData.earned,
+        orderFee: orderData.fee,
+        orderIntent: intentId,
+      })
+    );
+    console.log("ORDER VALIDATED");
+    const orderObject = {
+      buyerId,
+      sellerId,
+      artworkId,
+      versionId,
+      discountId,
+      licenseId,
+      reviewId: null,
+      spent: orderData.spent,
+      earned: orderData.earned,
+      fee: orderData.fee,
+      type: "commercial",
+      status: "completed",
+      intentId,
+    };
+    const savedOrder = await addNewOrder({
+      orderId,
+      orderData: orderObject,
+      connection,
+    });
+    console.log("ORDER SAVED");
+    await removeExistingIntent({
+      intentId,
+      connection,
+    });
+    console.log("INTENT DELETED");
+    // new start
+    await addNewNotification({
+      notificationId,
+      notificationLink: orderId,
+      notificationRef: "",
+      notificationType: "order",
+      notificationReceiver: sellerId,
+      connection,
+    });
+    socketApi.sendNotification(sellerId, orderId);
+    // new end
+    return { message: "Order processed successfully" };
+  } catch (err) {
+    const foundIntent = await retrieveStripeIntent({
+      intentId: stripeIntent.id,
+      connection,
+    });
+    if (!isObjectEmpty(foundIntent)) {
+      const refundedCharge = await issueStripeRefund({
+        chargeData: foundIntent.charges.data,
+        connection,
+      });
+    }
+    throw createError(400, "Could not process the order");
+  }
 };
