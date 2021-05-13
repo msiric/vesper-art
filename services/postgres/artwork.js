@@ -10,6 +10,7 @@ import { resolveSubQuery } from "../../utils/helpers";
 const ARTWORK_ACTIVE_STATUS = true;
 
 // Only used when inserting comment
+// $TODO add appropriate visiblity tag
 export const fetchArtworkById = async ({ artworkId, connection }) => {
   /*   return await Artwork.findOne({
     where: [{ id: artworkId }, { active: true }],
@@ -30,6 +31,7 @@ export const fetchArtworkById = async ({ artworkId, connection }) => {
 };
 
 // $Needs testing (mongo -> postgres)
+// $TODO add appropriate visiblity tag
 export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
   // return await Artwork.find({
   //   where: [{ active: true }],
@@ -81,6 +83,7 @@ export const fetchVersionDetails = async ({ versionId, connection }) => {
   return foundVersion;
 };
 
+// $TODO add appropriate visiblity tag
 export const fetchArtworkDetails = async ({
   artworkId,
   cursor,
@@ -164,6 +167,7 @@ export const fetchArtworkComments = async ({
   return foundComments;
 };
 
+// $TODO add appropriate visiblity tag
 export const fetchUserArtworks = async ({
   userId,
   cursor,
@@ -201,6 +205,7 @@ export const fetchUserArtworks = async ({
 
 // $TODO isto kao i prethodni service samo bez skip i limit
 // $Needs testing (mongo -> postgres)
+// $TODO add appropriate visiblity tag
 export const fetchArtworkByOwner = async ({ userId, connection }) => {
   const foundArtwork = await connection
     .getRepository(Artwork)
@@ -469,6 +474,7 @@ export const removeArtworkVersion = async ({ versionId, connection }) => {
 // };
 
 // $Needs testing (mongo -> postgres)
+// $TODO add appropriate visiblity tag
 export const deactivateExistingArtwork = async ({ artworkId, connection }) => {
   /*   const foundArtwork = Artwork.findOne({
     where: [{ id: artworkId, active: true }],

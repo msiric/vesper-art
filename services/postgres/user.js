@@ -215,6 +215,7 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
   return foundUser;
 };
 
+// $TODO add appropriate visiblity tag
 export const fetchSellerMedia = async ({ userId, artworkId, connection }) => {
   const foundArtwork = await connection
     .getRepository(Artwork)
@@ -331,6 +332,7 @@ export const editUserStripe = async ({ userId, stripeId, connection }) => {
 };
 
 // $Needs testing (mongo -> postgres)
+// $TODO add appropriate visiblity tag
 export const fetchUserProfile = async ({
   userUsername,
   userId,
@@ -368,6 +370,7 @@ export const fetchUserProfile = async ({
 };
 
 // $Needs testing (mongo -> postgres)
+// $TODO add appropriate visiblity tag
 export const fetchUserArtwork = async ({
   userId,
   cursor,
@@ -582,6 +585,7 @@ export const editUserProfile = async ({
     })
     .where("id = :userId AND active = :active", {
       userId: foundUser.id,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
@@ -656,6 +660,7 @@ export const editUserEmail = async ({
     })
     .where("id = :userId AND active = :active", {
       userId,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
@@ -681,6 +686,7 @@ export const editUserPassword = async ({
     .set({ password: hashedPassword })
     .where("id = :userId AND active = :active", {
       userId,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
@@ -706,6 +712,7 @@ export const editUserPreferences = async ({
     .set({ displayFavorites: userFavorites })
     .where("id = :userId AND active = :active", {
       userId,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
@@ -804,6 +811,7 @@ export const editUserOrigin = async ({
     .set({ businessAddress: userBusinessAddress })
     .where("id = :userId AND active = :active", {
       userId,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
@@ -849,6 +857,7 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
     })
     .where("id = :userId AND active = :active", {
       userId,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
