@@ -24,6 +24,7 @@ const ArtworkModifier = ({ paramId }) => {
   const artwork = useArtworkUpdate((state) => state.artwork.data);
   const artworkLoading = useArtworkUpdate((state) => state.artwork.loading);
   const capabilities = useArtworkUpdate((state) => state.capabilities.data);
+  const loading = useArtworkUpdate((state) => state.capabilities.loading);
   const isDeleting = useArtworkUpdate((state) => state.isDeleting);
   const fetchArtwork = useArtworkUpdate((state) => state.fetchArtwork);
   const fetchCapabilities = useArtworkUpdate(
@@ -90,23 +91,25 @@ const ArtworkModifier = ({ paramId }) => {
 
   return (
     <Card width="100%">
-      {!stripeId ? (
-        <HelpBox
-          type="alert"
-          label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
-        />
-      ) : capabilities.cardPayments === "pending" ||
-        capabilities.platformPayments === "pending" ? (
-        <HelpBox
-          type="alert"
-          label="To make your artwork commercially available, please wait for Stripe to verify the information you entered"
-        />
-      ) : capabilities.cardPayments !== "active" ||
-        capabilities.platformPayments !== "active" ? (
-        <HelpBox
-          type="alert"
-          label="To make your artwork commercially available, finish entering your Stripe account information"
-        />
+      {!loading ? (
+        !stripeId ? (
+          <HelpBox
+            type="alert"
+            label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
+          />
+        ) : capabilities.cardPayments === "pending" ||
+          capabilities.platformPayments === "pending" ? (
+          <HelpBox
+            type="alert"
+            label="To make your artwork commercially available, please wait for Stripe to verify the information you entered"
+          />
+        ) : capabilities.cardPayments !== "active" ||
+          capabilities.platformPayments !== "active" ? (
+          <HelpBox
+            type="alert"
+            label="To make your artwork commercially available, finish entering your Stripe account information"
+          />
+        ) : null
       ) : null}
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)}>
