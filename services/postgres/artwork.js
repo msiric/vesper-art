@@ -328,10 +328,12 @@ export const addNewVersion = async ({
         use: artworkData.artworkUse,
         personal: artworkData.artworkPersonal,
         commercial: artworkData.artworkCommercial,
-        category: artworkData.artworkCategory,
+        // $TODO restore after category implementation
+        // category: artworkData.artworkCategory,
         description: artworkData.artworkDescription,
         // $TODO restore after tags implementation
         /* tags: artworkUpload.fileDominant, */
+        visible: artworkData.artworkVisibility,
         coverId,
         mediaId,
         artworkId,

@@ -47,59 +47,56 @@ export const isPastDate = (value) =>
 export const isFutureDate = (value) =>
   isValid(new Date(value)) && isAfter(new Date(value), new Date());
 
-export const requestHandler = (promise, transaction, params) => async (
-  req,
-  res,
-  next
-) => {
-  const boundParams = params ? params(req, res, next) : {};
-  const userId = res.locals.user ? res.locals.user.id : null;
-  const handleRequest = (result) => {
-    if (result) {
-      if (result.redirect) {
-        return res.redirect(result.redirect);
+export const requestHandler =
+  (promise, transaction, params) => async (req, res, next) => {
+    const boundParams = params ? params(req, res, next) : {};
+    const userId = res.locals.user ? res.locals.user.id : null;
+    const handleRequest = (result) => {
+      if (result) {
+        if (result.redirect) {
+          return res.redirect(result.redirect);
+        } else {
+          return res.json(result);
+        }
       } else {
-        return res.json(result);
+        return res.json({ message: "OK" });
+      }
+    };
+    if (transaction) {
+      const queryRunner = getConnection().createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        const result = await promise({
+          userId,
+          connection: queryRunner.manager,
+          ...boundParams,
+        });
+        /*  return await handleRequest(result); */
+        await queryRunner.commitTransaction();
+        return handleRequest(result);
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        console.log(error);
+        next(error);
+      } finally {
+        await queryRunner.release();
       }
     } else {
-      return res.json({ message: "OK" });
+      try {
+        const connection = getConnection();
+        const result = await promise({
+          userId,
+          connection,
+          ...boundParams,
+        });
+        return handleRequest(result);
+      } catch (error) {
+        console.log(error);
+        next(error);
+      }
     }
   };
-  if (transaction) {
-    const queryRunner = getConnection().createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
-      const result = await promise({
-        userId,
-        connection: queryRunner.manager,
-        ...boundParams,
-      });
-      /*  return await handleRequest(result); */
-      await queryRunner.commitTransaction();
-      return handleRequest(result);
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      console.log(error);
-      next(error);
-    } finally {
-      await queryRunner.release();
-    }
-  } else {
-    try {
-      const connection = getConnection();
-      const result = await promise({
-        userId,
-        connection,
-        ...boundParams,
-      });
-      return handleRequest(result);
-    } catch (error) {
-      console.log(error);
-      next(error);
-    }
-  }
-};
 
 export const formatArtworkValues = (data) => {
   return {
@@ -119,7 +116,8 @@ export const formatArtworkValues = (data) => {
           ? currency(data.artworkCommercial).add(data.artworkPersonal).intValue
           : currency(data.artworkPersonal).intValue
         : 0,
-    artworkTags: JSON.parse(data.artworkTags),
+    // $TODO restore after tags are implemented
+    // artworkTags: JSON.parse(data.artworkTags),
   };
 };
 

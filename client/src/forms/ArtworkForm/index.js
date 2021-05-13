@@ -5,7 +5,6 @@ import { useUserStore } from "../../contexts/global/user.js";
 import ImageInput from "../../controls/ImageInput/index.js";
 import PriceInput from "../../controls/PriceInput/index.js";
 import SelectInput from "../../controls/SelectInput/index.js";
-import TagInput from "../../controls/TagInput/index.js";
 import TextInput from "../../controls/TextInput/index.js";
 
 /* import AddArtworkStyles from "../../components/Artwork/AddArtwork.style.js"; */
@@ -154,6 +153,19 @@ const ArtworkForm = ({
               errors={errors}
             />
           )}
+        <SelectInput
+          name="artworkVisibility"
+          label="Artwork visibility"
+          errors={errors}
+          options={[
+            { value: "" },
+            {
+              value: "visible",
+              text: "Visible to everyone",
+            },
+            { value: "invisible", text: "Hidden to public" },
+          ]}
+        />
         <TextInput
           name="artworkDescription"
           type="text"
@@ -161,7 +173,7 @@ const ArtworkForm = ({
           errors={errors}
           multiline
         />
-        <TagInput
+        {/* <TagInput
           name="artworkTags"
           trigger={trigger}
           value={getValues("artworkTags")}
@@ -170,7 +182,7 @@ const ArtworkForm = ({
           handleChange={(e, item) => setValue("artworkTags", item || [])}
           limit={5}
           multiline
-        />
+        /> */}
       </Box>
     </Box>
   );

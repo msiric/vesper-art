@@ -57,15 +57,18 @@ export const artworkValidation = Yup.object().shape({
         .max(pricing.maximumPrice)
         .required("Commercial license is required"),
     }),
-  artworkCategory: "",
+  // artworkCategory: "",
+  // artworkTags: Yup.array()
+  //   .of(Yup.string())
+  //   .min(1, "At least one tag is required")
+  //   .max(5, "At most five tags are permitted")
+  //   .required("Artwork tags are required"),
+  artworkVisibility: Yup.string()
+    .matches(/(visible|invisible)/)
+    .required("Artwork visibility is required"),
   artworkDescription: Yup.string()
     .trim()
     .required("Artwork description is required"),
-  artworkTags: Yup.array()
-    .of(Yup.string())
-    .min(1, "At least one tag is required")
-    .max(5, "At most five tags are permitted")
-    .required("Artwork tags are required"),
 });
 
 export const billingValidation = Yup.object().shape({
