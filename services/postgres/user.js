@@ -536,9 +536,24 @@ export const editUserAvatar = async ({ userId, avatarUpload, connection }) => {
     .where('"ownerId" = :userId', {
       userId,
     })
+    .returning("*")
     .execute();
   console.log(updatedAvatar);
   return updatedAvatar;
+};
+
+export const removeUserAvatar = async ({ userId, avatarId, connection }) => {
+  const deletedAvatar = await connection
+    .createQueryBuilder()
+    .delete()
+    .from(Avatar)
+    .where('id = :avatarId AND "ownerId" = :userId', {
+      avatarId,
+      userId,
+    })
+    .execute();
+  console.log(deletedAvatar);
+  return deletedAvatar;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -559,7 +574,7 @@ export const editUserProfile = async ({
     .createQueryBuilder()
     .update(User)
     .set({
-      avatarId: avatarId ? avatarId : foundUser.avatar,
+      avatarId: avatarId,
       description: userData.userDescription
         ? userData.userDescription
         : foundUser.description,

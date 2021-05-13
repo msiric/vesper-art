@@ -38,6 +38,7 @@ import {
   fetchUserReviews,
   fetchUserSales,
   removeExistingIntent,
+  removeUserAvatar,
 } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
 import {
@@ -224,6 +225,7 @@ export const updateUserProfile = async ({
   userData,
   connection,
 }) => {
+  // $TODO delete S3 images when not being used anymore
   // $TODO Validate data passed to upload
   const avatarUpload = await finalizeMediaUpload({
     filePath: userPath,
@@ -232,17 +234,20 @@ export const updateUserProfile = async ({
     fileType: "user",
   });
   await profileValidation.validate(sanitizeData(userData));
-  // $TODO Find or fail? Minimize overhead
   const foundUser = await fetchUserById({ userId, connection });
-  let avatarId;
+  let avatarId = null;
   if (avatarUpload.fileMedia) {
     if (foundUser.avatar) {
+      await deleteS3Object({
+        fileLink: foundUser.avatar.source,
+        folderName: "userMedia/",
+      });
       const updatedAvatar = await editUserAvatar({
         userId: foundUser.id,
         avatarUpload,
         connection,
       });
-      avatarId = updatedAvatar.id;
+      avatarId = updatedAvatar.raw[0].id;
     } else {
       ({ avatarId } = generateUuids({
         avatarId: null,
@@ -254,14 +259,34 @@ export const updateUserProfile = async ({
         connection,
       });
     }
+    await editUserProfile({
+      foundUser,
+      userData,
+      avatarId,
+      connection,
+    });
+  } else {
+    if (!foundUser.avatar) {
+      avatarId = foundUser.avatar.id;
+    }
+    await editUserProfile({
+      foundUser,
+      userData,
+      avatarId,
+      connection,
+    });
+    if (foundUser.avatar) {
+      await deleteS3Object({
+        fileLink: foundUser.avatar.source,
+        folderName: "userMedia/",
+      });
+      await removeUserAvatar({
+        userId: foundUser.id,
+        avatarId: foundUser.avatar.id,
+        connection,
+      });
+    }
   }
-  // $TODO if there is not fileMedia but avatar exists, it needs to be deleted
-  await editUserProfile({
-    foundUser,
-    userData,
-    avatarId,
-    connection,
-  });
   return { message: "User details updated" };
 };
 
@@ -477,10 +502,12 @@ export const deactivateUser = async ({ userId, connection }) => {
       }
       await deactivateExistingArtwork({ artworkId: artwork.id, connection });
     }
-    await deleteS3Object({
-      fileLink: foundUser.avatar,
-      folderName: "profilePhotos/",
-    });
+    if (foundUser.avatar) {
+      await deleteS3Object({
+        fileLink: foundUser.avatar.source,
+        folderName: "userMedia/",
+      });
+    }
     await deactivateExistingUser({ userId: foundUser.id, connection });
     req.logout();
     req.connection.destroy(function (err) {
