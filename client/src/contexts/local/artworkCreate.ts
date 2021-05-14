@@ -1,7 +1,7 @@
 import create from "zustand";
 import { postArtwork } from "../../services/artwork";
 import { getUser } from "../../services/stripe";
-import { deleteEmptyValues, formatValues } from "../../utils/helpers";
+import { deleteEmptyValues, formatArtworkValues } from "../../utils/helpers";
 
 const initialState = {
   capabilities: { data: {}, loading: true, error: false },
@@ -22,7 +22,7 @@ const initActions = (set, get) => ({
     } catch (err) {}
   },
   createArtwork: async ({ values }) => {
-    const data = deleteEmptyValues(formatValues(values));
+    const data = deleteEmptyValues(formatArtworkValues(values));
     const formData = new FormData();
     for (let value of Object.keys(data)) {
       if (Array.isArray(data[value])) {

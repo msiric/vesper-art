@@ -350,7 +350,7 @@ export const addNewVersion = async ({
         description: artworkData.artworkDescription,
         // $TODO restore after tags implementation
         /* tags: artworkUpload.fileDominant, */
-        visible: artworkData.artworkVisibility,
+        visibility: artworkData.artworkVisibility,
         coverId,
         mediaId,
         artworkId,

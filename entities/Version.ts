@@ -41,7 +41,7 @@ export enum VersionUse {
   unavailable = "unavailable",
 }
 
-export enum VersionVisible {
+export enum VersionVisibility {
   visible = "visible",
   invisible = "invisible",
 }
@@ -120,11 +120,11 @@ export class Version extends BaseEntity {
 
   @Column({
     type: "enum",
-    enum: VersionVisible,
+    enum: VersionVisibility,
     // $TODO temp nullable, remove later
     nullable: true,
   })
-  visible: VersionVisible;
+  visibility: VersionVisibility;
 
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;

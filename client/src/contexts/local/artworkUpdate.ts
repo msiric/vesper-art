@@ -5,7 +5,7 @@ import {
   patchArtwork,
 } from "../../services/artwork.js";
 import { getUser } from "../../services/stripe.js";
-import { deleteEmptyValues, formatValues } from "../../utils/helpers.js";
+import { deleteEmptyValues, formatArtworkValues } from "../../utils/helpers.js";
 
 const initialState = {
   artwork: {
@@ -19,6 +19,7 @@ const initialState = {
         personal: "",
         commercial: "",
         description: "",
+        visibility: "",
         cover: {},
         media: {},
         tags: [],
@@ -64,7 +65,7 @@ const initActions = (set, get) => ({
     } catch (err) {}
   },
   updateArtwork: async ({ artworkId, values }) => {
-    const data = deleteEmptyValues(formatValues(values));
+    const data = deleteEmptyValues(formatArtworkValues(values));
     const formData = new FormData();
     for (let value of Object.keys(data)) {
       if (Array.isArray(data[value])) {

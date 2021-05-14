@@ -49,7 +49,7 @@ const ArtworkModifier = ({ paramId }) => {
         ? artwork.current.commercial - artwork.current.personal
         : "",
     artworkDescription: artwork.current.description,
-    artworkVisibility: artwork.visibility,
+    artworkVisibility: artwork.current.visibility,
     // artworkCategory: artwork.current.category,
     // artworkTags: artwork.current.tags || [],
   });
