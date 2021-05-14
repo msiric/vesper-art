@@ -206,7 +206,11 @@ export const fetchUserArtworks = async ({
 // $TODO isto kao i prethodni service samo bez skip i limit
 // $Needs testing (mongo -> postgres)
 // $TODO add appropriate visiblity tag
-export const fetchArtworkByOwner = async ({ userId, connection }) => {
+export const fetchArtworkByOwner = async ({
+  artworkId,
+  userId,
+  connection,
+}) => {
   const foundArtwork = await connection
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
@@ -214,16 +218,20 @@ export const fetchArtworkByOwner = async ({ userId, connection }) => {
     .leftJoinAndSelect("owner.avatar", "avatar")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
-    .where("artwork.ownerId = :userId AND artwork.active = :active", {
-      userId,
-      active: ARTWORK_ACTIVE_STATUS,
-    })
+    .where(
+      "artwork.id = :artworkId AND artwork.ownerId = :userId AND artwork.active = :active",
+      {
+        artworkId,
+        userId,
+        active: ARTWORK_ACTIVE_STATUS,
+      }
+    )
     .getOne();
   console.log(foundArtwork);
   return foundArtwork;
 };
 
-export const fetchArtworkMedia = async ({ userId, connection }) => {
+export const fetchArtworkMedia = async ({ artworkId, userId, connection }) => {
   const foundArtwork = await connection
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
@@ -232,10 +240,14 @@ export const fetchArtworkMedia = async ({ userId, connection }) => {
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("version.media", "media")
-    .where("artwork.ownerId = :userId AND artwork.active = :active", {
-      userId,
-      active: ARTWORK_ACTIVE_STATUS,
-    })
+    .where(
+      "artwork.id = :artworkId AND artwork.ownerId = :userId AND artwork.active = :active",
+      {
+        artworkId,
+        userId,
+        active: ARTWORK_ACTIVE_STATUS,
+      }
+    )
     .getOne();
   console.log(foundArtwork);
   return foundArtwork;
