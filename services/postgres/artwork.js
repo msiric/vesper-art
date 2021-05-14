@@ -223,6 +223,23 @@ export const fetchArtworkByOwner = async ({ userId, connection }) => {
   return foundArtwork;
 };
 
+export const fetchArtworkMedia = async ({ userId, connection }) => {
+  const foundArtwork = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("version.media", "media")
+    .where("artwork.ownerId = :userId AND artwork.active = :active", {
+      userId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .getOne();
+  console.log(foundArtwork);
+  return foundArtwork;
+};
 export const addNewCover = async ({ coverId, artworkUpload, connection }) => {
   /*   const newCover = new Cover();
   newCover.source = artworkUpload.fileCover;
@@ -474,6 +491,24 @@ export const removeArtworkVersion = async ({ versionId, connection }) => {
 //     { new: true }
 //   );
 // };
+
+export const updateArtworkVersion = async ({
+  artworkId,
+  currentId,
+  connection,
+}) => {
+  const updatedArtwork = await connection
+    .createQueryBuilder()
+    .update(Artwork)
+    .set({ currentId })
+    .where("id = :artworkId AND active = :active", {
+      artworkId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .execute();
+  console.log(updatedArtwork);
+  return updatedArtwork;
+};
 
 // $Needs testing (mongo -> postgres)
 // $TODO add appropriate visiblity tag

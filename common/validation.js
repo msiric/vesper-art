@@ -6,46 +6,52 @@ export const artworkValidation = Yup.object().shape({
   artworkAvailability: Yup.string()
     .matches(/(available|unavailable)/)
     .required("Artwork availability is required"),
-  artworkType: Yup.string()
-    .notRequired()
-    .when("artworkAvailability", {
-      is: "available",
-      then: Yup.string()
-        .matches(/(commercial|free)/)
-        .required("Artwork type is required"),
-    }),
-  artworkLicense: Yup.string()
-    .notRequired()
-    .when("artworkAvailability", {
-      is: "available",
-      then: Yup.string()
-        .matches(/(commercial|personal)/)
-        .required("Artwork license is required"),
-    }),
-  artworkPersonal: Yup.number()
-    .notRequired()
-    .when(["artworkAvailability", "artworkType"], {
-      is: (artworkAvailability, artworkType) =>
-        artworkAvailability === "available" && artworkType === "commercial",
-      then: Yup.number()
-        .positive("Artwork price cannot be negative")
-        .integer()
-        .min(pricing.minimumPrice)
-        .max(pricing.maximumPrice)
-        .required("Artwork price is required"),
-    }),
-  artworkUse: Yup.string()
-    .notRequired()
-    .when(["artworkAvailability", "artworkLicense"], {
-      is: (artworkAvailability, artworkLicense) =>
-        artworkAvailability === "available" && artworkLicense === "commercial",
-      then: Yup.string()
-        .matches(/(separate|included)/)
-        .required("Commercial use is required"),
-    }),
-  artworkCommercial: Yup.number()
-    .notRequired()
-    .when(["artworkAvailability", "artworkLicense", "artworkUse"], {
+  artworkType: Yup.string().when("artworkAvailability", {
+    is: "available",
+    then: Yup.string()
+      .matches(/(commercial|free)/)
+      .required("Artwork type is required"),
+    otherwise: Yup.string()
+      .matches(/(unavailable)/)
+      .required("Artwork type is required"),
+  }),
+  artworkLicense: Yup.string().when("artworkAvailability", {
+    is: "available",
+    then: Yup.string()
+      .matches(/(commercial|personal)/)
+      .required("Artwork license is required"),
+    otherwise: Yup.string()
+      .matches(/(unavailable)/)
+      .required("Artwork license is required"),
+  }),
+  artworkPersonal: Yup.number().when(["artworkAvailability", "artworkType"], {
+    is: (artworkAvailability, artworkType) =>
+      artworkAvailability === "available" && artworkType === "commercial",
+    then: Yup.number()
+      .positive("Artwork price cannot be negative")
+      .integer()
+      .min(pricing.minimumPrice)
+      .max(pricing.maximumPrice)
+      .required("Artwork price is required"),
+    otherwise: Yup.number()
+      .integer()
+      .min(0)
+      .max(0)
+      .required("Artwork price is required"),
+  }),
+  artworkUse: Yup.string().when(["artworkAvailability", "artworkLicense"], {
+    is: (artworkAvailability, artworkLicense) =>
+      artworkAvailability === "available" && artworkLicense === "commercial",
+    then: Yup.string()
+      .matches(/(separate|included)/)
+      .required("Commercial use is required"),
+    otherwise: Yup.string()
+      .matches(/(unavailable)/)
+      .required("Commercial use is required"),
+  }),
+  artworkCommercial: Yup.number().when(
+    ["artworkAvailability", "artworkLicense", "artworkUse"],
+    {
       is: (artworkAvailability, artworkLicense, artworkUse) =>
         artworkAvailability === "available" &&
         artworkLicense === "commercial" &&
@@ -56,7 +62,13 @@ export const artworkValidation = Yup.object().shape({
         .min(pricing.minimumPrice)
         .max(pricing.maximumPrice)
         .required("Commercial license is required"),
-    }),
+      otherwise: Yup.number()
+        .integer()
+        .min(0)
+        .max(0)
+        .required("Artwork price is required"),
+    }
+  ),
   // artworkCategory: "",
   // artworkTags: Yup.array()
   //   .of(Yup.string())

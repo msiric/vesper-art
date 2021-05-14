@@ -68,7 +68,6 @@ export const fetchOrderByVersion = async ({
     .leftJoinAndSelect("order.artwork", "artwork")
     .leftJoinAndSelect("order.review", "review")
     .leftJoinAndSelect("order.license", "license")
-    .leftJoinAndSelect("order.license", "license")
     .where("order.artworkId = :artworkId AND order.versionId = :versionId", {
       artworkId,
       versionId,

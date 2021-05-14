@@ -12,11 +12,13 @@ import {
   fetchArtworkByOwner,
   fetchArtworkComments,
   fetchArtworkDetails,
+  fetchArtworkMedia,
   fetchFavoriteByParents,
   fetchFavoritesCount,
   fetchUserArtworks,
   removeArtworkVersion,
   removeExistingFavorite,
+  updateArtworkVersion,
 } from "../services/postgres/artwork.js";
 import { fetchOrderByVersion } from "../services/postgres/order.js";
 import { fetchStripeAccount } from "../services/postgres/stripe.js";
@@ -200,7 +202,7 @@ export const updateArtwork = async ({
   });
   const formattedData = formatArtworkValues(artworkData);
   await artworkValidation.validate(sanitizeData(formattedData));
-  const foundArtwork = await fetchArtworkByOwner({
+  const foundArtwork = await fetchArtworkMedia({
     artworkId,
     userId,
     connection,
@@ -231,25 +233,33 @@ export const updateArtwork = async ({
         );
       }
     }
-
+    const { coverId, mediaId, versionId } = generateUuids({
+      coverId: null,
+      mediaId: null,
+      versionId: null,
+    });
     const savedCover = artworkUpload.fileCover
       ? await addNewCover({
           artworkUpload,
+          coverId,
           connection,
         })
       : foundArtwork.current.cover;
     const savedMedia = artworkUpload.fileMedia
       ? await addNewMedia({
           artworkUpload,
+          mediaId,
           connection,
         })
       : foundArtwork.current.media;
     const savedVersion = await addNewVersion({
+      versionId,
+      coverId: savedCover.id,
+      mediaId: savedMedia.id,
+      artworkId,
       prevArtwork: foundArtwork.current,
       artworkData: formattedData,
       artworkUpload,
-      savedCover,
-      savedMedia,
       connection,
     });
     const foundOrder = await fetchOrderByVersion({
@@ -257,27 +267,30 @@ export const updateArtwork = async ({
       versionId: foundArtwork.current.id,
       connection,
     });
+    const oldVersion = foundArtwork.current;
+    const savedArtwork = await updateArtworkVersion({
+      artworkId: foundArtwork.id,
+      currentId: versionId,
+      connection,
+    });
     if (!foundOrder) {
       if (formattedData.artworkCover && formattedData.artworkMedia) {
         await deleteS3Object({
-          fileLink: foundArtwork.current.cover,
+          fileLink: oldVersion.cover,
           folderName: "artworkCovers/",
         });
 
         await deleteS3Object({
-          fileLink: foundArtwork.current.media,
+          fileLink: oldVersion.media,
           folderName: "artworkMedia/",
         });
       }
       await removeArtworkVersion({
-        versionId: foundArtwork.current.id,
+        versionId: oldVersion.id,
         connection,
       });
-    } else {
-      foundArtwork.versions.push(foundArtwork.current.id);
     }
-    foundArtwork.current = savedVersion;
-    await Artwork.save(foundArtwork);
+
     return { message: "Artwork updated successfully" };
   } else {
     throw createError(400, "Artwork not found");

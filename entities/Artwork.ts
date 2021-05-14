@@ -38,10 +38,6 @@ export class Artwork extends BaseEntity {
   @Column()
   active: boolean;
 
-  // $TODO temporary nullable, remove later
-  @Column({ nullable: true })
-  visible: boolean;
-
   @Column()
   generated: boolean;
 
