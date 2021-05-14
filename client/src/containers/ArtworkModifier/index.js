@@ -48,9 +48,10 @@ const ArtworkModifier = ({ paramId }) => {
       artwork.current.license === "commercial"
         ? artwork.current.commercial - artwork.current.personal
         : "",
-    artworkCategory: artwork.current.category,
     artworkDescription: artwork.current.description,
-    artworkTags: artwork.current.tags || [],
+    artworkVisibility: artwork.visibility,
+    // artworkCategory: artwork.current.category,
+    // artworkTags: artwork.current.tags || [],
   });
 
   const {

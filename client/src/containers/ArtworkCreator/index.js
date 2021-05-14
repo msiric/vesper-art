@@ -43,9 +43,10 @@ const ArtworkCreator = () => {
       artworkUse: "",
       artworkPersonal: pricing.minimumPrice,
       artworkCommercial: pricing.minimumPrice,
-      artworkCategory: "",
+      artworkVisibility: "",
       artworkDescription: "",
-      artworkTags: [],
+      // artworkCategory: "",
+      // artworkTags: [],
     },
     resolver: yupResolver(artworkValidation.concat(addArtwork)),
   });
