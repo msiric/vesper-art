@@ -118,9 +118,13 @@ export class Version extends BaseEntity {
   @Column()
   mediaId: string;
 
-  // $TODO temporary nullable, remove later
-  @Column({ nullable: true })
-  visible: string;
+  @Column({
+    type: "enum",
+    enum: VersionVisible,
+    // $TODO temp nullable, remove later
+    nullable: true,
+  })
+  visible: VersionVisible;
 
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;
