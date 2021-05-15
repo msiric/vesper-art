@@ -7,6 +7,7 @@ import {
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
+import { isVersionDifferent } from "../../../../common/helpers";
 import {
   artworkValidation,
   updateArtwork as updateValidation,
@@ -34,7 +35,6 @@ const ArtworkModifier = ({ paramId }) => {
   const toggleModal = useArtworkUpdate((state) => state.toggleModal);
 
   const setDefaultValues = () => ({
-    artworkMedia: "",
     artworkTitle: artwork.current.title,
     artworkType: artwork.current.type,
     artworkAvailability: artwork.current.availability,
@@ -123,6 +123,8 @@ const ArtworkModifier = ({ paramId }) => {
               trigger={trigger}
               getValues={getValues}
               watch={watch}
+              watchables={""}
+              editable={false}
               loading={artworkLoading}
             />
           </CardContent>
@@ -136,6 +138,7 @@ const ArtworkModifier = ({ paramId }) => {
               color="primary"
               padding
               loading={formState.isSubmitting}
+              disabled={!isVersionDifferent(getValues(), artwork.current)}
               startIcon={<UploadIcon />}
             >
               Publish

@@ -11,6 +11,7 @@ const EditUserForm = ({
   getValues,
   setValue,
   trigger,
+  editable,
   loading,
 }) => {
   const classes = {};
@@ -28,6 +29,7 @@ const EditUserForm = ({
         height={150}
         width={150}
         noEmpty={false}
+        editable={editable}
         loading={loading}
       />
       <Box>

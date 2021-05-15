@@ -71,6 +71,7 @@ const SettingsProfile = () => {
               getValues={getValues}
               setValue={setValue}
               trigger={trigger}
+              editable={true}
               loading={loading}
             />
           </CardContent>

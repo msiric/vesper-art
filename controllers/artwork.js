@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { isVersionDifferent } from "../common/helpers";
 import { artworkValidation } from "../common/validation";
 import {
   addNewArtwork,
@@ -167,7 +168,6 @@ export const postNewArtwork = async ({
       userId,
       prevArtwork: { cover: null, media: null, artwork: null },
       artworkData: formattedData,
-      artworkUpload,
       connection,
     });
     await addNewArtwork({
@@ -187,19 +187,16 @@ export const postNewArtwork = async ({
 export const updateArtwork = async ({
   userId,
   artworkId,
-  artworkMimetype,
-  artworkPath,
-  artworkFilename,
   artworkData,
   connection,
 }) => {
   // $TODO Validate data passed to upload
-  const artworkUpload = await finalizeMediaUpload({
+  /*   const artworkUpload = await finalizeMediaUpload({
     filePath: artworkPath,
     fileName: artworkFilename,
     mimeType: artworkMimetype,
     fileType: "artwork",
-  });
+  }); */
   const formattedData = formatArtworkValues(artworkData);
   await artworkValidation.validate(sanitizeData(formattedData));
   const foundArtwork = await fetchArtworkMedia({
@@ -207,93 +204,83 @@ export const updateArtwork = async ({
     userId,
     connection,
   });
-  if (foundArtwork) {
-    if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
-      const foundUser = await fetchUserById({
-        userId,
+  const shouldUpdate = isVersionDifferent(formattedData, foundArtwork.current);
+  if (shouldUpdate) {
+    if (foundArtwork) {
+      if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
+        const foundUser = await fetchUserById({
+          userId,
+          connection,
+        });
+        if (!foundUser) throw createError(400, "User not found");
+        if (!foundUser.stripeId)
+          throw createError(
+            400,
+            "Please complete the Stripe onboarding process before making your artwork commercially available"
+          );
+        const foundAccount = await fetchStripeAccount({
+          accountId: foundUser.stripeId,
+        });
+        if (
+          (formattedData.artworkPersonal || formattedData.artworkCommercial) &&
+          (foundAccount.capabilities.card_payments !== "active" ||
+            foundAccount.capabilities.transfers !== "active")
+        ) {
+          throw createError(
+            400,
+            "Please complete your Stripe account before making your artwork commercially available"
+          );
+        }
+      }
+      const { coverId, mediaId, versionId } = generateUuids({
+        coverId: null,
+        mediaId: null,
+        versionId: null,
+      });
+      const savedVersion = await addNewVersion({
+        versionId,
+        coverId: foundArtwork.current.cover.id,
+        mediaId: foundArtwork.current.media.id,
+        artworkId,
+        prevArtwork: foundArtwork.current,
+        artworkData: formattedData,
         connection,
       });
-      if (!foundUser) throw createError(400, "User not found");
-      if (!foundUser.stripeId)
-        throw createError(
-          400,
-          "Please complete the Stripe onboarding process before making your artwork commercially available"
-        );
-      const foundAccount = await fetchStripeAccount({
-        accountId: foundUser.stripeId,
-      });
-      if (
-        (formattedData.artworkPersonal || formattedData.artworkCommercial) &&
-        (foundAccount.capabilities.card_payments !== "active" ||
-          foundAccount.capabilities.transfers !== "active")
-      ) {
-        throw createError(
-          400,
-          "Please complete your Stripe account before making your artwork commercially available"
-        );
-      }
-    }
-    const { coverId, mediaId, versionId } = generateUuids({
-      coverId: null,
-      mediaId: null,
-      versionId: null,
-    });
-    const savedCover = artworkUpload.fileCover
-      ? await addNewCover({
-          artworkUpload,
-          coverId,
-          connection,
-        })
-      : foundArtwork.current.cover;
-    const savedMedia = artworkUpload.fileMedia
-      ? await addNewMedia({
-          artworkUpload,
-          mediaId,
-          connection,
-        })
-      : foundArtwork.current.media;
-    const savedVersion = await addNewVersion({
-      versionId,
-      coverId: savedCover.id,
-      mediaId: savedMedia.id,
-      artworkId,
-      prevArtwork: foundArtwork.current,
-      artworkData: formattedData,
-      artworkUpload,
-      connection,
-    });
-    const foundOrder = await fetchOrderByVersion({
-      artworkId: foundArtwork.id,
-      versionId: foundArtwork.current.id,
-      connection,
-    });
-    const oldVersion = foundArtwork.current;
-    const savedArtwork = await updateArtworkVersion({
-      artworkId: foundArtwork.id,
-      currentId: versionId,
-      connection,
-    });
-    if (!foundOrder) {
-      if (formattedData.artworkCover && formattedData.artworkMedia) {
-        await deleteS3Object({
-          fileLink: oldVersion.cover,
-          folderName: "artworkCovers/",
-        });
-
-        await deleteS3Object({
-          fileLink: oldVersion.media,
-          folderName: "artworkMedia/",
-        });
-      }
-      await removeArtworkVersion({
-        versionId: oldVersion.id,
+      const foundOrder = await fetchOrderByVersion({
+        artworkId: foundArtwork.id,
+        versionId: foundArtwork.current.id,
         connection,
       });
-    }
+      const oldVersion = foundArtwork.current;
+      const savedArtwork = await updateArtworkVersion({
+        artworkId: foundArtwork.id,
+        currentId: versionId,
+        connection,
+      });
+      if (!foundOrder) {
+        if (formattedData.artworkCover && formattedData.artworkMedia) {
+          await deleteS3Object({
+            fileLink: oldVersion.cover,
+            folderName: "artworkCovers/",
+          });
 
-    return { message: "Artwork updated successfully" };
+          await deleteS3Object({
+            fileLink: oldVersion.media,
+            folderName: "artworkMedia/",
+          });
+        }
+        await removeArtworkVersion({
+          versionId: oldVersion.id,
+          connection,
+        });
+      }
+
+      return { message: "Artwork updated successfully" };
+    } else {
+      throw createError(400, "Artwork not found");
+    }
   } else {
-    throw createError(400, "Artwork not found");
+    throw createError(400, "Artwork is identical to the previous version");
   }
 };
 

@@ -16,7 +16,7 @@ const imageInputStyles = makeStyles((muiTheme) => ({
     padding: muiTheme.spacing(1),
   },
   imageInputAvatar: {
-    cursor: "pointer",
+    cursor: ({ editable }) => (editable ? "pointer" : "auto"),
     height: "100%",
     maxWidth: 600,
     position: "relative",

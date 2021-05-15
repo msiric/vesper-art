@@ -22,6 +22,7 @@ const Input = ({
   height,
   width,
   noEmpty,
+  editable,
   loading,
 }) => {
   const [state, setState] = useState({
@@ -31,7 +32,7 @@ const Input = ({
   });
   const fileUpload = createRef();
 
-  const classes = imageInputStyles();
+  const classes = imageInputStyles({ editable });
 
   useEffect(() => {
     if (preview && !state.imagePreviewUrl)
@@ -43,35 +44,39 @@ const Input = ({
   }, [preview]);
 
   const showFileUpload = async (e) => {
-    if (!error && state.file && !noEmpty) {
-      setValue(name, null);
-      setState((prevState) => ({ ...prevState, file: null }));
-      await trigger(name);
-    } else if (fileUpload) {
-      fileUpload.current.value = null;
-      fileUpload.current.click();
+    if (editable) {
+      if (!error && state.file && !noEmpty) {
+        setValue(name, null);
+        setState((prevState) => ({ ...prevState, file: null }));
+        await trigger(name);
+      } else if (fileUpload) {
+        fileUpload.current.value = null;
+        fileUpload.current.click();
+      }
     }
   };
 
   const handleImageChange = (e) => {
-    e.preventDefault();
-    let reader = new FileReader();
-    let file = e.target.files[0];
-    if (file) {
-      setState((prevState) => ({
-        ...prevState,
-        loading: true,
-      }));
-      reader.readAsDataURL(file);
-      reader.onloadend = async () => {
-        setState({
-          loading: false,
-          file: file,
-          imagePreviewUrl: reader.result,
-        });
-        setValue(name, file);
-        await trigger(name);
-      };
+    if (editable) {
+      e.preventDefault();
+      let reader = new FileReader();
+      let file = e.target.files[0];
+      if (file) {
+        setState((prevState) => ({
+          ...prevState,
+          loading: true,
+        }));
+        reader.readAsDataURL(file);
+        reader.onloadend = async () => {
+          setState({
+            loading: false,
+            file: file,
+            imagePreviewUrl: reader.result,
+          });
+          setValue(name, file);
+          await trigger(name);
+        };
+      }
     }
   };
 

@@ -323,7 +323,6 @@ export const addNewVersion = async ({
   artworkId,
   prevArtwork,
   artworkData,
-  artworkUpload,
   connection,
 }) => {
   /*   const newVersion = new Version();

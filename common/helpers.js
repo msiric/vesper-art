@@ -34,3 +34,23 @@ export const isObjectEmpty = (object) => {
   }
   return true;
 };
+
+export const isVersionDifferent = (currentValues, savedValues) => {
+  const mapper = {
+    artworkTitle: "title",
+    artworkType: "type",
+    artworkAvailability: "availability",
+    artworkLicense: "license",
+    artworkUse: "use",
+    artworkPersonal: "personal",
+    artworkCommercial: "commercial",
+    artworkDescription: "description",
+    artworkVisibility: "visibility",
+  };
+  for (let item of Object.keys(currentValues)) {
+    if (savedValues[mapper[item]] !== currentValues[item]) {
+      return true;
+    }
+  }
+  return false;
+};

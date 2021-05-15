@@ -66,17 +66,9 @@ const initActions = (set, get) => ({
   },
   updateArtwork: async ({ artworkId, values }) => {
     const data = deleteEmptyValues(formatArtworkValues(values));
-    const formData = new FormData();
-    for (let value of Object.keys(data)) {
-      if (Array.isArray(data[value])) {
-        formData.append(value, JSON.stringify(data[value]));
-      } else {
-        formData.append(value, data[value]);
-      }
-    }
     await patchArtwork.request({
       artworkId,
-      data: formData,
+      data,
     });
   },
   removeArtwork: async ({ artworkId }) => {

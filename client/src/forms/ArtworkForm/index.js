@@ -17,14 +17,18 @@ const ArtworkForm = ({
   trigger,
   getValues,
   watch,
+  watchables,
+  editable,
   loading,
 }) => {
   const stripeId = useUserStore((state) => state.stripeId);
 
-  const artworkAvailability = watch("artworkAvailability");
-  const artworkType = watch("artworkType");
-  const artworkLicense = watch("artworkLicense");
-  const artworkUse = watch("artworkUse");
+  const {
+    artworkAvailability,
+    artworkType,
+    artworkLicense,
+    artworkUse,
+  } = watchables.length ? watch(watchables) : watch();
 
   const history = useHistory();
 
@@ -44,6 +48,7 @@ const ArtworkForm = ({
         height={400}
         width="100%"
         noEmpty={false}
+        editable={editable}
         loading={loading}
       />
       <Box>

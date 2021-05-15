@@ -98,6 +98,13 @@ const ArtworkCreator = () => {
               trigger={trigger}
               getValues={getValues}
               watch={watch}
+              watchables={[
+                "artworkAvailability",
+                "artworkType",
+                "artworkLicense",
+                "artworkUse",
+              ]}
+              editable={true}
               loading={loading}
             />
           </CardContent>
