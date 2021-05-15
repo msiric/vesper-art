@@ -486,12 +486,12 @@ export const deactivateUser = async ({ userId, connection }) => {
       });
       if (!foundOrder.length) {
         await deleteS3Object({
-          fileLink: artwork.current.cover,
+          fileLink: artwork.current.cover.source,
           folderName: "artworkCovers/",
         });
 
         await deleteS3Object({
-          fileLink: artwork.current.media,
+          fileLink: artwork.current.media.source,
           folderName: "artworkMedia/",
         });
 

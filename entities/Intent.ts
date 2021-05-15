@@ -27,7 +27,7 @@ export class Intent extends BaseEntity {
   @Column()
   ownerId: string;
 
-  @ManyToOne(() => Version)
+  @ManyToOne(() => Version, { onDelete: "CASCADE" })
   @JoinColumn()
   version: Version;
 

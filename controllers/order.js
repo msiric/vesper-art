@@ -1,8 +1,8 @@
 import aws from "aws-sdk";
 import createError from "http-errors";
 import {
-  fetchBuyerMedia,
   fetchOrderDetails,
+  fetchOrderMedia,
 } from "../services/postgres/order.js";
 import {
   fetchUserPurchases,
@@ -79,7 +79,7 @@ export const getOrderDetails = async ({ userId, orderId, connection }) => {
 };
 
 export const getOrderMedia = async ({ userId, orderId, connection }) => {
-  const foundMedia = await fetchBuyerMedia({
+  const foundMedia = await fetchOrderMedia({
     userId,
     orderId,
     connection,

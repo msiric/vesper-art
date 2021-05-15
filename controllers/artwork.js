@@ -7,6 +7,7 @@ import {
   addNewFavorite,
   addNewMedia,
   addNewVersion,
+  deactivateArtworkVersion,
   deactivateExistingArtwork,
   fetchActiveArtworks,
   fetchArtworkById,
@@ -21,7 +22,10 @@ import {
   removeExistingFavorite,
   updateArtworkVersion,
 } from "../services/postgres/artwork.js";
-import { fetchOrderByVersion } from "../services/postgres/order.js";
+import {
+  fetchOrderByVersion,
+  fetchOrdersByArtwork,
+} from "../services/postgres/order.js";
 import { fetchStripeAccount } from "../services/postgres/stripe.js";
 import { fetchUserById } from "../services/postgres/user.js";
 import {
@@ -258,17 +262,17 @@ export const updateArtwork = async ({
         connection,
       });
       if (!foundOrder) {
-        if (formattedData.artworkCover && formattedData.artworkMedia) {
+        /*         if (formattedData.artworkCover && formattedData.artworkMedia) {
           await deleteS3Object({
-            fileLink: oldVersion.cover,
+            fileLink: oldVersion.cover.source,
             folderName: "artworkCovers/",
           });
 
           await deleteS3Object({
-            fileLink: oldVersion.media,
+            fileLink: oldVersion.media.source,
             folderName: "artworkMedia/",
           });
-        }
+        } */
         await removeArtworkVersion({
           versionId: oldVersion.id,
           connection,
@@ -293,7 +297,7 @@ export const deleteArtwork = async ({
   data,
   connection,
 }) => {
-  const foundArtwork = await fetchArtworkByOwner({
+  const foundArtwork = await fetchArtworkMedia({
     artworkId,
     userId,
     connection,
@@ -301,28 +305,38 @@ export const deleteArtwork = async ({
   if (foundArtwork) {
     // $TODO Check that artwork wasn't updated in the meantime (current === version)
     if (true) {
-      const foundOrder = await fetchOrderByVersion({
+      const foundOrders = await fetchOrdersByArtwork({
+        userId: userId,
         artworkId: foundArtwork.id,
-        versionId: foundArtwork.current.id,
         connection,
       });
-      if (!foundOrder) {
+      if (!foundOrders.length) {
+        const oldVersion = foundArtwork.current;
+        await deactivateArtworkVersion({ artworkId, connection });
         await deleteS3Object({
-          fileLink: foundArtwork.current.cover,
+          fileLink: oldVersion.cover.source,
           folderName: "artworkCovers/",
         });
-
         await deleteS3Object({
-          fileLink: foundArtwork.current.media,
+          fileLink: oldVersion.media.source,
           folderName: "artworkMedia/",
         });
-
         await removeArtworkVersion({
-          versionId: foundArtwork.current.id,
+          versionId: oldVersion.id,
+          connection,
+        });
+      } else if (
+        foundOrders.find((item) => item.versionId === foundArtwork.current.id)
+      ) {
+        await deactivateExistingArtwork({ artworkId, connection });
+      } else {
+        const oldVersion = foundArtwork.current;
+        await deactivateArtworkVersion({ artworkId, connection });
+        await removeArtworkVersion({
+          versionId: oldVersion.id,
           connection,
         });
       }
-      await deactivateExistingArtwork({ artworkId, connection });
       return { message: "Artwork deleted successfully" };
     }
     throw createError(400, "Artwork has a newer version");

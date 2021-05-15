@@ -265,14 +265,14 @@ export const fetchOrdersByBuyer = async ({
   return foundOrders;
 };
 
-export const fetchBuyerMedia = async ({ userId, orderId, connection }) => {
+export const fetchOrderMedia = async ({ userId, orderId, connection }) => {
   const foundOrder = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.media", "media")
     .where(
-      "order.id = :orderId AND order.status = :status AND order.buyerId = :userId",
+      "order.id = :orderId AND order.status = :status AND (order.buyerId = :userId OR order.sellerId = :userId)",
       {
         orderId,
         // $TODO to const
@@ -283,4 +283,25 @@ export const fetchBuyerMedia = async ({ userId, orderId, connection }) => {
     .getOne();
   console.log(foundOrder.version.media);
   return foundOrder.version.media;
+};
+
+export const fetchOrdersByArtwork = async ({
+  userId,
+  artworkId,
+  connection,
+}) => {
+  const foundOrders = await connection
+    .getRepository(Order)
+    .createQueryBuilder("order")
+    .leftJoinAndSelect("order.seller", "seller")
+    .leftJoinAndSelect("order.review", "review")
+    .leftJoinAndSelect("order.version", "version")
+    .leftJoinAndSelect("order.license", "license")
+    .where("order.sellerId = :userId AND order.artworkId = :artworkId", {
+      userId,
+      artworkId,
+    })
+    .getMany();
+  console.log(foundOrders);
+  return foundOrders;
 };

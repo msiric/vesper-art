@@ -521,6 +521,26 @@ export const updateArtworkVersion = async ({
   return updatedArtwork;
 };
 
+export const deactivateArtworkVersion = async ({ artworkId, connection }) => {
+  /*   const foundArtwork = Artwork.findOne({
+    where: [{ id: artworkId, active: true }],
+  });
+  foundArtwork.active = false;
+  return await Artwork.save(foundArtwork); */
+
+  const updatedArtwork = await connection
+    .createQueryBuilder()
+    .update(Artwork)
+    .set({ active: false, current: null })
+    .where("id = :artworkId AND active = :active", {
+      artworkId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .execute();
+  console.log(updatedArtwork);
+  return updatedArtwork;
+};
+
 // $Needs testing (mongo -> postgres)
 // $TODO add appropriate visiblity tag
 export const deactivateExistingArtwork = async ({ artworkId, connection }) => {

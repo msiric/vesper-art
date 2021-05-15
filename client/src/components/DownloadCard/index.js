@@ -11,6 +11,7 @@ import downloadCardStyles from "./styles.js";
 const DownloadCard = ({ paramId }) => {
   const userId = useUserStore((state) => state.id);
 
+  const order = useOrderDetails((state) => state.order.data);
   const loading = useOrderDetails((state) => state.order.loading);
   const downloadArtwork = useOrderDetails((state) => state.downloadArtwork);
 
@@ -30,7 +31,7 @@ const DownloadCard = ({ paramId }) => {
             variant="outlined"
             startIcon={<DownloadIcon />}
             className={classes.downloadCardButton}
-            onClick={() => downloadArtwork({ orderId: paramId, userId })}
+            onClick={() => downloadArtwork({ orderId: order.id, userId })}
           >
             Download
           </Button>
