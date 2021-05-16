@@ -6,12 +6,11 @@ import {
 import React from "react";
 
 const CommentPopover = ({
-  artworkId,
   id,
   open,
   anchorEl,
   handleCommentOpen,
-  handleCommentDelete,
+  handleModalOpen,
   handlePopoverClose,
 }) => {
   return (
@@ -42,7 +41,7 @@ const CommentPopover = ({
         <Button
           variant="text"
           startIcon={<DeleteIcon />}
-          onClick={() => handleCommentDelete({ artworkId, commentId: id })}
+          onClick={() => handleModalOpen({ commentId: id })}
           fullWidth
         >
           Delete

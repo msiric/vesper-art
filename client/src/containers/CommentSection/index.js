@@ -13,6 +13,7 @@ import CommentPopover from "../../components/CommentPopover";
 import EmptySection from "../../components/EmptySection/index.js";
 import InfiniteList from "../../components/InfiniteList";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
+import PromptModal from "../../components/PromptModal";
 import { useUserStore } from "../../contexts/global/user";
 import { useArtworkComments } from "../../contexts/local/artworkComments";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
@@ -37,8 +38,10 @@ const CommentSection = ({
   const error = useArtworkComments((state) => state.comments.error);
   const edits = useArtworkComments((state) => state.edits);
   const popover = useArtworkComments((state) => state.popover);
+  const modal = useArtworkComments((state) => state.modal);
   const highlight = useArtworkComments((state) => state.highlight);
   const hasMore = useArtworkComments((state) => state.comments.hasMore);
+  const isDeleting = useArtworkComments((state) => state.isDeleting);
   const fetchComments = useArtworkComments((state) => state.fetchComments);
   const addComment = useArtworkComments((state) => state.addComment);
   const updateComment = useArtworkComments((state) => state.updateComment);
@@ -47,6 +50,8 @@ const CommentSection = ({
   const closeComment = useArtworkComments((state) => state.closeComment);
   const openPopover = useArtworkComments((state) => state.openPopover);
   const closePopover = useArtworkComments((state) => state.closePopover);
+  const openModal = useArtworkComments((state) => state.openModal);
+  const closeModal = useArtworkComments((state) => state.closeModal);
 
   const userId = useUserStore((state) => state.id);
   const userUsername = useUserStore((state) => state.name);
@@ -86,6 +91,8 @@ const CommentSection = ({
       commentsFetched.current = true;
     }
   }, [isVisible]);
+
+  console.log("POPVER?", popover, "MODAL", modal);
 
   return (
     <Card className={classes.root}>
@@ -195,8 +202,18 @@ const CommentSection = ({
         anchorEl={popover.anchorEl}
         open={popover.open}
         handleCommentOpen={openComment}
-        handleCommentDelete={deleteComment}
+        handleModalOpen={openModal}
         handlePopoverClose={closePopover}
+      />
+      <PromptModal
+        open={modal.open}
+        handleConfirm={() => deleteComment({ artworkId, commentId: modal.id })}
+        handleClose={closeModal}
+        ariaLabel="Delete comment"
+        promptTitle="Are you sure you want to delete this comment?"
+        promptConfirm="Delete"
+        promptCancel="Cancel"
+        isSubmitting={isDeleting}
       />
     </Card>
   );

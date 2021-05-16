@@ -51,6 +51,11 @@ const shareModalStyles = makeStyles((muiTheme) => ({
       },
     },
   },
+  copyButton: {
+    width: "100%",
+    height: "100%",
+    padding: 10,
+  },
   modalPopper: {
     zIndex: 10000,
   },

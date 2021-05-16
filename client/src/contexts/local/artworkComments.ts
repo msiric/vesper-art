@@ -29,6 +29,11 @@ const initialState = {
     fetched: false,
     element: null,
   },
+  modal: {
+    id: null,
+    open: false,
+  },
+  isDeleting: false,
 };
 
 const scrollToHighlight = (highlightRef) => {
@@ -208,6 +213,10 @@ const initActions = (set, get) => ({
   },
   deleteComment: async ({ artworkId, commentId }) => {
     try {
+      set((state) => ({
+        ...state,
+        isDeleting: true,
+      }));
       await deleteComment.request({
         artworkId,
         commentId,
@@ -225,6 +234,11 @@ const initActions = (set, get) => ({
           anchorEl: null,
           open: false,
         },
+        modal: {
+          id: null,
+          open: false,
+        },
+        isDeleting: false,
       }));
     } catch (err) {}
   },
@@ -261,6 +275,31 @@ const initActions = (set, get) => ({
       popover: {
         id: null,
         anchorEl: null,
+        open: false,
+      },
+    }));
+  },
+  openModal: ({ commentId }) => {
+    set((state) => ({
+      ...state,
+      popover: {
+        id: null,
+        anchorEl: null,
+        open: false,
+      },
+      modal: {
+        ...state.modal,
+        id: commentId,
+        open: true,
+      },
+    }));
+  },
+  closeModal: () => {
+    set((state) => ({
+      ...state,
+      modal: {
+        ...state.modal,
+        id: null,
         open: false,
       },
     }));

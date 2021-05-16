@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { LinkRounded as CopyIcon } from "@material-ui/icons";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
   FacebookIcon,
@@ -32,20 +32,59 @@ const ShareModal = ({
   promptCancel,
 }) => {
   const [state, setState] = useState({
-    popper: { label: "", anchor: null },
+    popper: { open: false, label: "" },
+    copy: { status: "idle" },
   });
+  const anchorEl = useRef(null);
   const url = `${window.location.origin}${href}`;
   const title = "test"; // $TODO appStore.brand;
 
   const classes = shareModalStyles();
 
+  const handlePopperChange = (status, label) => {
+    setState((prevState) => ({
+      ...prevState,
+      copy: {
+        ...prevState.copy,
+        status: status === "idle" ? "idle" : status ? "success" : "fail",
+      },
+      popper: {
+        ...prevState.popper,
+        label,
+      },
+    }));
+  };
+
   const handlePopperOpen = (e, label) => {
-    setState({ popper: { label, anchor: e.currentTarget } });
+    setState((prevState) => ({
+      ...prevState,
+      popper: {
+        ...prevState.popper,
+        open: true,
+        label,
+      },
+    }));
   };
 
   const handlePopperClose = () => {
-    setState({ popper: { label: "", anchor: null } });
+    setState((prevState) => ({
+      ...prevState,
+      popper: { ...prevState.popper, open: false, label: "" },
+    }));
   };
+
+  const handleCopyButton = (success) => {
+    const label = success !== "idle" ? (success ? "Copied" : "Failed") : "Copy";
+    handlePopperChange(success, label);
+  };
+
+  useEffect(() => {
+    if (state.copy.status !== "idle") {
+      setTimeout(() => {
+        handleCopyButton("idle");
+      }, 1000);
+    }
+  }, [state.copy.status]);
 
   return (
     <Box>
@@ -71,10 +110,24 @@ const ShareModal = ({
               <Box className={classes.shareContainer}>
                 <Box
                   className={classes.socialButton}
-                  onMouseEnter={(e) => handlePopperOpen(e, "Copy")}
+                  onMouseEnter={(e) => {
+                    anchorEl.current = e.currentTarget;
+                    handlePopperOpen(
+                      e,
+                      state.copy.status !== "idle"
+                        ? state.copy.status === "success"
+                          ? "Copied"
+                          : "Failed"
+                        : "Copy"
+                    );
+                  }}
                   onMouseLeave={handlePopperClose}
                 >
-                  <CopyToClipboard text={url} onCopy={() => null}>
+                  <CopyToClipboard
+                    text={url}
+                    className={classes.copyButton}
+                    onCopy={(_, success) => handleCopyButton(success)}
+                  >
                     <CopyIcon />
                   </CopyToClipboard>
                 </Box>
@@ -82,7 +135,10 @@ const ShareModal = ({
                   url={url}
                   quote={title}
                   className={classes.socialButton}
-                  onMouseEnter={(e) => handlePopperOpen(e, "Share")}
+                  onMouseEnter={(e) => {
+                    anchorEl.current = e.currentTarget;
+                    handlePopperOpen(e, "Share");
+                  }}
                   onMouseLeave={handlePopperClose}
                 >
                   <FacebookIcon size={32} round />
@@ -91,7 +147,10 @@ const ShareModal = ({
                   url={url}
                   title={title}
                   className={classes.socialButton}
-                  onMouseEnter={(e) => handlePopperOpen(e, "Tweet")}
+                  onMouseEnter={(e) => {
+                    anchorEl.current = e.currentTarget;
+                    handlePopperOpen(e, "Tweet");
+                  }}
                   onMouseLeave={handlePopperClose}
                 >
                   <TwitterIcon size={32} round />
@@ -102,7 +161,10 @@ const ShareModal = ({
                   windowWidth={660}
                   windowHeight={460}
                   className={classes.socialButton}
-                  onMouseEnter={(e) => handlePopperOpen(e, "Post")}
+                  onMouseEnter={(e) => {
+                    anchorEl.current = e.currentTarget;
+                    handlePopperOpen(e, "Post");
+                  }}
                   onMouseLeave={handlePopperClose}
                 >
                   <RedditIcon size={32} round />
@@ -112,7 +174,10 @@ const ShareModal = ({
                   title={title}
                   separator=":: "
                   className={classes.socialButton}
-                  onMouseEnter={(e) => handlePopperOpen(e, "Message")}
+                  onMouseEnter={(e) => {
+                    anchorEl.current = e.currentTarget;
+                    handlePopperOpen(e, "Message");
+                  }}
                   onMouseLeave={handlePopperClose}
                 >
                   <WhatsappIcon size={32} round />
@@ -135,11 +200,11 @@ const ShareModal = ({
         </Fade>
       </Modal>
       <Popper
-        open={!!state.popper.anchor}
-        anchorEl={state.popper.anchor}
+        open={state.popper.open}
+        anchorEl={anchorEl.current}
         className={classes.modalPopper}
       >
-        <Typography>{state.popper.anchor && state.popper.label}</Typography>
+        <Typography>{state.popper.label}</Typography>
       </Popper>
     </Box>
   );
