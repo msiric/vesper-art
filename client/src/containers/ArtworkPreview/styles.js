@@ -49,6 +49,9 @@ const artworkPreviewStyles = makeStyles((muiTheme) => ({
     flexDirection: "column",
     justifyContent: "space-between",
   },
+  artworkPreviewDescription: {
+    wordBreak: "break-word",
+  },
   user: {
     display: "flex",
     justifyContent: "center",

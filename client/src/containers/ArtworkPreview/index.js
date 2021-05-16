@@ -78,7 +78,11 @@ const ArtworkPreview = ({ paramId }) => {
           width="100%"
           height="120px"
         >
-          <Typography mb={2} variant="body2">
+          <Typography
+            mb={2}
+            variant="body2"
+            className={classes.artworkPreviewDescription}
+          >
             {version.description}
           </Typography>
         </SkeletonWrapper>

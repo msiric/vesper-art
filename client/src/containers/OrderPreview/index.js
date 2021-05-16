@@ -50,12 +50,19 @@ const OrderPreview = () => {
       <Divider />
       <Box p={2}>
         <SkeletonWrapper variant="text" loading={loading} height="60px">
-          <Typography fontWeight="fontWeightBold" fontSize="h5.fontSize">{`${
-            version.title
-          }, ${new Date(version.created).getFullYear()}`}</Typography>
+          <Typography
+            fontWeight="fontWeightBold"
+            fontSize="h5.fontSize"
+            className={classes.artworkPreviewTitle}
+          >{`${version.title}, ${new Date(
+            version.created
+          ).getFullYear()}`}</Typography>
         </SkeletonWrapper>
         <SkeletonWrapper variant="text" loading={loading} height="40px">
-          <Typography variant="body2">
+          <Typography
+            variant="body2"
+            className={classes.artworkPreviewDescription}
+          >
             {version.description || "Loading..."}
           </Typography>
         </SkeletonWrapper>

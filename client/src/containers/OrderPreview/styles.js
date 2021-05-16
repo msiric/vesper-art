@@ -31,6 +31,12 @@ const orderPreviewStyles = makeStyles((muiTheme) => ({
   artworkPreviewMedia: {
     backgroundSize: "contain",
   },
+  artworkPreviewTitle: {
+    wordBreak: "break-word",
+  },
+  artworkPreviewDescription: {
+    wordBreak: "break-word",
+  },
   avatar: {
     width: muiTheme.spacing(10),
     height: muiTheme.spacing(10),

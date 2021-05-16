@@ -18,6 +18,7 @@ const profileCardStyles = makeStyles((muiTheme) => ({
     display: "block",
     textAlign: "center",
     textDecoration: "none",
+    wordBreak: "break-word",
   },
   profileCardWrapper: {
     width: "100px",
