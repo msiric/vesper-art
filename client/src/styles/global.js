@@ -16,6 +16,18 @@ const GlobalStyles = makeStyles((muiTheme) => ({
   rightSpacing: {
     marginRight: artepunktTheme.spacing.grid,
   },
+  responsiveSpacing: {
+    marginRight: 0,
+    marginBottom: artepunktTheme.spacing.grid,
+    [muiTheme.breakpoints.down("sm")]: {
+      marginBottom: 0,
+      marginRight: artepunktTheme.spacing.grid,
+    },
+    [muiTheme.breakpoints.down("xs")]: {
+      marginRight: 0,
+      marginBottom: artepunktTheme.spacing.grid,
+    },
+  },
   elementSpacing: {
     margin: artepunktTheme.margin.elementLg,
     [muiTheme.breakpoints.down("sm")]: {

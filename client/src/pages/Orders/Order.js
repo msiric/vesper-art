@@ -12,23 +12,16 @@ import { useOrderDetails } from "../../contexts/local/orderDetails";
 import globalStyles from "../../styles/global.js";
 
 const useOrderStyles = makeStyles((muiTheme) => ({
-  orderContainerLg: {
+  responsiveContainer: {
     display: "flex",
     flexDirection: "column",
     [muiTheme.breakpoints.down("sm")]: {
-      display: "none",
+      display: "flex",
+      flexDirection: "row",
     },
     [muiTheme.breakpoints.down("xs")]: {
       display: "flex",
-    },
-  },
-  orderContainerMd: {
-    display: "flex",
-    [muiTheme.breakpoints.down("xs")]: {
-      display: "none",
-    },
-    [muiTheme.breakpoints.up("md")]: {
-      display: "none",
+      flexDirection: "column",
     },
   },
   userSection: {
@@ -64,20 +57,9 @@ const Order = ({ match }) => {
         <Grid item xs={12} md={8}>
           <OrderPreview paramId={paramId} />
         </Grid>
-        <Grid item xs={12} md={4} className={classes.orderContainerLg}>
-          <Box className={globalClasses.bottomSpacing}>
-            <UserSection />
-          </Box>
-          <Box className={globalClasses.bottomSpacing}>
-            <ReviewCard paramId={paramId} highlightRef={highlightRef} />
-          </Box>
-          <Box>
-            <DownloadCard />
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={4} className={classes.orderContainerMd}>
+        <Grid item xs={12} md={4} className={classes.responsiveContainer}>
           <Box
-            className={`${classes.userSection} ${globalClasses.rightSpacing}`}
+            className={`${classes.userSection} ${globalClasses.responsiveSpacing}`}
           >
             <UserSection />
           </Box>

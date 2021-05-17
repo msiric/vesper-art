@@ -53,6 +53,7 @@ const Settings = ({ location }) => {
             <Grid
               item
               xs={12}
+              sm={6}
               md={4}
               style={{
                 display: "flex",
@@ -64,6 +65,7 @@ const Settings = ({ location }) => {
             <Grid
               item
               xs={12}
+              sm={6}
               md={8}
               style={{
                 display: "flex",
