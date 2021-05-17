@@ -151,7 +151,11 @@ const ArtworkInfo = () => {
                       flexDirection="column"
                       style={{ justifyContent: "center", alignItems: "center" }}
                     >
-                      <Typography variant="subtitle1" m={2}>
+                      <Typography
+                        variant="subtitle1"
+                        m={2}
+                        style={{ textAlign: "center" }}
+                      >
                         This artwork cannot be purchased or downloaded since it
                         is preview only
                       </Typography>

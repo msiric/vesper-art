@@ -114,6 +114,8 @@ export const artepunktTheme = createMuiTheme({
   },
 });
 
+artepunktTheme.spacing.grid = artepunktTheme.spacing.unit * 2;
+
 artepunktTheme.overrides.MuiToolbar = {
   gutters: {
     "@media (min-width: 600px)": {
