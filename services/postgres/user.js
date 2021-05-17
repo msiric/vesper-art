@@ -346,6 +346,13 @@ export const fetchUserProfile = async ({
     .select([...USER_ESSENTIAL_INFO, ...USER_DETAILED_INFO])
     .leftJoinAndSelect("user.avatar", "avatar")
     .leftJoinAndMapMany(
+      "user.reviews",
+      Review,
+      "review",
+      "review.revieweeId = :userId",
+      { userId }
+    )
+    .leftJoinAndMapMany(
       "user.artwork",
       Artwork,
       "artwork",
@@ -366,6 +373,12 @@ export const fetchUserProfile = async ({
       active: USER_ACTIVE_STATUS,
     })
     .getOne();
+  foundUser.rating = foundUser.reviews.length
+    ? (
+        foundUser.reviews.reduce((sum, { rating }) => sum + rating, 0) /
+        foundUser.reviews.length
+      ).toFixed(2)
+    : null;
   return foundUser;
 };
 
