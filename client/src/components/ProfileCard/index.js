@@ -33,7 +33,7 @@ const ProfileCard = ({ user, loading }) => {
             component={RouterLink}
             to={`/user/${user.name}`}
             alt={user.name}
-            src={user.avatar}
+            src={user.avatar ? user.avatar.source : null}
             title={user.name}
             className={classes.profileCardAvatar}
           />

@@ -53,10 +53,14 @@ const useArtworkStyles = makeStyles((muiTheme) => ({
     height: "100%",
   },
   userSection: {
-    flex: 1,
+    [muiTheme.breakpoints.down("sm")]: {
+      flex: 1,
+    },
   },
   actionSection: {
-    flex: 1,
+    [muiTheme.breakpoints.down("sm")]: {
+      flex: 1,
+    },
   },
 }));
 

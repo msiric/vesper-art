@@ -47,7 +47,7 @@ const ProfileBanner = ({ profile, loading }) => {
             <SkeletonWrapper loading={loading} variant="circle">
               <Avatar
                 alt={profile.name}
-                src={profile.source}
+                src={profile.avatar ? profile.avatar.source : null}
                 title={profile.name}
                 width={130}
                 height={130}
