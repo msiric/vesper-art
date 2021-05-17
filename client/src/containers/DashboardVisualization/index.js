@@ -108,10 +108,16 @@ const DashboardVisualization = () => {
           mb={artepunktTheme.margin.spacing}
           display="flex"
           flexDirection="row"
+          justifyContent="center"
           spacing={2}
         >
-          {cards.map((card) => (
-            <GridItem item xs={12} md={12}>
+          {cards.map((card, index) => (
+            <GridItem
+              item
+              xs={12}
+              sm={index !== cards.length - 1 ? 6 : 8}
+              md={12}
+            >
               <DashboardCard
                 currency={card.currency}
                 data={card.data}
