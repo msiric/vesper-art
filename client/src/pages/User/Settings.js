@@ -16,6 +16,7 @@ import { postLogout } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
 
 const Settings = ({ location }) => {
+  // $TODO Update user store on every change in settings (ex. avatar change)
   const resetUser = useUserStore((state) => state.resetUser);
 
   const resetEvents = useEventsStore((state) => state.resetEvents);

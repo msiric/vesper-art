@@ -8,11 +8,11 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemSecondaryAction,
-  ListItemText,
+  ListItemText
 } from "@material-ui/core";
 import {
   AddCircleRounded as UploadIcon,
-  MoreVertRounded as MoreIcon,
+  MoreVertRounded as MoreIcon
 } from "@material-ui/icons";
 import { formatDistance } from "date-fns";
 import React, { useEffect } from "react";
@@ -82,7 +82,7 @@ const CommentCard = ({
           >
             <Avatar
               alt={comment.owner.name}
-              src={comment.owner.avatar}
+              src={comment.owner.avatar ? comment.owner.avatar.source : null}
               component={Link}
               to={`/user/${comment.owner.name}`}
               className={classes.noLink}

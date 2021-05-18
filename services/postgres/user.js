@@ -186,6 +186,7 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
+    .leftJoinAndSelect("user.avatar", "avatar")
     .leftJoinAndMapMany(
       "user.intents",
       Intent,

@@ -92,8 +92,6 @@ const CommentSection = ({
     }
   }, [isVisible]);
 
-  console.log("POPVER?", popover, "MODAL", modal);
-
   return (
     <Card className={classes.root}>
       <CardContent>
