@@ -21,7 +21,6 @@ const SearchForm = ({ handleToggle, getValues, setValue, errors }) => {
         value={getValues("searchInput")}
         setValue={setValue}
         placeholder="Search..."
-        errors={errors}
         style={{ margin: 0 }}
         InputProps={{
           startAdornment: (

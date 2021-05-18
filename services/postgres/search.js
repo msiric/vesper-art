@@ -1,6 +1,8 @@
 import { Artwork } from "../../entities/Artwork";
 import { User } from "../../entities/User";
 
+// $TODO version visible
+// $TODO active to const
 export const fetchArtworkResults = async ({
   searchQuery,
   cursor,
@@ -15,9 +17,13 @@ export const fetchArtworkResults = async ({
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
-    .where("version.title @@ plainto_tsquery(:query)", {
-      query: formattedQuery,
-    })
+    .where(
+      "version.title @@ plainto_tsquery(:query) AND artwork.active = :active",
+      {
+        query: formattedQuery,
+        active: true,
+      }
+    )
     .orderBy(
       "ts_rank(to_tsvector(version.title), plainto_tsquery(:query))",
       "DESC"
@@ -35,6 +41,7 @@ export const fetchArtworkResults = async ({
   return foundArtwork;
 };
 
+// $TODO active to const
 export const fetchUserResults = async ({
   searchQuery,
   cursor,
@@ -46,8 +53,9 @@ export const fetchUserResults = async ({
     .getRepository(User)
     .createQueryBuilder("user")
     .leftJoinAndSelect("user.avatar", "avatar")
-    .where("user.name @@ plainto_tsquery(:query)", {
+    .where("user.name @@ plainto_tsquery(:query) AND user.active = :active", {
       query: formattedQuery,
+      active: true,
     })
     .orderBy("ts_rank(to_tsvector(user.name), plainto_tsquery(:query))", "DESC")
     .getMany();

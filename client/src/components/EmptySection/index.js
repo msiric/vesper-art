@@ -11,7 +11,7 @@ const EmptySection = ({ label, page, loading }) => {
   const classes = emptySectionStyles();
 
   const content = (
-    <SkeletonWrapper loading={loading}>
+    <SkeletonWrapper loading={loading} width="100%">
       <Box
         style={{
           display: "flex",
