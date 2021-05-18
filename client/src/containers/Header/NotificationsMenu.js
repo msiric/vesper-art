@@ -63,18 +63,6 @@ const NotificationsMenu = ({
                 <Divider />
               </>
             ))}
-            {notifications.items.length >= 50 && (
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: "16px 0",
-                }}
-              >
-                <Typography>See all notifications</Typography>
-              </Box>
-            )}
           </List>
         ) : (
           <Box

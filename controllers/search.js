@@ -1,3 +1,4 @@
+import createError from "http-errors";
 import {
   fetchArtworkResults,
   fetchUserResults,
@@ -32,6 +33,8 @@ export const getResults = async ({
       connection,
     });
     foundType = "users";
+  } else {
+    throw createError(400, "Query type invalid");
   }
   return {
     searchData: foundResults,

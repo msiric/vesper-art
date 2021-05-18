@@ -1,5 +1,5 @@
-import User from "../../models/user.js";
-import Version from "../../models/version.js";
+import { Artwork } from "../../entities/Artwork";
+import { User } from "../../entities/User";
 
 export const fetchArtworkResults = async ({
   searchQuery,
@@ -7,7 +7,32 @@ export const fetchArtworkResults = async ({
   limit,
   connection,
 }) => {
-  return await Version.fuzzySearch(searchQuery).deepPopulate("artwork.owner");
+  const formattedQuery = searchQuery.trim().replace(/ /g, " & ");
+  const foundArtwork = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .where("version.title @@ plainto_tsquery(:query)", {
+      query: formattedQuery,
+    })
+    .orderBy(
+      "ts_rank(to_tsvector(version.title), plainto_tsquery(:query))",
+      "DESC"
+    )
+    .getMany();
+  // const foundArtworkTest = await connection
+  //   .getRepository(Artwork)
+  //   .createQueryBuilder("artwork")
+  //   .leftJoinAndSelect("artwork.current", "version")
+  //   .where(
+  //     `to_tsvector('simple',version.title) @@ to_tsquery('simple', :query) AND artwork.active = :active`,
+  //     { query: `${formattedQuery}:*`, active: true }
+  //   )
+  //   .getMany();
+  return foundArtwork;
 };
 
 export const fetchUserResults = async ({
@@ -16,5 +41,15 @@ export const fetchUserResults = async ({
   limit,
   connection,
 }) => {
-  return await User.fuzzySearch(searchQuery).deepPopulate("artwork.owner");
+  const formattedQuery = searchQuery.trim().replace(/ /g, " & ");
+  const foundUsers = await connection
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .leftJoinAndSelect("user.avatar", "avatar")
+    .where("user.name @@ plainto_tsquery(:query)", {
+      query: formattedQuery,
+    })
+    .orderBy("ts_rank(to_tsvector(user.name), plainto_tsquery(:query))", "DESC")
+    .getMany();
+  return foundUsers;
 };

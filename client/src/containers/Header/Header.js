@@ -72,14 +72,7 @@ const Header = ({ history }) => {
     },
   });
 
-  const {
-    handleSubmit,
-    formState,
-    errors,
-    control,
-    setValue,
-    getValues,
-  } = useForm({
+  const { handleSubmit, errors, control, setValue, getValues } = useForm({
     defaultValues: {
       searchInput: "",
     },

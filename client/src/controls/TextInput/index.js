@@ -3,10 +3,10 @@ import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import textInputStyles from "./styles";
 
-const Input = (props) => {
+const Input = ({ margin = "dense", variant = "outlined", ...props }) => {
   const classes = textInputStyles();
 
-  return <TextField {...props} margin="dense" variant="outlined" fullWidth />;
+  return <TextField {...props} margin={margin} variant={variant} fullWidth />;
 };
 
 const TextInput = (props) => {
