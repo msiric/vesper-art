@@ -5,7 +5,6 @@ const initialState = {
     items: [],
     count: 0,
     opened: false,
-    limit: 50,
     hasMore: true,
     cursor: "",
     limit: 10,
