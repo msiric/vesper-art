@@ -59,6 +59,7 @@ const initActions = (set) => ({
     }));
   },
   updateEmail: async ({ userId, values, handleLogout }) => {
+    // $TODO log user out server side
     await patchEmail.request({
       userId,
       data: values,

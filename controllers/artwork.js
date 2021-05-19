@@ -306,7 +306,7 @@ export const deleteArtwork = async ({
     // $TODO Check that artwork wasn't updated in the meantime (current === version)
     if (true) {
       const foundOrders = await fetchOrdersByArtwork({
-        userId: userId,
+        userId,
         artworkId: foundArtwork.id,
         connection,
       });

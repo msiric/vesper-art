@@ -56,6 +56,7 @@ router
   .delete(
     [isAuthenticated],
     handler(deactivateUser, true, (req, res, next) => ({
+      response: res,
       ...req.params,
     }))
   );

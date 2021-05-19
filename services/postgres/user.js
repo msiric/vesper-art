@@ -421,6 +421,38 @@ export const fetchUserArtwork = async ({
   return foundArtwork;
 };
 
+export const fetchUserMedia = async ({ userId, cursor, limit, connection }) => {
+  //
+  // return await Artwork.find({
+  //   where: [{ owner: userId, active: true }],
+  //   relations: ["current"],
+  //   skip: cursor,
+  //   take: limit,
+  // });
+
+  const queryBuilder = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork");
+  const foundArtwork = await queryBuilder
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("version.media", "media")
+    .where(
+      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
+      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
+      {
+        userId,
+        active: USER_ACTIVE_STATUS,
+      }
+    )
+    .orderBy("artwork.serial", "ASC")
+    .limit(limit)
+    .getMany();
+  console.log(foundArtwork);
+  return foundArtwork;
+};
+
 // $Needs testing (mongo -> postgres)
 export const fetchUserFavorites = async ({
   userId,

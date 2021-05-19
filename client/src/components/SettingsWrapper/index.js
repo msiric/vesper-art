@@ -1,18 +1,39 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import PromptModal from "../../components/PromptModal/index.js";
+import { socket } from "../../containers/Interceptor/Interceptor";
+import { useEventsStore } from "../../contexts/global/events";
+import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
 
 const SettingsWrapper = ({ location }) => {
+  const resetUser = useUserStore((state) => state.resetUser);
+  const resetEvents = useEventsStore((state) => state.resetEvents);
+
   const modal = useUserSettings((state) => state.modal);
   const userId = useUserSettings((state) => state.user.data.id);
   const isDeactivating = useUserSettings((state) => state.isDeactivating);
-  const deactiveUser = useUserSettings((state) => state.deactiveUser);
+  const deactivateUser = useUserSettings((state) => state.deactivateUser);
   const toggleModal = useUserSettings((state) => state.toggleModal);
+
+  const history = useHistory();
+
+  const handleDeactivation = async ({ userId }) => {
+    try {
+      await deactivateUser({ userId });
+      resetUser();
+      resetEvents();
+      socket.instance.disconnect();
+      history.push("/login");
+    } catch (err) {
+      console.log("ERROR", err);
+    }
+  };
 
   return (
     <PromptModal
       open={modal.open}
-      handleConfirm={() => deactiveUser({ userId })}
+      handleConfirm={() => handleDeactivation({ userId })}
       handleClose={toggleModal}
       ariaLabel="Deactivate account"
       promptTitle="Are you sure you want to deactivate your account?"

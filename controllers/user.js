@@ -10,6 +10,13 @@ import {
   profileValidation,
 } from "../common/validation";
 import {
+  deactivateArtworkVersion,
+  deactivateExistingArtwork,
+  removeArtworkVersion,
+} from "../services/postgres/artwork.js";
+import { logUserOut } from "../services/postgres/auth";
+import {
+  fetchOrdersByArtwork,
   fetchOrdersByBuyer,
   fetchOrdersBySeller,
 } from "../services/postgres/order.js";
@@ -32,6 +39,7 @@ import {
   fetchUserFavorites,
   fetchUserIdByEmail,
   fetchUserIdByUsername,
+  fetchUserMedia,
   fetchUserNotifications,
   fetchUserProfile,
   fetchUserPurchases,
@@ -471,7 +479,7 @@ export const updateUserPreferences = async ({
 // needs testing (better way to update already found user)
 // not tested
 // needs transaction (not tested)
-export const deactivateUser = async ({ userId, connection }) => {
+/* export const deactivateUser = async ({ userId, connection }) => {
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
     const foundArtwork = await fetchUserArtwork({
@@ -513,6 +521,60 @@ export const deactivateUser = async ({ userId, connection }) => {
     req.connection.destroy(function (err) {
       res.json("/");
     });
+    return { message: "User deactivated" };
+  }
+  throw createError(400, "User not found");
+}; */
+
+export const deactivateUser = async ({ userId, response, connection }) => {
+  const foundUser = await fetchUserById({ userId, connection });
+  if (foundUser) {
+    const foundArtwork = await fetchUserMedia({
+      userId,
+      connection,
+    });
+    for (let artwork of foundArtwork) {
+      const foundOrders = await fetchOrdersByArtwork({
+        userId: foundUser.id,
+        versionId: artwork.id,
+        connection,
+      });
+      if (!foundOrders.length) {
+        const oldVersion = foundArtwork.current;
+        await deactivateArtworkVersion({ artworkId, connection });
+        await deleteS3Object({
+          fileLink: oldVersion.cover.source,
+          folderName: "artworkCovers/",
+        });
+        await deleteS3Object({
+          fileLink: oldVersion.media.source,
+          folderName: "artworkMedia/",
+        });
+        await removeArtworkVersion({
+          versionId: oldVersion.id,
+          connection,
+        });
+      } else if (
+        foundOrders.find((item) => item.versionId === foundArtwork.current.id)
+      ) {
+        await deactivateExistingArtwork({ artworkId, connection });
+      } else {
+        const oldVersion = foundArtwork.current;
+        await deactivateArtworkVersion({ artworkId, connection });
+        await removeArtworkVersion({
+          versionId: oldVersion.id,
+          connection,
+        });
+      }
+    }
+    if (foundUser.avatar) {
+      await deleteS3Object({
+        fileLink: foundUser.avatar.source,
+        folderName: "userMedia/",
+      });
+    }
+    await deactivateExistingUser({ userId: foundUser.id, connection });
+    logUserOut(response);
     return { message: "User deactivated" };
   }
   throw createError(400, "User not found");
