@@ -163,6 +163,7 @@ const CheckoutSummary = ({
               fullWidth
               variant="outlined"
               color="error"
+              loading={loading}
               onClick={() =>
                 handleDiscountChange({ values: { discountCode: null } })
               }

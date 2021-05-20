@@ -58,6 +58,10 @@ const initActions = (set, get) => ({
     }
   },
   submitPayment: async ({ values, stripe, elements, history, changeStep }) => {
+    set((state) => ({
+      ...state,
+      intent: { ...state.intent, loading: true },
+    }));
     const secret = get().secret;
     if (!secret || !stripe || !elements) {
       console.log("nije dobro");
@@ -104,6 +108,7 @@ const initActions = (set, get) => ({
       console.log(error);
       set((state) => ({
         ...state,
+        intent: { ...state.intent, loading: false },
         payment: { ...state.payment, success: false, message: error.message },
       }));
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
@@ -126,6 +131,7 @@ const initActions = (set, get) => ({
           }); */
       set((state) => ({
         ...state,
+        intent: { ...state.intent, loading: false },
         payment: {
           ...state.payment,
           success: true,
@@ -144,6 +150,10 @@ const initActions = (set, get) => ({
   },
   saveIntent: async ({ values, changeStep }) => {
     try {
+      set((state) => ({
+        ...state,
+        intent: { ...state.intent, loading: true },
+      }));
       // $TODO REMOVE INTENT AND FETCH FROM API
       const version = get().version.data;
       const discount = get().discount.data;
@@ -160,6 +170,7 @@ const initActions = (set, get) => ({
       set((state) => ({
         ...state,
         secret: data.intent.secret,
+        intent: { ...state.intent, loading: false },
       }));
       changeStep({ value: 1 });
     } catch (err) {
@@ -170,12 +181,17 @@ const initActions = (set, get) => ({
   },
   changeDiscount: async ({ values }) => {
     try {
+      set((state) => ({
+        ...state,
+        discount: {
+          ...state.discount,
+          loading: true,
+        },
+      }));
       const discount = get().discount.data;
       const version = get().version.data;
       const license = get().license;
-      console.log("LICENSERINO ", license, discount);
       if (discount && values.discountCode === null) {
-        console.log("REMOVEAS DISCOUNT");
         await postIntent.request({
           versionId: version.id,
           artworkLicense: {
