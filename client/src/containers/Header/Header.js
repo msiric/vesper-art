@@ -44,6 +44,79 @@ import { socket } from "../Interceptor/Interceptor";
 import HeaderStyles from "./Header.style.js";
 import NotificationsMenu from "./NotificationsMenu.js";
 
+/* const AUTH_ITEMS = [
+  {
+    click: handleNotificationsMenuOpen,
+    ariaLabel: "Show notifications",
+    showBadge: true,
+    badgeValue: notifications.count,
+    icon: <NotificationsIcon />,
+    label: "Notifications",
+  },
+  {
+    click: handleProfileMenuOpen,
+    ariaLabel: "Show profile",
+    showBadge: false,
+    badgeValue: null,
+    icon: <AccountIcon />,
+    label: "Profile",
+  },
+];
+const UNAUTH_ITEMS = [
+  { redirect: "/login", label: "Login" },
+  { redirect: "/signup", label: "Sign up" },
+];
+const MENU_ITEMS = [
+  {
+    redirect: "/onboarding",
+    icon: <SellerIcon />,
+    label: "Become a seller",
+    hidden: !!stripeId,
+  },
+  {
+    redirect: `/user/${userUsername}`,
+    icon: <ProfileIcon />,
+    label: userUsername,
+    hidden: false,
+  },
+  {
+    redirect: "/dashboard",
+    icon: <DashboardIcon />,
+    label: "Dashboard",
+    hidden: false,
+  },
+  {
+    redirect: "/gallery",
+    icon: <GalleryIcon />,
+    label: "Gallery",
+    hidden: false,
+  },
+  {
+    redirect: "/my_artwork",
+    icon: <ArtworkIcon />,
+    label: "My artwork",
+    hidden: false,
+  },
+  {
+    redirect: "/orders",
+    icon: <OrdersIcon />,
+    label: "Orders",
+    hidden: false,
+  },
+  {
+    redirect: "/settings",
+    icon: <SettingsIcon />,
+    label: "Settings",
+    hidden: false,
+  },
+  {
+    handleClick: handleLogout,
+    icon: <LogoutIcon />,
+    label: "Log out",
+    hidden: false,
+  },
+]; */
+
 const searchValidation = Yup.object().shape({
   searchInput: Yup.string().trim().required("Search input is required"),
 });
