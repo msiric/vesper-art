@@ -6,10 +6,12 @@ import {
   Grid,
   Typography,
 } from "@material-ui/core";
+import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 import React, { useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useHomeArtwork } from "../../contexts/local/homeArtwork";
+import globalStyles from "../../styles/global.js";
 import homeBannerStyles from "./styles";
 
 const HomeBanner = () => {
@@ -20,6 +22,7 @@ const HomeBanner = () => {
     fetchArtwork();
   }, []);
 
+  const globalClasses = globalStyles();
   const classes = homeBannerStyles();
 
   return [
@@ -107,6 +110,7 @@ const HomeBanner = () => {
           <Box
             style={{
               display: "flex",
+              flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
               width: "100%",
@@ -114,6 +118,7 @@ const HomeBanner = () => {
               padding: 16,
             }}
           >
+            <AssignmentIndIcon style={{ fontSize: 56, marginBottom: 12 }} />
             <Typography style={{ textAlign: "center" }}>
               Need to verify a license? Head to the platform's verifier
             </Typography>
