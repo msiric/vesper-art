@@ -1,4 +1,6 @@
 import { Order } from "../../entities/Order";
+import { Review } from "../../entities/Review";
+import { calculateRating } from "../../utils/helpers";
 
 // $Needs testing (mongo -> postgres)
 export const addNewOrder = async ({ orderId, orderData, connection }) => {
@@ -100,8 +102,20 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.buyer", "buyer")
+    .leftJoinAndMapMany(
+      "buyer.reviews",
+      Review,
+      "buyerReview",
+      "buyerReview.revieweeId = buyer.id"
+    )
     .leftJoinAndSelect("buyer.avatar", "buyerAvatar")
     .leftJoinAndSelect("order.seller", "seller")
+    .leftJoinAndMapMany(
+      "seller.reviews",
+      Review,
+      "sellerReview",
+      "sellerReview.revieweeId = seller.id"
+    )
     .leftJoinAndSelect("seller.avatar", "sellerAvatar")
     .leftJoinAndSelect("order.discount", "discount")
     .leftJoinAndSelect("order.version", "version")
@@ -117,6 +131,14 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
       }
     )
     .getOne();
+  if (foundOrder && foundOrder.buyer && foundOrder.seller) {
+    foundOrder.seller.rating = calculateRating({
+      reviews: foundOrder.seller.reviews,
+    });
+    foundOrder.buyer.rating = calculateRating({
+      reviews: foundOrder.buyer.reviews,
+    });
+  }
   console.log(foundOrder);
   return foundOrder;
 };

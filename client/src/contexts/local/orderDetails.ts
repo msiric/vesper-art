@@ -55,12 +55,23 @@ const initActions = (set, get) => ({
       reviewRating: values.artistRating,
     });
     const order = get().order.data;
+    const newRating = order.seller.rating
+      ? (
+          (order.seller.rating * order.seller.reviews.length +
+            values.artistRating) /
+          (order.seller.reviews.length + 1)
+        ).toFixed(2)
+      : order.seller.rating;
     set((state) => ({
       ...state,
       order: {
         ...state.order,
         data: {
           ...state.order.data,
+          seller: {
+            ...state.order.data.seller,
+            rating: newRating,
+          },
           review: {
             order: order.id,
             artwork: order.artwork.id,
