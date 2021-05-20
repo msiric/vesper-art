@@ -23,7 +23,7 @@ const ShareButton = ({ link, type, labeled, ...props }) => {
     }));
   };
 
-  const handleModalClose = () => {
+  const handleModalClose = ({ callback }) => {
     setState((prevState) => ({
       ...prevState,
       modal: {
@@ -31,6 +31,7 @@ const ShareButton = ({ link, type, labeled, ...props }) => {
         open: false,
       },
     }));
+    callback();
   };
 
   return (

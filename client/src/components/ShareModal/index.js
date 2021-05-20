@@ -93,7 +93,7 @@ const ShareModal = ({
         aria-describedby={ariaLabel}
         className={classes.modalWrapper}
         open={open}
-        onClose={handleClose}
+        onClose={() => handleClose({ callback: handlePopperClose })}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
@@ -188,7 +188,7 @@ const ShareModal = ({
                   type="button"
                   variant="outlined"
                   color="dark"
-                  onClick={handleClose}
+                  onClick={() => handleClose({ callback: handlePopperClose })}
                   onMouseEnter={handlePopperOpen}
                   onMouseLeave={handlePopperClose}
                 >
