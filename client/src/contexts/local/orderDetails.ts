@@ -4,6 +4,7 @@ import { getDownload, getOrder, postReview } from "../../services/orders.js";
 const initialState = {
   order: {
     data: {
+      artwork: {},
       version: { cover: {} },
       seller: {},
       buyer: {},

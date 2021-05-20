@@ -21,6 +21,7 @@ import reviewCardStyles from "./styles.js";
 const ReviewCard = ({ paramId, highlightRef }) => {
   const userId = useUserStore((state) => state.id);
 
+  const artwork = useOrderDetails((state) => state.order.data.artwork);
   const review = useOrderDetails((state) => state.order.data.review);
   const buyer = useOrderDetails((state) => state.order.data.buyer);
   const loading = useOrderDetails((state) => state.order.loading);
@@ -29,8 +30,9 @@ const ReviewCard = ({ paramId, highlightRef }) => {
 
   const location = useLocation();
   const query = queryString.parse(location.search);
-  const shouldReview = () => userId === buyer.id;
-  const isHighlight = () => query && query.notif === "review";
+  const shouldReview = userId === buyer.id;
+  const isActive = artwork.active;
+  const isHighlight = query && query.notif === "review";
 
   const history = useHistory();
   const classes = reviewCardStyles();
@@ -41,9 +43,9 @@ const ReviewCard = ({ paramId, highlightRef }) => {
 
   return (
     <Card
-      ref={isHighlight() ? highlightRef : null}
+      ref={isHighlight ? highlightRef : null}
       className={`${classes.reviewContainer} ${
-        isHighlight() ? classes.highlightContainer : ""
+        isHighlight ? classes.highlightContainer : ""
       }`}
     >
       <CardContent
@@ -66,7 +68,7 @@ const ReviewCard = ({ paramId, highlightRef }) => {
           <Box className={classes.reviewContent}>
             <SkeletonWrapper variant="text" loading={loading}>
               <Typography m={2}>
-                {shouldReview() ? "No rating left" : "No rating found"}
+                {shouldReview ? "No rating left" : "No rating found"}
               </Typography>
             </SkeletonWrapper>
           </Box>
@@ -86,19 +88,23 @@ const ReviewCard = ({ paramId, highlightRef }) => {
             {loading || review ? (
               <SkeletonWrapper variant="text" loading={loading}>
                 <Typography m={2}>
-                  {shouldReview() ? "Your rating" : "Buyer's rating"}
+                  {shouldReview ? "Your rating" : "Buyer's rating"}
                 </Typography>
               </SkeletonWrapper>
-            ) : shouldReview() ? (
-              <Button
-                variant="outlined"
-                startIcon={<ReviewIcon />}
-                onClick={toggleModal}
-              >
-                Rate artist
-              </Button>
+            ) : isActive ? (
+              shouldReview ? (
+                <Button
+                  variant="outlined"
+                  startIcon={<ReviewIcon />}
+                  onClick={toggleModal}
+                >
+                  Rate artist
+                </Button>
+              ) : (
+                <Typography m={2}>Buyer's rating</Typography>
+              )
             ) : (
-              <Typography m={2}>Buyer's rating</Typography>
+              <Typography m={2}>Artwork is inactive</Typography>
             )}
           </Box>
         </SkeletonWrapper>
