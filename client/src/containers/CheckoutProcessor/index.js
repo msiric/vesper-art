@@ -269,13 +269,15 @@ const CheckoutProcessor = () => {
     }
   };
 
+  console.log("VERSION", versionLoading, "ID", version.id, "STRIPE", stripe);
+
   useEffect(() => {
     fetchCheckout({ license: licenseValue, versionId });
   }, []);
 
   return (
     <Grid container spacing={2} style={{ margin: 0 }}>
-      {versionLoading || (version.id && stripe) ? (
+      {versionLoading || version.id ? (
         <>
           <Grid item xs={12} md={8}>
             <FormProvider control={control}>

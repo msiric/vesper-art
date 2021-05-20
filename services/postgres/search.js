@@ -1,5 +1,7 @@
 import { Artwork } from "../../entities/Artwork";
+import { Review } from "../../entities/Review";
 import { User } from "../../entities/User";
+import { calculateRating } from "../../utils/helpers";
 
 // $TODO version visible
 // $TODO active to const
@@ -53,11 +55,20 @@ export const fetchUserResults = async ({
     .getRepository(User)
     .createQueryBuilder("user")
     .leftJoinAndSelect("user.avatar", "avatar")
+    .leftJoinAndMapMany(
+      "user.reviews",
+      Review,
+      "review",
+      "review.revieweeId = user.id"
+    )
     .where("user.name @@ plainto_tsquery(:query) AND user.active = :active", {
       query: formattedQuery,
       active: true,
     })
     .orderBy("ts_rank(to_tsvector(user.name), plainto_tsquery(:query))", "DESC")
     .getMany();
+  foundUsers.map(
+    (user) => (user.rating = calculateRating({ reviews: user.reviews }))
+  );
   return foundUsers;
 };
