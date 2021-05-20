@@ -7,7 +7,8 @@ const checkoutItemStyles = makeStyles((muiTheme) => ({
     },
   },
   checkoutItemPrice: {
-    fontSize: "1rem",
+    fontSize: "1.2rem",
+    fontWeight: "bold",
   },
 }));
 

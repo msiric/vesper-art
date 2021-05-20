@@ -7,7 +7,7 @@ import { Notification } from "../../entities/Notification";
 import { Order } from "../../entities/Order";
 import { Review } from "../../entities/Review";
 import { User } from "../../entities/User";
-import { resolveSubQuery } from "../../utils/helpers";
+import { calculateRating, resolveSubQuery } from "../../utils/helpers";
 
 const USER_ACTIVE_STATUS = true;
 const ARTWORK_ACTIVE_STATUS = true;
@@ -374,12 +374,9 @@ export const fetchUserProfile = async ({
       active: USER_ACTIVE_STATUS,
     })
     .getOne();
-  foundUser.rating = foundUser.reviews.length
-    ? (
-        foundUser.reviews.reduce((sum, { rating }) => sum + rating, 0) /
-        foundUser.reviews.length
-      ).toFixed(2)
-    : null;
+  foundUser.rating = calculateRating({
+    reviews: foundUser.reviews,
+  });
   return foundUser;
 };
 

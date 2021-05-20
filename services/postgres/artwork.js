@@ -4,8 +4,9 @@ import { Comment } from "../../entities/Comment";
 import { Cover } from "../../entities/Cover";
 import { Favorite } from "../../entities/Favorite";
 import { Media } from "../../entities/Media";
+import { Review } from "../../entities/Review";
 import { Version } from "../../entities/Version";
-import { resolveSubQuery } from "../../utils/helpers";
+import { calculateRating, resolveSubQuery } from "../../utils/helpers";
 
 const ARTWORK_ACTIVE_STATUS = true;
 
@@ -102,6 +103,12 @@ export const fetchArtworkDetails = async ({
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
+    .leftJoinAndMapMany(
+      "owner.reviews",
+      Review,
+      "review",
+      "review.revieweeId = owner.id"
+    )
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndMapMany(
@@ -125,6 +132,11 @@ export const fetchArtworkDetails = async ({
       active: ARTWORK_ACTIVE_STATUS,
     })
     .getOne();
+  if (foundArtwork && foundArtwork.owner) {
+    foundArtwork.owner.rating = calculateRating({
+      reviews: foundArtwork.owner.reviews,
+    });
+  }
   console.log(foundArtwork);
   return foundArtwork;
 };

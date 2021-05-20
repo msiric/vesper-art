@@ -244,3 +244,10 @@ export const resolveSubQuery = (
         .where(`${alias}.id = :id`, { id: cursor })
         .getQuery()
     : threshold;
+
+export const calculateRating = ({ reviews }) =>
+  reviews.length
+    ? (
+        reviews.reduce((sum, { rating }) => sum + rating, 0) / reviews.length
+      ).toFixed(2)
+    : null;

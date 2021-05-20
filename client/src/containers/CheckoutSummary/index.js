@@ -98,6 +98,7 @@ const CheckoutSummary = ({
                 : "No license selected"
             }
             amount="Price"
+            animate={true}
             price={state.summary.license ? state.summary.amount : 0}
           />
           <Divider />
@@ -106,6 +107,7 @@ const CheckoutSummary = ({
             description="Fixed fee"
             amount="Amount"
             prefix="+"
+            animate={true}
             price={
               state.summary.amount
                 ? (state.summary.amount * 0.05 + 2.35).toFixed(2)
@@ -120,6 +122,7 @@ const CheckoutSummary = ({
                 description={`${discount.name} (${discount.discount * 100}%)`}
                 amount="Amount"
                 prefix="-"
+                animate={true}
                 price={(state.summary.amount * discount.discount).toFixed(2)}
               />
               <Divider />
@@ -133,6 +136,7 @@ const CheckoutSummary = ({
                 : "No license selected"
             }
             amount="Total"
+            animate={true}
             price={
               state.summary.amount
                 ? discount

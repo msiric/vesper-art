@@ -1,4 +1,5 @@
 import { ListItem, ListItemText, Typography } from "@material-ui/core";
+import AnimatedNumber from "animated-number-react";
 import React from "react";
 import NumberFormat from "react-number-format";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
@@ -11,8 +12,11 @@ const CheckoutItem = ({
   amount,
   price,
   key,
+  animate,
   loading,
 }) => {
+  const formatValue = (value) => `$${value.toFixed(2)}`;
+
   const classes = checkoutItemStyles();
 
   return (
@@ -40,15 +44,26 @@ const CheckoutItem = ({
         secondary={
           <div className={classes.rightList}>
             <SkeletonWrapper variant="text" loading={loading}>
-              {prefix && <span>{prefix}</span>}
-              <NumberFormat
-                value={price}
-                displayType={"text"}
-                thousandSeparator={true}
-                decimalScale={2}
-                prefix={"$"}
-                className={classes.checkoutItemPrice}
-              />
+              {prefix && (
+                <span className={classes.checkoutItemPrice}>{prefix}</span>
+              )}
+              {animate ? (
+                <AnimatedNumber
+                  value={price}
+                  formatValue={formatValue}
+                  duration="500"
+                  className={classes.checkoutItemPrice}
+                />
+              ) : (
+                <NumberFormat
+                  value={price}
+                  displayType={"text"}
+                  thousandSeparator={true}
+                  decimalScale={2}
+                  prefix={"$"}
+                  className={classes.checkoutItemPrice}
+                />
+              )}
             </SkeletonWrapper>
           </div>
         }
