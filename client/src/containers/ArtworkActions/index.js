@@ -1,32 +1,25 @@
 import { Box, Card, CardActions, Divider } from "@material-ui/core";
 import { FavoriteRounded as FavoritedIcon } from "@material-ui/icons";
-import React, { useEffect } from "react";
+import React from "react";
 import FavoriteButton from "../../components/FavoriteButton/index.js";
 import IncrementCounter from "../../components/IncrementCounter";
 import ShareButton from "../../components/ShareButton/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
-import { useArtworkFavorites as useFavoritesStore } from "../../contexts/local/artworkFavorites";
 import { CardContent } from "../../styles/theme.js";
 import artworkActionsStyles from "./styles.js";
 
-const ArtworkActions = ({ paramId }) => {
+const ArtworkActions = () => {
   const artwork = useArtworkDetails((state) => state.artwork.data);
-
-  const favorites = useFavoritesStore((state) => state.favorites.data);
-  const loading = useFavoritesStore((state) => state.favorites.loading);
-  const fetchFavorites = useFavoritesStore((state) => state.fetchFavorites);
-  const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
+  const favorites = useArtworkDetails((state) => state.artwork.data.favorites);
+  const loading = useArtworkDetails((state) => state.artwork.loading);
+  const toggleFavorite = useArtworkDetails((state) => state.toggleFavorite);
 
   const userId = useUserStore((state) => state.id);
   const userFavorites = useUserStore((state) => state.favorites);
 
   const classes = artworkActionsStyles();
-
-  useEffect(() => {
-    fetchFavorites({ artworkId: paramId });
-  }, []);
 
   return (
     <Card className={classes.root} loading={loading}>

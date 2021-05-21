@@ -51,6 +51,18 @@ const initActions = (set) => ({
       console.log(err);
     }
   },
+  toggleFavorite: async ({ incrementBy }) => {
+    set((state) => ({
+      ...state,
+      artwork: {
+        ...state.artwork,
+        data: {
+          ...state.artwork.data,
+          favorites: state.artwork.data.favorites + incrementBy,
+        },
+      },
+    }));
+  },
   purchaseArtwork: ({ history, versionId, license }) => {
     history.push({
       pathname: `/checkout/${versionId}`,

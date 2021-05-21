@@ -136,6 +136,7 @@ export const fetchArtworkDetails = async ({
     foundArtwork.owner.rating = calculateRating({
       reviews: foundArtwork.owner.reviews,
     });
+    foundArtwork.favorites = foundArtwork.favorites.length;
   }
   console.log(foundArtwork);
   return foundArtwork;

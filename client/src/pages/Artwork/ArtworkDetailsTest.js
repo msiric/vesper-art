@@ -8,7 +8,6 @@ import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
 import CommentSection from "../../containers/CommentSection/index.js";
 import { useArtworkComments } from "../../contexts/local/artworkComments";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
-import { useArtworkFavorites as useFavoritesStore } from "../../contexts/local/artworkFavorites";
 import globalStyles from "../../styles/global.js";
 
 const useArtworkStyles = makeStyles((muiTheme) => ({
@@ -66,7 +65,6 @@ const useArtworkStyles = makeStyles((muiTheme) => ({
 
 const ArtworkDetails = ({ match, location }) => {
   const resetArtwork = useArtworkDetails((state) => state.resetArtwork);
-  const resetFavorites = useFavoritesStore((state) => state.resetFavorites);
   const resetComments = useArtworkComments((state) => state.resetComments);
   const paramId = match.params.id;
   const commentsFetched = useRef(false);
@@ -81,7 +79,6 @@ const ArtworkDetails = ({ match, location }) => {
     commentsRef.current = null;
     highlightRef.current = null;
     resetArtwork();
-    resetFavorites();
     resetComments();
   };
 
