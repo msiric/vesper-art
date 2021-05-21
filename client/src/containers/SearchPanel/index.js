@@ -1,10 +1,10 @@
 import { Box } from "@material-ui/core";
 import React, { useEffect } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
 import Masonry from "react-masonry-css";
 import { useLocation } from "react-router-dom";
 import ArtworkCard from "../../components/ArtworkCard/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
+import InfiniteList from "../../components/InfiniteList/index.js";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import ProfileCard from "../../components/ProfileCard/index.js";
 import { useSearchResults } from "../../contexts/local/searchResults";
@@ -19,10 +19,9 @@ const breakpointColumns = {
 
 const SearchPanel = ({ type }) => {
   const elements = useSearchResults((state) => state[type].data);
-  const loadMore = useSearchResults((state) => state[type].loadMore);
   const hasMore = useSearchResults((state) => state[type].hasMore);
   const loading = useSearchResults((state) => state[type].loading);
-
+  const error = useSearchResults((state) => state[type].error);
   const fetchResults = useSearchResults((state) => state.fetchResults);
 
   const location = useLocation();
@@ -35,12 +34,15 @@ const SearchPanel = ({ type }) => {
 
   return (
     <Box style={{ width: "100%", height: "100%", padding: "16px 0" }}>
-      <InfiniteScroll
+      <InfiniteList
+        style={{ overflow: "hidden" }}
         className={classes.scroller}
-        dataLength={elements.length}
-        next={loadMore}
+        dataLength={elements ? elements.length : 0}
+        next={fetchResults}
         hasMore={hasMore}
+        loading={loading}
         loader={<LoadingSpinner />}
+        error={error}
       >
         {elements.length ? (
           <Masonry
@@ -62,7 +64,7 @@ const SearchPanel = ({ type }) => {
             loading={loading}
           />
         )}
-      </InfiniteScroll>
+      </InfiniteList>
     </Box>
   );
 };

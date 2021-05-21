@@ -1,8 +1,8 @@
 import { Box } from "@material-ui/core";
 import React from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
 import Masonry from "react-masonry-css";
 import ArtworkCard from "../../components/ArtworkCard/index.js";
+import InfiniteList from "../../components/InfiniteList/index.js";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import artworkPanelStyles from "./styles.js";
@@ -18,18 +18,22 @@ const ArtworkPanel = ({ type, fixed }) => {
   const elements = useHomeArtwork((state) => state.artwork.data);
   const hasMore = useHomeArtwork((state) => state.artwork.hasMore);
   const loading = useHomeArtwork((state) => state.artwork.loading);
+  const error = useHomeArtwork((state) => state.artwork.error);
   const fetchArtwork = useHomeArtwork((state) => state.fetchArtwork);
 
   const classes = artworkPanelStyles();
 
   return (
     <Box style={{ width: "100%", height: "100%", padding: "16px 0" }}>
-      <InfiniteScroll
+      <InfiniteList
+        style={{ overflow: "hidden" }}
         className={classes.scroller}
-        dataLength={elements.length}
+        dataLength={elements ? elements.length : 0}
         next={fetchArtwork}
         hasMore={hasMore}
+        loading={loading}
         loader={<LoadingSpinner />}
+        error={error}
       >
         <Masonry
           breakpointCols={breakpointColumns}
@@ -45,7 +49,7 @@ const ArtworkPanel = ({ type, fixed }) => {
             />
           ))}
         </Masonry>
-      </InfiniteScroll>
+      </InfiniteList>
     </Box>
   );
 };

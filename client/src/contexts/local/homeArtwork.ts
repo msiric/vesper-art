@@ -9,7 +9,7 @@ const initialState = {
     error: false,
     hasMore: true,
     cursor: "",
-    limit: 50,
+    limit: 20,
   },
 };
 

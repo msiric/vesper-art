@@ -15,9 +15,9 @@ import {
   RateReviewRounded as ReviewIcon,
   ShoppingBasket as OrderIcon,
 } from "@material-ui/icons";
+import { formatDistance } from "date-fns";
 import React from "react";
 import { Link } from "react-router-dom";
-import { formatDate } from "../../../../common/helpers.js";
 import { useEventsStore } from "../../contexts/global/events.js";
 import { artepunktTheme } from "../../styles/theme.js";
 import NotificationItemStyles from "./NotificationItem.style.js";
@@ -41,15 +41,15 @@ const NotificationItem = ({
   if (notification.type === "comment") {
     data.label = "A user left a comment on your artwork";
     data.link = `/artwork/${notification.link}?notif=comment&ref=${notification.ref}`;
-    data.icon = <CommentIcon color={notification.read ? "" : "primary"} />;
+    data.icon = <CommentIcon />;
   } else if (notification.type === "order") {
     data.label = "A user ordered your artwork";
     data.link = `/orders/${notification.link}?notif=order`;
-    data.icon = <OrderIcon color={notification.read ? "" : "primary"} />;
+    data.icon = <OrderIcon />;
   } else if (notification.type === "review") {
     data.label = "A user left a review on your artwork";
     data.link = `/orders/${notification.link}?notif=review`;
-    data.icon = <ReviewIcon color={notification.read ? "" : "primary"} />;
+    data.icon = <ReviewIcon />;
   }
 
   return data.label && data.link ? (
@@ -59,14 +59,19 @@ const NotificationItem = ({
         style={{
           cursor: "pointer",
           width: "100%",
-          backgroundColor:
-            !notification.read &&
-            artepunktTheme.palette.background.notification,
         }}
         disableRipple
       >
         <ListItemAvatar>
-          <Avatar>{data.icon}</Avatar>
+          <Avatar
+            style={{
+              backgroundColor: notification.read
+                ? ""
+                : artepunktTheme.palette.primary.main,
+            }}
+          >
+            {data.icon}
+          </Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={
@@ -77,6 +82,7 @@ const NotificationItem = ({
                 fontWeight: "bold",
                 color: "white",
                 textDecoration: "none",
+                whiteSpace: "initial",
               }}
             >
               {data.label}
@@ -84,10 +90,12 @@ const NotificationItem = ({
           }
           secondary={
             <Typography variant="caption">
-              {formatDate(new Date(notification.created), "dd/MM/yyyy HH:mm")}
+              {`${formatDistance(
+                new Date(notification.created),
+                new Date()
+              )} ago`}
             </Typography>
           }
-          style={{ paddingRight: 32 }}
         />
         <ListItemSecondaryAction>
           <IconButton
