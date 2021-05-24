@@ -157,6 +157,7 @@ const CheckoutSummary = ({
       {step.current === 2 && (
         <CardActions className={classes.checkoutSummaryActions}>
           {/* $TODO Update intent when discount changes */}
+          {/* Fix AsyncButton loading/submitting */}
           {discount ? (
             <AsyncButton
               type="button"
@@ -182,7 +183,8 @@ const CheckoutSummary = ({
                   fullWidth
                   variant="outlined"
                   color="primary"
-                  loading={formState.isSubmitting}
+                  submitting={formState.isSubmitting}
+                  loading={loading}
                   startIcon={<UploadIcon />}
                 >
                   Apply

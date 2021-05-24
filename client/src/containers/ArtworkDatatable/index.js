@@ -1,4 +1,3 @@
-import { Box, IconButton } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
@@ -10,15 +9,14 @@ import Datatable from "../../components/DataTable/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useUserUploads } from "../../contexts/local/userUploads";
+import Box from "../../domain/Box";
+import IconButton from "../../domain/IconButton";
 
 const ArtworkDatatable = () => {
   const userId = useUserStore((state) => state.id);
 
   const uploads = useUserUploads((state) => state.uploads.data);
   const loading = useUserUploads((state) => state.uploads.loading);
-  const error = useUserUploads((state) => state.uploads.error);
-  const hasMore = useUserUploads((state) => state.uploads.hasMore);
-  const modal = useUserUploads((state) => state.modal);
   const fetchUploads = useUserUploads((state) => state.fetchUploads);
   const openModal = useUserUploads((state) => state.openModal);
 

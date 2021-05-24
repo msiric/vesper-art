@@ -8,11 +8,11 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemSecondaryAction,
-  ListItemText
+  ListItemText,
 } from "@material-ui/core";
 import {
   AddCircleRounded as UploadIcon,
-  MoreVertRounded as MoreIcon
+  MoreVertRounded as MoreIcon,
 } from "@material-ui/icons";
 import { formatDistance } from "date-fns";
 import React, { useEffect } from "react";
@@ -142,7 +142,8 @@ const CommentCard = ({
                     variant="outlined"
                     color="primary"
                     padding
-                    loading={formState.isSubmitting}
+                    submitting={formState.isSubmitting}
+                    loading={loading}
                     startIcon={<UploadIcon />}
                   >
                     Publish

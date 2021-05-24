@@ -62,7 +62,8 @@ const SettingsAccount = ({ handleLogout }) => {
               fullWidth
               variant="outlined"
               color="primary"
-              loading={formState.isSubmitting}
+              submitting={formState.isSubmitting}
+              loading={loading}
               startIcon={<UploadIcon />}
             >
               Save

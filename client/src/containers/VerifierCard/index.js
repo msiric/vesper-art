@@ -56,7 +56,8 @@ const VerifierCard = () => {
               variant="outlined"
               color="primary"
               padding
-              loading={formState.isSubmitting}
+              submitting={formState.isSubmitting}
+              loading={loading}
               startIcon={<UploadIcon />}
             >
               Verify

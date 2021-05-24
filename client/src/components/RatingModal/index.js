@@ -88,7 +88,7 @@ const RatingModal = ({
                   variant="outlined"
                   color="primary"
                   padding
-                  loading={formState.isSubmitting}
+                  submitting={formState.isSubmitting}
                   startIcon={<UploadIcon />}
                 >
                   {promptConfirm}

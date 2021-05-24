@@ -1,5 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CardActions, CardContent } from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -10,8 +9,11 @@ import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useArtworkCreate } from "../../contexts/local/artworkCreate";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
 import ArtworkForm from "../../forms/ArtworkForm/index.js";
-import { Card } from "../../styles/theme.js";
+import artworkCreatorStyles from "./styles.js";
 
 const ArtworkCreator = () => {
   const stripeId = useUserStore((state) => state.stripeId);
@@ -22,6 +24,10 @@ const ArtworkCreator = () => {
     (state) => state.fetchCapabilities
   );
   const createArtwork = useArtworkCreate((state) => state.createArtwork);
+
+  const history = useHistory();
+
+  const classes = artworkCreatorStyles();
 
   const {
     handleSubmit,
@@ -51,8 +57,6 @@ const ArtworkCreator = () => {
     resolver: yupResolver(artworkValidation.concat(addArtwork)),
   });
 
-  const history = useHistory();
-
   const onSubmit = async (values) => {
     await createArtwork({ values });
     history.push({
@@ -61,32 +65,38 @@ const ArtworkCreator = () => {
     });
   };
 
+  const renderHelpBox = () => {
+    const notOnboarded =
+      'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process';
+    const pendingVerification =
+      "To make your artwork commercially available, please wait for Stripe to verify the information you entered";
+    const incompleteInformation =
+      "To make your artwork commercially available, finish entering your Stripe account information";
+
+    return !loading ? (
+      !stripeId ? (
+        <HelpBox
+          type="alert"
+          label={
+            !stripeId
+              ? notOnboarded
+              : capabilities.cardPayments === "pending" ||
+                capabilities.platformPayments === "pending"
+              ? pendingVerification
+              : incompleteInformation
+          }
+        />
+      ) : null
+    ) : null;
+  };
+
   useEffect(() => {
     if (stripeId) fetchCapabilities({ stripeId });
   }, []);
 
   return (
-    <Card width="100%">
-      {!loading ? (
-        !stripeId ? (
-          <HelpBox
-            type="alert"
-            label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
-          />
-        ) : capabilities.cardPayments === "pending" ||
-          capabilities.platformPayments === "pending" ? (
-          <HelpBox
-            type="alert"
-            label="To make your artwork commercially available, please wait for Stripe to verify the information you entered"
-          />
-        ) : capabilities.cardPayments !== "active" ||
-          capabilities.platformPayments !== "active" ? (
-          <HelpBox
-            type="alert"
-            label="To make your artwork commercially available, finish entering your Stripe account information"
-          />
-        ) : null
-      ) : null}
+    <Card>
+      {renderHelpBox()}
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
@@ -108,16 +118,15 @@ const ArtworkCreator = () => {
               loading={loading}
             />
           </CardContent>
-          <CardActions
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
+          <CardActions className={classes.artworkCreatorActions}>
             <AsyncButton
               type="submit"
               fullWidth
               variant="outlined"
               color="primary"
               padding
-              loading={formState.isSubmitting}
+              submitting={formState.isSubmitting}
+              loading={loading}
               startIcon={<UploadIcon />}
             >
               Publish

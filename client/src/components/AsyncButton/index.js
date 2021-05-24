@@ -4,6 +4,7 @@ import SkeletonWrapper from "../SkeletonWrapper";
 import asyncButtonStyles from "./styles";
 
 const AsyncButton = ({
+  submitting = false,
   loading = false,
   variant = "outlined",
   color = "primary",
@@ -21,7 +22,7 @@ const AsyncButton = ({
           color={color}
           variant={variant}
           onClick={handleClick}
-          disabled={loading}
+          disabled={submitting}
           className={classes.buttonItem}
           {...rest}
         >
@@ -29,7 +30,7 @@ const AsyncButton = ({
         </Button>
       </SkeletonWrapper>
 
-      {loading && (
+      {submitting && (
         <CircularProgress size={24} className={classes.buttonProgress} />
       )}
     </Box>

@@ -13,6 +13,8 @@ import LicenseForm from "../../forms/LicenseForm/index.js";
 import { CardContent, Typography } from "../../styles/theme.js";
 import artworkInfoStyles from "./styles.js";
 
+// $TODO refactor needed (new domain components)
+
 const ArtworkInfo = () => {
   const artwork = useArtworkDetails((state) => state.artwork.data);
   const loading = useArtworkDetails((state) => state.artwork.loading);

@@ -10,7 +10,7 @@ const SyncButton = ({
   handleClick,
   padding,
   children,
-  ...rest
+  ...props
 }) => {
   const classes = syncButtonStyles({ padding: padding ? 16 : "" });
 
@@ -22,7 +22,7 @@ const SyncButton = ({
           variant={variant}
           onClick={handleClick}
           className={classes.buttonItem}
-          {...rest}
+          {...props}
         >
           {children}
         </Button>

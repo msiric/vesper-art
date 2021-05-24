@@ -1,18 +1,12 @@
 import { Box } from "@material-ui/core";
 import React from "react";
 import Masonry from "react-masonry-css";
+import { breakpoints } from "../../common/constants";
 import ArtworkCard from "../../components/ArtworkCard/index.js";
 import InfiniteList from "../../components/InfiniteList/index.js";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import artworkPanelStyles from "./styles.js";
-
-const breakpointColumns = {
-  default: 4,
-  1100: 3,
-  700: 2,
-  500: 1,
-};
 
 const ArtworkPanel = ({ type, fixed }) => {
   const elements = useHomeArtwork((state) => state.artwork.data);
@@ -24,10 +18,8 @@ const ArtworkPanel = ({ type, fixed }) => {
   const classes = artworkPanelStyles();
 
   return (
-    <Box style={{ width: "100%", height: "100%", padding: "16px 0" }}>
+    <Box className={classes.artworkPanelContainer}>
       <InfiniteList
-        style={{ overflow: "hidden" }}
-        className={classes.scroller}
         dataLength={elements ? elements.length : 0}
         next={fetchArtwork}
         hasMore={hasMore}
@@ -36,9 +28,9 @@ const ArtworkPanel = ({ type, fixed }) => {
         error={error}
       >
         <Masonry
-          breakpointCols={breakpointColumns}
-          className={classes.masonryContainer}
-          columnClassName={classes.masonryColumn}
+          breakpointCols={breakpoints}
+          className={classes.artworkPanelMasonry}
+          columnClassName={classes.artworkPanelColumn}
         >
           {elements.map((artwork) => (
             <ArtworkCard

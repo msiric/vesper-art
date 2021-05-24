@@ -183,7 +183,7 @@ const Onboarding = () => {
                       variant="outlined"
                       color="primary"
                       padding
-                      loading={formState.isSubmitting}
+                      submitting={formState.isSubmitting}
                       startIcon={<UploadIcon />}
                     >
                       Continue

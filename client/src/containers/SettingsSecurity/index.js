@@ -12,6 +12,7 @@ import settingsSecurityStyles from "./styles.js";
 
 const SettingsSecurity = ({ handleLogout }) => {
   const userId = useUserSettings((state) => state.user.data.id);
+  const loading = useUserSettings((state) => state.user.loading);
   const updatePassword = useUserSettings((state) => state.updatePassword);
 
   const { handleSubmit, formState, errors, control, reset } = useForm({
@@ -43,7 +44,8 @@ const SettingsSecurity = ({ handleLogout }) => {
               fullWidth
               variant="outlined"
               color="primary"
-              loading={formState.isSubmitting}
+              submitting={formState.isSubmitting}
+              loading={loading}
               startIcon={<UploadIcon />}
             >
               Save

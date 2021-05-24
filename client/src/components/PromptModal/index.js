@@ -47,7 +47,7 @@ const PromptModal = ({
               type="submit"
               variant="outlined"
               color="primary"
-              loading={isSubmitting}
+              submitting={isSubmitting}
               onClick={handleConfirm}
               fullWidth
             >

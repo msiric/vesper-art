@@ -113,7 +113,7 @@ const Login = () => {
               variant="outlined"
               color="primary"
               padding
-              loading={formState.isSubmitting}
+              submitting={formState.isSubmitting}
             >
               Sign in
             </AsyncButton>

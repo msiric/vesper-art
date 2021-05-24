@@ -77,7 +77,7 @@ const UpdateEmail = () => {
               variant="outlined"
               color="primary"
               padding
-              loading={formState.isSubmitting}
+              submitting={formState.isSubmitting}
             >
               Update email
             </AsyncButton>

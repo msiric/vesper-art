@@ -1,5 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, CardActions, CardContent } from "@material-ui/core";
 import {
   AddCircleRounded as UploadIcon,
   DeleteRounded as DeleteIcon,
@@ -14,10 +13,14 @@ import {
 } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
+import SyncButton from "../../components/SyncButton/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useArtworkUpdate } from "../../contexts/local/artworkUpdate";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
 import ArtworkForm from "../../forms/ArtworkForm/index.js";
 import { Card } from "../../styles/theme.js";
+import artworkModifierClasses from "./styles.js";
 
 const ArtworkModifier = ({ paramId }) => {
   const stripeId = useUserStore((state) => state.stripeId);
@@ -71,12 +74,39 @@ const ArtworkModifier = ({ paramId }) => {
 
   const history = useHistory();
 
+  const classes = artworkModifierClasses();
+
   const onSubmit = async (values) => {
     await updateArtwork({ artworkId: artwork.id, values });
     history.push({
       pathname: "/",
       state: { message: "Artwork updated" },
     });
+  };
+
+  const renderHelpBox = () => {
+    const notOnboarded =
+      'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process';
+    const pendingVerification =
+      "To make your artwork commercially available, please wait for Stripe to verify the information you entered";
+    const incompleteInformation =
+      "To make your artwork commercially available, finish entering your Stripe account information";
+
+    return !loading ? (
+      !stripeId ? (
+        <HelpBox
+          type="alert"
+          label={
+            !stripeId
+              ? notOnboarded
+              : capabilities.cardPayments === "pending" ||
+                capabilities.platformPayments === "pending"
+              ? pendingVerification
+              : incompleteInformation
+          }
+        />
+      ) : null
+    ) : null;
   };
 
   useEffect(() => {
@@ -91,27 +121,8 @@ const ArtworkModifier = ({ paramId }) => {
   }, [artwork.current]);
 
   return (
-    <Card width="100%">
-      {!loading ? (
-        !stripeId ? (
-          <HelpBox
-            type="alert"
-            label='To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process'
-          />
-        ) : capabilities.cardPayments === "pending" ||
-          capabilities.platformPayments === "pending" ? (
-          <HelpBox
-            type="alert"
-            label="To make your artwork commercially available, please wait for Stripe to verify the information you entered"
-          />
-        ) : capabilities.cardPayments !== "active" ||
-          capabilities.platformPayments !== "active" ? (
-          <HelpBox
-            type="alert"
-            label="To make your artwork commercially available, finish entering your Stripe account information"
-          />
-        ) : null
-      ) : null}
+    <Card>
+      {renderHelpBox()}
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
@@ -128,31 +139,35 @@ const ArtworkModifier = ({ paramId }) => {
               loading={artworkLoading}
             />
           </CardContent>
-          <CardActions
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
+          <CardActions className={classes.artworkModifierActions}>
             <AsyncButton
               type="submit"
               fullWidth
               variant="outlined"
               color="primary"
               padding
-              loading={formState.isSubmitting}
-              disabled={!isVersionDifferent(getValues(), artwork.current)}
+              submitting={formState.isSubmitting}
+              loading={loading}
+              disabled={
+                !isVersionDifferent(getValues(), artwork.current) ||
+                formState.isSubmitting
+              }
               startIcon={<UploadIcon />}
             >
               Publish
             </AsyncButton>
-            <Button
+            <SyncButton
               type="button"
               variant="outlined"
               color="error"
               onClick={toggleModal}
+              submitting={formState.isSubmitting || isDeleting}
+              loading={loading}
               disabled={formState.isSubmitting || isDeleting}
               startIcon={<DeleteIcon />}
             >
               Delete
-            </Button>
+            </SyncButton>
           </CardActions>
         </form>
       </FormProvider>

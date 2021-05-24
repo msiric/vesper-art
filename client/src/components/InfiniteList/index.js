@@ -3,6 +3,7 @@ import { AutorenewRounded as RefetchIcon } from "@material-ui/icons";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import AsyncButton from "../AsyncButton";
+import infiniteListStyles from "./styles";
 
 const InfiniteList = ({
   style,
@@ -14,16 +15,19 @@ const InfiniteList = ({
   loader,
   error,
   children,
+  ...props
 }) => {
-  console.log("PROPS", dataLength, next, hasMore, loading, loader, error);
+  const classes = infiniteListStyles();
+
+  // Fix AsyncButton loading/submitting
   return (
     <InfiniteScroll
-      style={style}
-      className={className}
       dataLength={dataLength}
       next={!loading ? next : () => []}
       hasMore={hasMore}
       loader={!error && loader}
+      className={classes.infiniteListWrapper}
+      {...props}
     >
       {children}
       {error && (
