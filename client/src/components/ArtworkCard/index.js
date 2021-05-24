@@ -1,17 +1,16 @@
-import { Typography } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardHeader from "@material-ui/core/CardHeader";
-import IconButton from "@material-ui/core/IconButton";
 import { EditRounded as EditIcon } from "@material-ui/icons";
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useUserStore } from "../../contexts/global/user.js";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardHeader from "../../domain/CardHeader";
+import IconButton from "../../domain/IconButton";
+import Typography from "../../domain/Typography";
 import FavoriteButton from "../FavoriteButton/index.js";
 import ImageWrapper from "../ImageWrapper/index.js";
 import ShareButton from "../ShareButton/index.js";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import artworkCardStyles from "./styles.js";
 
 const initialProps = {
@@ -71,30 +70,28 @@ const ArtworkCard = ({
     <Card className={classes.artworkCard}>
       <CardHeader
         title={
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography
-              noWrap
-              variant="h6"
-              component={RouterLink}
-              to={`/artwork/${item.id}`}
-              className={classes.artworkTitle}
-            >
-              {item.data.title}
-            </Typography>
-          </SkeletonWrapper>
+          <Typography
+            noWrap
+            variant="h6"
+            component={RouterLink}
+            to={`/artwork/${item.id}`}
+            loading={loading}
+            className={classes.artworkTitle}
+          >
+            {item.data.title}
+          </Typography>
         }
         subheader={
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography
-              noWrap
-              variant="body1"
-              component={RouterLink}
-              to={`/user/${item.owner.name}`}
-              className={classes.artworkSeller}
-            >
-              {item.owner.name}
-            </Typography>
-          </SkeletonWrapper>
+          <Typography
+            noWrap
+            variant="body1"
+            component={RouterLink}
+            to={`/user/${item.owner.name}`}
+            loading={loading}
+            className={classes.artworkSeller}
+          >
+            {item.owner.name}
+          </Typography>
         }
         disableTypography
         className={classes.artworkHeader}
@@ -122,45 +119,42 @@ const ArtworkCard = ({
         loading={loading}
       />
       <CardActions disableSpacing className={classes.artworkFooter}>
-        <SkeletonWrapper loading={loading}>
-          <Box style={{ display: "flex" }}>
-            {item.owner.id === userId ? (
-              <IconButton
-                aria-label={"Edit artwork"}
-                component={RouterLink}
-                to={`/artwork/${artwork.id}/edit`}
-                className={classes.buttonColor}
-              >
-                <EditIcon />
-              </IconButton>
-            ) : (
-              <FavoriteButton
-                artwork={item}
-                favorited={userFavorites[item.id]}
-                handleCallback={handleArtworkSave}
-              />
-            )}
-            <ShareButton link={`/artwork/${artwork.id}`} type="artwork" />
-          </Box>
-          <Box>
+        <Box style={{ display: "flex" }} loading={loading}>
+          {item.owner.id === userId ? (
             <IconButton
-              aria-label="Artwork price"
-              className={classes.artworkColor}
+              aria-label={"Edit artwork"}
+              component={RouterLink}
+              to={`/artwork/${artwork.id}/edit`}
+              className={classes.buttonColor}
             >
-              <Typography noWrap>
-                {item.data.availability === "available"
-                  ? item.data.license === "commercial"
-                    ? item.data.use === "included"
-                      ? `- / ${
-                          item.data.commercial
-                            ? `$${item.data.commercial}`
-                            : " Free"
-                        }`
-                      : `${
-                          item.data.personal
-                            ? `$${item.data.personal}`
-                            : " Free"
-                        }
+              <EditIcon />
+            </IconButton>
+          ) : (
+            <FavoriteButton
+              artwork={item}
+              favorited={userFavorites[item.id]}
+              handleCallback={handleArtworkSave}
+            />
+          )}
+          <ShareButton link={`/artwork/${artwork.id}`} type="artwork" />
+        </Box>
+        <Box>
+          <IconButton
+            aria-label="Artwork price"
+            className={classes.artworkColor}
+          >
+            <Typography noWrap>
+              {item.data.availability === "available"
+                ? item.data.license === "commercial"
+                  ? item.data.use === "included"
+                    ? `- / ${
+                        item.data.commercial
+                          ? `$${item.data.commercial}`
+                          : " Free"
+                      }`
+                    : `${
+                        item.data.personal ? `$${item.data.personal}` : " Free"
+                      }
                     /
                       ${
                         item.data.commercial
@@ -169,14 +163,13 @@ const ArtworkCard = ({
                           ? item.data.personal
                           : " Free"
                       }`
-                    : `${
-                        item.data.personal ? `$${item.data.personal}` : " Free"
-                      } / -`
-                  : "Preview only"}
-              </Typography>
-            </IconButton>
-          </Box>
-        </SkeletonWrapper>
+                  : `${
+                      item.data.personal ? `$${item.data.personal}` : " Free"
+                    } / -`
+                : "Preview only"}
+            </Typography>
+          </IconButton>
+        </Box>
       </CardActions>
     </Card>
   );

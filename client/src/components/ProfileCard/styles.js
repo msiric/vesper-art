@@ -35,6 +35,38 @@ const profileCardStyles = makeStyles((muiTheme) => ({
   profileCardDescription: {
     wordBreak: "break-word",
   },
+  profileCardContent: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  profileCardInfo: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: "12px",
+  },
+  profileCardRating: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: "6px",
+  },
+  profileCardCountry: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: "6px",
+  },
+  profileCardJoined: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileCardIcon: {
+    marginRight: 3,
+  },
 }));
 
 export default profileCardStyles;

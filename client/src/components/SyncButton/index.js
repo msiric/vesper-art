@@ -1,8 +1,10 @@
 import { Box, Button } from "@material-ui/core";
 import React from "react";
+import SkeletonWrapper from "../../components/SkeletonWrapper";
 import syncButtonStyles from "./styles";
 
 const SyncButton = ({
+  loading = false,
   variant = "outlined",
   color = "dark",
   handleClick,
@@ -14,15 +16,17 @@ const SyncButton = ({
 
   return (
     <Box className={classes.buttonContainer}>
-      <Button
-        color={color}
-        variant={variant}
-        onClick={handleClick}
-        className={classes.buttonItem}
-        {...rest}
-      >
-        {children}
-      </Button>
+      <SkeletonWrapper variant="text" loading={loading}>
+        <Button
+          color={color}
+          variant={variant}
+          onClick={handleClick}
+          className={classes.buttonItem}
+          {...rest}
+        >
+          {children}
+        </Button>
+      </SkeletonWrapper>
     </Box>
   );
 };

@@ -2,9 +2,10 @@ import { Box, Button, IconButton } from "@material-ui/core";
 import { ShareRounded as ShareIcon } from "@material-ui/icons";
 import React, { useState } from "react";
 import ShareModal from "../ShareModal/index.js";
+import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import shareButtonStyles from "./styles.js";
 
-const ShareButton = ({ link, type, labeled, ...props }) => {
+const ShareButton = ({ link, type, labeled, loading = false, ...props }) => {
   const [state, setState] = useState({
     modal: {
       open: false,
@@ -37,24 +38,28 @@ const ShareButton = ({ link, type, labeled, ...props }) => {
   return (
     <Box>
       {labeled ? (
-        <Button
-          variant="outlined"
-          color="primary"
-          startIcon={<ShareIcon />}
-          onClick={() => handleModalOpen()}
-          {...props}
-        >
-          Share
-        </Button>
+        <SkeletonWrapper loading={loading}>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<ShareIcon />}
+            onClick={() => handleModalOpen()}
+            {...props}
+          >
+            Share
+          </Button>
+        </SkeletonWrapper>
       ) : (
-        <IconButton
-          aria-label="Share artwork"
-          onClick={() => handleModalOpen()}
-          className={classes.artworkColor}
-          {...props}
-        >
-          <ShareIcon />
-        </IconButton>
+        <SkeletonWrapper loading={loading}>
+          <IconButton
+            aria-label="Share artwork"
+            onClick={() => handleModalOpen()}
+            className={classes.artworkColor}
+            {...props}
+          >
+            <ShareIcon />
+          </IconButton>
+        </SkeletonWrapper>
       )}
       <ShareModal
         open={state.modal.open}

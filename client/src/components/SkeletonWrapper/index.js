@@ -4,7 +4,7 @@ import skeletonWrapperStyles from "./styles";
 
 const SkeletonWrapper = ({
   animation = "wave",
-  variant = "rect",
+  variant = "text",
   loading,
   children,
   ...props
