@@ -1,10 +1,12 @@
-import { Box, Card, Divider } from "@material-ui/core";
+import { Divider } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
-import { Typography } from "../../styles/theme.js";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import Typography from "../../domain/Typography";
 import artworkPreviewStyles from "./styles.js";
 
 const ArtworkPreview = ({ paramId }) => {
@@ -21,35 +23,17 @@ const ArtworkPreview = ({ paramId }) => {
   }, []);
 
   return (
-    <Card
-      className={classes.artworkPreviewCard}
-      style={{
-        padding: 16,
-      }}
-    >
-      <Box style={{ marginBottom: 12 }}>
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography fontWeight="fontWeightBold" fontSize="h5.fontSize">{`${
-            version.title
-          }, ${new Date(version.created).getFullYear()}`}</Typography>
-        </SkeletonWrapper>
+    <Card className={classes.artworkPreviewContainer}>
+      <Box className={classes.artworkPreviewTitleWrapper}>
+        <Typography
+          loading={loading}
+          className={classes.artworkPreviewTitle}
+        >{`${version.title}, ${new Date(
+          version.created
+        ).getFullYear()}`}</Typography>
       </Box>
       <Divider />
-      {/* <SkeletonWrapper loading={loading} width="100%">
-        <CardMedia
-          className={classes.artworkPreviewMedia}
-          image={version.cover}
-          title={version.title}
-          style={loading ? { width: "100%", height } : { minHeight: height }}
-        />
-      </SkeletonWrapper> */}
-      <Box
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          maxHeight: 700,
-        }}
-      >
+      <Box className={classes.artworkPreviewImageWrapper}>
         <SkeletonWrapper
           loading={loading}
           height={300}
@@ -72,34 +56,30 @@ const ArtworkPreview = ({ paramId }) => {
       <Box>
         <Divider />
         <br />
-        <SkeletonWrapper
-          variant="text"
+        <Typography
           loading={loading}
-          width="100%"
-          height="120px"
+          className={classes.artworkPreviewDescription}
         >
-          <Typography
-            mb={2}
-            variant="body2"
-            className={classes.artworkPreviewDescription}
-          >
-            {version.description}
-          </Typography>
-        </SkeletonWrapper>
+          {version.description}
+        </Typography>
         <Box>
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography mt={2} fontSize={12} fontStyle="italic">
-              You are previewing a low resolution thumbnail of the original
-              artwork
-            </Typography>
-          </SkeletonWrapper>
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography
-              mb={2}
-              fontSize={12}
-              fontStyle="italic"
-            >{`The original artwork dimensions (in pixels) are: ${version.cover.width}x${version.cover.height}`}</Typography>
-          </SkeletonWrapper>
+          <Typography
+            variant="body2"
+            loading={loading}
+            mt={2}
+            fontSize={12}
+            fontStyle="italic"
+          >
+            You are previewing a low resolution thumbnail of the original
+            artwork
+          </Typography>
+          <Typography
+            variant="body2"
+            mb={2}
+            fontSize={12}
+            fontStyle="italic"
+            loading={loading}
+          >{`The original artwork dimensions (in pixels) are: ${version.cover.width}x${version.cover.height}`}</Typography>
         </Box>
       </Box>
     </Card>

@@ -42,15 +42,29 @@ const artworkPreviewStyles = makeStyles((muiTheme) => ({
     flexShrink: 0,
     backgroundColor: muiTheme.palette.background.default,
   },
-  artworkPreviewCard: {
+  artworkPreviewContainer: {
     width: "100%",
     backgroundColor: muiTheme.palette.background.paper,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    padding: 16,
+  },
+  artworkPreviewTitleWrapper: {
+    marginBottom: 12,
+  },
+  artworkPreviewTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  artworkPreviewImageWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    maxHeight: 700,
   },
   artworkPreviewDescription: {
     wordBreak: "break-word",
+    marginBottom: 8,
   },
   user: {
     display: "flex",
