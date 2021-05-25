@@ -48,7 +48,7 @@ const NotificationsMenu = ({
         {loading || (notifications.items && notifications.items.length) ? (
           <List
             className={classes.root}
-            style={{ width: "100%" }}
+            style={{ width: "100%", maxWidth: 280 }}
             disablePadding
           >
             {notifications.items.map((notification, index) => (
