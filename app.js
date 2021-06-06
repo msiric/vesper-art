@@ -65,8 +65,8 @@ app.use(
       url: postgres.database,
       logging: true,
       synchronize: true,
-      migrations: [path.join(__dirname, "./migrations/*")],
-      entities: [path.join(__dirname, "./entities/*")],
+      migrations: [path.join(dirname, "dist/migrations/*{.ts,.js}")],
+      entities: [path.join(dirname, "dist/entities/*{.ts,.js}")],
       ssl: {
         rejectUnauthorized: false,
       },
