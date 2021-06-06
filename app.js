@@ -19,7 +19,7 @@ import { validateParams } from "./utils/helpers.js";
 
 const app = express();
 const dirname = path.resolve();
-const root = path.resolve("./");
+const root = path.dirname(require.main.filename);
 
 app.use(
   cors({
