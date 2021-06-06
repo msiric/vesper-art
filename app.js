@@ -19,7 +19,6 @@ import { validateParams } from "./utils/helpers.js";
 
 const app = express();
 const dirname = path.resolve();
-const root = path.dirname(require.main.filename);
 
 app.use(
   cors({
@@ -97,11 +96,11 @@ app.use(
 app.use("/api", validateParams, api);
 app.use("/stripe", validateParams, stripe);
 
-app.use(express.static(path.join(root, "../../client/build")));
-app.use(express.static(path.join(root, "../../public")));
+app.use(express.static("../../client/build"));
+app.use(express.static("../../public"));
 
 app.use((req, res, next) => {
-  res.sendFile(path.join(root, "../../client/build", "index.html"));
+  res.sendFile("../../client/build", "index.html");
 });
 
 app.use((req, res, next) => {
