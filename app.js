@@ -96,11 +96,11 @@ app.use(
 app.use("/api", validateParams, api);
 app.use("/stripe", validateParams, stripe);
 
-app.use(express.static(path.join(__dirname, "client/build")));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "./client/build")));
+app.use(express.static(path.join(__dirname, "./public")));
 
 app.use((req, res, next) => {
-  res.sendFile(path.join(__dirname, "client/build", "index.html"));
+  res.sendFile(path.join(__dirname, "./client/build", "index.html"));
 });
 
 app.use((req, res, next) => {
