@@ -19,6 +19,8 @@ import { validateParams } from "./utils/helpers.js";
 
 const app = express();
 const dirname = path.resolve();
+const buildPath = "./client/build/index.html";
+const resolvedPath = path.resolve(buildPath);
 
 app.use(
   cors({
@@ -93,8 +95,6 @@ app.use(
 
 // app.use(rateLimiter);
 
-console.log(express.static("../../client/build"));
-
 app.use("/api", validateParams, api);
 app.use("/stripe", validateParams, stripe);
 
@@ -102,7 +102,7 @@ app.use(express.static("../../client/build"));
 app.use(express.static("../../public"));
 
 app.use((req, res, next) => {
-  res.sendFile(path.join(__dirname, "../../../client/build", "index.html"));
+  res.sendFile(resolvedPath);
 });
 
 app.use((req, res, next) => {
