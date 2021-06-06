@@ -98,7 +98,7 @@ app.use(
 app.use("/api", validateParams, api);
 app.use("/stripe", validateParams, stripe);
 
-app.use(express.static("../../client/build"));
+app.use(express.static("client/build"));
 app.use(express.static("../../public"));
 
 app.use((req, res, next) => {
