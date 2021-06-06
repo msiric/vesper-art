@@ -78,22 +78,23 @@ app.use(
 })();
 
 app.use(compression());
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": [
-        "'self'",
-        "'unsafe-inline'",
-        "https://vesperart-dev.herokuapp.com/",
-      ],
-      "img-src": [
-        "'self'",
-        `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/`,
-      ],
-    },
-  })
-);
+app.use(helmet({ contentSecurityPolicy: false }));
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     directives: {
+//       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+//       "script-src": [
+//         "'self'",
+//         "'unsafe-inline'",
+//         "https://vesperart-dev.herokuapp.com/",
+//       ],
+//       "img-src": [
+//         "'self'",
+//         `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/`,
+//       ],
+//     },
+//   })
+// );
 
 // app.use(rateLimiter);
 
