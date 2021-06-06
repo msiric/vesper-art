@@ -93,6 +93,8 @@ app.use(
 
 // app.use(rateLimiter);
 
+console.log(express.static("../../client/build"));
+
 app.use("/api", validateParams, api);
 app.use("/stripe", validateParams, stripe);
 
@@ -100,7 +102,7 @@ app.use(express.static("../../client/build"));
 app.use(express.static("../../public"));
 
 app.use((req, res, next) => {
-  res.sendFile("../../client/build", "index.html");
+  res.sendFile(path.join(__dirname, "../../../client/build", "index.html"));
 });
 
 app.use((req, res, next) => {
