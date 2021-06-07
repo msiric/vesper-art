@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc -w",
-    "start-dev": "nodemon ./dist/bin/www",
+    "start-dev": "set NODE_ENV=local&& nodemon ./dist/bin/www",
     "start": "node ./dist/bin/www",
     "client": "cd client && npm start",
     "webhook": "stripe listen --forward-to localhost:5000/stripe/hooks",

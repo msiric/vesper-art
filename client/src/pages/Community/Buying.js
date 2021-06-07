@@ -1,6 +1,6 @@
 import { Container, Grid, Typography } from "@material-ui/core";
 import React from "react";
-import { global } from "../../../../common/constants";
+import { appName } from "../../../../common/constants";
 import MainHeading from "../../components/MainHeading";
 import globalStyles from "../../styles/global.js";
 
@@ -11,11 +11,11 @@ const Buying = () => {
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
-          <MainHeading text={`Buying on ${global.appName}`} />
+          <MainHeading text={`Buying on ${appName}`} />
           <Typography>Signing Up</Typography>
           <Typography>
             {`Signing up is free and required for users to start downloading and purchasing
-            art on ${global.appName}. When you sign up, you will be able to download, 
+            art on ${appName}. When you sign up, you will be able to download, 
             purchase and upload your own artwork. 
             When browsing artwork, pay attention to the their type and availability.
             Artists can upload art as preview only, which allows you to only view the 
@@ -34,7 +34,7 @@ const Buying = () => {
             store it somewhere safe.
             In addition to the above, you can verify your licenses using the platform's verifier
             system to ensure the authenticity and non-repudiation of your ownership.
-            Every billable order you place will be subject to the ${global.appName}'s service fee, which
+            Every billable order you place will be subject to the ${appName}'s service fee, which
             will be displayed on the checkout page before you confirm your payment.
             For more information, see the Terms of Service.`}
           </Typography>

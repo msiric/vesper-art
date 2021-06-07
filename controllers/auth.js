@@ -1,7 +1,6 @@
 import argon2 from "argon2";
 import crypto from "crypto";
 import createError from "http-errors";
-import { global } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
@@ -10,6 +9,7 @@ import {
   recoveryValidation,
   signupValidation,
 } from "../common/validation";
+import { domain } from "../config/secret";
 import {
   addNewUser,
   editUserResetToken,
@@ -191,7 +191,7 @@ export const forgotPassword = async ({ userEmail, connection }) => {
       emailContent: `You are receiving this because you have requested to reset the password for your account.
           Please click on the following link, or paste this into your browser to complete the process:
           
-          <a href="${global.clientDomain}/reset_password/${resetToken}"</a>`,
+          <a href="${domain.client}/reset_password/${resetToken}"</a>`,
     });
     return { message: "Password reset" };
   });

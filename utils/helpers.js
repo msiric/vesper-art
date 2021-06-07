@@ -5,8 +5,7 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { getConnection } from "typeorm";
 import * as uuidJs from "uuid";
-import { global } from "../common/constants";
-import { uuid } from "../config/secret";
+import { domain, uuid } from "../config/secret";
 
 // this way of importing allows specifying the uuid version in the config file only once and gets propagated everywhere
 const {
@@ -225,7 +224,7 @@ export const generateUuids = ({ ...args }) => {
 
 export const generateToken = () => {
   const verificationToken = genUuid();
-  const verificationLink = `${global.clientDomain}/verify_token/${verificationToken}`;
+  const verificationLink = `${domain.client}/verify_token/${verificationToken}`;
   return { verificationToken, verificationLink };
 };
 

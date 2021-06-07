@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import useSound from "use-sound";
-import { global } from "../../../../common/constants";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useAppStore } from "../../contexts/global/app.js";
@@ -203,7 +202,7 @@ const Interceptor = () => {
   };
 
   const handleSocket = (token) => {
-    socket.instance = openSocket(global.serverDomain);
+    socket.instance = openSocket();
 
     socket.instance.emit("authenticateUser", {
       token: token ? `Bearer ${token}` : null,

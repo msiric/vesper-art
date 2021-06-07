@@ -1,10 +1,6 @@
 const TRANSFORMED_WIDTH = 640;
 
-export const global = {
-  appName: "Diagon",
-  clientDomain: "http://localhost:3000",
-  serverDomain: "http://localhost:5000",
-};
+export const appName = "Diagon";
 
 export const pricing = {
   minimumPrice: 10,

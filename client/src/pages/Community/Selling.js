@@ -1,6 +1,6 @@
 import { Container, Grid, Typography } from "@material-ui/core";
 import React from "react";
-import { global } from "../../../../common/constants";
+import { appName } from "../../../../common/constants";
 import { payment } from "../../../../common/constants.js";
 import MainHeading from "../../components/MainHeading";
 import globalStyles from "../../styles/global.js";
@@ -12,11 +12,11 @@ const Selling = () => {
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
-          <MainHeading text={`Selling on ${global.appName}`} />
+          <MainHeading text={`Selling on ${appName}`} />
           <Typography>Signing Up</Typography>
           <Typography>
             {`Signing up is free and required for users to start selling art on 
-            ${global.appName}. When you sign up, you will be able to download, 
+            ${appName}. When you sign up, you will be able to download, 
             purchase and upload your own artwork. 
             Your art can be published as preview only, which allows users to only view your 
             artwork without downloading or purchasing, or available for download, which allows 

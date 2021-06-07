@@ -11,7 +11,7 @@ import morgan from "morgan";
 import path from "path";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
-import { global } from "./common/constants";
+import { domain } from "./config/secret";
 import { mongo, postgres } from "./config/secret.js";
 import api from "./routes/api/index.js";
 import stripe from "./routes/stripe/index.js";
@@ -22,7 +22,7 @@ const dirname = path.resolve();
 
 app.use(
   cors({
-    origin: global.clientDomain,
+    origin: domain.client,
     credentials: true,
   })
 );
