@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const imageWrapperStyles = makeStyles((muiTheme) => ({
-  imageContent: {
+  imageWrapperContent: {
     display: "block",
     width: "100%",
     height: "auto",

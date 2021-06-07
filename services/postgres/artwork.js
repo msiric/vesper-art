@@ -111,6 +111,7 @@ export const fetchArtworkDetails = async ({
     )
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("version.media", "media")
     .leftJoinAndMapMany(
       "artwork.comments",
       Comment,
@@ -138,6 +139,10 @@ export const fetchArtworkDetails = async ({
     });
     foundArtwork.favorites = foundArtwork.favorites.length;
   }
+  foundArtwork.current.media = {
+    height: foundArtwork.current.media.height,
+    width: foundArtwork.current.media.width,
+  };
   console.log(foundArtwork);
   return foundArtwork;
 };

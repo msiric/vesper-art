@@ -62,24 +62,20 @@ const ArtworkPreview = ({ paramId }) => {
         >
           {version.description}
         </Typography>
-        <Box>
+        <Box className={classes.artworkPreviewDisclaimerWrapper}>
           <Typography
             variant="body2"
             loading={loading}
-            mt={2}
-            fontSize={12}
-            fontStyle="italic"
+            className={classes.artworkPreviewDisclaimer}
           >
             You are previewing a low resolution thumbnail of the original
             artwork
           </Typography>
           <Typography
             variant="body2"
-            mb={2}
-            fontSize={12}
-            fontStyle="italic"
             loading={loading}
-          >{`The original artwork dimensions (in pixels) are: ${version.cover.width}x${version.cover.height}`}</Typography>
+            className={classes.artworkPreviewDisclaimer}
+          >{`The original artwork dimensions (in pixels) are: ${version.media.width}x${version.media.height}`}</Typography>
         </Box>
       </Box>
     </Card>

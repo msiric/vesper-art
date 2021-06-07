@@ -123,6 +123,13 @@ const artworkPreviewStyles = makeStyles((muiTheme) => ({
     alignItems: "center",
     flexDirection: "column",
   },
+  artworkPreviewDisclaimerWrapper: {
+    margin: "8px 0",
+  },
+  artworkPreviewDisclaimer: {
+    fontSize: 12,
+    fontStyle: "italic",
+  },
 }));
 
 export default artworkPreviewStyles;

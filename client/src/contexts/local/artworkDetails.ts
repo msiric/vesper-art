@@ -5,7 +5,7 @@ import { displayValidLicense } from "../../utils/helpers";
 
 const initialState = {
   artwork: {
-    data: { owner: {}, current: { cover: {} } },
+    data: { owner: {}, current: { cover: {}, media: {} } },
     loading: true,
     error: false,
   },
