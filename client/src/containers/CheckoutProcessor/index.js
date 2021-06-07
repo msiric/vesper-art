@@ -1,31 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CircularProgress,
-  Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Step,
-  StepConnector,
-  StepLabel,
-  Stepper,
-  withStyles,
-} from "@material-ui/core";
-import {
-  CardMembershipRounded as LicenseIcon,
-  CheckRounded as CheckIcon,
-  ContactMailRounded as BillingIcon,
-  PaymentRounded as PaymentIcon,
-} from "@material-ui/icons";
+import { CheckRounded as CheckIcon } from "@material-ui/icons";
 import { useElements, useStripe } from "@stripe/react-stripe-js";
-import clsx from "clsx";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory, useLocation, useParams } from "react-router-dom";
@@ -34,11 +9,19 @@ import {
   emptyValidation,
   licenseValidation,
 } from "../../../../common/validation";
+import AsyncButton from "../../components/AsyncButton";
 import CheckoutStatus from "../../components/CheckoutStatus";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import CheckoutStepper from "../../components/CheckoutStepper";
+import ListItems from "../../components/ListItems";
+import SyncButton from "../../components/SyncButton";
 import CheckoutSummary from "../../containers/CheckoutSummary/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useOrderCheckout } from "../../contexts/local/orderCheckout";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
+import Grid from "../../domain/Grid";
 import BillingForm from "../../forms/BillingForm/index.js";
 import LicenseForm from "../../forms/LicenseForm/index.js";
 import PaymentForm from "../../forms/PaymentForm/index.js";
@@ -56,70 +39,6 @@ const STEPS = [
   "Billing information",
   "Payment information",
 ];
-
-const Connector = withStyles((theme) => ({
-  alternativeLabel: {
-    top: 22,
-  },
-  active: {
-    "& $line": {
-      background: theme.palette.primary.main,
-    },
-  },
-  completed: {
-    "& $line": {
-      background: theme.palette.primary.main,
-    },
-  },
-  line: {
-    height: 3,
-    border: 0,
-    backgroundColor: "#eaeaf0",
-    borderRadius: 1,
-  },
-}))(StepConnector);
-
-const StepperIcons = ({ active, completed, icon }) => {
-  const classes = iconsStyle();
-
-  const icons = {
-    1: <LicenseIcon />,
-    2: <BillingIcon />,
-    3: <PaymentIcon />,
-  };
-
-  return (
-    <div
-      className={clsx(classes.root, {
-        [classes.active]: active,
-        [classes.completed]: completed,
-      })}
-    >
-      {icons[String(icon)]}
-    </div>
-  );
-};
-
-const iconsStyle = makeStyles((theme) => ({
-  root: {
-    backgroundColor: "#ccc",
-    zIndex: 1,
-    color: "#fff",
-    width: 50,
-    height: 50,
-    display: "flex",
-    borderRadius: "50%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  active: {
-    background: theme.palette.primary.main,
-    boxShadow: "0 4px 10px 0 rgba(0,0,0,.25)",
-  },
-  completed: {
-    background: theme.palette.primary.main,
-  },
-}));
 
 const CheckoutProcessor = () => {
   const { id: versionId } = useParams();
@@ -186,29 +105,35 @@ const CheckoutProcessor = () => {
     license === "personal"
       ? [
           {
+            icon: <CheckIcon />,
             label: "Personal blogging, websites and social media",
           },
           {
+            icon: <CheckIcon />,
             label:
               "Home printing, art and craft projects, personal portfolios and gifts",
           },
-          { label: "Students and charities" },
+          { icon: <CheckIcon />, label: "Students and charities" },
           {
+            icon: <CheckIcon />,
             label:
               "The personal use license is not suitable for commercial activities",
           },
         ]
       : [
           {
+            icon: <CheckIcon />,
             label:
               "Print and digital advertising, broadcasts, product packaging, presentations, websites and blogs",
           },
           {
+            icon: <CheckIcon />,
             label:
               "Home printing, art and craft projects, personal portfolios and gifts",
           },
-          { label: "Students and charities" },
+          { icon: <CheckIcon />, label: "Students and charities" },
           {
+            icon: <CheckIcon />,
             label:
               "The personal use license is not suitable for commercial activities",
           },
@@ -276,7 +201,7 @@ const CheckoutProcessor = () => {
   }, []);
 
   return (
-    <Grid container spacing={2} style={{ margin: 0 }}>
+    <Grid container spacing={2} className={classes.checkoutProcessorContainer}>
       {versionLoading || version.id ? (
         <>
           <Grid item xs={12} md={8}>
@@ -287,91 +212,40 @@ const CheckoutProcessor = () => {
               >
                 <Card elevation={5} className={classes.checkoutProcessorCard}>
                   <CardContent className={classes.checkoutProcessorContent}>
-                    {intentLoading || stripe ? (
+                    {stripe ? (
                       <Box className={classes.checkoutProcessorWrapper}>
-                        {step.current !== 3 && (
-                          <SkeletonWrapper
-                            variant="text"
-                            loading={intentLoading}
-                            width="100%"
-                          >
-                            <Stepper
-                              alternativeLabel
-                              connector={<Connector />}
-                              activeStep={step.current}
-                            >
-                              {STEPS.map((e) => (
-                                <Step key={e}>
-                                  <StepLabel StepIconComponent={StepperIcons} />
-                                </Step>
-                              ))}
-                            </Stepper>
-                          </SkeletonWrapper>
+                        {step.current !== STEPS.length && (
+                          <CheckoutStepper step={step} />
                         )}
                         <Box className={classes.checkoutProcessorMultiform}>
                           {renderForm(step.current)}
                           {step.current === 0 && (
-                            <List
-                              component="nav"
-                              aria-label="Features"
-                              style={{ width: "100%" }}
-                              disablePadding
-                            >
-                              {licenseOptions.map((item) => (
-                                <ListItem>
-                                  <SkeletonWrapper
-                                    variant="text"
-                                    loading={intentLoading}
-                                    style={{ marginRight: 10 }}
-                                  >
-                                    <ListItemIcon>
-                                      <CheckIcon />
-                                    </ListItemIcon>
-                                  </SkeletonWrapper>
-                                  <SkeletonWrapper
-                                    variant="text"
-                                    loading={intentLoading}
-                                  >
-                                    <ListItemText primary={item.label} />
-                                  </SkeletonWrapper>
-                                </ListItem>
-                              ))}
-                            </List>
+                            <ListItems
+                              items={licenseOptions}
+                              loading={versionLoading}
+                            />
                           )}
                         </Box>
                       </Box>
                     ) : null}
                   </CardContent>
-                  {step.current !== 3 && (
-                    <CardActions
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <SkeletonWrapper loading={intentLoading}>
-                        <Button
-                          variant="outlined"
-                          disabled={step.current === 0}
-                          onClick={() => changeStep({ value: -1 })}
-                        >
-                          Back
-                        </Button>
-                      </SkeletonWrapper>
-                      <SkeletonWrapper loading={intentLoading}>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          type="submit"
-                          disabled={formState.isSubmitting}
-                        >
-                          {intentLoading ? (
-                            <CircularProgress color="secondary" size={24} />
-                          ) : (
-                            "Next"
-                          )}
-                        </Button>
-                      </SkeletonWrapper>
+                  {step.current !== STEPS.length && (
+                    <CardActions className={classes.checkoutProcessorActions}>
+                      <SyncButton
+                        disabled={step.current === 0 || intentLoading}
+                        onClick={() => changeStep({ value: -1 })}
+                        loading={versionLoading}
+                      >
+                        Back
+                      </SyncButton>
+                      <AsyncButton
+                        color="primary"
+                        type="submit"
+                        loading={versionLoading}
+                        submitting={intentLoading}
+                      >
+                        Next
+                      </AsyncButton>
                     </CardActions>
                   )}
                 </Card>

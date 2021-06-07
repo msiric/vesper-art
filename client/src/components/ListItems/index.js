@@ -1,4 +1,10 @@
-import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import {
+  Avatar,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core";
 import React from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import listItemsStyles from "./styles.js";
@@ -10,13 +16,17 @@ const ListItems = ({ items, loading, ...props }) => {
     <List disablePadding {...props}>
       {items.map((item) => (
         <ListItem>
-          <SkeletonWrapper
-            variant="circle"
-            loading={loading}
-            style={{ marginRight: 10 }}
-          >
+          {loading ? (
+            <SkeletonWrapper
+              className={classes.listItemsLoader}
+              variant="circle"
+              loading={loading}
+            >
+              <Avatar className={classes.listItemsIcon} />
+            </SkeletonWrapper>
+          ) : (
             <ListItemIcon>{item.icon}</ListItemIcon>
-          </SkeletonWrapper>
+          )}
           <SkeletonWrapper variant="text" loading={loading}>
             <ListItemText primary={item.label} />
           </SkeletonWrapper>
