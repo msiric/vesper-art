@@ -8,6 +8,15 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
     objectFit: "contain",
     borderRadius: 4,
   },
+  imageWrapperLoading: {
+    position: "relative",
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+  },
+  imageWrapperCover: {
+    position: "relative",
+  },
 }));
 
 export default imageWrapperStyles;

@@ -2,7 +2,6 @@ import { Divider } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
@@ -22,6 +21,8 @@ const ArtworkPreview = ({ paramId }) => {
     fetchArtwork({ artworkId: paramId });
   }, []);
 
+  console.log(version);
+
   return (
     <Card className={classes.artworkPreviewContainer}>
       <Box className={classes.artworkPreviewTitleWrapper}>
@@ -34,24 +35,17 @@ const ArtworkPreview = ({ paramId }) => {
       </Box>
       <Divider />
       <Box className={classes.artworkPreviewImageWrapper}>
-        <SkeletonWrapper
+        <ImageWrapper
+          height={version.height}
+          width={version.width}
+          source={version.cover.source}
+          placeholder={version.cover.dominant}
+          styles={{
+            maxWidth: 700 / (version.height / version.width) - 54,
+            margin: "24px",
+          }}
           loading={loading}
-          height={300}
-          width="100%"
-          style={{ margin: 24 }}
-        >
-          <ImageWrapper
-            height={version.height}
-            width={version.width}
-            source={version.cover.source}
-            placeholder={version.dominant}
-            styles={{
-              maxWidth: 700 / (version.height / version.width) - 54,
-              margin: "24px",
-            }}
-            loading={loading}
-          />
-        </SkeletonWrapper>
+        />
       </Box>
       <Box>
         <Divider />

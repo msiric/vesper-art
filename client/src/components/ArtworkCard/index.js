@@ -115,7 +115,9 @@ const ArtworkCard = ({
         height={item.data.height}
         width={item.data.width}
         source={item.data.cover ? item.data.cover.source : ""}
-        placeholder={item.data.dominant}
+        placeholder={
+          item.data.cover ? item.data.cover.dominant : item.data.dominant
+        }
         loading={loading}
       />
       <CardActions disableSpacing className={classes.artworkFooter}>

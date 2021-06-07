@@ -5,9 +5,9 @@ import SkeletonWrapper from "../../components/SkeletonWrapper";
 
 const StyledAvatar = withStyles({})(MaterialAvatar);
 
-const Avatar = ({ loading = false, ...props }) => {
+const Avatar = ({ loading = false, variant = "circle", ...props }) => {
   return (
-    <SkeletonWrapper variant="circle" loading={loading}>
+    <SkeletonWrapper variant={variant} loading={loading}>
       <StyledAvatar {...props} />
     </SkeletonWrapper>
   );

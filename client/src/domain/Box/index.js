@@ -5,9 +5,9 @@ import SkeletonWrapper from "../../components/SkeletonWrapper";
 
 const StyledBox = withStyles({})(MaterialBox);
 
-const Box = ({ loading = false, children, ...props }) => {
+const Box = ({ loading = false, variant = "text", children, ...props }) => {
   return (
-    <SkeletonWrapper variant="text" loading={loading}>
+    <SkeletonWrapper variant={variant} loading={loading}>
       <StyledBox {...props}>{children}</StyledBox>
     </SkeletonWrapper>
   );

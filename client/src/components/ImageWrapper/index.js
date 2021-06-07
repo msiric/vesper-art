@@ -1,6 +1,6 @@
-import { Box } from "@material-ui/core";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
+import Box from "../../domain/Box";
 import useProgressiveImage from "../../hooks/useProgressiveImage";
 import LoadingSpinner from "../LoadingSpinner/index.js";
 import imageWrapperStyles from "./styles.js";
@@ -17,7 +17,7 @@ const ImageWrapper = ({
 }) => {
   const downloaded = useProgressiveImage(source);
 
-  console.log(height, width, placeholder, cover, styles);
+  console.log(loading, downloaded, height, width, placeholder, cover, styles);
 
   const classes = imageWrapperStyles();
 
@@ -27,14 +27,7 @@ const ImageWrapper = ({
         <img className={classes.imageWrapperContent} src={source} />
       </Box>
     ) : (
-      <Box
-        style={{
-          position: "relative",
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+      <Box className={classes.imageWrapperLoading}>
         <LoadingSpinner
           styles={{ position: "absolute", display: loading ? "flex" : "none" }}
         />
@@ -46,7 +39,7 @@ const ImageWrapper = ({
       </Box>
     )
   ) : cover ? (
-    <Box style={{ position: "relative" }}>
+    <Box className={classes.imageWrapperCover}>
       <LoadingSpinner
         styles={{ position: "absolute", display: loading ? "flex" : "none" }}
       />
@@ -61,6 +54,8 @@ const ImageWrapper = ({
       style={{
         ...styles,
         background: placeholder,
+        width: "100%",
+        filter: "blur(8px)",
       }}
     >
       <img
