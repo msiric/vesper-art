@@ -1,22 +1,20 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Card,
-  CardActions,
-  CardContent,
-  Divider,
-  Grid,
-  List,
-  Typography,
-} from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
+import { payment } from "../../../../common/constants";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import CheckoutCard from "../../components/CheckoutCard/index.js";
 import CheckoutItem from "../../components/CheckoutItem/index.js";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import ListItems from "../../components/ListItems/index.js";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
+import Divider from "../../domain/Divider";
+import Grid from "../../domain/Grid";
+import Typography from "../../domain/Typography";
 import DiscountForm from "../../forms/DiscountForm/index.js";
 import checkoutSummaryStyles from "./styles.js";
 
@@ -30,6 +28,8 @@ const CheckoutSummary = ({
   discount,
   handleDiscountChange,
   loading,
+  submitting,
+  paying,
   step,
 }) => {
   const [state, setState] = useState({
@@ -38,6 +38,88 @@ const CheckoutSummary = ({
       amount: 0,
     },
   });
+
+  const calculatePrice = () =>
+    state.summary.license ? state.summary.amount : 0;
+
+  const calculateFee = () =>
+    state.summary.amount
+      ? (
+          state.summary.amount * payment.buyerFee.multiplier +
+          payment.buyerFee.added
+        ).toFixed(2)
+      : 0;
+
+  const calculateDiscount = () =>
+    discount ? (state.summary.amount * discount.discount).toFixed(2) : 0;
+
+  const calculateTotal = () =>
+    state.summary.amount
+      ? discount
+        ? (
+            state.summary.amount -
+            state.summary.amount * discount.discount +
+            (state.summary.amount * payment.buyerFee.multiplier +
+              payment.buyerFee.addend)
+          ).toFixed(2)
+        : (
+            state.summary.amount +
+            (state.summary.amount * payment.buyerFee.multiplier +
+              payment.buyerFee.addend)
+          ).toFixed(2)
+      : 0;
+
+  const summaryItems = [
+    <CheckoutItem
+      label={version.title}
+      description={
+        state.summary.license
+          ? `${state.summary.license} license`
+          : "No license selected"
+      }
+      amount="Price"
+      animate={true}
+      price={calculatePrice()}
+      loading={loading}
+    />,
+    <Divider />,
+    <CheckoutItem
+      label="Platform fee"
+      description="Fixed fee"
+      amount="Amount"
+      prefix="+"
+      animate={true}
+      price={calculateFee()}
+      loading={loading}
+    />,
+    <Divider />,
+    discount ? (
+      <>
+        <CheckoutItem
+          label="Discount"
+          description={`${discount.name} (${discount.discount * 100}%)`}
+          amount="Amount"
+          prefix="-"
+          animate={true}
+          price={calculateDiscount()}
+          loading={loading}
+        />
+        <Divider />
+      </>
+    ) : null,
+    <CheckoutItem
+      label="Order"
+      description={
+        state.summary.license
+          ? `${state.summary.license} license`
+          : "No license selected"
+      }
+      amount="Total"
+      animate={true}
+      price={calculateTotal()}
+      loading={loading}
+    />,
+  ];
 
   const {
     handleSubmit,
@@ -76,11 +158,9 @@ const CheckoutSummary = ({
   return (
     <Card className={classes.checkoutSummaryRoot}>
       <CardContent className={classes.checkoutSummaryContent}>
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography variant="h6" gutterBottom>
-            Order summary
-          </Typography>
-        </SkeletonWrapper>
+        <Typography variant="h6" gutterBottom loading={loading}>
+          Order summary
+        </Typography>
         <Grid
           item
           xs={12}
@@ -89,70 +169,7 @@ const CheckoutSummary = ({
         >
           <CheckoutCard version={version} loading={loading} />
         </Grid>
-        <List disablePadding>
-          <CheckoutItem
-            label={version.title}
-            description={
-              state.summary.license
-                ? `${state.summary.license} license`
-                : "No license selected"
-            }
-            amount="Price"
-            animate={true}
-            price={state.summary.license ? state.summary.amount : 0}
-          />
-          <Divider />
-          <CheckoutItem
-            label="Platform fee"
-            description="Fixed fee"
-            amount="Amount"
-            prefix="+"
-            animate={true}
-            price={
-              state.summary.amount
-                ? (state.summary.amount * 0.05 + 2.35).toFixed(2)
-                : 0
-            }
-          />
-          <Divider />
-          {discount ? (
-            <>
-              <CheckoutItem
-                label="Discount"
-                description={`${discount.name} (${discount.discount * 100}%)`}
-                amount="Amount"
-                prefix="-"
-                animate={true}
-                price={(state.summary.amount * discount.discount).toFixed(2)}
-              />
-              <Divider />
-            </>
-          ) : null}
-          <CheckoutItem
-            label="Order"
-            description={
-              state.summary.license
-                ? `${state.summary.license} license`
-                : "No license selected"
-            }
-            amount="Total"
-            animate={true}
-            price={
-              state.summary.amount
-                ? discount
-                  ? (
-                      state.summary.amount -
-                      state.summary.amount * discount.discount +
-                      (state.summary.amount * 0.05 + 2.35)
-                    ).toFixed(2)
-                  : (
-                      state.summary.amount +
-                      (state.summary.amount * 0.05 + 2.35)
-                    ).toFixed(2)
-                : 0
-            }
-          />
-        </List>
+        <ListItems items={summaryItems} custom={true}></ListItems>
       </CardContent>
       {step.current === 2 && (
         <CardActions className={classes.checkoutSummaryActions}>
@@ -165,6 +182,8 @@ const CheckoutSummary = ({
               variant="outlined"
               color="error"
               loading={loading}
+              submitting={submitting}
+              disabled={paying}
               onClick={() =>
                 handleDiscountChange({ values: { discountCode: null } })
               }
@@ -185,6 +204,8 @@ const CheckoutSummary = ({
                   color="primary"
                   submitting={formState.isSubmitting}
                   loading={loading}
+                  submitting={submitting}
+                  disabled={paying}
                   startIcon={<UploadIcon />}
                 >
                   Apply

@@ -5,7 +5,8 @@ import {
   CardExpiryElement,
   CardNumberElement,
 } from "@stripe/react-stripe-js";
-import React, { useImperativeHandle, useState } from "react"; //, {useState }
+import React, { useImperativeHandle, useState } from "react";
+import { useOrderCheckout } from "../../contexts/local/orderCheckout";
 
 const PaymentFormStyles = makeStyles((muiTheme) => ({
   fixed: {
@@ -147,10 +148,12 @@ export const StripeTextField = (props) => {
 };
 
 const PaymentForm = ({ secret, version }) => {
-  const [state, setState] = useState({ elementError: {} });
+  const errors = useOrderCheckout((state) => state.errors);
+  const reflectErrors = useOrderCheckout((state) => state.reflectErrors);
 
   const classes = PaymentFormStyles();
 
+  console.log("STATE ERRORS", errors);
   const cardsLogo = [
     "amex",
     "cirrus",
@@ -165,14 +168,7 @@ const PaymentForm = ({ secret, version }) => {
   ];
 
   const onChange = (event) => {
-    console.log("event", event);
-    setState((prevState) => ({
-      ...prevState,
-      elementError: {
-        ...prevState.elementError,
-        [event.elementType]: event.error ? event.error.message : "",
-      },
-    }));
+    reflectErrors({ event });
   };
 
   /*   const handlePaymentSubmit = async () => {
@@ -227,6 +223,8 @@ const PaymentForm = ({ secret, version }) => {
     }
   }; */
 
+  console.log("ERRORSSSSS", errors);
+
   return (
     <>
       <Grid container item xs={12}>
@@ -248,8 +246,8 @@ const PaymentForm = ({ secret, version }) => {
       </Grid>
       <Grid item xs={12}>
         <StripeTextField
-          error={!!state.elementError.cardNumber}
-          helperText={state.elementError.cardNumber}
+          error={!!errors.cardNumber}
+          helperText={errors.cardNumber}
           label="Card Number"
           inputProps={{
             options: {
@@ -265,8 +263,8 @@ const PaymentForm = ({ secret, version }) => {
       </Grid>
       <Grid item xs={6}>
         <StripeTextField
-          error={!!state.elementError.cardExpiry}
-          helperText={state.elementError.cardExpiry}
+          error={!!errors.cardExpiry}
+          helperText={errors.cardExpiry}
           label="Card expiry date"
           inputProps={{
             options: {
@@ -282,8 +280,8 @@ const PaymentForm = ({ secret, version }) => {
       </Grid>
       <Grid item xs={6}>
         <StripeTextField
-          error={!!state.elementError.cardCvc}
-          helperText={state.elementError.cardCvc}
+          error={!!errors.cardCvc}
+          helperText={errors.cardCvc}
           label="Card CVC"
           inputProps={{
             options: {

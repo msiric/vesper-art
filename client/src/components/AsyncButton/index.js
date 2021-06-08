@@ -6,6 +6,7 @@ import asyncButtonStyles from "./styles";
 const AsyncButton = ({
   submitting = false,
   loading = false,
+  disabled = false,
   variant = "outlined",
   color = "primary",
   handleClick,
@@ -22,7 +23,7 @@ const AsyncButton = ({
           color={color}
           variant={variant}
           onClick={handleClick}
-          disabled={submitting}
+          disabled={submitting || disabled}
           className={classes.buttonItem}
           {...rest}
         >

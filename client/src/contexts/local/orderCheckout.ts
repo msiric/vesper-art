@@ -1,4 +1,8 @@
-import { CardNumberElement } from "@stripe/react-stripe-js";
+import {
+  CardCvcElement,
+  CardExpiryElement,
+  CardNumberElement,
+} from "@stripe/react-stripe-js";
 import create from "zustand";
 import { isObjectEmpty } from "../../../../common/helpers";
 import { getCheckout, getDiscount } from "../../services/checkout";
@@ -25,6 +29,7 @@ const initialState = {
     current: 0,
     length: STEPS.length,
   },
+  errors: {},
 };
 
 const initState = () => ({
@@ -57,7 +62,41 @@ const initActions = (set, get) => ({
       set((state) => ({ ...state }));
     }
   },
-  submitPayment: async ({ values, stripe, elements, history, changeStep }) => {
+  submitPayment: async ({
+    values,
+    stripe,
+    elements,
+    reflectErrors,
+    changeStep,
+  }) => {
+    let invalidInput = false;
+    const stripeElements = [
+      elements.getElement(CardNumberElement),
+      elements.getElement(CardExpiryElement),
+      elements.getElement(CardCvcElement),
+    ];
+    const cardElements = {
+      cardNumber: "Card number",
+      cardExpiry: "Card's expiration date",
+      cardCvc: "Card's CVC",
+    };
+    for (let element of stripeElements) {
+      if (!element._implementation._complete) {
+        invalidInput = true;
+        const elementInfo = element._implementation;
+        const elementStatus = elementInfo._empty ? "required" : "invalid";
+        const event = {
+          elementType: elementInfo._componentName,
+          error: {
+            message: `${
+              cardElements[elementInfo._componentName]
+            } is ${elementStatus}`,
+          },
+        };
+        reflectErrors({ event });
+      }
+    }
+    if (invalidInput) return;
     set((state) => ({
       ...state,
       intent: { ...state.intent, loading: true },
@@ -248,6 +287,15 @@ const initActions = (set, get) => ({
     set((state) => ({
       ...state,
       license: license.value,
+    }));
+  },
+  reflectErrors: ({ event }) => {
+    set((state) => ({
+      ...state,
+      errors: {
+        ...state.errors,
+        [event.elementType]: event.error ? event.error.message : "",
+      },
     }));
   },
   resetArtwork: () => {

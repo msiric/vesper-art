@@ -60,6 +60,7 @@ const CheckoutProcessor = () => {
   const fetchCheckout = useOrderCheckout((state) => state.fetchCheckout);
   const saveIntent = useOrderCheckout((state) => state.saveIntent);
   const submitPayment = useOrderCheckout((state) => state.submitPayment);
+  const reflectErrors = useOrderCheckout((state) => state.reflectErrors);
 
   const stripe = useStripe();
   const elements = useElements();
@@ -144,7 +145,7 @@ const CheckoutProcessor = () => {
     const isLastStep = step.current === step.length - 1;
     console.log("first", isFirstStep, "last", isLastStep);
     if (isLastStep) {
-      submitPayment({ values, stripe, elements, history, changeStep });
+      submitPayment({ values, stripe, elements, reflectErrors, changeStep });
     } else if (isFirstStep) {
       saveIntent({ values, userIntents, changeStep });
     } else {
@@ -232,7 +233,9 @@ const CheckoutProcessor = () => {
                   {step.current !== STEPS.length && (
                     <CardActions className={classes.checkoutProcessorActions}>
                       <SyncButton
-                        disabled={step.current === 0 || intentLoading}
+                        disabled={
+                          step.current === 0 || intentLoading || discountLoading
+                        }
                         onClick={() => changeStep({ value: -1 })}
                         loading={versionLoading}
                       >
@@ -243,6 +246,7 @@ const CheckoutProcessor = () => {
                         type="submit"
                         loading={versionLoading}
                         submitting={intentLoading}
+                        disabled={discountLoading}
                       >
                         Next
                       </AsyncButton>
@@ -258,7 +262,9 @@ const CheckoutProcessor = () => {
               license={licenseType}
               discount={discount}
               handleDiscountChange={changeDiscount}
-              loading={discountLoading}
+              loading={versionLoading}
+              submitting={discountLoading}
+              paying={intentLoading}
               step={step}
             />
             <br />
