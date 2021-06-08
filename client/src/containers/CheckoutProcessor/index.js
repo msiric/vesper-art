@@ -143,7 +143,6 @@ const CheckoutProcessor = () => {
   const onSubmit = (values) => {
     const isFirstStep = step.current === 0;
     const isLastStep = step.current === step.length - 1;
-    console.log("first", isFirstStep, "last", isLastStep);
     if (isLastStep) {
       submitPayment({ values, stripe, elements, reflectErrors, changeStep });
     } else if (isFirstStep) {
@@ -151,7 +150,6 @@ const CheckoutProcessor = () => {
     } else {
       changeStep({ value: 1 });
     }
-    // reset(getValues());
   };
 
   const renderForm = (step) => {
@@ -194,8 +192,6 @@ const CheckoutProcessor = () => {
         return <div>Not Found</div>;
     }
   };
-
-  console.log("VERSION", versionLoading, "ID", version.id, "STRIPE", stripe);
 
   useEffect(() => {
     fetchCheckout({ license: licenseValue, versionId });
@@ -242,7 +238,6 @@ const CheckoutProcessor = () => {
                         Back
                       </SyncButton>
                       <AsyncButton
-                        color="primary"
                         type="submit"
                         loading={versionLoading}
                         submitting={intentLoading}

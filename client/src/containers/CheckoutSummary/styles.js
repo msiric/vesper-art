@@ -18,6 +18,9 @@ const checkoutSummaryStyles = makeStyles((muiTheme) => ({
   checkoutSummaryForm: {
     width: "100%",
   },
+  checkoutSummaryCard: {
+    flexBasis: "auto",
+  },
 }));
 
 export default checkoutSummaryStyles;

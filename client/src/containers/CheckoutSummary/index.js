@@ -176,12 +176,7 @@ const CheckoutSummary = ({
         <Typography variant="h6" gutterBottom loading={loading}>
           Order summary
         </Typography>
-        <Grid
-          item
-          xs={12}
-          className={classes.artwork}
-          style={{ flexBasis: "auto" }}
-        >
+        <Grid item xs={12} className={classes.checkoutSummaryCard}>
           <CheckoutCard version={version} loading={loading} />
         </Grid>
         <ListItems items={summaryItems} custom={true}></ListItems>
@@ -194,8 +189,6 @@ const CheckoutSummary = ({
             <AsyncButton
               type="button"
               fullWidth
-              variant="outlined"
-              color="error"
               loading={loading}
               submitting={submitting}
               disabled={paying}
@@ -215,8 +208,6 @@ const CheckoutSummary = ({
                 <AsyncButton
                   type="submit"
                   fullWidth
-                  variant="outlined"
-                  color="primary"
                   submitting={formState.isSubmitting}
                   loading={loading}
                   submitting={submitting}
