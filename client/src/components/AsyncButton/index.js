@@ -12,7 +12,7 @@ const AsyncButton = ({
   handleClick,
   padding,
   children,
-  ...rest
+  ...props
 }) => {
   const classes = asyncButtonStyles({ padding: padding ? 16 : "" });
 
@@ -25,7 +25,7 @@ const AsyncButton = ({
           onClick={handleClick}
           disabled={submitting || disabled}
           className={classes.buttonItem}
-          {...rest}
+          {...props}
         >
           {children}
         </Button>

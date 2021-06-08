@@ -1,5 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Box, Card, CardContent, Divider } from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import { useSnackbar } from "notistack";
 import queryString from "query-string";
@@ -13,13 +12,18 @@ import CommentPopover from "../../components/CommentPopover";
 import EmptySection from "../../components/EmptySection/index.js";
 import InfiniteList from "../../components/InfiniteList";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
+import MainHeading from "../../components/MainHeading";
 import PromptModal from "../../components/PromptModal";
 import { useUserStore } from "../../contexts/global/user";
 import { useArtworkComments } from "../../contexts/local/artworkComments";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import CardContent from "../../domain/CardContent";
+import Divider from "../../domain/Divider";
 import AddCommentForm from "../../forms/CommentForm/index.js";
 import useVisibleElement from "../../hooks/useVisibleElement";
-import { List, Typography } from "../../styles/theme.js";
+import { List } from "../../styles/theme.js";
 import commentSectionStyles from "./styles.js";
 
 const CommentSection = ({
@@ -93,11 +97,12 @@ const CommentSection = ({
   }, [isVisible]);
 
   return (
-    <Card className={classes.root}>
+    <Card className={classes.commentSectionContainer}>
       <CardContent>
-        <Typography my={2} fontSize="h5.fontSize">
-          Comments
-        </Typography>
+        <MainHeading
+          text="Comments"
+          className={classes.commentSectionHeading}
+        />
         <Divider />
         <FormProvider control={control}>
           <form
@@ -118,8 +123,6 @@ const CommentSection = ({
             <AsyncButton
               type="submit"
               fullWidth
-              variant="outlined"
-              color="primary"
               padding
               submitting={formState.isSubmitting}
               loading={loading}
@@ -129,13 +132,9 @@ const CommentSection = ({
             </AsyncButton>
           </form>
         </FormProvider>
-
-        <br />
         <Divider />
         {loading || error || comments.length ? (
           <InfiniteList
-            style={{ overflow: "hidden" }}
-            className={classes.scroller}
             dataLength={comments ? comments.length : 0}
             next={() =>
               fetchComments({ artworkId, query, highlightRef, enqueueSnackbar })
@@ -147,8 +146,7 @@ const CommentSection = ({
           >
             <List
               ref={commentsRef}
-              p={0}
-              style={{ display: "flex", flexDirection: "column-reverse" }}
+              className={classes.commentSectionList}
               disablePadding
             >
               <Box>
@@ -184,13 +182,7 @@ const CommentSection = ({
             </List>
           </InfiniteList>
         ) : (
-          <Box
-            height={180}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            mb={-2}
-          >
+          <Box className={classes.commentSectionEmpty}>
             <EmptySection label="No comments so far" loading={loading} />
           </Box>
         )}
