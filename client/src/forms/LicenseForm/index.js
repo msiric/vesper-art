@@ -80,32 +80,25 @@ const LicenseForm = ({ version, errors, loading }) => {
         name="licenseType"
         label="License type"
         errors={errors}
-        options={
-          version.license === "personal"
+        options={[
+          ...(version.type === "commercial"
             ? [
                 {
                   value: "personal",
                   text: "Personal",
                 },
               ]
-            : version.use === "included"
+            : []),
+
+          ...(version.license === "commercial" && version.use === "separate"
             ? [
                 {
                   value: "commercial",
                   text: "Commercial",
                 },
               ]
-            : [
-                {
-                  value: "personal",
-                  text: "Personal",
-                },
-                {
-                  value: "commercial",
-                  text: "Commercial",
-                },
-              ]
-        }
+            : []),
+        ]}
       />
     </Box>
   );

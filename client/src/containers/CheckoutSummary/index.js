@@ -37,37 +37,15 @@ const CheckoutSummary = ({
       license: null,
       amount: 0,
     },
+    values: {
+      price: 0,
+      fee: 0,
+      discount: 0,
+      total: 0,
+    },
   });
 
-  const calculatePrice = () =>
-    state.summary.license ? state.summary.amount : 0;
-
-  const calculateFee = () =>
-    state.summary.amount
-      ? (
-          state.summary.amount * payment.buyerFee.multiplier +
-          payment.buyerFee.added
-        ).toFixed(2)
-      : 0;
-
-  const calculateDiscount = () =>
-    discount ? (state.summary.amount * discount.discount).toFixed(2) : 0;
-
-  const calculateTotal = () =>
-    state.summary.amount
-      ? discount
-        ? (
-            state.summary.amount -
-            state.summary.amount * discount.discount +
-            (state.summary.amount * payment.buyerFee.multiplier +
-              payment.buyerFee.addend)
-          ).toFixed(2)
-        : (
-            state.summary.amount +
-            (state.summary.amount * payment.buyerFee.multiplier +
-              payment.buyerFee.addend)
-          ).toFixed(2)
-      : 0;
+  console.log("STAEEEEEETEEEE", state);
 
   const summaryItems = [
     <CheckoutItem
@@ -79,7 +57,7 @@ const CheckoutSummary = ({
       }
       amount="Price"
       animate={true}
-      price={calculatePrice()}
+      price={state.values.price}
       loading={loading}
     />,
     <Divider />,
@@ -89,7 +67,7 @@ const CheckoutSummary = ({
       amount="Amount"
       prefix="+"
       animate={true}
-      price={calculateFee()}
+      price={state.values.fee}
       loading={loading}
     />,
     <Divider />,
@@ -101,7 +79,7 @@ const CheckoutSummary = ({
           amount="Amount"
           prefix="-"
           animate={true}
-          price={calculateDiscount()}
+          price={state.values.discount}
           loading={loading}
         />
         <Divider />
@@ -116,7 +94,7 @@ const CheckoutSummary = ({
       }
       amount="Total"
       animate={true}
-      price={calculateTotal()}
+      price={state.values.total}
       loading={loading}
     />,
   ];
@@ -143,15 +121,52 @@ const CheckoutSummary = ({
 
   const classes = checkoutSummaryStyles();
 
+  const recalculateValues = () => {
+    const selectedLicense = license;
+    const selectedAmount = version[license];
+    const calculatedPrice = selectedLicense ? selectedAmount : 0;
+    const calculatedFee = selectedAmount
+      ? (
+          selectedAmount * payment.buyerFee.multiplier +
+          payment.buyerFee.addend
+        ).toFixed(2)
+      : 0;
+    const calculatedDiscount = discount
+      ? (selectedAmount * discount.discount).toFixed(2)
+      : 0;
+    const calculatedTotal = selectedAmount
+      ? discount
+        ? (
+            selectedAmount -
+            selectedAmount * discount.discount +
+            (selectedAmount * payment.buyerFee.multiplier +
+              payment.buyerFee.addend)
+          ).toFixed(2)
+        : (
+            selectedAmount +
+            (selectedAmount * payment.buyerFee.multiplier +
+              payment.buyerFee.addend)
+          ).toFixed(2)
+      : 0;
+
+    setState((prevState) => ({
+      ...prevState,
+      summary: {
+        license: selectedLicense,
+        amount: selectedAmount,
+      },
+      values: {
+        price: calculatedPrice,
+        fee: calculatedFee,
+        discount: calculatedDiscount,
+        total: calculatedTotal,
+      },
+    }));
+  };
+
   useEffect(() => {
     if (version.id) {
-      setState((prevState) => ({
-        ...prevState,
-        summary: {
-          license: license,
-          amount: version[license],
-        },
-      }));
+      recalculateValues();
     }
   }, [version, license]);
 
