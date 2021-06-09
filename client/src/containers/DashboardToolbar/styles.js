@@ -6,9 +6,10 @@ const dashboardToolbarStyles = makeStyles((muiTheme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    "&:not(:last-child)": {
-      marginBottom: 20,
-    },
+    marginBottom: 20,
+  },
+  dashboardToolbarForm: {
+    marginBottom: 12,
   },
 }));
 

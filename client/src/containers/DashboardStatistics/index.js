@@ -1,15 +1,9 @@
-import { Grid } from "@material-ui/core";
-import { styled } from "@material-ui/core/styles";
-import { compose, flexbox, spacing } from "@material-ui/system";
 import React, { useEffect } from "react";
 import DashboardCard from "../../components/DashboardCard/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useUserStats } from "../../contexts/local/userStats";
-import { artepunktTheme } from "../../styles/theme.js";
+import Grid from "../../domain/Grid";
 import dashboardStatisticsStyles from "./styles.js";
-
-const GridContainer = styled(Grid)(compose(spacing, flexbox));
-const GridItem = styled(Grid)(compose(flexbox));
 
 const DashboardStatistics = ({ layout }) => {
   const userId = useUserStore((state) => state.id);
@@ -49,16 +43,13 @@ const DashboardStatistics = ({ layout }) => {
   }, [display.type]);
 
   return (
-    <GridContainer
+    <Grid
       container
-      mb={artepunktTheme.margin.spacing}
-      display="flex"
-      flexDirection="row"
-      justifyContent="center"
       spacing={2}
+      className={classes.dashboardStatisticsContainer}
     >
       {cards.map((card, index) => (
-        <GridItem
+        <Grid
           item
           xs={12}
           sm={index !== cards.length - 1 ? 6 : 8}
@@ -70,9 +61,9 @@ const DashboardStatistics = ({ layout }) => {
             label={card.label}
             loading={loading}
           />
-        </GridItem>
+        </Grid>
       ))}
-    </GridContainer>
+    </Grid>
   );
 };
 
