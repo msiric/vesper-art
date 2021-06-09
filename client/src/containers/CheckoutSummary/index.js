@@ -168,7 +168,7 @@ const CheckoutSummary = ({
     if (version.id) {
       recalculateValues();
     }
-  }, [version, license]);
+  }, [version, license, discount]);
 
   return (
     <Card className={classes.checkoutSummaryRoot}>

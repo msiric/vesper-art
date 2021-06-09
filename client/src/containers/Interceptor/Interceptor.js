@@ -202,15 +202,17 @@ const Interceptor = () => {
   };
 
   const handleSocket = (token) => {
-    socket.instance = openSocket();
+    if (token) {
+      socket.instance = openSocket();
 
-    socket.instance.emit("authenticateUser", {
-      token: token ? `Bearer ${token}` : null,
-      data: socket.payload,
-    });
-    socket.payload = null;
-    socket.instance.on("sendNotification", handleSocketNotification);
-    socket.instance.on("expiredToken", handleSocketRefresh);
+      socket.instance.emit("authenticateUser", {
+        token: token ? `Bearer ${token}` : null,
+        data: socket.payload,
+      });
+      socket.payload = null;
+      socket.instance.on("sendNotification", handleSocketNotification);
+      socket.instance.on("expiredToken", handleSocketRefresh);
+    }
   };
 
   useEffect(() => {

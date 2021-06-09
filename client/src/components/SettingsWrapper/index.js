@@ -23,7 +23,7 @@ const SettingsWrapper = ({ location }) => {
       await deactivateUser({ userId });
       resetUser();
       resetEvents();
-      socket.instance.disconnect();
+      socket.instance.emit("disconnectUser");
       history.push("/login");
     } catch (err) {
       console.log("ERROR", err);

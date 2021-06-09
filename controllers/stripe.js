@@ -46,6 +46,7 @@ export const receiveWebhookEvent = async ({
   stripeBody,
   connection,
 }) => {
+  console.log("$TEST CHECKOUT RECEIVED WEBHOOK");
   const stripeSecret = process.env.STRIPE_WEBHOOK;
   let stripeEvent;
 
@@ -56,25 +57,25 @@ export const receiveWebhookEvent = async ({
       stripeSignature,
     });
   } catch (err) {
-    console.log("event error");
+    console.log("$TEST CHECKOUT event error");
   }
 
-  console.log("stripe event", stripeEvent.type);
+  console.log("$TEST CHECKOUT stripe event", stripeEvent.type);
 
   switch (stripeEvent.type) {
     case "payment_intent.succeeded":
-      console.log("Payment success");
+      console.log("$TEST CHECKOUT Payment success");
       const paymentIntent = stripeEvent.data.object;
       await processTransaction({ stripeIntent: paymentIntent, connection });
       break;
     case "payment_intent.failed":
-      console.log("Failed payment");
+      console.log("$TEST CHECKOUT Failed payment");
       break;
     default:
-      console.log("Invalid event");
+      console.log("$TEST CHECKOUT Invalid event");
   }
 
-  console.log("done");
+  console.log("$TEST CHECKOUT done");
   return { message: "Event received" };
 };
 

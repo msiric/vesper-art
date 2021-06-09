@@ -31,7 +31,7 @@ const Settings = ({ location }) => {
     resetUser();
     resetEvents();
     // $TODO verify that socket is defined
-    socket.instance.disconnect();
+    socket.instance.emit("disconnectUser");
     history.push("/login");
   };
 

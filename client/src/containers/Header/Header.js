@@ -270,9 +270,7 @@ const Header = ({ history }) => {
 
       resetUser();
       resetEvents();
-
-      socket.instance.disconnect();
-
+      socket.instance.emit("disconnectUser");
       handleMenuClose();
 
       history.push("/login");
