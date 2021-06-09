@@ -30,9 +30,7 @@ const Settings = ({ location }) => {
   const handleLogout = async () => {
     await postLogout.request();
     // $TODO verify that socket is defined
-    socket.instance.emit("disconnectUser", {
-      data: { id: userId },
-    });
+    socket.instance.emit("disconnectUser");
     resetUser();
     resetEvents();
     history.push("/login");

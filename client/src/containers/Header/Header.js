@@ -267,9 +267,7 @@ const Header = ({ history }) => {
   const handleLogout = async () => {
     try {
       await postLogout.request();
-      socket.instance.emit("disconnectUser", {
-        data: { id: userId },
-      });
+      socket.instance.emit("disconnectUser");
       resetUser();
       resetEvents();
       handleMenuClose();

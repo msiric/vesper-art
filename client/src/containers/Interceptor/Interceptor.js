@@ -24,6 +24,9 @@ const Interceptor = () => {
   const updateUser = useUserStore((state) => state.updateUser);
   const resetUser = useUserStore((state) => state.resetUser);
 
+  const notificationCount = useEventsStore(
+    (state) => state.notifications.count
+  );
   const setEvents = useEventsStore((state) => state.setEvents);
   const updateEvents = useEventsStore((state) => state.updateEvents);
   const incrementNotification = useEventsStore(
@@ -39,6 +42,7 @@ const Interceptor = () => {
   const getRefreshToken = async () => {
     try {
       if (!userToken) {
+        console.log("GET REFRESH TOKEN");
         setApp({ loading: true, error: false, theme });
 
         const { data } = await axios.post("/api/auth/refresh_token", {
@@ -106,7 +110,7 @@ const Interceptor = () => {
             reject(error);
           });
         }
-
+        socket.instance.emit("disconnectUser");
         if (
           error.config.url === "/api/auth/refresh_token" ||
           error.response.message === "Forbidden"
@@ -119,12 +123,12 @@ const Interceptor = () => {
             reject(error);
           });
         }
-
         const { data } = await axios.post("/api/auth/refresh_token", {
           headers: {
             credentials: "include",
           },
         });
+        console.log("UPDATE REFRESH TOKEN");
         updateUser({
           token: data.accessToken,
           email: data.user.email,
@@ -163,6 +167,7 @@ const Interceptor = () => {
   };
 
   const handleSocketNotification = (data) => {
+    console.log("INCREMENT NOFIRICATION");
     incrementNotification({ notification: data, cursor: data.id });
     playNotification();
   };
@@ -170,6 +175,7 @@ const Interceptor = () => {
   const handleSocketRefresh = async (payload) => {
     console.log("SOCKETT REFRESH");
     try {
+      socket.instance.emit("disconnectUser");
       const { data } = await axios.post(`/api/auth/refresh_token`, {
         headers: {
           credentials: "include",
@@ -190,6 +196,13 @@ const Interceptor = () => {
           return object;
         }, {}),
       });
+      if (notificationCount !== data.user.notifications) {
+        updateEvents({
+          notifications: { count: data.user.notifications },
+        });
+        playNotification();
+      }
+
       // not needed because of useEffect?
       // socket.emit("authenticateUser", {
       //   token: `Bearer ${data.accessToken}`,
@@ -212,6 +225,8 @@ const Interceptor = () => {
       socket.payload = null;
       socket.instance.on("sendNotification", handleSocketNotification);
       socket.instance.on("expiredToken", handleSocketRefresh);
+    } else {
+      if (socket && socket.instance) socket.instance.emit("disconnectUser");
     }
   };
 
