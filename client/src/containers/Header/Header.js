@@ -267,10 +267,11 @@ const Header = ({ history }) => {
   const handleLogout = async () => {
     try {
       await postLogout.request();
-
+      socket.instance.emit("disconnectUser", {
+        data: { id: userId },
+      });
       resetUser();
       resetEvents();
-      socket.instance.emit("disconnectUser");
       handleMenuClose();
 
       history.push("/login");

@@ -21,9 +21,11 @@ const SettingsWrapper = ({ location }) => {
   const handleDeactivation = async ({ userId }) => {
     try {
       await deactivateUser({ userId });
+      socket.instance.emit("disconnectUser", {
+        data: { id: userId },
+      });
       resetUser();
       resetEvents();
-      socket.instance.emit("disconnectUser");
       history.push("/login");
     } catch (err) {
       console.log("ERROR", err);

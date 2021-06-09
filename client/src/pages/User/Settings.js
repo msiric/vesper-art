@@ -17,6 +17,7 @@ import globalStyles from "../../styles/global.js";
 
 const Settings = ({ location }) => {
   // $TODO Update user store on every change in settings (ex. avatar change)
+  const userId = useUserStore((state) => state.id);
   const resetUser = useUserStore((state) => state.resetUser);
 
   const resetEvents = useEventsStore((state) => state.resetEvents);
@@ -28,10 +29,12 @@ const Settings = ({ location }) => {
 
   const handleLogout = async () => {
     await postLogout.request();
+    // $TODO verify that socket is defined
+    socket.instance.emit("disconnectUser", {
+      data: { id: userId },
+    });
     resetUser();
     resetEvents();
-    // $TODO verify that socket is defined
-    socket.instance.emit("disconnectUser");
     history.push("/login");
   };
 

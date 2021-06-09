@@ -37,9 +37,11 @@ const SettingsAccount = ({ handleLogout }) => {
 
   const onSubmit = async (values) => {
     await updateEmail({ userId: user.id, values, handleLogout });
+    socket.instance.emit("disconnectUser", {
+      data: { id: user.id },
+    });
     resetUser();
     resetEvents();
-    socket.instance.emit("disconnectUser");
     history.push("/login");
   };
 
