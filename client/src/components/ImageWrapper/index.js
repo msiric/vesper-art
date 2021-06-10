@@ -53,6 +53,7 @@ const ImageWrapper = ({
     <Box
       style={{
         ...styles,
+        height: height,
         background: placeholder,
         width: "100%",
         filter: "blur(8px)",

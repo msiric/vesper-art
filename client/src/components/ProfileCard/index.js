@@ -25,7 +25,7 @@ const ProfileCard = ({ user, loading }) => {
   const classes = profileCardStyles();
 
   return (
-    <Card className={classes.profileCardContainer} loading={loading}>
+    <Card className={classes.profileCardContainer}>
       <Box className={classes.profileCardWrapper}>
         <Avatar
           component={RouterLink}

@@ -12,7 +12,12 @@ const SkeletonWrapper = ({
   const classes = skeletonWrapperStyles();
 
   return loading ? (
-    <Skeleton variant={variant} animation={animation} {...props}>
+    <Skeleton
+      variant={variant}
+      animation={animation}
+      {...props}
+      className={classes.skeletonWrapperIndicator}
+    >
       {children}
     </Skeleton>
   ) : (

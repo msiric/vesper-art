@@ -21,8 +21,6 @@ const ArtworkPreview = ({ paramId }) => {
     fetchArtwork({ artworkId: paramId });
   }, []);
 
-  console.log(version);
-
   return (
     <Card className={classes.artworkPreviewContainer}>
       <Box className={classes.artworkPreviewTitleWrapper}>
@@ -36,7 +34,7 @@ const ArtworkPreview = ({ paramId }) => {
       <Divider />
       <Box className={classes.artworkPreviewImageWrapper}>
         <ImageWrapper
-          height={version.height}
+          height={version.height || 400}
           width={version.width}
           source={version.cover.source}
           placeholder={version.cover.dominant}

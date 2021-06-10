@@ -60,7 +60,7 @@ const ArtworkInfo = () => {
   }, [license]);
 
   return (
-    <Card className={classes.root} loading={loading}>
+    <Card className={classes.root}>
       <CardContent pt={0} pb={0}>
         {artwork.current && artwork.current.availability === "available" ? (
           <SwipeCard

@@ -24,7 +24,7 @@ const ArtworkActions = () => {
   const classes = artworkActionsStyles();
 
   return (
-    <Card className={classes.artworkActionsContainer} loading={loading}>
+    <Card className={classes.artworkActionsContainer}>
       <CardContent className={classes.artworkActionsContent}>
         <Box className={classes.artworkActionsCounter}>
           <Box loading={loading} className={classes.artworkActionsIncrementer}>
