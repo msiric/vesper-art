@@ -1,4 +1,3 @@
-import { Box, Card } from "@material-ui/core";
 import React, { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
@@ -7,9 +6,10 @@ import EmptySection from "../../components/EmptySection/index.js";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
 import InfiniteList from "../../components/InfiniteList";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useUserGallery } from "../../contexts/local/userGallery";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
 import globalStyles from "../../styles/global.js";
 import { artepunktTheme } from "../../styles/theme.js";
 import galleryPanelStyles from "./styles.js";
@@ -88,60 +88,57 @@ const GalleryPanel = ({ formatArtwork }) => {
   }, [selection]);
 
   return (
-    <Box style={{ height: "100%" }}>
-      <SkeletonWrapper loading={loading} width="100%" height="100%">
-        {covers.length ? (
-          <InfiniteList
-            className={classes.scroller}
-            dataLength={covers.length}
-            next={() => fetchUser({ userId, userUsername, formatArtwork })}
-            hasMore={hasMore}
-            loading={loading}
-            loader={<LoadingSpinner />}
-            error={error}
+    <Box>
+      {loading || covers.length ? (
+        <InfiniteList
+          dataLength={covers.length}
+          next={() => fetchUser({ userId, userUsername, formatArtwork })}
+          hasMore={hasMore}
+          loading={loading}
+          loader={<LoadingSpinner />}
+          error={error}
+        >
+          <Masonry
+            breakpointCols={breakpointColumns}
+            className={classes.galleryPanelMasonry}
+            columnClassName={classes.galleryPanelColumn}
           >
-            <Masonry
-              breakpointCols={breakpointColumns}
-              className={classes.masonryContainer}
-              columnClassName={classes.masonryColumn}
-            >
-              {covers.map((item, idx) => (
-                <Card
-                  className={classes.artworkWrapper}
-                  onClick={() =>
-                    toggleGallery({
-                      userId,
-                      item,
-                      index: idx,
-                      openLightbox,
-                      formatArtwork,
-                    })
-                  }
-                >
-                  {
-                    <ImageWrapper
-                      height={item.height}
-                      width={item.width}
-                      source={item.media ? item.media : item.cover}
-                      cover={item.cover}
-                      placeholder={item.dominant}
-                      loading={idx === index && fetching ? true : false}
-                    />
-                  }
-                </Card>
-              ))}
-            </Masonry>
-          </InfiniteList>
-        ) : (
-          <EmptySection
-            label={
-              display === "purchases"
-                ? "You have no purchased artwork"
-                : "You have no published artwork"
-            }
-          />
-        )}
-      </SkeletonWrapper>
+            {covers.map((item, idx) => (
+              <Card
+                className={classes.galleryPanelCard}
+                onClick={() =>
+                  toggleGallery({
+                    userId,
+                    item,
+                    index: idx,
+                    openLightbox,
+                    formatArtwork,
+                  })
+                }
+              >
+                {
+                  <ImageWrapper
+                    height={item.height}
+                    width={item.width}
+                    source={item.media ? item.media : item.cover}
+                    cover={item.cover}
+                    placeholder={item.dominant}
+                    loading={idx === index && fetching ? true : false}
+                  />
+                }
+              </Card>
+            ))}
+          </Masonry>
+        </InfiniteList>
+      ) : (
+        <EmptySection
+          label={
+            display === "purchases"
+              ? "You have no purchased artwork"
+              : "You have no published artwork"
+          }
+        />
+      )}
       {!fetching && !loading && (
         <SRLWrapper
           images={media}
