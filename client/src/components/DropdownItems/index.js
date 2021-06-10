@@ -4,11 +4,12 @@ import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import dropdownItemsStyles from "./styles.js";
 
 const DropdownItems = ({
-  variant = "outlined",
   label,
   loading,
   value,
   items,
+  variant = "outlined",
+  margin = "dense",
   children,
   ...props
 }) => {
@@ -18,6 +19,7 @@ const DropdownItems = ({
     <SkeletonWrapper loading={loading}>
       <TextField
         variant={variant}
+        margin={margin}
         value={value}
         label={label}
         select

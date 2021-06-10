@@ -42,7 +42,6 @@ const DashboardToolbar = () => {
           value={display.type}
           onChange={(e) => changeSelection({ selection: e.target.value })}
           label="Display"
-          margin="dense"
           loading={loading}
           items={menuItems}
         />
