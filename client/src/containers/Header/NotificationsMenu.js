@@ -1,6 +1,6 @@
-import { Box, Divider, Grid, List, Menu, Typography } from "@material-ui/core";
+import { Box, Divider, List, Menu, Typography } from "@material-ui/core";
 import React from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
+import InfiniteList from "../../components/InfiniteList/index.js";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { useEventsStore } from "../../contexts/global/events.js";
 import NotificationItem from "./NotificationItem.js";
@@ -30,20 +30,12 @@ const NotificationsMenu = ({
       className={classes.notificationMenu}
       keepMounted
     >
-      <InfiniteScroll
+      <InfiniteList
         height={400}
-        className={classes.scroller}
         dataLength={notifications.items.length}
         next={loadMore}
-        hasMore={
-          notifications.hasMore &&
-          notifications.items.length < notifications.limit
-        }
-        loader={
-          <Grid item xs={12} className={classes.loader}>
-            <LoadingSpinner />
-          </Grid>
-        }
+        hasMore={notifications.hasMore}
+        loader={<LoadingSpinner />}
       >
         {loading || (notifications.items && notifications.items.length) ? (
           <List
@@ -77,7 +69,7 @@ const NotificationsMenu = ({
             <Typography>No notifications</Typography>
           </Box>
         )}
-      </InfiniteScroll>
+      </InfiniteList>
     </Menu>
   );
 };
