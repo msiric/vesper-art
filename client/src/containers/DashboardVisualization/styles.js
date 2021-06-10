@@ -7,6 +7,15 @@ const dashboardVisualizationStyles = makeStyles((muiTheme) => ({
       height: 340,
     },
   },
+  dashboardVisualizationCard: {
+    padding: 8,
+    height: "100%",
+  },
+  dashboardVisualizationWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
 }));
 
 export default dashboardVisualizationStyles;
