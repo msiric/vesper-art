@@ -1,9 +1,11 @@
-import { Box, Grid, Paper } from "@material-ui/core";
 import React, { useEffect } from "react";
 import EmptySection from "../../components/EmptySection/index.js";
 import SwipeCard from "../../components/SwipeCard/index.js";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import { useUserProfile } from "../../contexts/local/userProfile";
+import Box from "../../domain/Box";
+import Grid from "../../domain/Grid";
+import Paper from "../../domain/Paper";
 import useVisibleElement from "../../hooks/useVisibleElement.js";
 import globalStyles from "../../styles/global.js";
 import UserArtwork from "../UserArtwork/index.js";
@@ -66,13 +68,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 iterable: true,
                 content: artwork.length,
                 component: (
-                  <Box
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      padding: "0 32px",
-                    }}
-                  >
+                  <Box className={classes.wrapper}>
                     <UserArtwork
                       elements={artwork}
                       hasMore={null}
@@ -100,15 +96,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 iterable: true,
                 content: favorites.length,
                 component: (
-                  <Box
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                    }}
-                    className={globalClasses.gridContainer}
-                  >
+                  <Box className={classes.wrapper}>
                     <UserFavorites
                       elements={favorites}
                       hasMore={null}
