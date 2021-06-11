@@ -1,16 +1,20 @@
 import { Box as MaterialBox } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import React from "react";
+import React, { forwardRef } from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper";
 
 const StyledBox = withStyles({})(MaterialBox);
 
-const Box = ({ loading = false, variant = "text", children, ...props }) => {
-  return (
-    <SkeletonWrapper variant={variant} loading={loading}>
-      <StyledBox {...props}>{children}</StyledBox>
-    </SkeletonWrapper>
-  );
-};
+const Box = forwardRef(
+  ({ loading = false, variant = "text", children, ...props }, ref) => {
+    return (
+      <SkeletonWrapper variant={variant} loading={loading}>
+        <StyledBox ref={ref} {...props}>
+          {children}
+        </StyledBox>
+      </SkeletonWrapper>
+    );
+  }
+);
 
 export default Box;

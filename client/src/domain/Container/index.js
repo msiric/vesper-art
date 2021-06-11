@@ -1,11 +1,11 @@
 import { Container as MaterialContainer } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import React from "react";
+import React, { forwardRef } from "react";
 
 const StyledContainer = withStyles({})(MaterialContainer);
 
-const Container = (props) => {
-  return <StyledContainer {...props}></StyledContainer>;
-};
+const Container = forwardRef((props, ref) => {
+  return <StyledContainer ref={ref} {...props}></StyledContainer>;
+});
 
 export default Container;
