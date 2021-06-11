@@ -1,7 +1,6 @@
-import { format } from "date-fns";
 import { withSnackbar } from "notistack";
 import React from "react";
-import { isObjectEmpty } from "../../../../common/helpers";
+import { formatDate, isObjectEmpty } from "../../../../common/helpers";
 import DataTable from "../../components/DataTable";
 import EmptySection from "../../components/EmptySection";
 import SubHeading from "../../components/SubHeading";
@@ -10,10 +9,6 @@ import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
 const LicenseSection = () => {
   const license = useLicenseVerifier((state) => state.license.data);
   const loading = useLicenseVerifier((state) => state.license.loading);
-
-  const formatDate = (date, type) => {
-    return format(new Date(date), type);
-  };
 
   return loading || !license ? (
     <EmptySection label="Enter license fingerprint to inspect the details" />
