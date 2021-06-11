@@ -18,11 +18,27 @@ const reviewCardStyles = makeStyles((muiTheme) => ({
       borderColor: artepunktTheme.palette.primary.main,
     },
   },
-  reviewContent: {
+  reviewCard: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    flexGrow: 1,
+  },
+  reviewWrapper: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     height: "100%",
+  },
+  reviewText: {
+    margin: 8,
+  },
+  reviewActions: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
 }));
 

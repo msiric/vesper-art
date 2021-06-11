@@ -1,21 +1,18 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Divider,
-} from "@material-ui/core";
 import { StarsRounded as ReviewIcon } from "@material-ui/icons";
-import { Rating } from "@material-ui/lab";
 import queryString from "query-string";
 import React, { useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import ReviewRating from "../../components/ReviewRating/index.js";
 import SubHeading from "../../components/SubHeading/index.js";
+import SyncButton from "../../components/SyncButton";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
-import { Typography } from "../../styles/theme.js";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
+import Divider from "../../domain/Divider";
+import Typography from "../../domain/Typography";
 import reviewCardStyles from "./styles.js";
 
 const ReviewCard = ({ paramId, highlightRef }) => {
@@ -48,66 +45,52 @@ const ReviewCard = ({ paramId, highlightRef }) => {
         isHighlight ? classes.highlightContainer : ""
       }`}
     >
-      <CardContent
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          flexGrow: 1,
-        }}
-      >
+      <CardContent className={classes.reviewCard}>
         <SubHeading text="Review" loading={loading} />
         {loading || review ? (
-          <Box className={classes.reviewContent}>
-            <SkeletonWrapper loading={loading}>
-              <Rating value={review.rating} readOnly />
-            </SkeletonWrapper>
+          <Box className={classes.reviewWrapper}>
+            <ReviewRating
+              value={review.rating}
+              readOnly={true}
+              loading={loading}
+            />
           </Box>
         ) : (
           <Box className={classes.reviewContent}>
-            <SkeletonWrapper variant="text" loading={loading}>
-              <Typography m={2}>
-                {shouldReview ? "No rating left" : "No rating found"}
-              </Typography>
-            </SkeletonWrapper>
+            <Typography className={classes.reviewText} loading={loading}>
+              {shouldReview ? "No rating left" : "No rating found"}
+            </Typography>
           </Box>
         )}
       </CardContent>
       <Divider />
       <CardActions>
-        <SkeletonWrapper loading={loading} width="100%">
-          <Box
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            {loading || review ? (
-              <SkeletonWrapper variant="text" loading={loading}>
-                <Typography m={2}>
-                  {shouldReview ? "Your rating" : "Buyer's rating"}
-                </Typography>
-              </SkeletonWrapper>
-            ) : isActive ? (
-              shouldReview ? (
-                <Button
-                  variant="outlined"
-                  startIcon={<ReviewIcon />}
-                  onClick={toggleModal}
-                >
-                  Rate artist
-                </Button>
-              ) : (
-                <Typography m={2}>Buyer's rating</Typography>
-              )
+        <Box className={classes.reviewActions}>
+          {loading || review ? (
+            <Typography className={classes.reviewText} loading={loading}>
+              {shouldReview ? "Your rating" : "Buyer's rating"}
+            </Typography>
+          ) : isActive ? (
+            shouldReview ? (
+              <SyncButton
+                variant="outlined"
+                startIcon={<ReviewIcon />}
+                onClick={toggleModal}
+                loading={loading}
+              >
+                Rate artist
+              </SyncButton>
             ) : (
-              <Typography m={2}>Artwork is inactive</Typography>
-            )}
-          </Box>
-        </SkeletonWrapper>
+              <Typography className={classes.reviewText} loading={loading}>
+                Buyer's rating
+              </Typography>
+            )
+          ) : (
+            <Typography className={classes.reviewText} loading={loading}>
+              Artwork is inactive
+            </Typography>
+          )}
+        </Box>
       </CardActions>
     </Card>
   );
