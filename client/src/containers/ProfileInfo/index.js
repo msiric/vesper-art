@@ -1,8 +1,8 @@
-import { Grid } from "@material-ui/core";
 import React, { useEffect } from "react";
 import ProfileBanner from "../../components/ProfileBanner/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useUserProfile } from "../../contexts/local/userProfile";
+import Grid from "../../domain/Grid";
 import profileInfoStyles from "./styles.js";
 
 const ProfileInfo = ({ paramId }) => {
@@ -17,7 +17,7 @@ const ProfileInfo = ({ paramId }) => {
   }, []);
 
   return (
-    <Grid item xs={12} className={classes.profile__bannerContainer}>
+    <Grid item xs={12}>
       <ProfileBanner profile={profile} loading={loading} />
     </Grid>
   );
