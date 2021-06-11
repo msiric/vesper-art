@@ -1,5 +1,4 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
 import ProfileCard from "../../components/ProfileCard/index.js";
 import { useUserStore } from "../../contexts/global/user";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
@@ -16,4 +15,4 @@ const UserSection = () => {
   return <ProfileCard user={user} loading={loading} />;
 };
 
-export default withRouter(UserSection);
+export default UserSection;

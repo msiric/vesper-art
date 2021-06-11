@@ -2,7 +2,7 @@ import create from "zustand";
 import { postVerifier } from "../../services/home";
 
 const initialState = {
-  license: { data: false, loading: true, error: false },
+  license: { data: false, loading: false, error: false },
 };
 
 const initState = () => ({ ...initialState });
@@ -10,6 +10,10 @@ const initState = () => ({ ...initialState });
 const initActions = (set) => ({
   fetchLicense: async ({ licenseData }) => {
     try {
+      set((state) => ({
+        ...state,
+        license: { ...state.license, loading: true, error: false },
+      }));
       const { data } = await postVerifier.request({ licenseData });
       set((state) => ({
         ...state,

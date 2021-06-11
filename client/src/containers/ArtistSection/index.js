@@ -1,5 +1,4 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
 import ProfileCard from "../../components/ProfileCard/index.js";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import artistSectionStyles from "./styles.js";
@@ -13,4 +12,4 @@ const ArtistSection = () => {
   return <ProfileCard user={owner} loading={loading} />;
 };
 
-export default withRouter(ArtistSection);
+export default ArtistSection;

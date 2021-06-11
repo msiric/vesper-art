@@ -2,15 +2,17 @@ import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme";
 
 const visualizationToolbarStyles = makeStyles((muiTheme) => ({
-  visualizationToolbarHeader: {
+  container: {
     display: "flex",
+    justifyContent: "space-between",
     alignItems: "center",
     margin: artepunktTheme.margin.elementLg,
     [muiTheme.breakpoints.down("xs")]: {
       flexDirection: "column",
     },
   },
-  visualizationToolbarHeading: {
+  heading: {
+    textTransform: "capitalize",
     [muiTheme.breakpoints.down("xs")]: {
       marginBottom: artepunktTheme.margin.headingLg,
     },

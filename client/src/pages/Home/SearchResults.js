@@ -2,7 +2,7 @@
 import { Grid } from "@material-ui/core";
 import queryString from "query-string";
 import React, { useEffect } from "react";
-import { useHistory, useLocation, withRouter } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import SearchPanel from "../../containers/SearchPanel/index.js";
 import { useSearchResults } from "../../contexts/local/searchResults";
 
@@ -37,4 +37,4 @@ const SearchResults = () => {
   );
 };
 
-export default withRouter(SearchResults);
+export default SearchResults;

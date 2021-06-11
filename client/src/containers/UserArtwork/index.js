@@ -1,10 +1,10 @@
-import { Box } from "@material-ui/core";
 import React from "react";
 import Masonry from "react-masonry-css";
 import ArtworkCard from "../../components/ArtworkCard/index.js";
 import InfiniteList from "../../components/InfiniteList/index.js";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
+import Box from "../../domain/Box";
 import userArtworkStyles from "./styles.js";
 
 const breakpointColumns = {
@@ -24,10 +24,8 @@ const UserArtwork = ({ type, fixed }) => {
   const classes = userArtworkStyles();
 
   return (
-    <Box style={{ width: "100%", height: "100%", padding: "16px 0" }}>
+    <Box className={classes.container}>
       <InfiniteList
-        style={{ overflow: "hidden" }}
-        className={classes.scroller}
         dataLength={elements ? elements.length : 0}
         next={fetchArtwork}
         hasMore={hasMore}

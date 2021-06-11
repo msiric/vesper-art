@@ -27,7 +27,7 @@ import {
 } from "@material-ui/icons";
 import React, { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import LogoMobile from "../../assets/images/logo/logo-mobile.svg";
@@ -657,4 +657,4 @@ const Header = ({ history }) => {
   );
 };
 
-export default withRouter(Header);
+export default Header;

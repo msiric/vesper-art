@@ -1,13 +1,10 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const userFavoritesStyles = makeStyles((muiTheme) => ({
-  artworkWrapper: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    maxWidth: 500,
-    height: "fit-content",
-    padding: 12,
+  container: {
+    width: "100%",
+    height: "100%",
+    padding: "16px 0",
   },
   masonryContainer: {
     display: "flex",
