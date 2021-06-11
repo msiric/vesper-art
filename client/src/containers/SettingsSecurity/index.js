@@ -1,12 +1,13 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CardActions, CardContent } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { passwordValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import { useUserSettings } from "../../contexts/local/userSettings";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
 import EditPasswordForm from "../../forms/PasswordForm/index.js";
 import settingsSecurityStyles from "./styles.js";
 
@@ -30,20 +31,16 @@ const SettingsSecurity = ({ handleLogout }) => {
   const classes = settingsSecurityStyles();
 
   return (
-    <Card className={classes.artworkContainer}>
+    <Card>
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
             <EditPasswordForm errors={errors} />
           </CardContent>
-          <CardActions
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
+          <CardActions className={classes.settingsActions}>
             <AsyncButton
               type="submit"
               fullWidth
-              variant="outlined"
-              color="primary"
               submitting={formState.isSubmitting}
               loading={loading}
               startIcon={<UploadIcon />}

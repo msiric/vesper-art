@@ -1,13 +1,16 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const settingsProfileStyles = makeStyles((muiTheme) => ({
-  settingsProfileForm: {
+  settingsContainer: {
+    height: "100%",
+  },
+  settingsForm: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
   },
-  settingsProfileContent: {
+  settingsContent: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -19,7 +22,7 @@ const settingsProfileStyles = makeStyles((muiTheme) => ({
       flexGrow: 1,
     },
   },
-  settingsProfileActions: {
+  settingsActions: {
     display: "flex",
   },
 }));

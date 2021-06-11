@@ -1,6 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CardActions, CardContent } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -8,6 +6,9 @@ import { patchAvatar, profileValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
 import EditUserForm from "../../forms/UserForm/index.js";
 import settingsProfileStyles from "./styles.js";
 
@@ -53,18 +54,13 @@ const SettingsProfile = () => {
   }, [user.description, user.country]);
 
   return (
-    <Card
-      className={classes.artworkContainer}
-      style={{
-        height: "100%",
-      }}
-    >
+    <Card className={classes.settingsContainer}>
       <FormProvider control={control}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className={classes.settingsProfileForm}
+          className={classes.settingsForm}
         >
-          <CardContent className={classes.settingsProfileContent}>
+          <CardContent className={classes.settingsContent}>
             <EditUserForm
               preview={user.avatar && user.avatar.source}
               errors={errors}
@@ -75,12 +71,10 @@ const SettingsProfile = () => {
               loading={loading}
             />
           </CardContent>
-          <CardActions className={classes.settingsProfileActions}>
+          <CardActions className={classes.settingsActions}>
             <AsyncButton
               type="submit"
               fullWidth
-              variant="outlined"
-              color="primary"
               submitting={formState.isSubmitting}
               loading={loading}
               startIcon={<UploadIcon />}

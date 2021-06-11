@@ -1,12 +1,13 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CardActions, CardContent } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { preferencesValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import { useUserSettings } from "../../contexts/local/userSettings";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
 import EditPreferencesForm from "../../forms/PreferencesForm/index.js";
 import settingsPreferencesStyles from "./styles.js";
 
@@ -42,7 +43,7 @@ const SettingsPreferences = () => {
   }, [user.displayFavorites]);
 
   return (
-    <Card className={classes.artworkContainer} style={{ marginBottom: "16px" }}>
+    <Card className={classes.container}>
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
@@ -52,14 +53,10 @@ const SettingsPreferences = () => {
               errors={errors}
             />
           </CardContent>
-          <CardActions
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
+          <CardActions className={classes.settingsActions}>
             <AsyncButton
               type="submit"
               fullWidth
-              variant="outlined"
-              color="primary"
               submitting={formState.isSubmitting}
               loading={loading}
               startIcon={<UploadIcon />}
