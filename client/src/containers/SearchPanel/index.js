@@ -1,4 +1,3 @@
-import { Box } from "@material-ui/core";
 import React, { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { useLocation } from "react-router-dom";
@@ -8,6 +7,7 @@ import InfiniteList from "../../components/InfiniteList/index.js";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import ProfileCard from "../../components/ProfileCard/index.js";
 import { useSearchResults } from "../../contexts/local/searchResults";
+import Box from "../../domain/Box";
 import searchPanelStyles from "./styles.js";
 
 const breakpointColumns = {
@@ -33,10 +33,8 @@ const SearchPanel = ({ type }) => {
   }, []);
 
   return (
-    <Box style={{ width: "100%", height: "100%", padding: "16px 0" }}>
+    <Box className={classes.container}>
       <InfiniteList
-        style={{ overflow: "hidden" }}
-        className={classes.scroller}
         dataLength={elements ? elements.length : 0}
         next={fetchResults}
         hasMore={hasMore}

@@ -1,8 +1,10 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const searchPanelStyles = makeStyles((muiTheme) => ({
-  searchPanelContainer: {
+  container: {
     width: "100%",
+    height: "100%",
+    padding: "16px 0",
   },
   masonryContainer: {
     display: "flex",
