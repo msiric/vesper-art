@@ -6,7 +6,7 @@ import SkeletonWrapper from "../../components/SkeletonWrapper";
 const StyledCardHeader = withStyles({})(MaterialCardHeader);
 
 const CardHeader = forwardRef(
-  ({ loading = false, variant = "text", children, props }, ref) => {
+  ({ loading = false, variant = "text", children, ...props }, ref) => {
     return (
       <SkeletonWrapper variant={variant} loading={loading}>
         <StyledCardHeader ref={ref} {...props}>

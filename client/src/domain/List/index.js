@@ -7,7 +7,7 @@ const StyledList = withStyles({})(MaterialList);
 
 const List = forwardRef(({ loading = false, children, ...props }, ref) => {
   return (
-    <SkeletonWrapper variant="text" loading={loading}>
+    <SkeletonWrapper variant="rect" loading={loading}>
       <StyledList ref={ref} {...props}>
         {children}
       </StyledList>

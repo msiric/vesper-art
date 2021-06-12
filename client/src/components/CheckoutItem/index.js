@@ -1,8 +1,11 @@
-import { ListItem, ListItemText, Typography } from "@material-ui/core";
 import AnimatedNumber from "animated-number-react";
 import React from "react";
 import NumberFormat from "react-number-format";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import Box from "../../domain/Box";
+import ListItem from "../../domain/ListItem";
+import ListItemText from "../../domain/ListItemText";
+import Typography from "../../domain/Typography";
 import checkoutItemStyles from "./styles.js";
 
 const CheckoutItem = ({
@@ -20,39 +23,27 @@ const CheckoutItem = ({
   const classes = checkoutItemStyles();
 
   return (
-    <ListItem className={classes.listItem} key={key} disableGutters>
+    <ListItem key={key} disableGutters>
       <ListItemText
-        primary={
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography>{label}</Typography>
-          </SkeletonWrapper>
-        }
+        primary={<Typography loading={loading}>{label}</Typography>}
         secondary={
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography className={classes.checkoutItemDescription}>
-              {description}
-            </Typography>
-          </SkeletonWrapper>
+          <Typography loading={loading} className={classes.description}>
+            {description}
+          </Typography>
         }
       />
       <ListItemText
-        primary={
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography className={classes.rightList}>{amount}</Typography>
-          </SkeletonWrapper>
-        }
+        primary={<Typography loading={loading}>{amount}</Typography>}
         secondary={
-          <div className={classes.rightList}>
+          <Box>
             <SkeletonWrapper variant="text" loading={loading}>
-              {prefix && (
-                <span className={classes.checkoutItemPrice}>{prefix}</span>
-              )}
+              {prefix && <span className={classes.price}>{prefix}</span>}
               {animate ? (
                 <AnimatedNumber
                   value={price}
                   formatValue={formatValue}
                   duration="500"
-                  className={classes.checkoutItemPrice}
+                  className={classes.price}
                 />
               ) : (
                 <NumberFormat
@@ -61,17 +52,13 @@ const CheckoutItem = ({
                   thousandSeparator={true}
                   decimalScale={2}
                   prefix={"$"}
-                  className={classes.checkoutItemPrice}
+                  className={classes.price}
                 />
               )}
             </SkeletonWrapper>
-          </div>
+          </Box>
         }
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-        }}
+        className={classes.wrapper}
       />
     </ListItem>
   );

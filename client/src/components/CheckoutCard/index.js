@@ -1,40 +1,39 @@
-import { Box, Typography } from "@material-ui/core";
 import React from "react";
-import { CardHeader, CardMedia, Grid } from "../../styles/theme.js";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
+import Box from "../../domain/Box";
+import CardHeader from "../../domain/CardHeader";
+import CardMedia from "../../domain/CardMedia";
+import Grid from "../../domain/Grid";
+import Typography from "../../domain/Typography";
 import checkoutCardStyles from "./styles.js";
 
 const CheckoutCard = ({ version, loading }) => {
   const classes = checkoutCardStyles();
 
   return (
-    <Grid container className={classes.checkoutCardContainer}>
-      <SkeletonWrapper loading={loading} height="100px" width="100%">
-        <CardMedia
-          className={classes.checkoutCardMedia}
-          image={version.cover.source}
-          title={version.title}
-          style={{
-            height: version.cover.height / 6,
-            width: version.cover.width / 6,
-          }}
-        />
-      </SkeletonWrapper>
-      <Box className={classes.checkoutCardInfo}>
+    <Grid container className={classes.container}>
+      <CardMedia
+        className={classes.media}
+        image={version.cover.source}
+        title={version.title}
+        style={{
+          height: version.cover.height / 6,
+          width: version.cover.width / 6,
+        }}
+        loading={loading}
+      />
+      <Box className={classes.wrapper}>
         <CardHeader
           title={
-            <SkeletonWrapper variant="text" loading={loading}>
-              <Typography>{version.title || "Artwork title"}</Typography>
-            </SkeletonWrapper>
+            <Typography loading={loading}>
+              {version.title || "Artwork title"}
+            </Typography>
           }
           subheader={
-            <SkeletonWrapper variant="text" loading={loading}>
-              <Typography>
-                {version.artwork.owner.name || "Artist name"}
-              </Typography>
-            </SkeletonWrapper>
+            <Typography loading={loading}>
+              {version.artwork.owner.name || "Artist name"}
+            </Typography>
           }
-          className={classes.checkoutCardText}
+          className={classes.text}
         />
         {/*           <CardContent>
             <Typography variant="body2" color="textSecondary" component="p">

@@ -1,10 +1,11 @@
-import { Grid, Typography } from "@material-ui/core";
 import {
   SentimentVeryDissatisfied,
   SentimentVerySatisfied,
 } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
+import Grid from "../../domain/Grid";
+import Typography from "../../domain/Typography";
 import SyncButton from "../SyncButton/index.js";
 import checkoutStatusStyles from "./styles.js";
 
@@ -22,19 +23,16 @@ const CheckoutStatus = ({ success, message, version }) => {
   };
 
   return (
-    <Grid
-      container
-      direction="column"
-      justify="space-evenly"
-      alignItems="center"
-      style={{ height: "100%" }}
-    >
+    <Grid container className={classes.container}>
       {success ? (
-        <SentimentVerySatisfied color="primary" style={{ fontSize: "5rem" }} />
+        <SentimentVerySatisfied color="primary" className={classes.sentiment} />
       ) : (
-        <SentimentVeryDissatisfied color="error" style={{ fontSize: "5rem" }} />
+        <SentimentVeryDissatisfied
+          color="error"
+          className={classes.sentiment}
+        />
       )}
-      <Typography variant="h5" style={{ textAlign: "center" }}>
+      <Typography variant="h5" className={classes.message}>
         {message}
       </Typography>
       <SyncButton

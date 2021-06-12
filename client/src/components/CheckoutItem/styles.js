@@ -1,14 +1,19 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const checkoutItemStyles = makeStyles((muiTheme) => ({
-  checkoutItemDescription: {
+  description: {
     "&:first-letter": {
       textTransform: "capitalize",
     },
   },
-  checkoutItemPrice: {
+  price: {
     fontSize: "1.2rem",
     fontWeight: "bold",
+  },
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-end",
   },
 }));
 
