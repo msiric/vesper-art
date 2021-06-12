@@ -2,10 +2,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const commentCardStyles = makeStyles((muiTheme) => ({
-  commentContainer: {
+  container: {
     padding: "0 12px",
   },
-  highlightContainer: {
+  highlight: {
     border: "2px transparent solid",
     borderRadius: "4px",
     animation: "$blink 0.8s",

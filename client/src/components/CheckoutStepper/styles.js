@@ -1,11 +1,11 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const checkoutStepperStyles = makeStyles((muiTheme) => ({
-  checkoutProcessorWrapper: {
+  wrapper: {
     height: "100%",
     width: "100%",
   },
-  checkoutProcessorIcon: {
+  icon: {
     backgroundColor: "#ccc",
     zIndex: 1,
     color: "#fff",
@@ -16,11 +16,11 @@ const checkoutStepperStyles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
-  checkoutProcessorActive: {
+  active: {
     background: muiTheme.palette.primary.main,
     boxShadow: "0 4px 10px 0 rgba(0,0,0,.25)",
   },
-  checkoutProcessorCompleted: {
+  completed: {
     background: muiTheme.palette.primary.main,
   },
 }));

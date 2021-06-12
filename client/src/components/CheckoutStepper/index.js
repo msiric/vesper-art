@@ -1,11 +1,4 @@
-import {
-  Box,
-  Step,
-  StepConnector,
-  StepLabel,
-  Stepper,
-  withStyles,
-} from "@material-ui/core";
+import { withStyles } from "@material-ui/core";
 import {
   CardMembershipRounded as LicenseIcon,
   ContactMailRounded as BillingIcon,
@@ -13,6 +6,11 @@ import {
 } from "@material-ui/icons";
 import clsx from "clsx";
 import React from "react";
+import Box from "../../domain/Box";
+import Step from "../../domain/Step";
+import StepConnector from "../../domain/StepConnector";
+import StepLabel from "../../domain/StepLabel";
+import Stepper from "../../domain/Stepper";
 import globalStyles from "../../styles/global.js";
 import checkoutStepperStyles from "./styles.js";
 
@@ -55,9 +53,9 @@ const StepperIcons = ({ active, completed, icon }) => {
 
   return (
     <Box
-      className={clsx(classes.checkoutProcessorIcon, {
-        [classes.checkoutProcessorActive]: active,
-        [classes.checkoutProcessorCompleted]: completed,
+      className={clsx(classes.icon, {
+        [classes.active]: active,
+        [classes.completed]: completed,
       })}
     >
       {ICONS[String(icon)]}
@@ -70,7 +68,7 @@ const CheckoutStepper = ({ step }) => {
   const classes = checkoutStepperStyles();
 
   return (
-    <Box className={classes.checkoutStepperWrapper}>
+    <Box className={classes.wrapper}>
       {step.current !== STEPS.length && (
         <Stepper
           alternativeLabel
