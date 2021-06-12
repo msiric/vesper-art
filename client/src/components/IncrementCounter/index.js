@@ -1,5 +1,5 @@
-import { Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
+import Typography from "../../domain/Typography";
 import incrementCounterStyles from "./styles";
 
 const IncrementCounter = ({ newValue = 0 }) => {
@@ -38,7 +38,7 @@ const IncrementCounter = ({ newValue = 0 }) => {
     <div className={classes.container}>
       <div className={classes.wrapper}>
         <span className={classes[animationValue]}>
-          <Typography style={{ fontSize: 34 }}>{value}</Typography>
+          <Typography className={classes.value}>{value}</Typography>
         </span>
       </div>
     </div>

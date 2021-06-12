@@ -22,6 +22,9 @@ const incrementCounter = makeStyles((muiTheme) => ({
     transform: "translate3d(0, 0px, 0)",
     transition: "0.1s ease-in-out",
   },
+  value: {
+    fontSize: 34,
+  },
 }));
 
 export default incrementCounter;

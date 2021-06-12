@@ -1,7 +1,8 @@
-import { Box, Typography } from "@material-ui/core";
 import { AutorenewRounded as RefetchIcon } from "@material-ui/icons";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import Box from "../../domain/Box";
+import Typography from "../../domain/Typography";
 import AsyncButton from "../AsyncButton";
 import infiniteListStyles from "./styles";
 
@@ -26,7 +27,7 @@ const InfiniteList = ({
       next={!loading ? next : () => []}
       hasMore={hasMore}
       loader={!error && loader}
-      className={classes.infiniteListWrapper}
+      className={classes.wrapper}
       {...props}
     >
       {children}
@@ -35,8 +36,6 @@ const InfiniteList = ({
           <Typography>Error fetching data</Typography>
           <AsyncButton
             type="button"
-            variant="outlined"
-            color="primary"
             padding
             loading={false}
             startIcon={<RefetchIcon />}

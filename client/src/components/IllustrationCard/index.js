@@ -1,6 +1,7 @@
-import { Box, Card } from "@material-ui/core";
 import React from "react";
-import { Typography } from "../../styles/theme.js";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import Typography from "../../domain/Typography";
 import illustrationCardStyles from "./styles.js";
 
 const IllustrationCard = ({
@@ -13,15 +14,13 @@ const IllustrationCard = ({
   const classes = illustrationCardStyles();
 
   return (
-    <Box className={classes.illustrationContainer} {...props}>
-      <Box className={classes.illustrationLabel}>
-        <Typography fontWeight="bold" ml={2} fontSize={24}>
-          {heading}
-        </Typography>
-        <Typography ml={2}>{paragraph}</Typography>
+    <Box className={classes.container} {...props}>
+      <Box className={classes.wrapper}>
+        <Typography className={classes.heading}>{heading}</Typography>
+        <Typography className={classes.paragraph}>{paragraph}</Typography>
         {body ? body : null}
       </Box>
-      <Card className={classes.illustrationWrapper}>{illustration}</Card>
+      <Card className={classes.label}>{illustration}</Card>
     </Box>
   );
 };

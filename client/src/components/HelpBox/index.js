@@ -1,4 +1,3 @@
-import { Box } from "@material-ui/core";
 import {
   CheckBoxRounded as SuccessIcon,
   ErrorRounded as ErrorIcon,
@@ -6,7 +5,8 @@ import {
   WarningRounded as WarningIcon,
 } from "@material-ui/icons";
 import React from "react";
-import { Typography } from "../../styles/theme.js";
+import Box from "../../domain/Box";
+import Typography from "../../domain/Typography";
 import helpBoxStyles from "./styles.js";
 
 const HelpBox = ({ type, label, margin = 0 }) => {
@@ -28,20 +28,9 @@ const HelpBox = ({ type, label, margin = 0 }) => {
   };
 
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      border="1px solid"
-      borderRadius={4}
-      p={2}
-      width="100%"
-      mb={margin}
-    >
+    <Box className={classes.container} style={{ margin }}>
       {renderIcon(type)}
-      <Typography fontWeight="bold" ml={2}>
-        {label}
-      </Typography>
+      <Typography className={classes.label}>{label}</Typography>
     </Box>
   );
 };

@@ -1,11 +1,12 @@
-import { Button, IconButton } from "@material-ui/core";
 import {
   FavoriteBorderRounded as FavoriteIcon,
   FavoriteRounded as FavoritedIcon,
 } from "@material-ui/icons";
 import React, { useState } from "react";
 import { useUserStore } from "../../contexts/global/user.js";
+import IconButton from "../../domain/IconButton";
 import { deleteFavorite, postFavorite } from "../../services/artwork.js";
+import AsyncButton from "../AsyncButton/index.js";
 import favoriteButtonStyles from "./styles.js";
 
 const FavoriteButton = ({
@@ -55,9 +56,7 @@ const FavoriteButton = ({
   };
 
   return labeled ? (
-    <Button
-      variant="outlined"
-      color="primary"
+    <AsyncButton
       startIcon={favorited ? <FavoritedIcon /> : <FavoriteIcon />}
       disabled={state.loading}
       onClick={() =>
@@ -68,10 +67,9 @@ const FavoriteButton = ({
       {...props}
     >
       {favorited ? "Unfavorite" : "Favorite"}
-    </Button>
+    </AsyncButton>
   ) : (
     <IconButton
-      className={classes.artworkColor}
       aria-label={`${favorited ? "Unsave artwork" : "Save artwork"}`}
       onClick={() =>
         favorited

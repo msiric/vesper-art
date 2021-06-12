@@ -1,13 +1,11 @@
-import {
-  Avatar,
-  Badge,
-  IconButton,
-  ListItemAvatar,
-  ListItemText,
-  MenuItem,
-} from "@material-ui/core";
 import React from "react";
 import { Link } from "react-router-dom";
+import Avatar from "../../domain/Avatar";
+import Badge from "../../domain/Badge";
+import IconButton from "../../domain/IconButton";
+import ListItemAvatar from "../../domain/ListItemAvatar";
+import ListItemText from "../../domain/ListItemText";
+import MenuItem from "../../domain/MenuItem";
 
 const HeaderItem = ({
   menu,
