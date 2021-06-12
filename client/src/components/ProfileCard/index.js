@@ -25,8 +25,8 @@ const ProfileCard = ({ user, loading }) => {
   const classes = profileCardStyles();
 
   return (
-    <Card className={classes.profileCardContainer}>
-      <Box className={classes.profileCardWrapper}>
+    <Card className={classes.container}>
+      <Box className={classes.wrapper}>
         <Avatar
           component={RouterLink}
           to={`/user/${user.name}`}
@@ -35,60 +35,41 @@ const ProfileCard = ({ user, loading }) => {
           title={user.name}
           loading={loading}
           variant="circle"
-          className={classes.profileCardAvatar}
+          className={classes.avatar}
         />
       </Box>
-      <CardContent className={classes.profileCardContent}>
+      <CardContent className={classes.content}>
         <Typography
           component={RouterLink}
           to={`/user/${user.name}`}
           gutterBottom
           variant="h5"
-          align="center"
           color="textPrimary"
           loading={loading}
-          className={classes.profileCardName}
+          className={classes.name}
         >
           {user.name || "Artist name"}
         </Typography>
-        <Box className={classes.profileCardInfo} loading={loading}>
+        <Box className={classes.info} loading={loading}>
           {user.rating > 0 && (
-            <Box className={classes.profileCardRating}>
-              <StarIcon fontSize="small" className={classes.profileCardIcon} />
-              <Typography
-                variant="body1"
-                color="textSecondary"
-                component="p"
-                align="center"
-              >
+            <Box className={classes.rating}>
+              <StarIcon fontSize="small" className={classes.icon} />
+              <Typography variant="body1" color="textSecondary" component="p">
                 {user.rating}
               </Typography>
             </Box>
           )}
           {user.country && (
-            <Box className={classes.profileCardCountry}>
-              <LocationIcon
-                fontSize="small"
-                className={classes.profileCardIcon}
-              />
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                component="p"
-                align="center"
-              >
+            <Box className={classes.country}>
+              <LocationIcon fontSize="small" className={classes.icon} />
+              <Typography variant="body2" color="textSecondary" component="p">
                 {user.country}
               </Typography>
             </Box>
           )}
-          <Box className={classes.profileCardJoined}>
-            <MemberIcon fontSize="small" className={classes.profileCardIcon} />
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              component="p"
-              align="center"
-            >
+          <Box className={classes.joined}>
+            <MemberIcon fontSize="small" className={classes.icon} />
+            <Typography variant="body2" color="textSecondary" component="p">
               {user.created && formatDate(new Date(user.created), "MMM yy")}
             </Typography>
           </Box>
@@ -97,9 +78,8 @@ const ProfileCard = ({ user, loading }) => {
           variant="body2"
           color="textSecondary"
           component="p"
-          align="center"
           loading={loading}
-          className={classes.profileCardDescription}
+          className={classes.description}
         >
           {user.description || "Nothing here yet"}
         </Typography>

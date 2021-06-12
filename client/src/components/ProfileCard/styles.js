@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme";
 
 const profileCardStyles = makeStyles((muiTheme) => ({
-  profileCardContainer: {
+  container: {
     width: "100%",
     display: "flex",
     flexDirection: "column",
@@ -13,59 +13,59 @@ const profileCardStyles = makeStyles((muiTheme) => ({
     textDecoration: "none",
     position: "relative",
   },
-  profileCardName: {
-    marginTop: 10,
-    display: "block",
-    textAlign: "center",
-    textDecoration: "none",
-    wordBreak: "break-word",
-  },
-  profileCardWrapper: {
+  wrapper: {
     width: "100px",
     height: "100px",
     borderRadius: "50%",
     overflow: "hidden",
     marginTop: 24,
   },
-  profileCardAvatar: {
+  avatar: {
     textAlign: "center",
     width: "100%",
     height: "100%",
   },
-  profileCardDescription: {
+  name: {
+    marginTop: 10,
+    display: "block",
+    textAlign: "center",
+    textDecoration: "none",
     wordBreak: "break-word",
   },
-  profileCardContent: {
+  content: {
     width: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
-  profileCardInfo: {
+  info: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: "12px",
   },
-  profileCardRating: {
+  rating: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     marginRight: "6px",
   },
-  profileCardCountry: {
+  country: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     marginRight: "6px",
   },
-  profileCardJoined: {
+  joined: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
-  profileCardIcon: {
+  icon: {
     marginRight: 3,
+  },
+  description: {
+    wordBreak: "break-word",
   },
 }));
 
