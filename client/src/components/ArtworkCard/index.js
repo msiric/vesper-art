@@ -1,5 +1,5 @@
 import { EditRounded as EditIcon } from "@material-ui/icons";
-import React, { useState } from "react";
+import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useUserStore } from "../../contexts/global/user.js";
 import Box from "../../domain/Box";
@@ -31,7 +31,6 @@ const ArtworkCard = ({
 }) => {
   const userId = useUserStore((state) => state.id);
   const userFavorites = useUserStore((state) => state.favorites);
-  const [state, setState] = useState({ favorited: false });
 
   const classes = artworkCardStyles();
 
@@ -67,7 +66,7 @@ const ArtworkCard = ({
         };
 
   return (
-    <Card className={classes.artworkCard}>
+    <Card className={classes.container}>
       <CardHeader
         title={
           <Typography
@@ -76,7 +75,7 @@ const ArtworkCard = ({
             component={RouterLink}
             to={`/artwork/${item.id}`}
             loading={loading}
-            className={classes.artworkTitle}
+            className={classes.title}
           >
             {item.data.title}
           </Typography>
@@ -88,13 +87,13 @@ const ArtworkCard = ({
             component={RouterLink}
             to={`/user/${item.owner.name}`}
             loading={loading}
-            className={classes.artworkSeller}
+            className={classes.owner}
           >
             {item.owner.name}
           </Typography>
         }
         disableTypography
-        className={classes.artworkHeader}
+        className={classes.header}
       />
       {/*       <SkeletonWrapper loading={loading} height="180px">
         <CardMedia
@@ -120,14 +119,14 @@ const ArtworkCard = ({
         }
         loading={loading}
       />
-      <CardActions disableSpacing className={classes.artworkFooter}>
+      <CardActions disableSpacing className={classes.footer}>
         <Box style={{ display: "flex" }} loading={loading}>
           {item.owner.id === userId ? (
             <IconButton
               aria-label={"Edit artwork"}
               component={RouterLink}
               to={`/artwork/${artwork.id}/edit`}
-              className={classes.buttonColor}
+              className={classes.button}
             >
               <EditIcon />
             </IconButton>
@@ -141,10 +140,7 @@ const ArtworkCard = ({
           <ShareButton link={`/artwork/${artwork.id}`} type="artwork" />
         </Box>
         <Box>
-          <IconButton
-            aria-label="Artwork price"
-            className={classes.artworkColor}
-          >
+          <IconButton aria-label="Artwork price">
             <Typography noWrap>
               {item.data.availability === "available"
                 ? item.data.license === "commercial"

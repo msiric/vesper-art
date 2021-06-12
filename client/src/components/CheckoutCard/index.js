@@ -7,8 +7,6 @@ import checkoutCardStyles from "./styles.js";
 const CheckoutCard = ({ version, loading }) => {
   const classes = checkoutCardStyles();
 
-  console.log(version);
-
   return (
     <Grid container className={classes.checkoutCardContainer}>
       <SkeletonWrapper loading={loading} height="100px" width="100%">

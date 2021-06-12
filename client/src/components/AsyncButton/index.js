@@ -1,6 +1,7 @@
-import { Box, Button, CircularProgress } from "@material-ui/core";
 import React from "react";
-import SkeletonWrapper from "../SkeletonWrapper";
+import Box from "../../domain/Box";
+import Button from "../../domain/Button";
+import CircularProgress from "../../domain/CircularProgress";
 import asyncButtonStyles from "./styles";
 
 const AsyncButton = ({
@@ -17,22 +18,19 @@ const AsyncButton = ({
   const classes = asyncButtonStyles({ padding: padding ? 16 : "" });
 
   return (
-    <Box className={classes.buttonContainer}>
-      <SkeletonWrapper variant="text" loading={loading}>
-        <Button
-          color={color}
-          variant={variant}
-          onClick={handleClick}
-          disabled={submitting || disabled}
-          className={classes.buttonItem}
-          {...props}
-        >
-          {children}
-        </Button>
-      </SkeletonWrapper>
-
+    <Box className={classes.container}>
+      <Button
+        color={color}
+        variant={variant}
+        onClick={handleClick}
+        disabled={submitting || disabled}
+        loading={loading}
+        {...props}
+      >
+        {children}
+      </Button>
       {submitting && (
-        <CircularProgress size={24} className={classes.buttonProgress} />
+        <CircularProgress size={24} className={classes.progress} />
       )}
     </Box>
   );
