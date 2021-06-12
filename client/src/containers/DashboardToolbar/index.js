@@ -25,7 +25,7 @@ const DashboardToolbar = () => {
 
   return (
     <Grid container>
-      <Grid item className={classes.dashboardToolbarHeader}>
+      <Grid item className={classes.wrapper}>
         <MainHeading text="Dashboard" />
         {stripeId && (
           <AsyncButton
@@ -36,7 +36,7 @@ const DashboardToolbar = () => {
           </AsyncButton>
         )}
       </Grid>
-      <Grid item className={classes.dashboardToolbarHeader}>
+      <Grid item className={classes.wrapper}>
         <SubHeading text="Total stats" />
         <DropdownItems
           value={display.type}

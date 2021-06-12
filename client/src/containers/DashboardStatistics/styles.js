@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const dashboardStatisticsStyles = makeStyles((muiTheme) => ({
-  dashboardStatisticsContainer: {
+  container: {
     marginBottom: 8,
     display: "flex",
     justifyContent: "center",

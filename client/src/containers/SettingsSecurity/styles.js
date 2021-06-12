@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const settingsSecurityStyles = makeStyles((muiTheme) => ({
-  settingsActions: {
+  actions: {
     display: "flex",
     justifyContent: "space-between",
   },

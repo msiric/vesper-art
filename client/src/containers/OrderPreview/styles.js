@@ -6,7 +6,7 @@ const orderPreviewStyles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     maxHeight: 700,
   },
-  artworkTitle: {
+  title: {
     wordBreak: "break-word",
     fontWeight: "bold",
     fontSize: 24,

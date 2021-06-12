@@ -54,7 +54,7 @@ const SettingsAccount = ({ handleLogout }) => {
           <CardContent>
             <EmailForm errors={errors} />
           </CardContent>
-          <CardActions className={classes.settingsActions}>
+          <CardActions className={classes.actions}>
             <AsyncButton
               type="submit"
               fullWidth

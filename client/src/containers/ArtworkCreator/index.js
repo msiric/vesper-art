@@ -118,7 +118,7 @@ const ArtworkCreator = () => {
               loading={loading}
             />
           </CardContent>
-          <CardActions className={classes.artworkCreatorActions}>
+          <CardActions className={classes.actions}>
             <AsyncButton
               type="submit"
               fullWidth

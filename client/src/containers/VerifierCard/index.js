@@ -52,7 +52,7 @@ const VerifierCard = () => {
           <CardContent>
             <VerifierForm errors={errors} loading={loading} />
           </CardContent>
-          <CardActions className={classes.verifierActions}>
+          <CardActions className={classes.actions}>
             <AsyncButton
               type="submit"
               fullWidth

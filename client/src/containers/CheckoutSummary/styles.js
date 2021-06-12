@@ -1,24 +1,24 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const checkoutSummaryStyles = makeStyles((muiTheme) => ({
-  checkoutSummaryRoot: {
+  container: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
   },
-  checkoutSummaryContent: {
+  content: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
     paddingBottom: 8,
   },
-  checkoutSummaryActions: {
+  actions: {
     width: "100%",
   },
-  checkoutSummaryForm: {
+  form: {
     width: "100%",
   },
-  checkoutSummaryCard: {
+  card: {
     flexBasis: "auto",
   },
 }));

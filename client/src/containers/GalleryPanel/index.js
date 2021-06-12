@@ -100,12 +100,12 @@ const GalleryPanel = ({ formatArtwork }) => {
         >
           <Masonry
             breakpointCols={breakpointColumns}
-            className={classes.galleryPanelMasonry}
-            columnClassName={classes.galleryPanelColumn}
+            className={classes.masonry}
+            columnClassName={classes.column}
           >
             {covers.map((item, idx) => (
               <Card
-                className={classes.galleryPanelCard}
+                className={classes.card}
                 onClick={() =>
                   toggleGallery({
                     userId,

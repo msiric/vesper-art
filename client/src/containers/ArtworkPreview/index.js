@@ -1,10 +1,10 @@
-import { Divider } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
+import Divider from "../../domain/Divider";
 import Typography from "../../domain/Typography";
 import artworkPreviewStyles from "./styles.js";
 
@@ -22,17 +22,14 @@ const ArtworkPreview = ({ paramId }) => {
   }, []);
 
   return (
-    <Card className={classes.artworkPreviewContainer}>
-      <Box className={classes.artworkPreviewTitleWrapper}>
-        <Typography
-          loading={loading}
-          className={classes.artworkPreviewTitle}
-        >{`${version.title}, ${new Date(
-          version.created
-        ).getFullYear()}`}</Typography>
+    <Card className={classes.container}>
+      <Box className={classes.titleWrapper}>
+        <Typography loading={loading} className={classes.title}>{`${
+          version.title
+        }, ${new Date(version.created).getFullYear()}`}</Typography>
       </Box>
       <Divider />
-      <Box className={classes.artworkPreviewImageWrapper}>
+      <Box className={classes.imageWrapper}>
         <ImageWrapper
           height={version.height || 400}
           width={version.width}
@@ -48,17 +45,14 @@ const ArtworkPreview = ({ paramId }) => {
       <Box>
         <Divider />
         <br />
-        <Typography
-          loading={loading}
-          className={classes.artworkPreviewDescription}
-        >
+        <Typography loading={loading} className={classes.description}>
           {version.description}
         </Typography>
-        <Box className={classes.artworkPreviewDisclaimerWrapper}>
+        <Box className={classes.disclaimerWrapper}>
           <Typography
             variant="body2"
             loading={loading}
-            className={classes.artworkPreviewDisclaimer}
+            className={classes.disclaimer}
           >
             You are previewing a low resolution thumbnail of the original
             artwork
@@ -66,7 +60,7 @@ const ArtworkPreview = ({ paramId }) => {
           <Typography
             variant="body2"
             loading={loading}
-            className={classes.artworkPreviewDisclaimer}
+            className={classes.disclaimer}
           >{`The original artwork dimensions (in pixels) are: ${version.media.width}x${version.media.height}`}</Typography>
         </Box>
       </Box>

@@ -47,7 +47,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   }, [tabs.value]);
 
   return (
-    <Grid item xs={12} className={classes.grid}>
+    <Grid item xs={12}>
       <Paper ref={artworkRef} className={classes.paper}>
         <SwipeCard
           tabs={{

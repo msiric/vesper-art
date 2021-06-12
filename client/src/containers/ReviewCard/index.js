@@ -41,14 +41,12 @@ const ReviewCard = ({ paramId, highlightRef }) => {
   return (
     <Card
       ref={isHighlight ? highlightRef : null}
-      className={`${classes.reviewContainer} ${
-        isHighlight ? classes.highlightContainer : ""
-      }`}
+      className={`${classes.container} ${isHighlight ? classes.highlight : ""}`}
     >
-      <CardContent className={classes.reviewCard}>
+      <CardContent className={classes.card}>
         <SubHeading text="Review" loading={loading} />
         {loading || review ? (
-          <Box className={classes.reviewWrapper}>
+          <Box className={classes.wrapper}>
             <ReviewRating
               value={review.rating}
               readOnly={true}
@@ -56,8 +54,8 @@ const ReviewCard = ({ paramId, highlightRef }) => {
             />
           </Box>
         ) : (
-          <Box className={classes.reviewContent}>
-            <Typography className={classes.reviewText} loading={loading}>
+          <Box>
+            <Typography className={classes.text} loading={loading}>
               {shouldReview ? "No rating left" : "No rating found"}
             </Typography>
           </Box>
@@ -65,9 +63,9 @@ const ReviewCard = ({ paramId, highlightRef }) => {
       </CardContent>
       <Divider />
       <CardActions>
-        <Box className={classes.reviewActions}>
+        <Box className={classes.actions}>
           {loading || review ? (
-            <Typography className={classes.reviewText} loading={loading}>
+            <Typography className={classes.text} loading={loading}>
               {shouldReview ? "Your rating" : "Buyer's rating"}
             </Typography>
           ) : isActive ? (
@@ -81,12 +79,12 @@ const ReviewCard = ({ paramId, highlightRef }) => {
                 Rate artist
               </SyncButton>
             ) : (
-              <Typography className={classes.reviewText} loading={loading}>
+              <Typography className={classes.text} loading={loading}>
                 Buyer's rating
               </Typography>
             )
           ) : (
-            <Typography className={classes.reviewText} loading={loading}>
+            <Typography className={classes.text} loading={loading}>
               Artwork is inactive
             </Typography>
           )}

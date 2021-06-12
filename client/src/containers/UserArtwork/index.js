@@ -35,8 +35,8 @@ const UserArtwork = ({ type, fixed }) => {
       >
         <Masonry
           breakpointCols={breakpointColumns}
-          className={classes.masonryContainer}
-          columnClassName={classes.masonryColumn}
+          className={classes.masonry}
+          columnClassName={classes.column}
         >
           {elements.map((artwork) => (
             <ArtworkCard

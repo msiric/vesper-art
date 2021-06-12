@@ -1,4 +1,3 @@
-import { Box } from "@material-ui/core";
 import React from "react";
 import Masonry from "react-masonry-css";
 import { breakpoints } from "../../common/constants";
@@ -6,6 +5,7 @@ import ArtworkCard from "../../components/ArtworkCard/index.js";
 import InfiniteList from "../../components/InfiniteList/index.js";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { useHomeArtwork } from "../../contexts/local/homeArtwork";
+import Box from "../../domain/Box";
 import artworkPanelStyles from "./styles.js";
 
 const ArtworkPanel = ({ type, fixed }) => {
@@ -18,7 +18,7 @@ const ArtworkPanel = ({ type, fixed }) => {
   const classes = artworkPanelStyles();
 
   return (
-    <Box className={classes.artworkPanelContainer}>
+    <Box className={classes.container}>
       <InfiniteList
         dataLength={elements ? elements.length : 0}
         next={fetchArtwork}
@@ -29,8 +29,8 @@ const ArtworkPanel = ({ type, fixed }) => {
       >
         <Masonry
           breakpointCols={breakpoints}
-          className={classes.artworkPanelMasonry}
-          columnClassName={classes.artworkPanelColumn}
+          className={classes.masonry}
+          columnClassName={classes.column}
         >
           {elements.map((artwork) => (
             <ArtworkCard

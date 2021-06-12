@@ -54,13 +54,10 @@ const SettingsProfile = () => {
   }, [user.description, user.country]);
 
   return (
-    <Card className={classes.settingsContainer}>
+    <Card className={classes.container}>
       <FormProvider control={control}>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className={classes.settingsForm}
-        >
-          <CardContent className={classes.settingsContent}>
+        <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+          <CardContent className={classes.content}>
             <EditUserForm
               preview={user.avatar && user.avatar.source}
               errors={errors}
@@ -71,7 +68,7 @@ const SettingsProfile = () => {
               loading={loading}
             />
           </CardContent>
-          <CardActions className={classes.settingsActions}>
+          <CardActions className={classes.actions}>
             <AsyncButton
               type="submit"
               fullWidth

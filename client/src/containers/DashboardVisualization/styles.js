@@ -1,17 +1,17 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const dashboardVisualizationStyles = makeStyles((muiTheme) => ({
-  dashboardVisualizationChart: {
+  chart: {
     height: 540,
     [muiTheme.breakpoints.down("xs")]: {
       height: 340,
     },
   },
-  dashboardVisualizationCard: {
+  card: {
     padding: 8,
     height: "100%",
   },
-  dashboardVisualizationWrapper: {
+  wrapper: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",

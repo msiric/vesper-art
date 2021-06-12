@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const artworkModifierStyles = makeStyles((muiTheme) => ({
-  artworkModifierActions: {
+  actions: {
     display: "flex",
     justifyContent: "space-between",
   },

@@ -1,5 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Box, Button, Card } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
@@ -7,10 +6,14 @@ import { licenseValidation } from "../../../../common/validation";
 import PricingCard from "../../components/PricingCard/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
 import SwipeCard from "../../components/SwipeCard/index.js";
+import SyncButton from "../../components/SyncButton";
 import { useUserStore } from "../../contexts/global/user";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import CardContent from "../../domain/CardContent";
+import Typography from "../../domain/Typography";
 import LicenseForm from "../../forms/LicenseForm/index.js";
-import { CardContent, Typography } from "../../styles/theme.js";
 import artworkInfoStyles from "./styles.js";
 
 // $TODO refactor needed (new domain components)
@@ -60,8 +63,8 @@ const ArtworkInfo = () => {
   }, [license]);
 
   return (
-    <Card className={classes.root}>
-      <CardContent pt={0} pb={0}>
+    <Card>
+      <CardContent className={classes.content}>
         {artwork.current && artwork.current.availability === "available" ? (
           <SwipeCard
             tabs={{
@@ -148,28 +151,21 @@ const ArtworkInfo = () => {
                   iterable: false,
                   content: null,
                   component: (
-                    <Box
-                      display="flex"
-                      flexDirection="column"
-                      style={{ justifyContent: "center", alignItems: "center" }}
-                    >
+                    <Box className={classes.wrapper}>
                       <Typography
                         variant="subtitle1"
-                        m={2}
-                        style={{ textAlign: "center" }}
+                        className={classes.heading}
                       >
                         This artwork cannot be purchased or downloaded since it
                         is preview only
                       </Typography>
                       {!loading && isSeller() && (
-                        <Button
-                          variant="outlined"
-                          color="primary"
+                        <SyncButton
                           component={RouterLink}
                           to={`/artwork/${artwork.id}/edit`}
                         >
                           Edit artwork
-                        </Button>
+                        </SyncButton>
                       )}
                     </Box>
                   ),

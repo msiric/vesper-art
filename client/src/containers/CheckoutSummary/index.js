@@ -3,8 +3,8 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import * as Yup from "yup";
 import { payment } from "../../../../common/constants";
+import { discountValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import CheckoutCard from "../../components/CheckoutCard/index.js";
 import CheckoutItem from "../../components/CheckoutItem/index.js";
@@ -17,10 +17,6 @@ import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
 import DiscountForm from "../../forms/DiscountForm/index.js";
 import checkoutSummaryStyles from "./styles.js";
-
-const validationSchema = Yup.object().shape({
-  discountCode: Yup.string().trim().required("Discount cannot be empty"),
-});
 
 const CheckoutSummary = ({
   version,
@@ -44,8 +40,6 @@ const CheckoutSummary = ({
       total: 0,
     },
   });
-
-  console.log("STAEEEEEETEEEE", state);
 
   const summaryItems = [
     <CheckoutItem
@@ -112,7 +106,7 @@ const CheckoutSummary = ({
     defaultValues: {
       discountCode: "",
     },
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(discountValidation),
   });
 
   const onSubmit = async (values) => await handleDiscountChange({ values });
@@ -171,18 +165,18 @@ const CheckoutSummary = ({
   }, [version, license, discount]);
 
   return (
-    <Card className={classes.checkoutSummaryRoot}>
-      <CardContent className={classes.checkoutSummaryContent}>
+    <Card className={classes.container}>
+      <CardContent className={classes.content}>
         <Typography variant="h6" gutterBottom loading={loading}>
           Order summary
         </Typography>
-        <Grid item xs={12} className={classes.checkoutSummaryCard}>
+        <Grid item xs={12} className={classes.card}>
           <CheckoutCard version={version} loading={loading} />
         </Grid>
         <ListItems items={summaryItems} custom={true}></ListItems>
       </CardContent>
       {step.current === 2 && (
-        <CardActions className={classes.checkoutSummaryActions}>
+        <CardActions className={classes.actions}>
           {/* $TODO Update intent when discount changes */}
           {/* Fix AsyncButton loading/submitting */}
           {discount ? (
@@ -200,10 +194,7 @@ const CheckoutSummary = ({
             </AsyncButton>
           ) : (
             <FormProvider control={control}>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className={classes.checkoutSummaryForm}
-              >
+              <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
                 <DiscountForm errors={errors} loading={state.loading} />
                 <AsyncButton
                   type="submit"

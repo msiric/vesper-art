@@ -43,11 +43,7 @@ const DashboardStatistics = ({ layout }) => {
   }, [display.type]);
 
   return (
-    <Grid
-      container
-      spacing={2}
-      className={classes.dashboardStatisticsContainer}
-    >
+    <Grid container spacing={2} className={classes.container}>
       {cards.map((card, index) => (
         <Grid
           item

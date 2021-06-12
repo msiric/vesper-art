@@ -1,28 +1,28 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const checkoutProcessorStyles = makeStyles((muiTheme) => ({
-  checkoutProcessorContainer: {
+  container: {
     margin: 0,
   },
-  checkoutProcessorForm: {
+  form: {
     height: "100%",
   },
-  checkoutProcessorCard: {
+  card: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
   },
-  checkoutProcessorContent: {
+  content: {
     height: "100%",
   },
-  checkoutProcessorWrapper: {
+  wrapper: {
     height: "100%",
   },
-  checkoutProcessorMultiform: {
+  multiform: {
     height: "100%",
   },
-  checkoutProcessorActions: {
+  actions: {
     display: "flex",
     justifyContent: "space-between",
   },

@@ -26,7 +26,7 @@ const SettingsActions = () => {
           This action is irreversible.
         </Typography>
       </CardContent>
-      <CardActions className={classes.settingsActions}>
+      <CardActions className={classes.actions}>
         <SkeletonWrapper loading={loading}>
           <SyncButton onClick={toggleModal}>Deactivate</SyncButton>
         </SkeletonWrapper>

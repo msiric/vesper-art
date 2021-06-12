@@ -6,11 +6,11 @@ const userFavoritesStyles = makeStyles((muiTheme) => ({
     height: "100%",
     padding: "16px 0",
   },
-  masonryContainer: {
+  masonry: {
     display: "flex",
     width: "auto",
   },
-  masonryColumn: {
+  column: {
     paddingLeft: 24,
     "&:first-child": {
       paddingLeft: 0,

@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const verifierCardStyles = makeStyles((muiTheme) => ({
-  verifierActions: {
+  actions: {
     display: "flex",
     justifyContent: "space-between",
   },

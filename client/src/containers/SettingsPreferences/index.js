@@ -53,7 +53,7 @@ const SettingsPreferences = () => {
               errors={errors}
             />
           </CardContent>
-          <CardActions className={classes.settingsActions}>
+          <CardActions className={classes.actions}>
             <AsyncButton
               type="submit"
               fullWidth

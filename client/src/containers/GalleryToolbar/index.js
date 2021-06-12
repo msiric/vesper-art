@@ -1,9 +1,9 @@
-import { Box } from "@material-ui/core";
 import React, { useEffect } from "react";
 import DropdownItems from "../../components/DropdownItems/index.js";
 import MainHeading from "../../components/MainHeading/index.js";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserGallery } from "../../contexts/local/userGallery";
+import Box from "../../domain/Box";
 import galleryToolbarStyles from "./styles.js";
 
 const GalleryToolbar = ({ formatArtwork, location }) => {
@@ -27,7 +27,7 @@ const GalleryToolbar = ({ formatArtwork, location }) => {
   }, [location, display]);
 
   return (
-    <Box className={classes.galleryToolbarContainer}>
+    <Box className={classes.container}>
       <MainHeading text="Gallery" />
       <DropdownItems
         items={menuItems}

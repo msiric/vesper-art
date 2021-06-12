@@ -27,7 +27,7 @@ import {
 } from "@material-ui/icons";
 import React, { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import LogoMobile from "../../assets/images/logo/logo-mobile.svg";
@@ -121,7 +121,7 @@ const searchValidation = Yup.object().shape({
   searchInput: Yup.string().trim().required("Search input is required"),
 });
 
-const Header = ({ history }) => {
+const Header = () => {
   const userId = useUserStore((state) => state.id);
   const userUsername = useUserStore((state) => state.name);
   const stripeId = useUserStore((state) => state.stripeId);
@@ -151,6 +151,8 @@ const Header = ({ history }) => {
     },
     resolver: yupResolver(searchValidation),
   });
+
+  const history = useHistory();
 
   const classes = HeaderStyles();
 

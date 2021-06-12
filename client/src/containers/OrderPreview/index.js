@@ -16,7 +16,7 @@ const OrderPreview = () => {
   const classes = orderPreviewStyles();
 
   return (
-    <Card className={classes.container}>
+    <Card>
       <Box className={classes.wrapper}>
         <ImageWrapper
           height={version.cover.height || 400}
@@ -31,8 +31,8 @@ const OrderPreview = () => {
         />
       </Box>
       <Divider />
-      <Box className={classes.artworkInfo}>
-        <Typography className={classes.artworkTitle} loading={loading}>{`${
+      <Box>
+        <Typography className={classes.title} loading={loading}>{`${
           version.title
         }, ${new Date(version.created).getFullYear()}`}</Typography>
         <Typography variant="body2" loading={loading}>

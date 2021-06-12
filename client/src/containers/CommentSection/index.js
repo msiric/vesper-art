@@ -21,9 +21,9 @@ import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
+import List from "../../domain/List";
 import AddCommentForm from "../../forms/CommentForm/index.js";
 import useVisibleElement from "../../hooks/useVisibleElement";
-import { List } from "../../styles/theme.js";
 import commentSectionStyles from "./styles.js";
 
 const CommentSection = ({
@@ -97,12 +97,9 @@ const CommentSection = ({
   }, [isVisible]);
 
   return (
-    <Card className={classes.commentSectionContainer}>
+    <Card>
       <CardContent>
-        <MainHeading
-          text="Comments"
-          className={classes.commentSectionHeading}
-        />
+        <MainHeading text="Comments" className={classes.heading} />
         <Divider />
         <FormProvider control={control}>
           <form
@@ -144,11 +141,7 @@ const CommentSection = ({
             loader={<LoadingSpinner />}
             error={error}
           >
-            <List
-              ref={commentsRef}
-              className={classes.commentSectionList}
-              disablePadding
-            >
+            <List ref={commentsRef} className={classes.list} disablePadding>
               <Box>
                 {comments.map((comment) => (
                   <CommentCard
@@ -182,7 +175,7 @@ const CommentSection = ({
             </List>
           </InfiniteList>
         ) : (
-          <Box className={classes.commentSectionEmpty}>
+          <Box className={classes.empty}>
             <EmptySection label="No comments so far" loading={loading} />
           </Box>
         )}

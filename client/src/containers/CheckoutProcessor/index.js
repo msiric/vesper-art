@@ -198,23 +198,20 @@ const CheckoutProcessor = () => {
   }, []);
 
   return (
-    <Grid container spacing={2} className={classes.checkoutProcessorContainer}>
+    <Grid container spacing={2} className={classes.container}>
       {versionLoading || version.id ? (
         <>
           <Grid item xs={12} md={8}>
             <FormProvider control={control}>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className={classes.checkoutProcessorForm}
-              >
-                <Card elevation={5} className={classes.checkoutProcessorCard}>
-                  <CardContent className={classes.checkoutProcessorContent}>
+              <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+                <Card elevation={5} className={classes.card}>
+                  <CardContent className={classes.content}>
                     {stripe ? (
-                      <Box className={classes.checkoutProcessorWrapper}>
+                      <Box className={classes.wrapper}>
                         {step.current !== STEPS.length && (
                           <CheckoutStepper step={step} />
                         )}
-                        <Box className={classes.checkoutProcessorMultiform}>
+                        <Box className={classes.multiform}>
                           {renderForm(step.current)}
                           {step.current === 0 && (
                             <ListItems
@@ -227,7 +224,7 @@ const CheckoutProcessor = () => {
                     ) : null}
                   </CardContent>
                   {step.current !== STEPS.length && (
-                    <CardActions className={classes.checkoutProcessorActions}>
+                    <CardActions className={classes.actions}>
                       <SyncButton
                         disabled={
                           step.current === 0 || intentLoading || discountLoading

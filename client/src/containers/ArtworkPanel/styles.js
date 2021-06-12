@@ -1,16 +1,16 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const artworkPanelStyles = makeStyles((muiTheme) => ({
-  artworkPanelContainer: {
+  container: {
     width: "100%",
     height: "100%",
     padding: "16px 0",
   },
-  artworkPanelMasonry: {
+  masonry: {
     display: "flex",
     width: "auto",
   },
-  artworkPanelColumn: {
+  column: {
     paddingLeft: 24,
     "&:first-child": {
       paddingLeft: 0,

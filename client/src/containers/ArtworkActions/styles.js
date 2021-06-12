@@ -1,19 +1,19 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const artworkActionsStyles = makeStyles((muiTheme) => ({
-  artworkActionsContainer: {},
-  artworkActionsContent: {
+  container: {},
+  content: {
     width: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
-  artworkActionsCounter: {
+  counter: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
-  artworkActionsIncrementer: {
+  incrementer: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -21,17 +21,17 @@ const artworkActionsStyles = makeStyles((muiTheme) => ({
     height: 55,
     width: "100%",
   },
-  artworkActionsFavorite: {
+  icon: {
     marginRight: "3px",
   },
-  artworkActionsFooter: {
+  footer: {
     padding: "14px",
     width: "100%",
     display: "flex",
     justifyContent: "space-evenly",
     alignItems: "center",
   },
-  artworkActionsAction: {
+  actions: {
     width: "100%",
     display: "flex",
     justifyContent: "space-evenly",

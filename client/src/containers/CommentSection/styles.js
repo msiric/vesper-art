@@ -1,18 +1,18 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const commentSectionStyles = makeStyles((muiTheme) => ({
-  commentSectionList: {
+  list: {
     display: "flex",
     flexDirection: "column-reverse",
     padding: 0,
   },
-  commentSectionEmpty: {
+  empty: {
     height: 180,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
-  commentSectionHeading: {
+  heading: {
     marginBottom: "12px",
   },
 }));

@@ -4,7 +4,7 @@ const settingsAccountStyles = makeStyles((muiTheme) => ({
   container: {
     marginBottom: 16,
   },
-  settingsActions: {
+  actions: {
     display: "flex",
     justifyContent: "space-between",
   },

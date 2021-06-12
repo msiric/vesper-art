@@ -14,8 +14,8 @@ import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useUserStats } from "../../contexts/local/userStats";
 import Box from "../../domain/Box";
+import Card from "../../domain/Card";
 import Grid from "../../domain/Grid";
-import { Card } from "../../styles/theme.js";
 import dashboardVisualizationStyles from "./styles.js";
 
 const DashboardVisualization = () => {
@@ -57,15 +57,11 @@ const DashboardVisualization = () => {
   const classes = dashboardVisualizationStyles();
 
   return (
-    <Grid
-      container
-      spacing={2}
-      className={classes.dashboardVisualizationContainer}
-    >
+    <Grid container spacing={2}>
       <Grid item xs={12} md={8}>
-        <Card className={classes.dashboardVisualizationCard}>
+        <Card className={classes.card}>
           <SkeletonWrapper loading={loading} width="100%">
-            <Box className={classes.dashboardVisualizationChart}>
+            <Box className={classes.chart}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={graphData}
@@ -101,11 +97,7 @@ const DashboardVisualization = () => {
         </Card>
       </Grid>
       <Grid item xs={12} md={4}>
-        <Grid
-          container
-          spacing={2}
-          className={classes.dashboardVisualizationWrapper}
-        >
+        <Grid container spacing={2} className={classes.wrapper}>
           {cards.map((card, index) => (
             <Grid item xs={12} sm={index !== cards.length - 1 ? 6 : 8} md={12}>
               <DashboardCard

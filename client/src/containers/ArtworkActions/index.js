@@ -1,4 +1,3 @@
-import { Divider } from "@material-ui/core";
 import { FavoriteRounded as FavoritedIcon } from "@material-ui/icons";
 import React from "react";
 import FavoriteButton from "../../components/FavoriteButton/index.js";
@@ -9,6 +8,7 @@ import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
+import Divider from "../../domain/Divider";
 import { CardContent } from "../../styles/theme.js";
 import artworkActionsStyles from "./styles.js";
 
@@ -24,21 +24,18 @@ const ArtworkActions = () => {
   const classes = artworkActionsStyles();
 
   return (
-    <Card className={classes.artworkActionsContainer}>
-      <CardContent className={classes.artworkActionsContent}>
-        <Box className={classes.artworkActionsCounter}>
-          <Box loading={loading} className={classes.artworkActionsIncrementer}>
-            <FavoritedIcon
-              fontSize="large"
-              className={classes.artworkActionsFavorite}
-            />
+    <Card className={classes.container}>
+      <CardContent className={classes.content}>
+        <Box className={classes.counter}>
+          <Box loading={loading} className={classes.incrementer}>
+            <FavoritedIcon fontSize="large" className={classes.icon} />
             <IncrementCounter newValue={favorites}></IncrementCounter>
           </Box>
         </Box>
       </CardContent>
       <Divider />
-      <CardActions className={classes.artworkActionsFooter}>
-        <Box loading={loading} className={classes.artworkActionsAction}>
+      <CardActions className={classes.footer}>
+        <Box loading={loading} className={classes.actions}>
           {artwork.owner && artwork.owner.id !== userId && (
             <FavoriteButton
               artwork={artwork}

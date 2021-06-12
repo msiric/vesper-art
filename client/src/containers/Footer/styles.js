@@ -2,15 +2,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme";
 
 const footerStyles = makeStyles((muiTheme) => ({
-  footerContainer: {
+  container: {
     backgroundColor: artepunktTheme.palette.background.paper,
     width: "100%",
   },
-  footerNav: {
+  navigation: {
     display: "flex",
     width: "100%",
   },
-  footerItem: {
+  item: {
     display: "flex",
     flexDirection: "column",
     padding: "18px 0",
@@ -22,17 +22,17 @@ const footerStyles = makeStyles((muiTheme) => ({
       flex: "0 0 50%",
     },
   },
-  footerLink: {
+  link: {
     textDecoration: "initial",
     color: "#fff",
   },
-  footerDisclaimers: {
+  disclaimers: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     padding: "18px 0",
   },
-  footerCopyright: {
+  copyright: {
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -47,11 +47,11 @@ const footerStyles = makeStyles((muiTheme) => ({
       justifyContent: "center",
     },
   },
-  logoDesktop: {
+  logo: {
     width: 100,
     cursor: "pointer",
   },
-  footerDisclosures: {
+  disclosures: {
     display: "flex",
     justifyContent: "flex-end",
     alignItems: "center",

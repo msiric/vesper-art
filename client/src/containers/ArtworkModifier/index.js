@@ -16,10 +16,10 @@ import HelpBox from "../../components/HelpBox/index.js";
 import SyncButton from "../../components/SyncButton/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useArtworkUpdate } from "../../contexts/local/artworkUpdate";
+import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import ArtworkForm from "../../forms/ArtworkForm/index.js";
-import { Card } from "../../styles/theme.js";
 import artworkModifierClasses from "./styles.js";
 
 const ArtworkModifier = ({ paramId }) => {
@@ -139,7 +139,7 @@ const ArtworkModifier = ({ paramId }) => {
               loading={artworkLoading}
             />
           </CardContent>
-          <CardActions className={classes.artworkModifierActions}>
+          <CardActions className={classes.actions}>
             <AsyncButton
               type="submit"
               fullWidth

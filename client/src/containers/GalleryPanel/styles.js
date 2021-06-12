@@ -1,18 +1,18 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const galleryPanelStyles = makeStyles((muiTheme) => ({
-  galleryPanelCard: {
+  card: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     maxWidth: 500,
     height: "fit-content",
   },
-  galleryPanelMasonry: {
+  masonry: {
     display: "flex",
     width: "auto",
   },
-  galleryPanelColumn: {
+  column: {
     paddingLeft: 24,
     "&:first-child": {
       paddingLeft: 0,
