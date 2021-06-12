@@ -1,14 +1,4 @@
 import {
-  Box,
-  Button,
-  CardContent,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from "@material-ui/core";
-import {
   CheckRounded as CheckIcon,
   EditRounded as EditIcon,
   GetAppRounded as DownloadIcon,
@@ -16,8 +6,16 @@ import {
 } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Card, Typography } from "../../styles/theme.js";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import CardContent from "../../domain/CardContent";
+import Divider from "../../domain/Divider";
+import List from "../../domain/List";
+import ListItem from "../../domain/ListItem";
+import ListItemIcon from "../../domain/ListItemIcon";
+import ListItemText from "../../domain/ListItemText";
+import Typography from "../../domain/Typography";
+import SyncButton from "../SyncButton/index.js";
 import pricingCardStyles from "./styles.js";
 
 const PricingCard = ({
@@ -35,75 +33,61 @@ const PricingCard = ({
   const classes = pricingCardStyles();
 
   return (
-    <Card width="100%" height="100%">
-      <CardContent p={32}>
-        <SkeletonWrapper loading={loading}>
-          <Box display="flex" justifyContent="center">
-            {price ? (
-              <Typography variant="h5" color="textSecondary">
-                $
-              </Typography>
-            ) : null}
-            <Box alignItems="flex-end">
-              <Typography fontSize={48}>{price || "Free"}</Typography>
-            </Box>
-          </Box>
-        </SkeletonWrapper>
-
-        <Divider />
-
-        <Box display="flex" flexDirection="column">
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography variant="subtitle1" m={2}>
-              {heading}
+    <Card className={classes.container}>
+      <CardContent className={classes.content}>
+        <Box loading={loading} className={classes.dataWrapper}>
+          {price ? (
+            <Typography variant="h5" color="textSecondary">
+              $
             </Typography>
-          </SkeletonWrapper>
+          ) : null}
+          <Box className={classes.priceWrapper}>
+            <Typography className={classes.price}>{price || "Free"}</Typography>
+          </Box>
+        </Box>
+        <Divider />
+        <Box className={classes.infoWrapper}>
+          <Typography
+            loading={loading}
+            variant="subtitle1"
+            className={classes.heading}
+          >
+            {heading}
+          </Typography>
           <List component="nav" aria-label="Features" disablePadding>
             {list.map((item) => (
-              <SkeletonWrapper loading={loading}>
-                <ListItem>
-                  <ListItemIcon>
-                    <CheckIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={item.label} />
-                </ListItem>
-              </SkeletonWrapper>
+              <ListItem loading={loading}>
+                <ListItemIcon>
+                  <CheckIcon />
+                </ListItemIcon>
+                <ListItemText primary={item.label} />
+              </ListItem>
             ))}
           </List>
         </Box>
       </CardContent>
-
-      <Box display="flex" justifyContent="center">
+      <Box className={classes.actionsWrapper}>
         {!isSeller() ? (
           price ? (
-            <Button
-              color="primary"
-              variant="outlined"
+            <SyncButton
               startIcon={<PurchaseIcon />}
               onClick={() => handlePurchase({ versionId, license })}
             >
               Purchase
-            </Button>
+            </SyncButton>
           ) : (
-            <Button
-              color="primary"
-              variant="outlined"
-              startIcon={<DownloadIcon />}
-              onClick={handleModalOpen}
-            >
+            <SyncButton startIcon={<DownloadIcon />} onClick={handleModalOpen}>
               Download
-            </Button>
+            </SyncButton>
           )
         ) : (
-          <Button
-            color="primary"
-            variant="outlined"
+          <SyncButton
             component={RouterLink}
             to={`/artwork/${artworkId}/edit`}
             startIcon={<EditIcon />}
           >
             Edit artwork
-          </Button>
+          </SyncButton>
         )}
       </Box>
     </Card>

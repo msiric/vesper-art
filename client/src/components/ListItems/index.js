@@ -1,12 +1,9 @@
-import {
-  Avatar,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from "@material-ui/core";
 import React from "react";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import Avatar from "../../domain/Avatar";
+import List from "../../domain/List";
+import ListItem from "../../domain/ListItem";
+import ListItemIcon from "../../domain/ListItemIcon";
+import ListItemText from "../../domain/ListItemText";
 import listItemsStyles from "./styles.js";
 
 const ListItems = ({ items, loading, custom = false, ...props }) => {
@@ -19,19 +16,11 @@ const ListItems = ({ items, loading, custom = false, ...props }) => {
         : items.map((item) => (
             <ListItem>
               {loading ? (
-                <SkeletonWrapper
-                  className={classes.listItemsLoader}
-                  variant="circle"
-                  loading={loading}
-                >
-                  <Avatar className={classes.listItemsIcon} />
-                </SkeletonWrapper>
+                <Avatar loading={loading} className={classes.icon} />
               ) : (
                 <ListItemIcon>{item.icon}</ListItemIcon>
               )}
-              <SkeletonWrapper variant="text" loading={loading}>
-                <ListItemText primary={item.label} />
-              </SkeletonWrapper>
+              <ListItemText loading={loading} primary={item.label} />
             </ListItem>
           ))}
     </List>

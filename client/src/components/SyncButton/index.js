@@ -6,7 +6,7 @@ import syncButtonStyles from "./styles";
 const SyncButton = ({
   loading = false,
   variant = "outlined",
-  color = "dark",
+  color = "primary",
   handleClick,
   padding,
   children,
