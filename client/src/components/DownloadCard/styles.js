@@ -1,14 +1,14 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const downloadCardStyles = makeStyles((muiTheme) => ({
-  downloadCardWrapper: {
+  container: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     padding: 24, // $TODO insert global padding here
     textAlign: "center",
   },
-  downloadCardLabel: {
+  label: {
     marginBottom: 20,
   },
 }));

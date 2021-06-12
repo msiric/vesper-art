@@ -1,8 +1,9 @@
-import { IconButton, Tooltip } from "@material-ui/core";
 import { Add as AddIcon } from "@material-ui/icons";
 import MUIDataTable from "mui-datatables";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import IconButton from "../../domain/IconButton";
+import Tooltip from "../../domain/Tooltip";
 import globalStyles from "../../styles/global";
 import LoadingSpinner from "../LoadingSpinner";
 

@@ -1,14 +1,14 @@
-import { Box, Button, Card } from "@material-ui/core";
 import { GetAppRounded as DownloadIcon } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
-import { Typography } from "../../styles/theme.js";
+import Card from "../../domain/Card";
+import Typography from "../../domain/Typography";
+import AsyncButton from "../AsyncButton/index.js";
 import downloadCardStyles from "./styles.js";
 
-const DownloadCard = ({ paramId }) => {
+const DownloadCard = () => {
   const userId = useUserStore((state) => state.id);
 
   const order = useOrderDetails((state) => state.order.data);
@@ -19,24 +19,17 @@ const DownloadCard = ({ paramId }) => {
   const classes = downloadCardStyles();
 
   return (
-    <Card>
-      <Box className={classes.downloadCardWrapper}>
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography className={classes.downloadCardLabel}>
-            Download high resolution artwork
-          </Typography>
-        </SkeletonWrapper>
-        <SkeletonWrapper loading={loading}>
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-            className={classes.downloadCardButton}
-            onClick={() => downloadArtwork({ orderId: order.id, userId })}
-          >
-            Download
-          </Button>
-        </SkeletonWrapper>
-      </Box>
+    <Card className={classes.container}>
+      <Typography loading={loading} className={classes.label}>
+        Download high resolution artwork
+      </Typography>
+      <AsyncButton
+        startIcon={<DownloadIcon />}
+        onClick={() => downloadArtwork({ orderId: order.id, userId })}
+        loading={loading}
+      >
+        Download
+      </AsyncButton>
     </Card>
   );
 };

@@ -1,9 +1,12 @@
-import { Box, Button, Popover } from "@material-ui/core";
 import {
   DeleteRounded as DeleteIcon,
   EditRounded as EditIcon,
 } from "@material-ui/icons";
 import React from "react";
+import Box from "../../domain/Box";
+import Button from "../../domain/Button";
+import Popover from "../../domain/Popover";
+import commentPopoverStyles from "./styles.js";
 
 const CommentPopover = ({
   id,
@@ -13,6 +16,8 @@ const CommentPopover = ({
   handleModalOpen,
   handlePopoverClose,
 }) => {
+  const classes = commentPopoverStyles();
+
   return (
     <Popover
       open={open}
@@ -26,12 +31,12 @@ const CommentPopover = ({
         vertical: "top",
         horizontal: "center",
       }}
-      width={120}
       transition
+      className={classes.popover}
     >
       <Box>
         <Button
-          variant="text"
+          outline="text"
           startIcon={<EditIcon />}
           onClick={() => handleCommentOpen({ commentId: id })}
           fullWidth
@@ -39,7 +44,7 @@ const CommentPopover = ({
           Edit
         </Button>
         <Button
-          variant="text"
+          outline="text"
           startIcon={<DeleteIcon />}
           onClick={() => handleModalOpen({ commentId: id })}
           fullWidth
