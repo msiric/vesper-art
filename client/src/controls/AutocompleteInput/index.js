@@ -1,7 +1,7 @@
-import { TextField } from "@material-ui/core";
-import { Autocomplete as SearchableSelect } from "@material-ui/lab";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import Autocomplete from "../../domain/Autocomplete";
+import TextField from "../../domain/TextField";
 import autocompleteInputStyles from "./styles";
 
 const Input = ({
@@ -13,18 +13,21 @@ const Input = ({
   helperText,
   error,
   options,
-  ...other
+  variant = "text",
+  loading = false,
+  ...props
 }) => {
   const classes = autocompleteInputStyles();
 
   return (
-    <SearchableSelect
-      {...other}
+    <Autocomplete
+      {...props}
       value={value ? options.find((item) => item.value === value) : ""}
       getOptionLabel={(option) => option.text}
       onChange={(e, item) => setValue(name, item ? item.value : "")}
       openOnFocus
       options={options}
+      loading={loading}
       renderInput={(params) => (
         <TextField
           {...params}
