@@ -1,26 +1,20 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Backdrop,
-  Box,
-  Button,
-  CardActions,
-  CardContent,
-  Divider,
-  Fade,
-  Modal,
-  Typography,
-} from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import * as Yup from "yup";
+import { reviewValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
+import Backdrop from "../../domain/Backdrop";
+import Box from "../../domain/Box";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
+import Divider from "../../domain/Divider";
+import Fade from "../../domain/Fade";
+import Modal from "../../domain/Modal";
+import Typography from "../../domain/Typography";
 import RatingForm from "../../forms/RatingForm";
+import SyncButton from "../SyncButton/index.js";
 import ratingModalStyles from "./styles";
-
-const reviewValidation = Yup.object().shape({
-  artistRating: Yup.number().min(1).max(5).required("Rating cannot be empty"),
-});
 
 const RatingModal = ({
   open,
@@ -54,7 +48,7 @@ const RatingModal = ({
     <Modal
       aria-labelledby={ariaLabel}
       aria-describedby={ariaLabel}
-      className={classes.modalWrapper}
+      className={classes.modal}
       open={open}
       onClose={handleClose}
       closeAfterTransition
@@ -64,8 +58,8 @@ const RatingModal = ({
       }}
     >
       <Fade in={open}>
-        <Box className={classes.modalContent}>
-          <Typography className={classes.modalTitle}>{promptTitle}</Typography>
+        <Box className={classes.content}>
+          <Typography className={classes.title}>{promptTitle}</Typography>
           <Divider />
           <FormProvider control={control}>
             <form onSubmit={handleSubmit(handleConfirm)}>
@@ -79,28 +73,19 @@ const RatingModal = ({
                   loading={loading}
                 />
               </CardContent>
-              <CardActions
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
+              <CardActions className={classes.actions}>
                 <AsyncButton
                   type="submit"
                   fullWidth
-                  variant="outlined"
-                  color="primary"
                   padding
                   submitting={formState.isSubmitting}
                   startIcon={<UploadIcon />}
                 >
                   {promptConfirm}
                 </AsyncButton>
-                <Button
-                  type="button"
-                  variant="outlined"
-                  color="dark"
-                  onClick={handleClose}
-                >
+                <SyncButton type="button" color="dark" onClick={handleClose}>
                   {promptCancel}
-                </Button>
+                </SyncButton>
               </CardActions>
             </form>
           </FormProvider>

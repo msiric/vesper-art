@@ -274,7 +274,9 @@ export const ticketValidation = Yup.object().shape({
 });
 
 export const fingerprintValidation = Yup.object().shape({
-  licenseFingerprint: Yup.string().trim().required(),
+  licenseFingerprint: Yup.string()
+    .trim()
+    .required("Fingerprint cannot be empty"),
 });
 
 export const recoveryValidation = Yup.object().shape({

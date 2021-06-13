@@ -2,7 +2,6 @@ import { StarsRounded as ReviewIcon } from "@material-ui/icons";
 import queryString from "query-string";
 import React, { useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import ReviewRating from "../../components/ReviewRating/index.js";
 import SubHeading from "../../components/SubHeading/index.js";
 import SyncButton from "../../components/SyncButton";
 import { useUserStore } from "../../contexts/global/user.js";
@@ -12,6 +11,7 @@ import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
+import Rating from "../../domain/Rating/index.js";
 import Typography from "../../domain/Typography";
 import reviewCardStyles from "./styles.js";
 
@@ -47,11 +47,7 @@ const ReviewCard = ({ paramId, highlightRef }) => {
         <SubHeading text="Review" loading={loading} />
         {loading || review ? (
           <Box className={classes.wrapper}>
-            <ReviewRating
-              value={review.rating}
-              readOnly={true}
-              loading={loading}
-            />
+            <Rating value={review.rating} readOnly={true} loading={loading} />
           </Box>
         ) : (
           <Box>

@@ -1,6 +1,6 @@
-import { Box, Button } from "@material-ui/core";
 import React from "react";
-import SkeletonWrapper from "../../components/SkeletonWrapper";
+import Box from "../../domain/Box";
+import Button from "../../domain/Button";
 import syncButtonStyles from "./styles";
 
 const SyncButton = ({
@@ -12,21 +12,19 @@ const SyncButton = ({
   children,
   ...props
 }) => {
-  const classes = syncButtonStyles({ padding: padding ? 16 : "" });
+  const classes = syncButtonStyles();
 
   return (
-    <Box className={classes.buttonContainer}>
-      <SkeletonWrapper variant="text" loading={loading}>
-        <Button
-          color={color}
-          variant={variant}
-          onClick={handleClick}
-          className={classes.buttonItem}
-          {...props}
-        >
-          {children}
-        </Button>
-      </SkeletonWrapper>
+    <Box>
+      <Button
+        color={color}
+        outline={variant}
+        onClick={handleClick}
+        loading={loading}
+        {...props}
+      >
+        {children}
+      </Button>
     </Box>
   );
 };

@@ -21,7 +21,7 @@ const AsyncButton = ({
     <Box className={classes.container}>
       <Button
         color={color}
-        variant={variant}
+        outline={variant}
         onClick={handleClick}
         disabled={submitting || disabled}
         loading={loading}

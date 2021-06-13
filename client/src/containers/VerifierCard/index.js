@@ -3,7 +3,7 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import { withSnackbar } from "notistack";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import * as Yup from "yup";
+import { fingerprintValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
 import Card from "../../domain/Card";
@@ -11,12 +11,6 @@ import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import VerifierForm from "../../forms/VerifierForm/index.js";
 import verifierCardStyles from "./styles.js";
-
-const fingerprintValidation = Yup.object().shape({
-  licenseFingerprint: Yup.string()
-    .trim()
-    .required("Fingerprint cannot be empty"),
-});
 
 const VerifierCard = () => {
   const loading = useLicenseVerifier((state) => state.license.loading);

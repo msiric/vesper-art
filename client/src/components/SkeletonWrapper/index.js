@@ -1,5 +1,5 @@
-import { Skeleton } from "@material-ui/lab";
 import React from "react";
+import Skeleton from "../../domain/Skeleton";
 import skeletonWrapperStyles from "./styles";
 
 const SkeletonWrapper = ({
@@ -16,7 +16,7 @@ const SkeletonWrapper = ({
       variant={variant}
       animation={animation}
       {...props}
-      className={classes.skeletonWrapperIndicator}
+      className={classes.wrapper}
     >
       {children}
     </Skeleton>

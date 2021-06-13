@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const skeletonWrapperStyles = makeStyles((muiTheme) => ({
-  skeletonWrapperIndicator: {
+  wrapper: {
     maxWidth: "initial",
   },
 }));

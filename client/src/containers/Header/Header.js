@@ -25,10 +25,10 @@ import {
   ShoppingBasketRounded as OrdersIcon,
   ViewCarouselRounded as GalleryIcon,
 } from "@material-ui/icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
-import * as Yup from "yup";
+import { searchValidation } from "../../../../common/validation";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import LogoMobile from "../../assets/images/logo/logo-mobile.svg";
 import { useEventsStore } from "../../contexts/global/events.js";
@@ -117,10 +117,6 @@ const MENU_ITEMS = [
   },
 ]; */
 
-const searchValidation = Yup.object().shape({
-  searchInput: Yup.string().trim().required("Search input is required"),
-});
-
 const Header = () => {
   const userId = useUserStore((state) => state.id);
   const userUsername = useUserStore((state) => state.name);
@@ -147,7 +143,8 @@ const Header = () => {
 
   const { handleSubmit, errors, control, setValue, getValues } = useForm({
     defaultValues: {
-      searchInput: "",
+      searchQuery: "",
+      searchType: "",
     },
     resolver: yupResolver(searchValidation),
   });
@@ -364,7 +361,9 @@ const Header = () => {
 
   const onSubmit = async (values) => {
     try {
-      history.push(`/search?q=${values.searchInput}&t=${search}`);
+      if (values.searchQuery.trim()) {
+        history.push(`/search?q=${values.searchQuery}&t=${search}`);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -522,6 +521,10 @@ const Header = () => {
       </MenuItem>
     </Menu>
   );
+
+  useEffect(() => {
+    setValue("searchType", search);
+  }, [search]);
 
   return (
     <>

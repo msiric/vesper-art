@@ -17,8 +17,8 @@ const SearchForm = ({ handleToggle, getValues, setValue, errors }) => {
   return (
     <Box>
       <TextInput
-        name="searchInput"
-        value={getValues("searchInput")}
+        name="searchQuery"
+        value={getValues("searchQuery")}
         setValue={setValue}
         placeholder="Search..."
         style={{ margin: 0 }}
@@ -52,6 +52,7 @@ const SearchForm = ({ handleToggle, getValues, setValue, errors }) => {
           ),
         }}
       />
+      <TextInput name="searchType" type="hidden" style={{ display: "none" }} />
     </Box>
   );
 };

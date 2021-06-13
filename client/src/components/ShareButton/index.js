@@ -1,8 +1,10 @@
-import { Box, Button, IconButton } from "@material-ui/core";
 import { ShareRounded as ShareIcon } from "@material-ui/icons";
 import React, { useState } from "react";
+import Box from "../../domain/Box";
+import IconButton from "../../domain/IconButton";
 import ShareModal from "../ShareModal/index.js";
 import SkeletonWrapper from "../SkeletonWrapper/index.js";
+import SyncButton from "../SyncButton/index";
 import shareButtonStyles from "./styles.js";
 
 const ShareButton = ({ link, type, labeled, loading = false, ...props }) => {
@@ -38,23 +40,19 @@ const ShareButton = ({ link, type, labeled, loading = false, ...props }) => {
   return (
     <Box>
       {labeled ? (
-        <SkeletonWrapper loading={loading}>
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<ShareIcon />}
-            onClick={() => handleModalOpen()}
-            {...props}
-          >
-            Share
-          </Button>
-        </SkeletonWrapper>
+        <SyncButton
+          startIcon={<ShareIcon />}
+          onClick={() => handleModalOpen()}
+          loading={loading}
+          {...props}
+        >
+          Share
+        </SyncButton>
       ) : (
         <SkeletonWrapper loading={loading}>
           <IconButton
             aria-label="Share artwork"
             onClick={() => handleModalOpen()}
-            className={classes.artworkColor}
             {...props}
           >
             <ShareIcon />

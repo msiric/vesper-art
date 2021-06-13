@@ -2,31 +2,31 @@ import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme";
 
 const shareModalStyles = makeStyles((muiTheme) => ({
-  modalWrapper: {
+  modal: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
-  modalContent: {
+  content: {
     backgroundColor: muiTheme.palette.background.paper,
     boxShadow: muiTheme.shadows[5],
     padding: muiTheme.spacing(2),
     borderRadius: muiTheme.spacing(0.5),
   },
-  modalTitle: {
+  title: {
     paddingBottom: muiTheme.spacing(2),
   },
-  modalActions: {
+  actions: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "column",
     marginTop: muiTheme.spacing(4),
   },
-  shareContainer: {
+  wrapper: {
     display: "flex",
   },
-  socialButton: {
+  button: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -51,12 +51,12 @@ const shareModalStyles = makeStyles((muiTheme) => ({
       },
     },
   },
-  copyButton: {
+  copy: {
     width: "100%",
     height: "100%",
     padding: 10,
   },
-  modalPopper: {
+  popper: {
     zIndex: 10000,
   },
 }));

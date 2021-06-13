@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const swipeCardStyles = makeStyles((muiTheme) => ({
-  profileArtworkContainer: {
+  container: {
     height: "100%",
     "&> div": {
       display: "flex",
@@ -16,7 +16,10 @@ const swipeCardStyles = makeStyles((muiTheme) => ({
         "transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s !important",
     },
   },
-  swipeCardBox: {
+  bar: {
+    marginBottom: 10,
+  },
+  wrapper: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

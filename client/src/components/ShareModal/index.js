@@ -1,13 +1,3 @@
-import {
-  Backdrop,
-  Box,
-  Button,
-  Divider,
-  Fade,
-  Modal,
-  Popper,
-  Typography,
-} from "@material-ui/core";
 import { LinkRounded as CopyIcon } from "@material-ui/icons";
 import React, { useEffect, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -21,6 +11,14 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
+import Backdrop from "../../domain/Backdrop";
+import Box from "../../domain/Box";
+import Divider from "../../domain/Divider";
+import Fade from "../../domain/Fade";
+import Modal from "../../domain/Modal";
+import Popper from "../../domain/Popper";
+import Typography from "../../domain/Typography";
+import SyncButton from "../SyncButton/index";
 import shareModalStyles from "./styles";
 
 const ShareModal = ({
@@ -91,7 +89,7 @@ const ShareModal = ({
       <Modal
         aria-labelledby={ariaLabel}
         aria-describedby={ariaLabel}
-        className={classes.modalWrapper}
+        className={classes.modal}
         open={open}
         onClose={() => handleClose({ callback: handlePopperClose })}
         closeAfterTransition
@@ -101,15 +99,13 @@ const ShareModal = ({
         }}
       >
         <Fade in={open}>
-          <Box className={classes.modalContent}>
-            <Typography className={classes.modalTitle}>
-              {promptTitle}
-            </Typography>
+          <Box className={classes.content}>
+            <Typography className={classes.title}>{promptTitle}</Typography>
             <Divider />
-            <Box className={classes.modalActions}>
-              <Box className={classes.shareContainer}>
+            <Box className={classes.actions}>
+              <Box className={classes.wrapper}>
                 <Box
-                  className={classes.socialButton}
+                  className={classes.button}
                   onMouseEnter={(e) => {
                     anchorEl.current = e.currentTarget;
                     handlePopperOpen(
@@ -125,7 +121,7 @@ const ShareModal = ({
                 >
                   <CopyToClipboard
                     text={url}
-                    className={classes.copyButton}
+                    className={classes.copy}
                     onCopy={(_, success) => handleCopyButton(success)}
                   >
                     <CopyIcon />
@@ -134,7 +130,7 @@ const ShareModal = ({
                 <FacebookShareButton
                   url={url}
                   quote={title}
-                  className={classes.socialButton}
+                  className={classes.button}
                   onMouseEnter={(e) => {
                     anchorEl.current = e.currentTarget;
                     handlePopperOpen(e, "Share");
@@ -146,7 +142,7 @@ const ShareModal = ({
                 <TwitterShareButton
                   url={url}
                   title={title}
-                  className={classes.socialButton}
+                  className={classes.button}
                   onMouseEnter={(e) => {
                     anchorEl.current = e.currentTarget;
                     handlePopperOpen(e, "Tweet");
@@ -160,7 +156,7 @@ const ShareModal = ({
                   title={title}
                   windowWidth={660}
                   windowHeight={460}
-                  className={classes.socialButton}
+                  className={classes.button}
                   onMouseEnter={(e) => {
                     anchorEl.current = e.currentTarget;
                     handlePopperOpen(e, "Post");
@@ -173,7 +169,7 @@ const ShareModal = ({
                   url={url}
                   title={title}
                   separator=":: "
-                  className={classes.socialButton}
+                  className={classes.button}
                   onMouseEnter={(e) => {
                     anchorEl.current = e.currentTarget;
                     handlePopperOpen(e, "Message");
@@ -183,17 +179,16 @@ const ShareModal = ({
                   <WhatsappIcon size={32} round />
                 </WhatsappShareButton>
               </Box>
-              <Box className={classes.modalActions}>
-                <Button
+              <Box>
+                <SyncButton
                   type="button"
-                  variant="outlined"
                   color="dark"
                   onClick={() => handleClose({ callback: handlePopperClose })}
                   onMouseEnter={handlePopperOpen}
                   onMouseLeave={handlePopperClose}
                 >
                   {promptCancel}
-                </Button>
+                </SyncButton>
               </Box>
             </Box>
           </Box>
@@ -202,7 +197,7 @@ const ShareModal = ({
       <Popper
         open={state.popper.open}
         anchorEl={anchorEl.current}
-        className={classes.modalPopper}
+        className={classes.popper}
       >
         <Typography>{state.popper.label}</Typography>
       </Popper>
