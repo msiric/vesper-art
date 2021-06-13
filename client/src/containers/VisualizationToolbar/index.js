@@ -8,6 +8,7 @@ import visualizationToolbarStyles from "./styles.js";
 const VisualizationToolbar = () => {
   const range = useUserStats((state) => state.range);
   const changeRange = useUserStats((state) => state.changeRange);
+  const loading = useUserStats((state) => state.selectedStats.loading);
 
   const classes = visualizationToolbarStyles();
 
@@ -21,6 +22,7 @@ const VisualizationToolbar = () => {
         toLabel="To"
         selectedDate={range}
         handleChange={(range) => changeRange({ range })}
+        loading={loading}
       />
     </Box>
   );

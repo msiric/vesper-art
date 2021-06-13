@@ -1,49 +1,38 @@
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import FormControl from "../../domain/FormControl";
-import FormHelperText from "../../domain/FormHelperText";
-import InputLabel from "../../domain/InputLabel";
 import MenuItem from "../../domain/MenuItem";
-import Select from "../../domain/Select";
+import TextField from "../../domain/TextField";
 
 const Input = ({
-  name,
   label,
   options,
-  helperText,
-  error,
+  variant = "outlined",
   loading = false,
+  margin = "dense",
   ...props
 }) => {
   return (
-    <FormControl variant="outlined" margin="dense" fullWidth>
-      <InputLabel error={error} htmlFor={name} loading={loading}>
-        {label}
-      </InputLabel>
-      <Select
-        {...props}
-        error={error}
-        label={label}
-        loading={loading}
-        inputProps={{
-          name: name,
-          id: name,
-        }}
-      >
-        {options.map((item, index) =>
-          item.value === "" ? (
-            <MenuItem key={index} value={item.value}>
-              <em>None</em>
-            </MenuItem>
-          ) : (
-            <MenuItem key={index} value={item.value} disabled={item.disabled}>
-              {item.text}
-            </MenuItem>
-          )
-        )}
-      </Select>
-      {helperText && <FormHelperText error>{helperText}</FormHelperText>}
-    </FormControl>
+    <TextField
+      {...props}
+      variant={variant}
+      margin={margin}
+      label={label}
+      loading={loading}
+      select
+      fullWidth
+    >
+      {options.map((item, index) =>
+        item.value === "" ? (
+          <MenuItem key={index} value={item.value}>
+            <em>None</em>
+          </MenuItem>
+        ) : (
+          <MenuItem key={index} value={item.value} disabled={item.disabled}>
+            {item.text}
+          </MenuItem>
+        )
+      )}
+    </TextField>
   );
 };
 
