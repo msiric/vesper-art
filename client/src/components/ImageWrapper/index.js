@@ -24,27 +24,27 @@ const ImageWrapper = ({
   return !loading && downloaded ? (
     redirect ? (
       <Box component={RouterLink} to={redirect}>
-        <img className={classes.imageWrapperContent} src={source} />
+        <img className={classes.media} src={source} />
       </Box>
     ) : (
-      <Box className={classes.imageWrapperLoading}>
+      <Box className={classes.loader}>
         <LoadingSpinner
           styles={{ position: "absolute", display: loading ? "flex" : "none" }}
         />
         <img
-          className={classes.imageWrapperContent}
+          className={classes.media}
           style={{ ...styles, opacity: loading ? 0.5 : 1 }}
           src={source}
         />
       </Box>
     )
   ) : cover ? (
-    <Box className={classes.imageWrapperCover}>
+    <Box className={classes.wrapper}>
       <LoadingSpinner
         styles={{ position: "absolute", display: loading ? "flex" : "none" }}
       />
       <img
-        className={classes.imageWrapperContent}
+        className={classes.media}
         style={{ ...styles, opacity: loading ? 0.5 : 1 }}
         src={cover}
       />
@@ -60,7 +60,7 @@ const ImageWrapper = ({
       }}
     >
       <img
-        className={classes.imageWrapperContent}
+        className={classes.media}
         style={{ visibility: "hidden" }}
         src={source}
       />
