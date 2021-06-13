@@ -1,11 +1,11 @@
 import { Box, Container, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useEffect, useRef } from "react";
-import DownloadCard from "../../components/DownloadCard/index.js";
-import OrderCard from "../../components/OrderCard/index.js";
-import RatingWrapper from "../../components/RatingWrapper/index.js";
+import DownloadCard from "../../containers/DownloadCard/index.js";
 import LicenseCard from "../../containers/LicenseCard/index.js";
+import OrderCard from "../../containers/OrderCard/index.js";
 import OrderPreview from "../../containers/OrderPreview/index.js";
+import RatingWrapper from "../../containers/RatingWrapper/index.js";
 import ReviewCard from "../../containers/ReviewCard/index.js";
 import UserSection from "../../containers/UserSection/index.js";
 import { useOrderDetails } from "../../contexts/local/orderDetails";

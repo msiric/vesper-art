@@ -1,11 +1,11 @@
 import { GetAppRounded as DownloadIcon } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
+import AsyncButton from "../../components/AsyncButton/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import Card from "../../domain/Card";
 import Typography from "../../domain/Typography";
-import AsyncButton from "../AsyncButton/index.js";
 import downloadCardStyles from "./styles.js";
 
 const DownloadCard = () => {

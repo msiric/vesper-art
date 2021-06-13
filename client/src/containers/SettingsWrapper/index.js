@@ -1,10 +1,10 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import PromptModal from "../../components/PromptModal/index.js";
-import { socket } from "../../containers/Interceptor/Interceptor";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
+import { socket } from "../Interceptor/Interceptor";
 
 const SettingsWrapper = ({ location }) => {
   const resetUser = useUserStore((state) => state.resetUser);
