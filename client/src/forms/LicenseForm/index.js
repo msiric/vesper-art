@@ -69,12 +69,14 @@ const LicenseForm = ({ version, errors, loading }) => {
         type="text"
         label="License assignee"
         errors={errors}
+        loading={loading}
       />
       <TextInput
         name="licenseCompany"
         type="text"
         label="License company"
         errors={errors}
+        loading={loading}
       />
       <SelectInput
         name="licenseType"
@@ -99,6 +101,7 @@ const LicenseForm = ({ version, errors, loading }) => {
               ]
             : []),
         ]}
+        loading={loading}
       />
     </Box>
   );

@@ -2,7 +2,7 @@ import { Box } from "@material-ui/core";
 import React from "react";
 import TextInput from "../../controls/TextInput";
 
-const VerifierForm = ({ errors }) => {
+const VerifierForm = ({ errors, loading }) => {
   return (
     <Box>
       <TextInput
@@ -10,6 +10,7 @@ const VerifierForm = ({ errors }) => {
         type="text"
         label="Enter license fingerprint"
         errors={errors}
+        loading={loading}
       />
     </Box>
   );

@@ -39,6 +39,7 @@ const EditUserForm = ({
           label="About"
           multiline
           errors={errors}
+          loading={loading}
         />
         <AutocompleteInput
           value={getValues("userCountry")}
@@ -47,6 +48,7 @@ const EditUserForm = ({
           label="Country"
           errors={errors}
           options={countries}
+          loading={loading}
         />
       </Box>
     </Box>

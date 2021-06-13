@@ -8,7 +8,7 @@ import React from "react";
 import { useEventsStore } from "../../contexts/global/events.js";
 import TextInput from "../../controls/TextInput/index.js";
 
-const SearchForm = ({ handleToggle, getValues, setValue, errors }) => {
+const SearchForm = ({ handleToggle, getValues, setValue, errors, loading }) => {
   const search = useEventsStore((state) => state.search);
 
   /* const classes = AddArtworkStyles(); */
@@ -22,6 +22,7 @@ const SearchForm = ({ handleToggle, getValues, setValue, errors }) => {
         setValue={setValue}
         placeholder="Search..."
         style={{ margin: 0 }}
+        loading={loading}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">

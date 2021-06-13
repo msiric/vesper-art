@@ -117,7 +117,7 @@ export const StripeInput = (props) => {
   );
 };
 
-export const StripeTextField = (props) => {
+export const StripeTextField = ({ loading, ...props }) => {
   const {
     InputLabelProps,
     stripeElement,
@@ -142,12 +142,13 @@ export const StripeTextField = (props) => {
         },
         inputComponent: StripeInput,
       }}
+      loading={loading}
       {...other}
     />
   );
 };
 
-const PaymentForm = ({ secret, version }) => {
+const PaymentForm = ({ secret, version, loading }) => {
   const errors = useOrderCheckout((state) => state.errors);
   const reflectErrors = useOrderCheckout((state) => state.reflectErrors);
 
@@ -258,6 +259,7 @@ const PaymentForm = ({ secret, version }) => {
           stripeElement={CardNumberElement}
           variant={"outlined"}
           margin="dense"
+          loading={loading}
           fullWidth
         />
       </Grid>
@@ -275,6 +277,7 @@ const PaymentForm = ({ secret, version }) => {
           stripeElement={CardExpiryElement}
           variant={"outlined"}
           margin="dense"
+          loading={loading}
           fullWidth
         />
       </Grid>
@@ -292,6 +295,7 @@ const PaymentForm = ({ secret, version }) => {
           stripeElement={CardCvcElement}
           variant={"outlined"}
           margin="dense"
+          loading={loading}
           fullWidth
         />
       </Grid>

@@ -60,7 +60,7 @@ const BillingFormStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const BillingForm = ({ errors, setValue, getValues }) => {
+const BillingForm = ({ errors, setValue, getValues, loading }) => {
   return (
     <Box>
       <TextInput
@@ -68,32 +68,43 @@ const BillingForm = ({ errors, setValue, getValues }) => {
         type="text"
         label="First name"
         errors={errors}
+        loading={loading}
       />
       <TextInput
         name="billingSurname"
         type="text"
         label="Last name"
         errors={errors}
+        loading={loading}
       />
       <TextInput
         name="billingEmail"
         type="text"
         label="Email address"
         errors={errors}
+        loading={loading}
       />
       <TextInput
         name="billingAddress"
         type="text"
         label="Street address"
         errors={errors}
+        loading={loading}
       />
       <TextInput
         name="billingZip"
         type="text"
         label="Zip code"
         errors={errors}
+        loading={loading}
       />
-      <TextInput name="billingCity" type="text" label="City" errors={errors} />
+      <TextInput
+        name="billingCity"
+        type="text"
+        label="City"
+        errors={errors}
+        loading={loading}
+      />
       <AutocompleteInput
         value={getValues("billingCountry")}
         setValue={setValue}
@@ -101,6 +112,7 @@ const BillingForm = ({ errors, setValue, getValues }) => {
         label="Country"
         errors={errors}
         options={countries}
+        loading={loading}
       />
     </Box>
   );

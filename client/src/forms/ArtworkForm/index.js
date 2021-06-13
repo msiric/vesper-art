@@ -57,6 +57,7 @@ const ArtworkForm = ({
           type="text"
           label="Artwork title"
           errors={errors}
+          loading={loading}
         />
         <SelectInput
           name="artworkAvailability"
@@ -70,6 +71,7 @@ const ArtworkForm = ({
             },
             { value: "unavailable", text: "Only for preview" },
           ]}
+          loading={loading}
         />
         {artworkAvailability === "available" && (
           <SelectInput
@@ -90,6 +92,7 @@ const ArtworkForm = ({
               },
               { value: "free", text: "Free" },
             ]}
+            loading={loading}
           />
         )}
         {artworkAvailability === "available" && (
@@ -102,6 +105,7 @@ const ArtworkForm = ({
               { value: "commercial", text: "Commercial" },
               { value: "personal", text: "Personal" },
             ]}
+            loading={loading}
           />
         )}
         {artworkAvailability === "available" &&
@@ -113,6 +117,7 @@ const ArtworkForm = ({
               trigger={trigger}
               label="Personal license price"
               errors={errors}
+              loading={loading}
             />
           )}
         {artworkAvailability === "available" &&
@@ -144,6 +149,7 @@ const ArtworkForm = ({
                       text: "Offer commercial license free of charge",
                     },
               ]}
+              loading={loading}
             />
           )}
         {artworkAvailability === "available" &&
@@ -156,6 +162,7 @@ const ArtworkForm = ({
               trigger={trigger}
               label="Commercial license price"
               errors={errors}
+              loading={loading}
             />
           )}
         <SelectInput
@@ -170,6 +177,7 @@ const ArtworkForm = ({
             },
             { value: "invisible", text: "Hidden to public" },
           ]}
+          loading={loading}
         />
         <TextInput
           name="artworkDescription"
@@ -177,6 +185,7 @@ const ArtworkForm = ({
           label="Artwork description"
           errors={errors}
           multiline
+          loading={loading}
         />
         {/* <TagInput
           name="artworkTags"
