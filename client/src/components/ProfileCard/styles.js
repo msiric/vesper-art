@@ -16,9 +16,9 @@ const profileCardStyles = makeStyles((muiTheme) => ({
   wrapper: {
     width: "100px",
     height: "100px",
-    borderRadius: "50%",
     overflow: "hidden",
     marginTop: 24,
+    display: "flex",
   },
   avatar: {
     textAlign: "center",
