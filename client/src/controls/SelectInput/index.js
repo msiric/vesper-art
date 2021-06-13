@@ -1,23 +1,30 @@
-import {
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import FormControl from "../../domain/FormControl";
+import FormHelperText from "../../domain/FormHelperText";
+import InputLabel from "../../domain/InputLabel";
+import MenuItem from "../../domain/MenuItem";
+import Select from "../../domain/Select";
 
-const Input = ({ name, label, options, helperText, error, ...other }) => {
+const Input = ({
+  name,
+  label,
+  options,
+  helperText,
+  error,
+  loading = false,
+  ...props
+}) => {
   return (
     <FormControl variant="outlined" margin="dense" fullWidth>
-      <InputLabel error={error} htmlFor={name}>
+      <InputLabel error={error} htmlFor={name} loading={loading}>
         {label}
       </InputLabel>
       <Select
-        {...other}
+        {...props}
         error={error}
         label={label}
+        loading={loading}
         inputProps={{
           name: name,
           id: name,

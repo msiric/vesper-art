@@ -14,7 +14,7 @@ const Input = ({
   error,
   helperText,
   loading = false,
-  other,
+  ...props
 }) => {
   const classes = ratingInputStyles();
 
@@ -23,7 +23,7 @@ const Input = ({
       <FormControlLabel
         control={
           <Rating
-            {...other}
+            {...props}
             value={value}
             onChange={(e, value) =>
               setValue(name, value || 0, { shouldValidate: true })

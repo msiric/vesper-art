@@ -1,12 +1,25 @@
-import { TextField } from "@material-ui/core";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import TextField from "../../domain/TextField";
 import textInputStyles from "./styles";
 
-const Input = ({ margin = "dense", variant = "outlined", ...props }) => {
+const Input = ({
+  margin = "dense",
+  variant = "outlined",
+  loading = false,
+  ...props
+}) => {
   const classes = textInputStyles();
 
-  return <TextField {...props} margin={margin} variant={variant} fullWidth />;
+  return (
+    <TextField
+      {...props}
+      margin={margin}
+      variant={variant}
+      loading={loading}
+      fullWidth
+    />
+  );
 };
 
 const TextInput = (props) => {

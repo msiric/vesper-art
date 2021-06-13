@@ -1,7 +1,9 @@
-import { FormControl, FormHelperText, TextField } from "@material-ui/core";
-import { Autocomplete } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import Autocomplete from "../../domain/Autocomplete";
+import FormControl from "../../domain/FormControl";
+import FormHelperText from "../../domain/FormHelperText";
+import TextField from "../../domain/TextField";
 import tagInputStyles from "./styles";
 
 const Input = ({
@@ -13,7 +15,8 @@ const Input = ({
   helperText,
   error,
   limit,
-  ...other
+  loading = false,
+  ...props
 }) => {
   const [state, setState] = useState({ tags: value, changed: false });
   const classes = tagInputStyles();
@@ -53,7 +56,7 @@ const Input = ({
   return (
     <FormControl variant="outlined" fullWidth>
       <Autocomplete
-        {...other}
+        {...props}
         multiple
         freeSolo
         options={[]}
@@ -62,6 +65,7 @@ const Input = ({
         getOptionSelected={(value1, value2) => console.log(value1, value2)}
         onChange={(e, values) => setState({ tags: values, changed: true })}
         filterSelectedOptions
+        loading={loading}
         renderInput={(params) => {
           params.inputProps.onKeyDown = handleKeyDown;
           return (
@@ -93,7 +97,6 @@ const Input = ({
 };
 
 const TagInput = (props) => {
-  console.log(props);
   const { control } = useFormContext();
   const error = { invalid: false, message: "" };
   if (props.errors && props.errors.hasOwnProperty(props.name)) {
