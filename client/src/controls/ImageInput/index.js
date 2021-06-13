@@ -1,4 +1,3 @@
-import { Box, CircularProgress, IconButton } from "@material-ui/core";
 import {
   Clear as ClearIcon,
   Error as ErrorIcon,
@@ -6,8 +5,12 @@ import {
 } from "@material-ui/icons";
 import React, { createRef, useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import { artepunktTheme, Avatar, Typography } from "../../styles/theme.js";
+import Avatar from "../../domain/Avatar";
+import Box from "../../domain/Box";
+import CircularProgress from "../../domain/CircularProgress";
+import IconButton from "../../domain/IconButton";
+import Typography from "../../domain/Typography";
+import { artepunktTheme } from "../../styles/theme.js";
 import imageInputStyles from "./styles.js";
 
 const Input = ({
@@ -81,9 +84,9 @@ const Input = ({
   };
 
   return (
-    <Box className={classes.imageInputContainer}>
+    <Box className={classes.container}>
       <input
-        className={classes.imageInputFile}
+        className={classes.file}
         id={name}
         name={name}
         type="file"
@@ -91,65 +94,60 @@ const Input = ({
         ref={fileUpload}
       />
       {title && (
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography className={classes.imageInputTitle} variant="h6" noWrap>
-            {title}
-          </Typography>
-        </SkeletonWrapper>
-      )}
-      <SkeletonWrapper
-        loading={loading}
-        variant={shape}
-        height="100%"
-        width="100%"
-      >
-        <Avatar
-          m="auto"
-          borderColor={artepunktTheme.palette.primary.main}
-          className={classes.imageInputAvatar}
-          onClick={showFileUpload}
-          variant={shape}
-          style={{ height, width }}
+        <Typography
+          loading={loading}
+          className={classes.title}
+          variant="h6"
+          noWrap
         >
-          {state.loading ? (
-            <Box className={classes.imageInputLoading}>
-              <CircularProgress color="white" />
-            </Box>
-          ) : error ? (
-            <Box className={classes.imageInputError}>
-              <IconButton disableRipple className={classes.imageInputIcon}>
-                <ErrorIcon fontSize="large" />
-              </IconButton>
-            </Box>
-          ) : state.file ? (
-            <Box className={classes.imageInputRemove}>
-              <IconButton disableRipple className={classes.imageInputIcon}>
-                <ClearIcon fontSize="large" />
-              </IconButton>
-            </Box>
-          ) : (
-            <Box className={classes.imageInputUpload}>
-              <IconButton disableRipple className={classes.imageInputIcon}>
-                <UploadIcon fontSize="large" />
-              </IconButton>
-            </Box>
-          )}
-          {state.file && (
-            <img
-              className={classes.imageInputPreview}
-              src={state.imagePreviewUrl}
-              alt="..."
-            />
-          )}
-        </Avatar>
-      </SkeletonWrapper>
+          {title}
+        </Typography>
+      )}
 
+      <Avatar
+        className={classes.avatar}
+        onClick={showFileUpload}
+        variant={shape}
+        style={{ height, width }}
+        loading={loading}
+      >
+        {state.loading ? (
+          <Box className={`${classes.input} ${classes.loading}`}>
+            <CircularProgress color="white" />
+          </Box>
+        ) : error ? (
+          <Box className={`${classes.input} ${classes.error}`}>
+            <IconButton disableRipple className={classes.icon}>
+              <ErrorIcon fontSize="large" />
+            </IconButton>
+          </Box>
+        ) : state.file ? (
+          <Box className={`${classes.input} ${classes.remove}`}>
+            <IconButton disableRipple className={classes.icon}>
+              <ClearIcon fontSize="large" />
+            </IconButton>
+          </Box>
+        ) : (
+          <Box className={`${classes.input} ${classes.upload}`}>
+            <IconButton disableRipple className={classes.icon}>
+              <UploadIcon fontSize="large" />
+            </IconButton>
+          </Box>
+        )}
+        {state.file && (
+          <img
+            className={classes.preview}
+            src={state.imagePreviewUrl}
+            alt="..."
+          />
+        )}
+      </Avatar>
       {error ? (
         <Typography
           variant="caption"
           color={artepunktTheme.palette.error.main}
           noWrap
-          className={classes.imageInputText}
+          className={classes.helper}
         >
           {helperText}
         </Typography>
