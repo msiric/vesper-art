@@ -26,7 +26,7 @@ const Input = ({
   width,
   noEmpty,
   editable,
-  loading,
+  loading = false,
 }) => {
   const [state, setState] = useState({
     loading: false,

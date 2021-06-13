@@ -1,11 +1,9 @@
-import {
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-} from "@material-ui/core";
-import { Rating } from "@material-ui/lab";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import FormControl from "../../domain/FormControl";
+import FormControlLabel from "../../domain/FormControlLabel";
+import FormHelperText from "../../domain/FormHelperText";
+import Rating from "../../domain/Rating";
 import ratingInputStyles from "./styles.js";
 
 const Input = ({
@@ -15,7 +13,7 @@ const Input = ({
   setValue,
   error,
   helperText,
-  loading,
+  loading = false,
   other,
 }) => {
   const classes = ratingInputStyles();
@@ -31,6 +29,7 @@ const Input = ({
               setValue(name, value || 0, { shouldValidate: true })
             }
             size="large"
+            loading={loading}
           />
         }
         label={label}

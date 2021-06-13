@@ -1,20 +1,20 @@
+import { FormHelperText as MaterialFormHelperText } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import { DateRangePicker as MaterialRangePicker } from "@material-ui/pickers";
 import React, { forwardRef } from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper";
 
-const StyledRangePicker = withStyles({})(MaterialRangePicker);
+const StyledFormHelperText = withStyles({})(MaterialFormHelperText);
 
-const RangePicker = forwardRef(
+const FormHelperText = forwardRef(
   ({ loading = false, variant = "text", children, ...props }, ref) => {
     return (
       <SkeletonWrapper variant={variant} loading={loading}>
-        <StyledRangePicker ref={ref} {...props}>
+        <StyledFormHelperText ref={ref} {...props}>
           {children}
-        </StyledRangePicker>
+        </StyledFormHelperText>
       </SkeletonWrapper>
     );
   }
 );
 
-export default RangePicker;
+export default FormHelperText;
