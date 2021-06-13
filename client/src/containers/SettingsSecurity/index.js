@@ -35,7 +35,7 @@ const SettingsSecurity = ({ handleLogout }) => {
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
-            <EditPasswordForm errors={errors} />
+            <EditPasswordForm errors={errors} loading={loading} />
           </CardContent>
           <CardActions className={classes.actions}>
             <AsyncButton

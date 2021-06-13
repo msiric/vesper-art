@@ -51,6 +51,7 @@ const SettingsPreferences = () => {
               setValue={setValue}
               getValues={getValues}
               errors={errors}
+              loading={loading}
             />
           </CardContent>
           <CardActions className={classes.actions}>

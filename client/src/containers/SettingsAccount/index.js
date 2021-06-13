@@ -52,7 +52,7 @@ const SettingsAccount = ({ handleLogout }) => {
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
-            <EmailForm errors={errors} />
+            <EmailForm errors={errors} loading={loading} />
           </CardContent>
           <CardActions className={classes.actions}>
             <AsyncButton
