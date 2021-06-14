@@ -1,4 +1,3 @@
-import { Box, Container, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useEffect, useRef } from "react";
 import DownloadCard from "../../containers/DownloadCard/index.js";
@@ -9,10 +8,13 @@ import RatingWrapper from "../../containers/RatingWrapper/index.js";
 import ReviewCard from "../../containers/ReviewCard/index.js";
 import UserSection from "../../containers/UserSection/index.js";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
+import Box from "../../domain/Box";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global.js";
 
 const useOrderStyles = makeStyles((muiTheme) => ({
-  responsiveContainer: {
+  container: {
     display: "flex",
     flexDirection: "column",
     [muiTheme.breakpoints.down("sm")]: {
@@ -24,12 +26,12 @@ const useOrderStyles = makeStyles((muiTheme) => ({
       flexDirection: "column",
     },
   },
-  userSection: {
+  ownerWrapper: {
     [muiTheme.breakpoints.down("sm")]: {
       flex: 1,
     },
   },
-  actionSection: {
+  actions: {
     [muiTheme.breakpoints.down("sm")]: {
       flex: 1,
     },
@@ -61,13 +63,13 @@ const Order = ({ match }) => {
         <Grid item xs={12} md={8}>
           <OrderPreview paramId={paramId} />
         </Grid>
-        <Grid item xs={12} md={4} className={classes.responsiveContainer}>
+        <Grid item xs={12} md={4} className={classes.container}>
           <Box
-            className={`${classes.userSection} ${globalClasses.responsiveSpacing}`}
+            className={`${classes.ownerWrapper} ${globalClasses.responsiveSpacing}`}
           >
             <UserSection />
           </Box>
-          <Box className={classes.actionSection}>
+          <Box className={classes.actions}>
             <Box className={globalClasses.bottomSpacing}>
               <ReviewCard paramId={paramId} highlightRef={highlightRef} />
             </Box>

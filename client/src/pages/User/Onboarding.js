@@ -1,11 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  CardActions,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import {
   AddCircleRounded as UploadIcon,
   LabelImportantRounded as LabelIcon,
@@ -17,18 +11,40 @@ import { countries } from "../../../../common/constants.js";
 import { originValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
+import ListItems from "../../components/ListItems/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import Typography from "../../domain/Typography";
 import OnboardingForm from "../../forms/OnboardingForm/index.js";
 import { postAuthorize } from "../../services/stripe.js";
 import { patchOrigin } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
-import {
-  Card,
-  CardContent,
-  Container,
-  Grid,
-  Typography,
-} from "../../styles/theme.js";
+
+const useOnboardingStyles = makeStyles((muiTheme) => ({
+  content: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 8,
+  },
+  helpBox: {
+    margin: 4,
+  },
+  icon: {
+    fontSize: 150,
+  },
+  text: {
+    marginBottom: 4,
+  },
+  label: {
+    alignSelf: "flex-start",
+  },
+}));
 
 const Onboarding = () => {
   const userId = useUserStore((state) => state.id);
@@ -37,6 +53,7 @@ const Onboarding = () => {
   const stripeId = useUserStore((state) => state.stripeId);
 
   const globalClasses = globalStyles();
+  const classes = useOnboardingStyles();
 
   const {
     handleSubmit,
@@ -51,6 +68,21 @@ const Onboarding = () => {
     },
     resolver: yupResolver(originValidation),
   });
+
+  const onboardingItems = [
+    { icon: <LabelIcon />, label: "Complete the onboarding process" },
+    { icon: <LabelIcon />, label: "Upload your artwork" },
+    {
+      icon: <LabelIcon />,
+      label:
+        "Set how much you want to charge for personal and commercial licenses",
+    },
+    {
+      icon: <LabelIcon />,
+      label:
+        "Transfer your earnings from your dashboard to your Stripe account",
+    },
+  ];
 
   const onSubmit = async (values) => {
     try {
@@ -78,88 +110,49 @@ const Onboarding = () => {
       <Grid container spacing={2}>
         <Grid item sm={12}>
           <Card>
-            <CardContent
-              style={{ display: "flex" }}
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              p={2}
-            >
+            <CardContent className={classes.content}>
               <HelpBox
                 type="alert"
                 label="Stripe currently only supports countries found in the dropdown below"
-                margin={4}
+                className={classes.helpBox}
               />
-              <MonetizationIcon style={{ fontSize: 150 }} />
+              <MonetizationIcon className={classes.icon} />
               {stripeId ? (
-                <Typography variant="subtitle1" mb={4}>
+                <Typography className={classes.text} variant="subtitle1">
                   You already went through the onboarding process
                 </Typography>
               ) : (
                 <>
-                  <Typography variant="h4" mb={4}>
+                  <Typography className={classes.text} variant="h4">
                     Start getting paid
                   </Typography>
-                  <Typography color="textSecondary" mb={4}>
+                  <Typography className={classes.text} color="textSecondary">
                     We use Stripe to make sure you get paid on time and to keep
                     your personal bank and details secure. Click on continue to
                     set up your payments on Stripe.
                   </Typography>
-                  <List
-                    component="nav"
-                    aria-label="Becoming a seller"
-                    style={{ marginBottom: 30 }}
-                    disablePadding
-                  >
-                    <ListItem>
-                      <ListItemIcon>
-                        <LabelIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Complete the onboarding process" />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemIcon>
-                        <LabelIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Upload your artwork" />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemIcon>
-                        <LabelIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Set how much you want to charge for personal and commercial licenses" />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemIcon>
-                        <LabelIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Transfer your earnings from your dashboard to your Stripe account" />
-                    </ListItem>
-                  </List>
+                  <ListItems items={onboardingItems} />
                   {/* $TODO Refactor supportedCountries */}
                   {userAddress ? (
                     countries[userAddress] &&
                     countries[userAddress].supported ? (
                       <Typography
                         color="textSecondary"
-                        style={{ alignSelf: "flex-start" }}
+                        className={classes.label}
                       >
                         Please confirm your registered business address
                       </Typography>
                     ) : (
                       <Typography
                         color="textSecondary"
-                        style={{ alignSelf: "flex-start" }}
+                        className={classes.label}
                       >
                         Your currently saved registered business address is not
                         supported for Stripe payments
                       </Typography>
                     )
                   ) : (
-                    <Typography
-                      color="textSecondary"
-                      style={{ alignSelf: "flex-start" }}
-                    >
+                    <Typography color="textSecondary" className={classes.label}>
                       Please select your registered business address
                     </Typography>
                   )}
@@ -175,13 +168,12 @@ const Onboarding = () => {
                     />
                   </CardContent>
                   <CardActions
+                    className={classes.actions}
                     style={{ display: "flex", justifyContent: "space-between" }}
                   >
                     <AsyncButton
                       type="submit"
                       fullWidth
-                      variant="outlined"
-                      color="primary"
                       padding
                       submitting={formState.isSubmitting}
                       startIcon={<UploadIcon />}

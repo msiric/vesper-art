@@ -1,4 +1,4 @@
-import { Container, Grid } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/index.js";
@@ -12,8 +12,21 @@ import SettingsWrapper from "../../containers/SettingsWrapper/index.js";
 import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useUserSettings } from "../../contexts/local/userSettings";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
 import { postLogout } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
+
+const useSettingsStyles = makeStyles((muiTheme) => ({
+  container: {
+    padding: 0,
+    margin: "16px 0",
+  },
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+  },
+}));
 
 const Settings = ({ location }) => {
   // $TODO Update user store on every change in settings (ex. avatar change)
@@ -25,7 +38,9 @@ const Settings = ({ location }) => {
   const resetSettings = useUserSettings((state) => state.resetSettings);
 
   const history = useHistory();
+
   const globalClasses = globalStyles();
+  const classes = useSettingsStyles();
 
   const handleLogout = async () => {
     await postLogout.request();
@@ -51,41 +66,16 @@ const Settings = ({ location }) => {
       <Grid container spacing={2}>
         <Grid item sm={12}>
           <MainHeading text="Settings" className={globalClasses.mainHeading} />
-          <Grid container p={0} my={4} spacing={2}>
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+          <Grid container spacing={2} className={classes.container}>
+            <Grid item xs={12} sm={6} md={4} className={classes.wrapper}>
               <SettingsProfile />
             </Grid>
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={8}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+            <Grid item xs={12} sm={6} md={8} className={classes.wrapper}>
               <SettingsAccount handleLogout={handleLogout} />
               <SettingsPreferences />
               <SettingsSecurity handleLogout={handleLogout} />
             </Grid>
-            <Grid
-              item
-              xs={12}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+            <Grid item xs={12} className={classes.wrapper}>
               <SettingsActions />
             </Grid>
           </Grid>
