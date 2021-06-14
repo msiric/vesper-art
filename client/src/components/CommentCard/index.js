@@ -117,12 +117,13 @@ const CommentCard = ({
             edits[comment.id] ? (
               <FormProvider control={control}>
                 <form
-                  onSubmit={handleSubmit(() =>
-                    handleCommentEdit({
-                      artworkId,
-                      commentId: comment.id,
-                      values: getValues(),
-                    })
+                  onSubmit={handleSubmit(
+                    async () =>
+                      await handleCommentEdit({
+                        artworkId,
+                        commentId: comment.id,
+                        values: getValues(),
+                      })
                   )}
                 >
                   <AddCommentForm errors={errors} loading={loading} />

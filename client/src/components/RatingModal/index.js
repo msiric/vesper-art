@@ -62,7 +62,7 @@ const RatingModal = ({
           <Typography className={classes.title}>{promptTitle}</Typography>
           <Divider />
           <FormProvider control={control}>
-            <form onSubmit={handleSubmit(handleConfirm)}>
+            <form onSubmit={handleSubmit(async () => await handleConfirm)}>
               <CardContent>
                 <RatingForm
                   errors={errors}

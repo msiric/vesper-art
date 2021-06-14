@@ -198,11 +198,12 @@ const ArtworkInfo = () => {
       >
         <FormProvider control={control}>
           <form
-            onSubmit={handleSubmit(() =>
-              downloadArtwork({
-                versionId: artwork.current.id,
-                values: getValues(),
-              })
+            onSubmit={handleSubmit(
+              async () =>
+                await downloadArtwork({
+                  versionId: artwork.current.id,
+                  values: getValues(),
+                })
             )}
           >
             <LicenseForm

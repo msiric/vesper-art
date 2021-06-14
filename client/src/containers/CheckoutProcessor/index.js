@@ -140,13 +140,19 @@ const CheckoutProcessor = () => {
           },
         ];
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     const isFirstStep = step.current === 0;
     const isLastStep = step.current === step.length - 1;
     if (isLastStep) {
-      submitPayment({ values, stripe, elements, reflectErrors, changeStep });
+      await submitPayment({
+        values,
+        stripe,
+        elements,
+        reflectErrors,
+        changeStep,
+      });
     } else if (isFirstStep) {
-      saveIntent({ values, userIntents, changeStep });
+      await saveIntent({ values, userIntents, changeStep });
     } else {
       changeStep({ value: 1 });
     }
@@ -237,7 +243,7 @@ const CheckoutProcessor = () => {
                       <AsyncButton
                         type="submit"
                         loading={versionLoading}
-                        submitting={intentLoading}
+                        submitting={formState.isSubmitting}
                         disabled={discountLoading}
                       >
                         Next

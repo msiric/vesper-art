@@ -103,17 +103,18 @@ const CommentSection = ({
         <Divider />
         <FormProvider control={control}>
           <form
-            onSubmit={handleSubmit(() =>
-              addComment({
-                artworkId,
-                userData: {
-                  id: userId,
-                  name: userUsername,
-                  avatar: userAvatar,
-                },
-                values: getValues(),
-                reset,
-              })
+            onSubmit={handleSubmit(
+              async () =>
+                await addComment({
+                  artworkId,
+                  userData: {
+                    id: userId,
+                    name: userUsername,
+                    avatar: userAvatar,
+                  },
+                  values: getValues(),
+                  reset,
+                })
             )}
           >
             <AddCommentForm errors={errors} loading={loading} />
