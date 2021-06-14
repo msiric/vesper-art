@@ -1,6 +1,9 @@
-import { Box, Container, Grid, Typography } from "@material-ui/core";
 import React from "react";
 import { ReactComponent as FourOhFour } from "../../assets/images/illustrations/not_found.svg";
+import Box from "../../domain/Box";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import Typography from "../../domain/Typography";
 import globalStyles from "../../styles/global.js";
 
 const NotFound = () => {

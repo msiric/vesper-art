@@ -1,8 +1,10 @@
-import { Container, Grid, Typography } from "@material-ui/core";
 import React from "react";
 import { appName } from "../../../../common/constants";
 import { payment } from "../../../../common/constants.js";
 import MainHeading from "../../components/MainHeading";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import Typography from "../../domain/Typography";
 import globalStyles from "../../styles/global.js";
 
 const Selling = () => {

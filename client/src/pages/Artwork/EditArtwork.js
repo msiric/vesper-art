@@ -1,4 +1,4 @@
-import { Container, Grid } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
@@ -6,10 +6,18 @@ import MainHeading from "../../components/MainHeading/index.js";
 import PromptModal from "../../components/PromptModal/index.js";
 import ArtworkModifier from "../../containers/ArtworkModifier";
 import { useArtworkUpdate } from "../../contexts/local/artworkUpdate";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
 import { deleteArtwork } from "../../services/artwork.js";
 import globalStyles from "../../styles/global.js";
 
-const EditArtwork = ({ location, match }) => {
+const useEditorStyles = makeStyles((muiTheme) => ({
+  wrapper: {
+    height: "100%",
+  },
+}));
+
+const EditArtwork = ({ match }) => {
   const artwork = useArtworkUpdate((state) => state.artwork.data);
   const artworkLoading = useArtworkUpdate((state) => state.artwork.loading);
   const capabilitiesLoading = useArtworkUpdate(
@@ -27,6 +35,7 @@ const EditArtwork = ({ location, match }) => {
   const history = useHistory();
 
   const globalClasses = globalStyles();
+  const classes = useEditorStyles();
 
   const handleDeleteArtwork = async () => {
     await removeArtwork({ artworkId: artwork.id });
@@ -50,7 +59,7 @@ const EditArtwork = ({ location, match }) => {
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         {artworkLoading || capabilitiesLoading || artwork.id ? (
-          <Grid item sm={12} style={{ height: "100%" }}>
+          <Grid item sm={12} className={classes.wrapper}>
             <MainHeading
               text="Edit artwork"
               className={globalClasses.mainHeading}

@@ -1,12 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Avatar,
-  Box,
-  Container,
-  Grid,
-  Link,
-  Typography,
-} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { LockRounded as LoginAvatar } from "@material-ui/icons";
 import { useSnackbar } from "notistack";
@@ -17,11 +9,17 @@ import { loginValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
+import Avatar from "../../domain/Avatar";
+import Box from "../../domain/Box";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import Link from "../../domain/Link";
+import Typography from "../../domain/Typography";
 import LoginForm from "../../forms/LoginForm/index.js";
 import { postLogin } from "../../services/auth.js";
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
+  wrapper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
@@ -97,7 +95,7 @@ const Login = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box className={classes.paper}>
+      <Box className={classes.wrapper}>
         <Avatar className={classes.avatar}>
           <LoginAvatar />
         </Avatar>
@@ -110,8 +108,6 @@ const Login = () => {
             <AsyncButton
               type="submit"
               fullWidth
-              variant="outlined"
-              color="primary"
               padding
               submitting={formState.isSubmitting}
             >

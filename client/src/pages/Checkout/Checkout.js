@@ -1,8 +1,8 @@
-import { Container } from "@material-ui/core";
 import React, { useEffect } from "react";
 import MainHeading from "../../components/MainHeading";
 import CheckoutContent from "../../containers/CheckoutContent";
 import { useOrderCheckout } from "../../contexts/local/orderCheckout";
+import Container from "../../domain/Container";
 
 const Checkout = ({ location }) => {
   const resetArtwork = useOrderCheckout((state) => state.resetArtwork);

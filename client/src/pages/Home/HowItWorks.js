@@ -1,4 +1,4 @@
-import { Button, Card, Container, Grid, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import React from "react";
 import { appName } from "../../../../common/constants";
 import { ReactComponent as ArtworkGallery } from "../../assets/images/illustrations/artwork_gallery.svg";
@@ -15,7 +15,18 @@ import { ReactComponent as UploadArtwork } from "../../assets/images/illustratio
 import { ReactComponent as WorkingArtist } from "../../assets/images/illustrations/working_artist.svg";
 import IllustrationCard from "../../components/IllustrationCard";
 import MainHeading from "../../components/MainHeading";
+import SyncButton from "../../components/SyncButton";
+import Card from "../../domain/Card";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import Typography from "../../domain/Typography";
 import globalStyles from "../../styles/global.js";
+
+const useInstructionsStyles = makeStyles((muiTheme) => ({
+  heading: {
+    textAlign: "center",
+  },
+}));
 
 const SELLER_ILLUSTRATIONS = [
   {
@@ -97,6 +108,7 @@ const BUYER_ILLUSTRATIONS = [
 
 const HowItWorks = () => {
   const globalClasses = globalStyles();
+  const classes = useInstructionsStyles();
 
   return (
     <Container className={globalClasses.gridContainer}>
@@ -111,7 +123,7 @@ const HowItWorks = () => {
         </Grid>
         <Grid item sm={12} md={6}>
           <Card>
-            <MainHeading text="Sellers" style={{ textAlign: "center" }} />
+            <MainHeading text="Sellers" className={classes.heading} />
             {SELLER_ILLUSTRATIONS.map((item) => (
               <IllustrationCard
                 heading={item.heading}
@@ -123,7 +135,7 @@ const HowItWorks = () => {
         </Grid>
         <Grid item sm={12} md={6}>
           <Card>
-            <MainHeading text="Buyers" style={{ textAlign: "center" }} />
+            <MainHeading text="Buyers" className={classes.heading} />
             {BUYER_ILLUSTRATIONS.map((item) => (
               <IllustrationCard
                 heading={item.heading}
@@ -135,12 +147,12 @@ const HowItWorks = () => {
         </Grid>
         <Grid item sm={12}>
           <Typography>Join the platform and get started</Typography>
-          <Button variant="outlined">Sign up</Button>
+          <SyncButton>Sign up</SyncButton>
           <Typography>
             Want to learn more? Click on one of the pages below
           </Typography>
-          <Button variant="outlined">{`Selling on ${appName}`}</Button>
-          <Button variant="outlined">{`Buying on ${appName}`}</Button>
+          <SyncButton>{`Selling on ${appName}`}</SyncButton>
+          <SyncButton>{`Buying on ${appName}`}</SyncButton>
         </Grid>
       </Grid>
     </Container>

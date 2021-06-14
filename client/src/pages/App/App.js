@@ -15,11 +15,46 @@ import { useAppStore } from "../../contexts/global/app.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const useStyles = makeStyles(() => ({
-  notificationContainer: {
+  wrapper: {
     backgroundColor: artepunktTheme.palette.background.notification,
     border: `1px solid ${artepunktTheme.palette.border.main}`,
   },
 }));
+
+const iconItems = {
+  success: (
+    <SuccessIcon
+      style={{
+        marginRight: 12,
+        color: artepunktTheme.palette.success.main,
+      }}
+    />
+  ),
+  error: (
+    <ErrorIcon
+      style={{
+        marginRight: 12,
+        color: artepunktTheme.palette.error.main,
+      }}
+    />
+  ),
+  warning: (
+    <WarningIcon
+      style={{
+        marginRight: 12,
+        color: artepunktTheme.palette.warning.main,
+      }}
+    />
+  ),
+  info: (
+    <InfoIcon
+      style={{
+        marginRight: 12,
+        color: artepunktTheme.palette.info.main,
+      }}
+    />
+  ),
+};
 
 const App = () => {
   const theme = useAppStore((state) => state.theme);
@@ -47,45 +82,12 @@ const App = () => {
           vertical: "top",
           horizontal: "center",
         }}
-        iconVariant={{
-          success: (
-            <SuccessIcon
-              style={{
-                marginRight: 12,
-                color: artepunktTheme.palette.success.main,
-              }}
-            />
-          ),
-          error: (
-            <ErrorIcon
-              style={{
-                marginRight: 12,
-                color: artepunktTheme.palette.error.main,
-              }}
-            />
-          ),
-          warning: (
-            <WarningIcon
-              style={{
-                marginRight: 12,
-                color: artepunktTheme.palette.warning.main,
-              }}
-            />
-          ),
-          info: (
-            <InfoIcon
-              style={{
-                marginRight: 12,
-                color: artepunktTheme.palette.info.main,
-              }}
-            />
-          ),
-        }}
+        iconVariant={iconItems}
         classes={{
-          variantSuccess: classes.notificationContainer,
-          variantError: classes.notificationContainer,
-          variantWarning: classes.notificationContainer,
-          variantInfo: classes.notificationContainer,
+          variantSuccess: classes.wrapper,
+          variantError: classes.wrapper,
+          variantWarning: classes.wrapper,
+          variantInfo: classes.wrapper,
         }}
         dense
         maxSnack={1}

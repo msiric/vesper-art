@@ -1,24 +1,23 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Avatar,
-  Box,
-  Button,
-  CardActions,
-  CardContent,
-  Container,
-  Typography,
-} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { KeyboardRounded as ResetAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import { passwordValidation } from "../../../../common/validation";
+import AsyncButton from "../../components/AsyncButton";
+import SyncButton from "../../components/SyncButton";
+import Avatar from "../../domain/Avatar";
+import Box from "../../domain/Box";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
+import Container from "../../domain/Container";
+import Typography from "../../domain/Typography";
 import EditPasswordForm from "../../forms/PasswordForm/index.js";
 import { postReset } from "../../services/auth.js";
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
+  wrapper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
@@ -27,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
+  },
+  actions: {
+    display: "flex",
+    justifyContent: "space-between",
   },
 }));
 
@@ -67,7 +70,7 @@ const ResetPassword = ({ match }) => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box className={classes.paper}>
+      <Box className={classes.wrapper}>
         <Avatar className={classes.avatar}>
           <ResetAvatar />
         </Avatar>
@@ -86,19 +89,13 @@ const ResetPassword = ({ match }) => {
                 watch={watch}
               />
             </CardContent>
-            <CardActions
-              style={{ display: "flex", justifyContent: "space-between" }}
-            >
-              <Button component={Link} to="/login" color="primary">
+            <CardActions className={classes.actions}>
+              <SyncButton component={Link} to="/login" color="primary">
                 Log in
-              </Button>
-              <Button
-                type="submit"
-                color="primary"
-                disabled={formState.isSubmitting}
-              >
+              </SyncButton>
+              <AsyncButton type="submit" disabled={formState.isSubmitting}>
                 Reset password
-              </Button>
+              </AsyncButton>
             </CardActions>
           </form>
         </FormProvider>

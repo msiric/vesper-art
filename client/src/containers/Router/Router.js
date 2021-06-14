@@ -22,7 +22,7 @@ const routes = [
   },
   {
     path: "/artwork/:id",
-    Component: lazy(() => import("../../pages/Artwork/ArtworkDetailsTest")),
+    Component: lazy(() => import("../../pages/Artwork/ArtworkDetails")),
     exact: true,
     type: "public",
   },
@@ -93,7 +93,7 @@ const routes = [
   // Home router
   {
     path: "/",
-    Component: lazy(() => import("../../pages/Home/HomeTest")),
+    Component: lazy(() => import("../../pages/Home/Home")),
     exact: true,
     type: "public",
   },
@@ -179,13 +179,13 @@ const routes = [
   // User router
   {
     path: "/user/:id",
-    Component: lazy(() => import("../../pages/User/ProfileTest")),
+    Component: lazy(() => import("../../pages/User/Profile")),
     exact: true,
     type: "public",
   },
   {
     path: "/gallery",
-    Component: lazy(() => import("../../pages/User/GalleryTest")),
+    Component: lazy(() => import("../../pages/User/Gallery")),
     exact: true,
     type: "protected",
   },

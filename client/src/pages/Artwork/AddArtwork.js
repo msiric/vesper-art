@@ -1,8 +1,9 @@
-import { Container, Grid } from "@material-ui/core";
 import React, { useEffect } from "react";
 import MainHeading from "../../components/MainHeading/index.js";
 import ArtworkCreator from "../../containers/ArtworkCreator/index.js";
 import { useArtworkCreate } from "../../contexts/local/artworkCreate";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global.js";
 
 const AddArtwork = () => {

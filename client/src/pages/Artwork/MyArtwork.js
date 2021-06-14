@@ -1,13 +1,14 @@
-import { Container, Grid } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
 import PromptModal from "../../components/PromptModal/index.js";
 import ArtworkDatatable from "../../containers/ArtworkDatatable/index.js";
 import { useUserUploads } from "../../contexts/local/userUploads";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
 import { deleteArtwork } from "../../services/artwork";
 import globalStyles from "../../styles/global.js";
 
-const MyArtwork = ({ location }) => {
+const MyArtwork = ({}) => {
   const modal = useUserUploads((state) => state.modal);
   const isDeleting = useUserUploads((state) => state.isDeleting);
   const closeModal = useUserUploads((state) => state.closeModal);

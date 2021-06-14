@@ -1,12 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Avatar,
-  Box,
-  Container,
-  Grid,
-  Link,
-  Typography,
-} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { MeetingRoomRounded as SignupAvatar } from "@material-ui/icons";
 import React from "react";
@@ -14,11 +6,17 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { signupValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
+import Avatar from "../../domain/Avatar";
+import Box from "../../domain/Box";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import Link from "../../domain/Link";
+import Typography from "../../domain/Typography";
 import SignupForm from "../../forms/SignupForm/index.js";
 import { postSignup } from "../../services/auth.js";
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
+  wrapper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
@@ -65,7 +63,7 @@ const Signup = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box className={classes.paper}>
+      <Box className={classes.wrapper}>
         <Avatar className={classes.avatar}>
           <SignupAvatar />
         </Avatar>
@@ -78,8 +76,6 @@ const Signup = () => {
             <AsyncButton
               type="submit"
               fullWidth
-              variant="outlined"
-              color="primary"
               padding
               submitting={formState.isSubmitting}
             >
