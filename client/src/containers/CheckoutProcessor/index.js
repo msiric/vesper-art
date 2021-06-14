@@ -213,7 +213,7 @@ const CheckoutProcessor = () => {
                 <Card elevation={5} className={classes.card}>
                   <CardContent className={classes.content}>
                     {stripe ? (
-                      <Box className={classes.wrapper}>
+                      <Box>
                         {step.current !== STEPS.length && (
                           <CheckoutStepper step={step} />
                         )}

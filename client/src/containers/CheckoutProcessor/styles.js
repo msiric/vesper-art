@@ -16,9 +16,6 @@ const checkoutProcessorStyles = makeStyles((muiTheme) => ({
   content: {
     height: "100%",
   },
-  wrapper: {
-    height: "100%",
-  },
   multiform: {
     height: "100%",
   },
