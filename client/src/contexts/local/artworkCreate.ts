@@ -1,10 +1,18 @@
 import create from "zustand";
 import { postArtwork } from "../../services/artwork";
 import { getUser } from "../../services/stripe";
-import { deleteEmptyValues, formatArtworkValues } from "../../utils/helpers";
+import {
+  deleteEmptyValues,
+  formatArtworkValues,
+  resolveAsyncError,
+} from "../../utils/helpers";
 
 const initialState = {
-  capabilities: { data: {}, loading: true, error: false },
+  capabilities: {
+    data: {},
+    loading: true,
+    error: { retry: false, message: "" },
+  },
 };
 
 const initState = () => ({
@@ -17,9 +25,23 @@ const initActions = (set, get) => ({
       const { data } = await getUser.request({ stripeId });
       set((state) => ({
         ...state,
-        capabilities: { data: data.capabilities, loading: false, error: false },
+        capabilities: {
+          ...state.capabilities,
+          data: data.capabilities,
+          loading: false,
+          error: { ...initialState.capabilities.error },
+        },
       }));
-    } catch (err) {}
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        capabilities: {
+          ...state.capabilities,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
+    }
   },
   createArtwork: async ({ values }) => {
     const data = deleteEmptyValues(formatArtworkValues(values));

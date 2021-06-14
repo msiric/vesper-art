@@ -2,7 +2,6 @@ import React from "react";
 import Masonry from "react-masonry-css";
 import ArtworkCard from "../../components/ArtworkCard/index.js";
 import InfiniteList from "../../components/InfiniteList/index.js";
-import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import Box from "../../domain/Box";
 import userArtworkStyles from "./styles.js";
@@ -30,7 +29,6 @@ const UserArtwork = ({ type, fixed }) => {
         next={fetchArtwork}
         hasMore={hasMore}
         loading={loading}
-        loader={<LoadingSpinner />}
         error={error}
       >
         <Masonry

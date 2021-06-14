@@ -5,7 +5,11 @@ import {
   patchArtwork,
 } from "../../services/artwork.js";
 import { getUser } from "../../services/stripe.js";
-import { deleteEmptyValues, formatArtworkValues } from "../../utils/helpers.js";
+import {
+  deleteEmptyValues,
+  formatArtworkValues,
+  resolveAsyncError,
+} from "../../utils/helpers.js";
 
 const initialState = {
   artwork: {
@@ -26,12 +30,12 @@ const initialState = {
       },
     },
     loading: true,
-    error: false,
+    error: { retry: false, message: "" },
   },
   capabilities: {
     data: {},
     loading: true,
-    error: false,
+    error: { retry: false, message: "" },
   },
   modal: {
     open: false,
@@ -51,18 +55,44 @@ const initActions = (set, get) => ({
       });
       set((state) => ({
         ...state,
-        artwork: { data: data.artwork, loading: false, error: false },
+        artwork: {
+          data: data.artwork,
+          loading: false,
+          error: { ...initialState.artwork.error },
+        },
       }));
-    } catch (err) {}
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        artwork: {
+          ...state.artwork,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
+    }
   },
   fetchCapabilities: async ({ stripeId }) => {
     try {
       const { data } = await getUser.request({ stripeId });
       set((state) => ({
         ...state,
-        capabilities: { data: data.capabilities, loading: false, error: false },
+        capabilities: {
+          data: data.capabilities,
+          loading: false,
+          error: { ...initialState.capabilities.error },
+        },
       }));
-    } catch (err) {}
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        capabilities: {
+          ...state.capabilities,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
+    }
   },
   updateArtwork: async ({ artworkId, values }) => {
     const data = deleteEmptyValues(formatArtworkValues(values));

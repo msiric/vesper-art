@@ -5,7 +5,6 @@ import { SRLWrapper, useLightbox } from "simple-react-lightbox";
 import EmptySection from "../../components/EmptySection/index.js";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
 import InfiniteList from "../../components/InfiniteList";
-import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useUserGallery } from "../../contexts/local/userGallery";
 import Box from "../../domain/Box";
@@ -95,7 +94,6 @@ const GalleryPanel = ({ formatArtwork }) => {
           next={() => fetchUser({ userId, userUsername, formatArtwork })}
           hasMore={hasMore}
           loading={loading}
-          loader={<LoadingSpinner />}
           error={error}
         >
           <Masonry

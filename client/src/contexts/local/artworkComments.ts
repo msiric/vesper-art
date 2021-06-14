@@ -7,16 +7,21 @@ import {
   patchComment,
   postComment,
 } from "../../services/artwork";
-import { resolvePaginationId } from "../../utils/helpers";
+import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
 const initialState = {
   comments: {
     data: [],
     loading: true,
-    error: false,
+    fetching: false,
+    initialized: false,
     hasMore: true,
     cursor: "",
     limit: 10,
+    error: {
+      refetch: false,
+      message: "",
+    },
   },
   edits: {},
   popover: {
@@ -109,7 +114,14 @@ const initActions = (set, get) => ({
     try {
       set((state) => ({
         ...state,
-        comments: { ...state.comments, loading: true, error: false },
+        comments: {
+          ...state.comments,
+          loading: !state.comments.initialized,
+          fetching: state.comments.initialized,
+          error: {
+            ...initialState.comments.error,
+          },
+        },
       }));
       const comments = get().comments;
       const highlight = get().highlight;
@@ -136,7 +148,9 @@ const initActions = (set, get) => ({
           ...state.comments,
           data: [...state.comments.data, ...data.comments],
           loading: false,
-          error: false,
+          fetching: false,
+          initialized: true,
+          error: { ...initialState.comments.error },
           hasMore: data.comments.length < state.comments.limit ? false : true,
           cursor: resolvePaginationId(data.comments),
         },
@@ -150,8 +164,10 @@ const initActions = (set, get) => ({
         ...state,
         comments: {
           ...state.comments,
+          initialized: true,
           loading: false,
-          error: true,
+          fetching: false,
+          error: resolveAsyncError(err, true),
         },
       }));
     }
@@ -215,7 +231,10 @@ const initActions = (set, get) => ({
     try {
       set((state) => ({
         ...state,
-        isDeleting: true,
+        comments: {
+          ...state.comments,
+          isDeleting: true,
+        },
       }));
       await deleteComment.request({
         artworkId,
@@ -240,7 +259,21 @@ const initActions = (set, get) => ({
         },
         isDeleting: false,
       }));
-    } catch (err) {}
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        popover: {
+          id: null,
+          anchorEl: null,
+          open: false,
+        },
+        modal: {
+          id: null,
+          open: false,
+        },
+        isDeleting: false,
+      }));
+    }
   },
   openComment: ({ commentId }) => {
     set((state) => ({

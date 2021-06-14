@@ -11,7 +11,6 @@ import CommentCard from "../../components/CommentCard/index.js";
 import CommentPopover from "../../components/CommentPopover";
 import EmptySection from "../../components/EmptySection/index.js";
 import InfiniteList from "../../components/InfiniteList";
-import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import MainHeading from "../../components/MainHeading";
 import PromptModal from "../../components/PromptModal";
 import { useUserStore } from "../../contexts/global/user";
@@ -39,6 +38,7 @@ const CommentSection = ({
 
   const comments = useArtworkComments((state) => state.comments.data);
   const loading = useArtworkComments((state) => state.comments.loading);
+  const fetching = useArtworkComments((state) => state.comments.fetching);
   const error = useArtworkComments((state) => state.comments.error);
   const edits = useArtworkComments((state) => state.edits);
   const popover = useArtworkComments((state) => state.popover);
@@ -138,9 +138,8 @@ const CommentSection = ({
               fetchComments({ artworkId, query, highlightRef, enqueueSnackbar })
             }
             hasMore={hasMore}
-            loading={loading}
-            loader={<LoadingSpinner />}
-            error={error}
+            loading={loading || fetching}
+            error={error.refetch}
           >
             <List ref={commentsRef} className={classes.list} disablePadding>
               <Box>

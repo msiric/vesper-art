@@ -1,7 +1,6 @@
 import { Box, Divider, List, Menu, Typography } from "@material-ui/core";
 import React from "react";
 import InfiniteList from "../../components/InfiniteList/index.js";
-import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import { useEventsStore } from "../../contexts/global/events.js";
 import NotificationItem from "./NotificationItem.js";
 import NotificationsMenuStyles from "./NotificationsMenu.style.js";
@@ -35,7 +34,6 @@ const NotificationsMenu = ({
         dataLength={notifications.items.length}
         next={loadMore}
         hasMore={notifications.hasMore}
-        loader={<LoadingSpinner />}
       >
         {loading || (notifications.items && notifications.items.length) ? (
           <List

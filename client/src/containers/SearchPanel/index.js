@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom";
 import ArtworkCard from "../../components/ArtworkCard/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import InfiniteList from "../../components/InfiniteList/index.js";
-import LoadingSpinner from "../../components/LoadingSpinner/index.js";
 import ProfileCard from "../../components/ProfileCard/index.js";
 import { useSearchResults } from "../../contexts/local/searchResults";
 import Box from "../../domain/Box";
@@ -39,7 +38,6 @@ const SearchPanel = ({ type }) => {
         next={fetchResults}
         hasMore={hasMore}
         loading={loading}
-        loader={<LoadingSpinner />}
         error={error}
       >
         {elements.length ? (

@@ -1,3 +1,5 @@
+import { errors } from "../../../common/constants";
+
 export const deleteEmptyValues = (values) => {
   for (let value in values) {
     if (typeof values[value] !== "boolean" && !values[value])
@@ -59,6 +61,17 @@ export const formatArtworkValues = (data) => {
 
 export const resolvePaginationId = (data) => {
   return data[data.length - 1] && data[data.length - 1].id;
+};
+
+export const resolveAsyncError = (err, isInfinite = false) => {
+  const statusCode = err.response.data.status_code;
+  const notFound = statusCode === errors.notFound;
+  const errorObj = isInfinite
+    ? { refetch: true, message: "" }
+    : notFound
+    ? { redirect: true, message: "" }
+    : { retry: true, message: "" };
+  return errorObj;
 };
 
 export const displayValidLicense = (use, license) => {

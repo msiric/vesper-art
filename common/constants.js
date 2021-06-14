@@ -33,6 +33,21 @@ export const payment = {
   },
 };
 
+export const errors = {
+  ok: 200,
+  created: 201,
+  noContent: 204,
+  tempRedirect: 307,
+  permRedirect: 308,
+  badRequest: 400,
+  unauthorized: 401,
+  forbidden: 403,
+  notFound: 404,
+  notAllowed: 405,
+  conflict: 409,
+  internalError: 500,
+};
+
 export const countries = [
   { text: "Afghanistan", value: "AF", supported: false },
   { text: "Åland Islands", value: "AX", supported: false },

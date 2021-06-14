@@ -1,13 +1,13 @@
 import create from "zustand";
 import { getDetails } from "../../services/artwork";
 import { postDownload } from "../../services/checkout";
-import { displayValidLicense } from "../../utils/helpers";
+import { displayValidLicense, resolveAsyncError } from "../../utils/helpers";
 
 const initialState = {
   artwork: {
     data: { owner: {}, current: { cover: {}, media: {} } },
     loading: true,
-    error: false,
+    error: { retry: false, redirect: false, message: "" },
   },
   license: null,
   modal: {
@@ -22,17 +22,32 @@ const initState = () => ({ ...initialState });
 
 const initActions = (set) => ({
   fetchArtwork: async ({ artworkId }) => {
-    const { data } = await getDetails.request({
-      artworkId,
-    });
-    set((state) => ({
-      ...state,
-      artwork: { data: data.artwork, loading: false, error: false },
-      license: displayValidLicense(
-        data.artwork.current.use,
-        data.artwork.current.license
-      ),
-    }));
+    try {
+      const { data } = await getDetails.request({
+        artworkId,
+      });
+      set((state) => ({
+        ...state,
+        artwork: {
+          data: data.artwork,
+          loading: false,
+          error: { ...initialState.artwork.error },
+        },
+        license: displayValidLicense(
+          data.artwork.current.use,
+          data.artwork.current.license
+        ),
+      }));
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        artwork: {
+          ...state.artwork,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
+    }
   },
   downloadArtwork: async ({ versionId, values }) => {
     try {
