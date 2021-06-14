@@ -30,12 +30,12 @@ const initialState = {
       },
     },
     loading: true,
-    error: { retry: false, message: "" },
+    error: { retry: false, redirect: false, message: "" },
   },
   capabilities: {
     data: {},
     loading: true,
-    error: { retry: false, message: "" },
+    error: { retry: false, redirect: false, message: "" },
   },
   modal: {
     open: false,

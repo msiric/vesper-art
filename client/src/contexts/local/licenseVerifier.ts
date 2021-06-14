@@ -1,8 +1,13 @@
 import create from "zustand";
 import { postVerifier } from "../../services/home";
+import { resolveAsyncError } from "../../utils/helpers";
 
 const initialState = {
-  license: { data: false, loading: false, error: false },
+  license: {
+    data: false,
+    loading: false,
+    error: { retry: false, redirect: false, message: "" },
+  },
 };
 
 const initState = () => ({ ...initialState });
@@ -12,17 +17,21 @@ const initActions = (set) => ({
     try {
       set((state) => ({
         ...state,
-        license: { ...state.license, loading: true, error: false },
+        license: {
+          ...state.license,
+          loading: true,
+          error: { ...initialState.license.error },
+        },
       }));
       const { data } = await postVerifier.request({ licenseData });
       set((state) => ({
         ...state,
-        license: { data: data.license, loading: false, error: false },
+        license: { ...state.license, data: data.license, loading: false },
       }));
     } catch (err) {
       set((state) => ({
         ...state,
-        license: { data: {}, loading: false, error: true },
+        license: { data: {}, loading: false, error: resolveAsyncError(err) },
       }));
     }
   },
