@@ -1,5 +1,6 @@
 import create from "zustand";
 import { getDownload, getOrder, postReview } from "../../services/orders.js";
+import { resolveAsyncError } from "../../utils/helpers.js";
 
 const initialState = {
   order: {
@@ -12,7 +13,7 @@ const initialState = {
       review: {},
     },
     loading: true,
-    error: false,
+    error: { retry: false, redirect: false, message: "" },
   },
   modal: {
     open: false,
@@ -31,15 +32,30 @@ const initState = () => ({ ...initialState });
 
 const initActions = (set, get) => ({
   fetchOrder: async ({ orderId, query, highlightRef }) => {
-    const { data } = await getOrder.request({
-      orderId,
-    });
-    set((state) => ({
-      ...state,
-      order: { data: data.order, loading: false, error: false },
-    }));
-    if (query && query.notif === "review") {
-      scrollToHighlight(highlightRef);
+    try {
+      const { data } = await getOrder.request({
+        orderId,
+      });
+      set((state) => ({
+        ...state,
+        order: {
+          data: data.order,
+          loading: false,
+          error: { ...initialState.order.error },
+        },
+      }));
+      if (query && query.notif === "review") {
+        scrollToHighlight(highlightRef);
+      }
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        order: {
+          ...state.order,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
     }
   },
   downloadArtwork: async ({ orderId }) => {

@@ -7,6 +7,7 @@ import create from "zustand";
 import { isObjectEmpty } from "../../../../common/helpers";
 import { getCheckout, getDiscount } from "../../services/checkout";
 import { postIntent } from "../../services/stripe";
+import { resolveAsyncError } from "../../utils/helpers";
 
 const STEPS = [
   "License information",
@@ -19,7 +20,7 @@ const initialState = {
   version: {
     data: { artwork: { owner: {} }, cover: {}, media: {} },
     loading: true,
-    error: false,
+    error: { retry: false, redirect: false, message: "" },
   },
   license: "",
   discount: { data: null, loading: false, error: false },
@@ -55,11 +56,22 @@ const initActions = (set, get) => ({
       set((state) => ({
         ...state,
         license: license || initialState.license,
-        version: { data: data.version, loading: false, error: false },
+        version: {
+          data: data.version,
+          loading: false,
+          error: { ...initialState.version.error },
+        },
         billing: billing,
       }));
     } catch (err) {
-      set((state) => ({ ...state }));
+      set((state) => ({
+        ...state,
+        version: {
+          ...state.version,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
     }
   },
   submitPayment: async ({
@@ -214,7 +226,6 @@ const initActions = (set, get) => ({
       changeStep({ value: 1 });
     } catch (err) {
       console.log(err);
-    } finally {
       set((state) => ({ ...set, intent: { ...state.intent, loading: false } }));
     }
   },
@@ -280,6 +291,10 @@ const initActions = (set, get) => ({
       }
     } catch (err) {
       console.log(err);
+      set((state) => ({
+        ...set,
+        discount: { ...state.discount, loading: false },
+      }));
     }
   },
   changeLicense: ({ license, setFieldValue }) => {
