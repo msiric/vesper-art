@@ -24,7 +24,7 @@ const ArtworkPanel = ({ type, fixed }) => {
         next={fetchArtwork}
         hasMore={hasMore}
         loading={loading || fetching}
-        error={error}
+        error={error.refetch}
       >
         <Masonry
           breakpointCols={breakpoints}
