@@ -17,6 +17,7 @@ const UserFavorites = ({ fixed }) => {
   const elements = useUserArtwork((state) => state.favorites.data);
   const hasMore = useUserArtwork((state) => state.favorites.hasMore);
   const loading = useUserArtwork((state) => state.favorites.loading);
+  const fetching = useUserArtwork((state) => state.favorites.fetching);
   const error = useUserArtwork((state) => state.favorites.error);
   const fetchFavorites = useUserArtwork((state) => state.fetchFavorites);
 
@@ -28,8 +29,8 @@ const UserFavorites = ({ fixed }) => {
         dataLength={elements ? elements.length : 0}
         next={fetchFavorites}
         hasMore={hasMore}
-        loading={loading}
-        error={error}
+        loading={loading || fetching}
+        error={error.refetch}
       >
         <Masonry
           breakpointCols={breakpointColumns}

@@ -7,13 +7,13 @@ import {
   patchPreferences,
   patchUser,
 } from "../../services/user.js";
-import { deleteEmptyValues } from "../../utils/helpers.js";
+import { deleteEmptyValues, resolveAsyncError } from "../../utils/helpers.js";
 
 const initialState = {
   user: {
     data: {},
     loading: true,
-    error: false,
+    error: { retry: false, message: "" },
   },
   modal: {
     open: false,
@@ -25,13 +25,28 @@ const initState = () => ({ ...initialState });
 
 const initActions = (set) => ({
   fetchSettings: async ({ userId }) => {
-    const { data } = await getSettings.request({
-      userId,
-    });
-    set((state) => ({
-      ...state,
-      user: { data: data.user, loading: false, error: false },
-    }));
+    try {
+      const { data } = await getSettings.request({
+        userId,
+      });
+      set((state) => ({
+        ...state,
+        user: {
+          data: data.user,
+          loading: false,
+          error: { ...initialState.user.error },
+        },
+      }));
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        user: {
+          ...state.user,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
+    }
   },
   updateProfile: async ({ userId, values }) => {
     const data = deleteEmptyValues(values);

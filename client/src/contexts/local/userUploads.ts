@@ -1,16 +1,16 @@
 import create from "zustand";
 import { deleteArtwork } from "../../services/artwork";
 import { getUploads } from "../../services/user";
-import { resolvePaginationId } from "../../utils/helpers";
+import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
 const initialState = {
   uploads: {
     data: [],
     loading: true,
-    error: false,
     hasMore: true,
     cursor: "",
     limit: 10,
+    error: { retry: false, message: "" },
   },
   modal: {
     id: null,
@@ -23,27 +23,34 @@ const initState = () => ({ ...initialState });
 
 const initActions = (set, get) => ({
   fetchUploads: async ({ userId }) => {
-    set((state) => ({
-      ...state,
-      uploads: { ...state.uploads, loading: true, error: false },
-    }));
-    const uploads = get().uploads;
-    const { data } = await getUploads.request({
-      userId,
-      cursor: uploads.cursor,
-      limit: uploads.limit,
-    });
-    set((state) => ({
-      ...state,
-      uploads: {
-        ...state.uploads,
-        data: [...state.uploads.data, ...data.artwork],
-        loading: false,
-        error: false,
-        hasMore: data.artwork.length < state.uploads.limit ? false : true,
-        cursor: resolvePaginationId(data.artwork),
-      },
-    }));
+    try {
+      const uploads = get().uploads;
+      const { data } = await getUploads.request({
+        userId,
+        cursor: uploads.cursor,
+        limit: uploads.limit,
+      });
+      set((state) => ({
+        ...state,
+        uploads: {
+          ...state.uploads,
+          data: [...state.uploads.data, ...data.artwork],
+          loading: false,
+          error: { ...initialState.uploads.error },
+          hasMore: data.artwork.length < state.uploads.limit ? false : true,
+          cursor: resolvePaginationId(data.artwork),
+        },
+      }));
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        uploads: {
+          ...state.uploads,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
+    }
   },
   removeArtwork: async ({ artworkId }) => {
     set((state) => ({ ...state, isDeleting: true }));

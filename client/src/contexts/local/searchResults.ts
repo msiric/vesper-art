@@ -1,23 +1,23 @@
 import create from "zustand";
 import { getSearch } from "../../services/home";
-import { resolvePaginationId } from "../../utils/helpers";
+import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
 const initialState = {
   artwork: {
     data: [],
     loading: true,
-    error: false,
     hasMore: true,
     cursor: "",
     limit: 50,
+    error: { retry: false, message: "" },
   },
   users: {
     data: [],
     loading: true,
-    error: false,
     hasMore: true,
     cursor: "",
     limit: 50,
+    error: { retry: false, message: "" },
   },
   type: null,
 };
@@ -29,7 +29,6 @@ const initState = () => ({
 const initActions = (set, get) => ({
   fetchResults: async ({ query, type }) => {
     try {
-      set({ ...initialState });
       const cursor = get()[type].cursor;
       const limit = get()[type].limit;
       const { data } = await getSearch.request({
@@ -45,11 +44,18 @@ const initActions = (set, get) => ({
           hasMore: data.searchData.length < state[type].limit ? false : true,
           cursor: resolvePaginationId(data.searchData),
           loading: false,
-          error: false,
+          error: { ...initialState[type].error },
         },
       }));
     } catch (err) {
       console.log(err);
+      set((state) => ({
+        [type]: {
+          ...state[type],
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
     }
   },
   resetResults: () => {

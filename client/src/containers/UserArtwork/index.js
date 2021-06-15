@@ -17,6 +17,7 @@ const UserArtwork = ({ type, fixed }) => {
   const elements = useUserArtwork((state) => state.artwork.data);
   const hasMore = useUserArtwork((state) => state.artwork.hasMore);
   const loading = useUserArtwork((state) => state.artwork.loading);
+  const fetching = useUserArtwork((state) => state.artwork.fetching);
   const error = useUserArtwork((state) => state.artwork.error);
   const fetchArtwork = useUserArtwork((state) => state.fetchArtwork);
 
@@ -28,8 +29,8 @@ const UserArtwork = ({ type, fixed }) => {
         dataLength={elements ? elements.length : 0}
         next={fetchArtwork}
         hasMore={hasMore}
-        loading={loading}
-        error={error}
+        loading={loading || fetching}
+        error={error.refetch}
       >
         <Masonry
           breakpointCols={breakpointColumns}

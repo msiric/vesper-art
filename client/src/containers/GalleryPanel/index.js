@@ -26,20 +26,21 @@ const GalleryPanel = ({ formatArtwork }) => {
 
   const display = useUserGallery((state) => state.display);
   const loading = useUserGallery((state) => state[display].loading);
+  const fetching = useUserGallery((state) => state[display].fetching);
   const hasMore = useUserGallery((state) => state[display].hasMore);
   const error = useUserGallery((state) => state[display].error);
   const selection = useUserGallery((state) => state[display]);
   const index = useUserGallery((state) => state.index);
   const media = useUserGallery((state) => state.media);
   const covers = useUserGallery((state) => state.covers);
-  const fetching = useUserGallery((state) => state.fetching);
+  const isDownloading = useUserGallery((state) => state.isDownloading);
   const captions = useUserGallery((state) => state.captions);
   const fetchUser = useUserGallery((state) => state.fetchUser);
   const toggleGallery = useUserGallery((state) => state.toggleGallery);
 
   const history = useHistory();
 
-  const globalClasses = globalStyles({ fetching });
+  const globalClasses = globalStyles({ isDownloading });
   const classes = galleryPanelStyles();
 
   const { openLightbox } = useLightbox();
@@ -93,8 +94,8 @@ const GalleryPanel = ({ formatArtwork }) => {
           dataLength={covers.length}
           next={() => fetchUser({ userId, userUsername, formatArtwork })}
           hasMore={hasMore}
-          loading={loading}
-          error={error}
+          loading={loading || fetching}
+          error={error.refetch}
         >
           <Masonry
             breakpointCols={breakpointColumns}
@@ -121,7 +122,7 @@ const GalleryPanel = ({ formatArtwork }) => {
                     source={item.media ? item.media : item.cover}
                     cover={item.cover}
                     placeholder={item.dominant}
-                    loading={idx === index && fetching ? true : false}
+                    loading={idx === index && isDownloading ? true : false}
                   />
                 }
               </Card>
@@ -137,7 +138,7 @@ const GalleryPanel = ({ formatArtwork }) => {
           }
         />
       )}
-      {!fetching && !loading && (
+      {!isDownloading && !loading && (
         <SRLWrapper
           images={media}
           callbacks={callbacks}

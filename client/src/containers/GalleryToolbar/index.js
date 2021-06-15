@@ -33,7 +33,7 @@ const GalleryToolbar = ({ formatArtwork, location }) => {
         items={menuItems}
         loading={loading}
         label="Display"
-        onChange={changeSelection}
+        onChange={(e) => changeSelection({ selection: e.target.value })}
         value={display}
       />
     </Box>

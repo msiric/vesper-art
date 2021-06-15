@@ -1,24 +1,34 @@
 import create from "zustand";
 import { getDownload } from "../../services/orders";
 import { getMedia, getOwnership, getUploads } from "../../services/user";
-import { resolvePaginationId } from "../../utils/helpers";
+import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
 const initialState = {
   artwork: {
     data: {},
     loading: true,
-    error: false,
+    fetching: false,
+    initialized: false,
     hasMore: true,
     cursor: "",
     limit: 10,
+    error: {
+      refetch: false,
+      message: "",
+    },
   },
   purchases: {
     data: {},
     loading: true,
-    error: false,
+    fetching: false,
+    initialized: false,
     hasMore: true,
     cursor: "",
     limit: 10,
+    error: {
+      refetch: false,
+      message: "",
+    },
   },
   covers: [],
   media: [],
@@ -29,7 +39,7 @@ const initialState = {
   //   type: "purchases",
   //   label: "spent",
   // },
-  fetching: false,
+  isDownloading: false,
 };
 
 const initState = () => ({ ...initialState });
@@ -37,10 +47,6 @@ const initState = () => ({ ...initialState });
 const initActions = (set, get) => ({
   fetchUser: async ({ userId, userUsername, formatArtwork }) => {
     try {
-      set((state) => ({
-        ...initialState,
-        display: state.display,
-      }));
       const display = get().display;
       const artwork = get().artwork;
       const purchases = get().purchases;
@@ -93,6 +99,9 @@ const initActions = (set, get) => ({
           ...state[display],
           data: { ...state[display].data, ...newArtwork },
           loading: false,
+          fetching: false,
+          initialized: true,
+          error: { ...initialState[display].error },
           hasMore: data[display].length < state[display].limit ? false : true,
           cursor: resolvePaginationId(data[display]),
         },
@@ -103,6 +112,16 @@ const initActions = (set, get) => ({
     } catch (err) {
       console.log(err);
       set((state) => ({ ...state, loading: false }));
+      set((state) => ({
+        ...state,
+        [state[state.display]]: {
+          ...state[state.display],
+          initialized: true,
+          loading: false,
+          fetching: false,
+          error: resolveAsyncError(err, true),
+        },
+      }));
     }
   },
   toggleGallery: async ({
@@ -126,7 +145,7 @@ const initActions = (set, get) => ({
     } else {
       set((state) => ({
         ...state,
-        fetching: true,
+        isDownloading: true,
         index,
       }));
       const { data } =
@@ -153,7 +172,7 @@ const initActions = (set, get) => ({
           covers: formattedArtwork.covers,
           media: formattedArtwork.media,
           captions: formattedArtwork.captions,
-          fetching: false,
+          isDownloading: false,
           index,
         }));
         image.onload = null;
@@ -161,11 +180,10 @@ const initActions = (set, get) => ({
       };
     }
   },
-  changeSelection: (e) => {
-    set((state) => ({
-      ...state,
-      display: e.target.value,
-      index: null,
+  changeSelection: ({ selection }) => {
+    set(() => ({
+      ...initialState,
+      display: selection,
     }));
   },
   resetGallery: () => {

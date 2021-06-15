@@ -50,10 +50,11 @@ const GlobalStyles = makeStyles((muiTheme) => ({
       fill: artepunktTheme.palette.primary.main,
     },
     ".SRLElementWrapper": {
-      opacity: ({ fetching }) => (fetching ? "0.3 !important" : "1 !important"),
+      opacity: ({ isDownloading }) =>
+        isDownloading ? "0.3 !important" : "1 !important",
       "&:last-of-type": {
         "&::after": {
-          display: ({ fetching }) => (fetching ? "block" : "none"),
+          display: ({ isDownloading }) => (isDownloading ? "block" : "none"),
           content: '""',
           position: "absolute",
           top: "50%",

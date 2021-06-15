@@ -1,15 +1,15 @@
 import create from "zustand";
 import { getOrders } from "../../services/orders";
-import { resolvePaginationId } from "../../utils/helpers";
+import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
 const initialState = {
   orders: {
     data: [],
     loading: true,
-    error: false,
     hasMore: true,
     cursor: "",
     limit: 10,
+    error: { retry: false, message: "" },
   },
   display: "purchases",
 };
@@ -18,25 +18,35 @@ const initState = () => ({ ...initialState });
 
 const initActions = (set, get) => ({
   fetchOrders: async ({ display }) => {
-    const { data } = await getOrders.request({
-      display,
-    });
-    set((state) => ({
-      ...state,
-      orders: {
-        ...state.artwork,
-        data: [...state.orders.data, ...data[display]],
-        loading: false,
-        error: false,
-        hasMore: data[display].length < state.orders.limit ? false : true,
-        cursor: resolvePaginationId(data[display]),
-      },
-    }));
+    try {
+      const { data } = await getOrders.request({
+        display,
+      });
+      set((state) => ({
+        ...state,
+        orders: {
+          ...state.artwork,
+          data: [...state.orders.data, ...data[display]],
+          loading: false,
+          error: { ...initialState.orders.error },
+          hasMore: data[display].length < state.orders.limit ? false : true,
+          cursor: resolvePaginationId(data[display]),
+        },
+      }));
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        orders: {
+          ...state.orders,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
+    }
   },
   changeSelection: ({ selection }) => {
-    set((state) => ({
-      ...state,
-      orders: { ...state.orders, data: [], loading: true, error: false },
+    set(() => ({
+      ...initialState,
       display: selection,
     }));
   },
