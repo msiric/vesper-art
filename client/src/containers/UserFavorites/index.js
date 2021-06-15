@@ -31,6 +31,7 @@ const UserFavorites = ({ fixed }) => {
         hasMore={hasMore}
         loading={loading || fetching}
         error={error.refetch}
+        empty="No favorites yet"
       >
         <Masonry
           breakpointCols={breakpointColumns}

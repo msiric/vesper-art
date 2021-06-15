@@ -31,6 +31,7 @@ const UserArtwork = ({ type, fixed }) => {
         hasMore={hasMore}
         loading={loading || fetching}
         error={error.refetch}
+        empty="No artwork yet"
       >
         <Masonry
           breakpointCols={breakpointColumns}

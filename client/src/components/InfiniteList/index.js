@@ -4,6 +4,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Box from "../../domain/Box";
 import Typography from "../../domain/Typography";
 import AsyncButton from "../AsyncButton";
+import EmptySection from "../EmptySection";
 import LoadingSpinner from "../LoadingSpinner";
 import infiniteListStyles from "./styles";
 
@@ -15,10 +16,12 @@ const InfiniteList = ({
   hasMore,
   loading,
   error,
+  empty,
+  height,
   children,
   ...props
 }) => {
-  const classes = infiniteListStyles();
+  const classes = infiniteListStyles({ height });
 
   return (
     <InfiniteScroll
@@ -27,9 +30,11 @@ const InfiniteList = ({
       hasMore={hasMore}
       loader={!error && <LoadingSpinner styles={{ marginTop: 20 }} />}
       className={classes.wrapper}
+      height={height}
       {...props}
     >
       {children}
+      {!loading && !dataLength ? <EmptySection label={empty} /> : null}
       {error && (
         <Box className={classes.error}>
           <Typography>Error fetching data</Typography>

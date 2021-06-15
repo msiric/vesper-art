@@ -140,6 +140,7 @@ const CommentSection = ({
             hasMore={hasMore}
             loading={loading || fetching}
             error={error.refetch}
+            empty="No comments yet"
           >
             <List ref={commentsRef} className={classes.list} disablePadding>
               <Box>

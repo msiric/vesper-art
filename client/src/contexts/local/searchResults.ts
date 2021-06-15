@@ -6,18 +6,22 @@ const initialState = {
   artwork: {
     data: [],
     loading: true,
+    fetching: false,
+    initialized: false,
     hasMore: true,
     cursor: "",
     limit: 50,
-    error: { retry: false, message: "" },
+    error: { refetch: false, message: "" },
   },
   users: {
     data: [],
     loading: true,
+    fetching: false,
+    initialized: false,
     hasMore: true,
     cursor: "",
     limit: 50,
-    error: { retry: false, message: "" },
+    error: { refetch: false, message: "" },
   },
   type: null,
 };
@@ -44,16 +48,19 @@ const initActions = (set, get) => ({
           hasMore: data.searchData.length < state[type].limit ? false : true,
           cursor: resolvePaginationId(data.searchData),
           loading: false,
+          fetching: false,
+          initialized: true,
           error: { ...initialState[type].error },
         },
       }));
     } catch (err) {
-      console.log(err);
       set((state) => ({
         [type]: {
           ...state[type],
+          initialized: true,
           loading: false,
-          error: resolveAsyncError(err),
+          fetching: false,
+          error: resolveAsyncError(err, true),
         },
       }));
     }
