@@ -5,8 +5,14 @@ import { useArtworkCreate } from "../../contexts/local/artworkCreate";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global.js";
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const AddArtwork = () => {
+  const retry = useArtworkCreate((state) => state.capabilities.error.retry);
+  const redirect = useArtworkCreate(
+    (state) => state.capabilities.error.redirect
+  );
+  const message = useArtworkCreate((state) => state.capabilities.error.message);
   const resetCapabilities = useArtworkCreate(
     (state) => state.resetCapabilities
   );
@@ -23,7 +29,7 @@ const AddArtwork = () => {
     };
   }, []);
 
-  return (
+  return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
@@ -35,6 +41,8 @@ const AddArtwork = () => {
         </Grid>
       </Grid>
     </Container>
+  ) : (
+    renderError({ retry, redirect, message })
   );
 };
 

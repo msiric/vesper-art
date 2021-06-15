@@ -7,9 +7,12 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import { deleteArtwork } from "../../services/artwork";
 import globalStyles from "../../styles/global.js";
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const MyArtwork = ({}) => {
   const modal = useUserUploads((state) => state.modal);
+  const retry = useUserUploads((state) => state.uploads.error.retry);
+  const message = useUserUploads((state) => state.uploads.error.message);
   const isDeleting = useUserUploads((state) => state.isDeleting);
   const closeModal = useUserUploads((state) => state.closeModal);
   const removeArtwork = useUserUploads((state) => state.removeArtwork);
@@ -36,7 +39,7 @@ const MyArtwork = ({}) => {
     };
   }, []);
 
-  return (
+  return !containsErrors(retry) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12} className={globalClasses.elementWidth}>
@@ -54,6 +57,8 @@ const MyArtwork = ({}) => {
         isSubmitting={isDeleting}
       />
     </Container>
+  ) : (
+    renderError({ retry, message })
   );
 };
 

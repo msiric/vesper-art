@@ -10,6 +10,7 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import LocalizationProvider from "../../domain/LocalizationProvider";
 import globalStyles from "../../styles/global.js";
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const useDashboardStyles = makeStyles((muiTheme) => ({
   wrapper: {
@@ -18,6 +19,18 @@ const useDashboardStyles = makeStyles((muiTheme) => ({
 }));
 
 const Dashboard = ({}) => {
+  const aggregateRetry = useUserStats(
+    (state) => state.aggregateStats.error.retry
+  );
+  const aggregateMessage = useUserStats(
+    (state) => state.aggregateStats.error.message
+  );
+  const selectedRetry = useUserStats(
+    (state) => state.selectedStats.error.retry
+  );
+  const selectedMessage = useUserStats(
+    (state) => state.selectedStats.error.message
+  );
   const resetStats = useUserStats((state) => state.resetStats);
 
   const globalClasses = globalStyles();
@@ -33,7 +46,7 @@ const Dashboard = ({}) => {
     };
   }, []);
 
-  return (
+  return !containsErrors(aggregateRetry, selectedRetry) ? (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
       <Container className={globalClasses.gridContainer}>
         <Grid container className={classes.wrapper}>
@@ -44,6 +57,11 @@ const Dashboard = ({}) => {
         </Grid>
       </Container>
     </LocalizationProvider>
+  ) : (
+    renderError(
+      { retry: aggregateRetry, message: aggregateMessage },
+      { retry: selectedRetry, message: selectedMessage }
+    )
   );
 };
 

@@ -12,6 +12,7 @@ import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global.js";
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const useOrderStyles = makeStyles((muiTheme) => ({
   container: {
@@ -39,6 +40,9 @@ const useOrderStyles = makeStyles((muiTheme) => ({
 }));
 
 const Order = ({ match }) => {
+  const retry = useOrderDetails((state) => state.order.error.retry);
+  const redirect = useOrderDetails((state) => state.order.error.redirect);
+  const message = useOrderDetails((state) => state.order.error.message);
   const resetOrder = useOrderDetails((state) => state.resetOrder);
 
   const globalClasses = globalStyles();
@@ -57,7 +61,7 @@ const Order = ({ match }) => {
     };
   }, []);
 
-  return (
+  return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
@@ -87,6 +91,8 @@ const Order = ({ match }) => {
       </Grid>
       <RatingWrapper paramId={paramId} />
     </Container>
+  ) : (
+    renderError({ retry, redirect, message })
   );
 };
 

@@ -5,8 +5,11 @@ import { useUserOrders } from "../../contexts/local/userOrders";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global.js";
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const Orders = () => {
+  const retry = useUserOrders((state) => state.orders.error.retry);
+  const message = useUserOrders((state) => state.orders.error.message);
   const resetOrders = useUserOrders((state) => state.resetOrders);
 
   const globalClasses = globalStyles();
@@ -21,7 +24,7 @@ const Orders = () => {
     };
   }, []);
 
-  return (
+  return !containsErrors(retry) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12} className={globalClasses.elementWidth}>
@@ -30,6 +33,8 @@ const Orders = () => {
         </Grid>
       </Grid>
     </Container>
+  ) : (
+    renderError({ retry, message })
   );
 };
 

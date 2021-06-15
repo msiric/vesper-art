@@ -10,6 +10,7 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import { deleteArtwork } from "../../services/artwork.js";
 import globalStyles from "../../styles/global.js";
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const useEditorStyles = makeStyles((muiTheme) => ({
   wrapper: {
@@ -18,6 +19,22 @@ const useEditorStyles = makeStyles((muiTheme) => ({
 }));
 
 const EditArtwork = ({ match }) => {
+  const artworkRetry = useArtworkUpdate((state) => state.artwork.error.retry);
+  const artworkRedirect = useArtworkUpdate(
+    (state) => state.artwork.error.redirect
+  );
+  const artworkMessage = useArtworkUpdate(
+    (state) => state.artwork.error.message
+  );
+  const capabilitiesRetry = useArtworkUpdate(
+    (state) => state.capabilities.error.retry
+  );
+  const capabilitiesRedirect = useArtworkUpdate(
+    (state) => state.capabilities.error.redirect
+  );
+  const capabilitiesMessage = useArtworkUpdate(
+    (state) => state.capabilities.error.message
+  );
   const artwork = useArtworkUpdate((state) => state.artwork.data);
   const artworkLoading = useArtworkUpdate((state) => state.artwork.loading);
   const capabilitiesLoading = useArtworkUpdate(
@@ -55,7 +72,12 @@ const EditArtwork = ({ match }) => {
     };
   }, []);
 
-  return (
+  return !containsErrors(
+    artworkRetry,
+    artworkRedirect,
+    capabilitiesRetry,
+    capabilitiesRedirect
+  ) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         {artworkLoading || capabilitiesLoading || artwork.id ? (
@@ -82,6 +104,19 @@ const EditArtwork = ({ match }) => {
         isSubmitting={isDeleting}
       />
     </Container>
+  ) : (
+    renderError(
+      {
+        retry: artworkRetry,
+        redirect: artworkRedirect,
+        message: artworkMessage,
+      },
+      {
+        retry: capabilitiesRetry,
+        redirect: capabilitiesRedirect,
+        message: capabilitiesMessage,
+      }
+    )
   );
 };
 

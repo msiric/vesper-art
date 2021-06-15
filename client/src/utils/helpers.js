@@ -1,4 +1,7 @@
+import React from "react";
 import { errors } from "../../../common/constants";
+import Redirect from "../pages/Home/Redirect";
+import Retry from "../pages/Home/Retry";
 
 export const deleteEmptyValues = (values) => {
   for (let value in values) {
@@ -80,4 +83,17 @@ export const displayValidLicense = (use, license) => {
     : license === "commercial"
     ? "commercial"
     : null;
+};
+
+export const containsErrors = (...errors) => errors.some((error) => error);
+
+export const renderError = (...errors) => {
+  for (let error of errors) {
+    if (error.retry) {
+      return <Retry message={error.message} />;
+    }
+    if (error.redirect) {
+      return <Redirect message={error.message} />;
+    }
+  }
 };

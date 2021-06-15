@@ -12,6 +12,7 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global.js";
 import { artepunktTheme } from "../../styles/theme";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const useVerifierStyles = makeStyles((muiTheme) => ({
   list: {
@@ -36,6 +37,9 @@ const useVerifierStyles = makeStyles((muiTheme) => ({
 }));
 
 const Verifier = () => {
+  const retry = useLicenseVerifier((state) => state.license.error.retry);
+  const redirect = useLicenseVerifier((state) => state.license.error.redirect);
+  const message = useLicenseVerifier((state) => state.license.error.message);
   const resetToken = useLicenseVerifier((state) => state.resetToken);
 
   const globalClasses = globalStyles();
@@ -63,7 +67,7 @@ const Verifier = () => {
     };
   }, []);
 
-  return (
+  return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={7}>
@@ -84,6 +88,8 @@ const Verifier = () => {
         </Grid>
       </Grid>
     </Container>
+  ) : (
+    renderError({ retry, redirect, message })
   );
 };
 

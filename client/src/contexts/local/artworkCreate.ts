@@ -11,7 +11,7 @@ const initialState = {
   capabilities: {
     data: {},
     loading: true,
-    error: { retry: false, message: "" },
+    error: { retry: false, redirect: false, message: "" },
   },
 };
 

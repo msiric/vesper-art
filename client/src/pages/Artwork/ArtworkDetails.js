@@ -11,6 +11,7 @@ import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global.js";
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const useArtworkStyles = makeStyles((muiTheme) => ({
   stickyWrapper: {
@@ -57,8 +58,12 @@ const useArtworkStyles = makeStyles((muiTheme) => ({
 }));
 
 const ArtworkDetails = ({ match }) => {
+  const retry = useArtworkDetails((state) => state.artwork.error.retry);
+  const redirect = useArtworkDetails((state) => state.artwork.error.redirect);
+  const message = useArtworkDetails((state) => state.artwork.error.message);
   const resetArtwork = useArtworkDetails((state) => state.resetArtwork);
   const resetComments = useArtworkComments((state) => state.resetComments);
+
   const paramId = match.params.id;
   const commentsFetched = useRef(false);
   const commentsRef = useRef(null);
@@ -81,7 +86,7 @@ const ArtworkDetails = ({ match }) => {
     };
   }, []);
 
-  return (
+  return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2} className={classes.container}>
         <Grid item sm={12} md={8}>
@@ -118,6 +123,8 @@ const ArtworkDetails = ({ match }) => {
         </Grid>
       </Grid>
     </Container>
+  ) : (
+    renderError({ retry, redirect, message })
   );
 };
 

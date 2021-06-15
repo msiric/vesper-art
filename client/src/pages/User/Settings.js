@@ -16,6 +16,7 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import { postLogout } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const useSettingsStyles = makeStyles((muiTheme) => ({
   container: {
@@ -35,6 +36,8 @@ const Settings = ({ location }) => {
 
   const resetEvents = useEventsStore((state) => state.resetEvents);
 
+  const retry = useUserSettings((state) => state.user.error.retry);
+  const message = useUserSettings((state) => state.user.error.message);
   const resetSettings = useUserSettings((state) => state.resetSettings);
 
   const history = useHistory();
@@ -61,7 +64,7 @@ const Settings = ({ location }) => {
     };
   }, []);
 
-  return (
+  return !containsErrors(retry) ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
@@ -83,6 +86,8 @@ const Settings = ({ location }) => {
       </Grid>
       <SettingsWrapper />
     </Container>
+  ) : (
+    renderError({ retry, message })
   );
 };
 
