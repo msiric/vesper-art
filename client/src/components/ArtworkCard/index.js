@@ -95,20 +95,7 @@ const ArtworkCard = ({
         disableTypography
         className={classes.header}
       />
-      {/*       <SkeletonWrapper loading={loading} height="180px">
-        <CardMedia
-          component={RouterLink}
-          to={`/artwork/${item.id}`}
-          className={classes.artworkMedia}
-          style={{
-            paddingTop: `${(item.data.height / item.data.width) * 100}%`,
-            maxWidth: upload.artwork.fileTransform.width,
-            width: "100%",
-          }}
-          image={item.data.cover}
-          title={item.title}
-        />
-      </SkeletonWrapper> */}
+
       <ImageWrapper
         redirect={`/artwork/${item.id}`}
         height={item.data.height}
@@ -120,7 +107,7 @@ const ArtworkCard = ({
         loading={loading}
       />
       <CardActions disableSpacing className={classes.footer}>
-        <Box style={{ display: "flex" }} loading={loading}>
+        <Box className={classes.buttonWrapper} loading={loading}>
           {item.owner.id === userId ? (
             <IconButton
               aria-label={"Edit artwork"}

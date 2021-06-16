@@ -3,6 +3,7 @@ import Masonry from "react-masonry-css";
 import ArtworkCard from "../../components/ArtworkCard/index.js";
 import InfiniteList from "../../components/InfiniteList/index.js";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
+import { useUserProfile } from "../../contexts/local/userProfile";
 import Box from "../../domain/Box";
 import userArtworkStyles from "./styles.js";
 
@@ -14,9 +15,10 @@ const breakpointColumns = {
 };
 
 const UserArtwork = ({ type, fixed }) => {
+  const loading = useUserProfile((state) => state.profile.loading);
+
   const elements = useUserArtwork((state) => state.artwork.data);
   const hasMore = useUserArtwork((state) => state.artwork.hasMore);
-  const loading = useUserArtwork((state) => state.artwork.loading);
   const fetching = useUserArtwork((state) => state.artwork.fetching);
   const error = useUserArtwork((state) => state.artwork.error);
   const fetchArtwork = useUserArtwork((state) => state.fetchArtwork);

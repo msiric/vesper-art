@@ -5,6 +5,7 @@ import {
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
+import ArtworkThumbnail from "../../components/ArtworkThumbnail/index.js";
 import Datatable from "../../components/DataTable/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
@@ -66,21 +67,17 @@ const ArtworkDatatable = () => {
         {
           name: "Artwork",
           options: {
-            customBodyRender: (value, tableMeta, updateValue) => (
-              <img style={{ width: "85%", maxWidth: 200 }} src={value} />
-            ),
+            customBodyRender: (value) => <ArtworkThumbnail source={value} />,
             sort: false,
           },
         },
         {
           name: "Title",
           options: {
-            sortCompare: (order) => {
-              return (obj1, obj2) =>
-                obj1.data.localeCompare(obj2.data, "en", {
-                  numeric: true,
-                }) * (order === "asc" ? 1 : -1);
-            },
+            sortCompare: (order) => (obj1, obj2) =>
+              obj1.data.localeCompare(obj2.data, "en", {
+                numeric: true,
+              }) * (order === "asc" ? 1 : -1),
           },
         },
         "Availability",
@@ -99,13 +96,8 @@ const ArtworkDatatable = () => {
                 : value.amount
                 ? `$${value.amount}`
                 : "Free",
-            sortCompare: (order) => {
-              return ({ data: previous }, { data: next }) => {
-                return (
-                  (previous.amount - next.amount) * (order === "asc" ? 1 : -1)
-                );
-              };
-            },
+            sortCompare: (order) => ({ data: previous }, { data: next }) =>
+              (previous.amount - next.amount) * (order === "asc" ? 1 : -1),
           },
         },
         {
@@ -117,28 +109,17 @@ const ArtworkDatatable = () => {
                 : value.amount
                 ? `$${value.amount}`
                 : "Free",
-            sortCompare: (order) => {
-              return ({ data: previous }, { data: next }) => {
-                return (
-                  (previous.amount - next.amount) * (order === "asc" ? 1 : -1)
-                );
-              };
-            },
+            sortCompare: (order) => ({ data: previous }, { data: next }) =>
+              (previous.amount - next.amount) * (order === "asc" ? 1 : -1),
           },
         },
         {
           name: "Date",
           options: {
             customBodyRender: (value) => formatDate(value, "dd/MM/yy HH:mm"),
-            sortCompare: (order) => {
-              return ({ data: previous }, { data: next }) => {
-                console.log(previous);
-                return (
-                  (new Date(previous).getTime() - new Date(next).getTime()) *
-                  (order === "asc" ? 1 : -1)
-                );
-              };
-            },
+            sortCompare: (order) => ({ data: previous }, { data: next }) =>
+              (new Date(previous).getTime() - new Date(next).getTime()) *
+              (order === "asc" ? 1 : -1),
           },
         },
         {

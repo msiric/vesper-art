@@ -7,7 +7,10 @@ import Typography from "../../domain/Typography";
 import checkoutCardStyles from "./styles.js";
 
 const CheckoutCard = ({ version, loading }) => {
-  const classes = checkoutCardStyles();
+  const classes = checkoutCardStyles({
+    height: version.cover.height / 6,
+    width: version.cover.width / 6,
+  });
 
   return (
     <Grid container className={classes.container}>
@@ -15,10 +18,6 @@ const CheckoutCard = ({ version, loading }) => {
         className={classes.media}
         image={version.cover.source}
         title={version.title}
-        style={{
-          height: version.cover.height / 6,
-          width: version.cover.width / 6,
-        }}
         loading={loading}
       />
       <Box className={classes.wrapper}>

@@ -8,18 +8,14 @@ import imageWrapperStyles from "./styles.js";
 const ImageWrapper = ({
   redirect,
   height,
-  width,
   source,
   placeholder,
   cover,
-  styles,
   loading,
 }) => {
   const downloaded = useProgressiveImage(source);
 
-  console.log(loading, downloaded, height, width, placeholder, cover, styles);
-
-  const classes = imageWrapperStyles();
+  const classes = imageWrapperStyles({ height, placeholder });
 
   return !loading && downloaded ? (
     redirect ? (
@@ -27,43 +23,18 @@ const ImageWrapper = ({
         <img className={classes.media} src={source} />
       </Box>
     ) : (
-      <Box className={classes.loader}>
-        <LoadingSpinner
-          styles={{ position: "absolute", display: loading ? "flex" : "none" }}
-        />
-        <img
-          className={classes.media}
-          style={{ ...styles, opacity: loading ? 0.5 : 1 }}
-          src={source}
-        />
+      <Box className={classes.wrapper}>
+        <img className={classes.media} src={source} />
       </Box>
     )
   ) : cover ? (
     <Box className={classes.wrapper}>
-      <LoadingSpinner
-        styles={{ position: "absolute", display: loading ? "flex" : "none" }}
-      />
-      <img
-        className={classes.media}
-        style={{ ...styles, opacity: loading ? 0.5 : 1 }}
-        src={cover}
-      />
+      <LoadingSpinner className={classes.spinner} />
+      <img className={classes.media} src={cover} />
     </Box>
   ) : (
-    <Box
-      style={{
-        ...styles,
-        height: height,
-        background: placeholder,
-        width: "100%",
-        filter: "blur(8px)",
-      }}
-    >
-      <img
-        className={classes.media}
-        style={{ visibility: "hidden" }}
-        src={source}
-      />
+    <Box className={classes.hiddenWrapper} loading={true}>
+      <img className={`${classes.media} ${classes.hidden}`} src={source} />
     </Box>
   );
 };

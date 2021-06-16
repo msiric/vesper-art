@@ -31,14 +31,10 @@ const ArtworkPreview = ({ paramId }) => {
       <Divider />
       <Box className={classes.imageWrapper}>
         <ImageWrapper
-          height={version.height || 400}
+          height={version.height || 500}
           width={version.width}
           source={version.cover.source}
           placeholder={version.cover.dominant}
-          styles={{
-            maxWidth: 700 / (version.height / version.width) - 54,
-            margin: "24px",
-          }}
           loading={loading}
         />
       </Box>

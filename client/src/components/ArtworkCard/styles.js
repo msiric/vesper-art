@@ -39,6 +39,7 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     justifyContent: "left",
     alignItems: "center",
     overflow: "hidden",
+    zIndex: 100,
   },
   footer: {
     "& button": {
@@ -55,6 +56,10 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     overflow: "hidden",
+    zIndex: 100,
+  },
+  buttonWrapper: {
+    display: "flex",
   },
   title: {
     color: "white",

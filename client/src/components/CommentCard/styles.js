@@ -17,6 +17,12 @@ const commentCardStyles = makeStyles((muiTheme) => ({
       borderColor: artepunktTheme.palette.primary.main,
     },
   },
+  owner: {
+    textDecoration: "none",
+  },
+  details: {
+    marginLeft: 6,
+  },
 }));
 
 export default commentCardStyles;

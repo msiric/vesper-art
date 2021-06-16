@@ -19,42 +19,22 @@ const useStyles = makeStyles(() => ({
     backgroundColor: artepunktTheme.palette.background.notification,
     border: `1px solid ${artepunktTheme.palette.border.main}`,
   },
+  icon: {
+    marginRight: 12,
+  },
+  success: {
+    color: artepunktTheme.palette.success.main,
+  },
+  error: {
+    color: artepunktTheme.palette.error.main,
+  },
+  warning: {
+    color: artepunktTheme.palette.warning.main,
+  },
+  info: {
+    color: artepunktTheme.palette.info.main,
+  },
 }));
-
-const iconItems = {
-  success: (
-    <SuccessIcon
-      style={{
-        marginRight: 12,
-        color: artepunktTheme.palette.success.main,
-      }}
-    />
-  ),
-  error: (
-    <ErrorIcon
-      style={{
-        marginRight: 12,
-        color: artepunktTheme.palette.error.main,
-      }}
-    />
-  ),
-  warning: (
-    <WarningIcon
-      style={{
-        marginRight: 12,
-        color: artepunktTheme.palette.warning.main,
-      }}
-    />
-  ),
-  info: (
-    <InfoIcon
-      style={{
-        marginRight: 12,
-        color: artepunktTheme.palette.info.main,
-      }}
-    />
-  ),
-};
 
 const App = () => {
   const theme = useAppStore((state) => state.theme);
@@ -62,6 +42,13 @@ const App = () => {
   const notistackRef = createRef();
 
   const classes = useStyles();
+
+  const iconItems = {
+    success: <SuccessIcon className={`${classes.icon} ${classes.success}`} />,
+    error: <ErrorIcon className={`${classes.icon} ${classes.error}`} />,
+    warning: <WarningIcon className={`${classes.icon} ${classes.warning}`} />,
+    info: <InfoIcon className={`${classes.icon} ${classes.info}`} />,
+  };
 
   const handleAlertClose = (key) => () => {
     notistackRef.current.closeSnackbar(key);

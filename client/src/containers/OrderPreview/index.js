@@ -19,14 +19,10 @@ const OrderPreview = () => {
     <Card>
       <Box className={classes.wrapper}>
         <ImageWrapper
-          height={version.cover.height || 400}
+          height={version.cover.height || 500}
           width={version.cover.width}
           source={version.cover.source}
           placeholder={version.cover.dominant}
-          styles={{
-            maxWidth: 700 / (version.cover.height / version.cover.width) - 54,
-            margin: "24px",
-          }}
           loading={loading}
         />
       </Box>

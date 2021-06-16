@@ -232,18 +232,6 @@ const PaymentForm = ({ secret, version, loading }) => {
         <Grid item xs={12} sm={3}>
           <Typography variant="h6">Payment Data</Typography>
         </Grid>
-        {/* <Grid container item xs={12} sm={9} justify="space-between">
-          {cardsLogo.map((card) => (
-            <img
-              key={card}
-              src={`../../../assets/images/cards/${card}.png`}
-              alt={card}
-              width="50px"
-              align="bottom"
-              style={{ padding: "0 5px" }}
-            />
-          ))}
-        </Grid> */}
       </Grid>
       <Grid item xs={12}>
         <StripeTextField

@@ -36,8 +36,9 @@ const CommentSection = ({
     (state) => state.artwork.data.owner.id
   );
 
+  const loading = useArtworkDetails((state) => state.artwork.loading);
+
   const comments = useArtworkComments((state) => state.comments.data);
-  const loading = useArtworkComments((state) => state.comments.loading);
   const fetching = useArtworkComments((state) => state.comments.fetching);
   const error = useArtworkComments((state) => state.comments.error);
   const edits = useArtworkComments((state) => state.edits);

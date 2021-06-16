@@ -6,8 +6,8 @@ const checkoutCardStyles = makeStyles((muiTheme) => ({
     margin: "16px 0",
   },
   media: {
-    height: "100%",
-    width: "100%",
+    height: ({ height }) => height,
+    width: ({ width }) => width,
     borderRadius: 4,
     backgroundSize: "contain",
   },

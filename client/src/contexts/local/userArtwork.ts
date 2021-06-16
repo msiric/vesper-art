@@ -5,7 +5,7 @@ import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 const initialState = {
   artwork: {
     data: [],
-    loading: true,
+    loading: false,
     fetching: false,
     initialized: false,
     hasMore: true,
@@ -18,7 +18,6 @@ const initialState = {
   },
   favorites: {
     data: [],
-    loading: true,
     fetching: false,
     initialized: false,
     hasMore: true,
@@ -76,9 +75,9 @@ const initActions = (set, get) => ({
         ...state,
         artwork: {
           ...state.artwork,
-          initialized: true,
           loading: false,
           fetching: false,
+          initialized: true,
           error: resolveAsyncError(err, true),
         },
       }));
@@ -90,8 +89,7 @@ const initActions = (set, get) => ({
         ...state,
         favorites: {
           ...state.favorites,
-          loading: !state.favorites.initialized,
-          fetching: state.favorites.initialized,
+          fetching: true,
           error: {
             ...initialState.favorites.error,
           },
@@ -109,7 +107,6 @@ const initActions = (set, get) => ({
         favorites: {
           ...state.favorites,
           data: [...state.favorites.data, ...data.favorites],
-          loading: false,
           fetching: false,
           initialized: true,
           error: { ...initialState.favorites.error },
@@ -124,7 +121,6 @@ const initActions = (set, get) => ({
         favorites: {
           ...state.favorites,
           initialized: true,
-          loading: false,
           fetching: false,
           error: resolveAsyncError(err, true),
         },

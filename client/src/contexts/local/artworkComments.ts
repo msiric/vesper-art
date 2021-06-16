@@ -12,7 +12,6 @@ import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 const initialState = {
   comments: {
     data: [],
-    loading: true,
     fetching: false,
     initialized: false,
     hasMore: true,
@@ -116,8 +115,7 @@ const initActions = (set, get) => ({
         ...state,
         comments: {
           ...state.comments,
-          loading: !state.comments.initialized,
-          fetching: state.comments.initialized,
+          fetching: true,
           error: {
             ...initialState.comments.error,
           },
@@ -147,7 +145,6 @@ const initActions = (set, get) => ({
         comments: {
           ...state.comments,
           data: [...state.comments.data, ...data.comments],
-          loading: false,
           fetching: false,
           initialized: true,
           error: { ...initialState.comments.error },
@@ -165,7 +162,6 @@ const initActions = (set, get) => ({
         comments: {
           ...state.comments,
           initialized: true,
-          loading: false,
           fetching: false,
           error: resolveAsyncError(err, true),
         },

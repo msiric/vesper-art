@@ -15,11 +15,12 @@ import profileArtworkStyles from "./styles.js";
 const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const profile = useUserProfile((state) => state.profile.data);
   const editable = useUserProfile((state) => state.editable);
+  const loading = useUserProfile((state) => state.profile.loading);
+
   const tabs = useUserArtwork((state) => state.tabs);
   const artwork = useUserArtwork((state) => state.artwork.data);
   const artworkLoading = useUserArtwork((state) => state.artwork.loading);
   const favorites = useUserArtwork((state) => state.favorites.data);
-  const favoritesLoading = useUserArtwork((state) => state.favorites.loading);
   const fetchArtwork = useUserArtwork((state) => state.fetchArtwork);
   const fetchFavorites = useUserArtwork((state) => state.fetchFavorites);
   const changeTab = useUserArtwork((state) => state.changeTab);
@@ -75,7 +76,6 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                       loadMore={fetchArtwork}
                       type="artwork"
                       fixed={true}
-                      loading={artworkLoading}
                     />
                   </Box>
                 ),
@@ -86,7 +86,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                         ? "You have no artwork to display"
                         : "This user has no artwork to display"
                     }
-                    loading={artworkLoading}
+                    loading={loading}
                   />
                 ),
                 loading: false,
@@ -103,7 +103,6 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                       loadMore={fetchFavorites}
                       type="artwork"
                       fixed={true}
-                      loading={favoritesLoading}
                     />
                   </Box>
                 ),
@@ -114,7 +113,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                         ? "You have no favorited artwork"
                         : "This user has no favorited artwork"
                     }
-                    loading={favoritesLoading}
+                    loading={loading}
                   />
                 ),
                 loading: tabs.loading,
@@ -122,7 +121,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
             ],
           }}
           handleTabsChange={changeTab}
-          loading={artworkLoading}
+          loading={loading || artworkLoading}
         />
       </Paper>
     </Grid>

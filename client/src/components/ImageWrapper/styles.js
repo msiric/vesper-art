@@ -16,6 +16,22 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
   },
   wrapper: {
     position: "relative",
+    width: "100%",
+    margin: "8px 0",
+  },
+  spinner: {
+    position: "absolute",
+    display: "flex",
+  },
+  hiddenWrapper: {
+    height: ({ height }) => height,
+    background: ({ placeholder }) => placeholder,
+    width: "100%",
+    filter: "blur(8px)",
+    margin: "8px 0",
+  },
+  hidden: {
+    visibility: "hidden",
   },
 }));
 

@@ -44,6 +44,10 @@ const useOnboardingStyles = makeStyles((muiTheme) => ({
   label: {
     alignSelf: "flex-start",
   },
+  actions: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
 }));
 
 const Onboarding = () => {
@@ -167,10 +171,7 @@ const Onboarding = () => {
                       setValue={setValue}
                     />
                   </CardContent>
-                  <CardActions
-                    className={classes.actions}
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
+                  <CardActions className={classes.actions}>
                     <AsyncButton
                       type="submit"
                       fullWidth

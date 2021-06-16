@@ -86,8 +86,8 @@ const CommentCard = ({
                 <Typography
                   component={Link}
                   to={`/user/${comment.owner.name}`}
-                  style={{ textDecoration: "none" }}
                   loading={loading}
+                  className={classes.owner}
                 >
                   {comment.owner.id === artworkOwnerId
                     ? `${comment.owner.name} 👤`
@@ -95,8 +95,8 @@ const CommentCard = ({
                 </Typography>
                 <Typography
                   component="span"
-                  style={{ marginLeft: 6 }}
                   loading={loading}
+                  className={classes.details}
                 >
                   {`${formatDistance(
                     new Date(comment.created),
@@ -105,8 +105,8 @@ const CommentCard = ({
                 </Typography>
                 <Typography
                   component="span"
-                  style={{ marginLeft: 6 }}
                   loading={loading}
+                  className={classes.details}
                 >
                   {comment.modified ? "(edited)" : null}
                 </Typography>
