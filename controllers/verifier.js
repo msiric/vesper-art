@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { errors } from "../common/constants";
 import { fingerprintValidation } from "../common/validation";
 import { fetchLicenseByFingerprint } from "../services/postgres/license.js";
 import { sanitizeData } from "../utils/helpers.js";
@@ -12,7 +13,7 @@ export const verifyLicense = async ({ licenseFingerprint, connection }) => {
   if (foundLicense) {
     return { license: foundLicense };
   }
-  throw createError(400, "License not found");
+  throw createError(errors.notFound, "License not found");
 };
 
 export const displayLicense = async (req, res, next) => {

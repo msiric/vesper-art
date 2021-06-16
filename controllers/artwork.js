@@ -1,5 +1,6 @@
 import createError from "http-errors";
-import { isVersionDifferent } from "../common/helpers";
+import { errors } from "../common/constants";
+import { isObjectEmpty, isVersionDifferent } from "../common/helpers";
 import { artworkValidation } from "../common/validation";
 import {
   addNewArtwork,
@@ -57,8 +58,8 @@ export const getArtworkDetails = async ({
     limit,
     connection,
   });
-  if (foundArtwork) return { artwork: foundArtwork };
-  throw createError(404, "Artwork not found");
+  if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
+  throw createError(errors.notFound, "Artwork not found");
 };
 
 export const getArtworkComments = async ({
@@ -73,8 +74,7 @@ export const getArtworkComments = async ({
     limit,
     connection,
   });
-  if (foundComments) return { comments: foundComments };
-  throw createError(400, "Artwork not found");
+  return { comments: foundComments };
 };
 
 // $TODO handle in user controller?
@@ -94,8 +94,8 @@ export const editArtwork = async ({ userId, artworkId, connection }) => {
     userId,
     connection,
   });
-  if (foundArtwork) return { artwork: foundArtwork };
-  throw createError(400, "Artwork not found");
+  if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
+  throw createError(errors.notFound, "Artwork not found");
 };
 
 export const postNewArtwork = async ({
@@ -128,10 +128,10 @@ export const postNewArtwork = async ({
         userId,
         connection,
       });
-      if (!foundUser) throw createError(400, "User not found");
+      if (!foundUser) throw createError(errors.notFound, "User not found");
       if (!foundUser.stripeId)
         throw createError(
-          400,
+          errors.unprocessable,
           "Please complete the Stripe onboarding process before making your artwork commercially available"
         );
       const foundAccount = await fetchStripeAccount({
@@ -143,7 +143,7 @@ export const postNewArtwork = async ({
           foundAccount.capabilities.transfers !== "active")
       ) {
         throw createError(
-          400,
+          errors.unprocessable,
           "Please complete your Stripe account before making your artwork commercially available"
         );
       }
@@ -182,7 +182,10 @@ export const postNewArtwork = async ({
     });
     return { message: "Artwork published successfully" };
   }
-  throw createError(400, "Please attach an artwork media before submitting");
+  throw createError(
+    errors.badRequest,
+    "Please attach artwork media before submitting"
+  );
 };
 
 // $TODO
@@ -216,10 +219,10 @@ export const updateArtwork = async ({
           userId,
           connection,
         });
-        if (!foundUser) throw createError(400, "User not found");
+        if (!foundUser) throw createError(errors.notFound, "User not found");
         if (!foundUser.stripeId)
           throw createError(
-            400,
+            errors.unprocessable,
             "Please complete the Stripe onboarding process before making your artwork commercially available"
           );
         const foundAccount = await fetchStripeAccount({
@@ -231,7 +234,7 @@ export const updateArtwork = async ({
             foundAccount.capabilities.transfers !== "active")
         ) {
           throw createError(
-            400,
+            errors.unprocessable,
             "Please complete your Stripe account before making your artwork commercially available"
           );
         }
@@ -281,10 +284,13 @@ export const updateArtwork = async ({
 
       return { message: "Artwork updated successfully" };
     } else {
-      throw createError(400, "Artwork not found");
+      throw createError(errors.notFound, "Artwork not found");
     }
   } else {
-    throw createError(400, "Artwork is identical to the previous version");
+    throw createError(
+      errors.badRequest,
+      "Artwork is identical to the previous version"
+    );
   }
 };
 
@@ -339,9 +345,9 @@ export const deleteArtwork = async ({
       }
       return { message: "Artwork deleted successfully" };
     }
-    throw createError(400, "Artwork has a newer version");
+    throw createError(errors.badRequest, "Artwork has a newer version");
   }
-  throw createError(400, "Artwork not found");
+  throw createError(errors.notFound, "Artwork not found");
 };
 
 export const fetchArtworkFavorites = async ({ artworkId, connection }) => {
@@ -375,9 +381,9 @@ export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
       });
       return { message: "Artwork favorited" };
     }
-    throw createError(400, "Artwork has already been favorited");
+    throw createError(errors.badRequest, "Artwork has already been favorited");
   }
-  throw createError(400, "Cannot favorite your own artwork");
+  throw createError(errors.badRequest, "Cannot favorite your own artwork");
 };
 
 export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
@@ -397,9 +403,12 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
       });
       return { message: "Artwork unfavorited" };
     }
-    throw createError(400, "Artwork has already been unfavorited");
+    throw createError(
+      errors.badRequest,
+      "Artwork has already been unfavorited"
+    );
   }
-  throw createError(400, "Cannot unfavorite your own artwork");
+  throw createError(errors.badRequest, "Cannot unfavorite your own artwork");
 };
 
 // needs transaction (done)

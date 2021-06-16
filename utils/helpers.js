@@ -5,6 +5,7 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { getConnection } from "typeorm";
 import * as uuidJs from "uuid";
+import { errors } from "../common/constants";
 import { domain, uuid } from "../config/secret";
 
 // this way of importing allows specifying the uuid version in the config file only once and gets propagated everywhere
@@ -151,14 +152,14 @@ export const formatArtworkValues = (data) => {
 export const isAuthenticated = async (req, res, next) => {
   try {
     const authentication = req.headers["authorization"];
-    if (!authentication) throw createError(403, "Forbidden");
+    if (!authentication) throw createError(errors.forbidden, "Forbidden");
     const token = authentication.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
       ignoreExpiration: true,
     });
     const data = jwt.decode(token);
     if (Date.now() >= data.exp * 1000 || !data.active)
-      throw createError(401, "Not authenticated");
+      throw createError(errors.unauthorized, "Not authenticated");
     res.locals.user = data;
   } catch (err) {
     console.log(err);
@@ -171,7 +172,8 @@ export const isAuthenticated = async (req, res, next) => {
 export const isNotAuthenticated = async (req, res, next) => {
   const authentication = req.headers["authorization"];
   // $TODO ovo treba handleat tako da ne stucka frontend
-  if (authentication) throw createError(400, "Already authenticated");
+  if (authentication)
+    throw createError(errors.badRequest, "Already authenticated");
 
   return next();
 };
@@ -180,7 +182,7 @@ export const isAuthorized = async (req, res, next) => {
   if (req.params.userId === res.locals.user.id) {
     return next();
   }
-  throw createError(401, "Not authorized to request resource");
+  throw createError(errors.unauthorized, "Not authorized to request resource");
 };
 
 export const validateParams = (req, res, next) => {
@@ -192,7 +194,7 @@ export const validateParams = (req, res, next) => {
       isValid = false;
   }
   if (isValid) return next();
-  throw createError(400, "Invalid route parameter");
+  throw createError(errors.badRequest, "Invalid route parameter");
 };
 
 export const sanitizeData = (body) =>

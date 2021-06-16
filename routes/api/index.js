@@ -1,5 +1,6 @@
 import express from "express";
 import createError from "http-errors";
+import { errors } from "../../common/constants.js";
 import artwork from "./routers/artwork.js";
 import auth from "./routers/auth.js";
 import checkout from "./routers/checkout.js";
@@ -25,12 +26,15 @@ router.use("/", search);
 router.use("/auth", auth);
 
 router.use((req, res, next) => {
-  createError(404);
+  createError(errors.internalError, "An error occurred");
 });
 
 router.use((err, req, res, next) => {
-  res.status(err.status || 500);
-  res.json({ status_code: err.status || 500, error: err.message });
+  res.status(err.status || errors.internalError);
+  res.json({
+    status_code: err.status || errors.internalError,
+    error: err.message,
+  });
 });
 
 export default router;

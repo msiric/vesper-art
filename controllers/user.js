@@ -1,6 +1,7 @@
 import argon2 from "argon2";
 import aws from "aws-sdk";
 import createError from "http-errors";
+import { errors } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
@@ -80,7 +81,7 @@ export const getUserProfile = async ({
     connection,
   });
   if (foundUser) return { user: foundUser };
-  throw createError(400, "User not found");
+  throw createError(errors.notFound, "User not found");
 };
 
 export const getUserArtwork = async ({
@@ -147,7 +148,7 @@ export const getUserFavorites = async ({
     });
     return { favorites: foundFavorites };
   }
-  throw createError(400, "User keeps favorites private");
+  throw createError(errors.notAllowed, "User keeps favorites private");
 };
 
 // $TODO ne valja nista
@@ -222,7 +223,7 @@ export const updateUserOrigin = async ({
     });
     return { message: "User business address updated" };
   }
-  throw createError(400, "User not found");
+  throw createError(errors.notFound, "User not found");
 };
 
 export const updateUserProfile = async ({
@@ -305,7 +306,7 @@ export const getUserSettings = async ({ userId, connection }) => {
     // $TODO change name
     return { user: foundUser };
   }
-  throw createError(400, "User not found");
+  throw createError(errors.notFound, "User not found");
 };
 
 export const getUserNotifications = async ({
@@ -352,7 +353,10 @@ export const updateUserEmail = async ({ userId, userEmail, connection }) => {
   await emailValidation.validate(sanitizeData({ userEmail }));
   const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
   if (emailUsed) {
-    throw createError(400, "User with provided email already exists");
+    throw createError(
+      errors.conflict,
+      "User with provided email already exists"
+    );
   } else {
     const { verificationToken, verificationLink } = generateToken();
     await editUserEmail({ userId, userEmail, verificationToken, connection });
@@ -380,13 +384,16 @@ export const updateUserPassword = async ({
   if (!isObjectEmpty(foundUser)) {
     const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
     if (!isCurrentValid)
-      throw createError(400, "Current password is incorrect");
+      throw createError(errors.badRequest, "Current password is incorrect");
     const isPasswordValid = await argon2.verify(
       foundUser.password,
       userPassword
     );
     if (isPasswordValid)
-      throw createError(400, "New password cannot be identical to the old one");
+      throw createError(
+        errors.badRequest,
+        "New password cannot be identical to the old one"
+      );
     await passwordValidation.validate(
       sanitizeData({
         userCurrent,
@@ -398,7 +405,7 @@ export const updateUserPassword = async ({
     await editUserPassword({ userId, hashedPassword, connection });
     return { message: "Password updated successfully" };
   }
-  throw createError(400, "User not found");
+  throw createError(errors.notFound, "User not found");
 };
 
 // needs transaction (done)
@@ -577,7 +584,7 @@ export const deactivateUser = async ({ userId, response, connection }) => {
     logUserOut(response);
     return { message: "User deactivated" };
   }
-  throw createError(400, "User not found");
+  throw createError(errors.notFound, "User not found");
 };
 
 export const getUserMedia = async ({ userId, artworkId, connection }) => {
@@ -598,5 +605,5 @@ export const getUserMedia = async ({ userId, artworkId, connection }) => {
 
     return { url, file };
   }
-  throw createError(400, "Artwork not found");
+  throw createError(errors.notFound, "Artwork not found");
 };

@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { errors } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
 import { reviewValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
@@ -63,9 +64,15 @@ export const postReview = async ({
         // new end
         return { message: "Review successfully published" };
       }
-      throw createError(400, "Review already exists for this artwork");
+      throw createError(
+        errors.conflict,
+        "Review already exists for this artwork"
+      );
     }
-    throw createError(400, "Review cannot be posted for unbought artwork");
+    throw createError(
+      errors.notAllowed,
+      "Review cannot be posted for unbought artwork"
+    );
   }
-  throw createError(400, "Rating is required");
+  throw createError(errors.badRequest, "Rating is required");
 };

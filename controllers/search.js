@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { errors } from "../common/constants.js";
 import {
   fetchArtworkResults,
   fetchUserResults,
@@ -34,7 +35,7 @@ export const getResults = async ({
     });
     foundType = "users";
   } else {
-    throw createError(400, "Query type invalid");
+    throw createError(errors.badRequest, "Query type invalid");
   }
   return {
     searchData: foundResults,

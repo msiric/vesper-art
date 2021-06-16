@@ -1,5 +1,6 @@
 import createError from "http-errors";
 import nodemailer from "nodemailer";
+import { errors } from "../common/constants.js";
 import { mailer } from "../config/secret.js";
 
 export const sendEmail = async ({
@@ -27,6 +28,6 @@ export const sendEmail = async ({
     await smtpTransport.sendMail(mailOptions);
   } catch (err) {
     console.log(err);
-    throw createError(400, "Email failed to send");
+    throw createError(errors.internalError, "Email failed to send");
   }
 };

@@ -3,6 +3,7 @@ import fs from "fs";
 import createError from "http-errors";
 import imageSize from "image-size";
 import sharp from "sharp";
+import { errors } from "../common/constants.js";
 import { rgbToHex } from "../common/helpers.js";
 import { upload } from "../config/constants.js";
 import { checkImageOrientation } from "./helpers.js";
@@ -140,16 +141,16 @@ export const finalizeMediaUpload = async ({
           return fileUpload;
         }
         deleteFileLocally({ filePath });
-        throw createError(400, "File aspect ratio is not valid");
+        throw createError(errors.badRequest, "File aspect ratio is not valid");
       }
       deleteFileLocally({ filePath });
-      throw createError(400, "File dimensions are not valid");
+      throw createError(errors.badRequest, "File dimensions are not valid");
     } else {
       return fileUpload;
     }
   } catch (err) {
     deleteFileLocally({ filePath });
-    throw createError(400, err);
+    throw createError(errors.internalError, err);
   }
 };
 

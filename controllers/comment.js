@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { errors } from "../common/constants";
 import { commentValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
 import { fetchArtworkById } from "../services/postgres/artwork.js";
@@ -29,7 +30,7 @@ export const postComment = async ({
   await commentValidation.validate(sanitizeData({ commentContent }));
   const foundArtwork = await fetchArtworkById({ artworkId, connection });
   if (!foundArtwork) {
-    throw createError(400, "Artwork not found");
+    throw createError(errors.notFound, "Artwork not found");
   } else {
     const { commentId, notificationId } = generateUuids({
       commentId: null,

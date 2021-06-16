@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { errors } from "../common/constants";
 import { discountValidation } from "../common/validation";
 import {
   addNewDiscount,
@@ -17,7 +18,7 @@ export const getDiscount = async ({ userId, discountCode, connection }) => {
   if (foundDiscount) {
     return { message: "Discount applied", payload: foundDiscount };
   }
-  throw createError(400, "Discount not found");
+  throw createError(errors.notFound, "Discount not found");
 };
 
 export const postDiscount = async ({ userId, discountData, connection }) => {

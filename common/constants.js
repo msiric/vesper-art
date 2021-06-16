@@ -45,6 +45,8 @@ export const errors = {
   notFound: 404,
   notAllowed: 405,
   conflict: 409,
+  gone: 410,
+  unprocessable: 422,
   tooManyRequests: 429,
   internalError: 500,
 };

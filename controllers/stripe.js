@@ -3,7 +3,7 @@ import FormData from "form-data";
 import createError from "http-errors";
 import querystring from "querystring";
 import * as Yup from "yup";
-import { appName, domain } from "../common/constants";
+import { appName, domain, errors } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
 import { licenseValidation, orderValidation } from "../common/validation";
 import { stripe as processor } from "../config/secret.js";
@@ -144,19 +144,25 @@ export const applyDiscount = async ({
                   },
                 };
               }
-              throw createError(400, "Could not apply discount");
+              throw createError(
+                errors.internalError,
+                "Could not apply discount"
+              );
             }
-            throw createError(400, "You are the owner of this artwork");
+            throw createError(
+              errors.badRequest,
+              "You are the owner of this artwork"
+            );
           }
-          throw createError(400, "Artwork version is obsolete");
+          throw createError(errors.badRequest, "Artwork version is obsolete");
         }
-        throw createError(400, "Artwork is no longer active");
+        throw createError(errors.gone, "Artwork is no longer active");
       }
-      throw createError(400, "Artwork not found");
+      throw createError(errors.notFound, "Artwork not found");
     }
-    throw createError(400, "Discount not found");
+    throw createError(errors.notFound, "Discount not found");
   }
-  throw createError(400, "User not found");
+  throw createError(errors.notFound, "User not found");
 };
 
 // $TODO validacija licenci
@@ -283,19 +289,25 @@ export const managePaymentIntent = async ({
                   },
                 };
               }
-              throw createError(400, "Could not process the payment");
+              throw createError(
+                errors.internalError,
+                "Could not process the payment"
+              );
             }
-            throw createError(400, "Could not apply discount");
+            throw createError(errors.internalError, "Could not apply discount");
           }
-          throw createError(400, "You are the owner of this artwork");
+          throw createError(
+            errors.badRequest,
+            "You are the owner of this artwork"
+          );
         }
-        throw createError(400, "Artwork version is obsolete");
+        throw createError(errors.badRequest, "Artwork version is obsolete");
       }
-      throw createError(400, "Artwork is no longer active");
+      throw createError(errors.gone, "Artwork is no longer active");
     }
-    throw createError(400, "Artwork not found");
+    throw createError(errors.notFound, "Artwork not found");
   }
-  throw createError(400, "User not found");
+  throw createError(errors.notFound, "User not found");
 };
 
 export const redirectToStripe = async ({
@@ -305,7 +317,7 @@ export const redirectToStripe = async ({
 }) => {
   if (!userOnboarded)
     throw createError(
-      400,
+      errors.unprocessable,
       "You need to complete the onboarding process before accessing your Stripe dashboard"
     );
   const loginLink = await constructStripeLink({
@@ -359,7 +371,10 @@ export const assignStripeId = async ({
   connection,
 }) => {
   if (sessionData.state != queryData.state)
-    throw createError(500, "There was an error in the onboarding process");
+    throw createError(
+      errors.internalError,
+      "There was an error in the onboarding process"
+    );
 
   const formData = new FormData();
   formData.append("grant_type", "authorization_code");
@@ -371,7 +386,8 @@ export const assignStripeId = async ({
     headers: formData.getHeaders(),
   });
 
-  if (expressAuthorized.error) throw createError(500, expressAuthorized.error);
+  if (expressAuthorized.error)
+    throw createError(errors.internalError, expressAuthorized.error);
 
   await editUserStripe({
     userId: sessionData.id,
@@ -395,7 +411,7 @@ export const fetchIntentById = async ({ userId, intentId, connection }) => {
       intent: foundIntent,
     };
   }
-  throw createError(400, "Could not fetch intent");
+  throw createError(errors.notFound, "Intent not found");
 };
 
 export const createPayout = async ({ userId, connection }) => {
@@ -417,7 +433,7 @@ export const createPayout = async ({ userId, connection }) => {
       message: "Payout successfully created",
     };
   }
-  throw createError(400, "Cannot create payout for this user");
+  throw createError(errors.notFound, "User not found");
 };
 
 // $TODO not good
@@ -527,6 +543,6 @@ const processTransaction = async ({ stripeIntent, connection }) => {
         connection,
       });
     }
-    throw createError(400, "Could not process the order");
+    throw createError(errors.internalError, "Could not process the order");
   }
 };

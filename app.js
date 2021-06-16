@@ -11,6 +11,7 @@ import morgan from "morgan";
 import path from "path";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
+import { errors } from "./common/constants";
 import { domain } from "./config/secret";
 import { mongo, postgres } from "./config/secret.js";
 import api from "./routes/api/index.js";
@@ -109,12 +110,15 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  createError(404);
+  createError(errors.internalError, "An error occurred");
 });
 
 app.use((err, req, res, next) => {
-  res.status(err.status || 500);
-  res.json({ status_code: err.status || 500, error: err.message });
+  res.status(err.status || errors.internalError);
+  res.json({
+    status_code: err.status || errors.internalError,
+    error: err.message,
+  });
 });
 
 export default app;

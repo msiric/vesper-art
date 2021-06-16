@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { errors } from "../common/constants";
 import { downloadValidation, licenseValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
@@ -15,7 +16,7 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
       version: foundVersion,
     };
   }
-  throw createError(400, "Artwork not found");
+  throw createError(errors.notFound, "Artwork not found");
 };
 
 // $TODO not good
@@ -110,13 +111,16 @@ export const postDownload = async ({
             // new end
             return { message: "Order completed successfully" };
           }
-          throw createError(400, "User not found");
+          throw createError(errors.notFound, "User not found");
         }
-        throw createError(400, "You are the owner of this artwork");
+        throw createError(
+          errors.badRequest,
+          "You are the owner of this artwork"
+        );
       }
-      throw createError(400, "Artwork version is obsolete");
+      throw createError(errors.badRequest, "Artwork version is obsolete");
     }
-    throw createError(400, "Artwork is no longer active");
+    throw createError(errors.gone, "Artwork is no longer active");
   }
-  throw createError(400, "Artwork not found");
+  throw createError(errors.notFound, "Artwork not found");
 };
