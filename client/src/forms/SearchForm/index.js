@@ -1,53 +1,59 @@
-import { Box, IconButton } from "@material-ui/core";
+import { Box, IconButton, InputAdornment } from "@material-ui/core";
 import {
   AccountBoxRounded as UserIcon,
   ImageRounded as ArtworkIcon,
   SearchRounded as SearchIcon,
 } from "@material-ui/icons";
 import React from "react";
-import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
-import InputBase from "../../controls/InputBase";
+import { useEventsStore } from "../../contexts/global/events.js";
+import TextInput from "../../controls/TextInput/index.js";
 
-const SearchForm = ({
-  handleToggle,
-  handleSubmit,
-  getValues,
-  setValue,
-  errors,
-  other,
-}) => {
-  const [eventsStore, eventsDispatch] = useEventsContext();
+const SearchForm = ({ handleToggle, getValues, setValue, errors, loading }) => {
+  const search = useEventsStore((state) => state.search);
+
   /* const classes = AddArtworkStyles(); */
   const classes = {};
 
   return (
     <Box>
-      <IconButton
-        title={
-          eventsStore.search === "artwork" ? "Search artwork" : "Search users"
-        }
-        onClick={handleToggle}
-        className={classes.typeIcon}
-        disableFocusRipple
-        disableRipple
-      >
-        {eventsStore.search === "artwork" ? <ArtworkIcon /> : <UserIcon />}
-      </IconButton>
-      <InputBase
-        name="searchInput"
-        value={getValues("searchInput")}
+      <TextInput
+        name="searchQuery"
+        value={getValues("searchQuery")}
         setValue={setValue}
         placeholder="Search..."
-        errors={errors}
+        style={{ margin: 0 }}
+        loading={loading}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <IconButton
+                title={search === "artwork" ? "Search artwork" : "Search users"}
+                onClick={handleToggle}
+                className={classes.typeIcon}
+                size="small"
+                disableFocusRipple
+                disableRipple
+              >
+                {search === "artwork" ? <ArtworkIcon /> : <UserIcon />}
+              </IconButton>
+            </InputAdornment>
+          ),
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                type="submit"
+                className={classes.searchIcon}
+                size="small"
+                disableFocusRipple
+                disableRipple
+              >
+                <SearchIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
-      <IconButton
-        type="submit"
-        className={classes.searchIcon}
-        disableFocusRipple
-        disableRipple
-      >
-        <SearchIcon />
-      </IconButton>
+      <TextInput name="searchType" type="hidden" style={{ display: "none" }} />
     </Box>
   );
 };

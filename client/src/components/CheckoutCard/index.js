@@ -1,74 +1,45 @@
-import { Box, Typography } from "@material-ui/core";
 import React from "react";
-import { hexToRgb } from "../../../../common/helpers.js";
-import { CardHeader, CardMedia, Grid } from "../../styles/theme.js";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
+import Box from "../../domain/Box";
+import CardHeader from "../../domain/CardHeader";
+import CardMedia from "../../domain/CardMedia";
+import Grid from "../../domain/Grid";
+import Typography from "../../domain/Typography";
 import checkoutCardStyles from "./styles.js";
 
 const CheckoutCard = ({ version, loading }) => {
-  const classes = checkoutCardStyles();
-
-  const { r, g, b } = loading
-    ? { r: null, g: null, b: null }
-    : hexToRgb(version.cover.dominant);
-
-  console.log("VERSION", version);
+  const classes = checkoutCardStyles({
+    height: version.cover.height / 6,
+    width: version.cover.width / 6,
+  });
 
   return (
-    <Grid container p={0} my={2}>
-      <Grid
-        item
-        xs={12}
-        md={version.cover.orientation === "portrait" ? 2 : 5}
-        style={{ display: "flex" }}
-      >
-        <Box
-          display="flex"
-          py={0}
-          style={{
-            boxShadow: `0px 0px 20px 5px rgba(${r},${g},${b},0.75)`,
-          }}
-        >
-          <SkeletonWrapper loading={loading} height="100px" width="100%">
-            <CardMedia
-              className={classes.media}
-              image={version.cover.source}
-              title={version.title}
-            />
-          </SkeletonWrapper>
-        </Box>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        md={version.cover.orientation === "portrait" ? 10 : 7}
-        className={classes.actions}
-      >
-        <Box display="flex" flexDirection="column">
-          <CardHeader
-            title={
-              <SkeletonWrapper variant="text" loading={loading}>
-                <Typography>{version.title || "Artwork title"}</Typography>
-              </SkeletonWrapper>
-            }
-            subheader={
-              <SkeletonWrapper variant="text" loading={loading}>
-                <Typography>
-                  {version.artwork.owner.name || "Artist name"}
-                </Typography>
-              </SkeletonWrapper>
-            }
-            px={2}
-            py={0}
-            md={{ px: 0 }}
-          />
-          {/*           <CardContent>
+    <Grid container className={classes.container}>
+      <CardMedia
+        className={classes.media}
+        image={version.cover.source}
+        title={version.title}
+        loading={loading}
+      />
+      <Box className={classes.wrapper}>
+        <CardHeader
+          title={
+            <Typography loading={loading}>
+              {version.title || "Artwork title"}
+            </Typography>
+          }
+          subheader={
+            <Typography loading={loading}>
+              {version.artwork.owner.name || "Artist name"}
+            </Typography>
+          }
+          className={classes.text}
+        />
+        {/*           <CardContent>
             <Typography variant="body2" color="textSecondary" component="p">
               {version.description}
             </Typography>
           </CardContent> */}
-        </Box>
-      </Grid>
+      </Box>
     </Grid>
   );
 };

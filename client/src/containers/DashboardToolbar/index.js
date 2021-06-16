@@ -1,50 +1,52 @@
-import {
-  Box,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Typography,
-} from "@material-ui/core";
-import { styled } from "@material-ui/core/styles";
-import { compose, typography } from "@material-ui/system";
 import React from "react";
-import { artepunktTheme } from "../../styles/theme.js";
+import AsyncButton from "../../components/AsyncButton/index.js";
+import DropdownItems from "../../components/DropdownItems/index.js";
+import MainHeading from "../../components/MainHeading/index.js";
+import SubHeading from "../../components/SubHeading/index.js";
+import { useUserStore } from "../../contexts/global/user.js";
+import { useUserStats } from "../../contexts/local/userStats";
+import Grid from "../../domain/Grid";
 import dashboardToolbarStyles from "./styles.js";
 
-const GridItem = styled(Grid)(compose(typography));
+const DashboardToolbar = () => {
+  const stripeId = useUserStore((state) => state.stripeId);
 
-const DashboardToolbar = ({ display, handleSelectChange }) => {
+  const display = useUserStats((state) => state.display);
+  const loading = useUserStats((state) => state.aggregateStats.loading);
+  const changeSelection = useUserStats((state) => state.changeSelection);
+  const redirectDashboard = useUserStats((state) => state.redirectDashboard);
+
+  const menuItems = [
+    { value: "purchases", text: "Purchases" },
+    { value: "sales", text: "Sales" },
+  ];
+
   const classes = dashboardToolbarStyles();
 
   return (
-    <Box display="flex" mb={artepunktTheme.margin.spacing} width="auto">
-      <GridItem item xs={12} md={6}>
-        <Typography style={{ textTransform: "capitalize" }} variant="h6">
-          Dashboard
-        </Typography>
-      </GridItem>
-      <GridItem item xs={12} md={6} textAlign="right">
-        <FormControl
-          variant="outlined"
-          className={classes.formControl}
-          style={{ marginBottom: "12px" }}
-        >
-          <InputLabel id="data-display">Display</InputLabel>
-          <Select
-            labelId="data-display"
-            value={display.type}
-            onChange={handleSelectChange}
-            label="Display"
-            margin="dense"
+    <Grid container>
+      <Grid item className={classes.wrapper}>
+        <MainHeading text="Dashboard" />
+        {stripeId && (
+          <AsyncButton
+            variant="outlined"
+            onClick={() => redirectDashboard({ stripeId })}
           >
-            <MenuItem value="purchases">Purchases</MenuItem>
-            <MenuItem value="sales">Sales</MenuItem>
-          </Select>
-        </FormControl>
-      </GridItem>
-    </Box>
+            Stripe dashboard
+          </AsyncButton>
+        )}
+      </Grid>
+      <Grid item className={classes.wrapper}>
+        <SubHeading text="Total stats" />
+        <DropdownItems
+          value={display.type}
+          onChange={(e) => changeSelection({ selection: e.target.value })}
+          label="Display"
+          loading={loading}
+          items={menuItems}
+        />
+      </Grid>
+    </Grid>
   );
 };
 

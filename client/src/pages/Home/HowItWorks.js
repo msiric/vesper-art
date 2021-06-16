@@ -1,6 +1,6 @@
-import { Button, Card, Container, Grid, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import React from "react";
-import { app } from "../../../../common/constants.js";
+import { appName } from "../../../../common/constants";
 import { ReactComponent as ArtworkGallery } from "../../assets/images/illustrations/artwork_gallery.svg";
 import { ReactComponent as BrowseArtwork } from "../../assets/images/illustrations/browse_artwork.svg";
 import { ReactComponent as DisplayCollection } from "../../assets/images/illustrations/display_collection.svg";
@@ -15,7 +15,18 @@ import { ReactComponent as UploadArtwork } from "../../assets/images/illustratio
 import { ReactComponent as WorkingArtist } from "../../assets/images/illustrations/working_artist.svg";
 import IllustrationCard from "../../components/IllustrationCard";
 import MainHeading from "../../components/MainHeading";
+import SyncButton from "../../components/SyncButton";
+import Card from "../../domain/Card";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import Typography from "../../domain/Typography";
 import globalStyles from "../../styles/global.js";
+
+const useInstructionsStyles = makeStyles((muiTheme) => ({
+  heading: {
+    textAlign: "center",
+  },
+}));
 
 const SELLER_ILLUSTRATIONS = [
   {
@@ -97,6 +108,7 @@ const BUYER_ILLUSTRATIONS = [
 
 const HowItWorks = () => {
   const globalClasses = globalStyles();
+  const classes = useInstructionsStyles();
 
   return (
     <Container className={globalClasses.gridContainer}>
@@ -104,14 +116,14 @@ const HowItWorks = () => {
         <Grid item sm={12}>
           <MainHeading text="How it works" />
           <Typography>
-            {`${app.name} is a digital art marketplace that allows art lovers to view, download and purchase art from other artists while protecting both sides 
+            {`${appName} is a digital art marketplace that allows art lovers to view, download and purchase art from other artists while protecting both sides 
             by utilizing a system based on licenses as a means of transparency and non-repudiation while maintaining user anonymity.
-            Get up to speed with how ${app.name} works in six simple steps from the perspective of both parties involved`}
+            Get up to speed with how ${appName} works in six simple steps from the perspective of both parties involved`}
           </Typography>
         </Grid>
         <Grid item sm={12} md={6}>
           <Card>
-            <MainHeading text="Sellers" style={{ textAlign: "center" }} />
+            <MainHeading text="Sellers" className={classes.heading} />
             {SELLER_ILLUSTRATIONS.map((item) => (
               <IllustrationCard
                 heading={item.heading}
@@ -123,7 +135,7 @@ const HowItWorks = () => {
         </Grid>
         <Grid item sm={12} md={6}>
           <Card>
-            <MainHeading text="Buyers" style={{ textAlign: "center" }} />
+            <MainHeading text="Buyers" className={classes.heading} />
             {BUYER_ILLUSTRATIONS.map((item) => (
               <IllustrationCard
                 heading={item.heading}
@@ -135,12 +147,12 @@ const HowItWorks = () => {
         </Grid>
         <Grid item sm={12}>
           <Typography>Join the platform and get started</Typography>
-          <Button variant="outlined">Sign up</Button>
+          <SyncButton>Sign up</SyncButton>
           <Typography>
             Want to learn more? Click on one of the pages below
           </Typography>
-          <Button variant="outlined">{`Selling on ${app.name}`}</Button>
-          <Button variant="outlined">{`Buying on ${app.name}`}</Button>
+          <SyncButton>{`Selling on ${appName}`}</SyncButton>
+          <SyncButton>{`Buying on ${appName}`}</SyncButton>
         </Grid>
       </Grid>
     </Container>

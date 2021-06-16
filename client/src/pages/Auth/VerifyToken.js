@@ -1,66 +1,27 @@
-import { Box, Container, Grid, Link, Typography } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
-import LoadingSpinner from "../../components/LoadingSpinner/index.js";
-import { getToken } from "../../services/auth.js";
+import React from "react";
+import TokenVerifier from "../../containers/TokenVerifier/index.js";
+import { useUserToken } from "../../contexts/local/userToken";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const VerifyToken = ({ match, location }) => {
-  const [state, setState] = useState({ loading: true, error: false });
-  const history = useHistory();
-  const classes = {};
+  const retry = useUserToken((state) => state.token.error.retry);
+  const redirect = useUserToken((state) => state.token.error.redirect);
+  const message = useUserToken((state) => state.token.error.message);
 
-  const verifyToken = async () => {
-    try {
-      await getToken.request({ tokenId: match.params.id });
-      setState((prevState) => ({ ...prevState, loading: false, error: false }));
-      setTimeout(() => {
-        history.push({
-          pathname: "/login",
-          state: { message: "Email successfully verified" },
-        });
-      }, 3000);
-    } catch (err) {
-      setState((prevState) => ({ ...prevState, loading: false, error: true }));
-      console.log(err);
-    }
-  };
+  const paramId = match.params.id;
 
-  useEffect(() => {
-    verifyToken();
-  }, []);
-
-  return (
-    <Container key={location.key} className={classes.fixed}>
-      <Grid container className={classes.container} spacing={2}>
-        <Grid item xs={12} className={classes.loader}>
-          {state.loading ? (
-            <LoadingSpinner />
-          ) : state.error ? (
-            <Box>
-              <Typography>Token is either invalid or has expired</Typography>
-              <Grid container>
-                <Grid item xs>
-                  <Link
-                    component={RouterLink}
-                    to="/resend_token"
-                    variant="body2"
-                  >
-                    Resend verification token?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link component={RouterLink} to="/" variant="body2">
-                    Got back to home page
-                  </Link>
-                </Grid>
-              </Grid>
-            </Box>
-          ) : (
-            <Typography>Successfully verified your account</Typography>
-          )}
+  return !containsErrors(retry, redirect) ? (
+    <Container key={location.key}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <TokenVerifier paramId={paramId} />
         </Grid>
       </Grid>
     </Container>
+  ) : (
+    renderError({ retry, redirect, message })
   );
 };
 

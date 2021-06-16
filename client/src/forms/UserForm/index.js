@@ -11,6 +11,7 @@ const EditUserForm = ({
   getValues,
   setValue,
   trigger,
+  editable,
   loading,
 }) => {
   const classes = {};
@@ -28,6 +29,7 @@ const EditUserForm = ({
         height={150}
         width={150}
         noEmpty={false}
+        editable={editable}
         loading={loading}
       />
       <Box>
@@ -37,6 +39,7 @@ const EditUserForm = ({
           label="About"
           multiline
           errors={errors}
+          loading={loading}
         />
         <AutocompleteInput
           value={getValues("userCountry")}
@@ -45,6 +48,7 @@ const EditUserForm = ({
           label="Country"
           errors={errors}
           options={countries}
+          loading={loading}
         />
       </Box>
     </Box>

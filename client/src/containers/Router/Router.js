@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { Redirect, Route, Router, Switch } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import AuthLayout from "../../layouts/AuthLayout.js";
 import MainLayout from "../../layouts/MainLayout.js";
 import history from "../../utils/history.js";
@@ -225,7 +225,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
           return (
             <AuthLayout>
               <Suspense fallback={<LoadingSpinner />}>
-                <Component {...props} />
+                <Component key={props.location.key} {...props} />
               </Suspense>
             </AuthLayout>
           );
@@ -256,9 +256,9 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
         }
       }
       return (
-        <MainLayout socket={rest.socket}>
+        <MainLayout>
           <Suspense fallback={<LoadingSpinner />}>
-            <Component {...props} socket={rest.socket} />
+            <Component key={props.location.key} {...props} />
           </Suspense>
         </MainLayout>
       );
@@ -266,8 +266,8 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   />
 );
 
-const AppRouter = ({ socket }) => {
-  const [userStore] = useUserContext();
+const AppRouter = () => {
+  const userToken = useUserStore((state) => state.token);
 
   return (
     <Router history={history}>
@@ -278,8 +278,7 @@ const AppRouter = ({ socket }) => {
             <Switch location={location}>
               {routes.map(({ path, Component, exact, type }) => (
                 <AppRoute
-                  socket={socket}
-                  token={userStore.token}
+                  token={userToken}
                   type={type}
                   path={path}
                   key={path}

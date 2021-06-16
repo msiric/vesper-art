@@ -1,204 +1,99 @@
-import { Container, Grid } from "@material-ui/core";
-import { format } from "date-fns";
-import queryString from "query-string";
-import React, { useEffect, useRef, useState } from "react";
-import { useHistory, withRouter } from "react-router-dom";
-import EmptySection from "../../components/EmptySection/index.js";
-import OrderCard from "../../components/OrderCard/index.js";
-import ProfileCard from "../../components/ProfileCard/index.js";
-import RatingModal from "../../components/RatingModal/index.js";
+import { makeStyles } from "@material-ui/core/styles";
+import React, { useEffect, useRef } from "react";
+import DownloadCard from "../../containers/DownloadCard/index.js";
 import LicenseCard from "../../containers/LicenseCard/index.js";
+import OrderCard from "../../containers/OrderCard/index.js";
 import OrderPreview from "../../containers/OrderPreview/index.js";
+import RatingWrapper from "../../containers/RatingWrapper/index.js";
 import ReviewCard from "../../containers/ReviewCard/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
-import { getDownload, getOrder, postReview } from "../../services/orders.js";
+import UserSection from "../../containers/UserSection/index.js";
+import { useOrderDetails } from "../../contexts/local/orderDetails";
+import Box from "../../domain/Box";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global.js";
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
-const initialState = {
-  loading: true,
-  order: {
-    version: { cover: {} },
-    seller: {},
-    buyer: {},
-    license: {},
-    review: {},
+const useOrderStyles = makeStyles((muiTheme) => ({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    [muiTheme.breakpoints.down("sm")]: {
+      display: "flex",
+      flexDirection: "row",
+    },
+    [muiTheme.breakpoints.down("xs")]: {
+      display: "flex",
+      flexDirection: "column",
+    },
   },
-  modal: {
-    open: false,
+  ownerWrapper: {
+    [muiTheme.breakpoints.down("sm")]: {
+      flex: 1,
+    },
   },
-};
+  actions: {
+    [muiTheme.breakpoints.down("sm")]: {
+      flex: 1,
+    },
+  },
+}));
 
-const Order = ({ match, location }) => {
-  const [userStore] = useUserContext();
-  const [state, setState] = useState({ ...initialState });
+const Order = ({ match }) => {
+  const retry = useOrderDetails((state) => state.order.error.retry);
+  const redirect = useOrderDetails((state) => state.order.error.redirect);
+  const message = useOrderDetails((state) => state.order.error.message);
+  const resetOrder = useOrderDetails((state) => state.resetOrder);
+
   const globalClasses = globalStyles();
+  const classes = useOrderStyles();
 
+  const paramId = match.params.id;
   const highlightRef = useRef(null);
-  const query = queryString.parse(location.search);
 
-  const history = useHistory();
-
-  const scrollToHighlight = () => {
-    if (highlightRef.current)
-      highlightRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+  const reinitializeState = () => {
+    resetOrder();
   };
-
-  const fetchOrder = async () => {
-    try {
-      setState({ ...initialState });
-      const { data } = await getOrder.request({ orderId: match.params.id });
-      setState((prevState) => ({
-        ...prevState,
-        loading: false,
-        tab: 0,
-        order: data.order,
-      }));
-      if (query && query.notif === "review") {
-        scrollToHighlight();
-      }
-    } catch (err) {
-      setState((prevState) => ({ ...prevState, loading: false }));
-    }
-  };
-
-  const handleModalOpen = () => {
-    setState((prevState) => ({
-      ...prevState,
-      modal: {
-        ...prevState.modal,
-        open: true,
-      },
-    }));
-  };
-
-  const handleModalClose = () => {
-    setState((prevState) => ({
-      ...prevState,
-      modal: {
-        ...prevState.modal,
-        open: false,
-      },
-    }));
-  };
-
-  const handleArtworkDownload = async () => {
-    try {
-      const { data } = await getDownload.request({ orderId: state.order.id });
-      const link = document.createElement("a");
-      link.href = data.url;
-      link.setAttribute("download", data.file);
-      document.body.appendChild(link);
-      link.click();
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const handleRatingSubmit = async (values) => {
-    await postReview.request({
-      orderId: state.order.id,
-      reviewRating: values.artistRating,
-    });
-    setState((prevState) => ({
-      ...prevState,
-      order: {
-        ...prevState.order,
-        review: {
-          order: prevState.order.id,
-          artwork: prevState.order.artwork.id,
-          owner: userStore.id,
-          rating: values.artistRating,
-        },
-      },
-    }));
-    handleModalClose();
-  };
-
-  const formatDate = (date, type) => {
-    return format(new Date(date), type);
-  };
-
-  const isSeller = () =>
-    state.order.id &&
-    userStore.id.toString() === state.order.seller.id.toString();
-
-  const isBuyer = () =>
-    state.order.id &&
-    userStore.id.toString() === state.order.buyer.id.toString();
 
   useEffect(() => {
-    fetchOrder();
-  }, [location]);
+    return () => {
+      reinitializeState();
+    };
+  }, []);
 
-  return (
-    <Container key={location.key} className={globalClasses.gridContainer}>
+  return !containsErrors(retry, redirect) ? (
+    <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.loading || state.order.id ? (
-          <>
-            <Grid item xs={12} md={8}>
-              <OrderPreview
-                version={state.order.version}
-                handleDownload={handleArtworkDownload}
-                shouldDownload={!isSeller() && isBuyer()}
-                loading={state.loading}
-              />
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              md={4}
-              style={{ display: "flex", flexDirection: "column" }}
-            >
-              <ProfileCard
-                user={
-                  !isSeller() && isBuyer()
-                    ? state.order.seller
-                    : state.order.buyer
-                }
-                styles={{ flexGrow: 1 }}
-                loading={state.loading}
-              />
-              <br />
-              <ReviewCard
-                handleModalOpen={handleModalOpen}
-                review={state.order.review}
-                shouldReview={!isSeller() && isBuyer()}
-                queryNotif={query ? query.notif : null}
-                highlightRef={highlightRef}
-                loading={state.loading}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <OrderCard
-                order={state.order}
-                isSeller={isSeller}
-                loading={state.loading}
-              />
-              <br />
-              <LicenseCard
-                license={state.order.license}
-                loading={state.loading}
-              />
-            </Grid>
-          </>
-        ) : (
-          <EmptySection label="Order not found" page />
-        )}
+        <Grid item xs={12} md={8}>
+          <OrderPreview paramId={paramId} />
+        </Grid>
+        <Grid item xs={12} md={4} className={classes.container}>
+          <Box
+            className={`${classes.ownerWrapper} ${globalClasses.responsiveSpacing}`}
+          >
+            <UserSection />
+          </Box>
+          <Box className={classes.actions}>
+            <Box className={globalClasses.bottomSpacing}>
+              <ReviewCard paramId={paramId} highlightRef={highlightRef} />
+            </Box>
+            <Box>
+              <DownloadCard />
+            </Box>
+          </Box>
+        </Grid>
+        <Grid item xs={12} className={globalClasses.elementWidth}>
+          <Box className={globalClasses.bottomSpacing}>
+            <OrderCard />
+          </Box>
+          <LicenseCard />
+        </Grid>
       </Grid>
-      <RatingModal
-        open={state.modal.open}
-        handleConfirm={handleRatingSubmit}
-        handleClose={handleModalClose}
-        ariaLabel="Artist rating"
-        promptTitle="Rate artist"
-        promptConfirm="Submit"
-        promptCancel="Cancel"
-      />
+      <RatingWrapper paramId={paramId} />
     </Container>
+  ) : (
+    renderError({ retry, redirect, message })
   );
 };
 
-export default withRouter(Order);
+export default Order;

@@ -1,7 +1,8 @@
 import { ax } from "../containers/Interceptor/Interceptor.js";
 
 export const postVerifier = {
-  request: async ({ data }) => await ax.post("/api/verifier", data),
+  request: async ({ licenseData }) =>
+    await ax.post("/api/verifier", licenseData),
   success: { message: "License successfully verified", variant: "success" },
   error: { message: "Failed to verify license", variant: "error" },
 };

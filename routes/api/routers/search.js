@@ -5,8 +5,7 @@ import { requestHandler as handler } from "../../../utils/helpers.js";
 const router = express.Router();
 
 router.route("/search").get(
-  handler(getResults, (req, res, next) => ({
-    ...req.query,
+  handler(getResults, false, (req, res, next) => ({
     searchQuery: req.query.q,
     searchType: req.query.t,
   }))

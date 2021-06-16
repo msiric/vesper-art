@@ -1,20 +1,74 @@
-import User from "../../models/user.js";
-import Version from "../../models/version.js";
+import { Artwork } from "../../entities/Artwork";
+import { Review } from "../../entities/Review";
+import { User } from "../../entities/User";
+import { calculateRating } from "../../utils/helpers";
 
+// $TODO version visible
+// $TODO active to const
 export const fetchArtworkResults = async ({
   searchQuery,
   cursor,
   limit,
   connection,
 }) => {
-  return await Version.fuzzySearch(searchQuery).deepPopulate("artwork.owner");
+  const formattedQuery = searchQuery.trim().replace(/ /g, " & ");
+  const foundArtwork = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("owner.avatar", "avatar")
+    .where(
+      "version.title @@ plainto_tsquery(:query) AND artwork.active = :active",
+      {
+        query: formattedQuery,
+        active: true,
+      }
+    )
+    .orderBy(
+      "ts_rank(to_tsvector(version.title), plainto_tsquery(:query))",
+      "DESC"
+    )
+    .getMany();
+  // const foundArtworkTest = await connection
+  //   .getRepository(Artwork)
+  //   .createQueryBuilder("artwork")
+  //   .leftJoinAndSelect("artwork.current", "version")
+  //   .where(
+  //     `to_tsvector('simple',version.title) @@ to_tsquery('simple', :query) AND artwork.active = :active`,
+  //     { query: `${formattedQuery}:*`, active: true }
+  //   )
+  //   .getMany();
+  return foundArtwork;
 };
 
+// $TODO active to const
 export const fetchUserResults = async ({
   searchQuery,
   cursor,
   limit,
   connection,
 }) => {
-  return await User.fuzzySearch(searchQuery).deepPopulate("artwork.owner");
+  const formattedQuery = searchQuery.trim().replace(/ /g, " & ");
+  const foundUsers = await connection
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .leftJoinAndSelect("user.avatar", "avatar")
+    .leftJoinAndMapMany(
+      "user.reviews",
+      Review,
+      "review",
+      "review.revieweeId = user.id"
+    )
+    .where("user.name @@ plainto_tsquery(:query) AND user.active = :active", {
+      query: formattedQuery,
+      active: true,
+    })
+    .orderBy("ts_rank(to_tsvector(user.name), plainto_tsquery(:query))", "DESC")
+    .getMany();
+  foundUsers.map(
+    (user) => (user.rating = calculateRating({ reviews: user.reviews }))
+  );
+  return foundUsers;
 };

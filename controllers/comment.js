@@ -59,7 +59,7 @@ export const postComment = async ({
     }
     return {
       message: "Comment posted successfully",
-      payload: savedComment,
+      payload: savedComment.raw[0],
     };
   }
 };

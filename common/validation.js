@@ -13,6 +13,7 @@ export const artworkValidation = Yup.object().shape({
       then: Yup.string()
         .matches(/(commercial|free)/)
         .required("Artwork type is required"),
+      otherwise: Yup.string().matches(/(unavailable)/),
     }),
   artworkLicense: Yup.string()
     .notRequired()
@@ -21,6 +22,7 @@ export const artworkValidation = Yup.object().shape({
       then: Yup.string()
         .matches(/(commercial|personal)/)
         .required("Artwork license is required"),
+      otherwise: Yup.string().matches(/(unavailable)/),
     }),
   artworkPersonal: Yup.number()
     .notRequired()
@@ -33,6 +35,7 @@ export const artworkValidation = Yup.object().shape({
         .min(pricing.minimumPrice)
         .max(pricing.maximumPrice)
         .required("Artwork price is required"),
+      otherwise: Yup.number().integer().min(0).max(0),
     }),
   artworkUse: Yup.string()
     .notRequired()
@@ -42,6 +45,7 @@ export const artworkValidation = Yup.object().shape({
       then: Yup.string()
         .matches(/(separate|included)/)
         .required("Commercial use is required"),
+      otherwise: Yup.string().matches(/(unavailable)/),
     }),
   artworkCommercial: Yup.number()
     .notRequired()
@@ -56,16 +60,20 @@ export const artworkValidation = Yup.object().shape({
         .min(pricing.minimumPrice)
         .max(pricing.maximumPrice)
         .required("Commercial license is required"),
+      otherwise: Yup.number().integer().min(0).max(0),
     }),
-  artworkCategory: "",
+  // artworkCategory: "",
+  // artworkTags: Yup.array()
+  //   .of(Yup.string())
+  //   .min(1, "At least one tag is required")
+  //   .max(5, "At most five tags are permitted")
+  //   .required("Artwork tags are required"),
+  artworkVisibility: Yup.string()
+    .matches(/(visible|invisible)/)
+    .required("Artwork visibility is required"),
   artworkDescription: Yup.string()
     .trim()
     .required("Artwork description is required"),
-  artworkTags: Yup.array()
-    .of(Yup.string())
-    .min(1, "At least one tag is required")
-    .max(5, "At most five tags are permitted")
-    .required("Artwork tags are required"),
 });
 
 export const billingValidation = Yup.object().shape({
@@ -109,7 +117,12 @@ export const licenseValidation = Yup.object().shape({
 });
 
 export const loginValidation = Yup.object().shape({
-  userUsername: Yup.string().trim().required("Username is required"),
+  userUsername: Yup.string()
+    .trim()
+    .min(5, "Username must contain at least 5 characters")
+    .max(20, "Username cannot contain more than 20 characters")
+    .lowercase()
+    .required("Username is required"),
   userPassword: Yup.string()
     .trim()
     .min(8, "Password must contain at least 8 characters")
@@ -206,7 +219,9 @@ export const preferencesValidation = Yup.object().shape({
 });
 
 export const profileValidation = Yup.object().shape({
-  userDescription: Yup.string().trim(),
+  userDescription: Yup.string()
+    .trim()
+    .max(250, "Description cannot contain more than 250 characters"),
   userCountry: Yup.string().trim(),
 });
 
@@ -232,7 +247,16 @@ export const searchValidation = Yup.object().shape({
 });
 
 export const signupValidation = Yup.object().shape({
-  userUsername: Yup.string().required("Username is required"),
+  userUsername: Yup.string()
+    .trim()
+    .matches(
+      /^([\w.]){0,}$/,
+      "Username can only contain letters, numbers, underscores and periods"
+    )
+    .min(5, "Username must contain at least 5 characters")
+    .max(20, "Username cannot contain more than 20 characters")
+    .lowercase()
+    .required("Username is required"),
   userEmail: Yup.string()
     .email("Enter a valid email")
     .required("Email is required"),
@@ -250,7 +274,9 @@ export const ticketValidation = Yup.object().shape({
 });
 
 export const fingerprintValidation = Yup.object().shape({
-  licenseFingerprint: Yup.string().trim().required(),
+  licenseFingerprint: Yup.string()
+    .trim()
+    .required("Fingerprint cannot be empty"),
 });
 
 export const recoveryValidation = Yup.object().shape({

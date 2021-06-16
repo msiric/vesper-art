@@ -1,97 +1,62 @@
-import { Box, Card, Divider } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { hexToRgb } from "../../../../common/helpers.js";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import { Typography } from "../../styles/theme.js";
+import { useArtworkDetails } from "../../contexts/local/artworkDetails";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import Divider from "../../domain/Divider";
+import Typography from "../../domain/Typography";
 import artworkPreviewStyles from "./styles.js";
 
-const ArtworkPreview = ({ version = { cover: {} }, loading }) => {
+const ArtworkPreview = ({ paramId }) => {
+  const version = useArtworkDetails((state) => state.artwork.data.current);
+  const loading = useArtworkDetails((state) => state.artwork.loading);
+  const fetchArtwork = useArtworkDetails((state) => state.fetchArtwork);
+
   const history = useHistory();
+
   const classes = artworkPreviewStyles();
 
-  const { r, g, b } = loading
-    ? { r: null, g: null, b: null }
-    : hexToRgb(version.cover.dominant);
+  useEffect(() => {
+    fetchArtwork({ artworkId: paramId });
+  }, []);
 
   return (
-    <Card
-      className={classes.artworkPreviewCard}
-      style={{
-        padding: 16,
-      }}
-    >
-      <Box style={{ marginBottom: 12 }}>
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography fontWeight="fontWeightBold" fontSize="h5.fontSize">{`${
-            version.title
-          }, ${new Date(version.created).getFullYear()}`}</Typography>
-        </SkeletonWrapper>
+    <Card className={classes.container}>
+      <Box className={classes.titleWrapper}>
+        <Typography loading={loading} className={classes.title}>{`${
+          version.title
+        }, ${new Date(version.created).getFullYear()}`}</Typography>
       </Box>
       <Divider />
-      {/* <SkeletonWrapper loading={loading} width="100%">
-        <CardMedia
-          className={classes.artworkPreviewMedia}
-          image={version.cover}
-          title={version.title}
-          style={loading ? { width: "100%", height } : { minHeight: height }}
-        />
-      </SkeletonWrapper> */}
-      <Box
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          maxHeight: 700,
-        }}
-      >
-        <SkeletonWrapper
+      <Box className={classes.imageWrapper}>
+        <ImageWrapper
+          height={version.height || 500}
+          source={version.cover.source}
+          placeholder={version.cover.dominant}
           loading={loading}
-          height={300}
-          width="100%"
-          style={{ margin: 24 }}
-        >
-          <ImageWrapper
-            height={version.height}
-            width={version.width}
-            source={version.cover.source}
-            placeholder={version.dominant}
-            styles={{
-              boxShadow: `0px 0px 40px 15px rgba(${r},${g},${b},0.75)`,
-              maxWidth: 700 / (version.height / version.width) - 54,
-              margin: "24px",
-            }}
-            loading={loading}
-          />
-        </SkeletonWrapper>
+        />
       </Box>
       <Box>
         <Divider />
         <br />
-        <SkeletonWrapper
-          variant="text"
-          loading={loading}
-          width="100%"
-          height="120px"
-        >
-          <Typography mb={2} variant="body2">
-            {version.description}
+        <Typography loading={loading} className={classes.description}>
+          {version.description}
+        </Typography>
+        <Box className={classes.disclaimerWrapper}>
+          <Typography
+            variant="body2"
+            loading={loading}
+            className={classes.disclaimer}
+          >
+            You are previewing a low resolution thumbnail of the original
+            artwork
           </Typography>
-        </SkeletonWrapper>
-        <Box>
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography mt={2} fontSize={12} fontStyle="italic">
-              You are previewing a low resolution thumbnail of the original
-              artwork
-            </Typography>
-          </SkeletonWrapper>
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography
-              mb={2}
-              fontSize={12}
-              fontStyle="italic"
-            >{`The original artwork dimensions (in pixels) are: ${version.cover.width}x${version.cover.height}`}</Typography>
-          </SkeletonWrapper>
+          <Typography
+            variant="body2"
+            loading={loading}
+            className={classes.disclaimer}
+          >{`The original artwork dimensions (in pixels) are: ${version.media.width}x${version.media.height}`}</Typography>
         </Box>
       </Box>
     </Card>

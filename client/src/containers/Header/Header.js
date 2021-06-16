@@ -25,14 +25,14 @@ import {
   ShoppingBasketRounded as OrdersIcon,
   ViewCarouselRounded as GalleryIcon,
 } from "@material-ui/icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link, withRouter } from "react-router-dom";
-import * as Yup from "yup";
+import { Link, useHistory } from "react-router-dom";
+import { searchValidation } from "../../../../common/validation";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import LogoMobile from "../../assets/images/logo/logo-mobile.svg";
-import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useEventsStore } from "../../contexts/global/events.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import SearchForm from "../../forms/SearchForm";
 import {
   getNotifications,
@@ -40,16 +40,99 @@ import {
   patchUnread,
   postLogout,
 } from "../../services/user.js";
+import { socket } from "../Interceptor/Interceptor";
 import HeaderStyles from "./Header.style.js";
 import NotificationsMenu from "./NotificationsMenu.js";
 
-const searchValidation = Yup.object().shape({
-  searchInput: Yup.string().trim().required("Search input is required"),
-});
+/* const AUTH_ITEMS = [
+  {
+    click: handleNotificationsMenuOpen,
+    ariaLabel: "Show notifications",
+    showBadge: true,
+    badgeValue: notifications.count,
+    icon: <NotificationsIcon />,
+    label: "Notifications",
+  },
+  {
+    click: handleProfileMenuOpen,
+    ariaLabel: "Show profile",
+    showBadge: false,
+    badgeValue: null,
+    icon: <AccountIcon />,
+    label: "Profile",
+  },
+];
+const UNAUTH_ITEMS = [
+  { redirect: "/login", label: "Login" },
+  { redirect: "/signup", label: "Sign up" },
+];
+const MENU_ITEMS = [
+  {
+    redirect: "/onboarding",
+    icon: <SellerIcon />,
+    label: "Become a seller",
+    hidden: !!stripeId,
+  },
+  {
+    redirect: `/user/${userUsername}`,
+    icon: <ProfileIcon />,
+    label: userUsername,
+    hidden: false,
+  },
+  {
+    redirect: "/dashboard",
+    icon: <DashboardIcon />,
+    label: "Dashboard",
+    hidden: false,
+  },
+  {
+    redirect: "/gallery",
+    icon: <GalleryIcon />,
+    label: "Gallery",
+    hidden: false,
+  },
+  {
+    redirect: "/my_artwork",
+    icon: <ArtworkIcon />,
+    label: "My artwork",
+    hidden: false,
+  },
+  {
+    redirect: "/orders",
+    icon: <OrdersIcon />,
+    label: "Orders",
+    hidden: false,
+  },
+  {
+    redirect: "/settings",
+    icon: <SettingsIcon />,
+    label: "Settings",
+    hidden: false,
+  },
+  {
+    handleClick: handleLogout,
+    icon: <LogoutIcon />,
+    label: "Log out",
+    hidden: false,
+  },
+]; */
 
-const Header = ({ socket, history }) => {
-  const [userStore, userDispatch] = useUserContext();
-  const [eventsStore, eventsDispatch] = useEventsContext();
+const Header = () => {
+  const userId = useUserStore((state) => state.id);
+  const userUsername = useUserStore((state) => state.name);
+  const stripeId = useUserStore((state) => state.stripeId);
+  const authenticated = useUserStore((state) => state.authenticated);
+  const resetUser = useUserStore((state) => state.resetUser);
+
+  const notifications = useEventsStore((state) => state.notifications);
+  const search = useEventsStore((state) => state.search);
+  const updateNotifications = useEventsStore(
+    (state) => state.updateNotifications
+  );
+  const updateLoading = useEventsStore((state) => state.updateLoading);
+  const updateSearch = useEventsStore((state) => state.updateSearch);
+  const resetEvents = useEventsStore((state) => state.resetEvents);
+
   const [state, setState] = useState({
     profile: { anchorEl: null, mobileAnchorEl: null },
     notifications: {
@@ -58,19 +141,15 @@ const Header = ({ socket, history }) => {
     },
   });
 
-  const {
-    handleSubmit,
-    formState,
-    errors,
-    control,
-    setValue,
-    getValues,
-  } = useForm({
+  const { handleSubmit, errors, control, setValue, getValues } = useForm({
     defaultValues: {
-      searchInput: "",
+      searchQuery: "",
+      searchType: "",
     },
     resolver: yupResolver(searchValidation),
   });
+
+  const history = useHistory();
 
   const classes = HeaderStyles();
 
@@ -116,11 +195,8 @@ const Header = ({ socket, history }) => {
 
   const handleNotificationsMenuOpen = async (e) => {
     const target = e.currentTarget;
-    console.log(eventsStore);
-    if (
-      eventsStore.notifications.items.length < eventsStore.notifications.limit
-    ) {
-      if (!eventsStore.notifications.opened) {
+    if (notifications.items.length < notifications.limit) {
+      if (!notifications.opened) {
         setState((prevState) => ({
           ...prevState,
           notifications: {
@@ -131,20 +207,15 @@ const Header = ({ socket, history }) => {
         }));
         try {
           const { data } = await getNotifications.request({
-            userId: userStore.id,
-            cursor: eventsStore.notifications.cursor,
-            limit: eventsStore.notifications.limit,
+            userId,
+            cursor: notifications.cursor,
+            limit: notifications.limit,
           });
-          eventsDispatch({
-            type: "UPDATE_NOTIFICATIONS",
+          updateNotifications({
             notifications: {
-              items: [...eventsStore.notifications.items].concat(
-                data.notifications
-              ),
+              items: [...notifications.items].concat(data.notifications),
               hasMore:
-                data.notifications.length < eventsStore.notifications.limit
-                  ? false
-                  : true,
+                data.notifications.length < notifications.limit ? false : true,
               cursor:
                 data.notifications[data.notifications.length - 1] &&
                 data.notifications[data.notifications.length - 1].id,
@@ -152,7 +223,7 @@ const Header = ({ socket, history }) => {
             },
           });
         } catch (err) {
-          console.log("error");
+          console.log("error", err);
         } finally {
           setState((prevState) => ({
             ...prevState,
@@ -195,16 +266,9 @@ const Header = ({ socket, history }) => {
   const handleLogout = async () => {
     try {
       await postLogout.request();
-
-      userDispatch({
-        type: "RESET_USER",
-      });
-      eventsDispatch({
-        type: "RESET_EVENTS",
-      });
-
-      socket.disconnect();
-
+      socket.instance.emit("disconnectUser");
+      resetUser();
+      resetEvents();
       handleMenuClose();
 
       history.push("/login");
@@ -215,23 +279,21 @@ const Header = ({ socket, history }) => {
 
   const handleReadClick = async (id) => {
     try {
-      eventsDispatch({
-        type: "NOTIFICATION_SUBMITTING",
+      updateLoading({
         notifications: {
-          isSubmitting: true,
+          isLoading: true,
         },
       });
       await patchRead.request({ notificationId: id });
-      eventsDispatch({
-        type: "UPDATE_NOTIFICATIONS",
+      updateNotifications({
         notifications: {
-          items: eventsStore.notifications.items.map((notification) =>
+          items: notifications.items.map((notification) =>
             notification.id === id
               ? { ...notification, read: true }
               : notification
           ),
-          count: eventsStore.notifications.count - 1,
-          isSubmitting: false,
+          count: notifications.count - 1,
+          isLoading: false,
         },
       });
     } catch (err) {
@@ -241,23 +303,21 @@ const Header = ({ socket, history }) => {
 
   const handleUnreadClick = async (id) => {
     try {
-      eventsDispatch({
-        type: "NOTIFICATION_SUBMITTING",
+      updateLoading({
         notifications: {
-          isSubmitting: true,
+          isLoading: true,
         },
       });
       await patchUnread.request({ notificationId: id });
-      eventsDispatch({
-        type: "UPDATE_NOTIFICATIONS",
+      updateNotifications({
         notifications: {
-          items: eventsStore.notifications.items.map((notification) =>
+          items: notifications.items.map((notification) =>
             notification.id === id
               ? { ...notification, read: false }
               : notification
           ),
-          count: eventsStore.notifications.count + 1,
-          isSubmitting: false,
+          count: notifications.count + 1,
+          isLoading: false,
         },
       });
     } catch (err) {
@@ -274,20 +334,15 @@ const Header = ({ socket, history }) => {
   const loadMore = async () => {
     try {
       const { data } = await getNotifications.request({
-        userId: userStore.id,
-        cursor: eventsStore.notifications.cursor,
-        limit: eventsStore.notifications.limit,
+        userId,
+        cursor: notifications.cursor,
+        limit: notifications.limit,
       });
-      eventsDispatch({
-        type: "UPDATE_NOTIFICATIONS",
+      updateNotifications({
         notifications: {
-          items: [...eventsStore.notifications.items].concat(
-            data.notifications
-          ),
+          items: [...notifications.items].concat(data.notifications),
           hasMore:
-            data.notifications.length < eventsStore.notifications.limit
-              ? false
-              : true,
+            data.notifications.length < notifications.limit ? false : true,
           cursor:
             data.notifications[data.notifications.length - 1] &&
             data.notifications[data.notifications.length - 1].id,
@@ -299,15 +354,16 @@ const Header = ({ socket, history }) => {
   };
 
   const handleToggle = () => {
-    eventsDispatch({
-      type: "UPDATE_SEARCH",
-      search: eventsStore.search === "artwork" ? "users" : "artwork",
+    updateSearch({
+      search: search === "artwork" ? "users" : "artwork",
     });
   };
 
   const onSubmit = async (values) => {
     try {
-      history.push(`/search?q=${values.searchInput}&t=${eventsStore.search}`);
+      if (values.searchQuery.trim()) {
+        history.push(`/search?q=${values.searchQuery}&t=${search}`);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -326,7 +382,7 @@ const Header = ({ socket, history }) => {
       keepMounted
     >
       <Divider />
-      {!userStore.stripeId && (
+      {!stripeId && (
         <>
           <MenuItem component={Link} to="/onboarding" disableRipple>
             <ListItemAvatar>
@@ -339,13 +395,13 @@ const Header = ({ socket, history }) => {
           <Divider />
         </>
       )}
-      <MenuItem component={Link} to={`/user/${userStore.name}`} disableRipple>
+      <MenuItem component={Link} to={`/user/${userUsername}`} disableRipple>
         <ListItemAvatar>
           <Avatar>
             <ProfileIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary={userStore.name} />
+        <ListItemText primary={userUsername} />
       </MenuItem>
       <Divider />
       <MenuItem component={Link} to="/dashboard" disableRipple>
@@ -427,7 +483,7 @@ const Header = ({ socket, history }) => {
       </MenuItem> */}
       <MenuItem onClick={handleNotificationsMenuOpen}>
         <IconButton aria-label="Show notifications" color="inherit">
-          <Badge badgeContent={eventsStore.notifications.count} color="primary">
+          <Badge badgeContent={notifications.count} color="primary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -466,6 +522,10 @@ const Header = ({ socket, history }) => {
     </Menu>
   );
 
+  useEffect(() => {
+    setValue("searchType", search);
+  }, [search]);
+
   return (
     <>
       <AppBar position="static" className={classes.headerContainer}>
@@ -496,7 +556,7 @@ const Header = ({ socket, history }) => {
             </FormProvider>
           </div>
           <div className={classes.grow} />
-          {userStore.authenticated ? (
+          {authenticated ? (
             <>
               <div className={classes.sectionDesktop}>
                 {/*                 <IconButton aria-label="Show messages" color="inherit">
@@ -509,10 +569,7 @@ const Header = ({ socket, history }) => {
                   aria-label="Show notifications"
                   color="inherit"
                 >
-                  <Badge
-                    badgeContent={eventsStore.notifications.count}
-                    color="primary"
-                  >
+                  <Badge badgeContent={notifications.count} color="primary">
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
@@ -538,10 +595,7 @@ const Header = ({ socket, history }) => {
                   aria-label="Show notifications"
                   color="inherit"
                 >
-                  <Badge
-                    badgeContent={eventsStore.notifications.count}
-                    color="primary"
-                  >
+                  <Badge badgeContent={notifications.count} color="primary">
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
@@ -593,7 +647,7 @@ const Header = ({ socket, history }) => {
           )}
         </Toolbar>
       </AppBar>
-      {userStore.authenticated ? renderAuthMobileMenu : renderUnauthMobileMenu}
+      {authenticated ? renderAuthMobileMenu : renderUnauthMobileMenu}
       {renderProfileMenu}
       <NotificationsMenu
         anchorEl={state.notifications.anchorEl}
@@ -608,4 +662,4 @@ const Header = ({ socket, history }) => {
   );
 };
 
-export default withRouter(Header);
+export default Header;

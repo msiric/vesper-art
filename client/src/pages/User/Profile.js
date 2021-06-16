@@ -1,250 +1,52 @@
-import { Container, Grid } from "@material-ui/core";
 import { withSnackbar } from "notistack";
-import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import EmptySection from "../../components/EmptySection/index.js";
+import React, { useEffect, useRef } from "react";
 import ProfileArtwork from "../../containers/ProfileArtwork/index.js";
 import ProfileInfo from "../../containers/ProfileInfo/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
-import { getArtwork } from "../../services/artwork.js";
-import { getFavorites, getUser } from "../../services/user.js";
+import { useUserArtwork } from "../../contexts/local/userArtwork";
+import { useUserProfile } from "../../contexts/local/userProfile";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global.js";
-
-const initialState = {
-  loading: true,
-  user: { artwork: {}, favorites: [], avatar: {} },
-  tabs: { value: 0, revealed: false, loading: true },
-  scroll: {
-    artwork: {
-      hasMore: true,
-      cursor: "",
-      limit: 20,
-    },
-    favorites: {
-      hasMore: true,
-      cursor: "",
-      limit: 20,
-    },
-  },
-};
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const Profile = ({ match, location }) => {
-  const [userStore] = useUserContext();
-  const [state, setState] = useState({
-    ...initialState,
-  });
-  const url = window.location;
-  const title = "test"; //$TODO store.main.brand;
-  const history = useHistory();
+  const retry = useUserProfile((state) => state.profile.error.retry);
+  const redirect = useUserProfile((state) => state.profile.error.redirect);
+  const message = useUserProfile((state) => state.profile.error.message);
+  const resetProfile = useUserProfile((state) => state.resetProfile);
+  const resetArtwork = useUserArtwork((state) => state.resetArtwork);
+  const paramId = match.params.id;
+  const artworkFetched = useRef(false);
+  const artworkRef = useRef(null);
 
-  const globalClasses = globalStyles();
-
-  const fetchUser = async () => {
-    try {
-      setState({ ...initialState });
-      const { data } = await getUser.request({
-        userUsername: match.params.id,
-        cursor: state.scroll.artwork.cursor,
-        limit: state.scroll.artwork.limit,
-      });
-      // const {
-      //   data: { artwork },
-      // } = await ax.get(
-      //   `/api/user/${user.id}/artwork?cursor=${state.cursor}&limit=${state.limit}`
-      // );
-      if (userStore.id === data.user.id) {
-        setState((prevState) => ({
-          ...prevState,
-          loading: false,
-          user: {
-            ...data.user,
-            editable: true,
-            artwork: data.user.artwork.filter((item) => item.current !== null),
-            favorites: [],
-          },
-          scroll: {
-            ...prevState.scroll,
-            artwork: {
-              ...prevState.scroll.artwork,
-              hasMore:
-                data.user.artwork.length < prevState.scroll.artwork.limit
-                  ? false
-                  : true,
-              cursor:
-                data.user.artwork[data.user.artwork.length - 1] &&
-                data.user.artwork[data.user.artwork.length - 1].id,
-            },
-          },
-        }));
-      } else {
-        setState((prevState) => ({
-          ...prevState,
-          loading: false,
-          user: {
-            ...data.user,
-            editable: false,
-            artwork: data.user.artwork.filter((item) => item.current !== null),
-            favorites: [],
-          },
-          scroll: {
-            ...prevState.scroll,
-            artwork: {
-              ...prevState.scroll.artwork,
-              hasMore:
-                data.user.artwork.length < prevState.scroll.artwork.limit
-                  ? false
-                  : true,
-              cursor:
-                data.user.artwork[data.user.artwork.length - 1] &&
-                data.user.artwork[data.user.artwork.length - 1].id,
-            },
-          },
-        }));
-      }
-    } catch (err) {
-      setState((prevState) => ({ ...prevState, loading: false }));
-    }
-  };
-
-  const loadMoreArtwork = async () => {
-    try {
-      const { data } = await getArtwork.request({
-        userId: state.user.id,
-        cursor: state.scroll.artwork.cursor,
-        limit: state.scroll.artwork.limit,
-      });
-      setState((prevState) => ({
-        ...prevState,
-        user: {
-          ...prevState.user,
-          artwork: [...prevState.user.artwork].concat(data.user.artwork),
-        },
-        scroll: {
-          ...state.scroll,
-          artwork: {
-            ...state.scroll.artwork,
-            hasMore:
-              data.user.artwork.length < state.scroll.artwork.limit
-                ? false
-                : true,
-            cursor:
-              data.user.artwork[data.user.artwork.length - 1] &&
-              data.user.artwork[data.user.artwork.length - 1].id,
-          },
-        },
-      }));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const loadMoreFavorites = async (newValue) => {
-    try {
-      setState((prevState) => ({
-        ...prevState,
-        tabs: { ...prevState.tabs, value: newValue, revealed: true },
-      }));
-      const { data } = await getFavorites.request({
-        userId: state.user.id,
-        cursor: state.scroll.favorites.cursor,
-        limit: state.scroll.favorites.limit,
-      });
-      setState((prevState) => ({
-        ...prevState,
-        user: {
-          ...prevState.user,
-          favorites: [...prevState.user.favorites].concat(data.favorites),
-        },
-        tabs: { ...prevState.tabs, loading: false },
-        scroll: {
-          ...state.scroll,
-          favorites: {
-            ...state.scroll,
-            hasMore:
-              data.favorites.length < state.scroll.favorites.limit
-                ? false
-                : true,
-            cursor:
-              data.favorites[data.favorites.length - 1] &&
-              data.favorites[data.favorites.length - 1].id,
-          },
-        },
-      }));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const a11yProps = (index) => {
-    return {
-      id: `full-width-tab-${index}`,
-      "aria-controls": `full-width-tabpanel-${index}`,
-    };
-  };
-
-  const handleModalOpen = () => {
-    setState((prevState) => ({
-      ...prevState,
-      modal: {
-        ...prevState.modal,
-        open: true,
-      },
-    }));
-  };
-
-  const handleModalClose = () => {
-    setState((prevState) => ({
-      ...prevState,
-      modal: {
-        ...prevState.modal,
-        open: false,
-      },
-    }));
-  };
-
-  const handleTabsChange = (e, newValue) => {
-    if (!state.tabs.revealed) loadMoreFavorites(newValue);
-    else
-      setState((prevState) => ({
-        ...prevState,
-        tabs: { ...prevState.tabs, value: newValue },
-      }));
-  };
-
-  const handleChangeIndex = (index) => {
-    setState((prevState) => ({
-      ...prevState,
-      tabs: { ...prevState.tabs, value: index },
-    }));
+  const reinitializeState = () => {
+    resetProfile();
+    resetArtwork();
   };
 
   useEffect(() => {
-    fetchUser();
-  }, [location]);
+    return () => {
+      reinitializeState();
+    };
+  }, []);
 
-  return state.loading || state.user.id ? (
+  const globalClasses = globalStyles();
+
+  return !containsErrors(retry, redirect) ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <>
-          <ProfileInfo
-            user={state.user}
-            handleModalOpen={handleModalOpen}
-            loading={state.loading}
-          />
+          <ProfileInfo paramId={paramId} />
           <ProfileArtwork
-            tabs={state.tabs}
-            user={state.user}
-            loadMoreArtwork={loadMoreArtwork}
-            loadMoreFavorites={loadMoreFavorites}
-            handleTabsChange={handleTabsChange}
-            handleChangeIndex={handleChangeIndex}
-            loading={state.loading}
+            paramId={paramId}
+            artworkRef={artworkRef}
+            artworkFetched={artworkFetched}
           />
         </>
       </Grid>
     </Container>
   ) : (
-    <EmptySection label="User not found" page />
+    renderError({ retry, redirect, message })
   );
 };
 

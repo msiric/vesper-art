@@ -2,35 +2,37 @@ import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme";
 
 const footerStyles = makeStyles((muiTheme) => ({
-  footerContainer: {
+  container: {
     backgroundColor: artepunktTheme.palette.background.paper,
     width: "100%",
   },
-  footerNav: {
+  navigation: {
     display: "flex",
     width: "100%",
   },
-  footerItem: {
+  item: {
     display: "flex",
     flexDirection: "column",
     padding: "18px 0",
+    flex: "0 0 25%",
     [muiTheme.breakpoints.down("sm")]: {
-      "&:nth-of-type(even)": {
-        alignItems: "flex-end",
-      },
+      flex: "0 0 33.3333%",
+    },
+    [muiTheme.breakpoints.down("xs")]: {
+      flex: "0 0 50%",
     },
   },
-  footerLink: {
+  link: {
     textDecoration: "initial",
     color: "#fff",
   },
-  footerDisclaimers: {
+  disclaimers: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     padding: "18px 0",
   },
-  footerCopyright: {
+  copyright: {
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -41,12 +43,15 @@ const footerStyles = makeStyles((muiTheme) => ({
         marginLeft: 0,
       },
     },
+    [muiTheme.breakpoints.down("sm")]: {
+      justifyContent: "center",
+    },
   },
-  logoDesktop: {
+  logo: {
     width: 100,
     cursor: "pointer",
   },
-  footerDisclosures: {
+  disclosures: {
     display: "flex",
     justifyContent: "flex-end",
     alignItems: "center",
@@ -56,6 +61,9 @@ const footerStyles = makeStyles((muiTheme) => ({
       "&:last-child": {
         marginRight: 0,
       },
+    },
+    [muiTheme.breakpoints.down("sm")]: {
+      justifyContent: "center",
     },
   },
 }));

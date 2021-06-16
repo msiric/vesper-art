@@ -1,16 +1,23 @@
-import { Button, IconButton } from "@material-ui/core";
 import {
   FavoriteBorderRounded as FavoriteIcon,
   FavoriteRounded as FavoritedIcon,
 } from "@material-ui/icons";
 import React, { useState } from "react";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useUserStore } from "../../contexts/global/user.js";
+import IconButton from "../../domain/IconButton";
 import { deleteFavorite, postFavorite } from "../../services/artwork.js";
+import AsyncButton from "../AsyncButton/index.js";
 import favoriteButtonStyles from "./styles.js";
 
-const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
+const FavoriteButton = ({
+  artwork,
+  favorited,
+  labeled,
+  handleCallback,
+  ...props
+}) => {
   const [state, setState] = useState({ loading: false });
-  const [userStore, userDispatch] = useUserContext();
+  const updateFavorites = useUserStore((state) => state.updateFavorites);
 
   const classes = favoriteButtonStyles();
 
@@ -18,13 +25,12 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
     try {
       setState({ loading: true });
       await postFavorite.request({ artworkId: id });
-      userDispatch({
-        type: "UPDATE_FAVORITES",
+      updateFavorites({
         favorites: {
           [id]: true,
         },
       });
-      if (handleCallback) handleCallback(1);
+      if (handleCallback) handleCallback({ incrementBy: 1 });
     } catch (err) {
       console.log(err);
     } finally {
@@ -36,13 +42,12 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
     try {
       setState({ loading: true });
       await deleteFavorite.request({ artworkId: id });
-      userDispatch({
-        type: "UPDATE_FAVORITES",
+      updateFavorites({
         favorites: {
           [id]: false,
         },
       });
-      if (handleCallback) handleCallback(-1);
+      if (handleCallback) handleCallback({ incrementBy: -1 });
     } catch (err) {
       console.log(err);
     } finally {
@@ -51,9 +56,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
   };
 
   return labeled ? (
-    <Button
-      variant="outlined"
-      color="primary"
+    <AsyncButton
       startIcon={favorited ? <FavoritedIcon /> : <FavoriteIcon />}
       disabled={state.loading}
       onClick={() =>
@@ -61,12 +64,12 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
           ? handleUnsaveArtwork(artwork.id)
           : handleSaveArtwork(artwork.id)
       }
+      {...props}
     >
       {favorited ? "Unfavorite" : "Favorite"}
-    </Button>
+    </AsyncButton>
   ) : (
     <IconButton
-      className={classes.artworkColor}
       aria-label={`${favorited ? "Unsave artwork" : "Save artwork"}`}
       onClick={() =>
         favorited
@@ -74,6 +77,7 @@ const FavoriteButton = ({ artwork, favorited, labeled, handleCallback }) => {
           : handleSaveArtwork(artwork.id)
       }
       disabled={state.loading}
+      {...props}
     >
       {favorited ? <FavoritedIcon /> : <FavoriteIcon />}
     </IconButton>

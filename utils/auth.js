@@ -12,7 +12,7 @@ export const createAccessToken = ({ userData }) => {
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "15m",
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
     }
   );
 };

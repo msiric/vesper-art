@@ -1,84 +1,45 @@
-import { Box } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link as RouterLink } from "react-router-dom";
+import Box from "../../domain/Box";
+import useProgressiveImage from "../../hooks/useProgressiveImage";
 import LoadingSpinner from "../LoadingSpinner/index.js";
 import imageWrapperStyles from "./styles.js";
-
-export const useProgressiveImage = (source) => {
-  const [state, setState] = useState({ downloaded: false });
-
-  useEffect(() => {
-    const image = new Image();
-    image.src = source;
-    image.onload = () => setState({ downloaded: true });
-  }, [source]);
-
-  return state.downloaded;
-};
 
 const ImageWrapper = ({
   redirect,
   height,
-  width,
   source,
   placeholder,
   cover,
-  styles,
   loading,
 }) => {
   const downloaded = useProgressiveImage(source);
 
-  console.log(height, width, placeholder, cover, styles);
-
-  const classes = imageWrapperStyles();
+  const classes = imageWrapperStyles({ height, placeholder });
 
   return !loading && downloaded ? (
     redirect ? (
       <Box component={RouterLink} to={redirect}>
-        <img className={classes.imageContent} src={source} />
+        <img className={classes.media} src={source} />
       </Box>
     ) : (
-      <Box
-        style={{
-          position: "relative",
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <LoadingSpinner
-          styles={{ position: "absolute", display: loading ? "flex" : "none" }}
-        />
-        <img
-          className={classes.imageContent}
-          style={{ ...styles, opacity: loading ? 0.5 : 1 }}
-          src={source}
-        />
+      <Box className={classes.wrapper}>
+        <img className={classes.media} src={source} />
       </Box>
     )
   ) : cover ? (
-    <Box style={{ position: "relative" }}>
-      <LoadingSpinner
-        styles={{ position: "absolute", display: loading ? "flex" : "none" }}
-      />
-      <img
-        className={classes.imageContent}
-        style={{ ...styles, opacity: loading ? 0.5 : 1 }}
-        src={cover}
-      />
+    <Box className={classes.wrapper}>
+      <LoadingSpinner styles={classes.spinner} />
+      <img className={`${classes.media} ${classes.opacity}`} src={cover} />
     </Box>
   ) : (
     <Box
-      style={{
-        ...styles,
-        background: placeholder,
-      }}
+      className={classes.hiddenWrapper}
+      height={height}
+      width="100%"
+      loading={true}
     >
-      <img
-        className={classes.imageContent}
-        style={{ visibility: "hidden" }}
-        src={source}
-      />
+      <img className={`${classes.media} ${classes.hidden}`} src={source} />
     </Box>
   );
 };

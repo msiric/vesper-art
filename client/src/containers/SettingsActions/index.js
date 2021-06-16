@@ -1,38 +1,34 @@
-import {
-  Button,
-  CardActions,
-  CardContent,
-  Typography,
-} from "@material-ui/core";
-import Card from "@material-ui/core/Card";
 import React from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import SyncButton from "../../components/SyncButton/index.js";
+import { useUserSettings } from "../../contexts/local/userSettings";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
+import Typography from "../../domain/Typography";
 import settingsActionsStyles from "./styles.js";
 
-const SettingsActions = ({ handleModalOpen, loading }) => {
+const SettingsActions = () => {
+  const loading = useUserSettings((state) => state.user.loading);
+  const toggleModal = useUserSettings((state) => state.toggleModal);
+
   const classes = settingsActionsStyles();
 
   return (
-    <Card className={classes.artworkContainer}>
-      <CardContent p={32}>
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography>Deactivate user</Typography>
-        </SkeletonWrapper>
-        <SkeletonWrapper variant="text" loading={loading} width="100%">
-          <Typography>
-            Deactivating your account will result in all your data being
-            deleted, except for essential artwork information (if you have any
-            sold artwork as a seller) and essential license information (if you
-            have any purchased artwork as a buyer) that are parts of other
-            users' orders. This action is irreversible.
-          </Typography>
-        </SkeletonWrapper>
+    <Card>
+      <CardContent>
+        <Typography loading={loading}>Deactivate user</Typography>
+        <Typography loading={loading}>
+          Deactivating your account will result in all your data being deleted,
+          except for essential artwork information (if you have any sold artwork
+          as a seller) and essential license information (if you have any
+          purchased artwork as a buyer) that are parts of other users' orders.
+          This action is irreversible.
+        </Typography>
       </CardContent>
-      <CardActions style={{ display: "flex", justifyContent: "flex-end" }}>
+      <CardActions className={classes.actions}>
         <SkeletonWrapper loading={loading}>
-          <Button variant="outlined" onClick={handleModalOpen}>
-            Deactivate
-          </Button>
+          <SyncButton onClick={toggleModal}>Deactivate</SyncButton>
         </SkeletonWrapper>
       </CardActions>
     </Card>

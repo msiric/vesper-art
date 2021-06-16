@@ -1,41 +1,36 @@
-import { Box } from "@material-ui/core";
 import React from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
 import Masonry from "react-masonry-css";
+import { breakpoints } from "../../common/constants";
 import ArtworkCard from "../../components/ArtworkCard/index.js";
-import LoadingSpinner from "../../components/LoadingSpinner/index.js";
+import InfiniteList from "../../components/InfiniteList/index.js";
+import { useHomeArtwork } from "../../contexts/local/homeArtwork";
+import Box from "../../domain/Box";
 import artworkPanelStyles from "./styles.js";
 
-const breakpointColumns = {
-  default: 4,
-  1100: 3,
-  700: 2,
-  500: 1,
-};
+const ArtworkPanel = ({ type, fixed }) => {
+  const elements = useHomeArtwork((state) => state.artwork.data);
+  const hasMore = useHomeArtwork((state) => state.artwork.hasMore);
+  const loading = useHomeArtwork((state) => state.artwork.loading);
+  const fetching = useHomeArtwork((state) => state.artwork.fetching);
+  const error = useHomeArtwork((state) => state.artwork.error);
+  const fetchArtwork = useHomeArtwork((state) => state.fetchArtwork);
 
-const ArtworkPanel = ({
-  elements,
-  hasMore,
-  loadMore,
-  type,
-  fixed,
-  loading,
-}) => {
   const classes = artworkPanelStyles();
 
   return (
-    <Box style={{ width: "100%", height: "100%", padding: "16px 0" }}>
-      <InfiniteScroll
-        className={classes.scroller}
-        dataLength={elements.length}
-        next={loadMore}
+    <Box className={classes.container}>
+      <InfiniteList
+        dataLength={elements ? elements.length : 0}
+        next={fetchArtwork}
         hasMore={hasMore}
-        loader={<LoadingSpinner />}
+        loading={loading || fetching}
+        error={error.refetch}
+        empty="No artwork found"
       >
         <Masonry
-          breakpointCols={breakpointColumns}
-          className={classes.masonryContainer}
-          columnClassName={classes.masonryColumn}
+          breakpointCols={breakpoints}
+          className={classes.masonry}
+          columnClassName={classes.column}
         >
           {elements.map((artwork) => (
             <ArtworkCard
@@ -46,7 +41,7 @@ const ArtworkPanel = ({
             />
           ))}
         </Masonry>
-      </InfiniteScroll>
+      </InfiniteList>
     </Box>
   );
 };

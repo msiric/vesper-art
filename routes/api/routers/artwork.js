@@ -53,13 +53,21 @@ router
     }))
   )
   // $TODO not tested
-  .patch(
+  // OLD ROUTE WITH MEDIA UPLOAD INCLUDED
+  /*   .patch(
     [isAuthenticated, multerApi.uploadArtworkLocal],
     handler(updateArtwork, true, (req, res, next) => ({
       ...req.params,
       artworkPath: req.file ? req.file.path : "",
       artworkFilename: req.file ? req.file.filename : "",
       artworkMimetype: req.file ? req.file.mimetype : "",
+      artworkData: { ...req.body },
+    }))
+  ) */
+  .patch(
+    [isAuthenticated],
+    handler(updateArtwork, true, (req, res, next) => ({
+      ...req.params,
       artworkData: { ...req.body },
     }))
   )

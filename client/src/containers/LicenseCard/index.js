@@ -3,9 +3,13 @@ import { formatDate } from "../../../../common/helpers.js";
 import Datatable from "../../components/DataTable/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import SubHeading from "../../components/SubHeading/index.js";
+import { useOrderDetails } from "../../contexts/local/orderDetails";
 import licenseCardStyles from "./styles.js";
 
-const LicenseCard = ({ license, loading }) => {
+const LicenseCard = () => {
+  const license = useOrderDetails((state) => state.order.data.license);
+  const loading = useOrderDetails((state) => state.order.loading);
+
   const classes = licenseCardStyles();
 
   return (
@@ -68,7 +72,8 @@ const LicenseCard = ({ license, loading }) => {
       empty={<EmptySection label="License not found" loading={loading} />}
       loading={loading}
       redirect=""
-      selectable={false}
+      selectable="none"
+      hoverable={false}
       searchable={false}
       pagination={false}
       addOptions={{ enabled: false, title: "", route: "" }}

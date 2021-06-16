@@ -9,7 +9,7 @@ import {
   recoveryValidation,
   signupValidation,
 } from "../common/validation";
-import { server } from "../config/secret.js";
+import { domain } from "../config/secret";
 import {
   addNewUser,
   editUserResetToken,
@@ -101,54 +101,60 @@ export const postLogIn = async ({
     userUsername,
     connection,
   });
-  const foundUser = await fetchUserByAuth({ userId: foundId, connection });
+  if (foundId) {
+    const foundUser = await fetchUserByAuth({ userId: foundId, connection });
 
-  if (isObjectEmpty(foundUser)) {
-    throw createError(400, "Account with provided credentials does not exist");
-  } else if (!foundUser.active) {
-    throw createError(400, "Account is no longer active");
-  } else if (!foundUser.verified) {
-    throw createError(400, "Please verify your account");
-  } else {
-    const isValid = await argon2.verify(foundUser.password, userPassword);
-
-    if (!isValid) {
+    if (isObjectEmpty(foundUser)) {
       throw createError(
         400,
         "Account with provided credentials does not exist"
       );
+    } else if (!foundUser.active) {
+      throw createError(400, "Account is no longer active");
+    } else if (!foundUser.verified) {
+      throw createError(400, "Please verify your account");
+    } else {
+      const isValid = await argon2.verify(foundUser.password, userPassword);
+
+      if (!isValid) {
+        throw createError(
+          400,
+          "Account with provided credentials does not exist"
+        );
+      }
     }
+
+    const tokenPayload = {
+      id: foundUser.id,
+      name: foundUser.name,
+      jwtVersion: foundUser.jwtVersion,
+      onboarded: !!foundUser.stripeId,
+      active: foundUser.active,
+    };
+
+    const userInfo = {
+      id: foundUser.id,
+      name: foundUser.name,
+      email: foundUser.email,
+      avatar: foundUser.avatar,
+      notifications: foundUser.notifications,
+      active: foundUser.active,
+      stripeId: foundUser.stripeId,
+      country: foundUser.country,
+      businessAddress: foundUser.businessAddress,
+      jwtVersion: foundUser.jwtVersion,
+      favorites: foundUser.favorites,
+      intents: foundUser.intents,
+    };
+
+    sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
+
+    return {
+      accessToken: createAccessToken({ userData: tokenPayload }),
+      user: userInfo,
+    };
   }
-
-  const tokenPayload = {
-    id: foundUser.id,
-    name: foundUser.name,
-    jwtVersion: foundUser.jwtVersion,
-    onboarded: !!foundUser.stripeId,
-    active: foundUser.active,
-  };
-
-  const userInfo = {
-    id: foundUser.id,
-    name: foundUser.name,
-    email: foundUser.email,
-    avatar: foundUser.avatar,
-    notifications: foundUser.notifications,
-    active: foundUser.active,
-    stripeId: foundUser.stripeId,
-    country: foundUser.country,
-    businessAddress: foundUser.businessAddress,
-    jwtVersion: foundUser.jwtVersion,
-    favorites: foundUser.favorites,
-    intents: foundUser.intents,
-  };
-
-  sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
-
-  return {
-    accessToken: createAccessToken({ userData: tokenPayload }),
-    user: userInfo,
-  };
+  throw createError(400, "Account with provided credentials does not exist");
 };
 
 export const postLogOut = ({ res, connection }) => {
@@ -185,7 +191,7 @@ export const forgotPassword = async ({ userEmail, connection }) => {
       emailContent: `You are receiving this because you have requested to reset the password for your account.
           Please click on the following link, or paste this into your browser to complete the process:
           
-          <a href="${server.clientDomain}/reset_password/${resetToken}"</a>`,
+          <a href="${domain.client}/reset_password/${resetToken}"</a>`,
     });
     return { message: "Password reset" };
   });
@@ -259,6 +265,7 @@ export const resendToken = async ({ userEmail, connection }) => {
 };
 
 export const updateEmail = async ({
+  response,
   userEmail,
   userUsername,
   userPassword,
@@ -275,44 +282,51 @@ export const updateEmail = async ({
     userUsername,
     connection,
   });
-  const foundUser = await fetchUserByAuth({ userId: foundId, connection });
+  if (foundId) {
+    const foundUser = await fetchUserByAuth({ userId: foundId, connection });
 
-  if (isObjectEmpty(foundUser)) {
-    throw createError(400, "Account with provided credentials does not exist");
-  } else if (!foundUser.active) {
-    throw createError(400, "Account is no longer active");
-  } else if (foundUser.verified) {
-    throw createError(400, "Account is already verified");
-  } else {
-    const isValid = await argon2.verify(foundUser.password, userPassword);
-
-    if (!isValid) {
+    if (isObjectEmpty(foundUser)) {
       throw createError(
         400,
         "Account with provided credentials does not exist"
       );
-    }
-  }
+    } else if (!foundUser.active) {
+      throw createError(400, "Account is no longer active");
+    } else if (foundUser.verified) {
+      throw createError(400, "Account is already verified");
+    } else {
+      const isValid = await argon2.verify(foundUser.password, userPassword);
 
-  const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
-  if (emailUsed) {
-    throw createError(400, "User with provided email already exists");
-  } else {
-    const { verificationToken, verificationLink } = generateToken();
-    await editUserEmail({
-      userId: foundId,
-      userEmail,
-      verificationToken,
-      connection,
-    });
-    await sendEmail({
-      emailReceiver: userEmail,
-      emailSubject: "Please confirm your email",
-      emailContent: `Hello,
+      if (!isValid) {
+        throw createError(
+          400,
+          "Account with provided credentials does not exist"
+        );
+      }
+    }
+
+    const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
+    if (emailUsed) {
+      throw createError(400, "User with provided email already exists");
+    } else {
+      const { verificationToken, verificationLink } = generateToken();
+      await editUserEmail({
+        userId: foundId,
+        userEmail,
+        verificationToken,
+        connection,
+      });
+      await sendEmail({
+        emailReceiver: userEmail,
+        emailSubject: "Please confirm your email",
+        emailContent: `Hello,
         Please click on the link to verify your email:
   
         <a href=${verificationLink}>Click here to verify</a>`,
-    });
-    return { message: "Email successfully updated" };
+      });
+      logUserOut(response);
+      return { message: "Email successfully updated" };
+    }
   }
+  throw createError(400, "Account with provided credentials does not exist");
 };

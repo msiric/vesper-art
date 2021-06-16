@@ -1,8 +1,8 @@
 import { ax } from "../containers/Interceptor/Interceptor.js";
 
 export const getUser = {
-  request: async ({ userUsername, cursor, limit }) =>
-    await ax.get(`/api/users/${userUsername}?cursor=${cursor}&limit=${limit}`),
+  request: async ({ userUsername }) =>
+    await ax.get(`/api/users/${userUsername}`),
   success: { message: "User successfully fetched", variant: "success" },
   error: { message: "Failed to fetch user", variant: "error" },
 };
@@ -41,9 +41,17 @@ export const postMedia = {
   error: { message: "Failed to upload avatar", variant: "error" },
 };
 export const getArtwork = {
+  request: async ({ userUsername, cursor, limit }) =>
+    await ax.get(
+      `/api/users/${userUsername}/artwork?cursor=${cursor}&limit=${limit}`
+    ),
+  success: { message: "User artwork successfully fetched", variant: "success" },
+  error: { message: "Failed to fetch user artwork", variant: "error" },
+};
+export const getUploads = {
   request: async ({ userId, cursor, limit }) =>
     await ax.get(
-      `/api/users/${userId}/artwork?cursor=${cursor}&limit=${limit}`
+      `/api/users/${userId}/uploads?cursor=${cursor}&limit=${limit}`
     ),
   success: { message: "User artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch user artwork", variant: "error" },
@@ -60,9 +68,9 @@ export const getOwnership = {
   error: { message: "Failed to fetch user purchases", variant: "error" },
 };
 export const getFavorites = {
-  request: async ({ userId, cursor, limit }) =>
+  request: async ({ userUsername, cursor, limit }) =>
     await ax.get(
-      `/api/users/${userId}/favorites?cursor=${cursor}&limit=${limit}`
+      `/api/users/${userUsername}/favorites?cursor=${cursor}&limit=${limit}`
     ),
   success: { message: "Favorites successfully fetched", variant: "success" },
   error: { message: "Failed to fetch favorites", variant: "error" },

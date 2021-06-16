@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import React from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import { app } from "../../../../common/constants.js";
+import { appName } from "../../../../common/constants";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import footerStyles from "./styles.js";
 
@@ -33,18 +33,18 @@ const Footer = () => {
     //     </Typography>
     //   </Container>
     // </footer>
-    <footer className={classes.footerContainer}>
+    <footer className={classes.container}>
       <Toolbar>
         <Container>
-          <Grid container className={classes.footerNav}>
-            <Grid item xs={12} sm={6} md={3} className={classes.footerItem}>
-              <Typography variant="h6" className={classes.footerHeading}>
+          <Grid container className={classes.navigation}>
+            <Grid item className={classes.item}>
+              <Typography variant="h6" className={classes.heading}>
                 Who are we
               </Typography>
               <List>
                 <ListItem disableGutters>
                   <Typography
-                    className={classes.footerLink}
+                    className={classes.link}
                     component={RouterLink}
                     to="/"
                   >
@@ -53,7 +53,7 @@ const Footer = () => {
                 </ListItem>
                 <ListItem disableGutters>
                   <Typography
-                    className={classes.footerLink}
+                    className={classes.link}
                     component={RouterLink}
                     to="/about"
                   >
@@ -62,7 +62,7 @@ const Footer = () => {
                 </ListItem>
                 <ListItem disableGutters>
                   <Typography
-                    className={classes.footerLink}
+                    className={classes.link}
                     component={RouterLink}
                     to="/how_it_works"
                   >
@@ -71,28 +71,28 @@ const Footer = () => {
                 </ListItem>
               </List>
             </Grid>
-            <Grid item xs={12} sm={6} md={3} className={classes.footerItem}>
-              <Typography variant="h6" className={classes.footerHeading}>
+            <Grid item className={classes.item}>
+              <Typography variant="h6" className={classes.heading}>
                 Community
               </Typography>
               <List>
                 <ListItem disableGutters>
                   <Typography
-                    className={classes.footerLink}
+                    className={classes.link}
                     component={RouterLink}
                     to="/start_selling"
-                  >{`Selling on ${app.name}`}</Typography>
+                  >{`Selling on ${appName}`}</Typography>
                 </ListItem>
                 <ListItem disableGutters>
                   <Typography
-                    className={classes.footerLink}
+                    className={classes.link}
                     component={RouterLink}
                     to="/start_buying"
-                  >{`Buying on ${app.name}`}</Typography>
+                  >{`Buying on ${appName}`}</Typography>
                 </ListItem>
                 <ListItem disableGutters>
                   <Typography
-                    className={classes.footerLink}
+                    className={classes.link}
                     component={RouterLink}
                     to="/community_guidelines"
                   >
@@ -101,14 +101,14 @@ const Footer = () => {
                 </ListItem>
               </List>
             </Grid>
-            <Grid item xs={12} sm={6} md={3} className={classes.footerItem}>
-              <Typography variant="h6" className={classes.footerHeading}>
+            <Grid item className={classes.item}>
+              <Typography variant="h6" className={classes.heading}>
                 Support
               </Typography>
               <List>
                 <ListItem disableGutters>
                   <Typography
-                    className={classes.footerLink}
+                    className={classes.link}
                     component={RouterLink}
                     to="/support"
                   >
@@ -117,7 +117,7 @@ const Footer = () => {
                 </ListItem>
                 <ListItem disableGutters>
                   <Typography
-                    className={classes.footerLink}
+                    className={classes.link}
                     component={RouterLink}
                     to="/contact"
                   >
@@ -126,18 +126,18 @@ const Footer = () => {
                 </ListItem>
               </List>
             </Grid>
-            <Grid item xs={12} sm={6} md={3} className={classes.footerItem}>
-              <Typography variant="h6" className={classes.footerHeading}>
+            <Grid item className={classes.item}>
+              <Typography variant="h6" className={classes.heading}>
                 Connect
               </Typography>
               <List>
                 <Typography
-                  className={classes.footerLink}
+                  className={classes.link}
                   component={RouterLink}
                   to=""
                 ></Typography>
                 <Typography
-                  className={classes.footerLink}
+                  className={classes.link}
                   component={RouterLink}
                   to=""
                 ></Typography>
@@ -145,23 +145,19 @@ const Footer = () => {
             </Grid>
           </Grid>
           <Divider />
-          <Grid container className={classes.footerDisclaimers}>
-            <Grid item xs={12} sm={6} className={classes.footerCopyright}>
+          <Grid container className={classes.dislaimers}>
+            <Grid item xs={12} sm={6} className={classes.copyright}>
               <img
                 src={LogoDesktop}
                 alt="Logo"
                 onClick={() => history.push("/")}
-                className={classes.logoDesktop}
+                className={classes.logo}
               />
-              <Typography
-                className={classes.footerLink}
-                component={RouterLink}
-                to=""
-              >
+              <Typography className={classes.link} component={RouterLink} to="">
                 Copyright &copy; {new Date().getFullYear()}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6} className={classes.footerDisclosures}>
+            <Grid item xs={12} sm={6} className={classes.disclosures}>
               <Link to={""}>Privacy Policy</Link>{" "}
               <Link to={""}>Terms of Service</Link>{" "}
             </Grid>

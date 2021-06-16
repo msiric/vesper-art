@@ -1,15 +1,21 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CardActions, CardContent } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { preferencesValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
+import { useUserSettings } from "../../contexts/local/userSettings";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
 import EditPreferencesForm from "../../forms/PreferencesForm/index.js";
 import settingsPreferencesStyles from "./styles.js";
 
-const SettingsPreferences = ({ user, handleUpdatePreferences, loading }) => {
+const SettingsPreferences = () => {
+  const user = useUserSettings((state) => state.user.data);
+  const loading = useUserSettings((state) => state.user.loading);
+  const updatePreferences = useUserSettings((state) => state.updatePreferences);
+
   const setDefaultValues = () => ({
     userFavorites: loading ? false : user.displayFavorites,
   });
@@ -27,7 +33,8 @@ const SettingsPreferences = ({ user, handleUpdatePreferences, loading }) => {
     resolver: yupResolver(preferencesValidation),
   });
 
-  const onSubmit = async (values) => await handleUpdatePreferences(values);
+  const onSubmit = async (values) =>
+    await updatePreferences({ userId: user.id, values });
 
   const classes = settingsPreferencesStyles();
 
@@ -36,7 +43,7 @@ const SettingsPreferences = ({ user, handleUpdatePreferences, loading }) => {
   }, [user.displayFavorites]);
 
   return (
-    <Card className={classes.artworkContainer} style={{ marginBottom: "16px" }}>
+    <Card className={classes.container}>
       <FormProvider control={control}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
@@ -44,17 +51,15 @@ const SettingsPreferences = ({ user, handleUpdatePreferences, loading }) => {
               setValue={setValue}
               getValues={getValues}
               errors={errors}
+              loading={loading}
             />
           </CardContent>
-          <CardActions
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
+          <CardActions className={classes.actions}>
             <AsyncButton
               type="submit"
               fullWidth
-              variant="outlined"
-              color="primary"
-              loading={formState.isSubmitting}
+              submitting={formState.isSubmitting}
+              loading={loading}
               startIcon={<UploadIcon />}
             >
               Save

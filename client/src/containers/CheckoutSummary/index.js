@@ -1,47 +1,97 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Divider,
-  Grid,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-} from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import NumberFormat from "react-number-format";
 import { useHistory } from "react-router-dom";
-import * as Yup from "yup";
+import { payment } from "../../../../common/constants";
+import { discountValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import CheckoutCard from "../../components/CheckoutCard/index.js";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import CheckoutItem from "../../components/CheckoutItem/index.js";
+import ListItems from "../../components/ListItems/index.js";
+import Card from "../../domain/Card";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
+import Divider from "../../domain/Divider";
+import Grid from "../../domain/Grid";
+import Typography from "../../domain/Typography";
 import DiscountForm from "../../forms/DiscountForm/index.js";
 import checkoutSummaryStyles from "./styles.js";
 
-const validationSchema = Yup.object().shape({
-  discountCode: Yup.string().trim().required("Discount cannot be empty"),
-});
-
 const CheckoutSummary = ({
-  match,
-  location,
   version,
   license,
   discount,
   handleDiscountChange,
   loading,
+  submitting,
+  paying,
+  step,
 }) => {
   const [state, setState] = useState({
     summary: {
       license: null,
       amount: 0,
     },
+    values: {
+      price: 0,
+      fee: 0,
+      discount: 0,
+      total: 0,
+    },
   });
+
+  const summaryItems = [
+    <CheckoutItem
+      label={version.title}
+      description={
+        state.summary.license
+          ? `${state.summary.license} license`
+          : "No license selected"
+      }
+      amount="Price"
+      animate={true}
+      price={state.values.price}
+      loading={loading}
+    />,
+    <Divider />,
+    <CheckoutItem
+      label="Platform fee"
+      description="Fixed fee"
+      amount="Amount"
+      prefix="+"
+      animate={true}
+      price={state.values.fee}
+      loading={loading}
+    />,
+    <Divider />,
+    discount ? (
+      <>
+        <CheckoutItem
+          label="Discount"
+          description={`${discount.name} (${discount.discount * 100}%)`}
+          amount="Amount"
+          prefix="-"
+          animate={true}
+          price={state.values.discount}
+          loading={loading}
+        />
+        <Divider />
+      </>
+    ) : null,
+    <CheckoutItem
+      label="Order"
+      description={
+        state.summary.license
+          ? `${state.summary.license} license`
+          : "No license selected"
+      }
+      amount="Total"
+      animate={true}
+      price={state.values.total}
+      loading={loading}
+    />,
+  ];
 
   const {
     handleSubmit,
@@ -56,303 +106,112 @@ const CheckoutSummary = ({
     defaultValues: {
       discountCode: "",
     },
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(discountValidation),
   });
 
-  const onSubmit = async (values) => await handleDiscountChange(values);
+  const onSubmit = async (values) => await handleDiscountChange({ values });
 
   const history = useHistory();
 
   const classes = checkoutSummaryStyles();
 
+  const recalculateValues = () => {
+    const selectedLicense = license;
+    const selectedAmount = version[license];
+    const calculatedPrice = selectedLicense ? selectedAmount : 0;
+    const calculatedFee = selectedAmount
+      ? (
+          selectedAmount * payment.buyerFee.multiplier +
+          payment.buyerFee.addend
+        ).toFixed(2)
+      : 0;
+    const calculatedDiscount = discount
+      ? (selectedAmount * discount.discount).toFixed(2)
+      : 0;
+    const calculatedTotal = selectedAmount
+      ? discount
+        ? (
+            selectedAmount -
+            selectedAmount * discount.discount +
+            (selectedAmount * payment.buyerFee.multiplier +
+              payment.buyerFee.addend)
+          ).toFixed(2)
+        : (
+            selectedAmount +
+            (selectedAmount * payment.buyerFee.multiplier +
+              payment.buyerFee.addend)
+          ).toFixed(2)
+      : 0;
+
+    setState((prevState) => ({
+      ...prevState,
+      summary: {
+        license: selectedLicense,
+        amount: selectedAmount,
+      },
+      values: {
+        price: calculatedPrice,
+        fee: calculatedFee,
+        discount: calculatedDiscount,
+        total: calculatedTotal,
+      },
+    }));
+  };
+
   useEffect(() => {
     if (version.id) {
-      setState((prevState) => ({
-        ...prevState,
-        summary: {
-          license: license,
-          amount: version[license],
-        },
-      }));
+      recalculateValues();
     }
-  }, [version, license]);
+  }, [version, license, discount]);
 
   return (
-    <Card
-      className={classes.summary}
-      style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <CardContent
-        style={{
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          paddingBottom: 8,
-        }}
-      >
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography variant="h6" gutterBottom>
-            Order summary
-          </Typography>
-        </SkeletonWrapper>
-        <Grid
-          item
-          xs={12}
-          className={classes.artwork}
-          style={{ flexBasis: "auto" }}
-        >
+    <Card className={classes.container}>
+      <CardContent className={classes.content}>
+        <Typography variant="h6" gutterBottom loading={loading}>
+          Order summary
+        </Typography>
+        <Grid item xs={12} className={classes.card}>
           <CheckoutCard version={version} loading={loading} />
         </Grid>
-        <List disablePadding>
-          <ListItem
-            className={classes.listItem}
-            key={version.id}
-            disableGutters
-          >
-            <ListItemText
-              primary={
-                <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography>{version.title || "Artwork title"}</Typography>
-                </SkeletonWrapper>
-              }
-              secondary={
-                <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography className={classes.listContent}>
-                    {state.summary.license
-                      ? `${license} license`
-                      : "No license selected"}
-                  </Typography>
-                </SkeletonWrapper>
-              }
-            />
-            <ListItemText
-              primary={
-                <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography className={classes.rightList}>Price</Typography>
-                </SkeletonWrapper>
-              }
-              secondary={
-                <div className={classes.rightList}>
-                  <SkeletonWrapper variant="text" loading={loading}>
-                    <NumberFormat
-                      value={state.summary.license ? state.summary.amount : 0}
-                      displayType={"text"}
-                      thousandSeparator={true}
-                      decimalScale={2}
-                      prefix={"$"}
-                    />
-                  </SkeletonWrapper>
-                </div>
-              }
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-              }}
-            />
-          </ListItem>
-
-          <Divider />
-          {discount ? (
-            <>
-              <ListItem className={classes.listItem} disableGutters>
-                <ListItemText
-                  primary={<Typography>Discount</Typography>}
-                  secondary={
-                    <div>
-                      <Typography>{`${discount.name} (${
-                        discount.discount * 100
-                      }%)`}</Typography>
-                    </div>
-                  }
-                />
-                <ListItemText
-                  primary={
-                    <Typography className={classes.rightList}>
-                      Amount
-                    </Typography>
-                  }
-                  secondary={
-                    <div>
-                      <Typography className={classes.rightList}>
-                        <NumberFormat
-                          value={(
-                            state.summary.amount * discount.discount
-                          ).toFixed(2)}
-                          displayType={"text"}
-                          thousandSeparator={true}
-                          decimalScale={2}
-                          prefix={"- $"}
-                        />
-                      </Typography>
-                    </div>
-                  }
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                  }}
-                />
-              </ListItem>
-              <Divider />
-            </>
-          ) : null}
-          <ListItem className={classes.listItem} disableGutters>
-            <ListItemText
-              primary={
-                <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography>Platform fee</Typography>
-                </SkeletonWrapper>
-              }
-              secondary={
-                <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography>Fixed fee</Typography>
-                </SkeletonWrapper>
-              }
-            />
-            <ListItemText
-              primary={
-                <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography className={classes.rightList}>Amount</Typography>
-                </SkeletonWrapper>
-              }
-              secondary={
-                <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography className={classes.rightList}>
-                    <NumberFormat
-                      value={
-                        state.summary.amount
-                          ? (state.summary.amount * 0.05 + 2.35).toFixed(2)
-                          : 0
-                      }
-                      displayType={"text"}
-                      thousandSeparator={true}
-                      decimalScale={2}
-                      prefix={"$"}
-                    />
-                  </Typography>
-                </SkeletonWrapper>
-              }
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-              }}
-            />
-          </ListItem>
-          <Divider />
-          <ListItem className={classes.listItem} disableGutters>
-            <ListItemText
-              primary={
-                <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography>Order</Typography>
-                </SkeletonWrapper>
-              }
-              secondary={
-                <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography className={classes.listContent}>
-                    {state.summary.license
-                      ? `${state.summary.license} license`
-                      : "No license selected"}
-                  </Typography>
-                </SkeletonWrapper>
-              }
-            />
-            <ListItemText
-              primary={
-                <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography className={classes.rightList}>Total</Typography>
-                </SkeletonWrapper>
-              }
-              secondary={
-                <SkeletonWrapper variant="text" loading={loading}>
-                  <Typography className={classes.rightList}>
-                    {state.summary.amount ? (
-                      discount ? (
-                        <NumberFormat
-                          value={(
-                            state.summary.amount -
-                            state.summary.amount * discount.discount +
-                            (state.summary.amount * 0.05 + 2.35)
-                          ).toFixed(2)}
-                          displayType={"text"}
-                          thousandSeparator={true}
-                          decimalScale={2}
-                          prefix={"$"}
-                        />
-                      ) : (
-                        <NumberFormat
-                          value={(
-                            state.summary.amount +
-                            (state.summary.amount * 0.05 + 2.35)
-                          ).toFixed(2)}
-                          displayType={"text"}
-                          thousandSeparator={true}
-                          decimalScale={2}
-                          prefix={"$"}
-                        />
-                      )
-                    ) : (
-                      <NumberFormat
-                        value={0}
-                        displayType={"text"}
-                        thousandSeparator={true}
-                        decimalScale={2}
-                        prefix={"$"}
-                      />
-                    )}
-                  </Typography>
-                </SkeletonWrapper>
-              }
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-              }}
-            />
-          </ListItem>
-        </List>
+        <ListItems items={summaryItems} custom={true}></ListItems>
       </CardContent>
-      <CardActions className={classes.actions}>
-        {/* Update intent when discount changes */}
-        {discount ? (
-          <Button
-            type="button"
-            color="error"
-            onClick={() => handleDiscountChange(null)}
-            fullWidth
-          >
-            Remove discount
-          </Button>
-        ) : (
-          <FormProvider control={control}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <CardContent>
+      {step.current === 2 && (
+        <CardActions className={classes.actions}>
+          {/* $TODO Update intent when discount changes */}
+          {/* Fix AsyncButton loading/submitting */}
+          {discount ? (
+            <AsyncButton
+              type="button"
+              fullWidth
+              loading={loading}
+              submitting={submitting}
+              disabled={paying}
+              onClick={() =>
+                handleDiscountChange({ values: { discountCode: null } })
+              }
+            >
+              Remove discount
+            </AsyncButton>
+          ) : (
+            <FormProvider control={control}>
+              <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
                 <DiscountForm errors={errors} loading={state.loading} />
-              </CardContent>
-              <CardActions
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
                 <AsyncButton
                   type="submit"
                   fullWidth
-                  variant="outlined"
-                  color="primary"
-                  padding
-                  loading={formState.isSubmitting}
+                  submitting={formState.isSubmitting}
+                  loading={loading}
+                  submitting={submitting}
+                  disabled={paying}
                   startIcon={<UploadIcon />}
                 >
                   Apply
                 </AsyncButton>
-              </CardActions>
-            </form>
-          </FormProvider>
-        )}
-      </CardActions>
+              </form>
+            </FormProvider>
+          )}
+        </CardActions>
+      )}
     </Card>
   );
 };

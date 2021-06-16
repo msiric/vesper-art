@@ -2,11 +2,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme";
 
 const reviewCardStyles = makeStyles((muiTheme) => ({
-  reviewContainer: {
+  container: {
     display: "flex",
     flexDirection: "column",
   },
-  highlightContainer: {
+  highlight: {
     border: "2px transparent solid",
     borderRadius: "4px",
     animation: "$blink 0.8s",
@@ -18,11 +18,27 @@ const reviewCardStyles = makeStyles((muiTheme) => ({
       borderColor: artepunktTheme.palette.primary.main,
     },
   },
-  reviewContent: {
+  card: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    flexGrow: 1,
+  },
+  wrapper: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     height: "100%",
+  },
+  text: {
+    margin: 8,
+  },
+  actions: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
 }));
 

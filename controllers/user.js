@@ -10,6 +10,13 @@ import {
   profileValidation,
 } from "../common/validation";
 import {
+  deactivateArtworkVersion,
+  deactivateExistingArtwork,
+  removeArtworkVersion,
+} from "../services/postgres/artwork.js";
+import { logUserOut } from "../services/postgres/auth";
+import {
+  fetchOrdersByArtwork,
   fetchOrdersByBuyer,
   fetchOrdersBySeller,
 } from "../services/postgres/order.js";
@@ -28,15 +35,18 @@ import {
   fetchUserArtwork,
   fetchUserByAuth,
   fetchUserById,
+  fetchUserByUsername,
   fetchUserFavorites,
   fetchUserIdByEmail,
   fetchUserIdByUsername,
+  fetchUserMedia,
   fetchUserNotifications,
   fetchUserProfile,
   fetchUserPurchases,
   fetchUserReviews,
   fetchUserSales,
   removeExistingIntent,
+  removeUserAvatar,
 } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
 import {
@@ -73,7 +83,26 @@ export const getUserProfile = async ({
   throw createError(400, "User not found");
 };
 
-export const getUserArtwork = async ({ userId, cursor, limit, connection }) => {
+export const getUserArtwork = async ({
+  userUsername,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundId = await fetchUserIdByUsername({
+    userUsername,
+    connection,
+  });
+  const foundArtwork = await fetchUserArtwork({
+    userId: foundId,
+    cursor,
+    limit,
+    connection,
+  });
+  return { artwork: foundArtwork };
+};
+
+export const getUserUploads = async ({ userId, cursor, limit, connection }) => {
   const foundArtwork = await fetchUserArtwork({
     userId,
     cursor,
@@ -100,18 +129,25 @@ export const getUserOwnership = async ({
 };
 
 export const getUserFavorites = async ({
-  userId,
+  userUsername,
   cursor,
   limit,
   connection,
 }) => {
-  const foundFavorites = await fetchUserFavorites({
-    userId,
-    cursor,
-    limit,
+  const foundUser = await fetchUserByUsername({
+    userUsername,
     connection,
   });
-  return { favorites: foundFavorites };
+  if (foundUser.displayFavorites) {
+    const foundFavorites = await fetchUserFavorites({
+      userId: foundUser.id,
+      cursor,
+      limit,
+      connection,
+    });
+    return { favorites: foundFavorites };
+  }
+  throw createError(400, "User keeps favorites private");
 };
 
 // $TODO ne valja nista
@@ -197,6 +233,7 @@ export const updateUserProfile = async ({
   userData,
   connection,
 }) => {
+  // $TODO delete S3 images when not being used anymore
   // $TODO Validate data passed to upload
   const avatarUpload = await finalizeMediaUpload({
     filePath: userPath,
@@ -205,16 +242,24 @@ export const updateUserProfile = async ({
     fileType: "user",
   });
   await profileValidation.validate(sanitizeData(userData));
-  // $TODO Find or fail? Minimize overhead
   const foundUser = await fetchUserById({ userId, connection });
-  let avatarId;
+  let avatarId = null;
   if (avatarUpload.fileMedia) {
     if (foundUser.avatar) {
-      await editUserAvatar({ userId: foundUser.id, avatarUpload, connection });
-    } else {
-      const { avatarId } = generateUuids({
-        avatarId: null,
+      await deleteS3Object({
+        fileLink: foundUser.avatar.source,
+        folderName: "userMedia/",
       });
+      const updatedAvatar = await editUserAvatar({
+        userId: foundUser.id,
+        avatarUpload,
+        connection,
+      });
+      avatarId = updatedAvatar.raw[0].id;
+    } else {
+      ({ avatarId } = generateUuids({
+        avatarId: null,
+      }));
       await addUserAvatar({
         avatarId,
         userId: foundUser.id,
@@ -222,13 +267,34 @@ export const updateUserProfile = async ({
         connection,
       });
     }
+    await editUserProfile({
+      foundUser,
+      userData,
+      avatarId,
+      connection,
+    });
+  } else {
+    if (!foundUser.avatar) {
+      avatarId = foundUser.avatar.id;
+    }
+    await editUserProfile({
+      foundUser,
+      userData,
+      avatarId,
+      connection,
+    });
+    if (foundUser.avatar) {
+      await deleteS3Object({
+        fileLink: foundUser.avatar.source,
+        folderName: "userMedia/",
+      });
+      await removeUserAvatar({
+        userId: foundUser.id,
+        avatarId: foundUser.avatar.id,
+        connection,
+      });
+    }
   }
-  await editUserProfile({
-    foundUser,
-    userData,
-    avatarId,
-    connection,
-  });
   return { message: "User details updated" };
 };
 
@@ -413,7 +479,7 @@ export const updateUserPreferences = async ({
 // needs testing (better way to update already found user)
 // not tested
 // needs transaction (not tested)
-export const deactivateUser = async ({ userId, connection }) => {
+/* export const deactivateUser = async ({ userId, connection }) => {
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
     const foundArtwork = await fetchUserArtwork({
@@ -428,12 +494,12 @@ export const deactivateUser = async ({ userId, connection }) => {
       });
       if (!foundOrder.length) {
         await deleteS3Object({
-          fileLink: artwork.current.cover,
+          fileLink: artwork.current.cover.source,
           folderName: "artworkCovers/",
         });
 
         await deleteS3Object({
-          fileLink: artwork.current.media,
+          fileLink: artwork.current.media.source,
           folderName: "artworkMedia/",
         });
 
@@ -444,15 +510,71 @@ export const deactivateUser = async ({ userId, connection }) => {
       }
       await deactivateExistingArtwork({ artworkId: artwork.id, connection });
     }
-    await deleteS3Object({
-      fileLink: foundUser.avatar,
-      folderName: "profilePhotos/",
-    });
+    if (foundUser.avatar) {
+      await deleteS3Object({
+        fileLink: foundUser.avatar.source,
+        folderName: "userMedia/",
+      });
+    }
     await deactivateExistingUser({ userId: foundUser.id, connection });
     req.logout();
     req.connection.destroy(function (err) {
       res.json("/");
     });
+    return { message: "User deactivated" };
+  }
+  throw createError(400, "User not found");
+}; */
+
+export const deactivateUser = async ({ userId, response, connection }) => {
+  const foundUser = await fetchUserById({ userId, connection });
+  if (foundUser) {
+    const foundArtwork = await fetchUserMedia({
+      userId,
+      connection,
+    });
+    for (let artwork of foundArtwork) {
+      const foundOrders = await fetchOrdersByArtwork({
+        userId: foundUser.id,
+        versionId: artwork.id,
+        connection,
+      });
+      if (!foundOrders.length) {
+        const oldVersion = foundArtwork.current;
+        await deactivateArtworkVersion({ artworkId, connection });
+        await deleteS3Object({
+          fileLink: oldVersion.cover.source,
+          folderName: "artworkCovers/",
+        });
+        await deleteS3Object({
+          fileLink: oldVersion.media.source,
+          folderName: "artworkMedia/",
+        });
+        await removeArtworkVersion({
+          versionId: oldVersion.id,
+          connection,
+        });
+      } else if (
+        foundOrders.find((item) => item.versionId === foundArtwork.current.id)
+      ) {
+        await deactivateExistingArtwork({ artworkId, connection });
+      } else {
+        const oldVersion = foundArtwork.current;
+        await deactivateArtworkVersion({ artworkId, connection });
+        await removeArtworkVersion({
+          versionId: oldVersion.id,
+          connection,
+        });
+      }
+    }
+    if (foundUser.avatar) {
+      await deleteS3Object({
+        fileLink: foundUser.avatar.source,
+        folderName: "userMedia/",
+      });
+    }
+    await deactivateExistingUser({ userId: foundUser.id, connection });
+    logUserOut(response);
     return { message: "User deactivated" };
   }
   throw createError(400, "User not found");

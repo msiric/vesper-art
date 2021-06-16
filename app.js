@@ -11,21 +11,18 @@ import morgan from "morgan";
 import path from "path";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
-import { mongo, postgres, server } from "./config/secret.js";
+import { domain } from "./config/secret";
+import { mongo, postgres } from "./config/secret.js";
 import api from "./routes/api/index.js";
 import stripe from "./routes/stripe/index.js";
 import { validateParams } from "./utils/helpers.js";
-import { rateLimiter } from "./utils/limiter.js";
 
 const app = express();
 const dirname = path.resolve();
 
-app.use(compression());
-app.use(helmet());
-
 app.use(
   cors({
-    origin: server.clientDomain,
+    origin: domain.client,
     credentials: true,
   })
 );
@@ -49,7 +46,6 @@ app.use(
     keys: ["key1", "key2"],
   })
 );
-app.use(express.static(path.join(dirname, "public")));
 
 // mongoose.connect(
 //   mongo.database,
@@ -69,8 +65,8 @@ app.use(express.static(path.join(dirname, "public")));
       url: postgres.database,
       logging: true,
       synchronize: true,
-      migrations: [path.join(__dirname, "./migrations/*")],
-      entities: [path.join(__dirname, "./entities/*")],
+      migrations: [path.join(dirname, "dist/migrations/*{.ts,.js}")],
+      entities: [path.join(dirname, "dist/entities/*{.ts,.js}")],
       ssl: {
         rejectUnauthorized: false,
       },
@@ -81,10 +77,36 @@ app.use(express.static(path.join(dirname, "public")));
   }
 })();
 
-app.use(rateLimiter);
+app.use(compression());
+app.use(helmet({ contentSecurityPolicy: false }));
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     directives: {
+//       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+//       "script-src": [
+//         "'self'",
+//         "'unsafe-inline'",
+//         "https://vesperart-dev.herokuapp.com/",
+//       ],
+//       "img-src": [
+//         "'self'",
+//         `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/`,
+//       ],
+//     },
+//   })
+// );
+
+// app.use(rateLimiter);
 
 app.use("/api", validateParams, api);
 app.use("/stripe", validateParams, stripe);
+
+app.use(express.static(path.join(dirname, "client/build")));
+app.use(express.static(path.join(dirname, "public")));
+
+app.use((req, res, next) => {
+  res.sendFile(path.join(dirname, "client/build", "index.html"));
+});
 
 app.use((req, res, next) => {
   createError(404);

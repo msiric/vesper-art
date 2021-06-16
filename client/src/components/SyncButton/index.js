@@ -1,25 +1,27 @@
-import { Box, Button } from "@material-ui/core";
 import React from "react";
+import Box from "../../domain/Box";
+import Button from "../../domain/Button";
 import syncButtonStyles from "./styles";
 
 const SyncButton = ({
+  loading = false,
   variant = "outlined",
-  color = "dark",
+  color = "primary",
   handleClick,
   padding,
   children,
-  ...rest
+  ...props
 }) => {
-  const classes = syncButtonStyles({ padding: padding ? 16 : "" });
+  const classes = syncButtonStyles();
 
   return (
-    <Box className={classes.buttonContainer}>
+    <Box>
       <Button
         color={color}
-        variant={variant}
+        outline={variant}
         onClick={handleClick}
-        className={classes.buttonItem}
-        {...rest}
+        loading={loading}
+        {...props}
       >
         {children}
       </Button>

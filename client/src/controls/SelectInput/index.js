@@ -1,42 +1,38 @@
-import {
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import MenuItem from "../../domain/MenuItem";
+import TextField from "../../domain/TextField";
 
-const Input = ({ name, label, options, helperText, error, ...other }) => {
+const Input = ({
+  label,
+  options,
+  variant = "outlined",
+  loading = false,
+  margin = "dense",
+  ...props
+}) => {
   return (
-    <FormControl variant="outlined" margin="dense" fullWidth>
-      <InputLabel error={error} htmlFor={name}>
-        {label}
-      </InputLabel>
-      <Select
-        {...other}
-        error={error}
-        label={label}
-        inputProps={{
-          name: name,
-          id: name,
-        }}
-      >
-        {options.map((item, index) =>
-          item.value === "" ? (
-            <MenuItem key={index} value={item.value}>
-              <em>None</em>
-            </MenuItem>
-          ) : (
-            <MenuItem key={index} value={item.value} disabled={item.disabled}>
-              {item.text}
-            </MenuItem>
-          )
-        )}
-      </Select>
-      {helperText && <FormHelperText error>{helperText}</FormHelperText>}
-    </FormControl>
+    <TextField
+      {...props}
+      variant={variant}
+      margin={margin}
+      label={label}
+      loading={loading}
+      select
+      fullWidth
+    >
+      {options.map((item, index) =>
+        item.value === "" ? (
+          <MenuItem key={index} value={item.value}>
+            <em>None</em>
+          </MenuItem>
+        ) : (
+          <MenuItem key={index} value={item.value} disabled={item.disabled}>
+            {item.text}
+          </MenuItem>
+        )
+      )}
+    </TextField>
   );
 };
 

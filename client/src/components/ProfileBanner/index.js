@@ -1,4 +1,3 @@
-import { Box } from "@material-ui/core";
 import {
   LocationOnRounded as LocationIcon,
   PersonRounded as MemberIcon,
@@ -6,202 +5,92 @@ import {
 } from "@material-ui/icons";
 import React from "react";
 import { formatDate } from "../../../../common/helpers.js";
-import {
-  artepunktTheme,
-  Avatar,
-  Card,
-  Typography,
-} from "../../styles/theme.js";
+import Avatar from "../../domain/Avatar";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import Typography from "../../domain/Typography";
+import globalStyles from "../../styles/global.js";
 import ShareButton from "../ShareButton/index.js";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import profileBannerStyles from "./styles.js";
 
-const ProfileBanner = ({ user, andleModalOpen, loading }) => {
+const ProfileBanner = ({ profile, loading }) => {
+  const globalClasses = globalStyles();
   const classes = profileBannerStyles();
 
   return (
-    <Card>
-      <Box
-        height={240}
-        p={3}
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        bgcolor={artepunktTheme.palette.action.disabledBackground}
-      ></Box>
-      <Box
-        minHeight={150}
-        p={3}
-        display="flex"
-        justifyContent="center"
-        flexDirection="column"
-      >
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="flex-start"
-          marginTop="-70px"
-        >
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <SkeletonWrapper loading={loading} variant="circle">
-              <Avatar
-                alt={user.name}
-                src={user.source}
-                title={user.name}
-                width={130}
-                height={130}
-                border={6}
-                borderColor={artepunktTheme.palette.background.paper}
-                mb={1}
-              />
-            </SkeletonWrapper>
-          </Box>
-          <Box
-            display="flex"
-            alignItems="flex-start"
-            justifyContent="center"
-            flexDirection="column"
-            marginTop="36px"
-            marginLeft="12px"
-          >
-            <SkeletonWrapper
-              variant="text"
+    <Card className={classes.container}>
+      <Box className={classes.banner}></Box>
+      <Box className={classes.content}>
+        <Box className={classes.infoWrapper}>
+          <Box className={classes.avatarWrapper}>
+            <Avatar
+              variant="circle"
+              alt={profile.name}
+              src={profile.avatar ? profile.avatar.source : null}
+              title={profile.name}
               loading={loading}
-              height="20px"
-              width="100px"
-            >
-              <Typography
-                variant="h4"
-                color="inherit"
-                style={{ fontWeight: "bold" }}
-              >
-                {user.name}
-              </Typography>
-            </SkeletonWrapper>
-            <SkeletonWrapper loading={loading} height="20px" width="200px">
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginTop: "-12px",
-                }}
-              >
-                {user.rating > 0 && (
-                  <Box
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginRight: 12,
-                    }}
-                  >
-                    <StarIcon
-                      fontSize="small"
-                      style={{
-                        marginRight: "3px",
-                      }}
-                    />
-                    <Typography
-                      variant="body1"
-                      color="textSecondary"
-                      component="p"
-                      align="center"
-                    >
-                      {user.rating}
-                    </Typography>
-                  </Box>
-                )}
-                {user.country && (
-                  <Box
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginRight: 12,
-                    }}
-                  >
-                    <LocationIcon
-                      fontSize="small"
-                      style={{
-                        marginRight: "3px",
-                      }}
-                    />
-                    <Typography
-                      variant="body1"
-                      color="textSecondary"
-                      component="p"
-                      align="center"
-                    >
-                      {user.country}
-                    </Typography>
-                  </Box>
-                )}
-                <Box
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <MemberIcon
-                    fontSize="small"
-                    style={{
-                      marginRight: "3px",
-                    }}
-                  />
+              className={classes.avatar}
+            />
+          </Box>
+          <Box className={classes.aboutWrapper}>
+            <Typography loading={loading} variant="h4" className={classes.name}>
+              {profile.name}
+            </Typography>
+            <Box className={classes.detailsWrapper} loading={loading}>
+              {profile.rating > 0 && (
+                <Box className={classes.item}>
+                  <StarIcon fontSize="small" className={classes.icon} />
                   <Typography
                     variant="body1"
                     color="textSecondary"
                     component="p"
-                    align="center"
                   >
-                    {!loading && formatDate(user.created, "MMM yy")}
+                    {profile.rating}
                   </Typography>
                 </Box>
+              )}
+              {profile.country && (
+                <Box className={classes.item}>
+                  <LocationIcon fontSize="small" className={classes.icon} />
+                  <Typography
+                    variant="body1"
+                    color="textSecondary"
+                    component="p"
+                  >
+                    {profile.country}
+                  </Typography>
+                </Box>
+              )}
+              <Box className={classes.item}>
+                <MemberIcon fontSize="small" className={classes.icon} />
+                <Typography variant="body1" color="textSecondary" component="p">
+                  {!loading && formatDate(profile.created, "MMM yy")}
+                </Typography>
               </Box>
-            </SkeletonWrapper>
+            </Box>
           </Box>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-end"
-            marginTop="6px"
-            flexGrow="1"
-          >
-            <ShareButton link="" type="user" />
+          <Box className={classes.share}>
+            <ShareButton link={`/user/${profile.name}`} type="profile" />
           </Box>
         </Box>
-        <Box
-          display="flex"
-          alignItems="flex-start"
-          justifyContent="space-between"
-          flexDirection="column"
-          height="50%"
-        >
-          <SkeletonWrapper variant="text" loading={loading}>
-            <Typography
-              variant="body1"
-              color="inherit"
-              style={{ fontWeight: "bold" }}
-            >
-              Description
-            </Typography>
-          </SkeletonWrapper>
-          <SkeletonWrapper
-            variant="text"
+        <Box className={classes.descriptionWrapper}>
+          <Typography
+            variant="body1"
+            color="inherit"
+            className={classes.label}
             loading={loading}
-            width="100%"
-            height="40px"
           >
-            <Typography variant="body2" color="inherit">
-              {user.description || "Nothing here yet"}
-            </Typography>
-          </SkeletonWrapper>
+            Description
+          </Typography>
+
+          <Typography
+            variant="body2"
+            color="inherit"
+            loading={loading}
+            className={classes.description}
+          >
+            {profile.description || "Nothing here yet"}
+          </Typography>
         </Box>
       </Box>
     </Card>

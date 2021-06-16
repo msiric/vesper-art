@@ -1,11 +1,9 @@
-import {
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  Switch,
-} from "@material-ui/core";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import FormControl from "../../domain/FormControl";
+import FormControlLabel from "../../domain/FormControlLabel";
+import FormHelperText from "../../domain/FormHelperText";
+import Switch from "../../domain/Switch";
 import switchInputStyles from "./styles";
 
 const Input = ({
@@ -16,7 +14,8 @@ const Input = ({
   helperText = null,
   error = null,
   labelPlacement = "start",
-  ...other
+  loading = false,
+  ...props
 }) => {
   const classes = switchInputStyles();
 
@@ -33,15 +32,12 @@ const Input = ({
               id: name,
             }}
             color="primary"
+            loading={loading}
           />
         }
         label={label}
         labelPlacement={labelPlacement}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          margin: 0,
-        }}
+        className={classes.wrapper}
       />
       {helperText && <FormHelperText error>{helperText}</FormHelperText>}
     </FormControl>

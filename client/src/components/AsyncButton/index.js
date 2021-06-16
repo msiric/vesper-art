@@ -1,32 +1,36 @@
-import { Box, Button, CircularProgress } from "@material-ui/core";
 import React from "react";
+import Box from "../../domain/Box";
+import Button from "../../domain/Button";
+import CircularProgress from "../../domain/CircularProgress";
 import asyncButtonStyles from "./styles";
 
 const AsyncButton = ({
-  loading,
+  submitting = false,
+  loading = false,
+  disabled = false,
   variant = "outlined",
   color = "primary",
   handleClick,
   padding,
   children,
-  ...rest
+  ...props
 }) => {
   const classes = asyncButtonStyles({ padding: padding ? 16 : "" });
 
   return (
-    <Box className={classes.buttonContainer}>
+    <Box className={classes.container}>
       <Button
         color={color}
-        variant={variant}
+        outline={variant}
         onClick={handleClick}
-        disabled={loading}
-        className={classes.buttonItem}
-        {...rest}
+        disabled={submitting || disabled}
+        loading={loading}
+        {...props}
       >
         {children}
       </Button>
-      {loading && (
-        <CircularProgress size={24} className={classes.buttonProgress} />
+      {submitting && (
+        <CircularProgress size={24} className={classes.progress} />
       )}
     </Box>
   );

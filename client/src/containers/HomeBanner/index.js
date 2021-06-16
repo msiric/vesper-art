@@ -1,128 +1,77 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  Typography,
-} from "@material-ui/core";
-import React from "react";
+import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
+import React, { useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import SyncButton from "../../components/SyncButton";
+import { useUserStore } from "../../contexts/global/user.js";
+import { useHomeArtwork } from "../../contexts/local/homeArtwork";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import CardContent from "../../domain/CardContent";
+import Grid from "../../domain/Grid";
+import Typography from "../../domain/Typography";
+import globalStyles from "../../styles/global.js";
 import homeBannerStyles from "./styles";
 
 const HomeBanner = () => {
-  const [userStore] = useUserContext();
+  const authenticated = useUserStore((state) => state.authenticated);
+  const fetchArtwork = useHomeArtwork((state) => state.fetchArtwork);
 
+  useEffect(() => {
+    fetchArtwork();
+  }, []);
+
+  const globalClasses = globalStyles();
   const classes = homeBannerStyles();
 
   return [
     <Grid item xs={12} md={9}>
-      <Card className={classes.bannerContainer}>
-        <CardContent
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-            zIndex: 1,
-          }}
-        >
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              marginBottom: 16,
-              padding: 16,
-            }}
-          >
-            <Typography
-              style={{
-                textAlign: "center",
-                fontSize: 24,
-                fontWeight: "bold",
-                width: "60%",
-              }}
-            >
+      <Card className={classes.banner}>
+        <CardContent className={classes.content}>
+          <Box className={classes.wrapper}>
+            <Typography className={classes.bannerHeading}>
               Browse, share and collect digital art the way it's intended to be
               done
             </Typography>
           </Box>
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            {!userStore.authenticated && (
-              <Button
+          <Box className={classes.bannerActions}>
+            {!authenticated && (
+              <SyncButton
                 component={RouterLink}
                 to="/signup"
-                style={{ margin: "0 6px" }}
+                className={classes.bannerButton}
               >
                 Sign up
-              </Button>
+              </SyncButton>
             )}
-            <Button
+            <SyncButton
               component={RouterLink}
               to="/how_it_works"
               color="default"
-              style={{ margin: "0 6px" }}
+              className={classes.bannerButton}
             >
               How it works
-            </Button>
+            </SyncButton>
           </Box>
         </CardContent>
       </Card>
     </Grid>,
     <Grid item xs={12} md={3}>
-      <Card
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-          height: "100%",
-          padding: "0 32px",
-        }}
-      >
-        <CardContent
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-          }}
-        >
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              marginBottom: 16,
-              padding: 16,
-            }}
-          >
-            <Typography style={{ textAlign: "center" }}>
+      <Card className={classes.verifier}>
+        <CardContent className={classes.content}>
+          <Box className={classes.wrapper}>
+            <AssignmentIndIcon className={classes.verifierIcon} />
+            <Typography className={classes.verifierHeading}>
               Need to verify a license? Head to the platform's verifier
             </Typography>
           </Box>
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            <Button component={RouterLink} to="/verifier" variant="outlined">
+          <Box className={classes.verifierButton}>
+            <SyncButton
+              component={RouterLink}
+              to="/verifier"
+              variant="outlined"
+            >
               Verify license
-            </Button>
+            </SyncButton>
           </Box>
         </CardContent>
       </Card>

@@ -2,7 +2,7 @@ import { Box } from "@material-ui/core";
 import React from "react";
 import TextInput from "../../controls/TextInput";
 
-const DiscountForm = ({ errors }) => {
+const DiscountForm = ({ errors, loading }) => {
   return (
     <Box>
       <TextInput
@@ -10,6 +10,7 @@ const DiscountForm = ({ errors }) => {
         type="text"
         label="Discount code"
         errors={errors}
+        loading={loading}
       />
     </Box>
   );

@@ -89,11 +89,16 @@ export const artepunktTheme = createMuiTheme({
     },
   },
   padding: {
-    container: 24,
+    containerLg: 24,
+    containerSm: 12,
   },
   margin: {
     element: 2,
-    container: "12px auto",
+    containerLg: "12px auto",
+    containerSm: "6px auto",
+    elementLg: "16px 0",
+    elementSm: "12px 0",
+    headingLg: 12,
   },
   props: {
     MuiButton: {
@@ -108,6 +113,56 @@ export const artepunktTheme = createMuiTheme({
     },
   },
 });
+
+artepunktTheme.spacing.grid = artepunktTheme.spacing.unit * 2;
+
+artepunktTheme.overrides.MuiList = {
+  padding: {
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+};
+
+artepunktTheme.overrides.MuiToolbar = {
+  gutters: {
+    "@media (min-width: 600px)": {
+      paddingLeft: 16,
+      paddingRight: 16,
+    },
+  },
+};
+
+artepunktTheme.overrides.MUIDataTableHeadCell = {
+  contentWrapper: {
+    "& > .MuiButton-textPrimary": {
+      color: "white",
+      "&:hover": {
+        backgroundColor: "rgba(255, 255, 255, 0.08)",
+      },
+    },
+  },
+};
+
+artepunktTheme.overrides.MUIDataTableBodyCell = {
+  root: {
+    wordBreak: "break-word",
+  },
+};
+
+artepunktTheme.overrides.MUIDataTableSearch = {
+  searchIcon: {
+    display: "none",
+  },
+};
+
+artepunktTheme.overrides.MuiPickersDateRangePickerInput = {
+  root: {
+    "@media (max-width: 599.95px)": {
+      flexDirection: "row",
+      alignItems: "baseline",
+    },
+  },
+};
 
 artepunktTheme.overrides.MuiCardHeader = {
   title: {
@@ -196,7 +251,6 @@ artepunktTheme.overrides.MuiTableBody = {
 
 artepunktTheme.overrides.MuiTableCell = {
   body: {
-    textTransform: "capitalize",
     cursor: "pointer",
   },
 };

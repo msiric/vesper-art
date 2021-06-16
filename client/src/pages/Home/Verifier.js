@@ -1,156 +1,95 @@
-import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  CardActions,
-  CardContent,
-  Container,
-  Grid,
-  Typography,
-} from "@material-ui/core";
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
-import { format } from "date-fns";
+import { makeStyles } from "@material-ui/core";
+import { LabelImportant as ItemIcon } from "@material-ui/icons";
 import { withSnackbar } from "notistack";
-import React, { useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import * as Yup from "yup";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import LoadingSpinner from "../../components/LoadingSpinner/index.js";
-import VerifierForm from "../../forms/VerifierForm/index.js";
-import { postVerifier } from "../../services/home.js";
+import React, { useEffect } from "react";
+import { ReactComponent as VerifyLicense } from "../../assets/images/illustrations/verify_license.svg";
+import IllustrationCard from "../../components/IllustrationCard";
+import ListItems from "../../components/ListItems";
+import LicenseSection from "../../containers/LicenseSection/index.js";
+import VerifierCard from "../../containers/VerifierCard/index.js";
+import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global.js";
+import { artepunktTheme } from "../../styles/theme";
+import { containsErrors, renderError } from "../../utils/helpers";
 
-const fingerprintValidation = Yup.object().shape({
-  licenseFingerprint: Yup.string()
-    .trim()
-    .required("Fingerprint cannot be empty"),
-});
+const useVerifierStyles = makeStyles((muiTheme) => ({
+  list: {
+    width: "100%",
+    marginTop: 20,
+  },
+  illustration: {
+    width: "60%",
+  },
+  card: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    background: artepunktTheme.palette.background.paper,
+    padding: 24,
+    margin: 0,
+    borderRadius: artepunktTheme.shape.borderRadius,
+    boxShadow:
+      "0px 3px 5px -1px rgb(0 0 0 / 20%), 0px 6px 10px 0px rgb(0 0 0 / 14%), 0px 1px 18px 0px rgb(0 0 0 / 12%)",
+  },
+}));
 
 const Verifier = () => {
-  const [state, setState] = useState({
-    loading: false,
-    license: {},
-  });
-
-  const {
-    handleSubmit,
-    formState,
-    errors,
-    control,
-    setValue,
-    trigger,
-    getValues,
-    watch,
-    reset,
-  } = useForm({
-    defaultValues: {
-      licenseFingerprint: "",
-    },
-    resolver: yupResolver(fingerprintValidation),
-  });
-
-  const formatDate = (date, type) => {
-    return format(new Date(date), type);
-  };
+  const retry = useLicenseVerifier((state) => state.license.error.retry);
+  const redirect = useLicenseVerifier((state) => state.license.error.redirect);
+  const message = useLicenseVerifier((state) => state.license.error.message);
+  const resetToken = useLicenseVerifier((state) => state.resetToken);
 
   const globalClasses = globalStyles();
+  const classes = useVerifierStyles();
 
-  const onSubmit = async (values) => {
-    try {
-      setState((prevState) => ({
-        ...prevState,
-        loading: true,
-      }));
-      const { data } = await postVerifier.request({ data: values });
-      setState((prevState) => ({
-        ...prevState,
-        loading: false,
-        license: data.license,
-      }));
-      reset();
-    } catch (err) {
-    } finally {
-      setState((prevState) => ({ ...prevState, loading: false }));
-    }
+  const verifierOptions = [
+    {
+      icon: <ItemIcon />,
+      label: "Enter license fingerprint",
+    },
+    {
+      icon: <ItemIcon />,
+      label: "Get back license information",
+    },
+    { icon: <ItemIcon />, label: "Verify data" },
+  ];
+
+  const reinitializeState = () => {
+    resetToken();
   };
 
-  return (
+  useEffect(() => {
+    return () => {
+      reinitializeState();
+    };
+  }, []);
+
+  return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
-      <Grid container>
-        <Grid item xs={12}>
-          <FormProvider control={control}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <CardContent>
-                <VerifierForm errors={errors} loading={state.loading} />
-              </CardContent>
-              <CardActions
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <AsyncButton
-                  type="submit"
-                  fullWidth
-                  variant="outlined"
-                  color="primary"
-                  padding
-                  loading={formState.isSubmitting}
-                  startIcon={<UploadIcon />}
-                >
-                  Verify
-                </AsyncButton>
-              </CardActions>
-            </form>
-          </FormProvider>
-          {state.loading ? (
-            <LoadingSpinner />
-          ) : state.license.id ? (
-            <div className="table-responsive">
-              <table className="simple">
-                <thead>
-                  <tr>
-                    <th>Fingerprint</th>
-                    <th>Type</th>
-                    <th>Buyer</th>
-                    <th>Seller</th>
-                    <th>Price</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr key={state.license.id}>
-                    <td>
-                      <Typography className="truncate">
-                        {state.license.fingerprint}
-                      </Typography>
-                    </td>
-                    <td className="w-64 text-right">
-                      <span className="truncate">{state.license.type}</span>
-                    </td>
-                    <td className="w-64 text-right">
-                      <span className="truncate">
-                        {state.license.owner.name}
-                      </span>
-                    </td>
-                    <td className="w-64 text-right">
-                      <span className="truncate">
-                        {state.license.artwork.owner.name}
-                      </span>
-                    </td>
-                    <td className="w-64 text-right">
-                      <span className="truncate">${state.license.price}</span>
-                    </td>
-                    <td className="w-64 text-right">
-                      <span className="truncate">
-                        {formatDate(state.license.created, "dd/MM/yyyy")}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            "Enter a license fingerprint"
-          )}
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={7}>
+          <VerifierCard />
+          <br />
+          <LicenseSection />
+        </Grid>
+        <Grid item xs={12} md={5}>
+          <IllustrationCard
+            heading="Verify your license"
+            paragraph="Make sure it's used by the right person"
+            body={
+              <ListItems className={classes.list} items={verifierOptions} />
+            }
+            illustration={<VerifyLicense className={classes.illustration} />}
+            className={classes.card}
+          />
         </Grid>
       </Grid>
     </Container>
+  ) : (
+    renderError({ retry, redirect, message })
   );
 };
 

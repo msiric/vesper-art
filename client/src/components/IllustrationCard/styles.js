@@ -1,19 +1,19 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const illustrationCardStyles = makeStyles((muiTheme) => ({
-  illustrationContainer: {
+  container: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
     margin: "128px 0",
   },
-  illustrationLabel: {
+  wrapper: {
     textAlign: "center",
     width: "70%",
     marginBottom: 36,
   },
-  illustrationWrapper: {
+  label: {
     width: "70%",
     paddingBottom: "70%",
     borderRadius: "50%",
@@ -30,6 +30,14 @@ const illustrationCardStyles = makeStyles((muiTheme) => ({
       width: "80%",
       height: "auto",
     },
+  },
+  heading: {
+    fontWeight: "bold",
+    marginLeft: 8,
+    fontSize: 24,
+  },
+  paragraph: {
+    marginLeft: 8,
   },
 }));
 

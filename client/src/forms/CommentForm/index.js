@@ -12,6 +12,7 @@ const AddCommentForm = ({ errors, loading }) => {
         type="text"
         label="Add a comment"
         errors={errors}
+        loading={loading}
       />
     </Box>
   );

@@ -12,12 +12,6 @@ import {
 import { User } from "./User";
 import { Version } from "./Version";
 
-export enum IntentStatus {
-  pending = "pending",
-  succeeded = "succeeded",
-  canceled = "canceled",
-}
-
 @Entity()
 export class Intent extends BaseEntity {
   @PrimaryColumn()
@@ -33,18 +27,12 @@ export class Intent extends BaseEntity {
   @Column()
   ownerId: string;
 
-  @ManyToOne(() => Version)
+  @ManyToOne(() => Version, { onDelete: "CASCADE" })
   @JoinColumn()
   version: Version;
 
   @Column()
   versionId: string;
-
-  @Column({
-    type: "enum",
-    enum: IntentStatus,
-  })
-  status: IntentStatus;
 
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;

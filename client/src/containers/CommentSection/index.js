@@ -1,141 +1,206 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Box, Card, CardContent, Divider } from "@material-ui/core";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
-import React from "react";
+import { useSnackbar } from "notistack";
+import queryString from "query-string";
+import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { useHistory } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import CommentCard from "../../components/CommentCard/index.js";
+import CommentPopover from "../../components/CommentPopover";
 import EmptySection from "../../components/EmptySection/index.js";
-import LoadingSpinner from "../../components/LoadingSpinner/index.js";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
+import InfiniteList from "../../components/InfiniteList";
+import MainHeading from "../../components/MainHeading";
+import PromptModal from "../../components/PromptModal";
+import { useUserStore } from "../../contexts/global/user";
+import { useArtworkComments } from "../../contexts/local/artworkComments";
+import { useArtworkDetails } from "../../contexts/local/artworkDetails";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import CardContent from "../../domain/CardContent";
+import Divider from "../../domain/Divider";
+import List from "../../domain/List";
 import AddCommentForm from "../../forms/CommentForm/index.js";
-import { postComment } from "../../services/artwork.js";
-import { List, Typography } from "../../styles/theme.js";
+import useVisibleElement from "../../hooks/useVisibleElement";
 import commentSectionStyles from "./styles.js";
 
 const CommentSection = ({
+  paramId,
   commentsRef,
-  artwork = {},
-  edits = {},
-  scroll = {},
-  queryRef,
-  highlight,
   highlightRef,
-  loadMoreComments,
-  handleCommentAdd,
-  handleCommentEdit,
-  handleCommentClose,
-  handlePopoverOpen,
-  loading,
+  commentsFetched,
 }) => {
-  const history = useHistory();
+  const artworkId = useArtworkDetails((state) => state.artwork.data.id);
+  const artworkOwnerId = useArtworkDetails(
+    (state) => state.artwork.data.owner.id
+  );
+
+  const loading = useArtworkDetails((state) => state.artwork.loading);
+
+  const comments = useArtworkComments((state) => state.comments.data);
+  const fetching = useArtworkComments((state) => state.comments.fetching);
+  const error = useArtworkComments((state) => state.comments.error);
+  const edits = useArtworkComments((state) => state.edits);
+  const popover = useArtworkComments((state) => state.popover);
+  const modal = useArtworkComments((state) => state.modal);
+  const highlight = useArtworkComments((state) => state.highlight);
+  const hasMore = useArtworkComments((state) => state.comments.hasMore);
+  const isDeleting = useArtworkComments((state) => state.isDeleting);
+  const fetchComments = useArtworkComments((state) => state.fetchComments);
+  const addComment = useArtworkComments((state) => state.addComment);
+  const updateComment = useArtworkComments((state) => state.updateComment);
+  const deleteComment = useArtworkComments((state) => state.deleteComment);
+  const openComment = useArtworkComments((state) => state.openComment);
+  const closeComment = useArtworkComments((state) => state.closeComment);
+  const openPopover = useArtworkComments((state) => state.openPopover);
+  const closePopover = useArtworkComments((state) => state.closePopover);
+  const openModal = useArtworkComments((state) => state.openModal);
+  const closeModal = useArtworkComments((state) => state.closeModal);
+
+  const userId = useUserStore((state) => state.id);
+  const userUsername = useUserStore((state) => state.name);
+  const userAvatar = useUserStore((state) => state.avatar);
+
+  const location = useLocation();
+  const { enqueueSnackbar } = useSnackbar();
+  const isVisible = useVisibleElement(commentsRef, commentsFetched.current);
+  const query = queryString.parse(location.search);
   const classes = commentSectionStyles();
 
-  const { handleSubmit, formState, errors, control, reset } = useForm({
+  const {
+    getValues,
+    handleSubmit,
+    formState,
+    errors,
+    control,
+    reset,
+  } = useForm({
     defaultValues: {
       commentContent: "",
     },
     resolver: yupResolver(commentValidation),
   });
 
-  const onSubmit = async (values) => {
-    const { data } = await postComment.request({
-      artworkId: artwork.id,
-      data: values,
-    });
-    // $TODO maybe this can be done better
-    handleCommentAdd(data.payload.raw[0]);
-    reset();
-  };
+  useEffect(() => {
+    if (
+      (!commentsFetched.current && isVisible) ||
+      (!commentsFetched.current && query.notif === "comment" && query.ref)
+    ) {
+      fetchComments({
+        artworkId: paramId,
+        query,
+        highlightRef,
+        enqueueSnackbar,
+      });
+      commentsFetched.current = true;
+    }
+  }, [isVisible]);
 
   return (
-    <Card className={classes.root}>
+    <Card>
       <CardContent>
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography my={2} fontSize="h5.fontSize">
-            Comments
-          </Typography>
-        </SkeletonWrapper>
+        <MainHeading text="Comments" className={classes.heading} />
         <Divider />
         <FormProvider control={control}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form
+            onSubmit={handleSubmit(
+              async () =>
+                await addComment({
+                  artworkId,
+                  userData: {
+                    id: userId,
+                    name: userUsername,
+                    avatar: userAvatar,
+                  },
+                  values: getValues(),
+                  reset,
+                })
+            )}
+          >
             <AddCommentForm errors={errors} loading={loading} />
             <AsyncButton
               type="submit"
               fullWidth
-              variant="outlined"
-              color="primary"
               padding
-              loading={formState.isSubmitting}
+              submitting={formState.isSubmitting}
+              loading={loading}
               startIcon={<UploadIcon />}
             >
               Post
             </AsyncButton>
           </form>
         </FormProvider>
-
-        <br />
         <Divider />
-        {loading || artwork.comments.length ? (
-          <InfiniteScroll
-            style={{ overflow: "hidden" }}
-            className={classes.scroller}
-            dataLength={artwork.comments ? artwork.comments.length : 0}
-            next={loadMoreComments}
-            hasMore={scroll.comments ? scroll.comments.hasMore : null}
-            loader={<LoadingSpinner />}
+        {loading || error || comments.length ? (
+          <InfiniteList
+            dataLength={comments ? comments.length : 0}
+            next={() =>
+              fetchComments({ artworkId, query, highlightRef, enqueueSnackbar })
+            }
+            hasMore={hasMore}
+            loading={loading || fetching}
+            error={error.refetch}
+            empty="No comments yet"
           >
-            <List
-              ref={commentsRef}
-              p={0}
-              style={{ display: "flex", flexDirection: "column-reverse" }}
-              disablePadding
-            >
+            <List ref={commentsRef} className={classes.list} disablePadding>
               <Box>
-                {artwork.comments.map((comment) => (
+                {comments.map((comment) => (
                   <CommentCard
-                    artwork={artwork}
+                    artworkId={artworkId}
+                    artworkOwnerId={artworkOwnerId}
                     comment={comment}
                     edits={edits}
-                    queryRef={queryRef}
+                    queryRef={query ? query.ref : null}
                     highlightRef={highlightRef}
-                    handleCommentClose={handleCommentClose}
-                    handleCommentEdit={handleCommentEdit}
-                    handlePopoverOpen={handlePopoverOpen}
-                    loading={loading}
+                    handleCommentClose={closeComment}
+                    handleCommentEdit={updateComment}
+                    handlePopoverOpen={openPopover}
+                    loading={false}
                   />
                 ))}
               </Box>
               {highlight.element && (
                 <CommentCard
-                  artwork={artwork}
+                  artworkId={artworkId}
+                  artworkOwnerId={artworkOwnerId}
                   comment={highlight.element}
                   edits={edits}
-                  queryRef={queryRef}
+                  queryRef={query ? query.ref : null}
                   highlightRef={highlightRef}
-                  handleCommentClose={handleCommentClose}
-                  handleCommentEdit={handleCommentEdit}
-                  handlePopoverOpen={handlePopoverOpen}
-                  loading={loading}
+                  handleCommentClose={closeComment}
+                  handleCommentEdit={updateComment}
+                  handlePopoverOpen={openPopover}
+                  loading={false}
                 />
               )}
             </List>
-          </InfiniteScroll>
+          </InfiniteList>
         ) : (
-          <Box
-            height={180}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            mb={-2}
-          >
+          <Box className={classes.empty}>
             <EmptySection label="No comments so far" loading={loading} />
           </Box>
         )}
       </CardContent>
+      <CommentPopover
+        artworkId={artworkId}
+        id={popover.id}
+        anchorEl={popover.anchorEl}
+        open={popover.open}
+        handleCommentOpen={openComment}
+        handleModalOpen={openModal}
+        handlePopoverClose={closePopover}
+      />
+      <PromptModal
+        open={modal.open}
+        handleConfirm={() => deleteComment({ artworkId, commentId: modal.id })}
+        handleClose={closeModal}
+        ariaLabel="Delete comment"
+        promptTitle="Are you sure you want to delete this comment?"
+        promptConfirm="Delete"
+        promptCancel="Cancel"
+        isSubmitting={isDeleting}
+      />
     </Card>
   );
 };

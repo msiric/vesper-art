@@ -1,242 +1,94 @@
-import { Container, Grid } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import { makeStyles } from "@material-ui/core";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/index.js";
-import PromptModal from "../../components/PromptModal/index.js";
+import { socket } from "../../containers/Interceptor/Interceptor";
 import SettingsAccount from "../../containers/SettingsAccount/index.js";
 import SettingsActions from "../../containers/SettingsActions/index.js";
 import SettingsPreferences from "../../containers/SettingsPreferences/index.js";
 import SettingsProfile from "../../containers/SettingsProfile/index.js";
 import SettingsSecurity from "../../containers/SettingsSecurity/index.js";
-import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
-import {
-  deleteUser,
-  getSettings,
-  patchEmail,
-  patchPassword,
-  patchPreferences,
-  patchUser,
-  postLogout,
-} from "../../services/user.js";
+import SettingsWrapper from "../../containers/SettingsWrapper/index.js";
+import { useEventsStore } from "../../contexts/global/events.js";
+import { useUserStore } from "../../contexts/global/user.js";
+import { useUserSettings } from "../../contexts/local/userSettings";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import { postLogout } from "../../services/user.js";
 import globalStyles from "../../styles/global.js";
-import { deleteEmptyValues } from "../../utils/helpers.js";
+import { containsErrors, renderError } from "../../utils/helpers.js";
 
-const initialState = {
-  loading: true,
-  user: { avatar: {} },
-  modal: { open: false },
-  isDeactivating: false,
-};
+const useSettingsStyles = makeStyles((muiTheme) => ({
+  container: {
+    padding: 0,
+    margin: "16px 0",
+  },
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+  },
+}));
 
-const Settings = ({ location, socket }) => {
-  const [userStore, userDispatch] = useUserContext();
-  const [eventsStore, eventsDispatch] = useEventsContext();
+const Settings = ({ location }) => {
+  // $TODO Update user store on every change in settings (ex. avatar change)
+  const userId = useUserStore((state) => state.id);
+  const resetUser = useUserStore((state) => state.resetUser);
 
-  const [state, setState] = useState({
-    ...initialState,
-  });
+  const resetEvents = useEventsStore((state) => state.resetEvents);
+
+  const retry = useUserSettings((state) => state.user.error.retry);
+  const redirect = useUserSettings((state) => state.user.error.redirect);
+  const message = useUserSettings((state) => state.user.error.message);
+  const resetSettings = useUserSettings((state) => state.resetSettings);
+
   const history = useHistory();
 
   const globalClasses = globalStyles();
-
-  const fetchSettings = async () => {
-    try {
-      setState({ ...initialState });
-      const { data } = await getSettings.request({ userId: userStore.id });
-      setState((prevState) => ({
-        ...prevState,
-        loading: false,
-        user: data.user,
-      }));
-    } catch (err) {
-      setState((prevState) => ({ ...prevState, loading: false }));
-    }
-  };
+  const classes = useSettingsStyles();
 
   const handleLogout = async () => {
     await postLogout.request();
-    userDispatch({
-      type: "RESET_USER",
-    });
-    eventsDispatch({
-      type: "RESET_EVENTS",
-    });
     // $TODO verify that socket is defined
-    socket.disconnect();
+    socket.instance.emit("disconnectUser");
+    resetUser();
+    resetEvents();
     history.push("/login");
   };
 
-  const handleUpdateProfile = async (values) => {
-    const data = deleteEmptyValues(values);
-    const formData = new FormData();
-    for (let value of Object.keys(data)) {
-      formData.append(value, data[value]);
-    }
-    await patchUser.request({
-      userId: userStore.id,
-      data: formData,
-    });
-    setState((prevState) => ({
-      ...prevState,
-      user: {
-        ...prevState.user,
-        avatar: values.userMedia,
-        description: values.userDescription,
-        country: values.userCountry,
-      },
-    }));
-  };
-
-  // $TODO LOG USER OUT AFTER EMAIL UPDATE
-  const handleUpdateEmail = async (values) => {
-    await patchEmail.request({
-      userId: userStore.id,
-      data: values,
-    });
-    await handleLogout();
-
-    /*     setState((prevState) => ({
-      ...prevState,
-      user: {
-        ...prevState.user,
-        email: values.email,
-        verified: false,
-      },
-    })); */
-  };
-
-  const handleUpdatePreferences = async (values) => {
-    await patchPreferences.request({
-      userId: userStore.id,
-      data: values,
-    });
-    setState((prevState) => ({
-      ...prevState,
-      user: {
-        ...prevState.user,
-        displayFavorites: values.userFavorites,
-      },
-    }));
-  };
-
-  // $TODO LOG USER OUT AFTER PASSWORD UPDATE
-  const handleUpdatePassword = async (values, reset) => {
-    await patchPassword.request({
-      userId: userStore.id,
-      data: values,
-    });
-    await handleLogout();
-  };
-
-  const handleModalOpen = () => {
-    setState((prevState) => ({
-      ...prevState,
-      modal: { ...prevState.modal, open: true },
-    }));
-  };
-
-  const handleModalClose = () => {
-    setState((prevState) => ({
-      ...prevState,
-      modal: { ...prevState.modal, open: false },
-    }));
-  };
-
-  const handleDeactivateUser = async () => {
-    try {
-      setState((prevState) => ({ ...prevState, isDeactivating: true }));
-      await deleteUser.request({ userId: userStore.id });
-    } catch (err) {
-    } finally {
-      setState((prevState) => ({ ...prevState, isDeactivating: false }));
-    }
+  const reinitializeState = () => {
+    resetSettings();
   };
 
   useEffect(() => {
-    fetchSettings();
-  }, [location]);
+    return () => {
+      reinitializeState();
+    };
+  }, []);
 
-  return (
+  return !containsErrors(retry, redirect) ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        {state.loading || state.user.id ? (
-          <Grid item sm={12}>
-            <MainHeading
-              text="Settings"
-              className={globalClasses.mainHeading}
-            />
-
-            <Grid container p={0} my={4} spacing={2}>
-              <Grid
-                item
-                xs={12}
-                md={4}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <SettingsProfile
-                  user={state.user}
-                  handleUpdateProfile={handleUpdateProfile}
-                  loading={state.loading}
-                />
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                md={8}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <SettingsAccount
-                  user={state.user}
-                  handleUpdateEmail={handleUpdateEmail}
-                  loading={state.loading}
-                />
-                <SettingsPreferences
-                  user={state.user}
-                  handleUpdatePreferences={handleUpdatePreferences}
-                  loading={state.loading}
-                />
-                <SettingsSecurity
-                  handleUpdatePassword={handleUpdatePassword}
-                  loading={state.loading}
-                />
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <SettingsActions
-                  handleModalOpen={handleModalOpen}
-                  loading={state.loading}
-                />
-              </Grid>
+        <Grid item sm={12}>
+          <MainHeading text="Settings" className={globalClasses.mainHeading} />
+          <Grid container spacing={2} className={classes.container}>
+            <Grid item xs={12} sm={6} md={4} className={classes.wrapper}>
+              <SettingsProfile />
+            </Grid>
+            <Grid item xs={12} sm={6} md={8} className={classes.wrapper}>
+              <SettingsAccount handleLogout={handleLogout} />
+              <SettingsPreferences />
+              <SettingsSecurity handleLogout={handleLogout} />
+            </Grid>
+            <Grid item xs={12} className={classes.wrapper}>
+              <SettingsActions />
             </Grid>
           </Grid>
-        ) : (
-          history.push("/")
-        )}
+        </Grid>
       </Grid>
-      <PromptModal
-        open={state.modal.open}
-        handleConfirm={handleDeactivateUser}
-        handleClose={handleModalClose}
-        ariaLabel="Deactivate account"
-        promptTitle="Are you sure you want to deactivate your account?"
-        promptConfirm="Deactivate"
-        promptCancel="Cancel"
-        isSubmitting={state.isDeactivating}
-      />
+      <SettingsWrapper />
     </Container>
+  ) : (
+    renderError({ retry, redirect, message })
   );
 };
 

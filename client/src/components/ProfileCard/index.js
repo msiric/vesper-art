@@ -1,8 +1,3 @@
-import { Avatar } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
 import {
   LocationOnRounded as LocationIcon,
   PersonRounded as MemberIcon,
@@ -11,138 +6,83 @@ import {
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
+import Avatar from "../../domain/Avatar";
+import Box from "../../domain/Box";
+import Card from "../../domain/Card";
+import CardContent from "../../domain/CardContent";
+import Typography from "../../domain/Typography";
 import profileCardStyles from "./styles.js";
 
-const ProfileCard = ({ user, styles, loading }) => {
+const ProfileCard = ({ user, loading }) => {
+  // const userId = useUserStore((state) => state.id);
+
+  // const buyer = useOrderDetails((state) => state.order.data.buyer);
+  // const seller = useOrderDetails((state) => state.order.data.seller);
+  // const loading = useOrderDetails((state) => state.order.loading);
+
+  // const user = buyer.id === userId ? buyer : seller;
+
   const classes = profileCardStyles();
 
   return (
-    <Card
-      className={classes.profileCardContainer}
-      style={{ ...styles }}
-      loading={loading}
-    >
-      <SkeletonWrapper
-        loading={loading}
-        variant="circle"
-        className={classes.profileCardWrapper}
-      >
-        <Box className={classes.profileCardWrapper}>
-          <Avatar
-            component={RouterLink}
-            to={`/user/${user.name}`}
-            alt={user.name}
-            src={user.avatar}
-            title={user.name}
-            className={classes.profileCardAvatar}
-          />
-        </Box>
-      </SkeletonWrapper>
-      <CardContent
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <SkeletonWrapper variant="text" loading={loading}>
-          <Typography
-            component={RouterLink}
-            to={`/user/${user.name}`}
-            gutterBottom
-            variant="h5"
-            align="center"
-            color="textPrimary"
-            className={classes.profileCardName}
-          >
-            {user.name || "Artist name"}
-          </Typography>
-        </SkeletonWrapper>
-        <SkeletonWrapper loading={loading} width="100%">
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: "12px",
-            }}
-          >
-            {user.rating > 0 && (
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginRight: "6px",
-                }}
-              >
-                <StarIcon fontSize="small" style={{ marginRight: "3px" }} />
-                <Typography
-                  variant="body1"
-                  color="textSecondary"
-                  component="p"
-                  align="center"
-                >
-                  {user.rating}
-                </Typography>
-              </Box>
-            )}
-            {user.country && (
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginRight: "6px",
-                }}
-              >
-                <LocationIcon fontSize="small" style={{ marginRight: "3px" }} />
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                  align="center"
-                >
-                  {user.country}
-                </Typography>
-              </Box>
-            )}
-            <Box
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <MemberIcon fontSize="small" style={{ marginRight: "3px" }} />
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                component="p"
-                align="center"
-              >
-                {user.created && formatDate(new Date(user.created), "MMM yy")}
+    <Card className={classes.container}>
+      <Box className={classes.wrapper}>
+        <Avatar
+          component={RouterLink}
+          to={`/user/${user.name}`}
+          alt={user.name}
+          src={user.avatar ? user.avatar.source : null}
+          title={user.name}
+          loading={loading}
+          variant="circle"
+          className={classes.avatar}
+        />
+      </Box>
+      <CardContent className={classes.content}>
+        <Typography
+          component={RouterLink}
+          to={`/user/${user.name}`}
+          gutterBottom
+          variant="h5"
+          color="textPrimary"
+          loading={loading}
+          className={classes.name}
+        >
+          {user.name || "Artist name"}
+        </Typography>
+        <Box className={classes.info} loading={loading}>
+          {user.rating > 0 && (
+            <Box className={classes.rating}>
+              <StarIcon fontSize="small" className={classes.icon} />
+              <Typography variant="body1" color="textSecondary" component="p">
+                {user.rating}
               </Typography>
             </Box>
+          )}
+          {user.country && (
+            <Box className={classes.country}>
+              <LocationIcon fontSize="small" className={classes.icon} />
+              <Typography variant="body2" color="textSecondary" component="p">
+                {user.country}
+              </Typography>
+            </Box>
+          )}
+          <Box className={classes.joined}>
+            <MemberIcon fontSize="small" className={classes.icon} />
+            <Typography variant="body2" color="textSecondary" component="p">
+              {user.created && formatDate(new Date(user.created), "MMM yy")}
+            </Typography>
           </Box>
-        </SkeletonWrapper>
-        <SkeletonWrapper
-          variant="text"
+        </Box>
+        <Typography
+          variant="body2"
+          color="textSecondary"
+          component="p"
           loading={loading}
-          width="100%"
-          height="140px"
+          className={classes.description}
         >
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            component="p"
-            align="center"
-          >
-            {user.description || "Nothing here yet"}
-          </Typography>
-        </SkeletonWrapper>
+          {user.description || "Nothing here yet"}
+        </Typography>
       </CardContent>
     </Card>
   );

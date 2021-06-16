@@ -2,7 +2,7 @@ import { Box } from "@material-ui/core";
 import React from "react";
 import RatingInput from "../../controls/RatingInput/index.js";
 
-const RatingForm = ({ setValue, getValues, errors }) => {
+const RatingForm = ({ setValue, getValues, errors, loading }) => {
   return (
     <Box>
       <RatingInput
@@ -12,6 +12,7 @@ const RatingForm = ({ setValue, getValues, errors }) => {
         type="text"
         label=""
         errors={errors}
+        loading={loading}
       />
     </Box>
   );

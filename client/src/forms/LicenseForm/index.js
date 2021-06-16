@@ -69,43 +69,39 @@ const LicenseForm = ({ version, errors, loading }) => {
         type="text"
         label="License assignee"
         errors={errors}
+        loading={loading}
       />
       <TextInput
         name="licenseCompany"
         type="text"
         label="License company"
         errors={errors}
+        loading={loading}
       />
       <SelectInput
         name="licenseType"
         label="License type"
         errors={errors}
-        options={
-          version.license === "personal"
+        options={[
+          ...(version.type === "commercial"
             ? [
                 {
                   value: "personal",
                   text: "Personal",
                 },
               ]
-            : version.use === "included"
+            : []),
+
+          ...(version.license === "commercial" && version.use === "separate"
             ? [
                 {
                   value: "commercial",
                   text: "Commercial",
                 },
               ]
-            : [
-                {
-                  value: "personal",
-                  text: "Personal",
-                },
-                {
-                  value: "commercial",
-                  text: "Commercial",
-                },
-              ]
-        }
+            : []),
+        ]}
+        loading={loading}
       />
     </Box>
   );

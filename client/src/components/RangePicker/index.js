@@ -1,9 +1,7 @@
-import { TextField } from "@material-ui/core";
-import {
-  DateRangeDelimiter,
-  DateRangePicker as RangePicker,
-} from "@material-ui/pickers";
 import * as React from "react";
+import RangeDelimiter from "../../domain/RangeDelimiter";
+import RangePicker from "../../domain/RangePicker";
+import TextField from "../../domain/TextField";
 import rangePickerStyles from "./styles";
 
 const RangePicker = ({
@@ -25,7 +23,7 @@ const RangePicker = ({
       renderInput={(startProps, endProps) => (
         <>
           <TextField {...startProps} margin="dense" />
-          <DateRangeDelimiter> to </DateRangeDelimiter>
+          <RangeDelimiter> to </RangeDelimiter>
           <TextField {...endProps} margin="dense" />
         </>
       )}

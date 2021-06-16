@@ -1,60 +1,46 @@
-import { AppBar, Box, Tab, Tabs, Typography } from "@material-ui/core";
 import React from "react";
 import SwipeableViews from "react-swipeable-views";
+import AppBar from "../../domain/AppBar";
+import Box from "../../domain/Box";
+import Tab from "../../domain/Tab";
+import Tabs from "../../domain/Tabs";
+import Typography from "../../domain/Typography";
 import LoadingSpinner from "../LoadingSpinner";
-import SkeletonWrapper from "../SkeletonWrapper/index";
 import swipeCardStyles from "./styles";
 
-const SwipeCard = ({
-  tabs,
-  handleTabsChange,
-  handleChangeIndex,
-  margin,
-  loading,
-}) => {
+const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
   const classes = swipeCardStyles();
 
   return (
-    <Box className={classes.profileArtworkContainer} m={margin}>
-      <AppBar
-        position="static"
-        color="transparent"
-        style={{ marginBottom: 10 }}
-      >
-        <SkeletonWrapper loading={loading} width="100%" height="100%">
-          <Tabs
-            value={tabs.value}
-            onChange={handleTabsChange}
-            indicatorColor="primary"
-            textColor="primary"
-            variant="fullWidth"
-            aria-label="Swipe card"
-          >
-            {tabs.headings
-              .filter((tab) => tab.display === true)
-              .map((heading) => (
-                <Tab label={heading.label} {...heading.props} />
-              ))}
-          </Tabs>
-        </SkeletonWrapper>
+    <Box className={classes.container} m={margin}>
+      <AppBar position="static" color="transparent" className={classes.bar}>
+        <Tabs
+          value={tabs.value}
+          onChange={(e, value) => handleTabsChange({ index: value })}
+          indicatorColor="primary"
+          textColor="primary"
+          type="fullWidth"
+          aria-label="Swipe card"
+          loading={loading}
+        >
+          {tabs.headings
+            .filter((tab) => tab.display === true)
+            .map((heading) => (
+              <Tab label={heading.label} {...heading.props} />
+            ))}
+        </Tabs>
       </AppBar>
-      <SkeletonWrapper
-        loading={loading}
-        width="100%"
-        style={{ minHeight: "280px" }}
-      >
+
+      {!loading ? (
         <SwipeableViews
           axis="x"
           index={tabs.value}
-          onChangeIndex={handleChangeIndex}
+          onChangeIndex={(value) => handleTabsChange({ index: value })}
         >
           {tabs.items
             .filter((tab) => tab.display === true)
             .map((item, index) => (
-              <Box
-                className={classes.swipeCardBox}
-                hidden={tabs.value !== index}
-              >
+              <Box className={classes.wrapper} hidden={tabs.value !== index}>
                 {item.loading ? (
                   <LoadingSpinner />
                 ) : item.iterable ? (
@@ -71,7 +57,9 @@ const SwipeCard = ({
               </Box>
             ))}
         </SwipeableViews>
-      </SkeletonWrapper>
+      ) : (
+        <LoadingSpinner />
+      )}
     </Box>
   );
 };

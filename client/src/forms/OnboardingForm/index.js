@@ -3,7 +3,7 @@ import React from "react";
 import { countries } from "../../../../common/constants.js";
 import AutocompleteInput from "../../controls/AutocompleteInput";
 
-const OnboardingForm = ({ getValues, setValue, errors }) => {
+const OnboardingForm = ({ getValues, setValue, errors, loading }) => {
   return (
     <Box>
       <AutocompleteInput
@@ -13,6 +13,7 @@ const OnboardingForm = ({ getValues, setValue, errors }) => {
         label="Country"
         errors={errors}
         options={countries.filter((country) => country.supported === true)}
+        loading={loading}
       />
     </Box>
   );

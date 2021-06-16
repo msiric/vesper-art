@@ -1,12 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Avatar,
-  Box,
-  Container,
-  Grid,
-  Link,
-  Typography,
-} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { MailOutlineRounded as EmailAvatar } from "@material-ui/icons";
 import React from "react";
@@ -14,11 +6,17 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { recoveryValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
+import Avatar from "../../domain/Avatar";
+import Box from "../../domain/Box";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import Link from "../../domain/Link";
+import Typography from "../../domain/Typography";
 import RecoveryForm from "../../forms/RecoveryForm/index.js";
 import { postEmail } from "../../services/auth.js";
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
+  wrapper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
@@ -61,7 +59,7 @@ const UpdateEmail = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box className={classes.paper}>
+      <Box className={classes.wrapper}>
         <Avatar className={classes.avatar}>
           <EmailAvatar />
         </Avatar>
@@ -74,10 +72,8 @@ const UpdateEmail = () => {
             <AsyncButton
               type="submit"
               fullWidth
-              variant="outlined"
-              color="primary"
               padding
-              loading={formState.isSubmitting}
+              submitting={formState.isSubmitting}
             >
               Update email
             </AsyncButton>

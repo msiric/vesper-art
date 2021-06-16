@@ -1,4 +1,6 @@
 import { Order } from "../../entities/Order";
+import { Review } from "../../entities/Review";
+import { calculateRating } from "../../utils/helpers";
 
 // $Needs testing (mongo -> postgres)
 export const addNewOrder = async ({ orderId, orderData, connection }) => {
@@ -68,7 +70,6 @@ export const fetchOrderByVersion = async ({
     .leftJoinAndSelect("order.artwork", "artwork")
     .leftJoinAndSelect("order.review", "review")
     .leftJoinAndSelect("order.license", "license")
-    .leftJoinAndSelect("order.license", "license")
     .where("order.artworkId = :artworkId AND order.versionId = :versionId", {
       artworkId,
       versionId,
@@ -101,8 +102,20 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.buyer", "buyer")
+    .leftJoinAndMapMany(
+      "buyer.reviews",
+      Review,
+      "buyerReview",
+      "buyerReview.revieweeId = buyer.id"
+    )
     .leftJoinAndSelect("buyer.avatar", "buyerAvatar")
     .leftJoinAndSelect("order.seller", "seller")
+    .leftJoinAndMapMany(
+      "seller.reviews",
+      Review,
+      "sellerReview",
+      "sellerReview.revieweeId = seller.id"
+    )
     .leftJoinAndSelect("seller.avatar", "sellerAvatar")
     .leftJoinAndSelect("order.discount", "discount")
     .leftJoinAndSelect("order.version", "version")
@@ -118,6 +131,14 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
       }
     )
     .getOne();
+  if (foundOrder && foundOrder.buyer && foundOrder.seller) {
+    foundOrder.seller.rating = calculateRating({
+      reviews: foundOrder.seller.reviews,
+    });
+    foundOrder.buyer.rating = calculateRating({
+      reviews: foundOrder.buyer.reviews,
+    });
+  }
   console.log(foundOrder);
   return foundOrder;
 };
@@ -205,9 +226,14 @@ export const fetchOrdersBySeller = async ({
     .leftJoinAndSelect("order.review", "review")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("order.license", "license")
-    .where("order.sellerId = :userId", {
-      userId,
-    })
+    .where(
+      "order.sellerId = :userId AND order.created >= :startDate AND order.created <= :endDate",
+      {
+        userId,
+        startDate: start,
+        endDate: end,
+      }
+    )
     .getMany();
   console.log(foundOrders);
   return foundOrders;
@@ -248,22 +274,27 @@ export const fetchOrdersByBuyer = async ({
     .leftJoinAndSelect("order.review", "review")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("order.license", "license")
-    .where("order.buyerId = :userId", {
-      userId,
-    })
+    .where(
+      "order.buyerId = :userId AND order.created >= :startDate AND order.created <= :endDate",
+      {
+        userId,
+        startDate: start,
+        endDate: end,
+      }
+    )
     .getMany();
   console.log(foundOrders);
   return foundOrders;
 };
 
-export const fetchBuyerMedia = async ({ userId, orderId, connection }) => {
+export const fetchOrderMedia = async ({ userId, orderId, connection }) => {
   const foundOrder = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.media", "media")
     .where(
-      "order.id = :orderId AND order.status = :status AND order.buyerId = :userId",
+      "order.id = :orderId AND order.status = :status AND (order.buyerId = :userId OR order.sellerId = :userId)",
       {
         orderId,
         // $TODO to const
@@ -274,4 +305,25 @@ export const fetchBuyerMedia = async ({ userId, orderId, connection }) => {
     .getOne();
   console.log(foundOrder.version.media);
   return foundOrder.version.media;
+};
+
+export const fetchOrdersByArtwork = async ({
+  userId,
+  artworkId,
+  connection,
+}) => {
+  const foundOrders = await connection
+    .getRepository(Order)
+    .createQueryBuilder("order")
+    .leftJoinAndSelect("order.seller", "seller")
+    .leftJoinAndSelect("order.review", "review")
+    .leftJoinAndSelect("order.version", "version")
+    .leftJoinAndSelect("order.license", "license")
+    .where("order.sellerId = :userId AND order.artworkId = :artworkId", {
+      userId,
+      artworkId,
+    })
+    .getMany();
+  console.log(foundOrders);
+  return foundOrders;
 };

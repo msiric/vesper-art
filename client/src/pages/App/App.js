@@ -11,22 +11,44 @@ import { SnackbarProvider } from "notistack";
 import React, { createRef } from "react";
 import SimpleReactLightbox from "simple-react-lightbox";
 import Router from "../../containers/Router/Router.js";
-import { useTracked as useAppContext } from "../../contexts/global/App.js";
+import { useAppStore } from "../../contexts/global/app.js";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const useStyles = makeStyles(() => ({
-  notificationContainer: {
+  wrapper: {
     backgroundColor: artepunktTheme.palette.background.notification,
     border: `1px solid ${artepunktTheme.palette.border.main}`,
   },
+  icon: {
+    marginRight: 12,
+  },
+  success: {
+    color: artepunktTheme.palette.success.main,
+  },
+  error: {
+    color: artepunktTheme.palette.error.main,
+  },
+  warning: {
+    color: artepunktTheme.palette.warning.main,
+  },
+  info: {
+    color: artepunktTheme.palette.info.main,
+  },
 }));
 
-const App = React.memo(({ socket }) => {
-  const [appStore, appDispatch] = useAppContext();
+const App = () => {
+  const theme = useAppStore((state) => state.theme);
 
   const notistackRef = createRef();
 
   const classes = useStyles();
+
+  const iconItems = {
+    success: <SuccessIcon className={`${classes.icon} ${classes.success}`} />,
+    error: <ErrorIcon className={`${classes.icon} ${classes.error}`} />,
+    warning: <WarningIcon className={`${classes.icon} ${classes.warning}`} />,
+    info: <InfoIcon className={`${classes.icon} ${classes.info}`} />,
+  };
 
   const handleAlertClose = (key) => () => {
     notistackRef.current.closeSnackbar(key);
@@ -36,7 +58,7 @@ const App = React.memo(({ socket }) => {
     <ThemeProvider
       theme={{
         ...artepunktTheme,
-        palette: { ...artepunktTheme.palette, type: appStore.theme },
+        palette: { ...artepunktTheme.palette, type: theme },
       }}
     >
       <SnackbarProvider
@@ -47,45 +69,12 @@ const App = React.memo(({ socket }) => {
           vertical: "top",
           horizontal: "center",
         }}
-        iconVariant={{
-          success: (
-            <SuccessIcon
-              style={{
-                marginRight: 12,
-                color: artepunktTheme.palette.success.main,
-              }}
-            />
-          ),
-          error: (
-            <ErrorIcon
-              style={{
-                marginRight: 12,
-                color: artepunktTheme.palette.error.main,
-              }}
-            />
-          ),
-          warning: (
-            <WarningIcon
-              style={{
-                marginRight: 12,
-                color: artepunktTheme.palette.warning.main,
-              }}
-            />
-          ),
-          info: (
-            <InfoIcon
-              style={{
-                marginRight: 12,
-                color: artepunktTheme.palette.info.main,
-              }}
-            />
-          ),
-        }}
+        iconVariant={iconItems}
         classes={{
-          variantSuccess: classes.notificationContainer,
-          variantError: classes.notificationContainer,
-          variantWarning: classes.notificationContainer,
-          variantInfo: classes.notificationContainer,
+          variantSuccess: classes.wrapper,
+          variantError: classes.wrapper,
+          variantWarning: classes.wrapper,
+          variantInfo: classes.wrapper,
         }}
         dense
         maxSnack={1}
@@ -105,11 +94,11 @@ const App = React.memo(({ socket }) => {
       >
         <SimpleReactLightbox>
           <CssBaseline />
-          <Router socket={socket} />
+          <Router />
         </SimpleReactLightbox>
       </SnackbarProvider>
     </ThemeProvider>
   );
-});
+};
 
 export default App;

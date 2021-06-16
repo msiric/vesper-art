@@ -1,8 +1,6 @@
 const TRANSFORMED_WIDTH = 640;
 
-export const app = {
-  name: "Diagon",
-};
+export const appName = "Diagon";
 
 export const pricing = {
   minimumPrice: 10,
@@ -33,6 +31,21 @@ export const payment = {
     multiplier: 0.05,
     addend: 2.35,
   },
+};
+
+export const errors = {
+  ok: 200,
+  created: 201,
+  noContent: 204,
+  tempRedirect: 307,
+  permRedirect: 308,
+  badRequest: 400,
+  unauthorized: 401,
+  forbidden: 403,
+  notFound: 404,
+  notAllowed: 405,
+  conflict: 409,
+  internalError: 500,
 };
 
 export const countries = [

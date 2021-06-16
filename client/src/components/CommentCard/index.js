@@ -1,33 +1,31 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  Avatar,
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  ListItem,
-  ListItemAvatar,
-  ListItemSecondaryAction,
-  ListItemText,
-} from "@material-ui/core";
-import {
   AddCircleRounded as UploadIcon,
   MoreVertRounded as MoreIcon,
 } from "@material-ui/icons";
+import { formatDistance } from "date-fns";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import SyncButton from "../../components/SyncButton/index.js";
+import { useUserStore } from "../../contexts/global/user.js";
+import Avatar from "../../domain/Avatar";
+import Box from "../../domain/Box";
+import Divider from "../../domain/Divider";
+import IconButton from "../../domain/IconButton";
+import ListItem from "../../domain/ListItem";
+import ListItemAvatar from "../../domain/ListItemAvatar";
+import ListItemSecondaryAction from "../../domain/ListItemSecondaryAction";
+import ListItemText from "../../domain/ListItemText";
+import Typography from "../../domain/Typography";
 import AddCommentForm from "../../forms/CommentForm/index.js";
-import { patchComment } from "../../services/artwork.js";
-import { Typography } from "../../styles/theme.js";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
 import commentCardStyles from "./styles.js";
 
 const CommentCard = ({
-  artwork = {},
+  artworkId,
+  artworkOwnerId,
   comment = { content: "" },
   edits = {},
   queryRef,
@@ -37,25 +35,23 @@ const CommentCard = ({
   handlePopoverOpen,
   loading,
 }) => {
-  const [userStore, userDispatch] = useUserContext();
+  const userId = useUserStore((state) => state.id);
 
   const setDefaultValues = () => ({
     commentContent: comment.content,
   });
 
-  const { handleSubmit, formState, errors, control, reset } = useForm({
+  const {
+    getValues,
+    handleSubmit,
+    formState,
+    errors,
+    control,
+    reset,
+  } = useForm({
     defaultValues: setDefaultValues(),
     resolver: yupResolver(commentValidation),
   });
-
-  const onSubmit = async (values) => {
-    await patchComment.request({
-      artworkId: artwork.id,
-      commentId: comment.id,
-      data: values,
-    });
-    handleCommentEdit(comment.id, values.commentContent);
-  };
 
   const history = useHistory();
   const classes = commentCardStyles();
@@ -69,89 +65,105 @@ const CommentCard = ({
   return (
     <Box ref={isHighlight() ? highlightRef : null} key={comment.id}>
       <ListItem
-        alignItems="flex-start"
         disableGutters
-        className={`${classes.commentContainer} ${
-          isHighlight() ? classes.highlightContainer : ""
+        className={`${classes.container} ${
+          isHighlight() ? classes.highlight : ""
         }`}
       >
         <ListItemAvatar>
-          <SkeletonWrapper
+          <Avatar
+            alt={comment.owner.name}
+            src={comment.owner.avatar ? comment.owner.avatar.source : null}
+            component={Link}
+            to={`/user/${comment.owner.name}`}
             loading={loading}
-            variant="circle"
-            styles={{ paddingTop: 40, width: 40 }}
-          >
-            <Avatar
-              alt={comment.owner.name}
-              src={comment.owner.avatar}
-              component={Link}
-              to={`/user/${comment.owner.name}`}
-              className={classes.noLink}
-            />
-          </SkeletonWrapper>
+          />
         </ListItemAvatar>
         <ListItemText
           primary={
             edits[comment.id] ? null : (
-              <SkeletonWrapper variant="text" loading={loading}>
+              <Box>
                 <Typography
                   component={Link}
                   to={`/user/${comment.owner.name}`}
-                  style={{ textDecoration: "none" }}
-                  color="text.primary"
+                  loading={loading}
+                  className={classes.owner}
                 >
-                  {comment.owner.name || "Could not load user"}
+                  {comment.owner.id === artworkOwnerId
+                    ? `${comment.owner.name} 👤`
+                    : comment.owner.name}
                 </Typography>
                 <Typography
                   component="span"
-                  color="text.secondary"
-                  fontStyle="oblique"
-                  style={{ marginLeft: 6 }}
+                  loading={loading}
+                  className={classes.details}
                 >
-                  {comment.modified ? "edited" : null}
+                  {`${formatDistance(
+                    new Date(comment.created),
+                    new Date()
+                  )} ago`}
                 </Typography>
-              </SkeletonWrapper>
+                <Typography
+                  component="span"
+                  loading={loading}
+                  className={classes.details}
+                >
+                  {comment.modified ? "(edited)" : null}
+                </Typography>
+              </Box>
             )
           }
           secondary={
             edits[comment.id] ? (
               <FormProvider control={control}>
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form
+                  onSubmit={handleSubmit(
+                    async () =>
+                      await handleCommentEdit({
+                        artworkId,
+                        commentId: comment.id,
+                        values: getValues(),
+                      })
+                  )}
+                >
                   <AddCommentForm errors={errors} loading={loading} />
                   <AsyncButton
                     type="submit"
                     fullWidth
-                    variant="outlined"
-                    color="primary"
                     padding
-                    loading={formState.isSubmitting}
+                    submitting={formState.isSubmitting}
+                    loading={loading}
                     startIcon={<UploadIcon />}
                   >
                     Publish
                   </AsyncButton>
-                  <Button
+                  <SyncButton
                     type="button"
-                    variant="outlined"
                     color="warning"
-                    onClick={() => handleCommentClose(comment.id)}
+                    onClick={() =>
+                      handleCommentClose({ commentId: comment.id })
+                    }
                   >
                     Cancel
-                  </Button>
+                  </SyncButton>
                 </form>
               </FormProvider>
             ) : (
-              <SkeletonWrapper variant="text" loading={loading} width="90%">
-                <Typography>
-                  {comment.content || "Could not load content"}
-                </Typography>
-              </SkeletonWrapper>
+              <Typography loading={loading}>
+                {comment.content || "Could not load content"}
+              </Typography>
             )
           }
         />
-        {edits[comment.id] || comment.owner.id !== userStore.id ? null : (
+        {edits[comment.id] || comment.owner.id !== userId ? null : (
           <ListItemSecondaryAction>
             <IconButton
-              onClick={(e) => handlePopoverOpen(e, comment.id)}
+              onClick={(e) =>
+                handlePopoverOpen({
+                  commentId: comment.id,
+                  commentTarget: e.currentTarget,
+                })
+              }
               edge="end"
               aria-label="More"
             >

@@ -1,12 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Avatar,
-  Box,
-  Container,
-  Grid,
-  Link,
-  Typography,
-} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { LockRounded as LoginAvatar } from "@material-ui/icons";
 import { useSnackbar } from "notistack";
@@ -15,13 +7,19 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { loginValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
-import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useEventsStore } from "../../contexts/global/events.js";
+import { useUserStore } from "../../contexts/global/user.js";
+import Avatar from "../../domain/Avatar";
+import Box from "../../domain/Box";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import Link from "../../domain/Link";
+import Typography from "../../domain/Typography";
 import LoginForm from "../../forms/LoginForm/index.js";
 import { postLogin } from "../../services/auth.js";
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
+  wrapper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
@@ -34,8 +32,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = () => {
-  const [userStore, userDispatch] = useUserContext();
-  const [eventsStore, eventsDispatch] = useEventsContext();
+  const setUser = useUserStore((state) => state.setUser);
+
+  const notifications = useEventsStore((state) => state.notifications);
+  const setEvents = useEventsStore((state) => state.setEvents);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -55,8 +55,7 @@ const Login = () => {
       const { data } = await postLogin.request({ data: values });
 
       if (data.user) {
-        userDispatch({
-          type: "SET_USER",
+        setUser({
           authenticated: true,
           token: data.accessToken,
           id: data.user.id,
@@ -74,11 +73,9 @@ const Login = () => {
             return object;
           }, {}),
         });
-        eventsDispatch({
-          type: "SET_EVENTS",
-          messages: { items: [], count: data.user.messages },
+        setEvents({
           notifications: {
-            ...eventsStore.notifications,
+            ...notifications,
             items: [],
             count: data.user.notifications,
             hasMore: true,
@@ -98,7 +95,7 @@ const Login = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box className={classes.paper}>
+      <Box className={classes.wrapper}>
         <Avatar className={classes.avatar}>
           <LoginAvatar />
         </Avatar>
@@ -111,10 +108,8 @@ const Login = () => {
             <AsyncButton
               type="submit"
               fullWidth
-              variant="outlined"
-              color="primary"
               padding
-              loading={formState.isSubmitting}
+              submitting={formState.isSubmitting}
             >
               Sign in
             </AsyncButton>

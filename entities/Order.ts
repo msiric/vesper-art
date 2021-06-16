@@ -14,7 +14,6 @@ import {
 import { formatAmount } from "../common/helpers";
 import { Artwork } from "./Artwork";
 import { Discount } from "./Discount";
-import { Intent } from "./Intent";
 import { License } from "./License";
 import { Review } from "./Review";
 import { User } from "./User";
@@ -87,10 +86,6 @@ export class Order extends BaseEntity {
 
   @Column({ nullable: true })
   reviewId: string;
-
-  @OneToOne(() => Intent)
-  @JoinColumn()
-  intent: Intent;
 
   @Column({ nullable: true })
   intentId: string;

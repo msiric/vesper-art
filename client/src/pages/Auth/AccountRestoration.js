@@ -1,4 +1,3 @@
-import { Avatar, Container, Grid, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { HelpRounded as RecoveryAvatar } from "@material-ui/icons";
 import React from "react";
@@ -7,6 +6,11 @@ import { ReactComponent as ChangeEmail } from "../../assets/images/illustrations
 import { ReactComponent as ForgotPassword } from "../../assets/images/illustrations/forgot_password.svg";
 import { ReactComponent as VerifyAccount } from "../../assets/images/illustrations/verify_account.svg";
 import RestorationCard from "../../components/RestorationCard";
+import Avatar from "../../domain/Avatar";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import Link from "../../domain/Link";
+import Typography from "../../domain/Typography";
 import globalStyles from "../../styles/global.js";
 
 const RESTORATION_CARDS = [
@@ -34,12 +38,12 @@ const RESTORATION_CARDS = [
 ];
 
 const useStyles = makeStyles((theme) => ({
-  gridWrapper: {
+  wrapper: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
-  cardHeader: {
+  headerWrapper: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -50,12 +54,6 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
   },
-  cardContainer: {
-    display: "flex",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    width: "100%",
-  },
 }));
 
 const AccountRestoration = () => {
@@ -64,8 +62,8 @@ const AccountRestoration = () => {
 
   return (
     <Container className={globalClasses.gridContainer}>
-      <Grid container className={classes.gridWrapper}>
-        <Grid item sm={12} className={classes.cardHeader}>
+      <Grid container className={classes.wrapper}>
+        <Grid item sm={12} className={classes.headerWrapper}>
           <Avatar className={classes.avatar}>
             <RecoveryAvatar />
           </Avatar>

@@ -1,22 +1,25 @@
-import { TextField } from "@material-ui/core";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import NumberFormat from "react-number-format";
+import CurrencyValue from "../../components/CurrencyValue";
+import TextField from "../../domain/TextField";
 
-const Input = ({ name, setValue, trigger, ...other }) => {
+const Input = ({ name, setValue, trigger, loading = false, ...props }) => {
   return (
-    <NumberFormat
-      {...other}
+    <CurrencyValue
+      {...props}
       customInput={TextField}
       onValueChange={async (values) => {
         setValue(name, values.floatValue);
         await trigger(name);
       }}
+      decimalScale={2}
+      displayType="input"
       thousandSeparator
       isNumericString
       prefix="$"
       variant="outlined"
       margin="dense"
+      loading={loading}
       fullWidth
     />
   );

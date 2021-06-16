@@ -5,7 +5,9 @@ import {
   CardExpiryElement,
   CardNumberElement,
 } from "@stripe/react-stripe-js";
-import React, { useState } from "react"; //, {useState }
+import React, { useImperativeHandle, useState } from "react";
+import { useOrderCheckout } from "../../contexts/local/orderCheckout";
+
 const PaymentFormStyles = makeStyles((muiTheme) => ({
   fixed: {
     height: "100%",
@@ -81,9 +83,9 @@ export const StripeInput = (props) => {
     ...other
   } = props;
   const theme = useTheme();
-  const [mountNode, setMountNode] = React.useState(null);
+  const [mountNode, setMountNode] = useState(null);
 
-  React.useImperativeHandle(
+  useImperativeHandle(
     inputRef,
     () => ({
       focus: () => mountNode.focus(),
@@ -115,7 +117,7 @@ export const StripeInput = (props) => {
   );
 };
 
-export const StripeTextField = (props) => {
+export const StripeTextField = ({ loading, ...props }) => {
   const {
     InputLabelProps,
     stripeElement,
@@ -140,15 +142,19 @@ export const StripeTextField = (props) => {
         },
         inputComponent: StripeInput,
       }}
+      loading={loading}
       {...other}
     />
   );
 };
 
-const PaymentForm = ({ secret, version }) => {
-  const [state, setState] = useState({ elementError: {} });
+const PaymentForm = ({ secret, version, loading }) => {
+  const errors = useOrderCheckout((state) => state.errors);
+  const reflectErrors = useOrderCheckout((state) => state.reflectErrors);
+
   const classes = PaymentFormStyles();
 
+  console.log("STATE ERRORS", errors);
   const cardsLogo = [
     "amex",
     "cirrus",
@@ -163,14 +169,7 @@ const PaymentForm = ({ secret, version }) => {
   ];
 
   const onChange = (event) => {
-    console.log("event", event);
-    setState((prevState) => ({
-      ...prevState,
-      elementError: {
-        ...prevState.elementError,
-        [event.elementType]: event.error ? event.error.message : "",
-      },
-    }));
+    reflectErrors({ event });
   };
 
   /*   const handlePaymentSubmit = async () => {
@@ -225,29 +224,19 @@ const PaymentForm = ({ secret, version }) => {
     }
   }; */
 
+  console.log("ERRORSSSSS", errors);
+
   return (
     <>
       <Grid container item xs={12}>
         <Grid item xs={12} sm={3}>
           <Typography variant="h6">Payment Data</Typography>
         </Grid>
-        {/* <Grid container item xs={12} sm={9} justify="space-between">
-          {cardsLogo.map((card) => (
-            <img
-              key={card}
-              src={`../../../assets/images/cards/${card}.png`}
-              alt={card}
-              width="50px"
-              align="bottom"
-              style={{ padding: "0 5px" }}
-            />
-          ))}
-        </Grid> */}
       </Grid>
       <Grid item xs={12}>
         <StripeTextField
-          error={!!state.elementError.cardNumber}
-          helperText={state.elementError.cardNumber}
+          error={!!errors.cardNumber}
+          helperText={errors.cardNumber}
           label="Card Number"
           inputProps={{
             options: {
@@ -258,13 +247,14 @@ const PaymentForm = ({ secret, version }) => {
           stripeElement={CardNumberElement}
           variant={"outlined"}
           margin="dense"
+          loading={loading}
           fullWidth
         />
       </Grid>
       <Grid item xs={6}>
         <StripeTextField
-          error={!!state.elementError.cardExpiry}
-          helperText={state.elementError.cardExpiry}
+          error={!!errors.cardExpiry}
+          helperText={errors.cardExpiry}
           label="Card expiry date"
           inputProps={{
             options: {
@@ -275,13 +265,14 @@ const PaymentForm = ({ secret, version }) => {
           stripeElement={CardExpiryElement}
           variant={"outlined"}
           margin="dense"
+          loading={loading}
           fullWidth
         />
       </Grid>
       <Grid item xs={6}>
         <StripeTextField
-          error={!!state.elementError.cardCvc}
-          helperText={state.elementError.cardCvc}
+          error={!!errors.cardCvc}
+          helperText={errors.cardCvc}
           label="Card CVC"
           inputProps={{
             options: {
@@ -292,6 +283,7 @@ const PaymentForm = ({ secret, version }) => {
           stripeElement={CardCvcElement}
           variant={"outlined"}
           margin="dense"
+          loading={loading}
           fullWidth
         />
       </Grid>

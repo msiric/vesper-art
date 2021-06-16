@@ -32,7 +32,7 @@ export class Artwork extends BaseEntity {
   @JoinColumn()
   current: Version;
 
-  @Column()
+  @Column({ nullable: true })
   currentId: string;
 
   @Column()

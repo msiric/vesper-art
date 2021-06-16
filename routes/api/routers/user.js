@@ -14,6 +14,7 @@ import {
   getUserPurchases,
   getUserSales,
   getUserSettings,
+  getUserUploads,
   updateUserEmail,
   updateUserOrigin,
   updateUserPassword,
@@ -55,15 +56,39 @@ router
   .delete(
     [isAuthenticated],
     handler(deactivateUser, true, (req, res, next) => ({
+      response: res,
       ...req.params,
     }))
   );
 
 router
-  .route("/users/:userId/artwork")
+  .route("/users/:userUsername/artwork")
   // $TODO not tested
+  // $TODO needs authentication when going to my_artwork
   .get(
     handler(getUserArtwork, false, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
+
+router
+  .route("/users/:userUsername/favorites")
+  // $TODO not tested
+  .get(
+    handler(getUserFavorites, false, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
+
+router
+  .route("/users/:userId/uploads")
+  // $TODO not tested
+  // $TODO needs authentication when going to my_artwork
+  .get(
+    [isAuthenticated],
+    handler(getUserUploads, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -84,16 +109,6 @@ router
   // $TODO not tested
   .get(
     handler(getUserOwnership, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
-    }))
-  );
-
-router
-  .route("/users/:userId/favorites")
-  // $TODO not tested
-  .get(
-    handler(getUserFavorites, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))

@@ -5,13 +5,10 @@ const profileArtworkStyles = makeStyles((muiTheme) => ({
     minHeight: 300,
     height: "100%",
   },
-  profileArtworkContainer: {
-    "&> div": {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      height: "100%",
-    },
+  wrapper: {
+    width: "100%",
+    height: "100%",
+    padding: "0 32px",
   },
 }));
 

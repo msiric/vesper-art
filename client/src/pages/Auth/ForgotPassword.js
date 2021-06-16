@@ -1,26 +1,24 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Avatar,
-  Box,
-  Button,
-  CardActions,
-  CardContent,
-  Container,
-  Grid,
-  Link,
-  Typography,
-} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { VpnKeyRounded as RecoveryAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { emailValidation } from "../../../../common/validation";
+import AsyncButton from "../../components/AsyncButton";
+import Avatar from "../../domain/Avatar";
+import Box from "../../domain/Box";
+import CardActions from "../../domain/CardActions";
+import CardContent from "../../domain/CardContent";
+import Container from "../../domain/Container";
+import Grid from "../../domain/Grid";
+import Link from "../../domain/Link";
+import Typography from "../../domain/Typography";
 import EmailForm from "../../forms/EmailForm/index.js";
 import { postRecover } from "../../services/auth.js";
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
+  wrapper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
@@ -29,6 +27,10 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
+  },
+  actions: {
+    display: "flex",
+    justifyContent: "space-between",
   },
 }));
 
@@ -60,7 +62,7 @@ const ForgotPassword = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box className={classes.paper}>
+      <Box className={classes.wrapper}>
         <Avatar className={classes.avatar}>
           <RecoveryAvatar />
         </Avatar>
@@ -72,19 +74,15 @@ const ForgotPassword = () => {
             <CardContent>
               <EmailForm errors={errors} />
             </CardContent>
-            <CardActions
-              style={{ display: "flex", justifyContent: "space-between" }}
-            >
-              <Button
+            <CardActions className={classes.actions}>
+              <AsyncButton
                 type="submit"
                 fullWidth
-                variant="outlined"
-                color="primary"
                 className={classes.submit}
                 disabled={formState.isSubmitting}
               >
                 Send recovery link
-              </Button>
+              </AsyncButton>
             </CardActions>
             <Grid container>
               <Grid item xs>

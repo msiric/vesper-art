@@ -1,11 +1,10 @@
 import { Box } from "@material-ui/core";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import ImageInput from "../../controls/ImageInput/index.js";
 import PriceInput from "../../controls/PriceInput/index.js";
 import SelectInput from "../../controls/SelectInput/index.js";
-import TagInput from "../../controls/TagInput/index.js";
 import TextInput from "../../controls/TextInput/index.js";
 
 /* import AddArtworkStyles from "../../components/Artwork/AddArtwork.style.js"; */
@@ -18,14 +17,18 @@ const ArtworkForm = ({
   trigger,
   getValues,
   watch,
+  watchables,
+  editable,
   loading,
 }) => {
-  const [userStore] = useUserContext();
+  const stripeId = useUserStore((state) => state.stripeId);
 
-  const artworkAvailability = watch("artworkAvailability");
-  const artworkType = watch("artworkType");
-  const artworkLicense = watch("artworkLicense");
-  const artworkUse = watch("artworkUse");
+  const {
+    artworkAvailability,
+    artworkType,
+    artworkLicense,
+    artworkUse,
+  } = watchables.length ? watch(watchables) : watch();
 
   const history = useHistory();
 
@@ -45,6 +48,7 @@ const ArtworkForm = ({
         height={400}
         width="100%"
         noEmpty={false}
+        editable={editable}
         loading={loading}
       />
       <Box>
@@ -53,6 +57,7 @@ const ArtworkForm = ({
           type="text"
           label="Artwork title"
           errors={errors}
+          loading={loading}
         />
         <SelectInput
           name="artworkAvailability"
@@ -66,6 +71,7 @@ const ArtworkForm = ({
             },
             { value: "unavailable", text: "Only for preview" },
           ]}
+          loading={loading}
         />
         {artworkAvailability === "available" && (
           <SelectInput
@@ -78,7 +84,7 @@ const ArtworkForm = ({
                 value: "commercial",
                 text: "Commercial",
                 disabled:
-                  userStore.stripeId &&
+                  stripeId &&
                   capabilities.cardPayments === "active" &&
                   capabilities.platformPayments === "active"
                     ? false
@@ -86,6 +92,7 @@ const ArtworkForm = ({
               },
               { value: "free", text: "Free" },
             ]}
+            loading={loading}
           />
         )}
         {artworkAvailability === "available" && (
@@ -98,6 +105,7 @@ const ArtworkForm = ({
               { value: "commercial", text: "Commercial" },
               { value: "personal", text: "Personal" },
             ]}
+            loading={loading}
           />
         )}
         {artworkAvailability === "available" &&
@@ -109,6 +117,7 @@ const ArtworkForm = ({
               trigger={trigger}
               label="Personal license price"
               errors={errors}
+              loading={loading}
             />
           )}
         {artworkAvailability === "available" &&
@@ -123,7 +132,7 @@ const ArtworkForm = ({
                   value: "separate",
                   text: "Charge commercial license separately",
                   disabled:
-                    userStore.stripeId &&
+                    stripeId &&
                     capabilities.cardPayments === "active" &&
                     capabilities.platformPayments === "active"
                       ? false
@@ -140,6 +149,7 @@ const ArtworkForm = ({
                       text: "Offer commercial license free of charge",
                     },
               ]}
+              loading={loading}
             />
           )}
         {artworkAvailability === "available" &&
@@ -152,16 +162,32 @@ const ArtworkForm = ({
               trigger={trigger}
               label="Commercial license price"
               errors={errors}
+              loading={loading}
             />
           )}
+        <SelectInput
+          name="artworkVisibility"
+          label="Artwork visibility"
+          errors={errors}
+          options={[
+            { value: "" },
+            {
+              value: "visible",
+              text: "Visible to everyone",
+            },
+            { value: "invisible", text: "Hidden to public" },
+          ]}
+          loading={loading}
+        />
         <TextInput
           name="artworkDescription"
           type="text"
           label="Artwork description"
           errors={errors}
           multiline
+          loading={loading}
         />
-        <TagInput
+        {/* <TagInput
           name="artworkTags"
           trigger={trigger}
           value={getValues("artworkTags")}
@@ -170,7 +196,7 @@ const ArtworkForm = ({
           handleChange={(e, item) => setValue("artworkTags", item || [])}
           limit={5}
           multiline
-        />
+        /> */}
       </Box>
     </Box>
   );

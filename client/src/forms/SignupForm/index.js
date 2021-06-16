@@ -2,7 +2,7 @@ import { Box } from "@material-ui/core";
 import React from "react";
 import TextInput from "../../controls/TextInput/index.js";
 
-const SignupForm = ({ errors }) => {
+const SignupForm = ({ errors, loading }) => {
   return (
     <Box>
       <TextInput
@@ -10,6 +10,7 @@ const SignupForm = ({ errors }) => {
         type="text"
         label="Username"
         errors={errors}
+        loading={loading}
       />
       <TextInput name="userEmail" type="text" label="Email" errors={errors} />
       <TextInput
@@ -17,12 +18,14 @@ const SignupForm = ({ errors }) => {
         type="password"
         label="Password"
         errors={errors}
+        loading={loading}
       />
       <TextInput
         name="userConfirm"
         type="password"
         label="Confirm password"
         errors={errors}
+        loading={loading}
       />
     </Box>
   );

@@ -1,10 +1,25 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const checkoutSummaryStyles = makeStyles((muiTheme) => ({
-  listContent: {
-    "&:first-letter": {
-      textTransform: "capitalize",
-    },
+  container: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+  },
+  content: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    paddingBottom: 8,
+  },
+  actions: {
+    width: "100%",
+  },
+  form: {
+    width: "100%",
+  },
+  card: {
+    flexBasis: "auto",
   },
 }));
 

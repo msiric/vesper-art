@@ -109,6 +109,7 @@ router.route("/resend_token").post(
 router.route("/update_email").post(
   isNotAuthenticated,
   handler(updateEmail, true, (req, res, next) => ({
+    response: res,
     ...req.body,
   }))
 );

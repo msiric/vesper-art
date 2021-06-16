@@ -7,7 +7,7 @@ import { Notification } from "../../entities/Notification";
 import { Order } from "../../entities/Order";
 import { Review } from "../../entities/Review";
 import { User } from "../../entities/User";
-import { resolveSubQuery } from "../../utils/helpers";
+import { calculateRating, resolveSubQuery } from "../../utils/helpers";
 
 const USER_ACTIVE_STATUS = true;
 const ARTWORK_ACTIVE_STATUS = true;
@@ -118,6 +118,26 @@ export const fetchUserById = async ({ userId, connection }) => {
   return foundUser;
 };
 
+export const fetchUserByUsername = async ({ userUsername, connection }) => {
+  const foundUser = await connection
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .select([
+      ...USER_ESSENTIAL_INFO,
+      ...USER_STRIPE_INFO,
+      ...USER_DETAILED_INFO,
+      ...USER_VERIFICATION_INFO,
+    ])
+    .leftJoinAndSelect("user.avatar", "avatar")
+    .where("user.name = :userUsername AND user.active = :active", {
+      userUsername,
+      active: USER_ACTIVE_STATUS,
+    })
+    .getOne();
+  console.log(foundUser);
+  return foundUser;
+};
+
 // $Needs testing (mongo -> postgres)
 export const fetchUserByEmail = async ({ userEmail, connection }) => {
   const foundUser = await connection
@@ -166,6 +186,7 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
+    .leftJoinAndSelect("user.avatar", "avatar")
     .leftJoinAndMapMany(
       "user.intents",
       Intent,
@@ -195,6 +216,7 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
   return foundUser;
 };
 
+// $TODO add appropriate visiblity tag
 export const fetchSellerMedia = async ({ userId, artworkId, connection }) => {
   const foundArtwork = await connection
     .getRepository(Artwork)
@@ -239,7 +261,7 @@ export const fetchUserPurchases = async ({
     .leftJoinAndSelect("order.review", "review")
     .where(
       `order.buyerId = :userId AND order.serial > 
-      ${resolveSubQuery(queryBuilder, "order", Order, cursor)}`,
+      ${resolveSubQuery(queryBuilder, "order", Order, cursor, -1)}`,
       { userId }
     )
     .orderBy("order.serial", "ASC")
@@ -269,7 +291,7 @@ export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
     .leftJoinAndSelect("order.review", "review")
     .where(
       `order.sellerId = :userId AND order.serial > 
-      ${resolveSubQuery(queryBuilder, "order", Order, cursor)}`,
+      ${resolveSubQuery(queryBuilder, "order", Order, cursor, -1)}`,
       { userId }
     )
     .orderBy("order.serial", "ASC")
@@ -311,6 +333,7 @@ export const editUserStripe = async ({ userId, stripeId, connection }) => {
 };
 
 // $Needs testing (mongo -> postgres)
+// $TODO add appropriate visiblity tag
 export const fetchUserProfile = async ({
   userUsername,
   userId,
@@ -323,6 +346,13 @@ export const fetchUserProfile = async ({
     .createQueryBuilder("user")
     .select([...USER_ESSENTIAL_INFO, ...USER_DETAILED_INFO])
     .leftJoinAndSelect("user.avatar", "avatar")
+    .leftJoinAndMapMany(
+      "user.reviews",
+      Review,
+      "review",
+      "review.revieweeId = :userId",
+      { userId }
+    )
     .leftJoinAndMapMany(
       "user.artwork",
       Artwork,
@@ -344,10 +374,14 @@ export const fetchUserProfile = async ({
       active: USER_ACTIVE_STATUS,
     })
     .getOne();
+  foundUser.rating = calculateRating({
+    reviews: foundUser.reviews,
+  });
   return foundUser;
 };
 
 // $Needs testing (mongo -> postgres)
+// $TODO add appropriate visiblity tag
 export const fetchUserArtwork = async ({
   userId,
   cursor,
@@ -367,10 +401,43 @@ export const fetchUserArtwork = async ({
     .createQueryBuilder("artwork");
   const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("version.cover", "cover")
     .where(
       `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
-      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor)}`,
+      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
+      {
+        userId,
+        active: USER_ACTIVE_STATUS,
+      }
+    )
+    .orderBy("artwork.serial", "ASC")
+    .limit(limit)
+    .getMany();
+  console.log(foundArtwork);
+  return foundArtwork;
+};
+
+export const fetchUserMedia = async ({ userId, cursor, limit, connection }) => {
+  //
+  // return await Artwork.find({
+  //   where: [{ owner: userId, active: true }],
+  //   relations: ["current"],
+  //   skip: cursor,
+  //   take: limit,
+  // });
+
+  const queryBuilder = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork");
+  const foundArtwork = await queryBuilder
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("version.media", "media")
+    .where(
+      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
+      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
       {
         userId,
         active: USER_ACTIVE_STATUS,
@@ -407,7 +474,7 @@ export const fetchUserFavorites = async ({
     .leftJoinAndSelect("version.cover", "cover")
     .where(
       `favorite.ownerId = :userId AND favorite.serial > 
-      ${resolveSubQuery(queryBuilder, "favorite", Favorite, cursor)}`,
+      ${resolveSubQuery(queryBuilder, "favorite", Favorite, cursor, -1)}`,
       {
         userId,
       }
@@ -515,9 +582,24 @@ export const editUserAvatar = async ({ userId, avatarUpload, connection }) => {
     .where('"ownerId" = :userId', {
       userId,
     })
+    .returning("*")
     .execute();
   console.log(updatedAvatar);
   return updatedAvatar;
+};
+
+export const removeUserAvatar = async ({ userId, avatarId, connection }) => {
+  const deletedAvatar = await connection
+    .createQueryBuilder()
+    .delete()
+    .from(Avatar)
+    .where('id = :avatarId AND "ownerId" = :userId', {
+      avatarId,
+      userId,
+    })
+    .execute();
+  console.log(deletedAvatar);
+  return deletedAvatar;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -538,7 +620,7 @@ export const editUserProfile = async ({
     .createQueryBuilder()
     .update(User)
     .set({
-      avatarId: avatarId ? avatarId : foundUser.avatar,
+      avatarId: avatarId,
       description: userData.userDescription
         ? userData.userDescription
         : foundUser.description,
@@ -546,6 +628,7 @@ export const editUserProfile = async ({
     })
     .where("id = :userId AND active = :active", {
       userId: foundUser.id,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
@@ -576,7 +659,13 @@ export const fetchUserNotifications = async ({
   const foundNotifications = await queryBuilder
     .where(
       `notification.receiverId = :userId AND notification.serial < 
-      ${resolveSubQuery(queryBuilder, "notification", Notification, cursor)}`,
+      ${resolveSubQuery(
+        queryBuilder,
+        "notification",
+        Notification,
+        cursor,
+        Number.MAX_VALUE
+      )}`,
       {
         userId,
       }
@@ -614,6 +703,7 @@ export const editUserEmail = async ({
     })
     .where("id = :userId AND active = :active", {
       userId,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
@@ -639,6 +729,7 @@ export const editUserPassword = async ({
     .set({ password: hashedPassword })
     .where("id = :userId AND active = :active", {
       userId,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
@@ -664,6 +755,7 @@ export const editUserPreferences = async ({
     .set({ displayFavorites: userFavorites })
     .where("id = :userId AND active = :active", {
       userId,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
@@ -675,19 +767,17 @@ export const fetchIntentByCreds = async ({
   intentId,
   userId,
   versionId,
-  status,
   connection,
 }) => {
   const foundIntent = await connection
     .getRepository(Intent)
     .createQueryBuilder("intent")
     .where(
-      "intent.id = :intentId AND intent.ownerId = :userId AND intent.versionId = :versionId AND intent.status = :status",
+      "intent.id = :intentId AND intent.ownerId = :userId AND intent.versionId = :versionId",
       {
         intentId,
         userId,
         versionId,
-        status,
       }
     )
     .getOne();
@@ -698,20 +788,15 @@ export const fetchIntentByCreds = async ({
 export const fetchIntentByParents = async ({
   userId,
   versionId,
-  status,
   connection,
 }) => {
   const foundIntent = await connection
     .getRepository(Intent)
     .createQueryBuilder("intent")
-    .where(
-      "intent.ownerId = :userId AND intent.versionId = :versionId AND intent.status = :status",
-      {
-        userId,
-        versionId,
-        status,
-      }
-    )
+    .where("intent.ownerId = :userId AND intent.versionId = :versionId", {
+      userId,
+      versionId,
+    })
     .getOne();
   console.log(foundIntent);
   return foundIntent;
@@ -722,10 +807,9 @@ export const addNewIntent = async ({
   intentId,
   userId,
   versionId,
-  status,
   connection,
 }) => {
-  console.log("INTENT CREATION", intentId, userId, versionId, status);
+  console.log("INTENT CREATION", intentId, userId, versionId);
   const savedIntent = await connection
     .createQueryBuilder()
     .insert()
@@ -735,7 +819,6 @@ export const addNewIntent = async ({
         id: intentId,
         ownerId: userId,
         versionId,
-        status,
       },
     ])
     .execute();
@@ -743,17 +826,17 @@ export const addNewIntent = async ({
   return savedIntent;
 };
 
-export const editExistingIntent = async ({ intentId, status, connection }) => {
-  const updatedIntent = await connection
+export const removeExistingIntent = async ({ intentId, connection }) => {
+  const deletedIntent = await connection
     .createQueryBuilder()
-    .update(Intent)
-    .set({ status: status })
+    .delete()
+    .from(Intent)
     .where("id = :intentId", {
       intentId,
     })
     .execute();
-  console.log(updatedIntent);
-  return updatedIntent;
+  console.log(deletedIntent);
+  return deletedIntent;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -771,6 +854,7 @@ export const editUserOrigin = async ({
     .set({ businessAddress: userBusinessAddress })
     .where("id = :userId AND active = :active", {
       userId,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();
@@ -816,6 +900,7 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
     })
     .where("id = :userId AND active = :active", {
       userId,
+      // $TODO wat?
       active: ARTWORK_ACTIVE_STATUS,
     })
     .execute();

@@ -5,21 +5,33 @@ import openSocket from "socket.io-client";
 import useSound from "use-sound";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { useTracked as useAppContext } from "../../contexts/global/App.js";
-import { useTracked as useEventsContext } from "../../contexts/global/Events.js";
-import { useTracked as useUserContext } from "../../contexts/global/User.js";
+import { useAppStore } from "../../contexts/global/app.js";
+import { useEventsStore } from "../../contexts/global/events.js";
+import { useUserStore } from "../../contexts/global/user.js";
 import App from "../../pages/App/App.js";
 import { postLogout } from "../../services/user.js";
 
-const ENDPOINT = "http://localhost:5000";
-
 const ax = axios.create();
-let socket = openSocket(ENDPOINT);
+export const socket = { instance: null, payload: null };
 
-const Interceptor = ({ children }) => {
-  const [appStore, appDispatch] = useAppContext();
-  const [userStore, userDispatch] = useUserContext();
-  const [eventsStore, eventsDispatch] = useEventsContext();
+const Interceptor = () => {
+  const theme = useAppStore((state) => state.theme);
+  const loading = useAppStore((state) => state.loading);
+  const setApp = useAppStore((state) => state.setApp);
+
+  const userToken = useUserStore((state) => state.token);
+  const setUser = useUserStore((state) => state.setUser);
+  const updateUser = useUserStore((state) => state.updateUser);
+  const resetUser = useUserStore((state) => state.resetUser);
+
+  const notificationCount = useEventsStore(
+    (state) => state.notifications.count
+  );
+  const setEvents = useEventsStore((state) => state.setEvents);
+  const updateEvents = useEventsStore((state) => state.updateEvents);
+  const incrementNotification = useEventsStore(
+    (state) => state.incrementNotification
+  );
 
   const [playNotification] = useSound(notificationSound);
 
@@ -29,13 +41,9 @@ const Interceptor = ({ children }) => {
 
   const getRefreshToken = async () => {
     try {
-      if (!userStore.token) {
-        appDispatch({
-          type: "SET_APP",
-          loading: true,
-          error: false,
-          theme: appStore.theme,
-        });
+      if (!userToken) {
+        console.log("GET REFRESH TOKEN");
+        setApp({ loading: true, error: false, theme });
 
         const { data } = await axios.post("/api/auth/refresh_token", {
           headers: {
@@ -44,8 +52,7 @@ const Interceptor = ({ children }) => {
         });
 
         if (data.user) {
-          userDispatch({
-            type: "SET_USER",
+          setUser({
             authenticated: true,
             token: data.accessToken,
             id: data.user.id,
@@ -63,12 +70,7 @@ const Interceptor = ({ children }) => {
               return object;
             }, {}),
           });
-          eventsDispatch({
-            type: "SET_EVENTS",
-            messages: {
-              items: [],
-              count: data.user.messages,
-            },
+          setEvents({
             notifications: {
               items: [],
               count: data.user.notifications,
@@ -79,28 +81,13 @@ const Interceptor = ({ children }) => {
               limit: 10,
             },
           });
-          appDispatch({
-            type: "SET_APP",
-            loading: false,
-            error: false,
-            theme: appStore.theme,
-          });
+          setApp({ loading: false, error: false, theme });
         } else {
-          appDispatch({
-            type: "SET_APP",
-            loading: false,
-            error: false,
-            theme: appStore.theme,
-          });
+          setApp({ loading: false, error: false, theme });
         }
       }
     } catch (err) {
-      appDispatch({
-        type: "SET_APP",
-        loading: false,
-        error: true,
-        theme: appStore.theme,
-      });
+      setApp({ loading: false, error: err, theme });
     }
   };
 
@@ -123,30 +110,26 @@ const Interceptor = ({ children }) => {
             reject(error);
           });
         }
-
+        socket.instance.emit("disconnectUser");
         if (
           error.config.url === "/api/auth/refresh_token" ||
           error.response.message === "Forbidden"
         ) {
           await postLogout.request();
-          userDispatch({
-            type: "RESET_USER",
-          });
+          resetUser();
           history.push("/login");
 
           return new Promise((resolve, reject) => {
             reject(error);
           });
         }
-
         const { data } = await axios.post("/api/auth/refresh_token", {
           headers: {
             credentials: "include",
           },
         });
-
-        userDispatch({
-          type: "UPDATE_USER",
+        console.log("UPDATE REFRESH TOKEN");
+        updateUser({
           token: data.accessToken,
           email: data.user.email,
           avatar: data.user.avatar,
@@ -161,13 +144,9 @@ const Interceptor = ({ children }) => {
             return object;
           }, {}),
         });
-
-        eventsDispatch({
-          type: "UPDATE_EVENTS",
-          messages: { items: [], count: data.user.messages },
+        updateEvents({
           notifications: { count: data.user.notifications },
         });
-
         const config = error.config;
         config.headers["Authorization"] = `Bearer ${data.accessToken}`;
 
@@ -188,24 +167,21 @@ const Interceptor = ({ children }) => {
   };
 
   const handleSocketNotification = (data) => {
-    eventsDispatch({
-      type: "ADD_NOTIFICATION",
-      notification: data,
-      cursor: data.id,
-    });
+    console.log("INCREMENT NOFIRICATION");
+    incrementNotification({ notification: data, cursor: data.id });
     playNotification();
   };
 
   const handleSocketRefresh = async (payload) => {
+    console.log("SOCKETT REFRESH");
     try {
+      socket.instance.emit("disconnectUser");
       const { data } = await axios.post(`/api/auth/refresh_token`, {
         headers: {
           credentials: "include",
         },
       });
-
-      userDispatch({
-        type: "UPDATE_USER",
+      updateUser({
         token: data.accessToken,
         email: data.user.email,
         avatar: data.user.avatar,
@@ -220,44 +196,57 @@ const Interceptor = ({ children }) => {
           return object;
         }, {}),
       });
-      socket.emit("authenticateUser", {
-        token: `Bearer ${data.accessToken}`,
-        data: payload,
-      });
+      if (notificationCount !== data.user.notifications) {
+        updateEvents({
+          notifications: { count: data.user.notifications },
+        });
+        playNotification();
+      }
+
+      // not needed because of useEffect?
+      // socket.emit("authenticateUser", {
+      //   token: `Bearer ${data.accessToken}`,
+      //   data: payload,
+      // });
+      socket.payload = payload;
     } catch (err) {
-      userDispatch({
-        type: "RESET_USER",
-      });
+      resetUser();
     }
   };
 
   const handleSocket = (token) => {
-    socket = openSocket(ENDPOINT);
+    if (token) {
+      socket.instance = openSocket();
 
-    socket.emit("authenticateUser", {
-      token: token ? `Bearer ${token}` : null,
-    });
-    socket.on("sendNotification", handleSocketNotification);
-    socket.on("expiredToken", handleSocketRefresh);
+      socket.instance.emit("authenticateUser", {
+        token: token ? `Bearer ${token}` : null,
+        data: socket.payload,
+      });
+      socket.payload = null;
+      socket.instance.on("sendNotification", handleSocketNotification);
+      socket.instance.on("expiredToken", handleSocketRefresh);
+    } else {
+      if (socket && socket.instance) socket.instance.emit("disconnectUser");
+    }
   };
 
   useEffect(() => {
     getRefreshToken();
     return () => {
-      socket.off("sendNotification", handleSocketNotification);
-      socket.off("expiredToken", handleSocketRefresh);
+      socket.instance.off("sendNotification", handleSocketNotification);
+      socket.instance.off("expiredToken", handleSocketRefresh);
     };
   }, []);
 
   useEffect(() => {
-    interceptTraffic(userStore.token);
+    interceptTraffic(userToken);
     return () => {
       axios.interceptors.request.eject(ax);
       axios.interceptors.response.eject(ax);
     };
-  }, [userStore.token]);
+  }, [userToken]);
 
-  return appStore.loading ? <LoadingSpinner /> : <App socket={socket} />;
+  return loading ? <LoadingSpinner /> : <App />;
 };
 
 export { ax };

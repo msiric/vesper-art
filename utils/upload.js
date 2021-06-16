@@ -20,6 +20,8 @@ const SHARP_FORMATS = {
   "image/gif": { type: "gif", animated: true },
 };
 
+const ALLOWED_RATIO = 5;
+
 export const userS3Upload = async ({ filePath, fileName, mimeType }) => {
   const sharpMedia = await sharp(filePath, {
     animated: SHARP_FORMATS[mimeType].animated,
@@ -49,7 +51,7 @@ export const artworkS3Upload = async ({ filePath, fileName, mimeType }) => {
     animated: SHARP_FORMATS[mimeType].animated,
   })
     .resize(upload.artwork.fileTransform.width)
-    [SHARP_FORMATS[mimeType].type]()
+    [SHARP_FORMATS[mimeType].type]({ quality: 100 })
     .toBuffer();
   const {
     dominant: { r, g, b },
@@ -72,6 +74,12 @@ export const artworkS3Upload = async ({ filePath, fileName, mimeType }) => {
     media: artworkMediaPath,
     dominant: artworkDominant,
   };
+};
+
+export const verifyAspectRatio = async ({ fileHeight, fileWidth }) => {
+  const difference =
+    Math.max(fileHeight, fileWidth) / Math.min(fileHeight, fileWidth);
+  return difference <= ALLOWED_RATIO;
 };
 
 export const verifyDimensions = async ({ filePath, fileType }) => {
@@ -109,22 +117,30 @@ export const finalizeMediaUpload = async ({
     // $TODO Verify that the user uploading the avatar is valid and check its id
     if (filePath && fileName) {
       const verifiedInput = await verifyDimensions({ filePath, fileType });
+      const verifiedRatio = verifyAspectRatio({
+        fileHeight: verifiedInput.dimensions.height,
+        fileWidth: verifiedInput.dimensions.width,
+      });
       if (verifiedInput.valid) {
-        const { cover, media, dominant } =
-          fileType === "artwork"
-            ? await artworkS3Upload({ filePath, fileName, mimeType })
-            : await userS3Upload({ filePath, fileName, mimeType });
+        if (verifiedRatio) {
+          const { cover, media, dominant } =
+            fileType === "artwork"
+              ? await artworkS3Upload({ filePath, fileName, mimeType })
+              : await userS3Upload({ filePath, fileName, mimeType });
+          deleteFileLocally({ filePath });
+          fileUpload.fileCover = cover;
+          fileUpload.fileMedia = media;
+          fileUpload.fileDominant = dominant;
+          fileUpload.fileHeight = verifiedInput.dimensions.height;
+          fileUpload.fileWidth = verifiedInput.dimensions.width;
+          fileUpload.fileOrientation = checkImageOrientation(
+            verifiedInput.dimensions.width,
+            verifiedInput.dimensions.height
+          );
+          return fileUpload;
+        }
         deleteFileLocally({ filePath });
-        fileUpload.fileCover = cover;
-        fileUpload.fileMedia = media;
-        fileUpload.fileDominant = dominant;
-        fileUpload.fileHeight = verifiedInput.dimensions.height;
-        fileUpload.fileWidth = verifiedInput.dimensions.width;
-        fileUpload.fileOrientation = checkImageOrientation(
-          verifiedInput.dimensions.width,
-          verifiedInput.dimensions.height
-        );
-        return fileUpload;
+        throw createError(400, "File aspect ratio is not valid");
       }
       deleteFileLocally({ filePath });
       throw createError(400, "File dimensions are not valid");
