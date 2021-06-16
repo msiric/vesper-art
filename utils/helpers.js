@@ -176,6 +176,13 @@ export const isNotAuthenticated = async (req, res, next) => {
   return next();
 };
 
+export const isAuthorized = async (req, res, next) => {
+  if (req.params.userId === res.locals.user.id) {
+    return next();
+  }
+  throw createError(401, "Not authorized to request resource");
+};
+
 export const validateParams = (req, res, next) => {
   let isValid = true;
   for (let param in req.params) {
