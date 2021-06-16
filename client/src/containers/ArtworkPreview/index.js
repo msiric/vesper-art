@@ -32,7 +32,6 @@ const ArtworkPreview = ({ paramId }) => {
       <Box className={classes.imageWrapper}>
         <ImageWrapper
           height={version.height || 500}
-          width={version.width}
           source={version.cover.source}
           placeholder={version.cover.dominant}
           loading={loading}

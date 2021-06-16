@@ -99,7 +99,6 @@ const ArtworkCard = ({
       <ImageWrapper
         redirect={`/artwork/${item.id}`}
         height={item.data.height}
-        width={item.data.width}
         source={item.data.cover ? item.data.cover.source : ""}
         placeholder={
           item.data.cover ? item.data.cover.dominant : item.data.dominant

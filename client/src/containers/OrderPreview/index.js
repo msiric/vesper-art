@@ -20,7 +20,6 @@ const OrderPreview = () => {
       <Box className={classes.wrapper}>
         <ImageWrapper
           height={version.cover.height || 500}
-          width={version.cover.width}
           source={version.cover.source}
           placeholder={version.cover.dominant}
           loading={loading}

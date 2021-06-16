@@ -29,11 +29,16 @@ const ImageWrapper = ({
     )
   ) : cover ? (
     <Box className={classes.wrapper}>
-      <LoadingSpinner className={classes.spinner} />
-      <img className={classes.media} src={cover} />
+      <LoadingSpinner styles={classes.spinner} />
+      <img className={`${classes.media} ${classes.opacity}`} src={cover} />
     </Box>
   ) : (
-    <Box className={classes.hiddenWrapper} loading={true}>
+    <Box
+      className={classes.hiddenWrapper}
+      height={height}
+      width="100%"
+      loading={true}
+    >
       <img className={`${classes.media} ${classes.hidden}`} src={source} />
     </Box>
   );

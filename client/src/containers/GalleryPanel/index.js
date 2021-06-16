@@ -119,7 +119,6 @@ const GalleryPanel = ({ formatArtwork }) => {
                 {
                   <ImageWrapper
                     height={item.height}
-                    width={item.width}
                     source={item.media ? item.media : item.cover}
                     cover={item.cover}
                     placeholder={item.dominant}

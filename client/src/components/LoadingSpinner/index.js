@@ -8,7 +8,7 @@ const LoadingSpinner = ({ styles }) => {
   const classes = loadingSpinnerStyles();
 
   return (
-    <Container className={classes.container} style={{ ...styles }}>
+    <Container className={`${classes.container} ${styles}`}>
       <Grid container spacing={2}>
         <Grid item xs={12} className={classes.item}>
           <CircularProgress className={classes.circle} />
