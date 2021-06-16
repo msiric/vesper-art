@@ -10,7 +10,7 @@ const initialState = {
     hasMore: true,
     cursor: "",
     limit: 10,
-    error: { retry: false, message: "" },
+    error: { retry: false, redirect: false, message: "" },
   },
   modal: {
     id: null,

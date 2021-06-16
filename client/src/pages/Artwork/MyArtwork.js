@@ -12,6 +12,7 @@ import { containsErrors, renderError } from "../../utils/helpers.js";
 const MyArtwork = ({}) => {
   const modal = useUserUploads((state) => state.modal);
   const retry = useUserUploads((state) => state.uploads.error.retry);
+  const redirect = useUserUploads((state) => state.uploads.error.redirect);
   const message = useUserUploads((state) => state.uploads.error.message);
   const isDeleting = useUserUploads((state) => state.isDeleting);
   const closeModal = useUserUploads((state) => state.closeModal);
@@ -39,7 +40,7 @@ const MyArtwork = ({}) => {
     };
   }, []);
 
-  return !containsErrors(retry) ? (
+  return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12} className={globalClasses.elementWidth}>
@@ -58,7 +59,7 @@ const MyArtwork = ({}) => {
       />
     </Container>
   ) : (
-    renderError({ retry, message })
+    renderError({ retry, redirect, message })
   );
 };
 

@@ -15,12 +15,12 @@ const initialState = {
   aggregateStats: {
     data: {},
     loading: true,
-    error: { retry: false, message: "" },
+    error: { retry: false, redirect: false, message: "" },
   },
   selectedStats: {
     data: { licenses: {} },
     loading: true,
-    error: { retry: false, message: "" },
+    error: { retry: false, redirect: false, message: "" },
   },
   display: {
     type: "purchases",

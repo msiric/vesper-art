@@ -22,11 +22,17 @@ const Dashboard = ({}) => {
   const aggregateRetry = useUserStats(
     (state) => state.aggregateStats.error.retry
   );
+  const aggregateRedirect = useUserStats(
+    (state) => state.aggregateStats.error.redirect
+  );
   const aggregateMessage = useUserStats(
     (state) => state.aggregateStats.error.message
   );
   const selectedRetry = useUserStats(
     (state) => state.selectedStats.error.retry
+  );
+  const selectedRedirect = useUserStats(
+    (state) => state.selectedStats.error.redirect
   );
   const selectedMessage = useUserStats(
     (state) => state.selectedStats.error.message
@@ -46,7 +52,12 @@ const Dashboard = ({}) => {
     };
   }, []);
 
-  return !containsErrors(aggregateRetry, selectedRetry) ? (
+  return !containsErrors(
+    aggregateRetry,
+    aggregateRedirect,
+    selectedRetry,
+    selectedRedirect
+  ) ? (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
       <Container className={globalClasses.gridContainer}>
         <Grid container className={classes.wrapper}>
@@ -59,8 +70,16 @@ const Dashboard = ({}) => {
     </LocalizationProvider>
   ) : (
     renderError(
-      { retry: aggregateRetry, message: aggregateMessage },
-      { retry: selectedRetry, message: selectedMessage }
+      {
+        retry: aggregateRetry,
+        redirect: aggregateRedirect,
+        message: aggregateMessage,
+      },
+      {
+        retry: selectedRetry,
+        redirect: selectedRedirect,
+        message: selectedMessage,
+      }
     )
   );
 };

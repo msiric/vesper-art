@@ -9,6 +9,7 @@ import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const Orders = () => {
   const retry = useUserOrders((state) => state.orders.error.retry);
+  const redirect = useUserOrders((state) => state.orders.error.redirect);
   const message = useUserOrders((state) => state.orders.error.message);
   const resetOrders = useUserOrders((state) => state.resetOrders);
 
@@ -24,7 +25,7 @@ const Orders = () => {
     };
   }, []);
 
-  return !containsErrors(retry) ? (
+  return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12} className={globalClasses.elementWidth}>
@@ -34,7 +35,7 @@ const Orders = () => {
       </Grid>
     </Container>
   ) : (
-    renderError({ retry, message })
+    renderError({ retry, redirect, message })
   );
 };
 

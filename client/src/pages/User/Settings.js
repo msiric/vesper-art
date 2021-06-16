@@ -37,6 +37,7 @@ const Settings = ({ location }) => {
   const resetEvents = useEventsStore((state) => state.resetEvents);
 
   const retry = useUserSettings((state) => state.user.error.retry);
+  const redirect = useUserSettings((state) => state.user.error.redirect);
   const message = useUserSettings((state) => state.user.error.message);
   const resetSettings = useUserSettings((state) => state.resetSettings);
 
@@ -64,7 +65,7 @@ const Settings = ({ location }) => {
     };
   }, []);
 
-  return !containsErrors(retry) ? (
+  return !containsErrors(retry, redirect) ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
@@ -87,7 +88,7 @@ const Settings = ({ location }) => {
       <SettingsWrapper />
     </Container>
   ) : (
-    renderError({ retry, message })
+    renderError({ retry, redirect, message })
   );
 };
 
