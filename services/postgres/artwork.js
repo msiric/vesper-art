@@ -138,11 +138,11 @@ export const fetchArtworkDetails = async ({
       reviews: foundArtwork.owner.reviews,
     });
     foundArtwork.favorites = foundArtwork.favorites.length;
+    foundArtwork.current.media = {
+      height: foundArtwork.current.media.height,
+      width: foundArtwork.current.media.width,
+    };
   }
-  foundArtwork.current.media = {
-    height: foundArtwork.current.media.height,
-    width: foundArtwork.current.media.width,
-  };
   console.log(foundArtwork);
   return foundArtwork;
 };

@@ -58,7 +58,7 @@ export const getArtworkDetails = async ({
     connection,
   });
   if (foundArtwork) return { artwork: foundArtwork };
-  throw createError(400, "Artwork not found");
+  throw createError(404, "Artwork not found");
 };
 
 export const getArtworkComments = async ({
