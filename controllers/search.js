@@ -4,7 +4,7 @@ import {
   fetchArtworkResults,
   fetchUserResults,
 } from "../services/postgres/search.js";
-import { sanitizeData } from "../utils/helpers.js";
+import {} from "../utils/helpers.js";
 import searchValidator from "../validation/search.js";
 
 export const getResults = async ({
@@ -14,7 +14,7 @@ export const getResults = async ({
   limit,
   connection,
 }) => {
-  const { error } = searchValidator(sanitizeData({ searchQuery, searchType }));
+  const { error } = searchValidator({ searchQuery, searchType });
 
   let foundResults = [];
   let foundType = null;

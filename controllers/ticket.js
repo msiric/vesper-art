@@ -1,7 +1,7 @@
 import { ticketValidation } from "../common/validation";
 import { addNewTicket } from "../services/postgres/ticket.js";
 import { sendEmail } from "../utils/email.js";
-import { generateUuids, sanitizeData } from "../utils/helpers.js";
+import { generateUuids } from "../utils/helpers.js";
 
 // how to handle transactions?
 // treba sredit
@@ -12,7 +12,7 @@ export const postTicket = async ({
   ticketBody,
   connection,
 }) => {
-  await ticketValidation.validate(sanitizeData({ ticketTitle, ticketBody }));
+  await ticketValidation.validate({ ticketTitle, ticketBody });
   const { ticketId } = generateUuids({
     ticketId: null,
   });

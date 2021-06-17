@@ -34,7 +34,7 @@ import {
   fetchUserById,
   removeExistingIntent,
 } from "../services/postgres/user.js";
-import { generateUuids, sanitizeData } from "../utils/helpers.js";
+import { generateUuids } from "../utils/helpers.js";
 import { calculateTotalCharge } from "../utils/payment";
 
 export const isIntentPending = (intent) => {
@@ -210,11 +210,9 @@ export const managePaymentIntent = async ({
                 // $TODO Sredit validnu licencu (npr, ako je "use": "included", ne moze bit odabran personal license)
                 // e.g. isArtworkFree(), isArtworkForSale(), isValidPersonalLicense(), isValidCommercialLicense()
                 shouldReinitialize
-                  ? await licenseValidation.validate(
-                      sanitizeData({
-                        ...licenseData,
-                      })
-                    )
+                  ? await licenseValidation.validate({
+                      ...licenseData,
+                    })
                   : await Yup.reach(licenseValidation, "licenseType").validate(
                       licenseData.licenseType
                     );
@@ -453,13 +451,11 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     console.log("IDS DECODED");
     const { licenseAssignee, licenseCompany, licenseType, licensePrice } =
       orderData.licenseData;
-    await licenseValidation.validate(
-      sanitizeData({
-        licenseAssignee,
-        licenseCompany,
-        licenseType,
-      })
-    );
+    await licenseValidation.validate({
+      licenseAssignee,
+      licenseCompany,
+      licenseType,
+    });
     console.log("LICENSE VALIDATED");
     const { licenseId, orderId, notificationId } = generateUuids({
       licenseId: null,
@@ -479,20 +475,18 @@ const processTransaction = async ({ stripeIntent, connection }) => {
       connection,
     });
     console.log("LICENSE SAVED");
-    await orderValidation.validate(
-      sanitizeData({
-        orderBuyer: buyerId,
-        orderSeller: sellerId,
-        orderArtwork: artworkId,
-        orderVersion: versionId,
-        orderDiscount: discountId,
-        orderLicense: licenseId,
-        orderSpent: orderData.spent,
-        orderEarned: orderData.earned,
-        orderFee: orderData.fee,
-        orderIntent: intentId,
-      })
-    );
+    await orderValidation.validate({
+      orderBuyer: buyerId,
+      orderSeller: sellerId,
+      orderArtwork: artworkId,
+      orderVersion: versionId,
+      orderDiscount: discountId,
+      orderLicense: licenseId,
+      orderSpent: orderData.spent,
+      orderEarned: orderData.earned,
+      orderFee: orderData.fee,
+      orderIntent: intentId,
+    });
     console.log("ORDER VALIDATED");
     const orderObject = {
       buyerId,

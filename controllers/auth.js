@@ -36,11 +36,7 @@ import {
   sendRefreshToken,
 } from "../utils/auth.js";
 import { sendEmail } from "../utils/email.js";
-import {
-  generateToken,
-  generateUuids,
-  sanitizeData,
-} from "../utils/helpers.js";
+import { generateToken, generateUuids } from "../utils/helpers.js";
 
 // needs transaction (not tested)
 export const postSignUp = async ({
@@ -50,14 +46,12 @@ export const postSignUp = async ({
   userConfirm,
   connection,
 }) => {
-  await signupValidation.validate(
-    sanitizeData({
-      userEmail,
-      userUsername,
-      userPassword,
-      userConfirm,
-    })
-  );
+  await signupValidation.validate({
+    userEmail,
+    userUsername,
+    userPassword,
+    userConfirm,
+  });
   const foundId = await fetchUserIdByCreds({
     userUsername,
     connection,
@@ -99,7 +93,7 @@ export const postLogIn = async ({
   res,
   connection,
 }) => {
-  await loginValidation.validate(sanitizeData({ userUsername, userPassword }));
+  await loginValidation.validate({ userUsername, userPassword });
 
   const foundId = await fetchUserIdByUsername({
     userUsername,
@@ -191,7 +185,7 @@ export const verifyRegisterToken = async ({ tokenId, connection }) => {
 };
 
 export const forgotPassword = async ({ userEmail, connection }) => {
-  await emailValidation.validate(sanitizeData({ userEmail }));
+  await emailValidation.validate({ userEmail });
   crypto.randomBytes(20, async function (err, buf) {
     const resetToken = buf.toString("hex");
     await editUserResetToken({ userEmail, resetToken, connection });
@@ -229,13 +223,11 @@ export const resetPassword = async ({
         errors.badRequest,
         "New password cannot be identical to the old one"
       );
-    await passwordValidation.validate(
-      sanitizeData({
-        userCurrent,
-        userPassword,
-        userConfirm,
-      })
-    );
+    await passwordValidation.validate({
+      userCurrent,
+      userPassword,
+      userConfirm,
+    });
     const hashedPassword = await argon2.hash(userPassword);
     await resetUserPassword({ tokenId, hashedPassword, connection });
     return { message: "Password updated successfully" };
@@ -244,11 +236,9 @@ export const resetPassword = async ({
 };
 
 export const resendToken = async ({ userEmail, connection }) => {
-  await emailValidation.validate(
-    sanitizeData({
-      userEmail,
-    })
-  );
+  await emailValidation.validate({
+    userEmail,
+  });
   const foundUser = await fetchUserByEmail({
     userEmail,
     connection,
@@ -287,13 +277,11 @@ export const updateEmail = async ({
   userPassword,
   connection,
 }) => {
-  await recoveryValidation.validate(
-    sanitizeData({
-      userEmail,
-      userUsername,
-      userPassword,
-    })
-  );
+  await recoveryValidation.validate({
+    userEmail,
+    userUsername,
+    userPassword,
+  });
   const foundId = await fetchUserIdByUsername({
     userUsername,
     connection,

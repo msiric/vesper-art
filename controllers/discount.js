@@ -5,12 +5,12 @@ import {
   addNewDiscount,
   fetchDiscountByCode,
 } from "../services/postgres/discount.js";
-import { sanitizeData } from "../utils/helpers.js";
+import {} from "../utils/helpers.js";
 
 // needs transaction (done)
 // treba sredit
 export const getDiscount = async ({ userId, discountCode, connection }) => {
-  await discountValidation.validate(sanitizeData({ discountCode }));
+  await discountValidation.validate({ discountCode });
   const foundDiscount = await fetchDiscountByCode({
     discountCode,
     connection,

@@ -7,7 +7,7 @@ import { addNewLicense } from "../services/postgres/license";
 import { addNewNotification } from "../services/postgres/notification.js";
 import { addNewOrder } from "../services/postgres/order.js";
 import { fetchUserById } from "../services/postgres/user.js";
-import { generateUuids, sanitizeData } from "../utils/helpers.js";
+import { generateUuids } from "../utils/helpers.js";
 
 export const getCheckout = async ({ userId, versionId, connection }) => {
   const foundVersion = await fetchVersionDetails({ versionId, connection });
@@ -33,13 +33,11 @@ export const postDownload = async ({
   if (foundVersion && foundVersion.artwork.active) {
     // $TODO Bolje sredit validaciju licence
     // $TODO Sredit validnu licencu (npr, ako je "use": "included", ne moze bit odabran personal license)
-    await licenseValidation.validate(
-      sanitizeData({
-        licenseAssignee,
-        licenseCompany,
-        licenseType,
-      })
-    );
+    await licenseValidation.validate({
+      licenseAssignee,
+      licenseCompany,
+      licenseType,
+    });
     // $TODO Check if artwork is free, and validate license and version correctly
     const licensePrice = foundVersion[licenseType];
     // $TODO Treba li dohvacat usera?
@@ -65,19 +63,17 @@ export const postDownload = async ({
               },
               connection,
             });
-            await downloadValidation.validate(
-              sanitizeData({
-                orderBuyer: foundUser.id,
-                orderSeller: foundVersion.artwork.owner.id,
-                orderArtwork: foundVersion.artwork.id,
-                orderVersion: foundVersion.id,
-                orderDiscount: null,
-                orderLicense: licenseId,
-                orderSpent: 0,
-                orderEarned: 0,
-                orderFee: 0,
-              })
-            );
+            await downloadValidation.validate({
+              orderBuyer: foundUser.id,
+              orderSeller: foundVersion.artwork.owner.id,
+              orderArtwork: foundVersion.artwork.id,
+              orderVersion: foundVersion.id,
+              orderDiscount: null,
+              orderLicense: licenseId,
+              orderSpent: 0,
+              orderEarned: 0,
+              orderFee: 0,
+            });
             const orderObject = {
               buyerId: foundUser.id,
               sellerId: foundVersion.artwork.owner.id,

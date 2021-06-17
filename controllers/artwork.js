@@ -29,11 +29,7 @@ import {
 } from "../services/postgres/order.js";
 import { fetchStripeAccount } from "../services/postgres/stripe.js";
 import { fetchUserById } from "../services/postgres/user.js";
-import {
-  formatArtworkValues,
-  generateUuids,
-  sanitizeData,
-} from "../utils/helpers.js";
+import { formatArtworkValues, generateUuids } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 
 export const getArtwork = async ({ cursor, limit, connection }) => {
@@ -122,7 +118,7 @@ export const postNewArtwork = async ({
     artworkUpload.fileOrientation
   ) {
     const formattedData = formatArtworkValues(artworkData);
-    await artworkValidation.validate(sanitizeData(formattedData));
+    await artworkValidation.validate(formattedData);
     if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
       const foundUser = await fetchUserById({
         userId,
@@ -205,7 +201,7 @@ export const updateArtwork = async ({
     fileType: "artwork",
   }); */
   const formattedData = formatArtworkValues(artworkData);
-  await artworkValidation.validate(sanitizeData(formattedData));
+  await artworkValidation.validate(formattedData);
   const foundArtwork = await fetchArtworkMedia({
     artworkId,
     userId,

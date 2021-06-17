@@ -2,10 +2,10 @@ import createError from "http-errors";
 import { errors } from "../common/constants";
 import { fingerprintValidation } from "../common/validation";
 import { fetchLicenseByFingerprint } from "../services/postgres/license.js";
-import { sanitizeData } from "../utils/helpers.js";
+import {} from "../utils/helpers.js";
 
 export const verifyLicense = async ({ licenseFingerprint, connection }) => {
-  await fingerprintValidation.validate(sanitizeData({ licenseFingerprint }));
+  await fingerprintValidation.validate({ licenseFingerprint });
   const foundLicense = await fetchLicenseByFingerprint({
     licenseFingerprint,
     connection,

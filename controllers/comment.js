@@ -10,7 +10,7 @@ import {
   removeExistingComment,
 } from "../services/postgres/comment.js";
 import { addNewNotification } from "../services/postgres/notification.js";
-import { generateUuids, sanitizeData } from "../utils/helpers.js";
+import { generateUuids } from "../utils/helpers.js";
 
 export const getComment = async ({ artworkId, commentId, connection }) => {
   const foundComment = await fetchCommentById({
@@ -27,7 +27,7 @@ export const postComment = async ({
   commentContent,
   connection,
 }) => {
-  await commentValidation.validate(sanitizeData({ commentContent }));
+  await commentValidation.validate({ commentContent });
   const foundArtwork = await fetchArtworkById({ artworkId, connection });
   if (!foundArtwork) {
     throw createError(errors.notFound, "Artwork not found");
@@ -72,7 +72,7 @@ export const patchComment = async ({
   commentContent,
   connection,
 }) => {
-  await commentValidation.validate(sanitizeData({ commentContent }));
+  await commentValidation.validate({ commentContent });
   await editExistingComment({
     commentId,
     artworkId,

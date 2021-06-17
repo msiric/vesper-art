@@ -197,21 +197,40 @@ export const validateParams = (req, res, next) => {
   throw createError(errors.badRequest, "Invalid route parameter");
 };
 
-export const sanitizeData = (body) =>
-  Object.keys(body).reduce((obj, key) => {
-    if (body[key] === null) return obj;
-    if (Array.isArray(body[key])) {
-      obj[key] = body[key].map((elem) => {
-        if (typeof elem === "object") return sanitizeData(elem);
-        return escapeHTML(elem);
-      });
-    } else if (typeof body[key] === "object") {
-      obj[key] = sanitizeData(body[key]);
-    } else {
-      obj[key] = escapeHTML(body[key]);
-    }
-    return obj;
-  }, {});
+export const sanitizeQuery = (req, res, next) => {
+  if (req && res && next) {
+    req.query = sanitizeData(req.query);
+    return next();
+  }
+  return;
+};
+
+export const sanitizeBody = (req, res, next) => {
+  if (req && res && next) {
+    req.body = sanitizeData(req.body);
+    return next();
+  }
+  return;
+};
+
+export const sanitizeData = (data) => {
+  return typeof data === "object"
+    ? Object.keys(data).reduce((obj, key) => {
+        if (data[key] === null) return obj;
+        if (Array.isArray(data[key])) {
+          obj[key] = data[key].map((elem) => {
+            if (typeof elem === "object") return sanitizeData(elem);
+            return escapeHTML(elem);
+          });
+        } else if (typeof data[key] === "object") {
+          obj[key] = sanitizeData(data[key]);
+        } else {
+          obj[key] = escapeHTML(data[key]);
+        }
+        return obj;
+      }, {})
+    : data;
+};
 
 export const checkImageOrientation = (width, height) => {
   if (width > height) {

@@ -50,11 +50,7 @@ import {
   removeUserAvatar,
 } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
-import {
-  generateToken,
-  generateUuids,
-  sanitizeData,
-} from "../utils/helpers.js";
+import { generateToken, generateUuids } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 
 aws.config.update({
@@ -213,7 +209,7 @@ export const updateUserOrigin = async ({
   userBusinessAddress,
   connection,
 }) => {
-  await originValidation.validate(sanitizeData({ userBusinessAddress }));
+  await originValidation.validate({ userBusinessAddress });
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
     await editUserOrigin({
@@ -242,7 +238,7 @@ export const updateUserProfile = async ({
     mimeType: userMimetype,
     fileType: "user",
   });
-  await profileValidation.validate(sanitizeData(userData));
+  await profileValidation.validate(userData);
   const foundUser = await fetchUserById({ userId, connection });
   let avatarId = null;
   if (avatarUpload.fileMedia) {
@@ -276,7 +272,7 @@ export const updateUserProfile = async ({
     });
   } else {
     if (!foundUser.avatar) {
-      avatarId = foundUser.avatar.id;
+      avatarId = null;
     }
     await editUserProfile({
       foundUser,
@@ -350,7 +346,7 @@ export const deleteUserIntent = async ({ userId, intentId, connection }) => {
 
 // $TODO Update user context with new data
 export const updateUserEmail = async ({ userId, userEmail, connection }) => {
-  await emailValidation.validate(sanitizeData({ userEmail }));
+  await emailValidation.validate({ userEmail });
   const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
   if (emailUsed) {
     throw createError(
@@ -394,13 +390,11 @@ export const updateUserPassword = async ({
         errors.badRequest,
         "New password cannot be identical to the old one"
       );
-    await passwordValidation.validate(
-      sanitizeData({
-        userCurrent,
-        userPassword,
-        userConfirm,
-      })
-    );
+    await passwordValidation.validate({
+      userCurrent,
+      userPassword,
+      userConfirm,
+    });
     const hashedPassword = await argon2.hash(userPassword);
     await editUserPassword({ userId, hashedPassword, connection });
     return { message: "Password updated successfully" };
@@ -415,7 +409,7 @@ export const updateUserPreferences = async ({
   userFavorites,
   connection,
 }) => {
-  await preferencesValidation.validate(sanitizeData({ userFavorites }));
+  await preferencesValidation.validate({ userFavorites });
   await editUserPreferences({ userId, userFavorites, connection });
   return { message: "Preferences updated successfully" };
 };

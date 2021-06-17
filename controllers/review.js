@@ -9,7 +9,7 @@ import {
   fetchUserPurchase,
 } from "../services/postgres/order.js";
 import { addNewReview } from "../services/postgres/review.js";
-import { generateUuids, sanitizeData } from "../utils/helpers.js";
+import { generateUuids } from "../utils/helpers.js";
 
 // needs transaction (done)
 export const postReview = async ({
@@ -18,7 +18,7 @@ export const postReview = async ({
   orderId,
   connection,
 }) => {
-  await reviewValidation.validate(sanitizeData({ reviewRating }));
+  await reviewValidation.validate({ reviewRating });
   if (reviewRating) {
     const foundOrder = await fetchUserPurchase({
       orderId,

@@ -16,7 +16,11 @@ import { domain } from "./config/secret";
 import { mongo, postgres } from "./config/secret.js";
 import api from "./routes/api/index.js";
 import stripe from "./routes/stripe/index.js";
-import { validateParams } from "./utils/helpers.js";
+import {
+  sanitizeBody,
+  sanitizeQuery,
+  validateParams,
+} from "./utils/helpers.js";
 
 const app = express();
 const dirname = path.resolve();
@@ -99,8 +103,8 @@ app.use(helmet({ contentSecurityPolicy: false }));
 
 // app.use(rateLimiter);
 
-app.use("/api", validateParams, api);
-app.use("/stripe", validateParams, stripe);
+app.use("/api", validateParams, sanitizeQuery, sanitizeBody, api);
+app.use("/stripe", validateParams, sanitizeQuery, sanitizeBody, stripe);
 
 app.use(express.static(path.join(dirname, "client/build")));
 app.use(express.static(path.join(dirname, "public")));
