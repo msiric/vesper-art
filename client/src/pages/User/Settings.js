@@ -20,6 +20,7 @@ import { containsErrors, renderError } from "../../utils/helpers.js";
 
 const useSettingsStyles = makeStyles((muiTheme) => ({
   container: {
+    width: "100%",
     padding: 0,
     margin: "16px 0",
   },
@@ -67,22 +68,18 @@ const Settings = ({ location }) => {
 
   return !containsErrors(retry, redirect) ? (
     <Container key={location.key} className={globalClasses.gridContainer}>
-      <Grid container spacing={2}>
-        <Grid item sm={12}>
-          <MainHeading text="Settings" className={globalClasses.mainHeading} />
-          <Grid container spacing={2} className={classes.container}>
-            <Grid item xs={12} sm={6} md={4} className={classes.wrapper}>
-              <SettingsProfile />
-            </Grid>
-            <Grid item xs={12} sm={6} md={8} className={classes.wrapper}>
-              <SettingsAccount handleLogout={handleLogout} />
-              <SettingsPreferences />
-              <SettingsSecurity handleLogout={handleLogout} />
-            </Grid>
-            <Grid item xs={12} className={classes.wrapper}>
-              <SettingsActions />
-            </Grid>
-          </Grid>
+      <MainHeading text="Settings" className={globalClasses.mainHeading} />
+      <Grid container spacing={2} className={classes.container}>
+        <Grid item xs={12} sm={6} md={4} className={classes.wrapper}>
+          <SettingsProfile />
+        </Grid>
+        <Grid item xs={12} sm={6} md={8} className={classes.wrapper}>
+          <SettingsAccount handleLogout={handleLogout} />
+          <SettingsPreferences />
+          <SettingsSecurity handleLogout={handleLogout} />
+        </Grid>
+        <Grid item xs={12} className={classes.wrapper}>
+          <SettingsActions />
         </Grid>
       </Grid>
       <SettingsWrapper />
