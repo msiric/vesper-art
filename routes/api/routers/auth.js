@@ -72,6 +72,7 @@ router
   .route("/verify_token/:tokenId")
   // $DONE works
   .get(
+    isNotAuthenticated,
     handler(verifyRegisterToken, true, (req, res, next) => ({
       ...req.params,
     }))
