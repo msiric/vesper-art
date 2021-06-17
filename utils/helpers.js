@@ -27,11 +27,18 @@ const VALID_PARAMS = {
   versionId: { isValid: (value) => isValidUuid(value) },
   userUsername: { isValid: (value) => isValidString(value) },
   discountCode: { isValid: (value) => isValidString(value) },
-  cursor: { isValid: (value) => isValidUuid(value) },
+};
+
+const VALID_QUERIES = {
+  cursor: { isValid: (value) => isValidCursor(value) },
   limit: { isValid: (value) => isPositiveInteger(value) },
   start: { isValid: (value) => isPastDate(value) },
   end: { isValid: (value) => isFutureDate(value) },
 };
+
+export const isValidCursor = (value) =>
+  value === "" ||
+  (validateUuid(value) && validateVersion(value) === uuid.version);
 
 export const isValidUuid = (value) =>
   validateUuid(value) && validateVersion(value) === uuid.version;
@@ -185,22 +192,20 @@ export const isAuthorized = async (req, res, next) => {
   throw createError(errors.unauthorized, "Not authorized to request resource");
 };
 
-export const validateParams = (req, res, next) => {
-  let isValid = true;
-  for (let param in req.params) {
-    const value = req.params[param];
-    if (!value) isValid = false;
-    else if (VALID_PARAMS[param] && !VALID_PARAMS[param].isValid(value))
-      isValid = false;
-  }
+export const sanitizeParams = (req, res, next) => {
+  const isValid = sanitizeUrl(req.params);
   if (isValid) return next();
   throw createError(errors.badRequest, "Invalid route parameter");
 };
 
 export const sanitizeQuery = (req, res, next) => {
   if (req && res && next) {
-    req.query = sanitizeData(req.query);
-    return next();
+    const isValid = sanitizeUrl(req.query);
+    if (isValid) {
+      req.query = sanitizeData(req.query);
+      return next();
+    }
+    throw createError(errors.badRequest, "Invalid route query");
   }
   return;
 };
@@ -211,6 +216,17 @@ export const sanitizeBody = (req, res, next) => {
     return next();
   }
   return;
+};
+
+export const sanitizeUrl = (data) => {
+  for (let param in data) {
+    const value = data[param];
+    if (value === "undefined") return false;
+    if (VALID_PARAMS[param] && !VALID_PARAMS[param].isValid(value))
+      return false;
+    return true;
+  }
+  return true;
 };
 
 export const sanitizeData = (data) => {

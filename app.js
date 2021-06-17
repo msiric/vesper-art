@@ -18,8 +18,8 @@ import api from "./routes/api/index.js";
 import stripe from "./routes/stripe/index.js";
 import {
   sanitizeBody,
+  sanitizeParams,
   sanitizeQuery,
-  validateParams,
 } from "./utils/helpers.js";
 
 const app = express();
@@ -103,8 +103,8 @@ app.use(helmet({ contentSecurityPolicy: false }));
 
 // app.use(rateLimiter);
 
-app.use("/api", validateParams, sanitizeQuery, sanitizeBody, api);
-app.use("/stripe", validateParams, sanitizeQuery, sanitizeBody, stripe);
+app.use("/api", sanitizeParams, sanitizeQuery, sanitizeBody, api);
+app.use("/stripe", sanitizeParams, sanitizeQuery, sanitizeBody, stripe);
 
 app.use(express.static(path.join(dirname, "client/build")));
 app.use(express.static(path.join(dirname, "public")));
