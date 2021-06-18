@@ -1,18 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  AppBar,
-  Avatar,
-  Badge,
-  Button,
-  Divider,
-  IconButton,
-  ListItemAvatar,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Toolbar,
-} from "@material-ui/core";
-import {
   AccountCircleRounded as AccountIcon,
   AttachMoneyRounded as SellerIcon,
   BarChartRounded as DashboardIcon,
@@ -29,87 +16,24 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import { searchValidation } from "../../../../common/validation";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
-import LogoMobile from "../../assets/images/logo/logo-mobile.svg";
 import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
+import AppBar from "../../domain/AppBar";
+import Avatar from "../../domain/Avatar";
+import Badge from "../../domain/Badge";
+import Box from "../../domain/Box";
+import Button from "../../domain/Button";
+import Divider from "../../domain/Divider";
+import IconButton from "../../domain/IconButton";
+import ListItemAvatar from "../../domain/ListItemAvatar";
+import ListItemText from "../../domain/ListItemText";
+import Menu from "../../domain/Menu";
+import MenuItem from "../../domain/MenuItem";
+import Toolbar from "../../domain/Toolbar";
 import SearchForm from "../../forms/SearchForm";
-import { postLogout } from "../../services/user.js";
 import { socket } from "../Interceptor/Interceptor";
 import NotificationMenu from "../NotificationMenu";
 import HeaderStyles from "./styles.js";
-
-/* const AUTH_ITEMS = [
-  {
-    click: handleNotificationsMenuOpen,
-    ariaLabel: "Show notifications",
-    showBadge: true,
-    badgeValue: notifications.count,
-    icon: <NotificationsIcon />,
-    label: "Notifications",
-  },
-  {
-    click: handleProfileMenuOpen,
-    ariaLabel: "Show profile",
-    showBadge: false,
-    badgeValue: null,
-    icon: <AccountIcon />,
-    label: "Profile",
-  },
-];
-const UNAUTH_ITEMS = [
-  { redirect: "/login", label: "Login" },
-  { redirect: "/signup", label: "Sign up" },
-];
-const MENU_ITEMS = [
-  {
-    redirect: "/onboarding",
-    icon: <SellerIcon />,
-    label: "Become a seller",
-    hidden: !!stripeId,
-  },
-  {
-    redirect: `/user/${userUsername}`,
-    icon: <ProfileIcon />,
-    label: userUsername,
-    hidden: false,
-  },
-  {
-    redirect: "/dashboard",
-    icon: <DashboardIcon />,
-    label: "Dashboard",
-    hidden: false,
-  },
-  {
-    redirect: "/gallery",
-    icon: <GalleryIcon />,
-    label: "Gallery",
-    hidden: false,
-  },
-  {
-    redirect: "/my_artwork",
-    icon: <ArtworkIcon />,
-    label: "My artwork",
-    hidden: false,
-  },
-  {
-    redirect: "/orders",
-    icon: <OrdersIcon />,
-    label: "Orders",
-    hidden: false,
-  },
-  {
-    redirect: "/settings",
-    icon: <SettingsIcon />,
-    label: "Settings",
-    hidden: false,
-  },
-  {
-    handleClick: handleLogout,
-    icon: <LogoutIcon />,
-    label: "Log out",
-    hidden: false,
-  },
-]; */
 
 const Header = () => {
   const userId = useUserStore((state) => state.id);
@@ -117,13 +41,16 @@ const Header = () => {
   const userAnchor = useUserStore((state) => state.anchor);
   const stripeId = useUserStore((state) => state.stripeId);
   const authenticated = useUserStore((state) => state.authenticated);
-  const toggleUserMenu = useUserStore((state) => state.toggleMenu);
+  const toggleMenu = useUserStore((state) => state.toggleMenu);
+  const unauthenticateUser = useUserStore((state) => state.unauthenticateUser);
+  const redirectUser = useUserStore((state) => state.redirectUser);
   const resetUser = useUserStore((state) => state.resetUser);
 
   const search = useEventsStore((state) => state.search);
   const count = useEventsStore((state) => state.notifications.count);
-  const updateSearch = useEventsStore((state) => state.updateSearch);
+  const toggleSearch = useEventsStore((state) => state.toggleSearch);
   const toggleNotificationsMenu = useEventsStore((state) => state.toggleMenu);
+  const searchQuery = useEventsStore((state) => state.searchQuery);
   const resetEvents = useEventsStore((state) => state.resetEvents);
 
   const { handleSubmit, errors, control, setValue, getValues } = useForm({
@@ -138,125 +65,85 @@ const Header = () => {
 
   const classes = HeaderStyles();
 
-  const handleLogout = async () => {
-    try {
-      await postLogout.request();
-      socket.instance.emit("disconnectUser");
-      resetUser();
-      resetEvents();
-      toggleUserMenu();
-
-      history.push("/login");
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const handleToggle = () => {
-    updateSearch({
-      search: search === "artwork" ? "users" : "artwork",
-    });
-  };
-
-  const onSubmit = async (values) => {
-    try {
-      if (values.searchQuery.trim()) {
-        history.push(`/search?q=${values.searchQuery}&t=${search}`);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const menuId = "primary-search-account-menu";
-  const renderProfileMenu = (
-    <Menu
-      id={menuId}
-      open={!!userAnchor}
-      anchorEl={userAnchor}
-      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      transformOrigin={{ vertical: "top", horizontal: "center" }}
-      onClose={toggleUserMenu}
-    >
-      <Divider />
-      {!stripeId && (
-        <>
-          <MenuItem component={Link} to="/onboarding" disableRipple>
-            <ListItemAvatar>
-              <Avatar>
-                <SellerIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary="Become a seller" />
-          </MenuItem>
-          <Divider />
-        </>
-      )}
-      <MenuItem component={Link} to={`/user/${userUsername}`} disableRipple>
-        <ListItemAvatar>
-          <Avatar>
-            <ProfileIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary={userUsername} />
-      </MenuItem>
-      <Divider />
-      <MenuItem component={Link} to="/dashboard" disableRipple>
-        <ListItemAvatar>
-          <Avatar>
-            <DashboardIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Dashboard" />
-      </MenuItem>
-      <Divider />
-      <MenuItem component={Link} to="/gallery" disableRipple>
-        <ListItemAvatar>
-          <Avatar>
-            <GalleryIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Gallery" />
-      </MenuItem>
-      <Divider />
-      <MenuItem component={Link} to="/my_artwork" disableRipple>
-        <ListItemAvatar>
-          <Avatar>
-            <ArtworkIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Artwork" />
-      </MenuItem>
-      <Divider />
-      <MenuItem component={Link} to="/orders" disableRipple>
-        <ListItemAvatar>
-          <Avatar>
-            <OrdersIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Orders" />
-      </MenuItem>
-      <Divider />
-      <MenuItem component={Link} to="/settings" disableRipple>
-        <ListItemAvatar>
-          <Avatar>
-            <SettingsIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Settings" />
-      </MenuItem>
-      <Divider />
-      <MenuItem onClick={handleLogout} disableRipple>
-        <ListItemAvatar>
-          <Avatar>
-            <LogoutIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Log out" />
-      </MenuItem>
-      <Divider />
-    </Menu>
-  );
+  const menuItems = [
+    {
+      handleClick: (e) =>
+        redirectUser({
+          event: e,
+          link: "/onboarding",
+          toggleMenu,
+          history,
+        }),
+      icon: <SellerIcon />,
+      label: "Become a seller",
+      hidden: !!stripeId,
+    },
+    {
+      handleClick: (e) =>
+        redirectUser({
+          event: e,
+          link: `/user/${userUsername}`,
+          toggleMenu,
+          history,
+        }),
+      icon: <ProfileIcon />,
+      label: userUsername,
+      hidden: false,
+    },
+    {
+      handleClick: (e) =>
+        redirectUser({ event: e, link: "/dashboard", toggleMenu, history }),
+      icon: <DashboardIcon />,
+      label: "Dashboard",
+      hidden: false,
+    },
+    {
+      handleClick: (e) =>
+        redirectUser({ event: e, link: "/gallery", toggleMenu, history }),
+      icon: <GalleryIcon />,
+      label: "Gallery",
+      hidden: false,
+    },
+    {
+      handleClick: (e) =>
+        redirectUser({
+          event: e,
+          link: "/my_artwork",
+          toggleMenu,
+          history,
+        }),
+      icon: <ArtworkIcon />,
+      label: "My artwork",
+      hidden: false,
+    },
+    {
+      handleClick: (e) =>
+        redirectUser({ event: e, link: "/orders", toggleMenu, history }),
+      icon: <OrdersIcon />,
+      label: "Orders",
+      hidden: false,
+    },
+    {
+      handleClick: (e) =>
+        redirectUser({ event: e, link: "/settings", toggleMenu, history }),
+      icon: <SettingsIcon />,
+      label: "Settings",
+      hidden: false,
+    },
+    {
+      handleClick: () =>
+        unauthenticateUser({
+          socket,
+          resetUser,
+          resetEvents,
+          toggleMenu,
+          history,
+        }),
+      icon: <LogoutIcon />,
+      label: "Log out",
+      hidden: false,
+    },
+  ];
 
   useEffect(() => {
     setValue("searchType", search);
@@ -264,25 +151,23 @@ const Header = () => {
 
   return (
     <>
-      <AppBar position="static" className={classes.headerContainer}>
+      <AppBar position="static" className={classes.container}>
         <Toolbar>
           <img
             src={LogoDesktop}
             alt="Logo"
             onClick={() => history.push("/")}
-            className={classes.logoDesktop}
+            className={classes.logo}
           />
-          <img
-            src={LogoMobile}
-            alt="Logo"
-            onClick={() => history.push("/")}
-            className={classes.logoMobile}
-          />
-          <div className={classes.search}>
+          <Box className={classes.search}>
             <FormProvider control={control}>
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form
+                onSubmit={handleSubmit((values) =>
+                  searchQuery({ values, history })
+                )}
+              >
                 <SearchForm
-                  handleToggle={handleToggle}
+                  handleToggle={toggleSearch}
                   handleSubmit={handleSubmit}
                   getValues={getValues}
                   setValue={setValue}
@@ -290,11 +175,11 @@ const Header = () => {
                 />
               </form>
             </FormProvider>
-          </div>
-          <div className={classes.grow} />
+          </Box>
+          <Box className={classes.grow} />
           {authenticated ? (
             <>
-              <div className={classes.sectionDesktop}>
+              <Box className={classes.wrapper}>
                 {/*                 <IconButton aria-label="Show messages" color="inherit">
                   <Badge badgeContent={store.user.messages} color="primary">
                     <MailIcon />
@@ -312,24 +197,23 @@ const Header = () => {
                 <IconButton
                   edge="end"
                   aria-label="Show profile"
-                  aria-controls={menuId}
                   aria-haspopup="true"
-                  onClick={(e) => toggleUserMenu({ event: e })}
+                  onClick={(e) => toggleMenu({ event: e })}
                   color="inherit"
                 >
                   <AccountIcon />
                 </IconButton>
-              </div>
+              </Box>
             </>
           ) : (
             <>
-              <div className={classes.sectionDesktop}>
+              <Box className={classes.wrapper}>
                 <Button
                   component={Link}
                   variant="outlined"
                   to="/login"
                   color="primary"
-                  style={{ marginRight: "6px" }}
+                  className={classes.margin}
                 >
                   Log in
                 </Button>
@@ -341,12 +225,34 @@ const Header = () => {
                 >
                   Sign up
                 </Button>
-              </div>
+              </Box>
             </>
           )}
         </Toolbar>
       </AppBar>
-      {renderProfileMenu}
+      <Menu
+        open={!!userAnchor}
+        anchorEl={userAnchor}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={toggleMenu}
+      >
+        <Divider />
+        {menuItems.map(
+          (item) =>
+            !item.hidden && (
+              <>
+                <MenuItem onClick={item.handleClick} disableRipple>
+                  <ListItemAvatar>
+                    <Avatar>{item.icon}</Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={item.label} />
+                </MenuItem>
+                <Divider />
+              </>
+            )
+        )}
+      </Menu>
       <NotificationMenu />
     </>
   );

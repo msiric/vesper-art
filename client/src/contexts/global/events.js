@@ -2,6 +2,11 @@ import create from "zustand";
 import { getNotifications, patchRead, patchUnread } from "../../services/user";
 import { resolveAsyncError } from "../../utils/helpers";
 
+const SEARCH_TYPES = {
+  artwork: "artwork",
+  users: "users",
+};
+
 const initialState = {
   notifications: {
     items: [],
@@ -259,14 +264,6 @@ const initActions = (set, get) => ({
   },
   incrementNotification: ({ notification, cursor }) => {
     set((state) => {
-      console.log(
-        "INCREMENT",
-        state.notifications,
-        notification,
-        state.notifications.items,
-        [notification].concat(state.notifications.items)
-      );
-
       return {
         ...state,
         notifications: {
@@ -281,11 +278,35 @@ const initActions = (set, get) => ({
       };
     });
   },
-  updateSearch: ({ search }) => {
+  toggleSearch: () => {
+    const search = get().search;
     set((state) => ({
       ...state,
-      search: search,
+      search: search === "artwork" ? "users" : "artwork",
     }));
+  },
+  searchQuery: ({ values, history }) => {
+    try {
+      if (values.searchQuery.trim()) {
+        const search = get().search;
+        history.push(`/search?q=${values.searchQuery}&t=${search}`);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  redirectUser: ({
+    event,
+    notification,
+    link,
+    readNotification,
+    toggleMenu,
+    userId,
+    history,
+  }) => {
+    toggleMenu({ event, userId });
+    history.push(link);
+    if (!notification.read) readNotification({ id: notification.id });
   },
   updateLoading: ({ notifications }) => {
     set((state) => ({

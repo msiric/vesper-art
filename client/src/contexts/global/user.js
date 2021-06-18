@@ -7,6 +7,7 @@ import {
   postReset,
   postSignup,
 } from "../../services/auth";
+import { postLogout } from "../../services/user";
 
 const initialState = {
   authenticated: false,
@@ -177,6 +178,28 @@ const initActions = (set, get) => ({
       ...state,
       anchor: state.anchor ? null : event.currentTarget,
     }));
+  },
+  redirectUser: ({ event, link, toggleMenu, history }) => {
+    toggleMenu({ event });
+    history.push(link);
+  },
+  unauthenticateUser: async ({
+    socket,
+    resetUser,
+    resetEvents,
+    toggleMenu,
+    history,
+  }) => {
+    try {
+      socket.instance.emit("disconnectUser");
+      await postLogout.request();
+      toggleMenu({ event: window.event });
+      resetUser();
+      resetEvents();
+      history.push("/login");
+    } catch (err) {
+      console.log(err);
+    }
   },
   resetUser: () => {
     set({ ...initialState });

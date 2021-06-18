@@ -1,23 +1,21 @@
 import {
-    Avatar,
-    IconButton,
-    ListItemAvatar,
-    ListItemSecondaryAction,
-    ListItemText,
-    MenuItem,
-    Typography
-} from "@material-ui/core";
-import {
-    CommentRounded as CommentIcon,
-    DraftsRounded as ReadIcon,
-    ErrorRounded as ErrorIcon,
-    MarkunreadRounded as UnreadIcon,
-    RateReviewRounded as ReviewIcon,
-    ShoppingBasket as OrderIcon
+  CommentRounded as CommentIcon,
+  DraftsRounded as ReadIcon,
+  ErrorRounded as ErrorIcon,
+  MarkunreadRounded as UnreadIcon,
+  RateReviewRounded as ReviewIcon,
+  ShoppingBasket as OrderIcon,
 } from "@material-ui/icons";
 import { formatDistance } from "date-fns";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import Avatar from "../../domain/Avatar";
+import IconButton from "../../domain/IconButton";
+import ListItemAvatar from "../../domain/ListItemAvatar";
+import ListItemSecondaryAction from "../../domain/ListItemSecondaryAction";
+import ListItemText from "../../domain/ListItemText";
+import MenuItem from "../../domain/MenuItem";
+import Typography from "../../domain/Typography";
 import { artepunktTheme } from "../../styles/theme.js";
 import notificationItemStyles from "./styles";
 
@@ -26,9 +24,14 @@ const NotificationItem = ({
   handleRedirectClick,
   handleReadClick,
   handleUnreadClick,
+  readNotification,
+  toggleMenu,
+  userId,
   isUpdating,
 }) => {
   const classes = notificationItemStyles();
+
+  const history = useHistory();
 
   const data = {
     label: "Error loading notification",
@@ -53,11 +56,18 @@ const NotificationItem = ({
   return data.label && data.link ? (
     <>
       <MenuItem
-        onClick={(e) => handleRedirectClick(e, notification, data.link)}
-        style={{
-          cursor: "pointer",
-          width: "100%",
-        }}
+        onClick={(e) =>
+          handleRedirectClick({
+            event: e,
+            notification,
+            link: data.link,
+            readNotification,
+            toggleMenu,
+            userId,
+            history,
+          })
+        }
+        className={classes.item}
         disableRipple
       >
         <ListItemAvatar>
@@ -76,12 +86,7 @@ const NotificationItem = ({
             <Typography
               component={Link}
               to={data.link}
-              style={{
-                fontWeight: "bold",
-                color: "white",
-                textDecoration: "none",
-                whiteSpace: "initial",
-              }}
+              className={classes.link}
             >
               {data.label}
             </Typography>

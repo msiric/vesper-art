@@ -1,8 +1,12 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const notificationMenuStyles = makeStyles((muiTheme) => ({
-  notificationMenu: {
+  menu: {
     width: "100%",
+  },
+  list: {
+    width: "100%",
+    maxWidth: 280,
   },
 }));
 
