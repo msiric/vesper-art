@@ -9,7 +9,6 @@ import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import CommentCard from "../../components/CommentCard/index.js";
 import CommentPopover from "../../components/CommentPopover";
-import EmptySection from "../../components/EmptySection/index.js";
 import InfiniteList from "../../components/InfiniteList";
 import MainHeading from "../../components/MainHeading";
 import PromptModal from "../../components/PromptModal";
@@ -132,39 +131,23 @@ const CommentSection = ({
           </form>
         </FormProvider>
         <Divider />
-        {loading || error || comments.length ? (
-          <InfiniteList
-            dataLength={comments ? comments.length : 0}
-            next={() =>
-              fetchComments({ artworkId, query, highlightRef, enqueueSnackbar })
-            }
-            hasMore={hasMore}
-            loading={loading || fetching}
-            error={error.refetch}
-            empty="No comments yet"
-          >
-            <List ref={commentsRef} className={classes.list} disablePadding>
-              <Box>
-                {comments.map((comment) => (
-                  <CommentCard
-                    artworkId={artworkId}
-                    artworkOwnerId={artworkOwnerId}
-                    comment={comment}
-                    edits={edits}
-                    queryRef={query ? query.ref : null}
-                    highlightRef={highlightRef}
-                    handleCommentClose={closeComment}
-                    handleCommentEdit={updateComment}
-                    handlePopoverOpen={openPopover}
-                    loading={false}
-                  />
-                ))}
-              </Box>
-              {highlight.element && (
+        <InfiniteList
+          dataLength={comments ? comments.length : 0}
+          next={() =>
+            fetchComments({ artworkId, query, highlightRef, enqueueSnackbar })
+          }
+          hasMore={hasMore}
+          loading={loading || fetching}
+          error={error.refetch}
+          empty="No comments yet"
+        >
+          <List ref={commentsRef} className={classes.list} disablePadding>
+            <Box>
+              {comments.map((comment) => (
                 <CommentCard
                   artworkId={artworkId}
                   artworkOwnerId={artworkOwnerId}
-                  comment={highlight.element}
+                  comment={comment}
                   edits={edits}
                   queryRef={query ? query.ref : null}
                   highlightRef={highlightRef}
@@ -173,14 +156,24 @@ const CommentSection = ({
                   handlePopoverOpen={openPopover}
                   loading={false}
                 />
-              )}
-            </List>
-          </InfiniteList>
-        ) : (
-          <Box className={classes.empty}>
-            <EmptySection label="No comments so far" loading={loading} />
-          </Box>
-        )}
+              ))}
+            </Box>
+            {highlight.element && (
+              <CommentCard
+                artworkId={artworkId}
+                artworkOwnerId={artworkOwnerId}
+                comment={highlight.element}
+                edits={edits}
+                queryRef={query ? query.ref : null}
+                highlightRef={highlightRef}
+                handleCommentClose={closeComment}
+                handleCommentEdit={updateComment}
+                handlePopoverOpen={openPopover}
+                loading={false}
+              />
+            )}
+          </List>
+        </InfiniteList>
       </CardContent>
       <CommentPopover
         artworkId={artworkId}

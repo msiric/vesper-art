@@ -8,6 +8,9 @@ const notificationMenuStyles = makeStyles((muiTheme) => ({
     width: "100%",
     maxWidth: 280,
   },
+  spinner: {
+    height: "100%",
+  },
 }));
 
 export default notificationMenuStyles;

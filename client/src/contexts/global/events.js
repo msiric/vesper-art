@@ -1,6 +1,6 @@
 import create from "zustand";
 import { getNotifications, patchRead, patchUnread } from "../../services/user";
-import { resolveAsyncError } from "../../utils/helpers";
+import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
 const SEARCH_TYPES = {
   artwork: "artwork",
@@ -15,7 +15,7 @@ const initialState = {
     hasMore: true,
     cursor: "",
     limit: 10,
-    loading: false,
+    loading: true,
     fetching: false,
     initialized: false,
     error: {
@@ -175,9 +175,7 @@ const initActions = (set, get) => ({
               data.notifications.length < state.notifications.limit
                 ? false
                 : true,
-            cursor:
-              data.notifications[data.notifications.length - 1] &&
-              data.notifications[data.notifications.length - 1].id,
+            cursor: resolvePaginationId(data.notifications),
             opened: true,
             loading: false,
             fetching: false,
@@ -208,8 +206,9 @@ const initActions = (set, get) => ({
       }));
     }
   },
-  readNotification: async ({ id }) => {
+  readNotification: async ({ event, id }) => {
     try {
+      event.stopPropagation();
       set((state) => ({
         ...state,
         notifications: {
@@ -235,8 +234,9 @@ const initActions = (set, get) => ({
       console.log(err);
     }
   },
-  unreadNotification: async ({ id }) => {
+  unreadNotification: async ({ event, id }) => {
     try {
+      event.stopPropagation();
       set((state) => ({
         ...state,
         notifications: {

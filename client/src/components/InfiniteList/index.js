@@ -28,7 +28,7 @@ const InfiniteList = ({
       dataLength={dataLength}
       next={!loading ? next : () => []}
       hasMore={hasMore}
-      loader={!error && <LoadingSpinner styles={{ marginTop: 20 }} />}
+      loader={!error && <LoadingSpinner styles={classes.spinner} />}
       className={classes.wrapper}
       height={height}
       {...props}

@@ -1,4 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
+import { artepunktTheme } from "../../styles/theme";
 
 const notificationItemStyles = makeStyles((muiTheme) => ({
   item: {
@@ -6,10 +7,19 @@ const notificationItemStyles = makeStyles((muiTheme) => ({
     width: "100%",
   },
   link: {
-    fontWeight: "bold",
     color: "white",
     textDecoration: "none",
     whiteSpace: "initial",
+  },
+  read: {
+    backgroundColor: "",
+  },
+  unread: {
+    backgroundColor: artepunktTheme.palette.primary.main,
+  },
+  icon: {
+    position: "static",
+    transform: "none",
   },
 }));
 

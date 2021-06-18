@@ -1,7 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import EmptySection from "../../components/EmptySection/index.js";
 import InfiniteList from "../../components/InfiniteList/index.js";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import NotificationItem from "../../components/NotificationItem/index.js";
 import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
@@ -19,7 +19,7 @@ const NotificationsMenu = () => {
   const loading = useEventsStore((state) => state.notifications.loading);
   const fetching = useEventsStore((state) => state.notifications.fetching);
   const isUpdating = useEventsStore((state) => state.notifications.isUpdating);
-  const refetch = useEventsStore((state) => state.notifications.error.refetch);
+  const error = useEventsStore((state) => state.notifications.error);
   const toggleMenu = useEventsStore((state) => state.toggleMenu);
   const redirectUser = useEventsStore((state) => state.redirectUser);
   const readNotification = useEventsStore((state) => state.readNotification);
@@ -44,14 +44,17 @@ const NotificationsMenu = () => {
         height={400}
         dataLength={notifications ? notifications.length : 0}
         next={() => toggleMenu({ userId, fetching: true })}
-        loading={loading || fetching}
         hasMore={hasMore}
-        error={refetch}
+        loading={loading || fetching}
+        error={error.refetch}
         empty="No notifications yet"
       >
-        {loading || (notifications && notifications.length) ? (
-          <List className={classes.list} disablePadding>
-            {notifications.map((notification) => (
+        <List
+          className={`${classes.list} ${loading && classes.spinner}`}
+          disablePadding
+        >
+          {!loading ? (
+            notifications.map((notification) => (
               <>
                 <Divider />
                 <NotificationItem
@@ -66,11 +69,11 @@ const NotificationsMenu = () => {
                 />
                 <Divider />
               </>
-            ))}
-          </List>
-        ) : (
-          <EmptySection label="No notifications" loading={loading} />
-        )}
+            ))
+          ) : (
+            <LoadingSpinner styles={classes.spinner} />
+          )}
+        </List>
       </InfiniteList>
     </Menu>
   );

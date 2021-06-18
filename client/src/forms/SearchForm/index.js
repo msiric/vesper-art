@@ -7,12 +7,12 @@ import {
 import React from "react";
 import { useEventsStore } from "../../contexts/global/events.js";
 import TextInput from "../../controls/TextInput/index.js";
+import useGlobalStyles from "../../styles/global";
 
-const SearchForm = ({ handleToggle, getValues, setValue, errors, loading }) => {
+const SearchForm = ({ handleToggle, getValues, setValue, loading }) => {
   const search = useEventsStore((state) => state.search);
 
-  /* const classes = AddArtworkStyles(); */
-  const classes = {};
+  const globalClasses = useGlobalStyles();
 
   return (
     <Box>
@@ -21,15 +21,14 @@ const SearchForm = ({ handleToggle, getValues, setValue, errors, loading }) => {
         value={getValues("searchQuery")}
         setValue={setValue}
         placeholder="Search..."
-        style={{ margin: 0 }}
         loading={loading}
+        className={globalClasses.searchQuery}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
               <IconButton
                 title={search === "artwork" ? "Search artwork" : "Search users"}
                 onClick={handleToggle}
-                className={classes.typeIcon}
                 size="small"
                 disableFocusRipple
                 disableRipple
@@ -42,7 +41,6 @@ const SearchForm = ({ handleToggle, getValues, setValue, errors, loading }) => {
             <InputAdornment position="end">
               <IconButton
                 type="submit"
-                className={classes.searchIcon}
                 size="small"
                 disableFocusRipple
                 disableRipple
@@ -53,7 +51,11 @@ const SearchForm = ({ handleToggle, getValues, setValue, errors, loading }) => {
           ),
         }}
       />
-      <TextInput name="searchType" type="hidden" style={{ display: "none" }} />
+      <TextInput
+        name="searchType"
+        type="hidden"
+        className={globalClasses.searchType}
+      />
     </Box>
   );
 };

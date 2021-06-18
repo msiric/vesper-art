@@ -45,6 +45,12 @@ const GlobalStyles = makeStyles((muiTheme) => ({
       width: "100%",
     },
   },
+  searchQuery: {
+    margin: 0,
+  },
+  searchType: {
+    display: "none",
+  },
   "@global": {
     ".illustrationPrimary": {
       fill: artepunktTheme.palette.primary.main,

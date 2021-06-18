@@ -6,6 +6,7 @@ import IconButton from "../../domain/IconButton";
 import Tooltip from "../../domain/Tooltip";
 import globalStyles from "../../styles/global";
 import LoadingSpinner from "../LoadingSpinner";
+import dataTableStyles from "./styles";
 
 const CustomToolbar = ({ addOptions }) => {
   const history = useHistory();
@@ -44,6 +45,7 @@ const DataTable = ({
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
 
   const globalClasses = globalStyles({ hoverable });
+  const classes = dataTableStyles();
 
   const history = useHistory();
 
@@ -71,11 +73,7 @@ const DataTable = ({
       setDisplayedData(data.displayData),
     textLabels: {
       body: {
-        noMatch: loading ? (
-          <LoadingSpinner styles={{ padding: "154px 0" }} />
-        ) : (
-          empty
-        ),
+        noMatch: loading ? <LoadingSpinner styles={classes.spinner} /> : empty,
       },
     },
   };

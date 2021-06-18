@@ -16,13 +16,13 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import { searchValidation } from "../../../../common/validation";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
+import SyncButton from "../../components/SyncButton";
 import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import AppBar from "../../domain/AppBar";
 import Avatar from "../../domain/Avatar";
 import Badge from "../../domain/Badge";
 import Box from "../../domain/Box";
-import Button from "../../domain/Button";
 import Divider from "../../domain/Divider";
 import IconButton from "../../domain/IconButton";
 import ListItemAvatar from "../../domain/ListItemAvatar";
@@ -208,7 +208,7 @@ const Header = () => {
           ) : (
             <>
               <Box className={classes.wrapper}>
-                <Button
+                <SyncButton
                   component={Link}
                   variant="outlined"
                   to="/login"
@@ -216,15 +216,15 @@ const Header = () => {
                   className={classes.margin}
                 >
                   Log in
-                </Button>
-                <Button
+                </SyncButton>
+                <SyncButton
                   component={Link}
                   variant="outlined"
                   to="/signup"
                   color="primary"
                 >
                   Sign up
-                </Button>
+                </SyncButton>
               </Box>
             </>
           )}

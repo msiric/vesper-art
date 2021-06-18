@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
 import { SRLWrapper, useLightbox } from "simple-react-lightbox";
-import EmptySection from "../../components/EmptySection/index.js";
 import ImageWrapper from "../../components/ImageWrapper/index.js";
 import InfiniteList from "../../components/InfiniteList";
 import { useUserStore } from "../../contexts/global/user.js";
@@ -89,55 +88,45 @@ const GalleryPanel = ({ formatArtwork }) => {
 
   return (
     <Box>
-      {loading || covers.length ? (
-        <InfiniteList
-          dataLength={covers.length}
-          next={() => fetchUser({ userId, userUsername, formatArtwork })}
-          hasMore={hasMore}
-          loading={loading || fetching}
-          error={error.refetch}
-          empty="No artwork in your gallery"
+      <InfiniteList
+        dataLength={covers.length}
+        next={() => fetchUser({ userId, userUsername, formatArtwork })}
+        hasMore={hasMore}
+        loading={loading || fetching}
+        error={error.refetch}
+        empty="No artwork in your gallery"
+      >
+        <Masonry
+          breakpointCols={breakpointColumns}
+          className={classes.masonry}
+          columnClassName={classes.column}
         >
-          <Masonry
-            breakpointCols={breakpointColumns}
-            className={classes.masonry}
-            columnClassName={classes.column}
-          >
-            {covers.map((item, idx) => (
-              <Card
-                className={classes.card}
-                onClick={() =>
-                  toggleGallery({
-                    userId,
-                    item,
-                    index: idx,
-                    openLightbox,
-                    formatArtwork,
-                  })
-                }
-              >
-                {
-                  <ImageWrapper
-                    height={item.height}
-                    source={item.media ? item.media : item.cover}
-                    cover={item.cover}
-                    placeholder={item.dominant}
-                    loading={idx === index && isDownloading ? true : false}
-                  />
-                }
-              </Card>
-            ))}
-          </Masonry>
-        </InfiniteList>
-      ) : (
-        <EmptySection
-          label={
-            display === "purchases"
-              ? "You have no purchased artwork"
-              : "You have no published artwork"
-          }
-        />
-      )}
+          {covers.map((item, idx) => (
+            <Card
+              className={classes.card}
+              onClick={() =>
+                toggleGallery({
+                  userId,
+                  item,
+                  index: idx,
+                  openLightbox,
+                  formatArtwork,
+                })
+              }
+            >
+              {
+                <ImageWrapper
+                  height={item.height}
+                  source={item.media ? item.media : item.cover}
+                  cover={item.cover}
+                  placeholder={item.dominant}
+                  loading={idx === index && isDownloading ? true : false}
+                />
+              }
+            </Card>
+          ))}
+        </Masonry>
+      </InfiniteList>
       {!isDownloading && !loading && (
         <SRLWrapper
           images={media}

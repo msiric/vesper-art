@@ -11,12 +11,11 @@ import React from "react";
 import { Link, useHistory } from "react-router-dom";
 import Avatar from "../../domain/Avatar";
 import IconButton from "../../domain/IconButton";
+import ListItem from "../../domain/ListItem";
 import ListItemAvatar from "../../domain/ListItemAvatar";
 import ListItemSecondaryAction from "../../domain/ListItemSecondaryAction";
 import ListItemText from "../../domain/ListItemText";
-import MenuItem from "../../domain/MenuItem";
 import Typography from "../../domain/Typography";
-import { artepunktTheme } from "../../styles/theme.js";
 import notificationItemStyles from "./styles";
 
 const NotificationItem = ({
@@ -54,68 +53,56 @@ const NotificationItem = ({
   }
 
   return data.label && data.link ? (
-    <>
-      <MenuItem
-        onClick={(e) =>
-          handleRedirectClick({
-            event: e,
-            notification,
-            link: data.link,
-            readNotification,
-            toggleMenu,
-            userId,
-            history,
-          })
+    <ListItem
+      onClick={(e) =>
+        handleRedirectClick({
+          event: e,
+          notification,
+          link: data.link,
+          readNotification,
+          toggleMenu,
+          userId,
+          history,
+        })
+      }
+      className={classes.item}
+      disableRipple
+    >
+      <ListItemAvatar>
+        <Avatar className={notification.read ? classes.read : classes.unread}>
+          {data.icon}
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText
+        primary={
+          <Typography component={Link} to={data.link} className={classes.link}>
+            {data.label}
+          </Typography>
         }
-        className={classes.item}
-        disableRipple
-      >
-        <ListItemAvatar>
-          <Avatar
-            style={{
-              backgroundColor: notification.read
-                ? ""
-                : artepunktTheme.palette.primary.main,
-            }}
-          >
-            {data.icon}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={
-            <Typography
-              component={Link}
-              to={data.link}
-              className={classes.link}
-            >
-              {data.label}
-            </Typography>
+        secondary={
+          <Typography variant="caption">
+            {`${formatDistance(
+              new Date(notification.created),
+              new Date()
+            )} ago`}
+          </Typography>
+        }
+      />
+      <ListItemSecondaryAction className={classes.icon}>
+        <IconButton
+          onClick={
+            notification.read
+              ? (e) => handleUnreadClick({ event: e, id: notification.id })
+              : (e) => handleReadClick({ event: e, id: notification.id })
           }
-          secondary={
-            <Typography variant="caption">
-              {`${formatDistance(
-                new Date(notification.created),
-                new Date()
-              )} ago`}
-            </Typography>
-          }
-        />
-        <ListItemSecondaryAction>
-          <IconButton
-            onClick={
-              notification.read
-                ? () => handleUnreadClick({ id: notification.id })
-                : () => handleReadClick({ id: notification.id })
-            }
-            edge="end"
-            aria-label={notification.read ? "Mark unread" : "Mark read"}
-            disabled={isUpdating}
-          >
-            {notification.read ? <ReadIcon /> : <UnreadIcon />}
-          </IconButton>
-        </ListItemSecondaryAction>
-      </MenuItem>
-    </>
+          edge="end"
+          aria-label={notification.read ? "Mark unread" : "Mark read"}
+          disabled={isUpdating}
+        >
+          {notification.read ? <ReadIcon /> : <UnreadIcon />}
+        </IconButton>
+      </ListItemSecondaryAction>
+    </ListItem>
   ) : null;
 };
 
