@@ -97,16 +97,7 @@ const HeaderStyles = makeStyles((muiTheme) => ({
     },
   },
   sectionDesktop: {
-    display: "none",
-    [muiTheme.breakpoints.up("md")]: {
-      display: "flex",
-    },
-  },
-  sectionMobile: {
     display: "flex",
-    [muiTheme.breakpoints.up("md")]: {
-      display: "none",
-    },
   },
 }));
 

@@ -1,7 +1,7 @@
 import { Backdrop, Box, CircularProgress } from "@material-ui/core";
 import React from "react";
-import Footer from "../containers/Footer/Footer.js";
-import Header from "../containers/Header/Header.js";
+import Footer from "../containers/Footer/index.js";
+import Header from "../containers/Header/index.js";
 import { useAppStore } from "../contexts/global/app.js";
 import MainLayoutStyles from "./MainLayout.style.js";
 

@@ -1,36 +1,34 @@
 import {
-  Avatar,
-  IconButton,
-  ListItemAvatar,
-  ListItemSecondaryAction,
-  ListItemText,
-  MenuItem,
-  Typography,
+    Avatar,
+    IconButton,
+    ListItemAvatar,
+    ListItemSecondaryAction,
+    ListItemText,
+    MenuItem,
+    Typography
 } from "@material-ui/core";
 import {
-  CommentRounded as CommentIcon,
-  DraftsRounded as ReadIcon,
-  ErrorRounded as ErrorIcon,
-  MarkunreadRounded as UnreadIcon,
-  RateReviewRounded as ReviewIcon,
-  ShoppingBasket as OrderIcon,
+    CommentRounded as CommentIcon,
+    DraftsRounded as ReadIcon,
+    ErrorRounded as ErrorIcon,
+    MarkunreadRounded as UnreadIcon,
+    RateReviewRounded as ReviewIcon,
+    ShoppingBasket as OrderIcon
 } from "@material-ui/icons";
 import { formatDistance } from "date-fns";
 import React from "react";
 import { Link } from "react-router-dom";
-import { useEventsStore } from "../../contexts/global/events.js";
 import { artepunktTheme } from "../../styles/theme.js";
-import NotificationItemStyles from "./NotificationItem.style.js";
+import notificationItemStyles from "./styles";
 
 const NotificationItem = ({
   notification,
   handleRedirectClick,
   handleReadClick,
   handleUnreadClick,
+  isUpdating,
 }) => {
-  const notifications = useEventsStore((state) => state.notifications);
-
-  const classes = NotificationItemStyles();
+  const classes = notificationItemStyles();
 
   const data = {
     label: "Error loading notification",
@@ -55,7 +53,7 @@ const NotificationItem = ({
   return data.label && data.link ? (
     <>
       <MenuItem
-        onClick={() => handleRedirectClick(notification, data.link)}
+        onClick={(e) => handleRedirectClick(e, notification, data.link)}
         style={{
           cursor: "pointer",
           width: "100%",
@@ -101,12 +99,12 @@ const NotificationItem = ({
           <IconButton
             onClick={
               notification.read
-                ? () => handleUnreadClick(notification.id)
-                : () => handleReadClick(notification.id)
+                ? () => handleUnreadClick({ id: notification.id })
+                : () => handleReadClick({ id: notification.id })
             }
             edge="end"
             aria-label={notification.read ? "Mark unread" : "Mark read"}
-            disabled={notifications.isLoading}
+            disabled={isUpdating}
           >
             {notification.read ? <ReadIcon /> : <UnreadIcon />}
           </IconButton>

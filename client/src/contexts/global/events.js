@@ -1,4 +1,6 @@
 import create from "zustand";
+import { getNotifications, patchRead, patchUnread } from "../../services/user";
+import { resolveAsyncError } from "../../utils/helpers";
 
 const initialState = {
   notifications: {
@@ -8,7 +10,15 @@ const initialState = {
     hasMore: true,
     cursor: "",
     limit: 10,
-    isLoading: false,
+    loading: false,
+    fetching: false,
+    initialized: false,
+    error: {
+      refetch: false,
+      message: "",
+    },
+    anchor: null,
+    isUpdating: false,
   },
   search: "artwork",
 };
@@ -127,6 +137,125 @@ const initActions = (set, get) => ({
       },
       search: typeof search !== "undefined" ? search : state.search,
     }));
+  },
+  toggleMenu: async ({ event, userId, fetching = false }) => {
+    const target = event ? event.currentTarget : null;
+    const notifications = get().notifications;
+    if (
+      fetching ||
+      (notifications.items.length < notifications.limit &&
+        !notifications.opened)
+    ) {
+      set((state) => ({
+        ...state,
+        notifications: {
+          ...state.notifications,
+          ...(!fetching && { anchor: target }),
+          loading: !state.notifications.initialized,
+          fetching: state.notifications.initialized,
+        },
+      }));
+      try {
+        const { data } = await getNotifications.request({
+          userId,
+          cursor: notifications.cursor,
+          limit: notifications.limit,
+        });
+        set((state) => ({
+          ...state,
+          notifications: {
+            ...state.notifications,
+            items: [...state.notifications.items].concat(data.notifications),
+            hasMore:
+              data.notifications.length < state.notifications.limit
+                ? false
+                : true,
+            cursor:
+              data.notifications[data.notifications.length - 1] &&
+              data.notifications[data.notifications.length - 1].id,
+            opened: true,
+            loading: false,
+            fetching: false,
+            initialized: true,
+          },
+        }));
+      } catch (err) {
+        console.log("error", err);
+        set((state) => ({
+          ...state,
+          notifications: {
+            ...state.notifications,
+            loading: false,
+            fetching: false,
+            error: resolveAsyncError(err, true),
+          },
+        }));
+      }
+    } else {
+      set((state) => ({
+        ...state,
+        notifications: {
+          ...state.notifications,
+          anchor: state.notifications.anchor ? null : target,
+          loading: false,
+          fetching: false,
+        },
+      }));
+    }
+  },
+  readNotification: async ({ id }) => {
+    try {
+      set((state) => ({
+        ...state,
+        notifications: {
+          ...state.notifications,
+          isUpdating: true,
+        },
+      }));
+      await patchRead.request({ notificationId: id });
+      set((state) => ({
+        ...state,
+        notifications: {
+          ...state.notifications,
+          items: state.notifications.items.map((notification) =>
+            notification.id === id
+              ? { ...notification, read: true }
+              : notification
+          ),
+          count: state.notifications.count - 1,
+          isUpdating: false,
+        },
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  unreadNotification: async ({ id }) => {
+    try {
+      set((state) => ({
+        ...state,
+        notifications: {
+          ...state.notifications,
+          isUpdating: true,
+        },
+      }));
+      await patchUnread.request({ notificationId: id });
+      set((state) => ({
+        ...state,
+        notifications: {
+          ...state.notifications,
+          items: state.notifications.items.map((notification) =>
+            notification.id === id
+              ? { ...notification, read: false }
+              : notification
+          ),
+          count: state.notifications.count + 1,
+          isUpdating: false,
+        },
+      }));
+    } catch (err) {
+      console.log(err);
+    }
   },
   incrementNotification: ({ notification, cursor }) => {
     set((state) => {
