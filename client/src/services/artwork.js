@@ -12,9 +12,7 @@ export const postArtwork = {
 };
 export const getArtwork = {
   request: async ({ cursor = "", limit = "" }) =>
-    typeof cursor !== null && typeof limit !== null
-      ? await ax.get(`/api/artwork?cursor=${cursor}&limit=${limit}`)
-      : await ax.get(`/api/artwork`),
+    await ax.get(`/api/artwork?cursor=${cursor}&limit=${limit}`),
   success: { message: "Artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch artwork", variant: "error" },
 };
