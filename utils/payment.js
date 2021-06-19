@@ -1,6 +1,6 @@
 import currency from "currency.js";
+import { payment } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
-import { payment } from "../config/constants.js";
 
 export const calculateTotalCharge = ({
   foundVersion,

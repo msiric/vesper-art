@@ -21,6 +21,7 @@ export const upload = {
   user: {
     fileSize: 5 * 1024 * 1024,
     fileDimensions: { height: 150, width: 150 },
+    fileTransform: { width: 150 },
     mimeTypes: ["image/jpg", "image/jpeg", "image/png"],
   },
 };
