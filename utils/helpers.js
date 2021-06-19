@@ -1,5 +1,5 @@
 import currency from "currency.js";
-import { isAfter, isBefore, isValid } from "date-fns";
+import { isBefore, isValid } from "date-fns";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
@@ -33,7 +33,7 @@ const VALID_QUERIES = {
   cursor: { isValid: (value) => isValidCursor(value) },
   limit: { isValid: (value) => isPositiveInteger(value) },
   start: { isValid: (value) => isPastDate(value) },
-  end: { isValid: (value) => isFutureDate(value) },
+  end: { isValid: (value) => isPastDate(value) },
 };
 
 export const isValidCursor = (value) =>
@@ -44,15 +44,17 @@ export const isValidUuid = (value) =>
   validateUuid(value) && validateVersion(value) === uuid.version;
 
 export const isPositiveInteger = (value) =>
-  Number.isInteger(value) && value > 0;
+  value === "" || (parseInt(value) !== NaN && parseInt(value) > 0);
 
 export const isValidString = (value) => typeof value === "string";
 
 export const isPastDate = (value) =>
   isValid(new Date(value)) && isBefore(new Date(value), new Date());
 
-export const isFutureDate = (value) =>
-  isValid(new Date(value)) && isAfter(new Date(value), new Date());
+/* export const isFutureDate = (value) =>
+  isValid(new Date(value)) &&
+  (isSameDay(new Date(value), new Date()) ||
+    isAfter(new Date(value), new Date())); */
 
 export const requestHandler =
   (promise, transaction, params) => async (req, res, next) => {
@@ -193,14 +195,14 @@ export const isAuthorized = async (req, res, next) => {
 };
 
 export const sanitizeParams = (req, res, next) => {
-  const isValid = sanitizeUrl(req.params);
+  const isValid = sanitizeUrl(req.params, VALID_PARAMS);
   if (isValid) return next();
   throw createError(errors.badRequest, "Invalid route parameter");
 };
 
 export const sanitizeQuery = (req, res, next) => {
   if (req && res && next) {
-    const isValid = sanitizeUrl(req.query);
+    const isValid = sanitizeUrl(req.query, VALID_QUERIES);
     if (isValid) {
       req.query = sanitizeData(req.query);
       return next();
@@ -218,15 +220,16 @@ export const sanitizeBody = (req, res, next) => {
   return;
 };
 
-export const sanitizeUrl = (data) => {
+export const sanitizeUrl = (data, validKeys) => {
+  console.log(data, validKeys);
+  let valid = true;
   for (let param in data) {
+    console.log(typeof param, param);
     const value = data[param];
     if (value === "undefined") return false;
-    if (VALID_PARAMS[param] && !VALID_PARAMS[param].isValid(value))
-      return false;
-    return true;
+    if (validKeys[param] && !validKeys[param].isValid(value)) return false;
   }
-  return true;
+  return valid;
 };
 
 export const sanitizeData = (data) => {

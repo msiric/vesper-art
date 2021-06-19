@@ -41,7 +41,7 @@ export const postMedia = {
   error: { message: "Failed to upload avatar", variant: "error" },
 };
 export const getArtwork = {
-  request: async ({ userUsername, cursor, limit }) =>
+  request: async ({ userUsername, cursor = "", limit = "" }) =>
     await ax.get(
       `/api/users/${userUsername}/artwork?cursor=${cursor}&limit=${limit}`
     ),
@@ -49,7 +49,7 @@ export const getArtwork = {
   error: { message: "Failed to fetch user artwork", variant: "error" },
 };
 export const getUploads = {
-  request: async ({ userId, cursor, limit }) =>
+  request: async ({ userId, cursor = "", limit = "" }) =>
     await ax.get(
       `/api/users/${userId}/uploads?cursor=${cursor}&limit=${limit}`
     ),
@@ -57,7 +57,7 @@ export const getUploads = {
   error: { message: "Failed to fetch user artwork", variant: "error" },
 };
 export const getOwnership = {
-  request: async ({ userId, cursor, limit }) =>
+  request: async ({ userId, cursor = "", limit = "" }) =>
     await ax.get(
       `/api/users/${userId}/ownership?cursor=${cursor}&limit=${limit}`
     ),
@@ -68,7 +68,7 @@ export const getOwnership = {
   error: { message: "Failed to fetch user purchases", variant: "error" },
 };
 export const getFavorites = {
-  request: async ({ userUsername, cursor, limit }) =>
+  request: async ({ userUsername, cursor = "", limit = "" }) =>
     await ax.get(
       `/api/users/${userUsername}/favorites?cursor=${cursor}&limit=${limit}`
     ),
@@ -113,7 +113,7 @@ export const patchBilling = {
   error: { message: "Failed to update billing information", variant: "error" },
 };
 export const getNotifications = {
-  request: async ({ userId, cursor, limit }) =>
+  request: async ({ userId, cursor = "", limit = "" }) =>
     await ax.get(
       `/api/users/${userId}/notifications?cursor=${cursor}&limit=${limit}`
     ),

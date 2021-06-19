@@ -11,7 +11,7 @@ export const postArtwork = {
   error: { message: "Failed to publish artwork", variant: "error" },
 };
 export const getArtwork = {
-  request: async ({ cursor = null, limit = null }) =>
+  request: async ({ cursor = "", limit = "" }) =>
     typeof cursor !== null && typeof limit !== null
       ? await ax.get(`/api/artwork?cursor=${cursor}&limit=${limit}`)
       : await ax.get(`/api/artwork`),
@@ -19,12 +19,8 @@ export const getArtwork = {
   error: { message: "Failed to fetch artwork", variant: "error" },
 };
 export const getDetails = {
-  request: async ({ artworkId, cursor = null, limit = null }) =>
-    typeof cursor !== null && typeof limit !== null
-      ? await ax.get(
-          `/api/artwork/${artworkId}?cursor=${cursor}&limit=${limit}`
-        )
-      : await ax.get(`/api/artwork/${artworkId}`),
+  request: async ({ artworkId, cursor = "", limit = "" }) =>
+    await ax.get(`/api/artwork/${artworkId}?cursor=${cursor}&limit=${limit}`),
   success: { message: "Artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch artwork", variant: "error" },
 };
@@ -41,7 +37,7 @@ export const deleteComment = {
   error: { message: "Failed to delete comment", variant: "error" },
 };
 export const getComments = {
-  request: async ({ artworkId, cursor = null, limit = null }) =>
+  request: async ({ artworkId, cursor = "", limit = "" }) =>
     await ax.get(
       `/api/artwork/${artworkId}/comments?cursor=${cursor}&limit=${limit}`
     ),
@@ -78,12 +74,10 @@ export const patchArtwork = {
   error: { message: "Failed to update artwork", variant: "error" },
 };
 export const getGallery = {
-  request: async ({ userId, cursor = null, limit = null }) =>
-    typeof cursor !== null && typeof limit !== null
-      ? await ax.get(
-          `/api/users/${userId}/artwork?cursor=${cursor}&limit=${limit}`
-        )
-      : await ax.get(`/api/users/${userId}/artwork`),
+  request: async ({ userId, cursor = "", limit = "" }) =>
+    await ax.get(
+      `/api/users/${userId}/artwork?cursor=${cursor}&limit=${limit}`
+    ),
   success: { message: "Artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch artwork", variant: "error" },
 };
