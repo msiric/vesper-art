@@ -77,11 +77,11 @@ export const resolveAsyncError = (err, isInfinite = false) => {
   return errorObj;
 };
 
-export const displayValidLicense = (use, license) => {
-  return use !== "included"
-    ? "personal"
-    : license === "commercial"
-    ? "commercial"
+export const displayValidLicense = (use, type) => {
+  return type === "free"
+    ? use !== "included"
+      ? "personal"
+      : "commercial"
     : null;
 };
 

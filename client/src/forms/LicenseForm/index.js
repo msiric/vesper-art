@@ -1,6 +1,10 @@
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
+import {
+  renderCommercialLicenses,
+  renderFreeLicenses,
+} from "../../../../common/helpers";
 import SelectInput from "../../controls/SelectInput/index.js";
 import TextInput from "../../controls/TextInput/index.js";
 
@@ -59,7 +63,7 @@ const LicenseFormStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-const LicenseForm = ({ version, errors, loading }) => {
+const LicenseForm = ({ version, errors, isFree, loading }) => {
   const classes = LicenseFormStyles();
 
   return (
@@ -82,25 +86,11 @@ const LicenseForm = ({ version, errors, loading }) => {
         name="licenseType"
         label="License type"
         errors={errors}
-        options={[
-          ...(version.type === "commercial"
-            ? [
-                {
-                  value: "personal",
-                  text: "Personal",
-                },
-              ]
-            : []),
-
-          ...(version.license === "commercial" && version.use === "separate"
-            ? [
-                {
-                  value: "commercial",
-                  text: "Commercial",
-                },
-              ]
-            : []),
-        ]}
+        options={
+          isFree
+            ? renderFreeLicenses({ version })
+            : renderCommercialLicenses({ version })
+        }
         loading={loading}
       />
     </Box>

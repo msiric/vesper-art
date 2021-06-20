@@ -208,6 +208,7 @@ const ArtworkInfo = () => {
           >
             <LicenseForm
               version={artwork.current}
+              isFree={true}
               errors={errors}
               loading={loading}
             />

@@ -3,10 +3,10 @@ import FormData from "form-data";
 import createError from "http-errors";
 import querystring from "querystring";
 import * as Yup from "yup";
-import { appName, domain, errors } from "../common/constants";
-import { isObjectEmpty } from "../common/helpers";
+import { appName, errors } from "../common/constants";
+import { isObjectEmpty, renderCommercialLicenses } from "../common/helpers";
 import { licenseValidation, orderValidation } from "../common/validation";
-import { stripe as processor } from "../config/secret.js";
+import { domain, stripe as processor } from "../config/secret.js";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
 import {
@@ -206,86 +206,98 @@ export const managePaymentIntent = async ({
                       licenseType: artworkLicense.type,
                     }
                   : { licenseType: artworkLicense.type };
-                // $TODO Bolje sredit validaciju licence
-                // $TODO Sredit validnu licencu (npr, ako je "use": "included", ne moze bit odabran personal license)
-                // e.g. isArtworkFree(), isArtworkForSale(), isValidPersonalLicense(), isValidCommercialLicense()
-                shouldReinitialize
-                  ? await licenseValidation.validate({
-                      ...licenseData,
-                    })
-                  : await Yup.reach(licenseValidation, "licenseType").validate(
-                      licenseData.licenseType
-                    );
-                const { buyerTotal, sellerTotal, platformTotal, licensePrice } =
-                  calculateTotalCharge({
+                const availableLicenses = renderCommercialLicenses({
+                  version: foundVersion,
+                });
+                if (
+                  availableLicenses.some(
+                    (item) => item.value === artworkLicense.type
+                  )
+                ) {
+                  shouldReinitialize
+                    ? await licenseValidation.validate({
+                        ...licenseData,
+                      })
+                    : await Yup.reach(
+                        licenseValidation,
+                        "licenseType"
+                      ).validate(licenseData.licenseType);
+                  const {
+                    buyerTotal,
+                    sellerTotal,
+                    platformTotal,
+                    licensePrice,
+                  } = calculateTotalCharge({
                     foundVersion,
                     foundDiscount,
                     licenseType: licenseData.licenseType,
                   });
-                const orderData = {
-                  ...(shouldReinitialize && { buyerId: foundUser.id }),
-                  ...(shouldReinitialize && {
-                    sellerId: foundVersion.artwork.owner.id,
-                  }),
-                  ...(shouldReinitialize && {
-                    artworkId: foundVersion.artwork.id,
-                  }),
-                  ...(shouldReinitialize && {
-                    versionId: foundVersion.id,
-                  }),
-                  discountId: !isObjectEmpty(foundDiscount)
-                    ? foundDiscount.id
-                    : null,
-                  spent: buyerTotal,
-                  earned: sellerTotal,
-                  fee: platformTotal,
-                  licenseData: {
-                    ...licenseData,
-                    licensePrice: licensePrice,
-                  },
-                };
-                // remove succeeded/canceled intent
-                if (
-                  !isObjectEmpty(verifiedIntent) &&
-                  !isIntentPending(verifiedIntent)
-                ) {
-                  await removeExistingIntent({
-                    intentId: verifiedIntent.id,
-                    connection,
-                  });
-                }
-                const paymentIntent = shouldReinitialize
-                  ? await constructStripeIntent({
-                      intentMethod: "card",
-                      intentAmount: buyerTotal,
-                      intentCurrency: "usd",
-                      intentFee: platformTotal,
-                      sellerId: foundVersion.artwork.owner.stripeId,
-                      orderData,
-                      connection,
-                    })
-                  : await updateStripeIntent({
-                      intentAmount: buyerTotal,
-                      intentFee: platformTotal,
-                      intentData: verifiedIntent,
-                      orderData,
+                  const orderData = {
+                    ...(shouldReinitialize && { buyerId: foundUser.id }),
+                    ...(shouldReinitialize && {
+                      sellerId: foundVersion.artwork.owner.id,
+                    }),
+                    ...(shouldReinitialize && {
+                      artworkId: foundVersion.artwork.id,
+                    }),
+                    ...(shouldReinitialize && {
+                      versionId: foundVersion.id,
+                    }),
+                    discountId: !isObjectEmpty(foundDiscount)
+                      ? foundDiscount.id
+                      : null,
+                    spent: buyerTotal,
+                    earned: sellerTotal,
+                    fee: platformTotal,
+                    licenseData: {
+                      ...licenseData,
+                      licensePrice: licensePrice,
+                    },
+                  };
+                  // remove succeeded/canceled intent
+                  if (
+                    !isObjectEmpty(verifiedIntent) &&
+                    !isIntentPending(verifiedIntent)
+                  ) {
+                    await removeExistingIntent({
+                      intentId: verifiedIntent.id,
                       connection,
                     });
-                // $TODO delete intent in the db if it succeeded or got canceled already
-                const savedIntent =
-                  shouldReinitialize &&
-                  (await addNewIntent({
-                    intentId: paymentIntent.id,
-                    userId: foundUser.id,
-                    versionId: foundVersion.id,
-                    connection,
-                  }));
-                return {
-                  intent: {
-                    id: paymentIntent.id,
-                    secret: paymentIntent.client_secret,
-                  },
-                };
+                  }
+                  const paymentIntent = shouldReinitialize
+                    ? await constructStripeIntent({
+                        intentMethod: "card",
+                        intentAmount: buyerTotal,
+                        intentCurrency: "usd",
+                        intentFee: platformTotal,
+                        sellerId: foundVersion.artwork.owner.stripeId,
+                        orderData,
+                        connection,
+                      })
+                    : await updateStripeIntent({
+                        intentAmount: buyerTotal,
+                        intentFee: platformTotal,
+                        intentData: verifiedIntent,
+                        orderData,
+                        connection,
+                      });
+                  // $TODO delete intent in the db if it succeeded or got canceled already
+                  const savedIntent =
+                    shouldReinitialize &&
+                    (await addNewIntent({
+                      intentId: paymentIntent.id,
+                      userId: foundUser.id,
+                      versionId: foundVersion.id,
+                      connection,
+                    }));
+                  return {
+                    intent: {
+                      id: paymentIntent.id,
+                      secret: paymentIntent.client_secret,
+                    },
+                  };
+                }
+                throw createError(errors.badRequest, "License is not valid");
               }
               throw createError(
                 errors.internalError,

@@ -54,3 +54,47 @@ export const isVersionDifferent = (currentValues, savedValues) => {
   }
   return false;
 };
+
+export const renderFreeLicenses = ({ version }) => {
+  return [
+    ...(version.type === "free" && version.use === "separate"
+      ? [
+          {
+            value: "personal",
+            text: "Personal",
+          },
+        ]
+      : []),
+
+    ...(version.type === "free" && version.use === "included"
+      ? [
+          {
+            value: "commercial",
+            text: "Commercial",
+          },
+        ]
+      : []),
+  ];
+};
+
+export const renderCommercialLicenses = ({ version }) => {
+  return [
+    ...(version.type === "commercial" && version.license === "personal"
+      ? [
+          {
+            value: "personal",
+            text: "Personal",
+          },
+        ]
+      : []),
+
+    ...(version.license === "commercial" && version.use === "separate"
+      ? [
+          {
+            value: "commercial",
+            text: "Commercial",
+          },
+        ]
+      : []),
+  ];
+};

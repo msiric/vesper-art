@@ -10,6 +10,8 @@ const LicenseCard = () => {
   const license = useOrderDetails((state) => state.order.data.license);
   const loading = useOrderDetails((state) => state.order.loading);
 
+  console.log("LICENSE", license);
+
   const classes = licenseCardStyles();
 
   return (

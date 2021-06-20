@@ -164,6 +164,7 @@ const CheckoutProcessor = () => {
         return (
           <LicenseForm
             version={version}
+            isFree={false}
             errors={errors}
             loading={intentLoading}
           />

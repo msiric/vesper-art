@@ -1,7 +1,8 @@
 import create from "zustand";
+import { renderFreeLicenses } from "../../../../common/helpers";
 import { getDetails } from "../../services/artwork";
 import { postDownload } from "../../services/checkout";
-import { displayValidLicense, resolveAsyncError } from "../../utils/helpers";
+import { resolveAsyncError } from "../../utils/helpers";
 
 const initialState = {
   artwork: {
@@ -26,6 +27,10 @@ const initActions = (set) => ({
       const { data } = await getDetails.request({
         artworkId,
       });
+      const availableLicenses = renderFreeLicenses({
+        version: data.artwork.current,
+      });
+      const selectedLicense = availableLicenses[availableLicenses.length - 1];
       set((state) => ({
         ...state,
         artwork: {
@@ -33,10 +38,7 @@ const initActions = (set) => ({
           loading: false,
           error: { ...initialState.artwork.error },
         },
-        license: displayValidLicense(
-          data.artwork.current.use,
-          data.artwork.current.license
-        ),
+        license: selectedLicense && selectedLicense.value,
       }));
     } catch (err) {
       set((state) => ({

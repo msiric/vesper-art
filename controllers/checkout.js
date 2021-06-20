@@ -1,5 +1,6 @@
 import createError from "http-errors";
 import { errors } from "../common/constants";
+import { renderFreeLicenses } from "../common/helpers";
 import { downloadValidation, licenseValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
 import { fetchVersionDetails } from "../services/postgres/artwork.js";
@@ -31,92 +32,98 @@ export const postDownload = async ({
 }) => {
   const foundVersion = await fetchVersionDetails({ versionId, connection });
   if (foundVersion && foundVersion.artwork.active) {
-    // $TODO Bolje sredit validaciju licence
-    // $TODO Sredit validnu licencu (npr, ako je "use": "included", ne moze bit odabran personal license)
     await licenseValidation.validate({
       licenseAssignee,
       licenseCompany,
       licenseType,
     });
-    // $TODO Check if artwork is free, and validate license and version correctly
-    const licensePrice = foundVersion[licenseType];
-    // $TODO Treba li dohvacat usera?
-    const foundUser = await fetchUserById({ userId, connection });
-    if (foundVersion.artwork.active) {
-      if (foundVersion.id === foundVersion.artwork.currentId) {
-        if (foundVersion.artwork.owner.id !== foundUser.id) {
-          if (foundUser && foundUser.active) {
-            const { licenseId, orderId, notificationId } = generateUuids({
-              licenseId: null,
-              orderId: null,
-              notificationId: null,
-            });
-            const savedLicense = await addNewLicense({
-              licenseId,
-              userId: foundUser.id,
-              artworkId: foundVersion.artwork.id,
-              licenseData: {
-                licenseAssignee,
-                licenseCompany,
-                licenseType,
-                licensePrice,
-              },
-              connection,
-            });
-            await downloadValidation.validate({
-              orderBuyer: foundUser.id,
-              orderSeller: foundVersion.artwork.owner.id,
-              orderArtwork: foundVersion.artwork.id,
-              orderVersion: foundVersion.id,
-              orderDiscount: null,
-              orderLicense: licenseId,
-              orderSpent: 0,
-              orderEarned: 0,
-              orderFee: 0,
-            });
-            const orderObject = {
-              buyerId: foundUser.id,
-              sellerId: foundVersion.artwork.owner.id,
-              artworkId: foundVersion.artwork.id,
-              versionId: foundVersion.id,
-              discountId: null,
-              licenseId,
-              review: null,
-              spent: 0,
-              earned: 0,
-              fee: 0,
-              type: "free",
-              status: "completed",
-              intentId: null,
-            };
-            const savedOrder = await addNewOrder({
-              orderId,
-              orderData: orderObject,
-              connection,
-            });
-            // new start
-            await addNewNotification({
-              notificationId,
-              notificationLink: orderId,
-              notificationRef: "",
-              notificationType: "order",
-              notificationReceiver: foundVersion.artwork.owner.id,
-              connection,
-            });
-            socketApi.sendNotification(foundVersion.artwork.owner.id, orderId);
-            // new end
-            return { message: "Order completed successfully" };
+    const availableLicenses = renderFreeLicenses({
+      version: foundVersion,
+    });
+    if (availableLicenses.some((item) => item.value === licenseType)) {
+      const licensePrice = foundVersion[licenseType];
+      // $TODO Treba li dohvacat usera?
+      const foundUser = await fetchUserById({ userId, connection });
+      if (foundVersion.artwork.active) {
+        if (foundVersion.id === foundVersion.artwork.currentId) {
+          if (foundVersion.artwork.owner.id !== foundUser.id) {
+            if (foundUser && foundUser.active) {
+              const { licenseId, orderId, notificationId } = generateUuids({
+                licenseId: null,
+                orderId: null,
+                notificationId: null,
+              });
+              const savedLicense = await addNewLicense({
+                licenseId,
+                userId: foundUser.id,
+                artworkId: foundVersion.artwork.id,
+                licenseData: {
+                  licenseAssignee,
+                  licenseCompany,
+                  licenseType,
+                  licensePrice,
+                },
+                connection,
+              });
+              await downloadValidation.validate({
+                orderBuyer: foundUser.id,
+                orderSeller: foundVersion.artwork.owner.id,
+                orderArtwork: foundVersion.artwork.id,
+                orderVersion: foundVersion.id,
+                orderDiscount: null,
+                orderLicense: licenseId,
+                orderSpent: 0,
+                orderEarned: 0,
+                orderFee: 0,
+              });
+              const orderObject = {
+                buyerId: foundUser.id,
+                sellerId: foundVersion.artwork.owner.id,
+                artworkId: foundVersion.artwork.id,
+                versionId: foundVersion.id,
+                discountId: null,
+                licenseId,
+                review: null,
+                spent: 0,
+                earned: 0,
+                fee: 0,
+                type: "free",
+                status: "completed",
+                intentId: null,
+              };
+              const savedOrder = await addNewOrder({
+                orderId,
+                orderData: orderObject,
+                connection,
+              });
+              // new start
+              await addNewNotification({
+                notificationId,
+                notificationLink: orderId,
+                notificationRef: "",
+                notificationType: "order",
+                notificationReceiver: foundVersion.artwork.owner.id,
+                connection,
+              });
+              socketApi.sendNotification(
+                foundVersion.artwork.owner.id,
+                orderId
+              );
+              // new end
+              return { message: "Order completed successfully" };
+            }
+            throw createError(errors.notFound, "User not found");
           }
-          throw createError(errors.notFound, "User not found");
+          throw createError(
+            errors.badRequest,
+            "You are the owner of this artwork"
+          );
         }
-        throw createError(
-          errors.badRequest,
-          "You are the owner of this artwork"
-        );
+        throw createError(errors.badRequest, "Artwork version is obsolete");
       }
-      throw createError(errors.badRequest, "Artwork version is obsolete");
+      throw createError(errors.gone, "Artwork is no longer active");
     }
-    throw createError(errors.gone, "Artwork is no longer active");
+    throw createError(errors.badRequest, "License is not valid");
   }
   throw createError(errors.notFound, "Artwork not found");
 };
