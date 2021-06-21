@@ -1,4 +1,5 @@
 import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { errors } from "../../../common/constants";
 import Redirect from "../pages/Home/Redirect";
 import Retry from "../pages/Home/Retry";
@@ -100,3 +101,6 @@ export const renderError = (...errors) => {
 
 export const renderUserData = ({ data, isUsername = false, fallback = "/" }) =>
   data ? data : isUsername ? "[deleted]" : fallback;
+
+export const renderRedirectLink = ({ active, isUsername = false }) =>
+  active ? RouterLink : isUsername ? "p" : "div";

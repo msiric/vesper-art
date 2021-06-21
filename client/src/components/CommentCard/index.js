@@ -6,7 +6,7 @@ import {
 import { formatDistance } from "date-fns";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import SyncButton from "../../components/SyncButton/index.js";
@@ -21,7 +21,7 @@ import ListItemSecondaryAction from "../../domain/ListItemSecondaryAction";
 import ListItemText from "../../domain/ListItemText";
 import Typography from "../../domain/Typography";
 import AddCommentForm from "../../forms/CommentForm/index.js";
-import { renderUserData } from "../../utils/helpers";
+import { renderRedirectLink, renderUserData } from "../../utils/helpers";
 import commentCardStyles from "./styles.js";
 
 const CommentCard = ({
@@ -75,7 +75,10 @@ const CommentCard = ({
           <Avatar
             alt={comment.owner.name}
             src={comment.owner.avatar ? comment.owner.avatar.source : null}
-            component={Link}
+            component={renderRedirectLink({
+              active: comment.owner.active,
+              isUsername: false,
+            })}
             to={`/user/${comment.owner.name}`}
             loading={loading}
           />
@@ -83,9 +86,12 @@ const CommentCard = ({
         <ListItemText
           primary={
             edits[comment.id] ? null : (
-              <Box>
+              <Box className={classes.wrapper}>
                 <Typography
-                  component={Link}
+                  component={renderRedirectLink({
+                    active: comment.owner.active,
+                    isUsername: true,
+                  })}
                   to={`/user/${comment.owner.name}`}
                   loading={loading}
                   className={classes.owner}

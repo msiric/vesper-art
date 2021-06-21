@@ -17,6 +17,9 @@ const commentCardStyles = makeStyles((muiTheme) => ({
       borderColor: artepunktTheme.palette.primary.main,
     },
   },
+  wrapper: {
+    display: "flex",
+  },
   owner: {
     textDecoration: "none",
   },

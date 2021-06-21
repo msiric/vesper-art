@@ -4,14 +4,13 @@ import {
   StarRounded as StarIcon,
 } from "@material-ui/icons";
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
 import { formatDate } from "../../../../common/helpers.js";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Typography from "../../domain/Typography";
-import { renderUserData } from "../../utils/helpers.js";
+import { renderRedirectLink, renderUserData } from "../../utils/helpers.js";
 import profileCardStyles from "./styles.js";
 
 const ProfileCard = ({ user, loading }) => {
@@ -29,7 +28,10 @@ const ProfileCard = ({ user, loading }) => {
     <Card className={classes.container}>
       <Box className={classes.wrapper}>
         <Avatar
-          component={RouterLink}
+          component={renderRedirectLink({
+            active: user.active,
+            isUsername: false,
+          })}
           to={`/user/${user.name}`}
           alt={user.name}
           src={user.avatar ? user.avatar.source : null}
@@ -41,7 +43,10 @@ const ProfileCard = ({ user, loading }) => {
       </Box>
       <CardContent className={classes.content}>
         <Typography
-          component={RouterLink}
+          component={renderRedirectLink({
+            active: user.active,
+            isUsername: true,
+          })}
           to={`/user/${user.name}`}
           gutterBottom
           variant="h5"
