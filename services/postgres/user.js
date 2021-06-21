@@ -476,10 +476,11 @@ export const fetchUserFavorites = async ({
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .where(
-      `favorite.ownerId = :userId AND favorite.serial > 
+      `favorite.ownerId = :userId AND artwork.active = :active AND favorite.serial > 
       ${resolveSubQuery(queryBuilder, "favorite", Favorite, cursor, -1)}`,
       {
         userId,
+        active: USER_ACTIVE_STATUS,
       }
     )
     .orderBy("favorite.serial", "ASC")
