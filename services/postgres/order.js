@@ -131,13 +131,19 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
       }
     )
     .getOne();
-  if (foundOrder && foundOrder.buyer && foundOrder.seller) {
-    foundOrder.seller.rating = calculateRating({
-      reviews: foundOrder.seller.reviews,
-    });
-    foundOrder.buyer.rating = calculateRating({
-      reviews: foundOrder.buyer.reviews,
-    });
+  if (foundOrder) {
+    if (foundOrder.seller) {
+      foundOrder.seller.rating = calculateRating({
+        active: foundOrder.seller.active,
+        reviews: foundOrder.seller.reviews,
+      });
+    }
+    if (foundOrder.buyer) {
+      foundOrder.buyer.rating = calculateRating({
+        active: foundOrder.buyer.active,
+        reviews: foundOrder.buyer.reviews,
+      });
+    }
   }
   console.log(foundOrder);
   return foundOrder;

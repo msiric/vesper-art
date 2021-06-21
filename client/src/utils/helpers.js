@@ -97,3 +97,6 @@ export const renderError = (...errors) => {
     }
   }
 };
+
+export const renderUserData = ({ data, isUsername = false, fallback = "/" }) =>
+  data ? data : isUsername ? "[deleted]" : fallback;

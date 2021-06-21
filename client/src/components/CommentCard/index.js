@@ -21,6 +21,7 @@ import ListItemSecondaryAction from "../../domain/ListItemSecondaryAction";
 import ListItemText from "../../domain/ListItemText";
 import Typography from "../../domain/Typography";
 import AddCommentForm from "../../forms/CommentForm/index.js";
+import { renderUserData } from "../../utils/helpers";
 import commentCardStyles from "./styles.js";
 
 const CommentCard = ({
@@ -90,8 +91,14 @@ const CommentCard = ({
                   className={classes.owner}
                 >
                   {comment.owner.id === artworkOwnerId
-                    ? `${comment.owner.name} 👤`
-                    : comment.owner.name}
+                    ? `${renderUserData({
+                        data: comment.owner.name,
+                        isUsername: true,
+                      })} 👤`
+                    : renderUserData({
+                        data: comment.owner.name,
+                        isUsername: true,
+                      })}
                 </Typography>
                 <Typography
                   component="span"

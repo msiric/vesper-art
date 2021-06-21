@@ -67,8 +67,11 @@ export const fetchUserResults = async ({
     })
     .orderBy("ts_rank(to_tsvector(user.name), plainto_tsquery(:query))", "DESC")
     .getMany();
-  foundUsers.map(
-    (user) => (user.rating = calculateRating({ reviews: user.reviews }))
-  );
+  for (let user of foundUsers) {
+    user.rating = calculateRating({
+      active: user.active,
+      reviews: user.reviews,
+    });
+  }
   return foundUsers;
 };

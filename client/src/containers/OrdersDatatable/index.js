@@ -5,6 +5,7 @@ import ArtworkThumbnail from "../../components/ArtworkThumbnail/index.js";
 import Datatable from "../../components/DataTable/index.js";
 import EmptySection from "../../components/EmptySection/index.js";
 import { useUserOrders } from "../../contexts/local/userOrders";
+import { renderUserData } from "../../utils/helpers.js";
 
 const OrdersDatatable = () => {
   const orders = useUserOrders((state) => state.orders.data);
@@ -51,6 +52,8 @@ const OrdersDatatable = () => {
               obj1.data.localeCompare(obj2.data, "en", {
                 numeric: true,
               }) * (order === "asc" ? 1 : -1),
+            customBodyRender: (value) =>
+              renderUserData({ data: value, isUsername: true }),
           },
         },
         {

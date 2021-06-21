@@ -5,6 +5,7 @@ import EmptySection from "../../components/EmptySection/index.js";
 import SubHeading from "../../components/SubHeading/index.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
+import { renderUserData } from "../../utils/helpers.js";
 import orderCardStyles from "./styles.js";
 
 const OrderCard = () => {
@@ -38,13 +39,15 @@ const OrderCard = () => {
           name: "Seller",
           options: {
             sort: false,
+            customBodyRender: (value) =>
+              renderUserData({ data: value, isUsername: true }),
           },
         },
         {
           name: "Discount",
           options: {
             sort: false,
-            customBodyRender: (value, tableMeta, updateValue) =>
+            customBodyRender: (value) =>
               value ? `${value.discount * 100}%` : "None",
           },
         },
@@ -52,7 +55,7 @@ const OrderCard = () => {
           name: isSeller() ? "Earned" : "Spent",
           options: {
             sort: false,
-            customBodyRender: (value, tableMeta, updateValue) =>
+            customBodyRender: (value) =>
               typeof value !== "undefined"
                 ? value
                   ? `$${value}`

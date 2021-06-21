@@ -135,6 +135,7 @@ export const fetchArtworkDetails = async ({
     .getOne();
   if (foundArtwork && foundArtwork.owner) {
     foundArtwork.owner.rating = calculateRating({
+      active: foundArtwork.owner.active,
       reviews: foundArtwork.owner.reviews,
     });
     foundArtwork.favorites = foundArtwork.favorites.length;

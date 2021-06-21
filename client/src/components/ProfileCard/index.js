@@ -11,6 +11,7 @@ import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Typography from "../../domain/Typography";
+import { renderUserData } from "../../utils/helpers.js";
 import profileCardStyles from "./styles.js";
 
 const ProfileCard = ({ user, loading }) => {
@@ -48,14 +49,20 @@ const ProfileCard = ({ user, loading }) => {
           loading={loading}
           className={classes.name}
         >
-          {user.name || "Artist name"}
+          {renderUserData({
+            data: user.name,
+            isUsername: true,
+          })}
         </Typography>
         <Box className={classes.info} loading={loading}>
           {user.rating > 0 && (
             <Box className={classes.rating}>
               <StarIcon fontSize="small" className={classes.icon} />
               <Typography variant="body1" color="textSecondary" component="p">
-                {user.rating}
+                {renderUserData({
+                  data: user.rating,
+                  isUsername: false,
+                })}
               </Typography>
             </Box>
           )}
@@ -63,16 +70,24 @@ const ProfileCard = ({ user, loading }) => {
             <Box className={classes.country}>
               <LocationIcon fontSize="small" className={classes.icon} />
               <Typography variant="body2" color="textSecondary" component="p">
-                {user.country}
+                {renderUserData({
+                  data: user.country,
+                  isUsername: false,
+                })}
               </Typography>
             </Box>
           )}
-          <Box className={classes.joined}>
-            <MemberIcon fontSize="small" className={classes.icon} />
-            <Typography variant="body2" color="textSecondary" component="p">
-              {user.created && formatDate(new Date(user.created), "MMM yy")}
-            </Typography>
-          </Box>
+          {user.created && (
+            <Box className={classes.joined}>
+              <MemberIcon fontSize="small" className={classes.icon} />
+              <Typography variant="body2" color="textSecondary" component="p">
+                {renderUserData({
+                  data: formatDate(new Date(user.created), "MMM yy"),
+                  isUsername: false,
+                })}
+              </Typography>
+            </Box>
+          )}
         </Box>
         <Typography
           variant="body2"
@@ -81,7 +96,11 @@ const ProfileCard = ({ user, loading }) => {
           loading={loading}
           className={classes.description}
         >
-          {user.description || "Nothing here yet"}
+          {renderUserData({
+            data: user.description,
+            isUsername: false,
+            fallback: `${user.active ? "Nothing here yet" : "[deleted]"}`,
+          })}
         </Typography>
       </CardContent>
     </Card>

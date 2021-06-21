@@ -11,6 +11,7 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
 import globalStyles from "../../styles/global.js";
+import { renderUserData } from "../../utils/helpers.js";
 
 const useGalleryStyles = makeStyles((muiTheme) => ({
   wrapper: {
@@ -72,7 +73,10 @@ const Gallery = () => {
               <Typography className={classes.title}>
                 {artwork[item].title}
               </Typography>
-              <Typography>{`\xa0by ${artwork[item].owner}`}</Typography>
+              <Typography>{`\xa0by ${renderUserData({
+                data: artwork[item].owner,
+                isUsername: true,
+              })}`}</Typography>
             </Box>
           ),
         });

@@ -291,8 +291,8 @@ export const resolveSubQuery = (
         .getQuery()
     : threshold;
 
-export const calculateRating = ({ reviews }) =>
-  reviews.length
+export const calculateRating = ({ active, reviews }) =>
+  active && reviews.length
     ? (
         reviews.reduce((sum, { rating }) => sum + rating, 0) / reviews.length
       ).toFixed(2)
