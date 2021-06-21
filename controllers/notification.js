@@ -2,6 +2,7 @@ import {
   editReadNotification,
   editUnreadNotification,
   fetchExistingNotifications,
+  removeAllNotifications,
 } from "../services/postgres/notification.js";
 
 export const getNotifications = async ({ userId, connection }) => {
@@ -38,4 +39,12 @@ export const unreadNotification = async ({
   });
   /*   await incrementUserNotification({ userId, connection }); */
   return { message: "Notification read" };
+};
+
+export const deleteUserNotifications = async ({ userId, connection }) => {
+  await removeAllNotifications({
+    userId,
+    connection,
+  });
+  return { message: "Notifications deleted successfully" };
 };

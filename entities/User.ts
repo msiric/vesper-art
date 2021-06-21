@@ -20,10 +20,10 @@ export class User extends BaseEntity {
   @Generated("increment")
   serial: number;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   email: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   name: string;
 
   @Column()

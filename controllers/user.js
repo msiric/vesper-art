@@ -52,6 +52,7 @@ import {
 import { sendEmail } from "../utils/email.js";
 import { generateToken, generateUuids } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
+import { deleteUserNotifications } from "./notification";
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,
@@ -537,12 +538,12 @@ export const deactivateUser = async ({ userId, response, connection }) => {
     for (let artwork of foundArtwork) {
       const foundOrders = await fetchOrdersByArtwork({
         userId: foundUser.id,
-        versionId: artwork.id,
+        artworkId: artwork.id,
         connection,
       });
       if (!foundOrders.length) {
-        const oldVersion = foundArtwork.current;
-        await deactivateArtworkVersion({ artworkId, connection });
+        const oldVersion = artwork.current;
+        await deactivateArtworkVersion({ artworkId: artwork.id, connection });
         await deleteS3Object({
           fileLink: oldVersion.cover.source,
           folderName: "artworkCovers/",
@@ -556,12 +557,12 @@ export const deactivateUser = async ({ userId, response, connection }) => {
           connection,
         });
       } else if (
-        foundOrders.find((item) => item.versionId === foundArtwork.current.id)
+        foundOrders.some((item) => item.versionId === artwork.current.id)
       ) {
-        await deactivateExistingArtwork({ artworkId, connection });
+        await deactivateExistingArtwork({ artworkId: artwork.id, connection });
       } else {
-        const oldVersion = foundArtwork.current;
-        await deactivateArtworkVersion({ artworkId, connection });
+        const oldVersion = artwork.current;
+        await deactivateArtworkVersion({ artworkId: artwork.id, connection });
         await removeArtworkVersion({
           versionId: oldVersion.id,
           connection,
@@ -574,6 +575,7 @@ export const deactivateUser = async ({ userId, response, connection }) => {
         folderName: "userMedia/",
       });
     }
+    await deleteUserNotifications({ userId: foundUser.id, connection });
     await deactivateExistingUser({ userId: foundUser.id, connection });
     logUserOut(response);
     return { message: "User deactivated" };

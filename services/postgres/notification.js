@@ -127,3 +127,16 @@ export const editUnreadNotification = async ({
   console.log(updatedNotification);
   return updatedNotification;
 };
+
+export const removeAllNotifications = async ({ userId, connection }) => {
+  const deletedNotifications = await connection
+    .createQueryBuilder()
+    .delete()
+    .from(Notification)
+    .where('"receiverId" = :userId', {
+      userId,
+    })
+    .execute();
+  console.log(deletedNotifications);
+  return deletedNotifications;
+};

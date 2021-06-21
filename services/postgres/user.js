@@ -885,8 +885,8 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
     .createQueryBuilder()
     .update(User)
     .set({
-      email: "",
-      name: "",
+      email: null,
+      name: null,
       password: "",
       avatar: null,
       description: "",
