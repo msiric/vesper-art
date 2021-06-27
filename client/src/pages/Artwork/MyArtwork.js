@@ -1,11 +1,9 @@
-import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
 import PromptModal from "../../components/PromptModal/index.js";
 import ArtworkDatatable from "../../containers/ArtworkDatatable/index.js";
 import { useUserUploads } from "../../contexts/local/userUploads";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import { deleteArtwork } from "../../services/artwork";
 import globalStyles from "../../styles/global.js";
 import { containsErrors, renderError } from "../../utils/helpers.js";
 
@@ -19,15 +17,10 @@ const MyArtwork = ({}) => {
   const removeArtwork = useUserUploads((state) => state.removeArtwork);
   const resetUploads = useUserUploads((state) => state.resetUploads);
 
-  const { enqueueSnackbar } = useSnackbar();
-
   const globalClasses = globalStyles();
 
   const handleArtworkDelete = async () => {
     await removeArtwork({ artworkId: modal.id });
-    enqueueSnackbar(deleteArtwork.success.message, {
-      variant: deleteArtwork.success.variant,
-    });
   };
 
   const reinitializeState = () => {

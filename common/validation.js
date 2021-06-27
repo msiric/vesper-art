@@ -145,7 +145,7 @@ export const addArtwork = Yup.object().shape({
     ),
 });
 
-export const updateArtwork = Yup.object().shape({
+/* export const updateArtwork = Yup.object().shape({
   artworkMedia: Yup.mixed()
     .test(
       "fileType",
@@ -159,7 +159,7 @@ export const updateArtwork = Yup.object().shape({
       `File needs to be less than ${upload.artwork.fileSize / 1048576}MB`,
       (value) => !value || (value && value.size <= upload.artwork.fileSize)
     ),
-});
+}); */
 
 export const patchAvatar = Yup.object().shape({
   userMedia: Yup.mixed()

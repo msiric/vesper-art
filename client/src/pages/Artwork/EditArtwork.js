@@ -1,5 +1,4 @@
 import { makeStyles } from "@material-ui/core";
-import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/index.js";
@@ -8,7 +7,6 @@ import ArtworkModifier from "../../containers/ArtworkModifier";
 import { useArtworkUpdate } from "../../contexts/local/artworkUpdate";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import { deleteArtwork } from "../../services/artwork.js";
 import globalStyles from "../../styles/global.js";
 import { containsErrors, renderError } from "../../utils/helpers.js";
 
@@ -48,7 +46,6 @@ const EditArtwork = ({ match }) => {
 
   const paramId = match.params.id;
 
-  const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
 
   const globalClasses = globalStyles();
@@ -57,9 +54,6 @@ const EditArtwork = ({ match }) => {
   const handleDeleteArtwork = async () => {
     await removeArtwork({ artworkId: artwork.id });
     history.push("/");
-    enqueueSnackbar(deleteArtwork.success.message, {
-      variant: deleteArtwork.success.variant,
-    });
   };
 
   const reinitializeState = () => {

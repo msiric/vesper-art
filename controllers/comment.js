@@ -21,7 +21,6 @@ export const getComment = async ({ artworkId, commentId, connection }) => {
   return { comment: foundComment };
 };
 
-// SNACKBAR $TODO Add expose to response
 export const postComment = async ({
   userId,
   artworkId,
@@ -62,11 +61,11 @@ export const postComment = async ({
     return {
       message: "Comment posted successfully",
       payload: savedComment.raw[0],
+      expose: true,
     };
   }
 };
 
-// SNACKBAR $TODO Add expose to response
 export const patchComment = async ({
   userId,
   artworkId,
@@ -82,10 +81,9 @@ export const patchComment = async ({
     commentContent,
     connection,
   });
-  return { message: "Comment updated successfully" };
+  return { message: "Comment updated successfully", expose: true };
 };
 
-// SNACKBAR $TODO Add expose to response
 export const deleteComment = async ({
   userId,
   artworkId,
@@ -98,5 +96,5 @@ export const deleteComment = async ({
     userId,
     connection,
   });
-  return { message: "Comment deleted successfully" };
+  return { message: "Comment deleted successfully", expose: true };
 };

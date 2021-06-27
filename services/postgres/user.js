@@ -1,4 +1,3 @@
-import { addHours, formatISO } from "date-fns";
 import { Artwork } from "../../entities/Artwork";
 import { Avatar } from "../../entities/Avatar";
 import { Favorite } from "../../entities/Favorite";
@@ -82,13 +81,12 @@ export const fetchUserIdByVerificationToken = async ({
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
-    .select("user.id")
     .where(
       "user.verificationToken = :tokenId AND user.verificationExpiry > :dateNow AND user.active = :active",
       {
         tokenId,
-        dateNow: formatISO(new Date()),
         // $TODO add constant
+        dateNow: new Date(),
         active: true,
       }
     )
@@ -174,7 +172,7 @@ export const fetchUserByResetToken = async ({ tokenId, connection }) => {
     .leftJoinAndSelect("user.avatar", "avatar")
     .where("user.resetToken = :token AND user.resetExpiry > :dateNow", {
       token: tokenId,
-      dateNow: formatISO(new Date()),
+      dateNow: new Date(),
     })
     .getOne();
   console.log(foundUser);
@@ -686,6 +684,7 @@ export const editUserEmail = async ({
   userId,
   userEmail,
   verificationToken,
+  verificationExpiry,
   connection,
 }) => {
   /*   const foundUser = await User.findOne({
@@ -702,7 +701,7 @@ export const editUserEmail = async ({
     .set({
       email: userEmail,
       verificationToken,
-      verificationExpiry: formatISO(addHours(new Date(), 1)),
+      verificationExpiry,
       verified: false,
     })
     .where("id = :userId AND active = :active", {

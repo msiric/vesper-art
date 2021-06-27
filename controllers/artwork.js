@@ -94,7 +94,6 @@ export const editArtwork = async ({ userId, artworkId, connection }) => {
   throw createError(errors.notFound, "Artwork not found", { expose: true });
 };
 
-// SNACKBAR $TODO Add expose to response
 export const postNewArtwork = async ({
   userId,
   artworkPath,
@@ -180,7 +179,7 @@ export const postNewArtwork = async ({
       userId,
       connection,
     });
-    return { message: "Artwork published successfully" };
+    return { message: "Artwork published successfully", expose: true };
   }
   throw createError(
     errors.badRequest,
@@ -192,7 +191,6 @@ export const postNewArtwork = async ({
 // $TODO
 // does it work in all cases?
 // needs testing
-// SNACKBAR $TODO Add expose to response
 export const updateArtwork = async ({
   userId,
   artworkId,
@@ -289,7 +287,7 @@ export const updateArtwork = async ({
         });
       }
 
-      return { message: "Artwork updated successfully" };
+      return { message: "Artwork updated successfully", expose: true };
     } else {
       throw createError(errors.notFound, "Artwork not found", { expose: true });
     }
@@ -305,7 +303,6 @@ export const updateArtwork = async ({
 // $TODO
 // does it work in all cases?
 // needs testing
-// SNACKBAR $TODO Add expose to response
 export const deleteArtwork = async ({
   userId,
   artworkId,
@@ -352,7 +349,7 @@ export const deleteArtwork = async ({
           connection,
         });
       }
-      return { message: "Artwork deleted successfully" };
+      return { message: "Artwork deleted successfully", expose: true };
     }
     throw createError(errors.badRequest, "Artwork has a newer version", {
       expose: true,

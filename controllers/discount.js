@@ -9,7 +9,6 @@ import {} from "../utils/helpers.js";
 
 // needs transaction (done)
 // treba sredit
-// SNACKBAR $TODO Add expose to response
 export const getDiscount = async ({ userId, discountCode, connection }) => {
   await discountValidation.validate({ discountCode });
   const foundDiscount = await fetchDiscountByCode({
@@ -17,7 +16,11 @@ export const getDiscount = async ({ userId, discountCode, connection }) => {
     connection,
   });
   if (foundDiscount) {
-    return { message: "Discount applied", payload: foundDiscount };
+    return {
+      message: "Discount applied",
+      payload: foundDiscount,
+      expose: true,
+    };
   }
   throw createError(errors.notFound, "Discount not found", { expose: true });
 };

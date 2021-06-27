@@ -7,10 +7,7 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { isVersionDifferent } from "../../../../common/helpers";
-import {
-  artworkValidation,
-  updateArtwork as updateValidation,
-} from "../../../../common/validation";
+import { artworkValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import HelpBox from "../../components/HelpBox/index.js";
 import SyncButton from "../../components/SyncButton/index.js";
@@ -69,7 +66,7 @@ const ArtworkModifier = ({ paramId }) => {
     reset,
   } = useForm({
     defaultValues: setDefaultValues(),
-    resolver: yupResolver(artworkValidation.concat(updateValidation)),
+    resolver: yupResolver(artworkValidation),
   });
 
   const history = useHistory();

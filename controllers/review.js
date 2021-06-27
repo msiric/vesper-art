@@ -12,7 +12,6 @@ import { addNewReview } from "../services/postgres/review.js";
 import { generateUuids } from "../utils/helpers.js";
 
 // needs transaction (done)
-// SNACKBAR $TODO Add expose to response
 export const postReview = async ({
   userId,
   reviewRating,
@@ -63,7 +62,7 @@ export const postReview = async ({
         });
         socketApi.sendNotification(foundOrder.seller, foundOrder.id);
         // new end
-        return { message: "Review successfully published" };
+        return { message: "Review successfully published", expose: true };
       }
       throw createError(
         errors.conflict,

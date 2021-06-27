@@ -1,5 +1,4 @@
 import argon2 from "argon2";
-import crypto from "crypto";
 import createError from "http-errors";
 import { errors } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
@@ -10,7 +9,6 @@ import {
   recoveryValidation,
   signupValidation,
 } from "../common/validation";
-import { domain } from "../config/secret";
 import {
   addNewUser,
   editUserResetToken,
@@ -36,10 +34,13 @@ import {
   sendRefreshToken,
 } from "../utils/auth.js";
 import { sendEmail } from "../utils/email.js";
-import { generateToken, generateUuids } from "../utils/helpers.js";
+import {
+  generateResetToken,
+  generateUuids,
+  generateVerificationToken,
+} from "../utils/helpers.js";
 
 // needs transaction (not tested)
-// SNACKBAR $TODO Add expose to response
 export const postSignUp = async ({
   userEmail,
   userUsername,
@@ -64,7 +65,8 @@ export const postSignUp = async ({
       { expose: true }
     );
   } else {
-    const { verificationToken, verificationLink } = generateToken();
+    const { verificationToken, verificationLink, verificationExpiry } =
+      generateVerificationToken();
     const hashedPassword = await argon2.hash(userPassword);
     const { userId } = generateUuids({
       userId: null,
@@ -75,6 +77,7 @@ export const postSignUp = async ({
       userUsername,
       hashedPassword,
       verificationToken,
+      verificationExpiry,
       connection,
     });
     await sendEmail({
@@ -85,7 +88,7 @@ export const postSignUp = async ({
 
         <a href=${verificationLink}>Click here to verify</a>`,
     });
-    return { message: "Verify your email address" };
+    return { message: "Verify your email address", expose: true };
   }
 };
 
@@ -181,12 +184,11 @@ export const postRevokeToken = async ({ userId, connection }) => {
 };
 
 // needs transaction (not tested)
-// SNACKBAR $TODO Add expose to response
 export const verifyRegisterToken = async ({ tokenId, connection }) => {
   const foundId = await fetchUserIdByVerificationToken({ tokenId, connection });
   if (foundId) {
     await resetVerificationToken({ tokenId, connection });
-    return { message: "Token successfully verified" };
+    return { message: "Token successfully verified", expose: true };
   }
   throw createError(
     errors.badRequest,
@@ -195,26 +197,27 @@ export const verifyRegisterToken = async ({ tokenId, connection }) => {
   );
 };
 
-// SNACKBAR $TODO Add expose to response
 export const forgotPassword = async ({ userEmail, connection }) => {
   await emailValidation.validate({ userEmail });
-  crypto.randomBytes(20, async function (err, buf) {
-    const resetToken = buf.toString("hex");
-    await editUserResetToken({ userEmail, resetToken, connection });
-    await sendEmail({
-      emailReceiver: userEmail,
-      emailSubject: "Reset your password",
-      emailContent: `You are receiving this because you have requested to reset the password for your account.
+  const { resetToken, resetLink, resetExpiry } = generateResetToken();
+  await editUserResetToken({
+    userEmail,
+    resetToken,
+    resetExpiry,
+    connection,
+  });
+  await sendEmail({
+    emailReceiver: userEmail,
+    emailSubject: "Reset your password",
+    emailContent: `You are receiving this because you have requested to reset the password for your account.
           Please click on the following link, or paste this into your browser to complete the process:
           
-          <a href="${domain.client}/reset_password/${resetToken}"</a>`,
-    });
-    return { message: "Password reset" };
+          <a href="${resetLink}"</a>`,
   });
+  return { message: "Password reset", expose: true };
 };
 
 // needs transaction (not tested)
-// SNACKBAR $TODO Add expose to response
 export const resetPassword = async ({
   tokenId,
   userCurrent,
@@ -246,7 +249,7 @@ export const resetPassword = async ({
     });
     const hashedPassword = await argon2.hash(userPassword);
     await resetUserPassword({ tokenId, hashedPassword, connection });
-    return { message: "Password updated successfully" };
+    return { message: "Password updated successfully", expose: true };
   }
   throw createError(
     errors.badRequest,
@@ -255,7 +258,6 @@ export const resetPassword = async ({
   );
 };
 
-// SNACKBAR $TODO Add expose to response
 export const resendToken = async ({ userEmail, connection }) => {
   await emailValidation.validate({
     userEmail,
@@ -266,11 +268,13 @@ export const resendToken = async ({ userEmail, connection }) => {
   });
   if (!isObjectEmpty(foundUser)) {
     if (!foundUser.verified) {
-      const { verificationToken, verificationLink } = generateToken();
+      const { verificationToken, verificationLink, verificationExpiry } =
+        generateVerificationToken();
       await editUserEmail({
         userId: foundUser.id,
         userEmail,
         verificationToken,
+        verificationExpiry,
         connection,
       });
       await sendEmail({
@@ -281,7 +285,7 @@ export const resendToken = async ({ userEmail, connection }) => {
   
           <a href=${verificationLink}>Click here to verify</a>`,
       });
-      return { message: "Verification link successfully sent" };
+      return { message: "Verification link successfully sent", expose: true };
     }
     throw createError(errors.badRequest, "Account is already verified", {
       expose: true,
@@ -294,7 +298,6 @@ export const resendToken = async ({ userEmail, connection }) => {
   );
 };
 
-// SNACKBAR $TODO Add expose to response
 export const updateEmail = async ({
   response,
   userEmail,
@@ -348,11 +351,13 @@ export const updateEmail = async ({
         { expose: true }
       );
     } else {
-      const { verificationToken, verificationLink } = generateToken();
+      const { verificationToken, verificationLink, verificationExpiry } =
+        generateVerificationToken();
       await editUserEmail({
         userId: foundId,
         userEmail,
         verificationToken,
+        verificationExpiry,
         connection,
       });
       await sendEmail({
@@ -364,7 +369,7 @@ export const updateEmail = async ({
         <a href=${verificationLink}>Click here to verify</a>`,
       });
       logUserOut(response);
-      return { message: "Email successfully updated" };
+      return { message: "Email address successfully updated", expose: true };
     }
   }
   throw createError(

@@ -80,9 +80,9 @@ export class User extends BaseEntity {
   @Column({ default: false })
   generated: boolean;
 
-  @CreateDateColumn({ type: "timestamptz" })
+  @CreateDateColumn({ type: "timestamptz", nullable: true })
   created: Date;
 
-  @UpdateDateColumn({ type: "timestamptz" })
+  @UpdateDateColumn({ type: "timestamptz", nullable: true })
   updated: Date;
 }

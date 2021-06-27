@@ -68,8 +68,8 @@ const Provider = () => {
           containerAnchorOriginTopCenter: classes.alert,
         }}
         anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
+          vertical: "bottom",
+          horizontal: "left",
         }}
         iconVariant={iconItems}
         classes={{

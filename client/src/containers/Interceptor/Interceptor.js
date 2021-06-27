@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import useSound from "use-sound";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
+import Backdrop from "../../components/Backdrop";
 import { useAppStore } from "../../contexts/global/app.js";
 import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
@@ -101,6 +102,12 @@ const Interceptor = () => {
 
     ax.interceptors.response.use(
       (response) => {
+        console.log("RESPONSE", response);
+        if (response.data && response.data.expose) {
+          enqueueSnackbar(response.data.message, {
+            variant: "success",
+          });
+        }
         return response;
       },
       async (error) => {
@@ -251,7 +258,7 @@ const Interceptor = () => {
     };
   }, [userToken]);
 
-  return  <App />;
+  return loading ? <Backdrop loading={loading} /> : <App />;
 };
 
 export { ax };

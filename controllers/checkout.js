@@ -22,7 +22,6 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
 
 // $TODO not good
 // transaction is not working correctly???
-// SNACKBAR $TODO Add expose to response
 export const postDownload = async ({
   userId,
   versionId,
@@ -111,7 +110,7 @@ export const postDownload = async ({
                 orderId
               );
               // new end
-              return { message: "Order completed successfully" };
+              return { message: "Order completed successfully", expose: true };
             }
             throw createError(errors.notFound, "User not found", {
               expose: true,

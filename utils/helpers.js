@@ -1,5 +1,6 @@
+import crypto from "crypto";
 import currency from "currency.js";
-import { isBefore, isValid } from "date-fns";
+import { addHours, isBefore, isValid } from "date-fns";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
@@ -188,7 +189,6 @@ export const isNotAuthenticated = async (req, res, next) => {
     throw createError(errors.badRequest, "Already authenticated", {
       expose: true,
     });
-
   return next();
 };
 
@@ -280,10 +280,19 @@ export const generateUuids = ({ ...args }) => {
   return generatedUuids;
 };
 
-export const generateToken = () => {
+export const generateVerificationToken = () => {
   const verificationToken = genUuid();
   const verificationLink = `${domain.client}/verify_token/${verificationToken}`;
-  return { verificationToken, verificationLink };
+  const verificationExpiry = addHours(new Date(), 1);
+  return { verificationToken, verificationLink, verificationExpiry };
+};
+
+export const generateResetToken = () => {
+  const buffer = crypto.randomBytes(20);
+  const resetToken = buffer.toString("hex");
+  const resetLink = `${domain.client}/reset_password/${resetToken}`;
+  const resetExpiry = addHours(new Date(), 1);
+  return { resetToken, resetLink, resetExpiry };
 };
 
 export const resolveSubQuery = (

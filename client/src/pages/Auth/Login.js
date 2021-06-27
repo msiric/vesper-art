@@ -1,7 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { makeStyles } from "@material-ui/core/styles";
 import { LockRounded as LoginAvatar } from "@material-ui/icons";
-import { useSnackbar } from "notistack";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
@@ -36,8 +35,6 @@ const Login = () => {
 
   const notifications = useEventsStore((state) => state.notifications);
   const setEvents = useEventsStore((state) => state.setEvents);
-
-  const { enqueueSnackbar } = useSnackbar();
 
   const { handleSubmit, formState, errors, control } = useForm({
     defaultValues: {
@@ -87,9 +84,6 @@ const Login = () => {
       history.push("/");
     } catch (err) {
       console.log(err);
-      enqueueSnackbar(postLogin.error.message, {
-        variant: postLogin.error.variant,
-      });
     }
   };
 

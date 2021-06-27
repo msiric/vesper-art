@@ -50,7 +50,7 @@ import {
   removeUserAvatar,
 } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
-import { generateToken, generateUuids } from "../utils/helpers.js";
+import { generateUuids, generateVerificationToken } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 import { deleteUserNotifications } from "./notification";
 
@@ -207,7 +207,6 @@ export const getUserPurchases = async ({ userId, start, end, connection }) => {
   return { statistics: foundOrders };
 };
 
-// SNACKBAR $TODO Add expose to response
 export const updateUserOrigin = async ({
   userId,
   userBusinessAddress,
@@ -221,12 +220,11 @@ export const updateUserOrigin = async ({
       userBusinessAddress,
       connection,
     });
-    return { message: "User business address updated" };
+    return { message: "User business address updated", expose: true };
   }
   throw createError(errors.notFound, "User not found", { expose: true });
 };
 
-// SNACKBAR $TODO Add expose to response
 export const updateUserProfile = async ({
   userId,
   userPath,
@@ -297,7 +295,7 @@ export const updateUserProfile = async ({
       });
     }
   }
-  return { message: "User details updated" };
+  return { message: "User details updated", expose: true };
 };
 
 export const getUserSettings = async ({ userId, connection }) => {
@@ -350,7 +348,6 @@ export const deleteUserIntent = async ({ userId, intentId, connection }) => {
 };
 
 // $TODO Update user context with new data
-// SNACKBAR $TODO Add expose to response
 export const updateUserEmail = async ({ userId, userEmail, connection }) => {
   await emailValidation.validate({ userEmail });
   const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
@@ -361,8 +358,15 @@ export const updateUserEmail = async ({ userId, userEmail, connection }) => {
       { expose: true }
     );
   } else {
-    const { verificationToken, verificationLink } = generateToken();
-    await editUserEmail({ userId, userEmail, verificationToken, connection });
+    const { verificationToken, verificationLink, verificationExpiry } =
+      generateVerificationToken();
+    await editUserEmail({
+      userId,
+      userEmail,
+      verificationToken,
+      verificationExpiry,
+      connection,
+    });
     await sendEmail({
       emailReceiver: userEmail,
       emailSubject: "Please confirm your email",
@@ -371,12 +375,11 @@ export const updateUserEmail = async ({ userId, userEmail, connection }) => {
 
         <a href=${verificationLink}>Click here to verify</a>`,
     });
-    return { message: "Email successfully updated" };
+    return { message: "Email address successfully updated", expose: true };
   }
 };
 
 // needs transaction (done)
-// SNACKBAR $TODO Add expose to response
 export const updateUserPassword = async ({
   userId,
   userCurrent,
@@ -408,14 +411,13 @@ export const updateUserPassword = async ({
     });
     const hashedPassword = await argon2.hash(userPassword);
     await editUserPassword({ userId, hashedPassword, connection });
-    return { message: "Password updated successfully" };
+    return { message: "Password updated successfully", expose: true };
   }
   throw createError(errors.notFound, "User not found", { expose: true });
 };
 
 // needs transaction (done)
 // $TODO Update context with new data
-// SNACKBAR $TODO Add expose to response
 export const updateUserPreferences = async ({
   userId,
   userFavorites,
@@ -423,7 +425,7 @@ export const updateUserPreferences = async ({
 }) => {
   await preferencesValidation.validate({ userFavorites });
   await editUserPreferences({ userId, userFavorites, connection });
-  return { message: "Preferences updated successfully" };
+  return { message: "Preferences updated successfully", expose: true };
 };
 
 /* const deleteUser = async (req, res, next) => {
@@ -539,7 +541,6 @@ export const updateUserPreferences = async ({
   throw createError(400, "User not found");
 }; */
 
-// SNACKBAR $TODO Add expose to response
 export const deactivateUser = async ({ userId, response, connection }) => {
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
@@ -590,7 +591,7 @@ export const deactivateUser = async ({ userId, response, connection }) => {
     await deleteUserNotifications({ userId: foundUser.id, connection });
     await deactivateExistingUser({ userId: foundUser.id, connection });
     logUserOut(response);
-    return { message: "User deactivated" };
+    return { message: "User account deactivated", expose: true };
   }
   throw createError(errors.notFound, "User not found", { expose: true });
 };
