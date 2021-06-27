@@ -13,7 +13,7 @@ export const verifyLicense = async ({ licenseFingerprint, connection }) => {
   if (foundLicense) {
     return { license: foundLicense };
   }
-  throw createError(errors.notFound, "License not found");
+  throw createError(errors.notFound, "License not found", { expose: true });
 };
 
 export const displayLicense = async (req, res, next) => {

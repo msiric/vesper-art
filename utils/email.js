@@ -28,6 +28,8 @@ export const sendEmail = async ({
     await smtpTransport.sendMail(mailOptions);
   } catch (err) {
     console.log(err);
-    throw createError(errors.internalError, "Email failed to send");
+    throw createError(errors.internalError, "Email failed to send", {
+      expose: true,
+    });
   }
 };

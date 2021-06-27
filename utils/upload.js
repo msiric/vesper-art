@@ -141,16 +141,20 @@ export const finalizeMediaUpload = async ({
           return fileUpload;
         }
         deleteFileLocally({ filePath });
-        throw createError(errors.badRequest, "File aspect ratio is not valid");
+        throw createError(errors.badRequest, "File aspect ratio is not valid", {
+          expose: true,
+        });
       }
       deleteFileLocally({ filePath });
-      throw createError(errors.badRequest, "File dimensions are not valid");
+      throw createError(errors.badRequest, "File dimensions are not valid", {
+        expose: true,
+      });
     } else {
       return fileUpload;
     }
   } catch (err) {
     deleteFileLocally({ filePath });
-    throw createError(errors.internalError, err);
+    throw createError(errors.internalError, err, { expose: true });
   }
 };
 

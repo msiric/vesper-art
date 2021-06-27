@@ -146,23 +146,29 @@ export const applyDiscount = async ({
               }
               throw createError(
                 errors.internalError,
-                "Could not apply discount"
+                "Could not apply discount",
+                { expose: true }
               );
             }
             throw createError(
               errors.badRequest,
-              "You are the owner of this artwork"
+              "You are the owner of this artwork",
+              { expose: true }
             );
           }
-          throw createError(errors.badRequest, "Artwork version is obsolete");
+          throw createError(errors.badRequest, "Artwork version is obsolete", {
+            expose: true,
+          });
         }
-        throw createError(errors.gone, "Artwork is no longer active");
+        throw createError(errors.gone, "Artwork is no longer active", {
+          expose: true,
+        });
       }
-      throw createError(errors.notFound, "Artwork not found");
+      throw createError(errors.notFound, "Artwork not found", { expose: true });
     }
-    throw createError(errors.notFound, "Discount not found");
+    throw createError(errors.notFound, "Discount not found", { expose: true });
   }
-  throw createError(errors.notFound, "User not found");
+  throw createError(errors.notFound, "User not found", { expose: true });
 };
 
 // $TODO validacija licenci
@@ -297,27 +303,39 @@ export const managePaymentIntent = async ({
                     },
                   };
                 }
-                throw createError(errors.badRequest, "License is not valid");
+                throw createError(errors.badRequest, "License is not valid", {
+                  expose: true,
+                });
               }
               throw createError(
                 errors.internalError,
-                "Could not process the payment"
+                "Could not process the payment",
+                { expose: true }
               );
             }
-            throw createError(errors.internalError, "Could not apply discount");
+            throw createError(
+              errors.internalError,
+              "Could not apply discount",
+              { expose: true }
+            );
           }
           throw createError(
             errors.badRequest,
-            "You are the owner of this artwork"
+            "You are the owner of this artwork",
+            { expose: true }
           );
         }
-        throw createError(errors.badRequest, "Artwork version is obsolete");
+        throw createError(errors.badRequest, "Artwork version is obsolete", {
+          expose: true,
+        });
       }
-      throw createError(errors.gone, "Artwork is no longer active");
+      throw createError(errors.gone, "Artwork is no longer active", {
+        expose: true,
+      });
     }
-    throw createError(errors.notFound, "Artwork not found");
+    throw createError(errors.notFound, "Artwork not found", { expose: true });
   }
-  throw createError(errors.notFound, "User not found");
+  throw createError(errors.notFound, "User not found", { expose: true });
 };
 
 export const redirectToStripe = async ({
@@ -328,7 +346,8 @@ export const redirectToStripe = async ({
   if (!userOnboarded)
     throw createError(
       errors.unprocessable,
-      "You need to complete the onboarding process before accessing your Stripe dashboard"
+      "You need to complete the onboarding process before accessing your Stripe dashboard",
+      { expose: true }
     );
   const loginLink = await constructStripeLink({
     accountId,
@@ -383,7 +402,8 @@ export const assignStripeId = async ({
   if (sessionData.state != queryData.state)
     throw createError(
       errors.internalError,
-      "There was an error in the onboarding process"
+      "There was an error in the onboarding process",
+      { expose: true }
     );
 
   const formData = new FormData();
@@ -397,7 +417,9 @@ export const assignStripeId = async ({
   });
 
   if (expressAuthorized.error)
-    throw createError(errors.internalError, expressAuthorized.error);
+    throw createError(errors.internalError, expressAuthorized.error, {
+      expose: true,
+    });
 
   await editUserStripe({
     userId: sessionData.id,
@@ -421,7 +443,7 @@ export const fetchIntentById = async ({ userId, intentId, connection }) => {
       intent: foundIntent,
     };
   }
-  throw createError(errors.notFound, "Intent not found");
+  throw createError(errors.notFound, "Intent not found", { expose: true });
 };
 
 export const createPayout = async ({ userId, connection }) => {
@@ -443,7 +465,7 @@ export const createPayout = async ({ userId, connection }) => {
       message: "Payout successfully created",
     };
   }
-  throw createError(errors.notFound, "User not found");
+  throw createError(errors.notFound, "User not found", { expose: true });
 };
 
 // $TODO not good
@@ -549,6 +571,8 @@ const processTransaction = async ({ stripeIntent, connection }) => {
         connection,
       });
     }
-    throw createError(errors.internalError, "Could not process the order");
+    throw createError(errors.internalError, "Could not process the order", {
+      expose: true,
+    });
   }
 };

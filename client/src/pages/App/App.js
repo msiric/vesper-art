@@ -12,6 +12,7 @@ import React, { createRef } from "react";
 import SimpleReactLightbox from "simple-react-lightbox";
 import Router from "../../containers/Router/Router.js";
 import { useAppStore } from "../../contexts/global/app.js";
+import globalStyles from "../../styles/global";
 import { artepunktTheme } from "../../styles/theme.js";
 
 const useStyles = makeStyles(() => ({
@@ -41,6 +42,7 @@ const App = () => {
 
   const notistackRef = createRef();
 
+  const globalClasses = globalStyles();
   const classes = useStyles();
 
   const iconItems = {

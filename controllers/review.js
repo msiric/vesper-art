@@ -66,13 +66,15 @@ export const postReview = async ({
       }
       throw createError(
         errors.conflict,
-        "Review already exists for this artwork"
+        "Review already exists for this artwork",
+        { expose: true }
       );
     }
     throw createError(
       errors.notAllowed,
-      "Review cannot be posted for unbought artwork"
+      "Review cannot be posted for unbought artwork",
+      { expose: true }
     );
   }
-  throw createError(errors.badRequest, "Rating is required");
+  throw createError(errors.badRequest, "Rating is required", { expose: true });
 };

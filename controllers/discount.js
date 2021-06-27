@@ -18,7 +18,7 @@ export const getDiscount = async ({ userId, discountCode, connection }) => {
   if (foundDiscount) {
     return { message: "Discount applied", payload: foundDiscount };
   }
-  throw createError(errors.notFound, "Discount not found");
+  throw createError(errors.notFound, "Discount not found", { expose: true });
 };
 
 export const postDiscount = async ({ userId, discountData, connection }) => {

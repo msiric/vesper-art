@@ -17,7 +17,7 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
       version: foundVersion,
     };
   }
-  throw createError(errors.notFound, "Artwork not found");
+  throw createError(errors.notFound, "Artwork not found", { expose: true });
 };
 
 // $TODO not good
@@ -112,18 +112,27 @@ export const postDownload = async ({
               // new end
               return { message: "Order completed successfully" };
             }
-            throw createError(errors.notFound, "User not found");
+            throw createError(errors.notFound, "User not found", {
+              expose: true,
+            });
           }
           throw createError(
             errors.badRequest,
-            "You are the owner of this artwork"
+            "You are the owner of this artwork",
+            { expose: true }
           );
         }
-        throw createError(errors.badRequest, "Artwork version is obsolete");
+        throw createError(errors.badRequest, "Artwork version is obsolete", {
+          expose: true,
+        });
       }
-      throw createError(errors.gone, "Artwork is no longer active");
+      throw createError(errors.gone, "Artwork is no longer active", {
+        expose: true,
+      });
     }
-    throw createError(errors.badRequest, "License is not valid");
+    throw createError(errors.badRequest, "License is not valid", {
+      expose: true,
+    });
   }
-  throw createError(errors.notFound, "Artwork not found");
+  throw createError(errors.notFound, "Artwork not found", { expose: true });
 };

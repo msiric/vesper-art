@@ -76,7 +76,7 @@ export const getOrderDetails = async ({ userId, orderId, connection }) => {
     // }
     return { order: foundOrder };
   }
-  throw createError(errors.notFound, "Order not found");
+  throw createError(errors.notFound, "Order not found", { expose: true });
 };
 
 export const getOrderMedia = async ({ userId, orderId, connection }) => {
@@ -97,5 +97,5 @@ export const getOrderMedia = async ({ userId, orderId, connection }) => {
 
     return { url, file };
   }
-  throw createError(errors.notFound, "Artwork not found");
+  throw createError(errors.notFound, "Artwork not found", { expose: true });
 };

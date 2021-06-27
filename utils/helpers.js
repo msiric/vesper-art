@@ -161,14 +161,17 @@ export const formatArtworkValues = (data) => {
 export const isAuthenticated = async (req, res, next) => {
   try {
     const authentication = req.headers["authorization"];
-    if (!authentication) throw createError(errors.forbidden, "Forbidden");
+    if (!authentication)
+      throw createError(errors.forbidden, "Forbidden", { expose: true });
     const token = authentication.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
       ignoreExpiration: true,
     });
     const data = jwt.decode(token);
     if (Date.now() >= data.exp * 1000 || !data.active)
-      throw createError(errors.unauthorized, "Not authenticated");
+      throw createError(errors.unauthorized, "Not authenticated", {
+        expose: true,
+      });
     res.locals.user = data;
   } catch (err) {
     console.log(err);
@@ -182,7 +185,9 @@ export const isNotAuthenticated = async (req, res, next) => {
   const authentication = req.headers["authorization"];
   // $TODO ovo treba handleat tako da ne stucka frontend
   if (authentication)
-    throw createError(errors.badRequest, "Already authenticated");
+    throw createError(errors.badRequest, "Already authenticated", {
+      expose: true,
+    });
 
   return next();
 };
@@ -191,13 +196,17 @@ export const isAuthorized = async (req, res, next) => {
   if (req.params.userId === res.locals.user.id) {
     return next();
   }
-  throw createError(errors.unauthorized, "Not authorized to request resource");
+  throw createError(errors.unauthorized, "Not authorized to request resource", {
+    expose: true,
+  });
 };
 
 export const sanitizeParams = (req, res, next) => {
   const isValid = sanitizeUrl(req.params, VALID_PARAMS);
   if (isValid) return next();
-  throw createError(errors.badRequest, "Invalid route parameter");
+  throw createError(errors.badRequest, "Invalid route parameter", {
+    expose: true,
+  });
 };
 
 export const sanitizeQuery = (req, res, next) => {
@@ -207,7 +216,9 @@ export const sanitizeQuery = (req, res, next) => {
       req.query = sanitizeData(req.query);
       return next();
     }
-    throw createError(errors.badRequest, "Invalid route query");
+    throw createError(errors.badRequest, "Invalid route query", {
+      expose: true,
+    });
   }
   return;
 };

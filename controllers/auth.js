@@ -59,7 +59,8 @@ export const postSignUp = async ({
   if (foundId) {
     throw createError(
       errors.conflict,
-      "Account with that email/username already exists"
+      "Account with that email/username already exists",
+      { expose: true }
     );
   } else {
     const { verificationToken, verificationLink } = generateToken();
@@ -105,19 +106,25 @@ export const postLogIn = async ({
     if (isObjectEmpty(foundUser)) {
       throw createError(
         errors.notFound,
-        "Account with provided credentials does not exist"
+        "Account with provided credentials does not exist",
+        { expose: true }
       );
     } else if (!foundUser.active) {
-      throw createError(errors.gone, "Account is no longer active");
+      throw createError(errors.gone, "Account is no longer active", {
+        expose: true,
+      });
     } else if (!foundUser.verified) {
-      throw createError(errors.unauthorized, "Please verify your account");
+      throw createError(errors.unauthorized, "Please verify your account", {
+        expose: true,
+      });
     } else {
       const isValid = await argon2.verify(foundUser.password, userPassword);
 
       if (!isValid) {
         throw createError(
           errors.notFound,
-          "Account with provided credentials does not exist"
+          "Account with provided credentials does not exist",
+          { expose: true }
         );
       }
     }
@@ -154,7 +161,8 @@ export const postLogIn = async ({
   }
   throw createError(
     errors.notFound,
-    "Account with provided credentials does not exist"
+    "Account with provided credentials does not exist",
+    { expose: true }
   );
 };
 
@@ -180,7 +188,8 @@ export const verifyRegisterToken = async ({ tokenId, connection }) => {
   }
   throw createError(
     errors.badRequest,
-    "Verification token is invalid or has expired"
+    "Verification token is invalid or has expired",
+    { expose: true }
   );
 };
 
@@ -213,7 +222,9 @@ export const resetPassword = async ({
   if (!isObjectEmpty(foundUser)) {
     const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
     if (!isCurrentValid)
-      throw createError(errors.badRequest, "Current password is incorrect");
+      throw createError(errors.badRequest, "Current password is incorrect", {
+        expose: true,
+      });
     const isPasswordValid = await argon2.verify(
       foundUser.password,
       userPassword
@@ -221,7 +232,8 @@ export const resetPassword = async ({
     if (isPasswordValid)
       throw createError(
         errors.badRequest,
-        "New password cannot be identical to the old one"
+        "New password cannot be identical to the old one",
+        { expose: true }
       );
     await passwordValidation.validate({
       userCurrent,
@@ -232,7 +244,11 @@ export const resetPassword = async ({
     await resetUserPassword({ tokenId, hashedPassword, connection });
     return { message: "Password updated successfully" };
   }
-  throw createError(errors.badRequest, "Reset token is invalid or has expired");
+  throw createError(
+    errors.badRequest,
+    "Reset token is invalid or has expired",
+    { expose: true }
+  );
 };
 
 export const resendToken = async ({ userEmail, connection }) => {
@@ -262,11 +278,14 @@ export const resendToken = async ({ userEmail, connection }) => {
       });
       return { message: "Verification link successfully sent" };
     }
-    throw createError(errors.badRequest, "Account is already verified");
+    throw createError(errors.badRequest, "Account is already verified", {
+      expose: true,
+    });
   }
   throw createError(
     errors.notFound,
-    "Account with provided email does not exist"
+    "Account with provided email does not exist",
+    { expose: true }
   );
 };
 
@@ -292,19 +311,25 @@ export const updateEmail = async ({
     if (isObjectEmpty(foundUser)) {
       throw createError(
         errors.notFound,
-        "Account with provided credentials does not exist"
+        "Account with provided credentials does not exist",
+        { expose: true }
       );
     } else if (!foundUser.active) {
-      throw createError(errors.gone, "Account is no longer active");
+      throw createError(errors.gone, "Account is no longer active", {
+        expose: true,
+      });
     } else if (foundUser.verified) {
-      throw createError(errors.badRequest, "Account is already verified");
+      throw createError(errors.badRequest, "Account is already verified", {
+        expose: true,
+      });
     } else {
       const isValid = await argon2.verify(foundUser.password, userPassword);
 
       if (!isValid) {
         throw createError(
           errors.notFound,
-          "Account with provided credentials does not exist"
+          "Account with provided credentials does not exist",
+          { expose: true }
         );
       }
     }
@@ -313,7 +338,8 @@ export const updateEmail = async ({
     if (emailUsed) {
       throw createError(
         errors.conflict,
-        "User with provided email already exists"
+        "User with provided email already exists",
+        { expose: true }
       );
     } else {
       const { verificationToken, verificationLink } = generateToken();
@@ -337,6 +363,7 @@ export const updateEmail = async ({
   }
   throw createError(
     errors.notFound,
-    "Account with provided credentials does not exist"
+    "Account with provided credentials does not exist",
+    { expose: true }
   );
 };

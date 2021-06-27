@@ -35,7 +35,9 @@ export const getResults = async ({
     });
     foundType = "users";
   } else {
-    throw createError(errors.badRequest, "Query type invalid");
+    throw createError(errors.badRequest, "Query type invalid", {
+      expose: true,
+    });
   }
   return {
     searchData: foundResults,

@@ -30,7 +30,7 @@ export const postComment = async ({
   await commentValidation.validate({ commentContent });
   const foundArtwork = await fetchArtworkById({ artworkId, connection });
   if (!foundArtwork) {
-    throw createError(errors.notFound, "Artwork not found");
+    throw createError(errors.notFound, "Artwork not found", { expose: true });
   } else {
     const { commentId, notificationId } = generateUuids({
       commentId: null,

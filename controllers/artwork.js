@@ -55,7 +55,7 @@ export const getArtworkDetails = async ({
     connection,
   });
   if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
-  throw createError(errors.notFound, "Artwork not found");
+  throw createError(errors.notFound, "Artwork not found", { expose: true });
 };
 
 export const getArtworkComments = async ({
@@ -91,7 +91,7 @@ export const editArtwork = async ({ userId, artworkId, connection }) => {
     connection,
   });
   if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
-  throw createError(errors.notFound, "Artwork not found");
+  throw createError(errors.notFound, "Artwork not found", { expose: true });
 };
 
 export const postNewArtwork = async ({
@@ -124,11 +124,13 @@ export const postNewArtwork = async ({
         userId,
         connection,
       });
-      if (!foundUser) throw createError(errors.notFound, "User not found");
+      if (!foundUser)
+        throw createError(errors.notFound, "User not found", { expose: true });
       if (!foundUser.stripeId)
         throw createError(
           errors.unprocessable,
-          "Please complete the Stripe onboarding process before making your artwork commercially available"
+          "Please complete the Stripe onboarding process before making your artwork commercially available",
+          { expose: true }
         );
       const foundAccount = await fetchStripeAccount({
         accountId: foundUser.stripeId,
@@ -140,7 +142,8 @@ export const postNewArtwork = async ({
       ) {
         throw createError(
           errors.unprocessable,
-          "Please complete your Stripe account before making your artwork commercially available"
+          "Please complete your Stripe account before making your artwork commercially available",
+          { expose: true }
         );
       }
     }
@@ -180,7 +183,8 @@ export const postNewArtwork = async ({
   }
   throw createError(
     errors.badRequest,
-    "Please attach artwork media before submitting"
+    "Please attach artwork media before submitting",
+    { expose: true }
   );
 };
 
@@ -215,11 +219,15 @@ export const updateArtwork = async ({
           userId,
           connection,
         });
-        if (!foundUser) throw createError(errors.notFound, "User not found");
+        if (!foundUser)
+          throw createError(errors.notFound, "User not found", {
+            expose: true,
+          });
         if (!foundUser.stripeId)
           throw createError(
             errors.unprocessable,
-            "Please complete the Stripe onboarding process before making your artwork commercially available"
+            "Please complete the Stripe onboarding process before making your artwork commercially available",
+            { expose: true }
           );
         const foundAccount = await fetchStripeAccount({
           accountId: foundUser.stripeId,
@@ -231,7 +239,8 @@ export const updateArtwork = async ({
         ) {
           throw createError(
             errors.unprocessable,
-            "Please complete your Stripe account before making your artwork commercially available"
+            "Please complete your Stripe account before making your artwork commercially available",
+            { expose: true }
           );
         }
       }
@@ -280,12 +289,13 @@ export const updateArtwork = async ({
 
       return { message: "Artwork updated successfully" };
     } else {
-      throw createError(errors.notFound, "Artwork not found");
+      throw createError(errors.notFound, "Artwork not found", { expose: true });
     }
   } else {
     throw createError(
       errors.badRequest,
-      "Artwork is identical to the previous version"
+      "Artwork is identical to the previous version",
+      { expose: true }
     );
   }
 };
@@ -341,9 +351,11 @@ export const deleteArtwork = async ({
       }
       return { message: "Artwork deleted successfully" };
     }
-    throw createError(errors.badRequest, "Artwork has a newer version");
+    throw createError(errors.badRequest, "Artwork has a newer version", {
+      expose: true,
+    });
   }
-  throw createError(errors.notFound, "Artwork not found");
+  throw createError(errors.notFound, "Artwork not found", { expose: true });
 };
 
 export const fetchArtworkFavorites = async ({ artworkId, connection }) => {
@@ -377,9 +389,13 @@ export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
       });
       return { message: "Artwork favorited" };
     }
-    throw createError(errors.badRequest, "Artwork has already been favorited");
+    throw createError(errors.badRequest, "Artwork has already been favorited", {
+      expose: true,
+    });
   }
-  throw createError(errors.badRequest, "Cannot favorite your own artwork");
+  throw createError(errors.badRequest, "Cannot favorite your own artwork", {
+    expose: true,
+  });
 };
 
 export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
@@ -401,10 +417,13 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
     }
     throw createError(
       errors.badRequest,
-      "Artwork has already been unfavorited"
+      "Artwork has already been unfavorited",
+      { expose: true }
     );
   }
-  throw createError(errors.badRequest, "Cannot unfavorite your own artwork");
+  throw createError(errors.badRequest, "Cannot unfavorite your own artwork", {
+    expose: true,
+  });
 };
 
 // needs transaction (done)
