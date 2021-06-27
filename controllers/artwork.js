@@ -94,6 +94,7 @@ export const editArtwork = async ({ userId, artworkId, connection }) => {
   throw createError(errors.notFound, "Artwork not found", { expose: true });
 };
 
+// SNACKBAR $TODO Add expose to response
 export const postNewArtwork = async ({
   userId,
   artworkPath,
@@ -191,6 +192,7 @@ export const postNewArtwork = async ({
 // $TODO
 // does it work in all cases?
 // needs testing
+// SNACKBAR $TODO Add expose to response
 export const updateArtwork = async ({
   userId,
   artworkId,
@@ -303,6 +305,7 @@ export const updateArtwork = async ({
 // $TODO
 // does it work in all cases?
 // needs testing
+// SNACKBAR $TODO Add expose to response
 export const deleteArtwork = async ({
   userId,
   artworkId,

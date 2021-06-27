@@ -39,6 +39,7 @@ import { sendEmail } from "../utils/email.js";
 import { generateToken, generateUuids } from "../utils/helpers.js";
 
 // needs transaction (not tested)
+// SNACKBAR $TODO Add expose to response
 export const postSignUp = async ({
   userEmail,
   userUsername,
@@ -180,6 +181,7 @@ export const postRevokeToken = async ({ userId, connection }) => {
 };
 
 // needs transaction (not tested)
+// SNACKBAR $TODO Add expose to response
 export const verifyRegisterToken = async ({ tokenId, connection }) => {
   const foundId = await fetchUserIdByVerificationToken({ tokenId, connection });
   if (foundId) {
@@ -193,6 +195,7 @@ export const verifyRegisterToken = async ({ tokenId, connection }) => {
   );
 };
 
+// SNACKBAR $TODO Add expose to response
 export const forgotPassword = async ({ userEmail, connection }) => {
   await emailValidation.validate({ userEmail });
   crypto.randomBytes(20, async function (err, buf) {
@@ -211,6 +214,7 @@ export const forgotPassword = async ({ userEmail, connection }) => {
 };
 
 // needs transaction (not tested)
+// SNACKBAR $TODO Add expose to response
 export const resetPassword = async ({
   tokenId,
   userCurrent,
@@ -251,6 +255,7 @@ export const resetPassword = async ({
   );
 };
 
+// SNACKBAR $TODO Add expose to response
 export const resendToken = async ({ userEmail, connection }) => {
   await emailValidation.validate({
     userEmail,
@@ -289,6 +294,7 @@ export const resendToken = async ({ userEmail, connection }) => {
   );
 };
 
+// SNACKBAR $TODO Add expose to response
 export const updateEmail = async ({
   response,
   userEmail,

@@ -17,7 +17,6 @@ const AuthLayoutStyles = makeStyles((muiTheme) => ({
     width: "100%",
     zIndex: muiTheme.zIndex.drawer + 1,
     color: "#fff",
-    background: "#fff",
   },
   appContainer: {
     width: "100%",

@@ -357,6 +357,7 @@ export const redirectToStripe = async ({
   return { url: loginLink.url };
 };
 
+// SNACKBAR $TODO Add expose to response
 export const onboardUser = async ({
   sessionData,
   responseData,
@@ -472,6 +473,7 @@ export const createPayout = async ({ userId, connection }) => {
 // $TODO validacija svih ID-ova
 // $TODO validacija license i pricea
 // vjerojatno najbolje fetchat svaki od ID-ova i verifyat data-u
+// SNACKBAR $TODO Add expose to response
 const processTransaction = async ({ stripeIntent, connection }) => {
   try {
     console.log("PROCESS TRANSACTION STARTED");

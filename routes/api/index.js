@@ -33,7 +33,8 @@ router.use((err, req, res, next) => {
   res.status(err.status || errors.internalError);
   res.json({
     status_code: err.status || errors.internalError,
-    error: err.message,
+    error: err.message || "An error occurred",
+    expose: !!err.expose,
   });
 });
 

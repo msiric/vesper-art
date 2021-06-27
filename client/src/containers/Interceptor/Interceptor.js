@@ -1,10 +1,10 @@
 import axios from "axios";
+import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import useSound from "use-sound";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import { useAppStore } from "../../contexts/global/app.js";
 import { useEventsStore } from "../../contexts/global/events.js";
 import { useUserStore } from "../../contexts/global/user.js";
@@ -38,6 +38,7 @@ const Interceptor = () => {
   const classes = {};
 
   const history = useHistory();
+  const { enqueueSnackbar } = useSnackbar();
 
   const getRefreshToken = async () => {
     try {
@@ -103,9 +104,13 @@ const Interceptor = () => {
         return response;
       },
       async (error) => {
-        console.log(error);
-        console.error(error);
+        console.log("ERROR", error);
         if (error.response.status !== 401) {
+          if (error.response.data && error.response.data.expose) {
+            enqueueSnackbar(error.response.data.error, {
+              variant: "error",
+            });
+          }
           return new Promise((resolve, reject) => {
             reject(error);
           });
@@ -246,7 +251,7 @@ const Interceptor = () => {
     };
   }, [userToken]);
 
-  return loading ? <LoadingSpinner /> : <App />;
+  return  <App />;
 };
 
 export { ax };

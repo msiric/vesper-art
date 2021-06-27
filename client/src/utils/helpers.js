@@ -68,6 +68,8 @@ export const resolvePaginationId = (data) => {
 };
 
 export const resolveAsyncError = (err, isInfinite = false) => {
+  console.log(err);
+  console.log(err.response);
   const statusCode = err.response.data.status_code;
   const notFound = statusCode === errors.notFound;
   const errorObj = isInfinite

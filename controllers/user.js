@@ -207,6 +207,7 @@ export const getUserPurchases = async ({ userId, start, end, connection }) => {
   return { statistics: foundOrders };
 };
 
+// SNACKBAR $TODO Add expose to response
 export const updateUserOrigin = async ({
   userId,
   userBusinessAddress,
@@ -225,6 +226,7 @@ export const updateUserOrigin = async ({
   throw createError(errors.notFound, "User not found", { expose: true });
 };
 
+// SNACKBAR $TODO Add expose to response
 export const updateUserProfile = async ({
   userId,
   userPath,
@@ -348,6 +350,7 @@ export const deleteUserIntent = async ({ userId, intentId, connection }) => {
 };
 
 // $TODO Update user context with new data
+// SNACKBAR $TODO Add expose to response
 export const updateUserEmail = async ({ userId, userEmail, connection }) => {
   await emailValidation.validate({ userEmail });
   const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
@@ -373,6 +376,7 @@ export const updateUserEmail = async ({ userId, userEmail, connection }) => {
 };
 
 // needs transaction (done)
+// SNACKBAR $TODO Add expose to response
 export const updateUserPassword = async ({
   userId,
   userCurrent,
@@ -411,6 +415,7 @@ export const updateUserPassword = async ({
 
 // needs transaction (done)
 // $TODO Update context with new data
+// SNACKBAR $TODO Add expose to response
 export const updateUserPreferences = async ({
   userId,
   userFavorites,
@@ -534,6 +539,7 @@ export const updateUserPreferences = async ({
   throw createError(400, "User not found");
 }; */
 
+// SNACKBAR $TODO Add expose to response
 export const deactivateUser = async ({ userId, response, connection }) => {
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {

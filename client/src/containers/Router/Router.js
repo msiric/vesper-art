@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { Redirect, Route, Router, Switch } from "react-router-dom";
-import LoadingSpinner from "../../components/LoadingSpinner/index.js";
+import ProgressBar from "react-topbar-progress-indicator";
 import { useUserStore } from "../../contexts/global/user.js";
 import AuthLayout from "../../layouts/AuthLayout.js";
 import MainLayout from "../../layouts/MainLayout.js";
@@ -224,7 +224,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
         if (!rest.token) {
           return (
             <AuthLayout>
-              <Suspense fallback={<LoadingSpinner />}>
+              <Suspense fallback={<ProgressBar />}>
                 <Component key={props.location.key} {...props} />
               </Suspense>
             </AuthLayout>
@@ -257,7 +257,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
       }
       return (
         <MainLayout>
-          <Suspense fallback={<LoadingSpinner />}>
+          <Suspense fallback={<ProgressBar />}>
             <Component key={props.location.key} {...props} />
           </Suspense>
         </MainLayout>

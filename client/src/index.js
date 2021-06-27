@@ -1,12 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Interceptor from "./containers/Interceptor/Interceptor.js";
+import Provider from "./containers/Provider";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker.js";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Interceptor />
+    <Provider />
   </React.StrictMode>,
   document.getElementById("root")
 );
