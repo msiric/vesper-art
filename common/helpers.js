@@ -79,7 +79,7 @@ export const renderFreeLicenses = ({ version }) => {
 
 export const renderCommercialLicenses = ({ version }) => {
   return [
-    ...(version.type === "commercial" && version.license === "personal"
+    ...(version.type === "commercial"
       ? [
           {
             value: "personal",

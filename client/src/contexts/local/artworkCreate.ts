@@ -10,7 +10,7 @@ import {
 const initialState = {
   capabilities: {
     data: {},
-    loading: true,
+    loading: false,
     error: { retry: false, redirect: false, message: "" },
   },
 };
@@ -22,6 +22,13 @@ const initState = () => ({
 const initActions = (set, get) => ({
   fetchCapabilities: async ({ stripeId }) => {
     try {
+      set((state) => ({
+        ...state,
+        capabilities: {
+          ...state.capabilities,
+          loading: true,
+        },
+      }));
       const { data } = await getUser.request({ stripeId });
       set((state) => ({
         ...state,

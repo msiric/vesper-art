@@ -1,5 +1,6 @@
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import InputAdornment from "../../domain/InputAdornment";
 import TextField from "../../domain/TextField";
 import textInputStyles from "./styles";
 
@@ -7,12 +8,18 @@ const Input = ({
   margin = "dense",
   variant = "outlined",
   loading = false,
+  adornment = null,
   ...props
 }) => {
   const classes = textInputStyles();
 
   return (
     <TextField
+      InputProps={{
+        startAdornment: adornment ? (
+          <InputAdornment position="start">{adornment}</InputAdornment>
+        ) : null,
+      }}
       {...props}
       margin={margin}
       variant={variant}

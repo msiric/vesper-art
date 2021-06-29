@@ -34,7 +34,7 @@ const initialState = {
   },
   capabilities: {
     data: {},
-    loading: true,
+    loading: false,
     error: { retry: false, redirect: false, message: "" },
   },
   modal: {
@@ -74,10 +74,18 @@ const initActions = (set, get) => ({
   },
   fetchCapabilities: async ({ stripeId }) => {
     try {
+      set((state) => ({
+        ...state,
+        capabilities: {
+          ...state.capabilities,
+          loading: true,
+        },
+      }));
       const { data } = await getUser.request({ stripeId });
       set((state) => ({
         ...state,
         capabilities: {
+          ...state.capabilities,
           data: data.capabilities,
           loading: false,
           error: { ...initialState.capabilities.error },

@@ -16,6 +16,7 @@ const Input = ({
   error,
   limit,
   loading = false,
+  adornment = null,
   ...props
 }) => {
   const [state, setState] = useState({ tags: value, changed: false });
@@ -70,6 +71,13 @@ const Input = ({
           params.inputProps.onKeyDown = handleKeyDown;
           return (
             <TextField
+              inputProps={{
+                ...params.inputProps,
+                disabled: state.tags.length >= limit,
+                startAdornment: adornment ? (
+                  <InputAdornment position="start">{adornment}</InputAdornment>
+                ) : null,
+              }}
               {...params}
               variant="outlined"
               label="Tags"
@@ -81,10 +89,6 @@ const Input = ({
                   : "Add a new tag"
               }
               margin="dense"
-              inputProps={{
-                ...params.inputProps,
-                disabled: state.tags.length >= limit,
-              }}
               error={error}
               fullWidth
             />
