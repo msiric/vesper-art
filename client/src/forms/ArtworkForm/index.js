@@ -1,13 +1,10 @@
 import { Box } from "@material-ui/core";
 import React from "react";
-import { useHistory } from "react-router-dom";
 import { useUserStore } from "../../contexts/global/user.js";
 import ImageInput from "../../controls/ImageInput/index.js";
 import PriceInput from "../../controls/PriceInput/index.js";
 import SelectInput from "../../controls/SelectInput/index.js";
 import TextInput from "../../controls/TextInput/index.js";
-
-/* import AddArtworkStyles from "../../components/Artwork/AddArtwork.style.js"; */
 
 const ArtworkForm = ({
   capabilities,
@@ -29,11 +26,6 @@ const ArtworkForm = ({
     artworkLicense,
     artworkUse,
   } = watchables.length ? watch(watchables) : watch();
-
-  const history = useHistory();
-
-  /* const classes = AddArtworkStyles(); */
-  const classes = {};
 
   return (
     <Box>

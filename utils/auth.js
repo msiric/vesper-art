@@ -91,7 +91,7 @@ export const createRefreshToken = ({ userData }) => {
 };
 
 export const sendRefreshToken = (res, refreshToken) => {
-  res.cookie("jid", refreshToken, {
+  return res.cookie("jid", refreshToken, {
     httpOnly: true,
     path: "api/auth/refresh_token",
   });

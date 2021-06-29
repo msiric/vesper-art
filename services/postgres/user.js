@@ -206,7 +206,11 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
       "favorite.ownerId = :userId",
       { userId }
     )
-    .where("user.id = :userId", { userId })
+    .where("user.id = :userId AND user.active = :active", {
+      userId,
+      // $TODO add const
+      active: true,
+    })
     .getOne();
   // temporary hacky solution
   foundUser.notifications = foundUser.notifications.length;

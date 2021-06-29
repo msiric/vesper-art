@@ -107,7 +107,7 @@ const Input = ({
       <Avatar
         className={classes.avatar}
         onClick={showFileUpload}
-        variant={shape}
+        shape={shape}
         style={{ height, width }}
         loading={loading}
       >
