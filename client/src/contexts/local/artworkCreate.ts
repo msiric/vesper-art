@@ -1,11 +1,8 @@
 import create from "zustand";
+import { formatArtworkValues } from "../../../../common/helpers";
 import { postArtwork } from "../../services/artwork";
 import { getUser } from "../../services/stripe";
-import {
-  deleteEmptyValues,
-  formatArtworkValues,
-  resolveAsyncError,
-} from "../../utils/helpers";
+import { deleteEmptyValues, resolveAsyncError } from "../../utils/helpers";
 
 const initialState = {
   capabilities: {

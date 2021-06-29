@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import currency from "currency.js";
 import { addHours, isBefore, isValid } from "date-fns";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
@@ -65,12 +64,10 @@ export const requestHandler =
       if (result) {
         if (result.redirect) {
           return res.redirect(result.redirect);
-        } else {
-          return res.json(result);
         }
-      } else {
-        return res.json({ message: "OK" });
+        return res.json(result);
       }
+      return res.json({ message: "OK" });
     };
     if (transaction) {
       const queryRunner = getConnection().createQueryRunner();
@@ -107,57 +104,6 @@ export const requestHandler =
       }
     }
   };
-
-export const formatArtworkValues = (data) => {
-  return {
-    ...data,
-    // artworkType
-    // if artworkAvailability === 'available'
-    // then either 'free' or 'commercial'
-    // else 'unavailable'
-
-    // artworkLicense
-    // if artworkAvailability === 'available'
-    // then either 'personal' or 'commercial'
-    // else 'unavailable'
-
-    // artworkUse
-    // if artworkAvailability === 'available' and artworkLicense === 'commercial'
-    // then either 'separate' or 'included'
-    // else 'unavailable'
-
-    artworkType:
-      data.artworkAvailability === "available"
-        ? data.artworkType
-        : "unavailable",
-    artworkLicense:
-      data.artworkAvailability === "available"
-        ? data.artworkLicense
-        : "unavailable",
-    artworkUse:
-      data.artworkAvailability === "available" &&
-      data.artworkLicense === "commercial"
-        ? data.artworkUse
-        : "unavailable",
-    artworkPersonal:
-      data.artworkAvailability === "available" &&
-      data.artworkType === "commercial"
-        ? data.artworkUse === "separate" || data.artworkLicense === "personal"
-          ? currency(data.artworkPersonal).intValue
-          : 0
-        : 0,
-    artworkCommercial:
-      data.artworkLicense === "commercial"
-        ? data.artworkAvailability === "available" &&
-          data.artworkLicense === "commercial" &&
-          data.artworkUse === "separate"
-          ? currency(data.artworkCommercial).intValue
-          : currency(data.artworkPersonal).intValue
-        : 0,
-    // $TODO restore after tags are implemented
-    // artworkTags: JSON.parse(data.artworkTags),
-  };
-};
 
 export const isAuthenticated = async (req, res, next) => {
   try {

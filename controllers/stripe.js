@@ -338,6 +338,10 @@ export const managePaymentIntent = async ({
   throw createError(errors.notFound, "User not found", { expose: true });
 };
 
+export const redirectToDashboard = () => {
+  return { redirect: "/dashboard" };
+};
+
 export const redirectToStripe = async ({
   accountId,
   userOnboarded,

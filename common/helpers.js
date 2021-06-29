@@ -98,3 +98,54 @@ export const renderCommercialLicenses = ({ version }) => {
       : []),
   ];
 };
+
+export const formatArtworkValues = (data) => {
+  return {
+    ...data,
+    // artworkType
+    // if artworkAvailability === 'available'
+    // then either 'free' or 'commercial'
+    // else 'unavailable'
+
+    // artworkLicense
+    // if artworkAvailability === 'available'
+    // then either 'personal' or 'commercial'
+    // else 'unavailable'
+
+    // artworkUse
+    // if artworkAvailability === 'available' and artworkLicense === 'commercial'
+    // then either 'separate' or 'included'
+    // else 'unavailable'
+
+    artworkType:
+      data.artworkAvailability === "available"
+        ? data.artworkType
+        : "unavailable",
+    artworkLicense:
+      data.artworkAvailability === "available"
+        ? data.artworkLicense
+        : "unavailable",
+    artworkUse:
+      data.artworkAvailability === "available" &&
+      data.artworkLicense === "commercial"
+        ? data.artworkUse
+        : "unavailable",
+    artworkPersonal:
+      data.artworkAvailability === "available" &&
+      data.artworkType === "commercial"
+        ? data.artworkUse === "separate" || data.artworkLicense === "personal"
+          ? currency(data.artworkPersonal).intValue
+          : 0
+        : 0,
+    artworkCommercial:
+      data.artworkLicense === "commercial"
+        ? data.artworkAvailability === "available" &&
+          data.artworkLicense === "commercial" &&
+          data.artworkUse === "separate"
+          ? currency(data.artworkCommercial).intValue
+          : currency(data.artworkPersonal).intValue
+        : 0,
+    // $TODO restore after tags are implemented
+    // artworkTags: JSON.parse(data.artworkTags),
+  };
+};

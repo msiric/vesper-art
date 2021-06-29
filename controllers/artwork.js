@@ -1,6 +1,10 @@
 import createError from "http-errors";
 import { errors } from "../common/constants";
-import { isObjectEmpty, isVersionDifferent } from "../common/helpers";
+import {
+  formatArtworkValues,
+  isObjectEmpty,
+  isVersionDifferent,
+} from "../common/helpers";
 import { artworkValidation } from "../common/validation";
 import {
   addNewArtwork,
@@ -29,7 +33,7 @@ import {
 } from "../services/postgres/order.js";
 import { fetchStripeAccount } from "../services/postgres/stripe.js";
 import { fetchUserById } from "../services/postgres/user.js";
-import { formatArtworkValues, generateUuids } from "../utils/helpers.js";
+import { generateUuids } from "../utils/helpers.js";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 
 export const getArtwork = async ({ cursor, limit, connection }) => {

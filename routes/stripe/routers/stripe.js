@@ -8,6 +8,7 @@ import {
   managePaymentIntent,
   onboardUser,
   receiveWebhookEvent,
+  redirectToDashboard,
   redirectToStripe,
 } from "../../../controllers/stripe.js";
 import {
@@ -45,6 +46,12 @@ router.route("/intent/:versionId").post(
   handler(managePaymentIntent, true, (req, res, next) => ({
     ...req.params,
     ...req.body,
+  }))
+);
+
+router.route("/dashboard/").get(
+  handler(redirectToDashboard, false, (req, res, next) => ({
+    ...req.params,
   }))
 );
 

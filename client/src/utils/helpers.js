@@ -12,57 +12,6 @@ export const deleteEmptyValues = (values) => {
   return values;
 };
 
-export const formatArtworkValues = (data) => {
-  return {
-    ...data,
-    // artworkType
-    // if artworkAvailability === 'available'
-    // then either 'free' or 'commercial'
-    // else 'unavailable'
-
-    // artworkLicense
-    // if artworkAvailability === 'available'
-    // then either 'personal' or 'commercial'
-    // else 'unavailable'
-
-    // artworkUse
-    // if artworkAvailability === 'available' and artworkLicense === 'commercial'
-    // then either 'separate' or 'included'
-    // else 'unavailable'
-
-    artworkType:
-      data.artworkAvailability === "available"
-        ? data.artworkType
-        : "unavailable",
-    artworkLicense:
-      data.artworkAvailability === "available"
-        ? data.artworkLicense
-        : "unavailable",
-    artworkUse:
-      data.artworkAvailability === "available" &&
-      data.artworkLicense === "commercial"
-        ? data.artworkUse
-        : "unavailable",
-    artworkPersonal:
-      data.artworkAvailability === "available" &&
-      data.artworkType === "commercial"
-        ? data.artworkUse === "separate" || data.artworkLicense === "personal"
-          ? data.artworkPersonal
-          : 0
-        : 0,
-    artworkCommercial:
-      data.artworkLicense === "commercial"
-        ? data.artworkAvailability === "available" &&
-          data.artworkLicense === "commercial" &&
-          data.artworkUse === "separate"
-          ? data.artworkCommercial
-          : data.artworkPersonal
-        : 0,
-    // $TODO restore after tags are implemented
-    // artworkTags: JSON.parse(data.artworkTags),
-  };
-};
-
 export const resolvePaginationId = (data) => {
   return data[data.length - 1] && data[data.length - 1].id;
 };

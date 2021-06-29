@@ -1,15 +1,12 @@
 import create from "zustand";
+import { formatArtworkValues } from "../../../../common/helpers";
 import {
   deleteArtwork,
   editArtwork,
   patchArtwork,
 } from "../../services/artwork.js";
 import { getUser } from "../../services/stripe.js";
-import {
-  deleteEmptyValues,
-  formatArtworkValues,
-  resolveAsyncError,
-} from "../../utils/helpers.js";
+import { deleteEmptyValues, resolveAsyncError } from "../../utils/helpers.js";
 
 const initialState = {
   artwork: {
