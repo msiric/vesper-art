@@ -32,11 +32,11 @@ const Input = ({
               id: name,
             }}
             color="primary"
-            loading={loading}
           />
         }
         label={label}
         labelPlacement={labelPlacement}
+        loading={loading}
         className={classes.wrapper}
       />
       {helperText && <FormHelperText error>{helperText}</FormHelperText>}
