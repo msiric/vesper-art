@@ -251,7 +251,7 @@ const PaymentForm = ({ secret, version, loading }) => {
           fullWidth
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12}>
         <StripeTextField
           error={!!errors.cardExpiry}
           helperText={errors.cardExpiry}
@@ -269,7 +269,7 @@ const PaymentForm = ({ secret, version, loading }) => {
           fullWidth
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12}>
         <StripeTextField
           error={!!errors.cardCvc}
           helperText={errors.cardCvc}

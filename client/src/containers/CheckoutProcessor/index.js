@@ -247,7 +247,7 @@ const CheckoutProcessor = () => {
                         submitting={formState.isSubmitting}
                         disabled={discountLoading}
                       >
-                        Next
+                        {step.current === step.length - 1 ? "Pay" : "Next"}
                       </AsyncButton>
                     </CardActions>
                   )}
