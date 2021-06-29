@@ -48,7 +48,7 @@ const ArtworkCreator = () => {
       artworkLicense: "",
       artworkUse: "",
       artworkPersonal: pricing.minimumPrice,
-      artworkCommercial: pricing.minimumPrice,
+      artworkCommercial: pricing.minimumPrice + 10,
       artworkVisibility: "",
       artworkDescription: "",
       // artworkCategory: "",

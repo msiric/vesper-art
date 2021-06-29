@@ -57,7 +57,10 @@ export const artworkValidation = Yup.object().shape({
       then: Yup.number()
         .positive("Commercial license cannot be negative")
         .integer()
-        .min(pricing.minimumPrice)
+        .moreThan(
+          Yup.ref("artworkPersonal"),
+          "Commercial license cannot cost less or equal to the personal license"
+        )
         .max(pricing.maximumPrice)
         .required("Commercial license is required"),
       otherwise: Yup.number().integer().min(0).max(0),

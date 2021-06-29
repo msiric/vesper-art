@@ -151,7 +151,7 @@ export const formatArtworkValues = (data) => {
         ? data.artworkAvailability === "available" &&
           data.artworkLicense === "commercial" &&
           data.artworkUse === "separate"
-          ? currency(data.artworkCommercial).add(data.artworkPersonal).intValue
+          ? currency(data.artworkCommercial).intValue
           : currency(data.artworkPersonal).intValue
         : 0,
     // $TODO restore after tags are implemented

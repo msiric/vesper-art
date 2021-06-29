@@ -46,7 +46,7 @@ const ArtworkModifier = ({ paramId }) => {
         : artwork.current.personal,
     artworkCommercial:
       artwork.current.license === "commercial"
-        ? artwork.current.commercial - artwork.current.personal
+        ? artwork.current.commercial
         : "",
     artworkDescription: artwork.current.description,
     artworkVisibility: artwork.current.visibility,
@@ -117,6 +117,8 @@ const ArtworkModifier = ({ paramId }) => {
     reset(setDefaultValues());
   }, [artwork.current]);
 
+  console.log(getValues(), artwork.current);
+
   return (
     <Card>
       {renderHelpBox()}
@@ -131,7 +133,12 @@ const ArtworkModifier = ({ paramId }) => {
               trigger={trigger}
               getValues={getValues}
               watch={watch}
-              watchables={""}
+              watchables={[
+                "artworkAvailability",
+                "artworkType",
+                "artworkLicense",
+                "artworkUse",
+              ]}
               editable={false}
               loading={artworkLoading}
             />

@@ -55,7 +55,7 @@ export const formatArtworkValues = (data) => {
         ? data.artworkAvailability === "available" &&
           data.artworkLicense === "commercial" &&
           data.artworkUse === "separate"
-          ? data.artworkCommercial + data.artworkPersonal
+          ? data.artworkCommercial
           : data.artworkPersonal
         : 0,
     // $TODO restore after tags are implemented
