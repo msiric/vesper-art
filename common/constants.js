@@ -166,7 +166,7 @@ export const countries = [
   { text: "Israel", value: "IL", supported: true },
   { text: "Italy", value: "IT", supported: true },
   { text: "Jamaica", value: "JM", supported: false },
-  { text: "Japan", value: "JP", supported: true },
+  { text: "Japan", value: "JP", supported: false },
   { text: "Jersey", value: "JE", supported: false },
   { text: "Jordan", value: "JO", supported: false },
   { text: "Kazakhstan", value: "KZ", supported: false },
@@ -296,7 +296,7 @@ export const countries = [
   { text: "Tuvalu", value: "TV", supported: false },
   { text: "Uganda", value: "UG", supported: false },
   { text: "Ukraine", value: "UA", supported: false },
-  { text: "United Arab Emirates", value: "AE", supported: true },
+  { text: "United Arab Emirates", value: "AE", supported: false },
   { text: "United Kingdom", value: "GB", supported: true },
   { text: "United States", value: "US", supported: true },
   {
