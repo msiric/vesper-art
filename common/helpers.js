@@ -1,6 +1,7 @@
 import currency from "currency.js";
 import * as fns from "date-fns";
 import createError from "http-errors";
+import { errors, featureFlags } from "./constants";
 const { format } = fns;
 
 export const formatDate = (date, form = "dd/MM/yy HH:mm") => {
@@ -44,6 +45,14 @@ export const verifyVersionValidity = async ({
   if (data.artworkPersonal || data.artworkCommercial) {
     if (!foundUser)
       throw createError(errors.notFound, "User not found", { expose: true });
+    if (!featureFlags.stripe) {
+      // FEATURE FLAG - stripe
+      throw createError(
+        errors.internalError,
+        "Creating and updating commercial artwork is currently disabled",
+        { expose: true }
+      );
+    }
     if (!foundUser.stripeId)
       throw createError(
         errors.unprocessable,

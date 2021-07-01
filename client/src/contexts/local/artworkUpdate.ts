@@ -1,4 +1,5 @@
 import create from "zustand";
+import { featureFlags } from "../../../../common/constants";
 import { formatArtworkValues } from "../../../../common/helpers";
 import {
   deleteArtwork,
@@ -70,33 +71,36 @@ const initActions = (set, get) => ({
     }
   },
   fetchCapabilities: async ({ stripeId }) => {
-    try {
-      set((state) => ({
-        ...state,
-        capabilities: {
-          ...state.capabilities,
-          loading: true,
-        },
-      }));
-      const { data } = await getUser.request({ stripeId });
-      set((state) => ({
-        ...state,
-        capabilities: {
-          ...state.capabilities,
-          data: data.capabilities,
-          loading: false,
-          error: { ...initialState.capabilities.error },
-        },
-      }));
-    } catch (err) {
-      set((state) => ({
-        ...state,
-        capabilities: {
-          ...state.capabilities,
-          loading: false,
-          error: resolveAsyncError(err),
-        },
-      }));
+    // FEATURE FLAG - stripe
+    if (featureFlags.stripe) {
+      try {
+        set((state) => ({
+          ...state,
+          capabilities: {
+            ...state.capabilities,
+            loading: true,
+          },
+        }));
+        const { data } = await getUser.request({ stripeId });
+        set((state) => ({
+          ...state,
+          capabilities: {
+            ...state.capabilities,
+            data: data.capabilities,
+            loading: false,
+            error: { ...initialState.capabilities.error },
+          },
+        }));
+      } catch (err) {
+        set((state) => ({
+          ...state,
+          capabilities: {
+            ...state.capabilities,
+            loading: false,
+            error: resolveAsyncError(err),
+          },
+        }));
+      }
     }
   },
   updateArtwork: async ({ artworkId, values }) => {

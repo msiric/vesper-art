@@ -11,7 +11,7 @@ import morgan from "morgan";
 import path from "path";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
-import { errors } from "./common/constants";
+import { errors, featureFlags } from "./common/constants";
 import { domain } from "./config/secret";
 import { mongo, postgres } from "./config/secret.js";
 import api from "./routes/api/index.js";
@@ -104,7 +104,9 @@ app.use(helmet({ contentSecurityPolicy: false }));
 // app.use(rateLimiter);
 
 app.use("/api", sanitizeParams, sanitizeQuery, sanitizeBody, api);
-app.use("/stripe", sanitizeParams, sanitizeQuery, sanitizeBody, stripe);
+// FEATURE FLAG - stripe
+featureFlags.stripe &&
+  app.use("/stripe", sanitizeParams, sanitizeQuery, sanitizeBody, stripe);
 
 app.use(express.static(path.join(dirname, "client/build")));
 app.use(express.static(path.join(dirname, "public")));

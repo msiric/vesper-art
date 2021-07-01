@@ -1,4 +1,5 @@
 import express from "express";
+import { featureFlags } from "../../../common/constants.js";
 import { getDiscount, postDiscount } from "../../../controllers/discount.js";
 import {
   isAuthenticated,
@@ -8,12 +9,14 @@ import {
 const router = express.Router();
 
 // $TODO not tested
-router.route("/discounts/:discountCode").get(
-  isAuthenticated,
-  handler(getDiscount, false, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+// FEATURE FLAG - stripe
+featureFlags.stripe &&
+  router.route("/discounts/:discountCode").get(
+    isAuthenticated,
+    handler(getDiscount, false, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
 
 // $TODO REMOVE (ONLY FOR DEV)
 router.route("/discounts").post(

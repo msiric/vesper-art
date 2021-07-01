@@ -3,14 +3,9 @@ const TRANSFORMED_WIDTH = 640;
 export const appName = "Diagon";
 
 export const featureFlags = {
-  stripe: true,
+  stripe: false,
   payment: true,
   discount: true,
-};
-
-export const pricing = {
-  minimumPrice: 10,
-  maximumPrice: 100000,
 };
 
 export const upload = {
@@ -32,13 +27,22 @@ export const upload = {
   },
 };
 
-export const payment = {
-  appFee: 0.15,
-  buyerFee: {
-    multiplier: 0.05,
-    addend: 2.35,
-  },
-};
+export const pricing = featureFlags.stripe
+  ? {
+      minimumPrice: 10,
+      maximumPrice: 100000,
+    }
+  : {};
+
+export const payment = featureFlags.stripe
+  ? {
+      appFee: 0.15,
+      buyerFee: {
+        multiplier: 0.05,
+        addend: 2.35,
+      },
+    }
+  : {};
 
 export const errors = {
   ok: 200,

@@ -1,5 +1,6 @@
 import { Box } from "@material-ui/core";
 import React from "react";
+import { featureFlags } from "../../../../common/constants.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import ImageInput from "../../controls/ImageInput/index.js";
 import PriceInput from "../../controls/PriceInput/index.js";
@@ -26,6 +27,15 @@ const ArtworkForm = ({
     artworkLicense,
     artworkUse,
   } = watchables.length ? watch(watchables) : watch();
+
+  // FEATURE FLAG - stripe
+  const isDisabled =
+    !featureFlags.stripe ||
+    (stripeId &&
+      !(
+        capabilities.cardPayments === "active" &&
+        capabilities.platformPayments === "active"
+      ));
 
   return (
     <Box>
@@ -75,12 +85,7 @@ const ArtworkForm = ({
               {
                 value: "commercial",
                 text: "Commercial",
-                disabled:
-                  stripeId &&
-                  capabilities.cardPayments === "active" &&
-                  capabilities.platformPayments === "active"
-                    ? false
-                    : true,
+                disabled: isDisabled,
               },
               { value: "free", text: "Free" },
             ]}
@@ -123,12 +128,7 @@ const ArtworkForm = ({
                 {
                   value: "separate",
                   text: "Charge commercial license separately",
-                  disabled:
-                    stripeId &&
-                    capabilities.cardPayments === "active" &&
-                    capabilities.platformPayments === "active"
-                      ? false
-                      : true,
+                  disabled: isDisabled,
                 },
                 artworkAvailability === "available" &&
                 artworkType === "commercial"

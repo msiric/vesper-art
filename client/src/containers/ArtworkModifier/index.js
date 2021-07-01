@@ -6,6 +6,7 @@ import {
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
+import { featureFlags } from "../../../../common/constants";
 import { isVersionDifferent } from "../../../../common/helpers";
 import { artworkValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
@@ -82,6 +83,9 @@ const ArtworkModifier = ({ paramId }) => {
   };
 
   const renderHelpBox = () => {
+    // FEATURE FLAG - stripe
+    const stripeDisabled =
+      "Creating or updating commercial artwork is currently disabled";
     const notOnboarded =
       'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process';
     const pendingVerification =
@@ -90,19 +94,16 @@ const ArtworkModifier = ({ paramId }) => {
       "To make your artwork commercially available, finish entering your Stripe account information";
 
     return !loading ? (
-      !stripeId ? (
-        <HelpBox
-          type="alert"
-          label={
-            !stripeId
-              ? notOnboarded
-              : capabilities.cardPayments === "pending" ||
-                capabilities.platformPayments === "pending"
-              ? pendingVerification
-              : incompleteInformation
-          }
-        />
-      ) : null
+      !featureFlags.stripe ? (
+        <HelpBox type="alert" label={stripeDisabled} />
+      ) : !stripeId ? (
+        <HelpBox type="alert" label={notOnboarded} />
+      ) : capabilities.cardPayments === "pending" ||
+        capabilities.platformPayments === "pending" ? (
+        <HelpBox type="alert" label={pendingVerification} />
+      ) : (
+        <HelpBox type="alert" label={incompleteInformation} />
+      )
     ) : null;
   };
 

@@ -14,6 +14,7 @@ import {
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
+import { featureFlags } from "../../../../common/constants";
 import { searchValidation } from "../../../../common/validation";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import SyncButton from "../../components/SyncButton";
@@ -76,7 +77,8 @@ const Header = () => {
         }),
       icon: <SellerIcon />,
       label: "Become a seller",
-      hidden: !!stripeId,
+      // FEATURE FLAG - stripe
+      hidden: !!stripeId || !featureFlags.stripe,
     },
     {
       handleClick: (e) =>

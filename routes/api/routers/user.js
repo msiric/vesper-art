@@ -1,4 +1,5 @@
 import express from "express";
+import { featureFlags } from "../../../common/constants.js";
 import {
   createUserIntent,
   deactivateUser,
@@ -223,25 +224,29 @@ router
     }))
   );
 
-router
-  .route("/users/:userId/intents")
-  // $TODO not tested
-  .post(
-    [isAuthenticated, isAuthorized],
-    handler(createUserIntent, true, (req, res, next) => ({
-      ...req.params,
-      ...req.body,
-    }))
-  );
+// FEATURE FLAG - stripe
+featureFlags.stripe &&
+  router
+    .route("/users/:userId/intents")
+    // $TODO not tested
+    .post(
+      [isAuthenticated, isAuthorized],
+      handler(createUserIntent, true, (req, res, next) => ({
+        ...req.params,
+        ...req.body,
+      }))
+    );
 
-router
-  .route("/users/:userId/intents/:intentId")
-  // $TODO not tested
-  .delete(
-    [isAuthenticated, isAuthorized],
-    handler(deleteUserIntent, true, (req, res, next) => ({
-      ...req.params,
-    }))
-  );
+// FEATURE FLAG - stripe
+featureFlags.stripe &&
+  router
+    .route("/users/:userId/intents/:intentId")
+    // $TODO not tested
+    .delete(
+      [isAuthenticated, isAuthorized],
+      handler(deleteUserIntent, true, (req, res, next) => ({
+        ...req.params,
+      }))
+    );
 
 export default router;

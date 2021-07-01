@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { Redirect, Route, Router, Switch } from "react-router-dom";
 import ProgressBar from "react-topbar-progress-indicator";
+import { featureFlags } from "../../../../common/constants.js";
 import { useUserStore } from "../../contexts/global/user.js";
 import AuthLayout from "../../layouts/AuthLayout.js";
 import MainLayout from "../../layouts/MainLayout.js";
@@ -157,12 +158,17 @@ const routes = [
   //   exact: true,
   //   type: 'protected',
   // },
-  {
-    path: "/checkout/:id",
-    Component: lazy(() => import("../../pages/Checkout/Checkout")),
-    exact: true,
-    type: "protected",
-  },
+  // FEATURE FLAG - stripe
+  ...(featureFlags.stripe
+    ? [
+        {
+          path: "/checkout/:id",
+          Component: lazy(() => import("../../pages/Checkout/Checkout")),
+          exact: true,
+          type: "protected",
+        },
+      ]
+    : []),
   // Orders router
   {
     path: "/orders",
@@ -201,12 +207,17 @@ const routes = [
     exact: true,
     type: "protected",
   },
-  {
-    path: "/onboarding",
-    Component: lazy(() => import("../../pages/User/Onboarding")),
-    exact: true,
-    type: "protected",
-  },
+  // FEATURE FLAG - stripe
+  ...(featureFlags.stripe
+    ? [
+        {
+          path: "/onboarding",
+          Component: lazy(() => import("../../pages/User/Onboarding")),
+          exact: true,
+          type: "protected",
+        },
+      ]
+    : []),
   // 404
   {
     path: "/404",

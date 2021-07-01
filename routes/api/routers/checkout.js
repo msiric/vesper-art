@@ -1,4 +1,5 @@
 import express from "express";
+import { featureFlags } from "../../../common/constants.js";
 import { getCheckout, postDownload } from "../../../controllers/checkout.js";
 import {
   isAuthenticated,
@@ -7,15 +8,17 @@ import {
 
 const router = express.Router();
 
-router
-  .route("/checkout/:versionId")
-  // $TODO not tested
-  .get(
-    [isAuthenticated],
-    handler(getCheckout, false, (req, res, next) => ({
-      ...req.params,
-    }))
-  );
+// FEATURE FLAG - stripe
+featureFlags.stripe &&
+  router
+    .route("/checkout/:versionId")
+    // $TODO not tested
+    .get(
+      [isAuthenticated],
+      handler(getCheckout, false, (req, res, next) => ({
+        ...req.params,
+      }))
+    );
 
 router
   .route("/download/:versionId")
