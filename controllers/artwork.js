@@ -4,6 +4,7 @@ import {
   formatArtworkValues,
   isObjectEmpty,
   isVersionDifferent,
+  verifyVersionValidity,
 } from "../common/helpers";
 import { artworkValidation } from "../common/validation";
 import {
@@ -123,34 +124,16 @@ export const postNewArtwork = async ({
   ) {
     const formattedData = formatArtworkValues(artworkData);
     await artworkValidation.validate(formattedData);
-    if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
-      const foundUser = await fetchUserById({
-        userId,
-        connection,
-      });
-      if (!foundUser)
-        throw createError(errors.notFound, "User not found", { expose: true });
-      if (!foundUser.stripeId)
-        throw createError(
-          errors.unprocessable,
-          "Please complete the Stripe onboarding process before making your artwork commercially available",
-          { expose: true }
-        );
-      const foundAccount = await fetchStripeAccount({
-        accountId: foundUser.stripeId,
-      });
-      if (
-        (formattedData.artworkPersonal || formattedData.artworkCommercial) &&
-        (foundAccount.capabilities.card_payments !== "active" ||
-          foundAccount.capabilities.transfers !== "active")
-      ) {
-        throw createError(
-          errors.unprocessable,
-          "Please complete your Stripe account before making your artwork commercially available",
-          { expose: true }
-        );
-      }
-    }
+    const foundUser = await fetchUserById({
+      userId,
+      connection,
+    });
+    const foundAccount = foundUser.stripeId
+      ? await fetchStripeAccount({
+          accountId: foundUser.stripeId,
+        })
+      : null;
+    verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
     const { coverId, mediaId, versionId, artworkId } = generateUuids({
       coverId: null,
       mediaId: null,
@@ -215,39 +198,22 @@ export const updateArtwork = async ({
     userId,
     connection,
   });
-  const shouldUpdate = isVersionDifferent(formattedData, foundArtwork.current);
-  if (shouldUpdate) {
-    if (foundArtwork) {
-      if (formattedData.artworkPersonal || formattedData.artworkCommercial) {
-        const foundUser = await fetchUserById({
-          userId,
-          connection,
-        });
-        if (!foundUser)
-          throw createError(errors.notFound, "User not found", {
-            expose: true,
-          });
-        if (!foundUser.stripeId)
-          throw createError(
-            errors.unprocessable,
-            "Please complete the Stripe onboarding process before making your artwork commercially available",
-            { expose: true }
-          );
-        const foundAccount = await fetchStripeAccount({
-          accountId: foundUser.stripeId,
-        });
-        if (
-          (formattedData.artworkPersonal || formattedData.artworkCommercial) &&
-          (foundAccount.capabilities.card_payments !== "active" ||
-            foundAccount.capabilities.transfers !== "active")
-        ) {
-          throw createError(
-            errors.unprocessable,
-            "Please complete your Stripe account before making your artwork commercially available",
-            { expose: true }
-          );
-        }
-      }
+  if (foundArtwork) {
+    const shouldUpdate = isVersionDifferent(
+      formattedData,
+      foundArtwork.current
+    );
+    if (shouldUpdate) {
+      const foundUser = await fetchUserById({
+        userId,
+        connection,
+      });
+      const foundAccount = foundUser.stripeId
+        ? await fetchStripeAccount({
+            accountId: foundUser.stripeId,
+          })
+        : null;
+      verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
       const { coverId, mediaId, versionId } = generateUuids({
         coverId: null,
         mediaId: null,
@@ -290,18 +256,15 @@ export const updateArtwork = async ({
           connection,
         });
       }
-
       return { message: "Artwork updated successfully", expose: true };
-    } else {
-      throw createError(errors.notFound, "Artwork not found", { expose: true });
     }
-  } else {
     throw createError(
       errors.badRequest,
       "Artwork is identical to the previous version",
       { expose: true }
     );
   }
+  throw createError(errors.notFound, "Artwork not found", { expose: true });
 };
 
 // $TODO

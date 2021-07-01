@@ -1,5 +1,6 @@
 import currency from "currency.js";
 import * as fns from "date-fns";
+import createError from "http-errors";
 const { format } = fns;
 
 export const formatDate = (date, form = "dd/MM/yy HH:mm") => {
@@ -33,6 +34,35 @@ export const isObjectEmpty = (object) => {
     if (object.hasOwnProperty(item)) return false;
   }
   return true;
+};
+
+export const verifyVersionValidity = async ({
+  data,
+  foundUser,
+  foundAccount,
+}) => {
+  if (data.artworkPersonal || data.artworkCommercial) {
+    if (!foundUser)
+      throw createError(errors.notFound, "User not found", { expose: true });
+    if (!foundUser.stripeId)
+      throw createError(
+        errors.unprocessable,
+        "Please complete the Stripe onboarding process before making your artwork commercially available",
+        { expose: true }
+      );
+    if (
+      (data.artworkPersonal || data.artworkCommercial) &&
+      (foundAccount.capabilities.card_payments !== "active" ||
+        foundAccount.capabilities.transfers !== "active")
+    ) {
+      throw createError(
+        errors.unprocessable,
+        "Please complete your Stripe account before making your artwork commercially available",
+        { expose: true }
+      );
+    }
+  }
+  return;
 };
 
 export const isVersionDifferent = (currentValues, savedValues) => {

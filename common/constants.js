@@ -2,6 +2,12 @@ const TRANSFORMED_WIDTH = 640;
 
 export const appName = "Diagon";
 
+export const featureFlags = {
+  stripe: true,
+  payment: true,
+  discount: true,
+};
+
 export const pricing = {
   minimumPrice: 10,
   maximumPrice: 100000,
