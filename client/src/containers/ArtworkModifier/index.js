@@ -101,9 +101,10 @@ const ArtworkModifier = ({ paramId }) => {
       ) : capabilities.cardPayments === "pending" ||
         capabilities.platformPayments === "pending" ? (
         <HelpBox type="alert" label={pendingVerification} />
-      ) : (
+      ) : capabilities.cardPayments !== "active" ||
+        capabilities.platformPayments !== "active" ? (
         <HelpBox type="alert" label={incompleteInformation} />
-      )
+      ) : null
     ) : null;
   };
 

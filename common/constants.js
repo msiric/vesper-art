@@ -3,7 +3,7 @@ const TRANSFORMED_WIDTH = 640;
 export const appName = "Diagon";
 
 export const featureFlags = {
-  stripe: false,
+  stripe: true,
   payment: true,
   discount: true,
 };
