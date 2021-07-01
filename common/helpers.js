@@ -49,7 +49,7 @@ export const verifyVersionValidity = async ({
       // FEATURE FLAG - stripe
       throw createError(
         errors.internalError,
-        "Creating and updating commercial artwork is currently disabled",
+        "Creating commercial artwork is not yet available",
         { expose: true }
       );
     }

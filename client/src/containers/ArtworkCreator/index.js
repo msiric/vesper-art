@@ -67,8 +67,7 @@ const ArtworkCreator = () => {
 
   const renderHelpBox = () => {
     // FEATURE FLAG - stripe
-    const stripeDisabled =
-      "Creating or updating commercial artwork is currently disabled";
+    const stripeDisabled = "Creating commercial artwork is not yet available";
     const notOnboarded =
       'To make your artwork commercially available, click on "Become a seller" and complete the Stripe onboarding process';
     const pendingVerification =
