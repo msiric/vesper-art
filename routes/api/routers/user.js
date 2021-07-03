@@ -225,7 +225,9 @@ router
   );
 
 // FEATURE FLAG - stripe
+// FEATURE FLAG - payment
 featureFlags.stripe &&
+  featureFlags.payment &&
   router
     .route("/users/:userId/intents")
     // $TODO not tested
@@ -238,7 +240,9 @@ featureFlags.stripe &&
     );
 
 // FEATURE FLAG - stripe
+// FEATURE FLAG - payment
 featureFlags.stripe &&
+  featureFlags.payment &&
   router
     .route("/users/:userId/intents/:intentId")
     // $TODO not tested

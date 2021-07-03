@@ -1,5 +1,6 @@
 import bodyParser from "body-parser";
 import express from "express";
+import { featureFlags } from "../../../common/constants";
 import {
   assignStripeId,
   createPayout,
@@ -34,20 +35,24 @@ router.route("/account/:accountId").get(
 );
 
 // ovo je test za novi checkout (trenutno delayed)
-router.route("/intent/:intentId").get(
-  isAuthenticated,
-  handler(fetchIntentById, false, (req, res, next) => ({
-    ...req.params,
-  }))
-);
+// FEATURE FLAG - payment
+featureFlags.payment &&
+  router.route("/intent/:intentId").get(
+    isAuthenticated,
+    handler(fetchIntentById, false, (req, res, next) => ({
+      ...req.params,
+    }))
+  );
 
-router.route("/intent/:versionId").post(
-  isAuthenticated,
-  handler(managePaymentIntent, true, (req, res, next) => ({
-    ...req.params,
-    ...req.body,
-  }))
-);
+// FEATURE FLAG - payment
+featureFlags.payment &&
+  router.route("/intent/:versionId").post(
+    isAuthenticated,
+    handler(managePaymentIntent, true, (req, res, next) => ({
+      ...req.params,
+      ...req.body,
+    }))
+  );
 
 router.route("/dashboard/").get(
   handler(redirectToDashboard, false, (req, res, next) => ({

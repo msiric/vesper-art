@@ -1,6 +1,10 @@
 import create from "zustand";
 import { getArtwork } from "../../services/artwork.js";
-import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
+import {
+  getBarState,
+  resolveAsyncError,
+  resolvePaginationId,
+} from "../../utils/helpers";
 
 const initialState = {
   artwork: {
@@ -15,6 +19,10 @@ const initialState = {
       refetch: false,
       message: "",
     },
+  },
+  bar: {
+    visible: false,
+    message: "",
   },
 };
 
@@ -64,6 +72,16 @@ const initActions = (set, get) => ({
         },
       }));
     }
+  },
+  setBar: () => {
+    const barState = getBarState();
+    set((state) => ({
+      ...state,
+      bar: {
+        ...state.bar,
+        ...barState,
+      },
+    }));
   },
   resetArtwork: () => {
     set({ ...initialState });

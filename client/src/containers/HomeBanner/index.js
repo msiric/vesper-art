@@ -1,6 +1,7 @@
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 import React, { useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
+import HelpBox from "../../components/HelpBox";
 import SyncButton from "../../components/SyncButton";
 import { useUserStore } from "../../contexts/global/user.js";
 import { useHomeArtwork } from "../../contexts/local/homeArtwork";
@@ -14,10 +15,15 @@ import homeBannerStyles from "./styles";
 
 const HomeBanner = () => {
   const authenticated = useUserStore((state) => state.authenticated);
+
+  const visible = useHomeArtwork((state) => state.bar.visible);
+  const message = useHomeArtwork((state) => state.bar.message);
+  const setBar = useHomeArtwork((state) => state.setBar);
   const fetchArtwork = useHomeArtwork((state) => state.fetchArtwork);
 
   useEffect(() => {
     fetchArtwork();
+    setBar();
   }, []);
 
   const globalClasses = globalStyles();
@@ -25,6 +31,7 @@ const HomeBanner = () => {
 
   return [
     <Grid item xs={12} md={9}>
+      {visible && <HelpBox type="alert" label={message} />}
       <Card className={classes.banner}>
         <CardContent className={classes.content}>
           <Box className={classes.wrapper}>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { errors } from "../../../common/constants";
+import { errors, featureFlags } from "../../../common/constants";
 import Redirect from "../pages/Home/Redirect";
 import Retry from "../pages/Home/Retry";
 
@@ -55,3 +55,9 @@ export const renderUserData = ({ data, isUsername = false, fallback = "/" }) =>
 
 export const renderRedirectLink = ({ active, isUsername = false }) =>
   active ? RouterLink : isUsername ? "p" : "div";
+
+// FEATURE FLAG - payment
+export const getBarState = () => ({
+  visible: !featureFlags.payment,
+  message: "Purchasing artwork is temporarily disabled",
+});

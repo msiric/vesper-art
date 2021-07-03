@@ -9,7 +9,9 @@ import {
 const router = express.Router();
 
 // FEATURE FLAG - stripe
+// FEATURE FLAG - payment
 featureFlags.stripe &&
+  featureFlags.payment &&
   router
     .route("/checkout/:versionId")
     // $TODO not tested

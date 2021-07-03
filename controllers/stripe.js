@@ -3,7 +3,7 @@ import FormData from "form-data";
 import createError from "http-errors";
 import querystring from "querystring";
 import * as Yup from "yup";
-import { appName, errors } from "../common/constants";
+import { appName, errors, featureFlags } from "../common/constants";
 import { isObjectEmpty, renderCommercialLicenses } from "../common/helpers";
 import { licenseValidation, orderValidation } from "../common/validation";
 import { domain, stripe as processor } from "../config/secret.js";
@@ -65,8 +65,11 @@ export const receiveWebhookEvent = async ({
   switch (stripeEvent.type) {
     case "payment_intent.succeeded":
       console.log("$TEST CHECKOUT Payment success");
-      const paymentIntent = stripeEvent.data.object;
-      await processTransaction({ stripeIntent: paymentIntent, connection });
+      // FEATURE FLAG - payment
+      if (featureFlags.payment) {
+        const paymentIntent = stripeEvent.data.object;
+        await processTransaction({ stripeIntent: paymentIntent, connection });
+      }
       break;
     case "payment_intent.failed":
       console.log("$TEST CHECKOUT Failed payment");
@@ -117,12 +120,16 @@ export const applyDiscount = async ({
                 connection,
               });
               if (!isObjectEmpty(foundIntent)) {
-                const { buyerTotal, sellerTotal, platformTotal, licensePrice } =
-                  calculateTotalCharge({
-                    foundVersion,
-                    foundDiscount,
-                    licenseType,
-                  });
+                const {
+                  buyerTotal,
+                  sellerTotal,
+                  platformTotal,
+                  licensePrice,
+                } = calculateTotalCharge({
+                  foundVersion,
+                  foundDiscount,
+                  licenseType,
+                });
                 const orderData = {
                   discountId: foundDiscount.id,
                   spent: buyerTotal,
@@ -487,8 +494,12 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     const discountId = orderData.discountId;
     const intentId = stripeIntent.id;
     console.log("IDS DECODED");
-    const { licenseAssignee, licenseCompany, licenseType, licensePrice } =
-      orderData.licenseData;
+    const {
+      licenseAssignee,
+      licenseCompany,
+      licenseType,
+      licensePrice,
+    } = orderData.licenseData;
     await licenseValidation.validate({
       licenseAssignee,
       licenseCompany,

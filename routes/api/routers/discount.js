@@ -10,7 +10,9 @@ const router = express.Router();
 
 // $TODO not tested
 // FEATURE FLAG - stripe
+// FEATURE FLAG - payment
 featureFlags.stripe &&
+  featureFlags.payment &&
   router.route("/discounts/:discountCode").get(
     isAuthenticated,
     handler(getDiscount, false, (req, res, next) => ({

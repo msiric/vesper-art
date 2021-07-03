@@ -6,6 +6,7 @@ import {
 } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { featureFlags } from "../../../../common/constants";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
@@ -72,6 +73,8 @@ const PricingCard = ({
             <SyncButton
               startIcon={<PurchaseIcon />}
               onClick={() => handlePurchase({ versionId, license })}
+              // FEATURE FLAG - payment
+              disabled={!featureFlags.payment}
             >
               Purchase
             </SyncButton>
