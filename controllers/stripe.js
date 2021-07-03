@@ -193,9 +193,11 @@ export const managePaymentIntent = async ({
       if (foundVersion.artwork.active) {
         if (foundVersion.id === foundVersion.artwork.currentId) {
           if (foundVersion.artwork.owner.id !== foundUser.id) {
-            const foundDiscount = discountId
-              ? await fetchDiscountById({ discountId, connection })
-              : {};
+            // FEATURE FLAG - discount
+            const foundDiscount =
+              discountId && featureFlags.discount
+                ? await fetchDiscountById({ discountId, connection })
+                : {};
             if (!(discountId && isObjectEmpty(foundDiscount))) {
               const foundIntent = await fetchIntentByParents({
                 userId: foundUser.id,

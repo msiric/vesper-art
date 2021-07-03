@@ -3,7 +3,7 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { payment } from "../../../../common/constants";
+import { featureFlags, payment } from "../../../../common/constants";
 import { discountValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index.js";
 import CheckoutCard from "../../components/CheckoutCard/index.js";
@@ -175,7 +175,8 @@ const CheckoutSummary = ({
         </Grid>
         <ListItems items={summaryItems} custom={true}></ListItems>
       </CardContent>
-      {step.current === 2 && (
+      {/* // FEATURE FLAG - discount */}
+      {step.current === 2 && featureFlags.discount && (
         <CardActions className={classes.actions}>
           {/* $TODO Update intent when discount changes */}
           {/* Fix AsyncButton loading/submitting */}
