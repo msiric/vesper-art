@@ -33,7 +33,7 @@ export const connectToDatabase = async () => {
     console.log("Connected to PostgreSQL");
     return connection;
   } catch (err) {
-    console.log("DB error", err);
+    console.log("Could not connect to PostgreSQL", err);
   }
 };
 
@@ -42,7 +42,6 @@ export const closeConnection = async (connection = null) => {
 };
 
 export const startTransaction = async (connection = null) => {
-  console.log("CONNECTIONNNNNN", connection);
   const queryRunner = connection
     ? connection.createQueryRunner()
     : getConnection().createQueryRunner();

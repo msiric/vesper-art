@@ -87,7 +87,6 @@ export const requestHandler =
         return handleRequest(result);
       } catch (error) {
         await rollbackTransaction(queryRunner);
-        console.log(error);
         next(error);
       } finally {
         await releaseTransaction(queryRunner);
@@ -102,7 +101,6 @@ export const requestHandler =
         });
         return handleRequest(result);
       } catch (error) {
-        console.log(error);
         next(error);
       }
     }

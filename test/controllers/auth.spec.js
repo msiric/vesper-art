@@ -102,4 +102,36 @@ describe("User authentication", () => {
       expect(res.statusCode).toEqual(500);
     });
   });
+
+  describe("User login", () => {
+    it("should throw a 400 error if user is already authenticated", async () => {
+      const res = await request(app, token).post("/api/auth/login").send({
+        userUsername: "test@test.com",
+        userPassword: "User1Password",
+      });
+      expect(res.statusCode).toEqual(400);
+    });
+
+    it("should throw a 404 error if user doesn't exist", async () => {
+      const res = await request(app).post("/api/auth/login").send({
+        userUsername: "test@test.com",
+        userPassword: "User1Password",
+      });
+      expect(res.statusCode).toEqual(404);
+    });
+
+    it("should throw a validation error if username is missing", async () => {
+      const res = await request(app).post("/api/auth/login").send({
+        userPassword: "User1Password",
+      });
+      expect(res.statusCode).toEqual(500);
+    });
+
+    it("should throw a validation error if password is missing", async () => {
+      const res = await request(app).post("/api/auth/login").send({
+        userUsername: "test@test.com",
+      });
+      expect(res.statusCode).toEqual(500);
+    });
+  });
 });
