@@ -1,0 +1,25 @@
+fixtures:
+  - User:
+      id: 5697f6c5-9099-44d8-a6f4-3cabd66ae019
+      name: user1
+      email: user1@email.com
+      password: "$argon2i$v=19$m=4096,t=3,p=1$aIZGlk2eu4fklz3kFYBEPA$M1W0ZGyqGvI492SBY4Xf80s6Y1TAzyrYbKMBlVrqiEE" # User1Password
+      avatar: null
+  - User:
+      id: 2376c85b-24c0-40df-ba7f-fcaed75f5d57
+      name: user2
+      email: user2@email.com
+      password: "$argon2i$v=19$m=4096,t=3,p=1$notcPExPDdNHQhbHU5MYgA$YGS4f/xEBXPcywbPvonBFsxspYS4PYWFQhBaJiH+ork" # User2Password
+      avatar: null
+  - User:
+      id: 649fc409-cc16-4d66-accf-c63e5e87a9fa
+      name: user3
+      email: user3@email.com
+      password: "$argon2i$v=19$m=4096,t=3,p=1$WvaFcHyOwsauM6TMHeQPWA$XmjyJmqhm6CGcK0Ls+uRs3cyIR61Hvsq5hWg4xbbKLk" # User3Password
+      avatar: null
+  - User:
+      id: c2d4bb55-25f7-43f4-991f-a31611eafead
+      name: user4
+      email: user4@email.com
+      password: "$argon2i$v=19$m=4096,t=3,p=1$9YvDSdkaxp+iifzitWOTUA$A6kZzWwroUVmBZFf+ytraxnzRbobUDLojjd/40tOYR8" # User4Password
+      avatar: null

@@ -12,12 +12,9 @@ export const sendEmail = async ({
   try {
     const smtpTransport = nodemailer.createTransport({
       // smtp.zoho.com or smtp.zoho.eu for eu data server
-      host: "smtp.zoho.eu",
-      secure: true,
-      auth: {
-        user: mailer.email,
-        pass: mailer.password,
-      },
+      host: mailer.host,
+      secure: mailer.secure,
+      auth: mailer.auth,
     });
     const mailOptions = {
       from: emailSender,
@@ -25,7 +22,8 @@ export const sendEmail = async ({
       subject: emailSubject,
       html: emailContent,
     };
-    await smtpTransport.sendMail(mailOptions);
+    const sentEmail = await smtpTransport.sendMail(mailOptions);
+    return sentEmail;
   } catch (err) {
     console.log(err);
     throw createError(errors.internalError, "Email failed to send", {

@@ -7,6 +7,12 @@ import { getConnection } from "typeorm";
 import * as uuidJs from "uuid";
 import { errors } from "../common/constants";
 import { domain, uuid } from "../config/secret";
+import {
+  evaluateTransaction,
+  releaseTransaction,
+  rollbackTransaction,
+  startTransaction,
+} from "./database";
 
 // this way of importing allows specifying the uuid version in the config file only once and gets propagated everywhere
 const {
@@ -58,6 +64,14 @@ export const isPastDate = (value) =>
 
 export const requestHandler =
   (promise, transaction, params) => async (req, res, next) => {
+    console.log(
+      "PROMISE",
+      promise,
+      "TRANSACTION",
+      transaction,
+      "params",
+      params
+    );
     const boundParams = params ? params(req, res, next) : {};
     const userId = res.locals.user ? res.locals.user.id : null;
     const handleRequest = (result) => {
@@ -70,24 +84,21 @@ export const requestHandler =
       return res.json({ message: "OK" });
     };
     if (transaction) {
-      const queryRunner = getConnection().createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
+      const queryRunner = await startTransaction();
       try {
         const result = await promise({
           userId,
           connection: queryRunner.manager,
           ...boundParams,
         });
-        /*  return await handleRequest(result); */
-        await queryRunner.commitTransaction();
+        await evaluateTransaction(queryRunner);
         return handleRequest(result);
       } catch (error) {
-        await queryRunner.rollbackTransaction();
+        await rollbackTransaction(queryRunner);
         console.log(error);
         next(error);
       } finally {
-        await queryRunner.release();
+        await releaseTransaction(queryRunner);
       }
     } else {
       try {
