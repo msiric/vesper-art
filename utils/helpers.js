@@ -64,14 +64,6 @@ export const isPastDate = (value) =>
 
 export const requestHandler =
   (promise, transaction, params) => async (req, res, next) => {
-    console.log(
-      "PROMISE",
-      promise,
-      "TRANSACTION",
-      transaction,
-      "params",
-      params
-    );
     const boundParams = params ? params(req, res, next) : {};
     const userId = res.locals.user ? res.locals.user.id : null;
     const handleRequest = (result) => {
@@ -120,20 +112,22 @@ export const isAuthenticated = async (req, res, next) => {
   try {
     const authentication = req.headers["authorization"];
     if (!authentication)
-      throw createError(errors.forbidden, "Forbidden", { expose: true });
+      return next(createError(errors.forbidden, "Forbidden", { expose: true }));
     const token = authentication.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
       ignoreExpiration: true,
     });
     const data = jwt.decode(token);
     if (Date.now() >= data.exp * 1000 || !data.active)
-      throw createError(errors.unauthorized, "Not authenticated", {
-        expose: true,
-      });
+      return next(
+        createError(errors.unauthorized, "Not authenticated", {
+          expose: true,
+        })
+      );
     res.locals.user = data;
   } catch (err) {
     console.log(err);
-    next(err);
+    return next(err);
   }
 
   return next();
@@ -143,9 +137,11 @@ export const isNotAuthenticated = async (req, res, next) => {
   const authentication = req.headers["authorization"];
   // $TODO ovo treba handleat tako da ne stucka frontend
   if (authentication)
-    throw createError(errors.badRequest, "Already authenticated", {
-      expose: true,
-    });
+    return next(
+      createError(errors.badRequest, "Already authenticated", {
+        expose: true,
+      })
+    );
   return next();
 };
 
@@ -153,17 +149,21 @@ export const isAuthorized = async (req, res, next) => {
   if (req.params.userId === res.locals.user.id) {
     return next();
   }
-  throw createError(errors.unauthorized, "Not authorized to request resource", {
-    expose: true,
-  });
+  return next(
+    createError(errors.unauthorized, "Not authorized to request resource", {
+      expose: true,
+    })
+  );
 };
 
 export const sanitizeParams = (req, res, next) => {
   const isValid = sanitizeUrl(req.params, VALID_PARAMS);
   if (isValid) return next();
-  throw createError(errors.badRequest, "Invalid route parameter", {
-    expose: true,
-  });
+  return next(
+    createError(errors.badRequest, "Invalid route parameter", {
+      expose: true,
+    })
+  );
 };
 
 export const sanitizeQuery = (req, res, next) => {
@@ -173,9 +173,11 @@ export const sanitizeQuery = (req, res, next) => {
       req.query = sanitizeData(req.query);
       return next();
     }
-    throw createError(errors.badRequest, "Invalid route query", {
-      expose: true,
-    });
+    return next(
+      createError(errors.badRequest, "Invalid route query", {
+        expose: true,
+      })
+    );
   }
   return;
 };
@@ -189,10 +191,8 @@ export const sanitizeBody = (req, res, next) => {
 };
 
 export const sanitizeUrl = (data, validKeys) => {
-  console.log(data, validKeys);
   let valid = true;
   for (let param in data) {
-    console.log(typeof param, param);
     const value = data[param];
     if (value === "undefined") return false;
     if (validKeys[param] && !validKeys[param].isValid(value)) return false;
