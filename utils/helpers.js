@@ -5,7 +5,6 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { getConnection } from "typeorm";
 import * as uuidJs from "uuid";
-import { errors } from "../common/constants";
 import { domain, uuid } from "../config/secret";
 import {
   evaluateTransaction,
@@ -110,7 +109,9 @@ export const isAuthenticated = async (req, res, next) => {
   try {
     const authentication = req.headers["authorization"];
     if (!authentication)
-      return next(createError(errors.forbidden, "Forbidden", { expose: true }));
+      return next(
+        createError(statusCodes.forbidden, "Forbidden", { expose: true })
+      );
     const token = authentication.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
       ignoreExpiration: true,
@@ -118,7 +119,7 @@ export const isAuthenticated = async (req, res, next) => {
     const data = jwt.decode(token);
     if (Date.now() >= data.exp * 1000 || !data.active)
       return next(
-        createError(errors.unauthorized, "Not authenticated", {
+        createError(statusCodes.unauthorized, "Not authenticated", {
           expose: true,
         })
       );
@@ -136,7 +137,7 @@ export const isNotAuthenticated = async (req, res, next) => {
   // $TODO ovo treba handleat tako da ne stucka frontend
   if (authentication)
     return next(
-      createError(errors.badRequest, "Already authenticated", {
+      createError(statusCodes.badRequest, "Already authenticated", {
         expose: true,
       })
     );
@@ -148,9 +149,13 @@ export const isAuthorized = async (req, res, next) => {
     return next();
   }
   return next(
-    createError(errors.unauthorized, "Not authorized to request resource", {
-      expose: true,
-    })
+    createError(
+      statusCodes.unauthorized,
+      "Not authorized to request resource",
+      {
+        expose: true,
+      }
+    )
   );
 };
 
@@ -158,7 +163,7 @@ export const sanitizeParams = (req, res, next) => {
   const isValid = sanitizeUrl(req.params, VALID_PARAMS);
   if (isValid) return next();
   return next(
-    createError(errors.badRequest, "Invalid route parameter", {
+    createError(statusCodes.badRequest, "Invalid route parameter", {
       expose: true,
     })
   );
@@ -172,7 +177,7 @@ export const sanitizeQuery = (req, res, next) => {
       return next();
     }
     return next(
-      createError(errors.badRequest, "Invalid route query", {
+      createError(statusCodes.badRequest, "Invalid route query", {
         expose: true,
       })
     );

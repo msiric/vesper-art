@@ -44,7 +44,7 @@ export const payment = featureFlags.stripe
     }
   : {};
 
-export const errors = {
+export const statusCodes = {
   ok: 200,
   created: 201,
   noContent: 204,

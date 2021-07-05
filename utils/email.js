@@ -1,6 +1,5 @@
 import createError from "http-errors";
 import nodemailer from "nodemailer";
-import { errors } from "../common/constants.js";
 import { mailer } from "../config/secret.js";
 
 export const sendEmail = async ({
@@ -26,7 +25,7 @@ export const sendEmail = async ({
     return sentEmail;
   } catch (err) {
     console.log(err);
-    throw createError(errors.internalError, "Email failed to send", {
+    throw createError(statusCodes.internalError, "Email failed to send", {
       expose: true,
     });
   }

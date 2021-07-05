@@ -1,7 +1,6 @@
 import argon2 from "argon2";
 import aws from "aws-sdk";
 import createError from "http-errors";
-import { errors } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
@@ -78,7 +77,7 @@ export const getUserProfile = async ({
     connection,
   });
   if (foundUser) return { user: foundUser };
-  throw createError(errors.notFound, "User not found", { expose: true });
+  throw createError(statusCodes.notFound, "User not found", { expose: true });
 };
 
 export const getUserArtwork = async ({
@@ -145,7 +144,7 @@ export const getUserFavorites = async ({
     });
     return { favorites: foundFavorites };
   }
-  throw createError(errors.notAllowed, "User keeps favorites private", {
+  throw createError(statusCodes.notAllowed, "User keeps favorites private", {
     expose: true,
   });
 };
@@ -222,7 +221,7 @@ export const updateUserOrigin = async ({
     });
     return { message: "User business address updated", expose: true };
   }
-  throw createError(errors.notFound, "User not found", { expose: true });
+  throw createError(statusCodes.notFound, "User not found", { expose: true });
 };
 
 export const updateUserProfile = async ({
@@ -305,7 +304,7 @@ export const getUserSettings = async ({ userId, connection }) => {
     // $TODO change name
     return { user: foundUser };
   }
-  throw createError(errors.notFound, "User not found", { expose: true });
+  throw createError(statusCodes.notFound, "User not found", { expose: true });
 };
 
 export const getUserNotifications = async ({
@@ -353,7 +352,7 @@ export const updateUserEmail = async ({ userId, userEmail, connection }) => {
   const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
   if (emailUsed) {
     throw createError(
-      errors.conflict,
+      statusCodes.conflict,
       "User with provided email already exists",
       { expose: true }
     );
@@ -391,16 +390,20 @@ export const updateUserPassword = async ({
   if (!isObjectEmpty(foundUser)) {
     const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
     if (!isCurrentValid)
-      throw createError(errors.badRequest, "Current password is incorrect", {
-        expose: true,
-      });
+      throw createError(
+        statusCodes.badRequest,
+        "Current password is incorrect",
+        {
+          expose: true,
+        }
+      );
     const isPasswordValid = await argon2.verify(
       foundUser.password,
       userPassword
     );
     if (isPasswordValid)
       throw createError(
-        errors.badRequest,
+        statusCodes.badRequest,
         "New password cannot be identical to the old one",
         { expose: true }
       );
@@ -413,7 +416,7 @@ export const updateUserPassword = async ({
     await editUserPassword({ userId, hashedPassword, connection });
     return { message: "Password updated successfully", expose: true };
   }
-  throw createError(errors.notFound, "User not found", { expose: true });
+  throw createError(statusCodes.notFound, "User not found", { expose: true });
 };
 
 // needs transaction (done)
@@ -593,7 +596,7 @@ export const deactivateUser = async ({ userId, response, connection }) => {
     logUserOut(response);
     return { message: "User account deactivated", expose: true };
   }
-  throw createError(errors.notFound, "User not found", { expose: true });
+  throw createError(statusCodes.notFound, "User not found", { expose: true });
 };
 
 export const getUserMedia = async ({ userId, artworkId, connection }) => {
@@ -614,5 +617,7 @@ export const getUserMedia = async ({ userId, artworkId, connection }) => {
 
     return { url, file };
   }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(statusCodes.notFound, "Artwork not found", {
+    expose: true,
+  });
 };

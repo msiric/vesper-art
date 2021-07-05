@@ -1,6 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { errors, featureFlags } from "../../../common/constants";
+import { featureFlags } from "../../../common/constants";
 import Redirect from "../pages/Home/Redirect";
 import Retry from "../pages/Home/Retry";
 
@@ -20,7 +20,7 @@ export const resolveAsyncError = (err, isInfinite = false) => {
   console.log(err);
   console.log(err.response);
   const statusCode = err.response.data.status_code;
-  const notFound = statusCode === errors.notFound;
+  const notFound = statusCode === statusCodes.notFound;
   const errorObj = isInfinite
     ? { refetch: true, message: "" }
     : notFound

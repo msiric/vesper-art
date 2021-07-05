@@ -1,7 +1,7 @@
 import currency from "currency.js";
 import * as fns from "date-fns";
 import createError from "http-errors";
-import { errors, featureFlags } from "./constants";
+import { featureFlags } from "./constants";
 const { format } = fns;
 
 export const formatDate = (date, form = "dd/MM/yy HH:mm") => {
@@ -44,18 +44,20 @@ export const verifyVersionValidity = async ({
 }) => {
   if (data.artworkPersonal || data.artworkCommercial) {
     if (!foundUser)
-      throw createError(errors.notFound, "User not found", { expose: true });
+      throw createError(statusCodes.notFound, "User not found", {
+        expose: true,
+      });
     if (!featureFlags.stripe) {
       // FEATURE FLAG - stripe
       throw createError(
-        errors.internalError,
+        statusCodes.internalError,
         "Creating commercial artwork is not yet available",
         { expose: true }
       );
     }
     if (!foundUser.stripeId)
       throw createError(
-        errors.unprocessable,
+        statusCodes.unprocessable,
         "Please complete the Stripe onboarding process before making your artwork commercially available",
         { expose: true }
       );
@@ -65,7 +67,7 @@ export const verifyVersionValidity = async ({
         foundAccount.capabilities.transfers !== "active")
     ) {
       throw createError(
-        errors.unprocessable,
+        statusCodes.unprocessable,
         "Please complete your Stripe account before making your artwork commercially available",
         { expose: true }
       );

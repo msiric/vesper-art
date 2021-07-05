@@ -1,5 +1,4 @@
 import createError from "http-errors";
-import { errors } from "../common/constants";
 import {
   formatArtworkValues,
   isObjectEmpty,
@@ -60,7 +59,9 @@ export const getArtworkDetails = async ({
     connection,
   });
   if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(statusCodes.notFound, "Artwork not found", {
+    expose: true,
+  });
 };
 
 export const getArtworkComments = async ({
@@ -96,7 +97,9 @@ export const editArtwork = async ({ userId, artworkId, connection }) => {
     connection,
   });
   if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(statusCodes.notFound, "Artwork not found", {
+    expose: true,
+  });
 };
 
 export const postNewArtwork = async ({
@@ -169,7 +172,7 @@ export const postNewArtwork = async ({
     return { message: "Artwork published successfully", expose: true };
   }
   throw createError(
-    errors.badRequest,
+    statusCodes.badRequest,
     "Please attach artwork media before submitting",
     { expose: true }
   );
@@ -259,12 +262,14 @@ export const updateArtwork = async ({
       return { message: "Artwork updated successfully", expose: true };
     }
     throw createError(
-      errors.badRequest,
+      statusCodes.badRequest,
       "Artwork is identical to the previous version",
       { expose: true }
     );
   }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(statusCodes.notFound, "Artwork not found", {
+    expose: true,
+  });
 };
 
 // $TODO
@@ -318,11 +323,13 @@ export const deleteArtwork = async ({
       }
       return { message: "Artwork deleted successfully", expose: true };
     }
-    throw createError(errors.badRequest, "Artwork has a newer version", {
+    throw createError(statusCodes.badRequest, "Artwork has a newer version", {
       expose: true,
     });
   }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(statusCodes.notFound, "Artwork not found", {
+    expose: true,
+  });
 };
 
 export const fetchArtworkFavorites = async ({ artworkId, connection }) => {
@@ -356,13 +363,21 @@ export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
       });
       return { message: "Artwork favorited" };
     }
-    throw createError(errors.badRequest, "Artwork has already been favorited", {
-      expose: true,
-    });
+    throw createError(
+      statusCodes.badRequest,
+      "Artwork has already been favorited",
+      {
+        expose: true,
+      }
+    );
   }
-  throw createError(errors.badRequest, "Cannot favorite your own artwork", {
-    expose: true,
-  });
+  throw createError(
+    statusCodes.badRequest,
+    "Cannot favorite your own artwork",
+    {
+      expose: true,
+    }
+  );
 };
 
 export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
@@ -383,14 +398,18 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
       return { message: "Artwork unfavorited" };
     }
     throw createError(
-      errors.badRequest,
+      statusCodes.badRequest,
       "Artwork has already been unfavorited",
       { expose: true }
     );
   }
-  throw createError(errors.badRequest, "Cannot unfavorite your own artwork", {
-    expose: true,
-  });
+  throw createError(
+    statusCodes.badRequest,
+    "Cannot unfavorite your own artwork",
+    {
+      expose: true,
+    }
+  );
 };
 
 // needs transaction (done)

@@ -1,5 +1,4 @@
 import createError from "http-errors";
-import { errors } from "../common/constants";
 import { renderFreeLicenses } from "../common/helpers";
 import { downloadValidation, licenseValidation } from "../common/validation";
 import socketApi from "../lib/socket.js";
@@ -17,7 +16,9 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
       version: foundVersion,
     };
   }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(statusCodes.notFound, "Artwork not found", {
+    expose: true,
+  });
 };
 
 // $TODO not good
@@ -112,27 +113,33 @@ export const postDownload = async ({
               // new end
               return { message: "Order completed successfully", expose: true };
             }
-            throw createError(errors.notFound, "User not found", {
+            throw createError(statusCodes.notFound, "User not found", {
               expose: true,
             });
           }
           throw createError(
-            errors.badRequest,
+            statusCodes.badRequest,
             "You are the owner of this artwork",
             { expose: true }
           );
         }
-        throw createError(errors.badRequest, "Artwork version is obsolete", {
-          expose: true,
-        });
+        throw createError(
+          statusCodes.badRequest,
+          "Artwork version is obsolete",
+          {
+            expose: true,
+          }
+        );
       }
-      throw createError(errors.gone, "Artwork is no longer active", {
+      throw createError(statusCodes.gone, "Artwork is no longer active", {
         expose: true,
       });
     }
-    throw createError(errors.badRequest, "License is not valid", {
+    throw createError(statusCodes.badRequest, "License is not valid", {
       expose: true,
     });
   }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(statusCodes.notFound, "Artwork not found", {
+    expose: true,
+  });
 };

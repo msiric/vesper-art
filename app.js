@@ -9,7 +9,7 @@ import createError from "http-errors";
 import morgan from "morgan";
 import path from "path";
 import "reflect-metadata";
-import { errors, featureFlags } from "./common/constants";
+import { featureFlags } from "./common/constants";
 import { domain, environment, ENV_OPTIONS } from "./config/secret";
 import { mongo } from "./config/secret.js";
 import api from "./routes/api/index.js";
@@ -105,13 +105,13 @@ const dirname = path.resolve();
   });
 
   app.use((req, res, next) => {
-    createError(errors.internalError, "An error occurred");
+    createError(statusCodes.internalError, "An error occurred");
   });
 
   app.use((err, req, res, next) => {
-    res.status(err.status || errors.internalError);
+    res.status(err.status || statusCodes.internalError);
     res.json({
-      status_code: err.status || errors.internalError,
+      status_code: err.status || statusCodes.internalError,
       error: err.message,
     });
   });

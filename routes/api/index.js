@@ -1,6 +1,5 @@
 import express from "express";
 import createError from "http-errors";
-import { errors } from "../../common/constants.js";
 import artwork from "./routers/artwork.js";
 import auth from "./routers/auth.js";
 import checkout from "./routers/checkout.js";
@@ -26,13 +25,13 @@ router.use("/", search);
 router.use("/auth", auth);
 
 router.use((req, res, next) => {
-  createError(errors.internalError, "An error occurred");
+  createError(statusCodes.internalError, "An error occurred");
 });
 
 router.use((err, req, res, next) => {
-  res.status(err.status || errors.internalError);
+  res.status(err.status || statusCodes.internalError);
   res.json({
-    status_code: err.status || errors.internalError,
+    status_code: err.status || statusCodes.internalError,
     error: err.message || "An error occurred",
     expose: !!err.expose,
   });

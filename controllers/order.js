@@ -1,6 +1,5 @@
 import aws from "aws-sdk";
 import createError from "http-errors";
-import { errors } from "../common/constants.js";
 import {
   fetchOrderDetails,
   fetchOrderMedia,
@@ -76,7 +75,7 @@ export const getOrderDetails = async ({ userId, orderId, connection }) => {
     // }
     return { order: foundOrder };
   }
-  throw createError(errors.notFound, "Order not found", { expose: true });
+  throw createError(statusCodes.notFound, "Order not found", { expose: true });
 };
 
 export const getOrderMedia = async ({ userId, orderId, connection }) => {
@@ -97,5 +96,7 @@ export const getOrderMedia = async ({ userId, orderId, connection }) => {
 
     return { url, file };
   }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(statusCodes.notFound, "Artwork not found", {
+    expose: true,
+  });
 };

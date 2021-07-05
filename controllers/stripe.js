@@ -3,7 +3,7 @@ import FormData from "form-data";
 import createError from "http-errors";
 import querystring from "querystring";
 import * as Yup from "yup";
-import { appName, errors, featureFlags } from "../common/constants";
+import { appName, featureFlags } from "../common/constants";
 import { isObjectEmpty, renderCommercialLicenses } from "../common/helpers";
 import { licenseValidation, orderValidation } from "../common/validation";
 import { domain, stripe as processor } from "../config/secret.js";
@@ -120,16 +120,12 @@ export const applyDiscount = async ({
                 connection,
               });
               if (!isObjectEmpty(foundIntent)) {
-                const {
-                  buyerTotal,
-                  sellerTotal,
-                  platformTotal,
-                  licensePrice,
-                } = calculateTotalCharge({
-                  foundVersion,
-                  foundDiscount,
-                  licenseType,
-                });
+                const { buyerTotal, sellerTotal, platformTotal, licensePrice } =
+                  calculateTotalCharge({
+                    foundVersion,
+                    foundDiscount,
+                    licenseType,
+                  });
                 const orderData = {
                   discountId: foundDiscount.id,
                   spent: buyerTotal,
@@ -152,30 +148,38 @@ export const applyDiscount = async ({
                 };
               }
               throw createError(
-                errors.internalError,
+                statusCodes.internalError,
                 "Could not apply discount",
                 { expose: true }
               );
             }
             throw createError(
-              errors.badRequest,
+              statusCodes.badRequest,
               "You are the owner of this artwork",
               { expose: true }
             );
           }
-          throw createError(errors.badRequest, "Artwork version is obsolete", {
-            expose: true,
-          });
+          throw createError(
+            statusCodes.badRequest,
+            "Artwork version is obsolete",
+            {
+              expose: true,
+            }
+          );
         }
-        throw createError(errors.gone, "Artwork is no longer active", {
+        throw createError(statusCodes.gone, "Artwork is no longer active", {
           expose: true,
         });
       }
-      throw createError(errors.notFound, "Artwork not found", { expose: true });
+      throw createError(statusCodes.notFound, "Artwork not found", {
+        expose: true,
+      });
     }
-    throw createError(errors.notFound, "Discount not found", { expose: true });
+    throw createError(statusCodes.notFound, "Discount not found", {
+      expose: true,
+    });
   }
-  throw createError(errors.notFound, "User not found", { expose: true });
+  throw createError(statusCodes.notFound, "User not found", { expose: true });
 };
 
 // $TODO validacija licenci
@@ -312,39 +316,49 @@ export const managePaymentIntent = async ({
                     },
                   };
                 }
-                throw createError(errors.badRequest, "License is not valid", {
-                  expose: true,
-                });
+                throw createError(
+                  statusCodes.badRequest,
+                  "License is not valid",
+                  {
+                    expose: true,
+                  }
+                );
               }
               throw createError(
-                errors.internalError,
+                statusCodes.internalError,
                 "Could not process the payment",
                 { expose: true }
               );
             }
             throw createError(
-              errors.internalError,
+              statusCodes.internalError,
               "Could not apply discount",
               { expose: true }
             );
           }
           throw createError(
-            errors.badRequest,
+            statusCodes.badRequest,
             "You are the owner of this artwork",
             { expose: true }
           );
         }
-        throw createError(errors.badRequest, "Artwork version is obsolete", {
-          expose: true,
-        });
+        throw createError(
+          statusCodes.badRequest,
+          "Artwork version is obsolete",
+          {
+            expose: true,
+          }
+        );
       }
-      throw createError(errors.gone, "Artwork is no longer active", {
+      throw createError(statusCodes.gone, "Artwork is no longer active", {
         expose: true,
       });
     }
-    throw createError(errors.notFound, "Artwork not found", { expose: true });
+    throw createError(statusCodes.notFound, "Artwork not found", {
+      expose: true,
+    });
   }
-  throw createError(errors.notFound, "User not found", { expose: true });
+  throw createError(statusCodes.notFound, "User not found", { expose: true });
 };
 
 export const redirectToDashboard = () => {
@@ -358,7 +372,7 @@ export const redirectToStripe = async ({
 }) => {
   if (!userOnboarded)
     throw createError(
-      errors.unprocessable,
+      statusCodes.unprocessable,
       "You need to complete the onboarding process before accessing your Stripe dashboard",
       { expose: true }
     );
@@ -414,7 +428,7 @@ export const assignStripeId = async ({
 }) => {
   if (sessionData.state != queryData.state)
     throw createError(
-      errors.internalError,
+      statusCodes.internalError,
       "There was an error in the onboarding process",
       { expose: true }
     );
@@ -430,7 +444,7 @@ export const assignStripeId = async ({
   });
 
   if (expressAuthorized.error)
-    throw createError(errors.internalError, expressAuthorized.error, {
+    throw createError(statusCodes.internalError, expressAuthorized.error, {
       expose: true,
     });
 
@@ -456,7 +470,7 @@ export const fetchIntentById = async ({ userId, intentId, connection }) => {
       intent: foundIntent,
     };
   }
-  throw createError(errors.notFound, "Intent not found", { expose: true });
+  throw createError(statusCodes.notFound, "Intent not found", { expose: true });
 };
 
 export const createPayout = async ({ userId, connection }) => {
@@ -478,7 +492,7 @@ export const createPayout = async ({ userId, connection }) => {
       message: "Payout successfully created",
     };
   }
-  throw createError(errors.notFound, "User not found", { expose: true });
+  throw createError(statusCodes.notFound, "User not found", { expose: true });
 };
 
 // $TODO not good
@@ -496,12 +510,8 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     const discountId = orderData.discountId;
     const intentId = stripeIntent.id;
     console.log("IDS DECODED");
-    const {
-      licenseAssignee,
-      licenseCompany,
-      licenseType,
-      licensePrice,
-    } = orderData.licenseData;
+    const { licenseAssignee, licenseCompany, licenseType, licensePrice } =
+      orderData.licenseData;
     await licenseValidation.validate({
       licenseAssignee,
       licenseCompany,
@@ -588,8 +598,12 @@ const processTransaction = async ({ stripeIntent, connection }) => {
         connection,
       });
     }
-    throw createError(errors.internalError, "Could not process the order", {
-      expose: true,
-    });
+    throw createError(
+      statusCodes.internalError,
+      "Could not process the order",
+      {
+        expose: true,
+      }
+    );
   }
 };
