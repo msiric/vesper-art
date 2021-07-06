@@ -1,15 +1,15 @@
 import express from "express";
 import createError from "http-errors";
-import artwork from "./routers/artwork.js";
-import auth from "./routers/auth.js";
-import checkout from "./routers/checkout.js";
-import discount from "./routers/discount.js";
-import notification from "./routers/notification.js";
-import order from "./routers/order.js";
-import search from "./routers/search.js";
-import ticket from "./routers/ticket.js";
-import user from "./routers/user.js";
-import verifier from "./routers/verifier.js";
+import artwork from "./routers/artwork";
+import auth from "./routers/auth";
+import checkout from "./routers/checkout";
+import discount from "./routers/discount";
+import notification from "./routers/notification";
+import order from "./routers/order";
+import search from "./routers/search";
+import ticket from "./routers/ticket";
+import user from "./routers/user";
+import verifier from "./routers/verifier";
 
 const router = express.Router();
 

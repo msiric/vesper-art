@@ -1,7 +1,7 @@
 import React from "react";
-import ProfileCard from "../../components/ProfileCard/index.js";
+import ProfileCard from "../../components/ProfileCard/index";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
-import artistSectionStyles from "./styles.js";
+import artistSectionStyles from "./styles";
 
 const ArtistSection = () => {
   const owner = useArtworkDetails((state) => state.artwork.data.owner);

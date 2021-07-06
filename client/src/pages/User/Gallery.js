@@ -1,17 +1,17 @@
 import { makeStyles } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { hexToRgb } from "../../../../common/helpers.js";
-import GalleryPanel from "../../containers/GalleryPanel/index.js";
-import GalleryToolbar from "../../containers/GalleryToolbar/index.js";
+import { hexToRgb } from "../../../../common/helpers";
+import GalleryPanel from "../../containers/GalleryPanel/index";
+import GalleryToolbar from "../../containers/GalleryToolbar/index";
 import { useUserGallery } from "../../contexts/local/userGallery";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
-import globalStyles from "../../styles/global.js";
-import { renderUserData } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { renderUserData } from "../../utils/helpers";
 
 const useGalleryStyles = makeStyles((muiTheme) => ({
   wrapper: {

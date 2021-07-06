@@ -14,19 +14,19 @@ import CheckoutStatus from "../../components/CheckoutStatus";
 import CheckoutStepper from "../../components/CheckoutStepper";
 import ListItems from "../../components/ListItems";
 import SyncButton from "../../components/SyncButton";
-import CheckoutSummary from "../../containers/CheckoutSummary/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import CheckoutSummary from "../../containers/CheckoutSummary/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useOrderCheckout } from "../../contexts/local/orderCheckout";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import Grid from "../../domain/Grid";
-import BillingForm from "../../forms/BillingForm/index.js";
-import LicenseForm from "../../forms/LicenseForm/index.js";
-import PaymentForm from "../../forms/PaymentForm/index.js";
-import globalStyles from "../../styles/global.js";
-import checkoutProcessorStyles from "./styles.js";
+import BillingForm from "../../forms/BillingForm/index";
+import LicenseForm from "../../forms/LicenseForm/index";
+import PaymentForm from "../../forms/PaymentForm/index";
+import globalStyles from "../../styles/global";
+import checkoutProcessorStyles from "./styles";
 
 const checkoutValidation = [
   licenseValidation,

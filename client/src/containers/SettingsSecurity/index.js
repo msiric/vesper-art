@@ -3,13 +3,13 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { passwordValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
 import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
-import EditPasswordForm from "../../forms/PasswordForm/index.js";
-import settingsSecurityStyles from "./styles.js";
+import EditPasswordForm from "../../forms/PasswordForm/index";
+import settingsSecurityStyles from "./styles";
 
 const SettingsSecurity = ({ handleLogout }) => {
   const userId = useUserSettings((state) => state.user.data.id);

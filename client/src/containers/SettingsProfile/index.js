@@ -3,14 +3,14 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { patchAvatar, profileValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
-import EditUserForm from "../../forms/UserForm/index.js";
-import settingsProfileStyles from "./styles.js";
+import EditUserForm from "../../forms/UserForm/index";
+import settingsProfileStyles from "./styles";
 
 const SettingsProfile = () => {
   const userId = useUserStore((state) => state.id);

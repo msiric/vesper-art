@@ -6,7 +6,7 @@ import React from "react";
 import Box from "../../domain/Box";
 import Button from "../../domain/Button";
 import Popover from "../../domain/Popover";
-import commentPopoverStyles from "./styles.js";
+import commentPopoverStyles from "./styles";
 
 const CommentPopover = ({
   id,

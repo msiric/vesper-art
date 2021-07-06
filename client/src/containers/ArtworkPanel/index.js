@@ -1,11 +1,11 @@
 import React from "react";
 import Masonry from "react-masonry-css";
 import { breakpoints } from "../../common/constants";
-import ArtworkCard from "../../components/ArtworkCard/index.js";
-import InfiniteList from "../../components/InfiniteList/index.js";
+import ArtworkCard from "../../components/ArtworkCard/index";
+import InfiniteList from "../../components/InfiniteList/index";
 import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import Box from "../../domain/Box";
-import artworkPanelStyles from "./styles.js";
+import artworkPanelStyles from "./styles";
 
 const ArtworkPanel = ({ type, fixed }) => {
   const elements = useHomeArtwork((state) => state.artwork.data);

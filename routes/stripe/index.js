@@ -1,6 +1,6 @@
 import express from "express";
 import createError from "http-errors";
-import stripe from "./routers/stripe.js";
+import stripe from "./routers/stripe";
 
 const router = express.Router();
 

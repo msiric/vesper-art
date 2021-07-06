@@ -9,17 +9,12 @@ import createError from "http-errors";
 import morgan from "morgan";
 import path from "path";
 import "reflect-metadata";
-import { featureFlags } from "./common/constants";
-import { domain, environment, ENV_OPTIONS } from "./config/secret";
-import { mongo } from "./config/secret.js";
-import api from "./routes/api/index.js";
-import stripe from "./routes/stripe/index.js";
+import { featureFlags, statusCodes } from "./common/constants";
+import { domain, environment, ENV_OPTIONS, mongo } from "./config/secret";
+import api from "./routes/api/index";
+import stripe from "./routes/stripe/index";
 import { connectToDatabase } from "./utils/database";
-import {
-  sanitizeBody,
-  sanitizeParams,
-  sanitizeQuery,
-} from "./utils/helpers.js";
+import { sanitizeBody, sanitizeParams, sanitizeQuery } from "./utils/helpers";
 
 const app = express();
 const dirname = path.resolve();

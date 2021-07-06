@@ -4,14 +4,14 @@ import {
   StarRounded as StarIcon,
 } from "@material-ui/icons";
 import React from "react";
-import { formatDate } from "../../../../common/helpers.js";
+import { formatDate } from "../../../../common/helpers";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Typography from "../../domain/Typography";
-import globalStyles from "../../styles/global.js";
-import ShareButton from "../ShareButton/index.js";
-import profileBannerStyles from "./styles.js";
+import globalStyles from "../../styles/global";
+import ShareButton from "../ShareButton/index";
+import profileBannerStyles from "./styles";
 
 const ProfileBanner = ({ profile, loading }) => {
   const globalClasses = globalStyles();

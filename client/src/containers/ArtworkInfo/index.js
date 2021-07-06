@@ -3,9 +3,9 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { licenseValidation } from "../../../../common/validation";
-import PricingCard from "../../components/PricingCard/index.js";
-import PromptModal from "../../components/PromptModal/index.js";
-import SwipeCard from "../../components/SwipeCard/index.js";
+import PricingCard from "../../components/PricingCard/index";
+import PromptModal from "../../components/PromptModal/index";
+import SwipeCard from "../../components/SwipeCard/index";
 import SyncButton from "../../components/SyncButton";
 import { useUserStore } from "../../contexts/global/user";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
@@ -13,8 +13,8 @@ import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Typography from "../../domain/Typography";
-import LicenseForm from "../../forms/LicenseForm/index.js";
-import artworkInfoStyles from "./styles.js";
+import LicenseForm from "../../forms/LicenseForm/index";
+import artworkInfoStyles from "./styles";
 
 // $TODO refactor needed (new domain components)
 

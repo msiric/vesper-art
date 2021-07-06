@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import DashboardCard from "../../components/DashboardCard/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import DashboardCard from "../../components/DashboardCard/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useUserStats } from "../../contexts/local/userStats";
 import Grid from "../../domain/Grid";
-import dashboardStatisticsStyles from "./styles.js";
+import dashboardStatisticsStyles from "./styles";
 
 const DashboardStatistics = ({ layout }) => {
   const userId = useUserStore((state) => state.id);

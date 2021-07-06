@@ -1,16 +1,16 @@
 import { makeStyles } from "@material-ui/core";
 import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
 import React, { useEffect } from "react";
-import DashboardStatistics from "../../containers/DashboardStatistics/index.js";
-import DashboardToolbar from "../../containers/DashboardToolbar/index.js";
-import DashboardVisualization from "../../containers/DashboardVisualization/index.js";
-import VisualizationToolbar from "../../containers/VisualizationToolbar/index.js";
+import DashboardStatistics from "../../containers/DashboardStatistics/index";
+import DashboardToolbar from "../../containers/DashboardToolbar/index";
+import DashboardVisualization from "../../containers/DashboardVisualization/index";
+import VisualizationToolbar from "../../containers/VisualizationToolbar/index";
 import { useUserStats } from "../../contexts/local/userStats";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import LocalizationProvider from "../../domain/LocalizationProvider";
-import globalStyles from "../../styles/global.js";
-import { containsErrors, renderError } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const useDashboardStyles = makeStyles((muiTheme) => ({
   wrapper: {

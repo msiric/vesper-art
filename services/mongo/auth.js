@@ -1,6 +1,6 @@
 import argon2 from "argon2";
-import User from "../../models/user.js";
-import { sendRefreshToken, updateAccessToken } from "../../utils/auth.js";
+import User from "../../models/user";
+import { sendRefreshToken, updateAccessToken } from "../../utils/auth";
 
 export const addNewUser = async ({
   userEmail,

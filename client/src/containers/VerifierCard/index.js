@@ -4,13 +4,13 @@ import { withSnackbar } from "notistack";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { fingerprintValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
 import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
-import VerifierForm from "../../forms/VerifierForm/index.js";
-import verifierCardStyles from "./styles.js";
+import VerifierForm from "../../forms/VerifierForm/index";
+import verifierCardStyles from "./styles";
 
 const VerifierCard = () => {
   const loading = useLicenseVerifier((state) => state.license.loading);

@@ -3,8 +3,8 @@ import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
 import Typography from "../../domain/Typography";
-import CurrencyValue from "../CurrencyValue/index.js";
-import dashboardCardStyles from "./styles.js";
+import CurrencyValue from "../CurrencyValue/index";
+import dashboardCardStyles from "./styles";
 
 const DashboardCard = ({ currency, data, label, loading }) => {
   const classes = dashboardCardStyles();

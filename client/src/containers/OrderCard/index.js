@@ -1,12 +1,12 @@
 import React from "react";
-import { formatDate } from "../../../../common/helpers.js";
-import Datatable from "../../components/DataTable/index.js";
-import EmptySection from "../../components/EmptySection/index.js";
-import SubHeading from "../../components/SubHeading/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import { formatDate } from "../../../../common/helpers";
+import Datatable from "../../components/DataTable/index";
+import EmptySection from "../../components/EmptySection/index";
+import SubHeading from "../../components/SubHeading/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
-import { renderUserData } from "../../utils/helpers.js";
-import orderCardStyles from "./styles.js";
+import { renderUserData } from "../../utils/helpers";
+import orderCardStyles from "./styles";
 
 const OrderCard = () => {
   const userId = useUserStore((state) => state.id);

@@ -1,10 +1,10 @@
 import express from "express";
-import { featureFlags } from "../../../common/constants.js";
-import { getDiscount, postDiscount } from "../../../controllers/discount.js";
+import { featureFlags } from "../../../common/constants";
+import { getDiscount, postDiscount } from "../../../controllers/discount";
 import {
   isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 

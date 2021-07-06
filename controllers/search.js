@@ -2,10 +2,10 @@ import createError from "http-errors";
 import {
   fetchArtworkResults,
   fetchUserResults,
-} from "../services/postgres/search.js";
-import {} from "../utils/helpers.js";
-import { errors } from "../utils/statuses.js";
-import searchValidator from "../validation/search.js";
+} from "../services/postgres/search";
+import {} from "../utils/helpers";
+import { errors } from "../utils/statuses";
+import searchValidator from "../validation/search";
 
 export const getResults = async ({
   searchQuery,

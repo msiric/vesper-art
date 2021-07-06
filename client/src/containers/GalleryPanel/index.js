@@ -2,15 +2,15 @@ import React, { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
 import { SRLWrapper, useLightbox } from "simple-react-lightbox";
-import ImageWrapper from "../../components/ImageWrapper/index.js";
+import ImageWrapper from "../../components/ImageWrapper/index";
 import InfiniteList from "../../components/InfiniteList";
-import { useUserStore } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user";
 import { useUserGallery } from "../../contexts/local/userGallery";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
-import globalStyles from "../../styles/global.js";
-import { artepunktTheme } from "../../styles/theme.js";
-import galleryPanelStyles from "./styles.js";
+import globalStyles from "../../styles/global";
+import { artepunktTheme } from "../../styles/theme";
+import galleryPanelStyles from "./styles";
 
 const breakpointColumns = {
   default: 4,

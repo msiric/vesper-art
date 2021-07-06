@@ -1,17 +1,17 @@
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useEffect, useRef } from "react";
-import ArtistSection from "../../containers/ArtistSection/index.js";
-import ArtworkActions from "../../containers/ArtworkActions/index.js";
-import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
-import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
-import CommentSection from "../../containers/CommentSection/index.js";
+import ArtistSection from "../../containers/ArtistSection/index";
+import ArtworkActions from "../../containers/ArtworkActions/index";
+import ArtworkInfo from "../../containers/ArtworkInfo/index";
+import ArtworkPreview from "../../containers/ArtworkPreview/index";
+import CommentSection from "../../containers/CommentSection/index";
 import { useArtworkComments } from "../../contexts/local/artworkComments";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import globalStyles from "../../styles/global.js";
-import { containsErrors, renderError } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const useArtworkStyles = makeStyles((muiTheme) => ({
   stickyWrapper: {

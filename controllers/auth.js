@@ -16,7 +16,7 @@ import {
   resetUserPassword,
   resetVerificationToken,
   revokeAccessToken,
-} from "../services/postgres/auth.js";
+} from "../services/postgres/auth";
 import {
   editUserEmail,
   fetchUserByAuth,
@@ -26,20 +26,20 @@ import {
   fetchUserIdByEmail,
   fetchUserIdByUsername,
   fetchUserIdByVerificationToken,
-} from "../services/postgres/user.js";
+} from "../services/postgres/user";
 import {
   createAccessToken,
   createRefreshToken,
   sendRefreshToken,
-} from "../utils/auth.js";
-import { sendEmail } from "../utils/email.js";
+} from "../utils/auth";
+import { sendEmail } from "../utils/email";
 import {
   formatError,
   formatResponse,
   generateResetToken,
   generateUuids,
   generateVerificationToken,
-} from "../utils/helpers.js";
+} from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
 
 // needs transaction (not tested)

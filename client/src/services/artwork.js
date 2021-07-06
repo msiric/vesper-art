@@ -1,4 +1,4 @@
-import { ax } from "../containers/Interceptor/Interceptor.js";
+import { ax } from "../containers/Interceptor/Interceptor";
 
 export const postMedia = {
   request: async ({ data }) => await ax.post("/api/artwork_media_upload", data),

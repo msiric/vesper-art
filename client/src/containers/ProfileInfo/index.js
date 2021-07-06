@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import ProfileBanner from "../../components/ProfileBanner/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import ProfileBanner from "../../components/ProfileBanner/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useUserProfile } from "../../contexts/local/userProfile";
 import Grid from "../../domain/Grid";
-import profileInfoStyles from "./styles.js";
+import profileInfoStyles from "./styles";
 
 const ProfileInfo = ({ paramId }) => {
   const userId = useUserStore((state) => state.id);

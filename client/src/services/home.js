@@ -1,4 +1,4 @@
-import { ax } from "../containers/Interceptor/Interceptor.js";
+import { ax } from "../containers/Interceptor/Interceptor";
 
 export const postVerifier = {
   request: async ({ licenseData }) =>

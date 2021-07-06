@@ -1,16 +1,16 @@
 import { FavoriteRounded as FavoritedIcon } from "@material-ui/icons";
 import React from "react";
-import FavoriteButton from "../../components/FavoriteButton/index.js";
+import FavoriteButton from "../../components/FavoriteButton/index";
 import IncrementCounter from "../../components/IncrementCounter";
-import ShareButton from "../../components/ShareButton/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import ShareButton from "../../components/ShareButton/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import Divider from "../../domain/Divider";
-import { CardContent } from "../../styles/theme.js";
-import artworkActionsStyles from "./styles.js";
+import { CardContent } from "../../styles/theme";
+import artworkActionsStyles from "./styles";
 
 const ArtworkActions = () => {
   const artwork = useArtworkDetails((state) => state.artwork.data);

@@ -4,12 +4,12 @@ import {
   getOrderDetails,
   getOrderMedia,
   getSoldOrders,
-} from "../../../controllers/order.js";
-import { postReview } from "../../../controllers/review.js";
+} from "../../../controllers/order";
+import { postReview } from "../../../controllers/review";
 import {
   isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 

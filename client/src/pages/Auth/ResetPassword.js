@@ -13,8 +13,8 @@ import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import Container from "../../domain/Container";
 import Typography from "../../domain/Typography";
-import EditPasswordForm from "../../forms/PasswordForm/index.js";
-import { postReset } from "../../services/auth.js";
+import EditPasswordForm from "../../forms/PasswordForm/index";
+import { postReset } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {

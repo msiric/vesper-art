@@ -5,14 +5,14 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { emailValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
-import EmailForm from "../../forms/EmailForm/index.js";
+import EmailForm from "../../forms/EmailForm/index";
 import { socket } from "../Interceptor/Interceptor";
-import settingsAccountStyles from "./styles.js";
+import settingsAccountStyles from "./styles";
 
 const SettingsAccount = ({ handleLogout }) => {
   const resetUser = useUserStore((state) => state.resetUser);

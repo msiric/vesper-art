@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { useLocation } from "react-router-dom";
-import ArtworkCard from "../../components/ArtworkCard/index.js";
-import InfiniteList from "../../components/InfiniteList/index.js";
-import ProfileCard from "../../components/ProfileCard/index.js";
+import ArtworkCard from "../../components/ArtworkCard/index";
+import InfiniteList from "../../components/InfiniteList/index";
+import ProfileCard from "../../components/ProfileCard/index";
 import { useSearchResults } from "../../contexts/local/searchResults";
 import Box from "../../domain/Box";
-import searchPanelStyles from "./styles.js";
+import searchPanelStyles from "./styles";
 
 const breakpointColumns = {
   default: 4,

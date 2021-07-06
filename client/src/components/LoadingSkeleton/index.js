@@ -1,5 +1,5 @@
 import React from "react";
-import CommentCard from "../../components/CommentCard/index.js";
+import CommentCard from "../../components/CommentCard/index";
 import loadingSkeletonStyles from "./styles";
 
 // $TODO Just a blueprint, needs to be finished

@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core";
 import queryString from "query-string";
 import React, { useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import SearchPanel from "../../containers/SearchPanel/index.js";
+import SearchPanel from "../../containers/SearchPanel/index";
 import { useSearchResults } from "../../contexts/local/searchResults";
 import Grid from "../../domain/Grid";
 

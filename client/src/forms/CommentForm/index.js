@@ -1,6 +1,6 @@
 import { Box } from "@material-ui/core";
 import React from "react";
-import TextInput from "../../controls/TextInput/index.js";
+import TextInput from "../../controls/TextInput/index";
 
 const AddCommentForm = ({ errors, loading }) => {
   const classes = {};

@@ -1,11 +1,11 @@
 import React, { lazy, Suspense } from "react";
 import { Redirect, Route, Router, Switch } from "react-router-dom";
 import ProgressBar from "react-topbar-progress-indicator";
-import { featureFlags } from "../../../../common/constants.js";
-import { useUserStore } from "../../contexts/global/user.js";
-import AuthLayout from "../../layouts/AuthLayout.js";
-import MainLayout from "../../layouts/MainLayout.js";
-import history from "../../utils/history.js";
+import { featureFlags } from "../../../../common/constants";
+import { useUserStore } from "../../contexts/global/user";
+import AuthLayout from "../../layouts/AuthLayout";
+import MainLayout from "../../layouts/MainLayout";
+import history from "../../utils/history";
 
 const routes = [
   // Artwork router

@@ -3,9 +3,9 @@ import {
   editUnreadNotification,
   fetchExistingNotifications,
   removeAllNotifications,
-} from "../services/postgres/notification.js";
-import { formatResponse } from "../utils/helpers.js";
-import { responses } from "../utils/statuses.js";
+} from "../services/postgres/notification";
+import { formatResponse } from "../utils/helpers";
+import { responses } from "../utils/statuses";
 
 export const getNotifications = async ({ userId, connection }) => {
   const foundNotifications = await fetchExistingNotifications({

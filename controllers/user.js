@@ -13,14 +13,14 @@ import {
   deactivateArtworkVersion,
   deactivateExistingArtwork,
   removeArtworkVersion,
-} from "../services/postgres/artwork.js";
+} from "../services/postgres/artwork";
 import { logUserOut } from "../services/postgres/auth";
 import {
   fetchOrdersByArtwork,
   fetchOrdersByBuyer,
   fetchOrdersBySeller,
-} from "../services/postgres/order.js";
-import { fetchStripeBalance } from "../services/postgres/stripe.js";
+} from "../services/postgres/order";
+import { fetchStripeBalance } from "../services/postgres/stripe";
 import {
   addNewIntent,
   addUserAvatar,
@@ -47,16 +47,16 @@ import {
   fetchUserSales,
   removeExistingIntent,
   removeUserAvatar,
-} from "../services/postgres/user.js";
-import { sendEmail } from "../utils/email.js";
+} from "../services/postgres/user";
+import { sendEmail } from "../utils/email";
 import {
   formatError,
   formatResponse,
   generateUuids,
   generateVerificationToken,
-} from "../utils/helpers.js";
+} from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
-import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
+import { deleteS3Object, finalizeMediaUpload } from "../utils/upload";
 import { deleteUserNotifications } from "./notification";
 
 aws.config.update({

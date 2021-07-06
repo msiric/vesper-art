@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import ImageWrapper from "../../components/ImageWrapper/index.js";
+import ImageWrapper from "../../components/ImageWrapper/index";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Divider from "../../domain/Divider";
 import Typography from "../../domain/Typography";
-import artworkPreviewStyles from "./styles.js";
+import artworkPreviewStyles from "./styles";
 
 const ArtworkPreview = ({ paramId }) => {
   const version = useArtworkDetails((state) => state.artwork.data.current);

@@ -1,14 +1,14 @@
 import { makeStyles } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import MainHeading from "../../components/MainHeading/index.js";
-import PromptModal from "../../components/PromptModal/index.js";
+import MainHeading from "../../components/MainHeading/index";
+import PromptModal from "../../components/PromptModal/index";
 import ArtworkModifier from "../../containers/ArtworkModifier";
 import { useArtworkUpdate } from "../../contexts/local/artworkUpdate";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import globalStyles from "../../styles/global.js";
-import { containsErrors, renderError } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const useEditorStyles = makeStyles((muiTheme) => ({
   wrapper: {

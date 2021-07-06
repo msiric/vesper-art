@@ -1,5 +1,5 @@
 import express from "express";
-import { featureFlags } from "../../../common/constants.js";
+import { featureFlags } from "../../../common/constants";
 import {
   createUserIntent,
   deactivateUser,
@@ -21,13 +21,13 @@ import {
   updateUserPassword,
   updateUserPreferences,
   updateUserProfile,
-} from "../../../controllers/user.js";
-import multerApi from "../../../lib/multer.js";
+} from "../../../controllers/user";
+import multerApi from "../../../lib/multer";
 import {
   isAuthenticated,
   isAuthorized,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 

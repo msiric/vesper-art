@@ -3,17 +3,17 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { featureFlags, pricing } from "../../../../common/constants.js";
+import { featureFlags, pricing } from "../../../../common/constants";
 import { addArtwork, artworkValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import HelpBox from "../../components/HelpBox/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import AsyncButton from "../../components/AsyncButton/index";
+import HelpBox from "../../components/HelpBox/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useArtworkCreate } from "../../contexts/local/artworkCreate";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
-import ArtworkForm from "../../forms/ArtworkForm/index.js";
-import artworkCreatorStyles from "./styles.js";
+import ArtworkForm from "../../forms/ArtworkForm/index";
+import artworkCreatorStyles from "./styles";
 
 const ArtworkCreator = () => {
   const stripeId = useUserStore((state) => state.stripeId);

@@ -1,19 +1,15 @@
 import createError from "http-errors";
 import { commentValidation } from "../common/validation";
-import socketApi from "../lib/socket.js";
-import { fetchArtworkById } from "../services/postgres/artwork.js";
+import socketApi from "../lib/socket";
+import { fetchArtworkById } from "../services/postgres/artwork";
 import {
   addNewComment,
   editExistingComment,
   fetchCommentById,
   removeExistingComment,
-} from "../services/postgres/comment.js";
-import { addNewNotification } from "../services/postgres/notification.js";
-import {
-  formatError,
-  formatResponse,
-  generateUuids,
-} from "../utils/helpers.js";
+} from "../services/postgres/comment";
+import { addNewNotification } from "../services/postgres/notification";
+import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
 
 export const getComment = async ({ artworkId, commentId, connection }) => {

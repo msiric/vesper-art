@@ -16,8 +16,8 @@ import ListItem from "../../domain/ListItem";
 import ListItemIcon from "../../domain/ListItemIcon";
 import ListItemText from "../../domain/ListItemText";
 import Typography from "../../domain/Typography";
-import SyncButton from "../SyncButton/index.js";
-import pricingCardStyles from "./styles.js";
+import SyncButton from "../SyncButton/index";
+import pricingCardStyles from "./styles";
 
 const PricingCard = ({
   artworkId,

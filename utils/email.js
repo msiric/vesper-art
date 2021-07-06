@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import nodemailer from "nodemailer";
-import { mailer } from "../config/secret.js";
-import { errors } from "./statuses.js";
+import { mailer } from "../config/secret";
+import { errors } from "./statuses";
 
 export const sendEmail = async ({
   emailSender = mailer.sender,

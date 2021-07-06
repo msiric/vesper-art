@@ -1,12 +1,12 @@
 import React from "react";
-import SkeletonWrapper from "../../components/SkeletonWrapper/index.js";
-import SyncButton from "../../components/SyncButton/index.js";
+import SkeletonWrapper from "../../components/SkeletonWrapper/index";
+import SyncButton from "../../components/SyncButton/index";
 import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import Typography from "../../domain/Typography";
-import settingsActionsStyles from "./styles.js";
+import settingsActionsStyles from "./styles";
 
 const SettingsActions = () => {
   const loading = useUserSettings((state) => state.user.loading);

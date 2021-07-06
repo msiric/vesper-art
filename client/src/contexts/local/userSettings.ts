@@ -6,8 +6,8 @@ import {
   patchPassword,
   patchPreferences,
   patchUser,
-} from "../../services/user.js";
-import { deleteEmptyValues, resolveAsyncError } from "../../utils/helpers.js";
+} from "../../services/user";
+import { deleteEmptyValues, resolveAsyncError } from "../../utils/helpers";
 
 const initialState = {
   user: {

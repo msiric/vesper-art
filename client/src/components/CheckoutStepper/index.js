@@ -11,8 +11,8 @@ import Step from "../../domain/Step";
 import StepConnector from "../../domain/StepConnector";
 import StepLabel from "../../domain/StepLabel";
 import Stepper from "../../domain/Stepper";
-import globalStyles from "../../styles/global.js";
-import checkoutStepperStyles from "./styles.js";
+import globalStyles from "../../styles/global";
+import checkoutStepperStyles from "./styles";
 
 const STEPS = [
   "License information",

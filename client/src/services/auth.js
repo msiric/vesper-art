@@ -1,4 +1,4 @@
-import { ax } from "../containers/Interceptor/Interceptor.js";
+import { ax } from "../containers/Interceptor/Interceptor";
 
 export const postRecover = {
   request: async ({ data }) => await ax.post("/api/auth/forgot_password", data),

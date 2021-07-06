@@ -1,6 +1,6 @@
 import React from "react";
-import Typography from "../../domain/Typography/index.js";
-import mainHeadingStyles from "./styles.js";
+import Typography from "../../domain/Typography/index";
+import mainHeadingStyles from "./styles";
 
 const MainHeading = ({ text, loading, style, ...props }) => {
   const classes = mainHeadingStyles();

@@ -11,11 +11,11 @@ import {
   receiveWebhookEvent,
   redirectToDashboard,
   redirectToStripe,
-} from "../../../controllers/stripe.js";
+} from "../../../controllers/stripe";
 import {
   isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 

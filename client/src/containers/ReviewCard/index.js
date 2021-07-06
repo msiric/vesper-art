@@ -2,18 +2,18 @@ import { StarsRounded as ReviewIcon } from "@material-ui/icons";
 import queryString from "query-string";
 import React, { useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import SubHeading from "../../components/SubHeading/index.js";
+import SubHeading from "../../components/SubHeading/index";
 import SyncButton from "../../components/SyncButton";
-import { useUserStore } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
-import Rating from "../../domain/Rating/index.js";
+import Rating from "../../domain/Rating/index";
 import Typography from "../../domain/Typography";
-import reviewCardStyles from "./styles.js";
+import reviewCardStyles from "./styles";
 
 const ReviewCard = ({ paramId, highlightRef }) => {
   const userId = useUserStore((state) => state.id);

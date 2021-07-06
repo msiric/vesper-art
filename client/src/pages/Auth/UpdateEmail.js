@@ -5,15 +5,15 @@ import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { recoveryValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Link from "../../domain/Link";
 import Typography from "../../domain/Typography";
-import RecoveryForm from "../../forms/RecoveryForm/index.js";
-import { postEmail } from "../../services/auth.js";
+import RecoveryForm from "../../forms/RecoveryForm/index";
+import { postEmail } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {

@@ -5,8 +5,8 @@ import {
   SearchRounded as SearchIcon,
 } from "@material-ui/icons";
 import React from "react";
-import { useEventsStore } from "../../contexts/global/events.js";
-import TextInput from "../../controls/TextInput/index.js";
+import { useEventsStore } from "../../contexts/global/events";
+import TextInput from "../../controls/TextInput/index";
 import useGlobalStyles from "../../styles/global";
 
 const SearchForm = ({ handleToggle, getValues, setValue, loading }) => {

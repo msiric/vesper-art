@@ -6,16 +6,16 @@ import * as Yup from "yup";
 import { appName, featureFlags } from "../common/constants";
 import { isObjectEmpty, renderCommercialLicenses } from "../common/helpers";
 import { licenseValidation, orderValidation } from "../common/validation";
-import { domain, stripe as processor } from "../config/secret.js";
+import { domain, stripe as processor } from "../config/secret";
 import socketApi from "../lib/socket";
-import { fetchVersionDetails } from "../services/postgres/artwork.js";
+import { fetchVersionDetails } from "../services/postgres/artwork";
 import {
   fetchDiscountByCode,
   fetchDiscountById,
-} from "../services/postgres/discount.js";
+} from "../services/postgres/discount";
 import { addNewLicense } from "../services/postgres/license";
 import { addNewNotification } from "../services/postgres/notification";
-import { addNewOrder } from "../services/postgres/order.js";
+import { addNewOrder } from "../services/postgres/order";
 import {
   constructStripeEvent,
   constructStripeIntent,
@@ -26,19 +26,15 @@ import {
   issueStripeRefund,
   retrieveStripeIntent,
   updateStripeIntent,
-} from "../services/postgres/stripe.js";
+} from "../services/postgres/stripe";
 import {
   addNewIntent,
   editUserStripe,
   fetchIntentByParents,
   fetchUserById,
   removeExistingIntent,
-} from "../services/postgres/user.js";
-import {
-  formatError,
-  formatResponse,
-  generateUuids,
-} from "../utils/helpers.js";
+} from "../services/postgres/user";
+import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { calculateTotalCharge } from "../utils/payment";
 import { errors, responses } from "../utils/statuses";
 

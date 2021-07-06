@@ -1,5 +1,5 @@
 import { User } from "../../entities/User";
-import { sendRefreshToken, updateAccessToken } from "../../utils/auth.js";
+import { sendRefreshToken, updateAccessToken } from "../../utils/auth";
 
 // $Done (mongo -> postgres)
 export const addNewUser = async ({

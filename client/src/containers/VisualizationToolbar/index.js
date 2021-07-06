@@ -1,9 +1,9 @@
 import React from "react";
 import { useUserStats } from "../../contexts/local/userStats";
-import RangeInput from "../../controls/RangeInput/index.js";
+import RangeInput from "../../controls/RangeInput/index";
 import Box from "../../domain/Box";
 import Typography from "../../domain/Typography";
-import visualizationToolbarStyles from "./styles.js";
+import visualizationToolbarStyles from "./styles";
 
 const VisualizationToolbar = () => {
   const range = useUserStats((state) => state.range);

@@ -7,7 +7,7 @@ import {
 import React from "react";
 import Box from "../../domain/Box";
 import Typography from "../../domain/Typography";
-import helpBoxStyles from "./styles.js";
+import helpBoxStyles from "./styles";
 
 const HelpBox = ({ type, label, margin = 0 }) => {
   const classes = helpBoxStyles();

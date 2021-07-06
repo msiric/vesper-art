@@ -1,11 +1,11 @@
 import { Rating } from "@material-ui/lab";
 import React, { useEffect } from "react";
-import { formatDate } from "../../../../common/helpers.js";
-import ArtworkThumbnail from "../../components/ArtworkThumbnail/index.js";
-import Datatable from "../../components/DataTable/index.js";
-import EmptySection from "../../components/EmptySection/index.js";
+import { formatDate } from "../../../../common/helpers";
+import ArtworkThumbnail from "../../components/ArtworkThumbnail/index";
+import Datatable from "../../components/DataTable/index";
+import EmptySection from "../../components/EmptySection/index";
 import { useUserOrders } from "../../contexts/local/userOrders";
-import { renderUserData } from "../../utils/helpers.js";
+import { renderUserData } from "../../utils/helpers";
 
 const OrdersDatatable = () => {
   const orders = useUserOrders((state) => state.orders.data);
@@ -60,8 +60,10 @@ const OrdersDatatable = () => {
           name: "Amount",
           options: {
             customBodyRender: (value) => (value ? `$${value}` : "Free"),
-            sortCompare: (order) => ({ data: previous }, { data: next }) =>
-              (previous - next) * (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                (previous - next) * (order === "asc" ? 1 : -1),
           },
         },
         {
@@ -69,18 +71,22 @@ const OrdersDatatable = () => {
           options: {
             customBodyRender: (value) =>
               value ? <Rating value={value.rating} readOnly /> : "Not rated",
-            sortCompare: (order) => ({ data: previous }, { data: next }) =>
-              ((previous ? previous.rating : 0) - (next ? next.rating : 0)) *
-              (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                ((previous ? previous.rating : 0) - (next ? next.rating : 0)) *
+                (order === "asc" ? 1 : -1),
           },
         },
         {
           name: "Date",
           options: {
             customBodyRender: (value) => formatDate(value, "dd/MM/yy HH:mm"),
-            sortCompare: (order) => ({ data: previous }, { data: next }) =>
-              (new Date(previous).getTime() - new Date(next).getTime()) *
-              (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                (new Date(previous).getTime() - new Date(next).getTime()) *
+                (order === "asc" ? 1 : -1),
           },
         },
         ,

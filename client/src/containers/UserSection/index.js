@@ -1,5 +1,5 @@
 import React from "react";
-import ProfileCard from "../../components/ProfileCard/index.js";
+import ProfileCard from "../../components/ProfileCard/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 

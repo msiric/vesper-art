@@ -4,8 +4,8 @@ import createError from "http-errors";
 import imageSize from "image-size";
 import sharp from "sharp";
 import { upload } from "../common/constants";
-import { rgbToHex } from "../common/helpers.js";
-import { checkImageOrientation, formatError } from "./helpers.js";
+import { rgbToHex } from "../common/helpers";
+import { checkImageOrientation, formatError } from "./helpers";
 import { errors } from "./statuses";
 
 aws.config.update({

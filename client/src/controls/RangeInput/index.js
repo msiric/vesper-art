@@ -2,7 +2,7 @@ import * as React from "react";
 import RangeDelimiter from "../../domain/RangeDelimiter";
 import RangePicker from "../../domain/RangePicker";
 import TextField from "../../domain/TextField";
-import rangeInputStyles from "./styles.js";
+import rangeInputStyles from "./styles";
 
 // $TODO Treba sredit
 const RangeInput = ({

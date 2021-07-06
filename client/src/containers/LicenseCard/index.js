@@ -1,10 +1,10 @@
 import React from "react";
-import { formatDate } from "../../../../common/helpers.js";
-import Datatable from "../../components/DataTable/index.js";
-import EmptySection from "../../components/EmptySection/index.js";
-import SubHeading from "../../components/SubHeading/index.js";
+import { formatDate } from "../../../../common/helpers";
+import Datatable from "../../components/DataTable/index";
+import EmptySection from "../../components/EmptySection/index";
+import SubHeading from "../../components/SubHeading/index";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
-import licenseCardStyles from "./styles.js";
+import licenseCardStyles from "./styles";
 
 const LicenseCard = () => {
   const license = useOrderDetails((state) => state.order.data.license);

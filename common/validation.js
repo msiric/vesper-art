@@ -316,17 +316,12 @@ export const errors = {
     message: "Invalid value",
     expose: true,
   },
-},
+};
 
 export const artworkValidation = Yup.object().shape({
-  artworkTitle: Yup.string()
-    .trim()
-    .required(errors.artworkTitleRequired),
+  artworkTitle: Yup.string().trim().required(errors.artworkTitleRequired),
   artworkAvailability: Yup.string()
-    .matches(
-      /(available|unavailable)/,
-      errors.artworkAvailabilityInvalid
-    )
+    .matches(/(available|unavailable)/, errors.artworkAvailabilityInvalid)
     .required(errors.artworkAvailabilityRequired),
   artworkType: Yup.string()
     .notRequired()
@@ -345,10 +340,7 @@ export const artworkValidation = Yup.object().shape({
     .when("artworkAvailability", {
       is: "available",
       then: Yup.string()
-        .matches(
-          /(commercial|personal)/,
-          errors.artworkLicenseInvalid
-        )
+        .matches(/(commercial|personal)/, errors.artworkLicenseInvalid)
         .required(errors.artworkLicenseRequired),
       otherwise: Yup.string().matches(
         /(unavailable)/,
@@ -391,10 +383,7 @@ export const artworkValidation = Yup.object().shape({
       then: Yup.number()
         .positive(errors.artworkCommercialNegative)
         .integer()
-        .moreThan(
-          Yup.ref("artworkPersonal"),
-          errors.artworkCommercialMin
-        )
+        .moreThan(Yup.ref("artworkPersonal"), errors.artworkCommercialMin)
         .max(pricing.maximumPrice, errors.artworkCommercialMax)
         .required(errors.artworkCommercialRequired),
       otherwise: Yup.number().integer().min(0).max(0),
@@ -406,10 +395,7 @@ export const artworkValidation = Yup.object().shape({
   //   .max(5, "At most five tags are permitted")
   //   .required("Artwork tags are required"),
   artworkVisibility: Yup.string()
-    .matches(
-      /(visible|invisible)/,
-      errors.artworkVisibilityInvalid
-    )
+    .matches(/(visible|invisible)/, errors.artworkVisibilityInvalid)
     .required(errors.artworkVisibilityRequired),
   artworkDescription: Yup.string()
     .trim()
@@ -417,39 +403,23 @@ export const artworkValidation = Yup.object().shape({
 });
 
 export const billingValidation = Yup.object().shape({
-  billingName: Yup.string()
-    .trim()
-    .required(errors.billingNameRequired),
-  billingSurname: Yup.string()
-    .trim()
-    .required(errors.billingSurnameRequired),
+  billingName: Yup.string().trim().required(errors.billingNameRequired),
+  billingSurname: Yup.string().trim().required(errors.billingSurnameRequired),
   billingEmail: Yup.string()
     .email(errors.userEmailInvalid)
     .required(errors.userEmailRequired),
-  billingAddress: Yup.string()
-    .trim()
-    .required(errors.billingAddressRequired),
-  billingZip: Yup.string()
-    .trim()
-    .required(errors.billingZipRequired),
-  billingCity: Yup.string()
-    .trim()
-    .required(errors.billingCityRequired),
-  billingCountry: Yup.string()
-    .trim()
-    .required(errors.billingCountryRequired),
+  billingAddress: Yup.string().trim().required(errors.billingAddressRequired),
+  billingZip: Yup.string().trim().required(errors.billingZipRequired),
+  billingCity: Yup.string().trim().required(errors.billingCityRequired),
+  billingCountry: Yup.string().trim().required(errors.billingCountryRequired),
 });
 
 export const commentValidation = Yup.object().shape({
-  commentContent: Yup.string()
-    .trim()
-    .required(errors.commentContentRequired),
+  commentContent: Yup.string().trim().required(errors.commentContentRequired),
 });
 
 export const discountValidation = Yup.object().shape({
-  discountCode: Yup.string()
-    .trim()
-    .required(errors.discountCodeRequired),
+  discountCode: Yup.string().trim().required(errors.discountCodeRequired),
 });
 
 export const emailValidation = Yup.object().shape({
@@ -461,9 +431,7 @@ export const emailValidation = Yup.object().shape({
 
 export const licenseValidation = Yup.object().shape({
   // $TODO Needs licenseOwner, licenseArtwork, licensePrice for server validation
-  licenseAssignee: Yup.string().required(
-    errors.licenseAssigneeRequired
-  ),
+  licenseAssignee: Yup.string().required(errors.licenseAssigneeRequired),
   licenseCompany: Yup.string(),
   licenseType: Yup.string()
     .matches(/(personal|commercial)/, errors.licenseTypeInvalid)
@@ -548,12 +516,8 @@ export const orderValidation = Yup.object().shape({
   orderLicense: Yup.string()
     .uuid(errors.invalidUUID)
     .required(errors.requiredValue),
-  orderSpent: Yup.number()
-    .integer()
-    .required(errors.requiredValue),
-  orderEarned: Yup.number()
-    .integer()
-    .required(errors.requiredValue),
+  orderSpent: Yup.number().integer().required(errors.requiredValue),
+  orderEarned: Yup.number().integer().required(errors.requiredValue),
   orderFee: Yup.number().integer().required(errors.requiredValue),
   orderIntent: Yup.string(errors.orderIntentInvalid).required(
     errors.requiredValue
@@ -579,12 +543,8 @@ export const downloadValidation = Yup.object().shape({
   orderLicense: Yup.string()
     .uuid(errors.invalidUUID)
     .required(errors.requiredValue),
-  orderSpent: Yup.number()
-    .integer()
-    .required(errors.requiredValue),
-  orderEarned: Yup.number()
-    .integer()
-    .required(errors.requiredValue),
+  orderSpent: Yup.number().integer().required(errors.requiredValue),
+  orderEarned: Yup.number().integer().required(errors.requiredValue),
   orderFee: Yup.number().integer().required(errors.requiredValue),
 });
 
@@ -601,22 +561,15 @@ export const passwordValidation = Yup.object().shape({
     .required(errors.userNewRequired),
   userConfirm: Yup.string()
     .required(errors.userConfirmationRequired)
-    .oneOf(
-      [Yup.ref("userPassword")],
-      errors.userPasswordMismatch
-    ),
+    .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch),
 });
 
 export const preferencesValidation = Yup.object().shape({
-  userFavorites: Yup.boolean().required(
-    errors.favoritesPreferenceRequired
-  ),
+  userFavorites: Yup.boolean().required(errors.favoritesPreferenceRequired),
 });
 
 export const profileValidation = Yup.object().shape({
-  userDescription: Yup.string()
-    .trim()
-    .max(250, errors.userDescriptionMax),
+  userDescription: Yup.string().trim().max(250, errors.userDescriptionMax),
   userCountry: Yup.string().trim(),
 });
 
@@ -627,10 +580,7 @@ export const resetValidation = Yup.object().shape({
     .required(errors.userPasswordRequired),
   userConfirm: Yup.string()
     .required(errors.userConfirmationRequired)
-    .oneOf(
-      [Yup.ref("userPassword"), null],
-      errors.userPasswordMismatch
-    ),
+    .oneOf([Yup.ref("userPassword"), null], errors.userPasswordMismatch),
 });
 
 export const reviewValidation = Yup.object().shape({
@@ -663,10 +613,7 @@ export const signupValidation = Yup.object().shape({
     .required(errors.userPasswordRequired),
   userConfirm: Yup.string()
     .required(errors.userConfirmationRequired)
-    .oneOf(
-      [Yup.ref("userPassword")],
-      errors.userPasswordMismatch
-    ),
+    .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch),
 });
 
 export const ticketValidation = Yup.object().shape({
@@ -681,9 +628,7 @@ export const fingerprintValidation = Yup.object().shape({
 });
 
 export const recoveryValidation = Yup.object().shape({
-  userUsername: Yup.string().required(
-    errors.userUsernameRequired
-  ),
+  userUsername: Yup.string().required(errors.userUsernameRequired),
   userEmail: Yup.string()
     .email(errors.userEmailInvalid)
     .required(errors.userEmailRequired),

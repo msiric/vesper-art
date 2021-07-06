@@ -11,28 +11,25 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Link from "../../domain/Link";
 import Typography from "../../domain/Typography";
-import globalStyles from "../../styles/global.js";
+import globalStyles from "../../styles/global";
 
 const RESTORATION_CARDS = [
   {
     illustration: <ForgotPassword />,
     title: "Forgot password?",
-    text:
-      "You can reset your password by receiving a reset token to your linked email",
+    text: "You can reset your password by receiving a reset token to your linked email",
     redirect: "/forgot_password",
   },
   {
     illustration: <VerifyAccount />,
     title: "Verify account?",
-    text:
-      "If you haven't received a verification token to your linked email, you can request a new one",
+    text: "If you haven't received a verification token to your linked email, you can request a new one",
     redirect: "/resend_token",
   },
   {
     illustration: <ChangeEmail />,
     title: "Change email?",
-    text:
-      "If you typed in a wrong email or you're locked out of one, you can try updating it here",
+    text: "If you typed in a wrong email or you're locked out of one, you can try updating it here",
     redirect: "/update_email",
   },
 ];

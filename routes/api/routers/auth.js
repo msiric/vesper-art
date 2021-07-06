@@ -10,12 +10,12 @@ import {
   resetPassword,
   updateEmail,
   verifyRegisterToken,
-} from "../../../controllers/auth.js";
+} from "../../../controllers/auth";
 import {
   isAuthenticated,
   isNotAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 

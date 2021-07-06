@@ -1,6 +1,6 @@
 import { Box } from "@material-ui/core";
 import React from "react";
-import { countries } from "../../../../common/constants.js";
+import { countries } from "../../../../common/constants";
 import AutocompleteInput from "../../controls/AutocompleteInput";
 
 const OnboardingForm = ({ getValues, setValue, errors, loading }) => {

@@ -26,20 +26,16 @@ import {
   removeArtworkVersion,
   removeExistingFavorite,
   updateArtworkVersion,
-} from "../services/postgres/artwork.js";
+} from "../services/postgres/artwork";
 import {
   fetchOrderByVersion,
   fetchOrdersByArtwork,
-} from "../services/postgres/order.js";
-import { fetchStripeAccount } from "../services/postgres/stripe.js";
-import { fetchUserById } from "../services/postgres/user.js";
-import {
-  formatError,
-  formatResponse,
-  generateUuids,
-} from "../utils/helpers.js";
+} from "../services/postgres/order";
+import { fetchStripeAccount } from "../services/postgres/stripe";
+import { fetchUserById } from "../services/postgres/user";
+import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
-import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
+import { deleteS3Object, finalizeMediaUpload } from "../utils/upload";
 
 export const getArtwork = async ({ cursor, limit, connection }) => {
   const foundArtwork = await fetchActiveArtworks({

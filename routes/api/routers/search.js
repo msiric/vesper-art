@@ -1,6 +1,6 @@
 import express from "express";
-import { getResults } from "../../../controllers/search.js";
-import { requestHandler as handler } from "../../../utils/helpers.js";
+import { getResults } from "../../../controllers/search";
+import { requestHandler as handler } from "../../../utils/helpers";
 
 const router = express.Router();
 

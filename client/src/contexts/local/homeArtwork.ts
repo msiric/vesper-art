@@ -1,5 +1,5 @@
 import create from "zustand";
-import { getArtwork } from "../../services/artwork.js";
+import { getArtwork } from "../../services/artwork";
 import {
   getBarState,
   resolveAsyncError,

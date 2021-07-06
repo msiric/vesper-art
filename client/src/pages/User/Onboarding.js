@@ -7,22 +7,22 @@ import {
 } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { countries } from "../../../../common/constants.js";
+import { countries } from "../../../../common/constants";
 import { originValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import HelpBox from "../../components/HelpBox/index.js";
-import ListItems from "../../components/ListItems/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import AsyncButton from "../../components/AsyncButton/index";
+import HelpBox from "../../components/HelpBox/index";
+import ListItems from "../../components/ListItems/index";
+import { useUserStore } from "../../contexts/global/user";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
-import OnboardingForm from "../../forms/OnboardingForm/index.js";
-import { postAuthorize } from "../../services/stripe.js";
-import { patchOrigin } from "../../services/user.js";
-import globalStyles from "../../styles/global.js";
+import OnboardingForm from "../../forms/OnboardingForm/index";
+import { postAuthorize } from "../../services/stripe";
+import { patchOrigin } from "../../services/user";
+import globalStyles from "../../styles/global";
 
 const useOnboardingStyles = makeStyles((muiTheme) => ({
   content: {
@@ -59,19 +59,13 @@ const Onboarding = () => {
   const globalClasses = globalStyles();
   const classes = useOnboardingStyles();
 
-  const {
-    handleSubmit,
-    formState,
-    errors,
-    control,
-    setValue,
-    getValues,
-  } = useForm({
-    defaultValues: {
-      userBusinessAddress: "",
-    },
-    resolver: yupResolver(originValidation),
-  });
+  const { handleSubmit, formState, errors, control, setValue, getValues } =
+    useForm({
+      defaultValues: {
+        userBusinessAddress: "",
+      },
+      resolver: yupResolver(originValidation),
+    });
 
   const onboardingItems = [
     { icon: <LabelIcon />, label: "Complete the onboarding process" },

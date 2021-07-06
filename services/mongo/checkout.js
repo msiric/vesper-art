@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import Artwork from "../../models/artwork.js";
+import Artwork from "../../models/artwork";
 
 // $CHECKED NOT USED (Can be safely removed)
 export const fetchCheckoutArtwork = async ({

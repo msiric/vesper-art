@@ -3,11 +3,11 @@ import {
   getNotifications,
   readNotification,
   unreadNotification,
-} from "../../../controllers/notification.js";
+} from "../../../controllers/notification";
 import {
   isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 

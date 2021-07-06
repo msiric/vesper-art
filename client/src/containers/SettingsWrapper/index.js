@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import PromptModal from "../../components/PromptModal/index.js";
+import PromptModal from "../../components/PromptModal/index";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";

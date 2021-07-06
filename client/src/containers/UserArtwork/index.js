@@ -1,11 +1,11 @@
 import React from "react";
 import Masonry from "react-masonry-css";
-import ArtworkCard from "../../components/ArtworkCard/index.js";
-import InfiniteList from "../../components/InfiniteList/index.js";
+import ArtworkCard from "../../components/ArtworkCard/index";
+import InfiniteList from "../../components/InfiniteList/index";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import { useUserProfile } from "../../contexts/local/userProfile";
 import Box from "../../domain/Box";
-import userArtworkStyles from "./styles.js";
+import userArtworkStyles from "./styles";
 
 const breakpointColumns = {
   default: 4,

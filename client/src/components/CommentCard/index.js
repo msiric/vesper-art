@@ -8,9 +8,9 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { commentValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import SyncButton from "../../components/SyncButton/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import AsyncButton from "../../components/AsyncButton/index";
+import SyncButton from "../../components/SyncButton/index";
+import { useUserStore } from "../../contexts/global/user";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
 import Divider from "../../domain/Divider";
@@ -20,9 +20,9 @@ import ListItemAvatar from "../../domain/ListItemAvatar";
 import ListItemSecondaryAction from "../../domain/ListItemSecondaryAction";
 import ListItemText from "../../domain/ListItemText";
 import Typography from "../../domain/Typography";
-import AddCommentForm from "../../forms/CommentForm/index.js";
+import AddCommentForm from "../../forms/CommentForm/index";
 import { renderRedirectLink, renderUserData } from "../../utils/helpers";
-import commentCardStyles from "./styles.js";
+import commentCardStyles from "./styles";
 
 const CommentCard = ({
   artworkId,
@@ -42,17 +42,11 @@ const CommentCard = ({
     commentContent: comment.content,
   });
 
-  const {
-    getValues,
-    handleSubmit,
-    formState,
-    errors,
-    control,
-    reset,
-  } = useForm({
-    defaultValues: setDefaultValues(),
-    resolver: yupResolver(commentValidation),
-  });
+  const { getValues, handleSubmit, formState, errors, control, reset } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(commentValidation),
+    });
 
   const history = useHistory();
   const classes = commentCardStyles();

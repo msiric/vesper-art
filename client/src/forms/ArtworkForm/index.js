@@ -1,11 +1,11 @@
 import { Box } from "@material-ui/core";
 import React from "react";
-import { featureFlags } from "../../../../common/constants.js";
-import { useUserStore } from "../../contexts/global/user.js";
-import ImageInput from "../../controls/ImageInput/index.js";
-import PriceInput from "../../controls/PriceInput/index.js";
-import SelectInput from "../../controls/SelectInput/index.js";
-import TextInput from "../../controls/TextInput/index.js";
+import { featureFlags } from "../../../../common/constants";
+import { useUserStore } from "../../contexts/global/user";
+import ImageInput from "../../controls/ImageInput/index";
+import PriceInput from "../../controls/PriceInput/index";
+import SelectInput from "../../controls/SelectInput/index";
+import TextInput from "../../controls/TextInput/index";
 
 const ArtworkForm = ({
   capabilities,
@@ -21,12 +21,8 @@ const ArtworkForm = ({
 }) => {
   const stripeId = useUserStore((state) => state.stripeId);
 
-  const {
-    artworkAvailability,
-    artworkType,
-    artworkLicense,
-    artworkUse,
-  } = watchables.length ? watch(watchables) : watch();
+  const { artworkAvailability, artworkType, artworkLicense, artworkUse } =
+    watchables.length ? watch(watchables) : watch();
 
   // FEATURE FLAG - stripe
   const isDisabled =

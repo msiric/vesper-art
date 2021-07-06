@@ -1,18 +1,11 @@
 import createError from "http-errors";
 import { isObjectEmpty } from "../common/helpers";
 import { reviewValidation } from "../common/validation";
-import socketApi from "../lib/socket.js";
-import { addNewNotification } from "../services/postgres/notification.js";
-import {
-  addOrderReview,
-  fetchUserPurchase,
-} from "../services/postgres/order.js";
-import { addNewReview } from "../services/postgres/review.js";
-import {
-  formatError,
-  formatResponse,
-  generateUuids,
-} from "../utils/helpers.js";
+import socketApi from "../lib/socket";
+import { addNewNotification } from "../services/postgres/notification";
+import { addOrderReview, fetchUserPurchase } from "../services/postgres/order";
+import { addNewReview } from "../services/postgres/review";
+import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
 
 // needs transaction (done)

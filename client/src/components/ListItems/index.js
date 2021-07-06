@@ -4,7 +4,7 @@ import List from "../../domain/List";
 import ListItem from "../../domain/ListItem";
 import ListItemIcon from "../../domain/ListItemIcon";
 import ListItemText from "../../domain/ListItemText";
-import listItemsStyles from "./styles.js";
+import listItemsStyles from "./styles";
 
 const ListItems = ({ items, loading, custom = false, ...props }) => {
   const classes = listItemsStyles();

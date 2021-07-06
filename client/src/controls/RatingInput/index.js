@@ -4,7 +4,7 @@ import FormControl from "../../domain/FormControl";
 import FormControlLabel from "../../domain/FormControlLabel";
 import FormHelperText from "../../domain/FormHelperText";
 import Rating from "../../domain/Rating";
-import ratingInputStyles from "./styles.js";
+import ratingInputStyles from "./styles";
 
 const Input = ({
   name,

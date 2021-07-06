@@ -1,12 +1,12 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import ImageWrapper from "../../components/ImageWrapper/index.js";
+import ImageWrapper from "../../components/ImageWrapper/index";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Divider from "../../domain/Divider";
 import Typography from "../../domain/Typography";
-import orderPreviewStyles from "./styles.js";
+import orderPreviewStyles from "./styles";
 
 const OrderPreview = () => {
   const version = useOrderDetails((state) => state.order.data.version);

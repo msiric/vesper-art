@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import OrdersDatatable from "../../containers/OrdersDatatable/index.js";
-import OrdersToolbar from "../../containers/OrdersToolbar/index.js";
+import OrdersDatatable from "../../containers/OrdersDatatable/index";
+import OrdersToolbar from "../../containers/OrdersToolbar/index";
 import { useUserOrders } from "../../contexts/local/userOrders";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import globalStyles from "../../styles/global.js";
-import { containsErrors, renderError } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const Orders = () => {
   const retry = useUserOrders((state) => state.orders.error.retry);

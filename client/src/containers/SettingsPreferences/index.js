@@ -3,13 +3,13 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { preferencesValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
 import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
-import EditPreferencesForm from "../../forms/PreferencesForm/index.js";
-import settingsPreferencesStyles from "./styles.js";
+import EditPreferencesForm from "../../forms/PreferencesForm/index";
+import settingsPreferencesStyles from "./styles";
 
 const SettingsPreferences = () => {
   const user = useUserSettings((state) => state.user.data);

@@ -6,11 +6,11 @@ import openSocket from "socket.io-client";
 import useSound from "use-sound";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import Backdrop from "../../components/Backdrop";
-import { useAppStore } from "../../contexts/global/app.js";
-import { useEventsStore } from "../../contexts/global/events.js";
-import { useUserStore } from "../../contexts/global/user.js";
-import App from "../../pages/App/App.js";
-import { postLogout } from "../../services/user.js";
+import { useAppStore } from "../../contexts/global/app";
+import { useEventsStore } from "../../contexts/global/events";
+import { useUserStore } from "../../contexts/global/user";
+import App from "../../pages/App/App";
+import { postLogout } from "../../services/user";
 
 const ax = axios.create();
 export const socket = { instance: null, payload: null };

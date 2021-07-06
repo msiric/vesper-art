@@ -10,10 +10,10 @@ import {
 import { SnackbarProvider } from "notistack";
 import React, { createRef } from "react";
 import SimpleReactLightbox from "simple-react-lightbox";
-import { useAppStore } from "../../contexts/global/app.js";
+import { useAppStore } from "../../contexts/global/app";
 import globalStyles from "../../styles/global";
-import { artepunktTheme } from "../../styles/theme.js";
-import Interceptor from "../Interceptor/Interceptor.js";
+import { artepunktTheme } from "../../styles/theme";
+import Interceptor from "../Interceptor/Interceptor";
 
 const useStyles = makeStyles(() => ({
   wrapper: {

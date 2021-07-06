@@ -6,8 +6,8 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
 import { commentValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import CommentCard from "../../components/CommentCard/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
+import CommentCard from "../../components/CommentCard/index";
 import CommentPopover from "../../components/CommentPopover";
 import InfiniteList from "../../components/InfiniteList";
 import MainHeading from "../../components/MainHeading";
@@ -20,9 +20,9 @@ import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
 import List from "../../domain/List";
-import AddCommentForm from "../../forms/CommentForm/index.js";
+import AddCommentForm from "../../forms/CommentForm/index";
 import useVisibleElement from "../../hooks/useVisibleElement";
-import commentSectionStyles from "./styles.js";
+import commentSectionStyles from "./styles";
 
 const CommentSection = ({
   paramId,
@@ -67,19 +67,13 @@ const CommentSection = ({
   const query = queryString.parse(location.search);
   const classes = commentSectionStyles();
 
-  const {
-    getValues,
-    handleSubmit,
-    formState,
-    errors,
-    control,
-    reset,
-  } = useForm({
-    defaultValues: {
-      commentContent: "",
-    },
-    resolver: yupResolver(commentValidation),
-  });
+  const { getValues, handleSubmit, formState, errors, control, reset } =
+    useForm({
+      defaultValues: {
+        commentContent: "",
+      },
+      resolver: yupResolver(commentValidation),
+    });
 
   useEffect(() => {
     if (

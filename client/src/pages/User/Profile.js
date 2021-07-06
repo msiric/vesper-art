@@ -1,13 +1,13 @@
 import { withSnackbar } from "notistack";
 import React, { useEffect, useRef } from "react";
-import ProfileArtwork from "../../containers/ProfileArtwork/index.js";
-import ProfileInfo from "../../containers/ProfileInfo/index.js";
+import ProfileArtwork from "../../containers/ProfileArtwork/index";
+import ProfileInfo from "../../containers/ProfileInfo/index";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import { useUserProfile } from "../../contexts/local/userProfile";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import globalStyles from "../../styles/global.js";
-import { containsErrors, renderError } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const Profile = ({ match, location }) => {
   const retry = useUserProfile((state) => state.profile.error.retry);

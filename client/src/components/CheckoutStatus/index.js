@@ -6,8 +6,8 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
-import SyncButton from "../SyncButton/index.js";
-import checkoutStatusStyles from "./styles.js";
+import SyncButton from "../SyncButton/index";
+import checkoutStatusStyles from "./styles";
 
 const CheckoutStatus = ({ success, message, version }) => {
   const history = useHistory();

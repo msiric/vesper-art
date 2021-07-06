@@ -1,15 +1,9 @@
 import aws from "aws-sdk";
 import createError from "http-errors";
-import {
-  fetchOrderDetails,
-  fetchOrderMedia,
-} from "../services/postgres/order.js";
-import {
-  fetchUserPurchases,
-  fetchUserSales,
-} from "../services/postgres/user.js";
-import { formatError } from "../utils/helpers.js";
-import { errors } from "../utils/statuses.js";
+import { fetchOrderDetails, fetchOrderMedia } from "../services/postgres/order";
+import { fetchUserPurchases, fetchUserSales } from "../services/postgres/user";
+import { formatError } from "../utils/helpers";
+import { errors } from "../utils/statuses";
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,

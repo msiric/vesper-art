@@ -1,6 +1,6 @@
 import express from "express";
-import { verifyLicense } from "../../../controllers/verifier.js";
-import { requestHandler as handler } from "../../../utils/helpers.js";
+import { verifyLicense } from "../../../controllers/verifier";
+import { requestHandler as handler } from "../../../utils/helpers";
 
 const router = express.Router();
 

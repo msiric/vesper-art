@@ -5,17 +5,17 @@ import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { loginValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import { useEventsStore } from "../../contexts/global/events.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import AsyncButton from "../../components/AsyncButton/index";
+import { useEventsStore } from "../../contexts/global/events";
+import { useUserStore } from "../../contexts/global/user";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Link from "../../domain/Link";
 import Typography from "../../domain/Typography";
-import LoginForm from "../../forms/LoginForm/index.js";
-import { postLogin } from "../../services/auth.js";
+import LoginForm from "../../forms/LoginForm/index";
+import { postLogin } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {

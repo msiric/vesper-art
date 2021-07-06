@@ -2,7 +2,7 @@ import fs from "fs";
 import yaml from "js-yaml";
 import path from "path";
 import { createConnection, getConnection } from "typeorm";
-import { environment, ENV_OPTIONS, postgres } from "../config/secret.js";
+import { environment, ENV_OPTIONS, postgres } from "../config/secret";
 
 const dirname = path.resolve();
 

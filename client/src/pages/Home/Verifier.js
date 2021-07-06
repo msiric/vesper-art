@@ -5,12 +5,12 @@ import React, { useEffect } from "react";
 import { ReactComponent as VerifyLicense } from "../../assets/images/illustrations/verify_license.svg";
 import IllustrationCard from "../../components/IllustrationCard";
 import ListItems from "../../components/ListItems";
-import LicenseSection from "../../containers/LicenseSection/index.js";
-import VerifierCard from "../../containers/VerifierCard/index.js";
+import LicenseSection from "../../containers/LicenseSection/index";
+import VerifierCard from "../../containers/VerifierCard/index";
 import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import globalStyles from "../../styles/global.js";
+import globalStyles from "../../styles/global";
 import { artepunktTheme } from "../../styles/theme";
 import { containsErrors, renderError } from "../../utils/helpers";
 

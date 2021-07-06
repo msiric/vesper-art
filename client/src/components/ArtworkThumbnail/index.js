@@ -1,5 +1,5 @@
 import React from "react";
-import artworkThumbnailStyles from "./styles.js";
+import artworkThumbnailStyles from "./styles";
 
 const ArtworkThumbnail = ({ source }) => {
   const classes = artworkThumbnailStyles();

@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { fingerprintValidation } from "../common/validation";
-import { fetchLicenseByFingerprint } from "../services/postgres/license.js";
-import { formatError } from "../utils/helpers.js";
+import { fetchLicenseByFingerprint } from "../services/postgres/license";
+import { formatError } from "../utils/helpers";
 import { errors } from "../utils/statuses";
 
 export const verifyLicense = async ({ licenseFingerprint, connection }) => {

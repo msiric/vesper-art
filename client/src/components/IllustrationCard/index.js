@@ -2,7 +2,7 @@ import React from "react";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Typography from "../../domain/Typography";
-import illustrationCardStyles from "./styles.js";
+import illustrationCardStyles from "./styles";
 
 const IllustrationCard = ({
   heading,

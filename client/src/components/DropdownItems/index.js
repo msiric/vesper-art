@@ -1,7 +1,7 @@
 import React from "react";
 import MenuItem from "../../domain/MenuItem";
 import TextField from "../../domain/TextField";
-import dropdownItemsStyles from "./styles.js";
+import dropdownItemsStyles from "./styles";
 
 const DropdownItems = ({
   label,

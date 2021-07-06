@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
-import EmptySection from "../../components/EmptySection/index.js";
-import SwipeCard from "../../components/SwipeCard/index.js";
+import EmptySection from "../../components/EmptySection/index";
+import SwipeCard from "../../components/SwipeCard/index";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import { useUserProfile } from "../../contexts/local/userProfile";
 import Box from "../../domain/Box";
 import Grid from "../../domain/Grid";
 import Paper from "../../domain/Paper";
-import useVisibleElement from "../../hooks/useVisibleElement.js";
-import globalStyles from "../../styles/global.js";
-import UserArtwork from "../UserArtwork/index.js";
-import UserFavorites from "../UserFavorites/index.js";
-import profileArtworkStyles from "./styles.js";
+import useVisibleElement from "../../hooks/useVisibleElement";
+import globalStyles from "../../styles/global";
+import UserArtwork from "../UserArtwork/index";
+import UserFavorites from "../UserFavorites/index";
+import profileArtworkStyles from "./styles";
 
 const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const profile = useUserProfile((state) => state.profile.data);

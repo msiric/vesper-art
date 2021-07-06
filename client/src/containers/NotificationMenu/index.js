@@ -1,10 +1,10 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import InfiniteList from "../../components/InfiniteList/index.js";
+import InfiniteList from "../../components/InfiniteList/index";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import NotificationItem from "../../components/NotificationItem/index.js";
-import { useEventsStore } from "../../contexts/global/events.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import NotificationItem from "../../components/NotificationItem/index";
+import { useEventsStore } from "../../contexts/global/events";
+import { useUserStore } from "../../contexts/global/user";
 import Divider from "../../domain/Divider";
 import List from "../../domain/List";
 import Menu from "../../domain/Menu";

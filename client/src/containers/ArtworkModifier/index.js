@@ -9,16 +9,16 @@ import { useHistory } from "react-router-dom";
 import { featureFlags } from "../../../../common/constants";
 import { isVersionDifferent } from "../../../../common/helpers";
 import { artworkValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import HelpBox from "../../components/HelpBox/index.js";
-import SyncButton from "../../components/SyncButton/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import AsyncButton from "../../components/AsyncButton/index";
+import HelpBox from "../../components/HelpBox/index";
+import SyncButton from "../../components/SyncButton/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useArtworkUpdate } from "../../contexts/local/artworkUpdate";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
-import ArtworkForm from "../../forms/ArtworkForm/index.js";
-import artworkModifierClasses from "./styles.js";
+import ArtworkForm from "../../forms/ArtworkForm/index";
+import artworkModifierClasses from "./styles";
 
 const ArtworkModifier = ({ paramId }) => {
   const stripeId = useUserStore((state) => state.stripeId);

@@ -1,17 +1,17 @@
 import { EditRounded as EditIcon } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { useUserStore } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardHeader from "../../domain/CardHeader";
 import IconButton from "../../domain/IconButton";
 import Typography from "../../domain/Typography";
-import FavoriteButton from "../FavoriteButton/index.js";
-import ImageWrapper from "../ImageWrapper/index.js";
-import ShareButton from "../ShareButton/index.js";
-import artworkCardStyles from "./styles.js";
+import FavoriteButton from "../FavoriteButton/index";
+import ImageWrapper from "../ImageWrapper/index";
+import ShareButton from "../ShareButton/index";
+import artworkCardStyles from "./styles";
 
 const initialProps = {
   artwork: {

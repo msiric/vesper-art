@@ -2,8 +2,8 @@ import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import Box from "../../domain/Box";
 import useProgressiveImage from "../../hooks/useProgressiveImage";
-import LoadingSpinner from "../LoadingSpinner/index.js";
-import imageWrapperStyles from "./styles.js";
+import LoadingSpinner from "../LoadingSpinner/index";
+import imageWrapperStyles from "./styles";
 
 const ImageWrapper = ({
   redirect,

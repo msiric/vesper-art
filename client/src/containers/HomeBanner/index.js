@@ -3,14 +3,14 @@ import React, { useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import HelpBox from "../../components/HelpBox";
 import SyncButton from "../../components/SyncButton";
-import { useUserStore } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user";
 import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
-import globalStyles from "../../styles/global.js";
+import globalStyles from "../../styles/global";
 import homeBannerStyles from "./styles";
 
 const HomeBanner = () => {

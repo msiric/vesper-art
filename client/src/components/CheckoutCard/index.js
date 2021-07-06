@@ -4,7 +4,7 @@ import CardHeader from "../../domain/CardHeader";
 import CardMedia from "../../domain/CardMedia";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
-import checkoutCardStyles from "./styles.js";
+import checkoutCardStyles from "./styles";
 
 const CheckoutCard = ({ version, loading }) => {
   const classes = checkoutCardStyles({

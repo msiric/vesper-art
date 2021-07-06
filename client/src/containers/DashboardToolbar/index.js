@@ -1,12 +1,12 @@
 import React from "react";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import DropdownItems from "../../components/DropdownItems/index.js";
-import MainHeading from "../../components/MainHeading/index.js";
-import SubHeading from "../../components/SubHeading/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import AsyncButton from "../../components/AsyncButton/index";
+import DropdownItems from "../../components/DropdownItems/index";
+import MainHeading from "../../components/MainHeading/index";
+import SubHeading from "../../components/SubHeading/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useUserStats } from "../../contexts/local/userStats";
 import Grid from "../../domain/Grid";
-import dashboardToolbarStyles from "./styles.js";
+import dashboardToolbarStyles from "./styles";
 
 const DashboardToolbar = () => {
   const stripeId = useUserStore((state) => state.stripeId);

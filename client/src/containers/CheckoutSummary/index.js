@@ -5,18 +5,18 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { featureFlags, payment } from "../../../../common/constants";
 import { discountValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import CheckoutCard from "../../components/CheckoutCard/index.js";
-import CheckoutItem from "../../components/CheckoutItem/index.js";
-import ListItems from "../../components/ListItems/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
+import CheckoutCard from "../../components/CheckoutCard/index";
+import CheckoutItem from "../../components/CheckoutItem/index";
+import ListItems from "../../components/ListItems/index";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
-import DiscountForm from "../../forms/DiscountForm/index.js";
-import checkoutSummaryStyles from "./styles.js";
+import DiscountForm from "../../forms/DiscountForm/index";
+import checkoutSummaryStyles from "./styles";
 
 const CheckoutSummary = ({
   version,

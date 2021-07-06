@@ -3,7 +3,7 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { reviewValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
 import Backdrop from "../../domain/Backdrop";
 import Box from "../../domain/Box";
 import CardActions from "../../domain/CardActions";
@@ -13,7 +13,7 @@ import Fade from "../../domain/Fade";
 import Modal from "../../domain/Modal";
 import Typography from "../../domain/Typography";
 import RatingForm from "../../forms/RatingForm";
-import SyncButton from "../SyncButton/index.js";
+import SyncButton from "../SyncButton/index";
 import ratingModalStyles from "./styles";
 
 const RatingModal = ({

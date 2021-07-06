@@ -2,10 +2,10 @@ import { ShareRounded as ShareIcon } from "@material-ui/icons";
 import React, { useState } from "react";
 import Box from "../../domain/Box";
 import IconButton from "../../domain/IconButton";
-import ShareModal from "../ShareModal/index.js";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
+import ShareModal from "../ShareModal/index";
+import SkeletonWrapper from "../SkeletonWrapper/index";
 import SyncButton from "../SyncButton/index";
-import shareButtonStyles from "./styles.js";
+import shareButtonStyles from "./styles";
 
 const ShareButton = ({ link, type, labeled, loading = false, ...props }) => {
   const [state, setState] = useState({

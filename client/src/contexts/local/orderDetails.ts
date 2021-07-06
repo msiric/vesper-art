@@ -1,6 +1,6 @@
 import create from "zustand";
-import { getDownload, getOrder, postReview } from "../../services/orders.js";
-import { resolveAsyncError } from "../../utils/helpers.js";
+import { getDownload, getOrder, postReview } from "../../services/orders";
+import { resolveAsyncError } from "../../utils/helpers";
 
 const initialState = {
   order: {

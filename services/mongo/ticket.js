@@ -1,4 +1,4 @@
-import Ticket from "../../models/ticket.js";
+import Ticket from "../../models/ticket";
 
 export const addNewTicket = async ({
   userId,

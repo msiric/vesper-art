@@ -1,9 +1,9 @@
 import express from "express";
-import { postTicket } from "../../../controllers/ticket.js";
+import { postTicket } from "../../../controllers/ticket";
 import {
   isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 

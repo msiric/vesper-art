@@ -14,8 +14,8 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Link from "../../domain/Link";
 import Typography from "../../domain/Typography";
-import EmailForm from "../../forms/EmailForm/index.js";
-import { postRecover } from "../../services/auth.js";
+import EmailForm from "../../forms/EmailForm/index";
+import { postRecover } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {

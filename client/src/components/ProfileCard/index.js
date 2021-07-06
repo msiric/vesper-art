@@ -4,14 +4,14 @@ import {
   StarRounded as StarIcon,
 } from "@material-ui/icons";
 import React from "react";
-import { formatDate } from "../../../../common/helpers.js";
+import { formatDate } from "../../../../common/helpers";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Typography from "../../domain/Typography";
-import { renderRedirectLink, renderUserData } from "../../utils/helpers.js";
-import profileCardStyles from "./styles.js";
+import { renderRedirectLink, renderUserData } from "../../utils/helpers";
+import profileCardStyles from "./styles";
 
 const ProfileCard = ({ user, loading }) => {
   // const userId = useUserStore((state) => state.id);

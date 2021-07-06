@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core";
 import { withSnackbar } from "notistack";
 import React, { useEffect } from "react";
-import ArtworkPanel from "../../containers/ArtworkPanel/index.js";
+import ArtworkPanel from "../../containers/ArtworkPanel/index";
 import HomeBanner from "../../containers/HomeBanner";
 import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import Grid from "../../domain/Grid";

@@ -1,17 +1,13 @@
 import createError from "http-errors";
 import { renderFreeLicenses } from "../common/helpers";
 import { downloadValidation, licenseValidation } from "../common/validation";
-import socketApi from "../lib/socket.js";
-import { fetchVersionDetails } from "../services/postgres/artwork.js";
+import socketApi from "../lib/socket";
+import { fetchVersionDetails } from "../services/postgres/artwork";
 import { addNewLicense } from "../services/postgres/license";
-import { addNewNotification } from "../services/postgres/notification.js";
-import { addNewOrder } from "../services/postgres/order.js";
-import { fetchUserById } from "../services/postgres/user.js";
-import {
-  formatError,
-  formatResponse,
-  generateUuids,
-} from "../utils/helpers.js";
+import { addNewNotification } from "../services/postgres/notification";
+import { addNewOrder } from "../services/postgres/order";
+import { fetchUserById } from "../services/postgres/user";
+import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
 
 export const getCheckout = async ({ userId, versionId, connection }) => {

@@ -1,9 +1,9 @@
 import { Box } from "@material-ui/core";
 import React from "react";
-import { countries } from "../../../../common/constants.js";
-import AutocompleteInput from "../../controls/AutocompleteInput/index.js";
-import ImageInput from "../../controls/ImageInput/index.js";
-import TextInput from "../../controls/TextInput/index.js";
+import { countries } from "../../../../common/constants";
+import AutocompleteInput from "../../controls/AutocompleteInput/index";
+import ImageInput from "../../controls/ImageInput/index";
+import TextInput from "../../controls/TextInput/index";
 
 const EditUserForm = ({
   preview,

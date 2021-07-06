@@ -6,8 +6,8 @@
 
 import debugLib from "debug";
 import http from "http";
-import app from "../app.js";
-import socketApi from "../lib/socket.js";
+import app from "../app";
+import socketApi from "../lib/socket";
 
 const debug = debugLib("tst:server");
 const io = socketApi.io;

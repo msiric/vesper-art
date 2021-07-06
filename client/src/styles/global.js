@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
-import { artepunktTheme } from "./theme.js";
+import { artepunktTheme } from "./theme";
 
 const GlobalStyles = makeStyles((muiTheme) => ({
   gridContainer: {

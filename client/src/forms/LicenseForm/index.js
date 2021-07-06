@@ -5,8 +5,8 @@ import {
   renderCommercialLicenses,
   renderFreeLicenses,
 } from "../../../../common/helpers";
-import SelectInput from "../../controls/SelectInput/index.js";
-import TextInput from "../../controls/TextInput/index.js";
+import SelectInput from "../../controls/SelectInput/index";
+import TextInput from "../../controls/TextInput/index";
 
 const LicenseFormStyles = makeStyles((muiTheme) => ({
   fixed: {

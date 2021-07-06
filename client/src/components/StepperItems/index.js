@@ -2,8 +2,8 @@ import React from "react";
 import Step from "../../domain/Step";
 import StepLabel from "../../domain/StepLabel";
 import Stepper from "../../domain/Stepper";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
-import stepperItemsStyles from "./styles.js";
+import SkeletonWrapper from "../SkeletonWrapper/index";
+import stepperItemsStyles from "./styles";
 
 const StepperItems = ({
   connector,

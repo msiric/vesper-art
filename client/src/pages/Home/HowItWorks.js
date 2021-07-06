@@ -20,7 +20,7 @@ import Card from "../../domain/Card";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
-import globalStyles from "../../styles/global.js";
+import globalStyles from "../../styles/global";
 
 const useInstructionsStyles = makeStyles((muiTheme) => ({
   heading: {

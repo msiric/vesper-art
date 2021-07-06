@@ -10,8 +10,8 @@ import Box from "../../domain/Box";
 import CircularProgress from "../../domain/CircularProgress";
 import IconButton from "../../domain/IconButton";
 import Typography from "../../domain/Typography";
-import { artepunktTheme } from "../../styles/theme.js";
-import imageInputStyles from "./styles.js";
+import { artepunktTheme } from "../../styles/theme";
+import imageInputStyles from "./styles";
 
 const Input = ({
   name,
