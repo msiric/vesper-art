@@ -334,7 +334,7 @@ export const createUserIntent = async ({
     intentId,
     connection,
   });
-  return { message: "Intent successfully saved" };
+  return { message: "Intent successfully saved", expose: false };
 };
 
 export const deleteUserIntent = async ({ userId, intentId, connection }) => {
@@ -343,7 +343,7 @@ export const deleteUserIntent = async ({ userId, intentId, connection }) => {
     intentId,
     connection,
   });
-  return { message: "Intent successfully deleted" };
+  return { message: "Intent successfully deleted", expose: false };
 };
 
 // $TODO Update user context with new data

@@ -28,5 +28,5 @@ export const postTicket = async ({
     emailSubject: `Support ticket (#${ticketId}): ${ticketTitle}`,
     emailContent: ticketBody,
   });
-  return { message: "Ticket successfully created" };
+  return { message: "Ticket successfully created", expose: true };
 };

@@ -79,7 +79,7 @@ export const receiveWebhookEvent = async ({
   }
 
   console.log("$TEST CHECKOUT done");
-  return { message: "Event received" };
+  return { message: "Event received", expose: false };
 };
 
 export const getStripeUser = async ({ accountId }) => {

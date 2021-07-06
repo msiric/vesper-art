@@ -361,7 +361,7 @@ export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
         artworkId,
         connection,
       });
-      return { message: "Artwork favorited" };
+      return { message: "Artwork favorited", expose: false };
     }
     throw createError(
       statusCodes.badRequest,
@@ -395,7 +395,7 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
         favoriteId: foundFavorite.id,
         connection,
       });
-      return { message: "Artwork unfavorited" };
+      return { message: "Artwork unfavorited", expose: false };
     }
     throw createError(
       statusCodes.badRequest,

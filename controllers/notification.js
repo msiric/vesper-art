@@ -24,7 +24,7 @@ export const readNotification = async ({
     connection,
   });
   /*   await decrementUserNotification({ userId, connection }); */
-  return { message: "Notification read" };
+  return { message: "Notification read", expose: false };
 };
 
 export const unreadNotification = async ({
@@ -38,7 +38,7 @@ export const unreadNotification = async ({
     connection,
   });
   /*   await incrementUserNotification({ userId, connection }); */
-  return { message: "Notification read" };
+  return { message: "Notification read", expose: false };
 };
 
 export const deleteUserNotifications = async ({ userId, connection }) => {
@@ -46,5 +46,5 @@ export const deleteUserNotifications = async ({ userId, connection }) => {
     userId,
     connection,
   });
-  return { message: "Notifications deleted successfully" };
+  return { message: "Notifications deleted successfully", expose: false };
 };
