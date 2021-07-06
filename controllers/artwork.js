@@ -33,7 +33,12 @@ import {
 } from "../services/postgres/order.js";
 import { fetchStripeAccount } from "../services/postgres/stripe.js";
 import { fetchUserById } from "../services/postgres/user.js";
-import { generateUuids } from "../utils/helpers.js";
+import {
+  formatError,
+  formatResponse,
+  generateUuids,
+} from "../utils/helpers.js";
+import { errors, responses } from "../utils/statuses";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 
 export const getArtwork = async ({ cursor, limit, connection }) => {
@@ -59,9 +64,7 @@ export const getArtworkDetails = async ({
     connection,
   });
   if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
-  throw createError(statusCodes.notFound, "Artwork not found", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const getArtworkComments = async ({
@@ -97,9 +100,7 @@ export const editArtwork = async ({ userId, artworkId, connection }) => {
     connection,
   });
   if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
-  throw createError(statusCodes.notFound, "Artwork not found", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const postNewArtwork = async ({
@@ -169,13 +170,9 @@ export const postNewArtwork = async ({
       userId,
       connection,
     });
-    return { message: "Artwork published successfully", expose: true };
+    return formatResponse(responses.artworkCreated);
   }
-  throw createError(
-    statusCodes.badRequest,
-    "Please attach artwork media before submitting",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.artworkMediaMissing));
 };
 
 // $TODO
@@ -259,17 +256,11 @@ export const updateArtwork = async ({
           connection,
         });
       }
-      return { message: "Artwork updated successfully", expose: true };
+      return formatResponse(responses.artworkUpdated);
     }
-    throw createError(
-      statusCodes.badRequest,
-      "Artwork is identical to the previous version",
-      { expose: true }
-    );
+    throw createError(...formatError(errors.artworkDetailsIdentical));
   }
-  throw createError(statusCodes.notFound, "Artwork not found", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 // $TODO
@@ -321,15 +312,11 @@ export const deleteArtwork = async ({
           connection,
         });
       }
-      return { message: "Artwork deleted successfully", expose: true };
+      return formatResponse(responses.artworkDeleted);
     }
-    throw createError(statusCodes.badRequest, "Artwork has a newer version", {
-      expose: true,
-    });
+    throw createError(...formatError(errors.artworkVersionObsolete));
   }
-  throw createError(statusCodes.notFound, "Artwork not found", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const fetchArtworkFavorites = async ({ artworkId, connection }) => {
@@ -361,23 +348,11 @@ export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
         artworkId,
         connection,
       });
-      return { message: "Artwork favorited", expose: false };
+      return formatResponse(responses.artworkFavorited);
     }
-    throw createError(
-      statusCodes.badRequest,
-      "Artwork has already been favorited",
-      {
-        expose: true,
-      }
-    );
+    throw createError(...formatError(errors.artworkAlreadyFavorited));
   }
-  throw createError(
-    statusCodes.badRequest,
-    "Cannot favorite your own artwork",
-    {
-      expose: true,
-    }
-  );
+  throw createError(...formatError(errors.artworkFavoritedByOwner));
 };
 
 export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
@@ -395,21 +370,11 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
         favoriteId: foundFavorite.id,
         connection,
       });
-      return { message: "Artwork unfavorited", expose: false };
+      return formatResponse(responses.artworkUnfavorited);
     }
-    throw createError(
-      statusCodes.badRequest,
-      "Artwork has already been unfavorited",
-      { expose: true }
-    );
+    throw createError(...formatError(errors.artworkAlreadyUnfavorited));
   }
-  throw createError(
-    statusCodes.badRequest,
-    "Cannot unfavorite your own artwork",
-    {
-      expose: true,
-    }
-  );
+  throw createError(...formatError(errors.artworkUnfavoritedByOwner));
 };
 
 // needs transaction (done)

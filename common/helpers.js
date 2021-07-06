@@ -1,6 +1,8 @@
 import currency from "currency.js";
 import * as fns from "date-fns";
 import createError from "http-errors";
+import { formatError } from "../utils/helpers";
+import { errors } from "../utils/statuses";
 import { featureFlags } from "./constants";
 const { format } = fns;
 
@@ -43,34 +45,19 @@ export const verifyVersionValidity = async ({
   foundAccount,
 }) => {
   if (data.artworkPersonal || data.artworkCommercial) {
-    if (!foundUser)
-      throw createError(statusCodes.notFound, "User not found", {
-        expose: true,
-      });
+    if (!foundUser) throw createError(...formatError(errors.userNotFound));
     if (!featureFlags.stripe) {
       // FEATURE FLAG - stripe
-      throw createError(
-        statusCodes.internalError,
-        "Creating commercial artwork is not yet available",
-        { expose: true }
-      );
+      throw createError(...formatError(errors.commercialArtworkUnavailable));
     }
     if (!foundUser.stripeId)
-      throw createError(
-        statusCodes.unprocessable,
-        "Please complete the Stripe onboarding process before making your artwork commercially available",
-        { expose: true }
-      );
+      throw createError(...formatError(errors.stripeOnboardingIncomplete));
     if (
       (data.artworkPersonal || data.artworkCommercial) &&
       (foundAccount.capabilities.card_payments !== "active" ||
         foundAccount.capabilities.transfers !== "active")
     ) {
-      throw createError(
-        statusCodes.unprocessable,
-        "Please complete your Stripe account before making your artwork commercially available",
-        { expose: true }
-      );
+      throw createError(...formatError(errors.stripeAccountIncomplete));
     }
   }
   return;

@@ -49,7 +49,13 @@ import {
   removeUserAvatar,
 } from "../services/postgres/user.js";
 import { sendEmail } from "../utils/email.js";
-import { generateUuids, generateVerificationToken } from "../utils/helpers.js";
+import {
+  formatError,
+  formatResponse,
+  generateUuids,
+  generateVerificationToken,
+} from "../utils/helpers.js";
+import { errors, responses } from "../utils/statuses";
 import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
 import { deleteUserNotifications } from "./notification";
 
@@ -77,7 +83,7 @@ export const getUserProfile = async ({
     connection,
   });
   if (foundUser) return { user: foundUser };
-  throw createError(statusCodes.notFound, "User not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const getUserArtwork = async ({
@@ -144,9 +150,7 @@ export const getUserFavorites = async ({
     });
     return { favorites: foundFavorites };
   }
-  throw createError(statusCodes.notAllowed, "User keeps favorites private", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.userFavoritesNotAllowed));
 };
 
 // $TODO ne valja nista
@@ -219,9 +223,9 @@ export const updateUserOrigin = async ({
       userBusinessAddress,
       connection,
     });
-    return { message: "User business address updated", expose: true };
+    return formatResponse(responses.businessAddressUpdated);
   }
-  throw createError(statusCodes.notFound, "User not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const updateUserProfile = async ({
@@ -294,7 +298,7 @@ export const updateUserProfile = async ({
       });
     }
   }
-  return { message: "User details updated", expose: true };
+  return formatResponse(responses.userDetailsUpdated);
 };
 
 export const getUserSettings = async ({ userId, connection }) => {
@@ -304,7 +308,7 @@ export const getUserSettings = async ({ userId, connection }) => {
     // $TODO change name
     return { user: foundUser };
   }
-  throw createError(statusCodes.notFound, "User not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const getUserNotifications = async ({
@@ -334,7 +338,7 @@ export const createUserIntent = async ({
     intentId,
     connection,
   });
-  return { message: "Intent successfully saved", expose: false };
+  return formatResponse(responses.userIntentCreated);
 };
 
 export const deleteUserIntent = async ({ userId, intentId, connection }) => {
@@ -343,7 +347,7 @@ export const deleteUserIntent = async ({ userId, intentId, connection }) => {
     intentId,
     connection,
   });
-  return { message: "Intent successfully deleted", expose: false };
+  return formatResponse(responses.userIntentDeleted);
 };
 
 // $TODO Update user context with new data
@@ -351,11 +355,7 @@ export const updateUserEmail = async ({ userId, userEmail, connection }) => {
   await emailValidation.validate({ userEmail });
   const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
   if (emailUsed) {
-    throw createError(
-      statusCodes.conflict,
-      "User with provided email already exists",
-      { expose: true }
-    );
+    throw createError(...formatError(errors.emailAlreadyExists));
   } else {
     const { verificationToken, verificationLink, verificationExpiry } =
       generateVerificationToken();
@@ -374,7 +374,7 @@ export const updateUserEmail = async ({ userId, userEmail, connection }) => {
 
         <a href=${verificationLink}>Click here to verify</a>`,
     });
-    return { message: "Email address successfully updated", expose: true };
+    return formatResponse(responses.emailAddressUpdated);
   }
 };
 
@@ -390,23 +390,13 @@ export const updateUserPassword = async ({
   if (!isObjectEmpty(foundUser)) {
     const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
     if (!isCurrentValid)
-      throw createError(
-        statusCodes.badRequest,
-        "Current password is incorrect",
-        {
-          expose: true,
-        }
-      );
+      throw createError(...formatError(errors.currentPasswordIncorrect));
     const isPasswordValid = await argon2.verify(
       foundUser.password,
       userPassword
     );
     if (isPasswordValid)
-      throw createError(
-        statusCodes.badRequest,
-        "New password cannot be identical to the old one",
-        { expose: true }
-      );
+      throw createError(...formatError(errors.newPasswordIdentical));
     await passwordValidation.validate({
       userCurrent,
       userPassword,
@@ -414,9 +404,9 @@ export const updateUserPassword = async ({
     });
     const hashedPassword = await argon2.hash(userPassword);
     await editUserPassword({ userId, hashedPassword, connection });
-    return { message: "Password updated successfully", expose: true };
+    return formatResponse(responses.passwordUpdated);
   }
-  throw createError(statusCodes.notFound, "User not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 // needs transaction (done)
@@ -428,7 +418,7 @@ export const updateUserPreferences = async ({
 }) => {
   await preferencesValidation.validate({ userFavorites });
   await editUserPreferences({ userId, userFavorites, connection });
-  return { message: "Preferences updated successfully", expose: true };
+  return formatResponse(responses.preferencesUpdated);
 };
 
 /* const deleteUser = async (req, res, next) => {
@@ -594,9 +584,9 @@ export const deactivateUser = async ({ userId, response, connection }) => {
     await deleteUserNotifications({ userId: foundUser.id, connection });
     await deactivateExistingUser({ userId: foundUser.id, connection });
     logUserOut(response);
-    return { message: "User account deactivated", expose: true };
+    return formatResponse(responses.userDeactivated);
   }
-  throw createError(statusCodes.notFound, "User not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const getUserMedia = async ({ userId, artworkId, connection }) => {
@@ -617,7 +607,5 @@ export const getUserMedia = async ({ userId, artworkId, connection }) => {
 
     return { url, file };
   }
-  throw createError(statusCodes.notFound, "Artwork not found", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.artworkNotFound));
 };

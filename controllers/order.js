@@ -8,6 +8,8 @@ import {
   fetchUserPurchases,
   fetchUserSales,
 } from "../services/postgres/user.js";
+import { formatError } from "../utils/helpers.js";
+import { errors } from "../utils/statuses.js";
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,
@@ -75,7 +77,7 @@ export const getOrderDetails = async ({ userId, orderId, connection }) => {
     // }
     return { order: foundOrder };
   }
-  throw createError(statusCodes.notFound, "Order not found", { expose: true });
+  throw createError(...formatError(errors.orderNotFound));
 };
 
 export const getOrderMedia = async ({ userId, orderId, connection }) => {
@@ -96,7 +98,5 @@ export const getOrderMedia = async ({ userId, orderId, connection }) => {
 
     return { url, file };
   }
-  throw createError(statusCodes.notFound, "Artwork not found", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.artworkNotFound));
 };

@@ -8,7 +8,12 @@ import {
   fetchUserPurchase,
 } from "../services/postgres/order.js";
 import { addNewReview } from "../services/postgres/review.js";
-import { generateUuids } from "../utils/helpers.js";
+import {
+  formatError,
+  formatResponse,
+  generateUuids,
+} from "../utils/helpers.js";
+import { errors, responses } from "../utils/statuses";
 
 // needs transaction (done)
 export const postReview = async ({
@@ -60,17 +65,9 @@ export const postReview = async ({
       });
       socketApi.sendNotification(foundOrder.seller, foundOrder.id);
       // new end
-      return { message: "Review successfully published", expose: true };
+      return formatResponse(responses.reviewCreated);
     }
-    throw createError(
-      statusCodes.conflict,
-      "Review already exists for this artwork",
-      { expose: true }
-    );
+    throw createError(...formatError(errors.reviewAlreadyExists));
   }
-  throw createError(
-    statusCodes.notAllowed,
-    "Review cannot be posted for unbought artwork",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.reviewNotAllowed));
 };

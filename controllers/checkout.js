@@ -7,7 +7,12 @@ import { addNewLicense } from "../services/postgres/license";
 import { addNewNotification } from "../services/postgres/notification.js";
 import { addNewOrder } from "../services/postgres/order.js";
 import { fetchUserById } from "../services/postgres/user.js";
-import { generateUuids } from "../utils/helpers.js";
+import {
+  formatError,
+  formatResponse,
+  generateUuids,
+} from "../utils/helpers.js";
+import { errors, responses } from "../utils/statuses";
 
 export const getCheckout = async ({ userId, versionId, connection }) => {
   const foundVersion = await fetchVersionDetails({ versionId, connection });
@@ -16,9 +21,7 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
       version: foundVersion,
     };
   }
-  throw createError(statusCodes.notFound, "Artwork not found", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 // $TODO not good
@@ -111,35 +114,17 @@ export const postDownload = async ({
                 orderId
               );
               // new end
-              return { message: "Order completed successfully", expose: true };
+              return formatResponse(responses.orderCreated);
             }
-            throw createError(statusCodes.notFound, "User not found", {
-              expose: true,
-            });
+            throw createError(...formatError(errors.userNotFound));
           }
-          throw createError(
-            statusCodes.badRequest,
-            "You are the owner of this artwork",
-            { expose: true }
-          );
+          throw createError(...formatError(errors.artworkDownloadedByOwner));
         }
-        throw createError(
-          statusCodes.badRequest,
-          "Artwork version is obsolete",
-          {
-            expose: true,
-          }
-        );
+        throw createError(...formatError(errors.artworkVersionObsolete));
       }
-      throw createError(statusCodes.gone, "Artwork is no longer active", {
-        expose: true,
-      });
+      throw createError(...formatError(errors.artworkNoLongerActive));
     }
-    throw createError(statusCodes.badRequest, "License is not valid", {
-      expose: true,
-    });
+    throw createError(...formatError(errors.artworkLicenseInvalid));
   }
-  throw createError(statusCodes.notFound, "Artwork not found", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.artworkNotFound));
 };

@@ -34,8 +34,13 @@ import {
   fetchUserById,
   removeExistingIntent,
 } from "../services/postgres/user.js";
-import { generateUuids } from "../utils/helpers.js";
+import {
+  formatError,
+  formatResponse,
+  generateUuids,
+} from "../utils/helpers.js";
 import { calculateTotalCharge } from "../utils/payment";
+import { errors, responses } from "../utils/statuses";
 
 export const isIntentPending = (intent) => {
   return intent.status !== "succeeded" && intent.status !== "canceled";
@@ -79,7 +84,7 @@ export const receiveWebhookEvent = async ({
   }
 
   console.log("$TEST CHECKOUT done");
-  return { message: "Event received", expose: false };
+  return formatResponse(responses.eventReceived);
 };
 
 export const getStripeUser = async ({ accountId }) => {
@@ -147,39 +152,19 @@ export const applyDiscount = async ({
                   },
                 };
               }
-              throw createError(
-                statusCodes.internalError,
-                "Could not apply discount",
-                { expose: true }
-              );
+              throw createError(...formatError(errors.discountNotApplied));
             }
-            throw createError(
-              statusCodes.badRequest,
-              "You are the owner of this artwork",
-              { expose: true }
-            );
+            throw createError(...formatError(errors.artworkDownloadedByOwner));
           }
-          throw createError(
-            statusCodes.badRequest,
-            "Artwork version is obsolete",
-            {
-              expose: true,
-            }
-          );
+          throw createError(...formatError(errors.artworkVersionObsolete));
         }
-        throw createError(statusCodes.gone, "Artwork is no longer active", {
-          expose: true,
-        });
+        throw createError(...formatError(errors.artworkNoLongerActive));
       }
-      throw createError(statusCodes.notFound, "Artwork not found", {
-        expose: true,
-      });
+      throw createError(...formatError(errors.artworkNotFound));
     }
-    throw createError(statusCodes.notFound, "Discount not found", {
-      expose: true,
-    });
+    throw createError(...formatError(errors.discountNotFound));
   }
-  throw createError(statusCodes.notFound, "User not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 // $TODO validacija licenci
@@ -316,49 +301,21 @@ export const managePaymentIntent = async ({
                     },
                   };
                 }
-                throw createError(
-                  statusCodes.badRequest,
-                  "License is not valid",
-                  {
-                    expose: true,
-                  }
-                );
+                throw createError(...formatError(errors.artworkLicenseInvalid));
               }
-              throw createError(
-                statusCodes.internalError,
-                "Could not process the payment",
-                { expose: true }
-              );
+              throw createError(...formatError(errors.paymentNotProcessed));
             }
-            throw createError(
-              statusCodes.internalError,
-              "Could not apply discount",
-              { expose: true }
-            );
+            throw createError(...formatError(errors.discountNotApplied));
           }
-          throw createError(
-            statusCodes.badRequest,
-            "You are the owner of this artwork",
-            { expose: true }
-          );
+          throw createError(...formatError(errors.artworkDownloadedByOwner));
         }
-        throw createError(
-          statusCodes.badRequest,
-          "Artwork version is obsolete",
-          {
-            expose: true,
-          }
-        );
+        throw createError(...formatError(errors.artworkVersionObsolete));
       }
-      throw createError(statusCodes.gone, "Artwork is no longer active", {
-        expose: true,
-      });
+      throw createError(...formatError(errors.artworkNoLongerActive));
     }
-    throw createError(statusCodes.notFound, "Artwork not found", {
-      expose: true,
-    });
+    throw createError(...formatError(errors.artworkNotFound));
   }
-  throw createError(statusCodes.notFound, "User not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const redirectToDashboard = () => {
@@ -371,11 +328,7 @@ export const redirectToStripe = async ({
   connection,
 }) => {
   if (!userOnboarded)
-    throw createError(
-      statusCodes.unprocessable,
-      "You need to complete the onboarding process before accessing your Stripe dashboard",
-      { expose: true }
-    );
+    throw createError(...formatError(errors.stripeOnboardingIncomplete));
   const loginLink = await constructStripeLink({
     accountId,
     serverDomain: domain.server,
@@ -427,11 +380,7 @@ export const assignStripeId = async ({
   connection,
 }) => {
   if (sessionData.state != queryData.state)
-    throw createError(
-      statusCodes.internalError,
-      "There was an error in the onboarding process",
-      { expose: true }
-    );
+    throw createError(...formatError(errors.onboardingProcessInvalid));
 
   const formData = new FormData();
   formData.append("grant_type", "authorization_code");
@@ -470,7 +419,7 @@ export const fetchIntentById = async ({ userId, intentId, connection }) => {
       intent: foundIntent,
     };
   }
-  throw createError(statusCodes.notFound, "Intent not found", { expose: true });
+  throw createError(...formatError(errors.intentNotFound));
 };
 
 export const createPayout = async ({ userId, connection }) => {
@@ -488,11 +437,9 @@ export const createPayout = async ({ userId, connection }) => {
       stripeId: foundUser.stripeId,
       connection,
     });
-    return {
-      message: "Payout successfully created",
-    };
+    return formatResponse(responses.payoutCreated);
   }
-  throw createError(statusCodes.notFound, "User not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 // $TODO not good
@@ -586,7 +533,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     });
     socketApi.sendNotification(sellerId, orderId);
     // new end
-    return { message: "Order processed successfully", expose: true };
+    return formatResponse(responses.paymentProcessed);
   } catch (err) {
     const foundIntent = await retrieveStripeIntent({
       intentId: stripeIntent.id,
@@ -598,12 +545,6 @@ const processTransaction = async ({ stripeIntent, connection }) => {
         connection,
       });
     }
-    throw createError(
-      statusCodes.internalError,
-      "Could not process the order",
-      {
-        expose: true,
-      }
-    );
+    throw createError(...formatError(errors.orderNotProcessed));
   }
 };

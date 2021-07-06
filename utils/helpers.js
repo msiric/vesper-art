@@ -12,6 +12,7 @@ import {
   rollbackTransaction,
   startTransaction,
 } from "./database";
+import { errors } from "./statuses";
 
 // this way of importing allows specifying the uuid version in the config file only once and gets propagated everywhere
 const {
@@ -109,20 +110,14 @@ export const isAuthenticated = async (req, res, next) => {
   try {
     const authentication = req.headers["authorization"];
     if (!authentication)
-      return next(
-        createError(statusCodes.forbidden, "Forbidden", { expose: true })
-      );
+      return next(createError(...formatError(errors.forbiddenAccess)));
     const token = authentication.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
       ignoreExpiration: true,
     });
     const data = jwt.decode(token);
     if (Date.now() >= data.exp * 1000 || !data.active)
-      return next(
-        createError(statusCodes.unauthorized, "Not authenticated", {
-          expose: true,
-        })
-      );
+      return next(createError(...formatError(errors.notAuthenticated)));
     res.locals.user = data;
   } catch (err) {
     console.log(err);
@@ -136,11 +131,7 @@ export const isNotAuthenticated = async (req, res, next) => {
   const authentication = req.headers["authorization"];
   // $TODO ovo treba handleat tako da ne stucka frontend
   if (authentication)
-    return next(
-      createError(statusCodes.badRequest, "Already authenticated", {
-        expose: true,
-      })
-    );
+    return next(createError(...formatError(errors.alreadyAuthenticated)));
   return next();
 };
 
@@ -148,25 +139,13 @@ export const isAuthorized = async (req, res, next) => {
   if (req.params.userId === res.locals.user.id) {
     return next();
   }
-  return next(
-    createError(
-      statusCodes.unauthorized,
-      "Not authorized to request resource",
-      {
-        expose: true,
-      }
-    )
-  );
+  return next(createError(...formatError(errors.notAuthorized)));
 };
 
 export const sanitizeParams = (req, res, next) => {
   const isValid = sanitizeUrl(req.params, VALID_PARAMS);
   if (isValid) return next();
-  return next(
-    createError(statusCodes.badRequest, "Invalid route parameter", {
-      expose: true,
-    })
-  );
+  return next(createError(...formatError(errors.routeParameterInvalid)));
 };
 
 export const sanitizeQuery = (req, res, next) => {
@@ -176,11 +155,7 @@ export const sanitizeQuery = (req, res, next) => {
       req.query = sanitizeData(req.query);
       return next();
     }
-    return next(
-      createError(statusCodes.badRequest, "Invalid route query", {
-        expose: true,
-      })
-    );
+    return next(createError(...formatError(errors.routeQueryInvalid)));
   }
   return;
 };
@@ -277,3 +252,17 @@ export const calculateRating = ({ active, reviews }) =>
         reviews.reduce((sum, { rating }) => sum + rating, 0) / reviews.length
       ).toFixed(2)
     : null;
+
+export const formatError = ({ status, message, expose, ...rest }) => [
+  status,
+  message,
+  expose,
+  ...rest,
+];
+
+export const formatResponse = ({ status, message, expose, ...rest }) => ({
+  status,
+  message,
+  expose,
+  ...rest,
+});

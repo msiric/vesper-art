@@ -4,6 +4,7 @@ import {
   fetchUserResults,
 } from "../services/postgres/search.js";
 import {} from "../utils/helpers.js";
+import { errors } from "../utils/statuses.js";
 import searchValidator from "../validation/search.js";
 
 export const getResults = async ({
@@ -34,9 +35,7 @@ export const getResults = async ({
     });
     foundType = "users";
   } else {
-    throw createError(statusCodes.badRequest, "Query type invalid", {
-      expose: true,
-    });
+    throw createError(...formatError(errors.searchTypeInvalid));
   }
   return {
     searchData: foundResults,

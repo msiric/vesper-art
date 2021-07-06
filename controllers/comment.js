@@ -9,7 +9,12 @@ import {
   removeExistingComment,
 } from "../services/postgres/comment.js";
 import { addNewNotification } from "../services/postgres/notification.js";
-import { generateUuids } from "../utils/helpers.js";
+import {
+  formatError,
+  formatResponse,
+  generateUuids,
+} from "../utils/helpers.js";
+import { errors, responses } from "../utils/statuses";
 
 export const getComment = async ({ artworkId, commentId, connection }) => {
   const foundComment = await fetchCommentById({
@@ -29,9 +34,7 @@ export const postComment = async ({
   await commentValidation.validate({ commentContent });
   const foundArtwork = await fetchArtworkById({ artworkId, connection });
   if (!foundArtwork) {
-    throw createError(statusCodes.notFound, "Artwork not found", {
-      expose: true,
-    });
+    throw createError(...formatError(errors.artworkNotFound));
   } else {
     const { commentId, notificationId } = generateUuids({
       commentId: null,
@@ -59,11 +62,10 @@ export const postComment = async ({
         savedNotification.raw[0]
       );
     }
-    return {
-      message: "Comment posted successfully",
+    return formatResponse({
+      ...responses.commentCreated,
       payload: savedComment.raw[0],
-      expose: true,
-    };
+    });
   }
 };
 
@@ -82,7 +84,7 @@ export const patchComment = async ({
     commentContent,
     connection,
   });
-  return { message: "Comment updated successfully", expose: true };
+  return formatResponse(responses.commentUpdated);
 };
 
 export const deleteComment = async ({
@@ -97,5 +99,5 @@ export const deleteComment = async ({
     userId,
     connection,
   });
-  return { message: "Comment deleted successfully", expose: true };
+  return formatResponse(responses.commentDeleted);
 };

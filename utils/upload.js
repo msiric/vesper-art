@@ -5,7 +5,8 @@ import imageSize from "image-size";
 import sharp from "sharp";
 import { upload } from "../common/constants";
 import { rgbToHex } from "../common/helpers.js";
-import { checkImageOrientation } from "./helpers.js";
+import { checkImageOrientation, formatError } from "./helpers.js";
+import { errors } from "./statuses";
 
 aws.config.update({
   secretAccessKey: process.env.S3_SECRET,
@@ -140,22 +141,10 @@ export const finalizeMediaUpload = async ({
           return fileUpload;
         }
         deleteFileLocally({ filePath });
-        throw createError(
-          statusCodes.badRequest,
-          "File aspect ratio is not valid",
-          {
-            expose: true,
-          }
-        );
+        throw createError(...formatError(errors.aspectRatioInvalid));
       }
       deleteFileLocally({ filePath });
-      throw createError(
-        statusCodes.badRequest,
-        "File dimensions are not valid",
-        {
-          expose: true,
-        }
-      );
+      throw createError(...formatError(errors.fileDimensionsInvalid));
     } else {
       return fileUpload;
     }

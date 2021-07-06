@@ -34,10 +34,13 @@ import {
 } from "../utils/auth.js";
 import { sendEmail } from "../utils/email.js";
 import {
+  formatError,
+  formatResponse,
   generateResetToken,
   generateUuids,
   generateVerificationToken,
 } from "../utils/helpers.js";
+import { errors, responses } from "../utils/statuses";
 
 // needs transaction (not tested)
 export const postSignUp = async ({
@@ -58,11 +61,7 @@ export const postSignUp = async ({
     connection,
   });
   if (foundId) {
-    throw createError(
-      statusCodes.conflict,
-      "Account with that email/username already exists",
-      { expose: true }
-    );
+    throw createError(...formatError(errors.userAlreadyExists));
   } else {
     const { verificationToken, verificationLink, verificationExpiry } =
       generateVerificationToken();
@@ -87,7 +86,7 @@ export const postSignUp = async ({
 
         <a href=${verificationLink}>Click here to verify</a>`,
     });
-    return { message: "Verify your email address", expose: true };
+    return formatResponse(responses.userSignedUp);
   }
 };
 
@@ -107,32 +106,16 @@ export const postLogIn = async ({
     const foundUser = await fetchUserByAuth({ userId: foundId, connection });
 
     if (isObjectEmpty(foundUser)) {
-      throw createError(
-        statusCodes.notFound,
-        "Account with provided credentials does not exist",
-        { expose: true }
-      );
+      throw createError(...formatError(errors.userDoesNotExist));
     } else if (!foundUser.active) {
-      throw createError(statusCodes.gone, "Account is no longer active", {
-        expose: true,
-      });
+      throw createError(...formatError(errors.userNoLongerActive));
     } else if (!foundUser.verified) {
-      throw createError(
-        statusCodes.unauthorized,
-        "Please verify your account",
-        {
-          expose: true,
-        }
-      );
+      throw createError(...formatError(errors.userNotVerified));
     } else {
       const isValid = await argon2.verify(foundUser.password, userPassword);
 
       if (!isValid) {
-        throw createError(
-          statusCodes.notFound,
-          "Account with provided credentials does not exist",
-          { expose: true }
-        );
+        throw createError(...formatError(errors.userDoesNotExist));
       }
     }
 
@@ -166,11 +149,7 @@ export const postLogIn = async ({
       user: userInfo,
     };
   }
-  throw createError(
-    statusCodes.notFound,
-    "Account with provided credentials does not exist",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.userDoesNotExist));
 };
 
 export const postLogOut = ({ res, connection }) => {
@@ -183,7 +162,7 @@ export const postRefreshToken = async ({ req, res, next, connection }) => {
 
 export const postRevokeToken = async ({ userId, connection }) => {
   await revokeAccessToken({ userId, connection });
-  return { message: "Token successfully revoked", expose: false };
+  return formatResponse(responses.accessTokenRevoked);
 };
 
 // needs transaction (not tested)
@@ -191,13 +170,9 @@ export const verifyRegisterToken = async ({ tokenId, connection }) => {
   const foundId = await fetchUserIdByVerificationToken({ tokenId, connection });
   if (foundId) {
     await resetVerificationToken({ tokenId, connection });
-    return { message: "Token successfully verified", expose: true };
+    return formatResponse(responses.registerTokenVerified);
   }
-  throw createError(
-    statusCodes.badRequest,
-    "Verification token is invalid or has expired",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.verificationTokenInvalid));
 };
 
 export const forgotPassword = async ({ userEmail, connection }) => {
@@ -217,7 +192,7 @@ export const forgotPassword = async ({ userEmail, connection }) => {
           
           <a href="${resetLink}"</a>`,
   });
-  return { message: "Password reset", expose: true };
+  return formatResponse(responses.passwordReset);
 };
 
 // needs transaction (not tested)
@@ -232,23 +207,13 @@ export const resetPassword = async ({
   if (!isObjectEmpty(foundUser)) {
     const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
     if (!isCurrentValid)
-      throw createError(
-        statusCodes.badRequest,
-        "Current password is incorrect",
-        {
-          expose: true,
-        }
-      );
+      throw createError(...formatError(errors.currentPasswordIncorrect));
     const isPasswordValid = await argon2.verify(
       foundUser.password,
       userPassword
     );
     if (isPasswordValid)
-      throw createError(
-        statusCodes.badRequest,
-        "New password cannot be identical to the old one",
-        { expose: true }
-      );
+      throw createError(...formatError(errors.newPasswordIdentical));
     await passwordValidation.validate({
       userCurrent,
       userPassword,
@@ -256,13 +221,9 @@ export const resetPassword = async ({
     });
     const hashedPassword = await argon2.hash(userPassword);
     await resetUserPassword({ tokenId, hashedPassword, connection });
-    return { message: "Password updated successfully", expose: true };
+    return formatResponse(responses.passwordUpdated);
   }
-  throw createError(
-    statusCodes.badRequest,
-    "Reset token is invalid or has expired",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.resetTokenInvalid));
 };
 
 export const resendToken = async ({ userEmail, connection }) => {
@@ -292,17 +253,11 @@ export const resendToken = async ({ userEmail, connection }) => {
   
           <a href=${verificationLink}>Click here to verify</a>`,
       });
-      return { message: "Verification link successfully sent", expose: true };
+      return formatResponse(responses.verificationTokenResent);
     }
-    throw createError(statusCodes.badRequest, "Account is already verified", {
-      expose: true,
-    });
+    throw createError(...formatError(errors.userAlreadyVerified));
   }
-  throw createError(
-    statusCodes.notFound,
-    "Account with provided email does not exist",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.emailNotFound));
 };
 
 export const updateEmail = async ({
@@ -325,38 +280,22 @@ export const updateEmail = async ({
     const foundUser = await fetchUserByAuth({ userId: foundId, connection });
 
     if (isObjectEmpty(foundUser)) {
-      throw createError(
-        statusCodes.notFound,
-        "Account with provided credentials does not exist",
-        { expose: true }
-      );
+      throw createError(...formatError(errors.userDoesNotExist));
     } else if (!foundUser.active) {
-      throw createError(statusCodes.gone, "Account is no longer active", {
-        expose: true,
-      });
+      throw createError(...formatError(errors.userNoLongerActive));
     } else if (foundUser.verified) {
-      throw createError(statusCodes.badRequest, "Account is already verified", {
-        expose: true,
-      });
+      throw createError(...formatError(errors.userAlreadyVerified));
     } else {
       const isValid = await argon2.verify(foundUser.password, userPassword);
 
       if (!isValid) {
-        throw createError(
-          statusCodes.notFound,
-          "Account with provided credentials does not exist",
-          { expose: true }
-        );
+        throw createError(...formatError(errors.userDoesNotExist));
       }
     }
 
     const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
     if (emailUsed) {
-      throw createError(
-        statusCodes.conflict,
-        "User with provided email already exists",
-        { expose: true }
-      );
+      throw createError(...formatError(errors.emailAlreadyExists));
     } else {
       const { verificationToken, verificationLink, verificationExpiry } =
         generateVerificationToken();
@@ -376,12 +315,8 @@ export const updateEmail = async ({
         <a href=${verificationLink}>Click here to verify</a>`,
       });
       logUserOut(response);
-      return { message: "Email address successfully updated", expose: true };
+      return formatResponse(responses.emailAddressUpdated);
     }
   }
-  throw createError(
-    statusCodes.notFound,
-    "Account with provided credentials does not exist",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.userDoesNotExist));
 };

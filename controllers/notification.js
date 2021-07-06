@@ -4,6 +4,8 @@ import {
   fetchExistingNotifications,
   removeAllNotifications,
 } from "../services/postgres/notification.js";
+import { formatResponse } from "../utils/helpers.js";
+import { responses } from "../utils/statuses.js";
 
 export const getNotifications = async ({ userId, connection }) => {
   const foundNotifications = await fetchExistingNotifications({
@@ -24,7 +26,7 @@ export const readNotification = async ({
     connection,
   });
   /*   await decrementUserNotification({ userId, connection }); */
-  return { message: "Notification read", expose: false };
+  return formatResponse(responses.notificationRead);
 };
 
 export const unreadNotification = async ({
@@ -38,7 +40,7 @@ export const unreadNotification = async ({
     connection,
   });
   /*   await incrementUserNotification({ userId, connection }); */
-  return { message: "Notification read", expose: false };
+  return formatResponse(responses.notificationUnread);
 };
 
 export const deleteUserNotifications = async ({ userId, connection }) => {
@@ -46,5 +48,5 @@ export const deleteUserNotifications = async ({ userId, connection }) => {
     userId,
     connection,
   });
-  return { message: "Notifications deleted successfully", expose: false };
+  return formatResponse(responses.notificationsDeleted);
 };

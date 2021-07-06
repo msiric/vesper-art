@@ -4,7 +4,8 @@ import {
   addNewDiscount,
   fetchDiscountByCode,
 } from "../services/postgres/discount.js";
-import {} from "../utils/helpers.js";
+import { formatError, formatResponse } from "../utils/helpers.js";
+import { errors, responses } from "../utils/statuses";
 
 // needs transaction (done)
 // treba sredit
@@ -15,15 +16,12 @@ export const getDiscount = async ({ userId, discountCode, connection }) => {
     connection,
   });
   if (foundDiscount) {
-    return {
-      message: "Discount applied",
+    return formatResponse({
+      ...responses.discountApplied,
       payload: foundDiscount,
-      expose: true,
-    };
+    });
   }
-  throw createError(statusCodes.notFound, "Discount not found", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.discountNotFound));
 };
 
 export const postDiscount = async ({ userId, discountData, connection }) => {
