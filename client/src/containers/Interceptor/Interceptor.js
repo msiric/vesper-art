@@ -114,7 +114,7 @@ const Interceptor = () => {
         console.log("ERROR", error);
         if (error.response.status !== 401) {
           if (error.response.data && error.response.data.expose) {
-            enqueueSnackbar(error.response.data.error, {
+            enqueueSnackbar(error.response.data.message, {
               variant: "error",
             });
           }
