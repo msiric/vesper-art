@@ -10,7 +10,7 @@ jest.useFakeTimers();
 
 let connection;
 
-describe("User authentication", () => {
+describe("Auth tests", () => {
   beforeAll(async () => {
     connection = await connectToDatabase();
   });
@@ -19,7 +19,7 @@ describe("User authentication", () => {
     await closeConnection(connection);
   });
 
-  describe("User signup", () => {
+  describe("/api/auth/signup", () => {
     // needs a valid user in db to finish properly
     it("should create a new user", async () => {
       const res = await request(app).post("/api/auth/signup").send({
@@ -134,7 +134,7 @@ describe("User authentication", () => {
   });
 
   // needs a valid user in db to finish properly
-  describe("User login", () => {
+  describe("/api/auth/login", () => {
     it("should throw a 400 error if user is already authenticated", async () => {
       const res = await request(app, token).post("/api/auth/login").send({
         userUsername: "test@test.com",
@@ -176,7 +176,7 @@ describe("User authentication", () => {
     });
   });
 
-  describe("User logout", () => {
+  describe("/api/auth/logout", () => {
     it("should log the user out", async () => {
       const newToken = createAccessToken({ userData: fakeUser });
       const res = await request(app, newToken).post("/api/auth/logout").send();
@@ -190,8 +190,10 @@ describe("User authentication", () => {
       expect(res.statusCode).toEqual(statusCodes.forbidden);
       expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
     });
+  });
 
-    // needs a valid user in db to finish properly
+  // needs a valid user in db to finish properly
+  describe("/api/auth/refresh_token", () => {
     it("should return an empty access token", async () => {
       const newToken = createAccessToken({ userData: fakeUser });
       const cookie = newToken;
@@ -204,7 +206,7 @@ describe("User authentication", () => {
   });
 
   // needs a valid user in db to finish properly
-  describe("User verification", () => {
+  describe("/api/auth/verify_token/:tokenId", () => {
     /*   it("should verify user's token", async () => {
             const res = await request(app, newToken).post("/api/auth/logout").send();
       expect(res.statusCode).toEqual(statusCodes.ok);
