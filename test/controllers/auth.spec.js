@@ -20,6 +20,7 @@ describe("User authentication", () => {
   });
 
   describe("User signup", () => {
+    // needs a valid user in db to finish properly
     it("should create a new user", async () => {
       const res = await request(app).post("/api/auth/signup").send({
         userUsername: "testuser",
@@ -132,6 +133,7 @@ describe("User authentication", () => {
     });
   });
 
+  // needs a valid user in db to finish properly
   describe("User login", () => {
     it("should throw a 400 error if user is already authenticated", async () => {
       const res = await request(app, token).post("/api/auth/login").send({
@@ -188,5 +190,26 @@ describe("User authentication", () => {
       expect(res.statusCode).toEqual(statusCodes.forbidden);
       expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
     });
+
+    // needs a valid user in db to finish properly
+    it("should return an empty access token", async () => {
+      const newToken = createAccessToken({ userData: fakeUser });
+      const cookie = newToken;
+      const res = await request(app, newToken, cookie)
+        .post("/api/auth/refresh_token")
+        .send();
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.accessToken).toEqual("");
+    });
+  });
+
+  // needs a valid user in db to finish properly
+  describe("User verification", () => {
+    /*   it("should verify user's token", async () => {
+            const res = await request(app, newToken).post("/api/auth/logout").send();
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.accessToken).toEqual("");
+      expect(res.body.user).toEqual("");
+    }); */
   });
 });

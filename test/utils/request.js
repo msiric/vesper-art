@@ -10,9 +10,10 @@ export const fakeUser = {
 
 export const token = "test";
 
-export const request = (app, token = null) => {
+export const request = (app, token = null, cookie = null) => {
   const config = {
     ...(token && { Authorization: `Bearer ${token}` }),
+    ...(cookie && { Cookie: [`jid=${cookie}`] }),
   };
 
   const hook =
