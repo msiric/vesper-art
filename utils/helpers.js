@@ -5,6 +5,7 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { getConnection } from "typeorm";
 import * as uuidJs from "uuid";
+import { statusCodes } from "../common/constants";
 import { domain, uuid } from "../config/secret";
 import {
   evaluateTransaction,
@@ -253,11 +254,10 @@ export const calculateRating = ({ active, reviews }) =>
       ).toFixed(2)
     : null;
 
-export const formatError = ({ status, message, expose, ...rest }) => [
+export const formatError = ({ status, message, expose }) => [
   status,
   message,
   expose,
-  ...rest,
 ];
 
 export const formatResponse = ({ status, message, expose, ...rest }) => ({
@@ -266,3 +266,20 @@ export const formatResponse = ({ status, message, expose, ...rest }) => ({
   expose,
   ...rest,
 });
+
+export const handleDelegatedError = ({ err }) => {
+  if (err && typeof err.message !== "string") {
+    return {
+      ...err.message,
+      status:
+        err.name === "ValidationError"
+          ? statusCodes.badRequest
+          : err.status || statusCodes.internalError,
+    };
+  }
+  return {
+    status: err.status || statusCodes.internalError,
+    message: err.message || errors.internalServerError.message,
+    expose: !!err.expose,
+  };
+};

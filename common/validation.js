@@ -559,9 +559,13 @@ export const passwordValidation = Yup.object().shape({
   userPassword: Yup.string()
     .min(8, errors.userPasswordMin)
     .required(errors.userNewRequired),
-  userConfirm: Yup.string()
-    .required(errors.userConfirmationRequired)
-    .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch),
+  userConfirm: Yup.string().when(["userPassword"], {
+    is: (userPassword) => userPassword && userPassword.trim() !== "",
+    then: Yup.string()
+      .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch)
+      .required(errors.userConfirmationRequired),
+    otherwise: Yup.string().required(errors.userConfirmationRequired),
+  }),
 });
 
 export const preferencesValidation = Yup.object().shape({
@@ -578,9 +582,13 @@ export const resetValidation = Yup.object().shape({
   userPassword: Yup.string()
     .min(8, errors.userPasswordMin)
     .required(errors.userPasswordRequired),
-  userConfirm: Yup.string()
-    .required(errors.userConfirmationRequired)
-    .oneOf([Yup.ref("userPassword"), null], errors.userPasswordMismatch),
+  userConfirm: Yup.string().when(["userPassword"], {
+    is: (userPassword) => userPassword && userPassword.trim() !== "",
+    then: Yup.string()
+      .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch)
+      .required(errors.userConfirmationRequired),
+    otherwise: Yup.string().required(errors.userConfirmationRequired),
+  }),
 });
 
 export const reviewValidation = Yup.object().shape({
@@ -611,9 +619,13 @@ export const signupValidation = Yup.object().shape({
   userPassword: Yup.string()
     .min(8, errors.userPasswordMin)
     .required(errors.userPasswordRequired),
-  userConfirm: Yup.string()
-    .required(errors.userConfirmationRequired)
-    .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch),
+  userConfirm: Yup.string().when(["userPassword"], {
+    is: (userPassword) => userPassword && userPassword.trim() !== "",
+    then: Yup.string()
+      .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch)
+      .required(errors.userConfirmationRequired),
+    otherwise: Yup.string().required(errors.userConfirmationRequired),
+  }),
 });
 
 export const ticketValidation = Yup.object().shape({
