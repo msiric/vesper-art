@@ -1,9 +1,10 @@
 import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { errors as validationErrors } from "../../common/validation";
+import { createAccessToken } from "../../utils/auth";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { errors as logicErrors, responses } from "../../utils/statuses";
-import { request, token } from "../utils/request";
+import { fakeUser, request, token } from "../utils/request";
 
 jest.useFakeTimers();
 
@@ -170,6 +171,22 @@ describe("User authentication", () => {
       expect(res.body.message).toEqual(
         validationErrors.userPasswordRequired.message
       );
+    });
+  });
+
+  describe("User logout", () => {
+    it("should log the user out", async () => {
+      const newToken = createAccessToken({ userData: fakeUser });
+      const res = await request(app, newToken).post("/api/auth/logout").send();
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.accessToken).toEqual("");
+      expect(res.body.user).toEqual("");
+    });
+
+    it("should throw a 500 error if user is not authenticated", async () => {
+      const res = await request(app).post("/api/auth/logout").send();
+      expect(res.statusCode).toEqual(statusCodes.forbidden);
+      expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
     });
   });
 });
