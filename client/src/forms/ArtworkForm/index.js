@@ -27,6 +27,7 @@ const ArtworkForm = ({
   // FEATURE FLAG - stripe
   const isDisabled =
     !featureFlags.stripe ||
+    !stripeId ||
     (stripeId &&
       !(
         capabilities.cardPayments === "active" &&

@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import { getConnection } from "typeorm";
 import * as uuidJs from "uuid";
 import { statusCodes } from "../common/constants";
-import { domain, uuid } from "../config/secret";
+import { domain, tokens, uuid } from "../config/secret";
 import {
   evaluateTransaction,
   releaseTransaction,
@@ -113,7 +113,7 @@ export const isAuthenticated = async (req, res, next) => {
     if (!authentication)
       return next(createError(...formatError(errors.forbiddenAccess)));
     const token = authentication.split(" ")[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
+    jwt.verify(token, tokens.accessToken, {
       ignoreExpiration: true,
     });
     const data = jwt.decode(token);

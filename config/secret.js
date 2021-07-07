@@ -40,6 +40,7 @@ export const stripe = {
   clientId: process.env.STRIPE_CLIENT,
   authorizeUri: process.env.STRIPE_AUTHORIZE_URI,
   tokenUri: process.env.STRIPE_TOKEN_URI,
+  webhookSecret: process.env.STRIPE_WEBHOOK,
 };
 
 export const mailer = {
@@ -50,6 +51,23 @@ export const mailer = {
     user: process.env.MAILER_MAIL,
     pass: process.env.MAILER_PASS,
   },
+};
+
+export const aws = {
+  secretAccessKey: process.env.S3_SECRET,
+  accessKeyId: process.env.S3_ID,
+  region: process.env.S3_REGION,
+  bucket: process.env.S3_BUCKET,
+  signatureVersion: "v4",
+  expires: 180,
+};
+
+export const tokens = {
+  accessToken: process.env.ACCESS_TOKEN_SECRET,
+  accessExpiry: process.env.ACCESS_TOKEN_EXPIRY,
+  refreshToken: process.env.REFRESH_TOKEN_SECRET,
+  refreshExpiry: process.env.REFRESH_TOKEN_EXPIRY,
+  refreshPath: "api/auth/refresh_token",
 };
 
 export const uuid = {

@@ -1,15 +1,9 @@
-import aws from "aws-sdk";
 import createError from "http-errors";
+import { s3, s3Params } from "../lib/s3";
 import { fetchOrderDetails, fetchOrderMedia } from "../services/postgres/order";
 import { fetchUserPurchases, fetchUserSales } from "../services/postgres/user";
 import { formatError } from "../utils/helpers";
 import { errors } from "../utils/statuses";
-
-aws.config.update({
-  secretAccessKey: process.env.S3_SECRET,
-  accessKeyId: process.env.S3_ID,
-  region: process.env.S3_REGION,
-});
 
 // ovo je test za novi checkout (trenutno delayed)
 // $TODO validacija licenci
@@ -81,15 +75,9 @@ export const getOrderMedia = async ({ userId, orderId, connection }) => {
     connection,
   });
   if (foundMedia) {
-    const s3 = new aws.S3({ signatureVersion: "v4" });
     const file = foundMedia.source.split("/").pop();
-    const params = {
-      Bucket: process.env.S3_BUCKET,
-      Key: `artworkMedia/${file}`,
-      Expires: 60 * 3,
-    };
+    const params = s3Params({ key: `artworkMedia/${file}` });
     const url = s3.getSignedUrl("getObject", params);
-
     return { url, file };
   }
   throw createError(...formatError(errors.artworkNotFound));

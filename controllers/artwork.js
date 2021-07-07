@@ -6,6 +6,7 @@ import {
   verifyVersionValidity,
 } from "../common/helpers";
 import { artworkValidation } from "../common/validation";
+import { deleteS3Object } from "../lib/s3";
 import {
   addNewArtwork,
   addNewCover,
@@ -35,7 +36,7 @@ import { fetchStripeAccount } from "../services/postgres/stripe";
 import { fetchUserById } from "../services/postgres/user";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
-import { deleteS3Object, finalizeMediaUpload } from "../utils/upload";
+import { finalizeMediaUpload } from "../utils/upload";
 
 export const getArtwork = async ({ cursor, limit, connection }) => {
   const foundArtwork = await fetchActiveArtworks({

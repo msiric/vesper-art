@@ -1,5 +1,4 @@
 import argon2 from "argon2";
-import aws from "aws-sdk";
 import createError from "http-errors";
 import { isObjectEmpty } from "../common/helpers";
 import {
@@ -9,6 +8,7 @@ import {
   preferencesValidation,
   profileValidation,
 } from "../common/validation";
+import { deleteS3Object, getSignedS3Object } from "../lib/s3";
 import {
   deactivateArtworkVersion,
   deactivateExistingArtwork,
@@ -56,14 +56,8 @@ import {
   generateVerificationToken,
 } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
-import { deleteS3Object, finalizeMediaUpload } from "../utils/upload";
+import { finalizeMediaUpload } from "../utils/upload";
 import { deleteUserNotifications } from "./notification";
-
-aws.config.update({
-  secretAccessKey: process.env.S3_SECRET,
-  accessKeyId: process.env.S3_ID,
-  region: process.env.S3_REGION,
-});
 
 export const getUserProfile = async ({
   userUsername,
@@ -421,119 +415,6 @@ export const updateUserPreferences = async ({
   return formatResponse(responses.preferencesUpdated);
 };
 
-/* const deleteUser = async (req, res, next) => {
-  try {
-    const foundUser = await User.findOne({
-      $and: [{ id: res.locals.user.id }, { active: true }]
-    });
-    if (foundUser) {
-      if (foundUser.avatar.includes(foundUser.id)) {
-        const folderName = 'profileavatars/';
-        const fileName = foundUser.avatar.split('/').slice(-1)[0];
-        const filePath = folderName + fileName;
-        const s3 = new aws.S3();
-        const params = {
-          Bucket: process.env.S3_BUCKET,
-          Key: filePath
-        };
-        await s3.deleteObject(params).promise();
-      }
-      const updatedUser = await User.updateOne(
-        { id: foundUser.id },
-        {
-          $set: {
-            name: 'Deleted User',
-            password: null,
-            avatar: foundUser.gravatar(),
-            description: null,
-            facebookId: null,
-            googleId: null,
-            customWork: false,
-            verificationToken: null,
-            verified: false,
-            resetToken: null,
-            resetExpiry: null,
-            discount: null,
-            inbox: null,
-            notifications: null,
-            rating: null,
-            reviews: null,
-            favorites: null,
-            earnings: null,
-            incomingFunds: null,
-            outgoingFunds: null,
-            escrow: null,
-            active: false
-          }
-        }
-      );
-      if (updatedUser) {
-        req.logout();
-        req.connection.destroy(function(err) {
-          res.json('/');
-        });
-      } else {
-        return res.status(400).json({ message: 'User could not be deleted' });
-      }
-    } else {
-      return res.status(400).json({ message: 'User not found' });
-    }
-  } catch (err) {
-    console.log(err);
-    next(err, res);
-  }
-}; */
-
-// needs testing (better way to update already found user)
-// not tested
-// needs transaction (not tested)
-/* export const deactivateUser = async ({ userId, connection }) => {
-  const foundUser = await fetchUserById({ userId, connection });
-  if (foundUser) {
-    const foundArtwork = await fetchUserArtwork({
-      userId,
-      connection,
-    });
-    for (let artwork of foundArtwork) {
-      const foundOrder = await fetchOrderByVersion({
-        artworkId: artwork.id,
-        versionId: artwork.current.id,
-        connection,
-      });
-      if (!foundOrder.length) {
-        await deleteS3Object({
-          fileLink: artwork.current.cover.source,
-          folderName: "artworkCovers/",
-        });
-
-        await deleteS3Object({
-          fileLink: artwork.current.media.source,
-          folderName: "artworkMedia/",
-        });
-
-        await removeArtworkVersion({
-          versionId: artwork.current.id,
-          connection,
-        });
-      }
-      await deactivateExistingArtwork({ artworkId: artwork.id, connection });
-    }
-    if (foundUser.avatar) {
-      await deleteS3Object({
-        fileLink: foundUser.avatar.source,
-        folderName: "userMedia/",
-      });
-    }
-    await deactivateExistingUser({ userId: foundUser.id, connection });
-    req.logout();
-    req.connection.destroy(function (err) {
-      res.json("/");
-    });
-    return { message: "User deactivated" };
-  }
-  throw createError(400, "User not found");
-}; */
-
 export const deactivateUser = async ({ userId, response, connection }) => {
   const foundUser = await fetchUserById({ userId, connection });
   if (foundUser) {
@@ -596,15 +477,11 @@ export const getUserMedia = async ({ userId, artworkId, connection }) => {
     connection,
   });
   if (foundMedia) {
-    const s3 = new aws.S3({ signatureVersion: "v4" });
     const file = foundMedia.source.split("/").pop();
-    const params = {
-      Bucket: process.env.S3_BUCKET,
-      Key: `artworkMedia/${file}`,
-      Expires: 60 * 3,
-    };
-    const url = s3.getSignedUrl("getObject", params);
-
+    const url = getSignedS3Object({
+      fileLink: file,
+      folderName: "artworkMedia/",
+    });
     return { url, file };
   }
   throw createError(...formatError(errors.artworkNotFound));

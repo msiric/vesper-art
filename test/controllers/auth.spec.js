@@ -185,7 +185,7 @@ describe("Auth tests", () => {
       expect(res.body.user).toEqual("");
     });
 
-    it("should throw a 500 error if user is not authenticated", async () => {
+    it("should throw a 403 error if user is not authenticated", async () => {
       const res = await request(app).post("/api/auth/logout").send();
       expect(res.statusCode).toEqual(statusCodes.forbidden);
       expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);

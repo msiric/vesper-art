@@ -6,7 +6,7 @@ import * as Yup from "yup";
 import { appName, featureFlags } from "../common/constants";
 import { isObjectEmpty, renderCommercialLicenses } from "../common/helpers";
 import { licenseValidation, orderValidation } from "../common/validation";
-import { domain, stripe as processor } from "../config/secret";
+import { domain, stripe as stripeConfig } from "../config/secret";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/postgres/artwork";
 import {
@@ -48,7 +48,7 @@ export const receiveWebhookEvent = async ({
   connection,
 }) => {
   console.log("$TEST CHECKOUT RECEIVED WEBHOOK");
-  const stripeSecret = process.env.STRIPE_WEBHOOK;
+  const stripeSecret = stripeConfig.webhookSecret;
   let stripeEvent;
 
   try {
@@ -345,7 +345,7 @@ export const onboardUser = async ({
   sessionData.name = responseData.user.name;
 
   const parameters = {
-    client_id: processor.clientId,
+    client_id: stripeConfig.clientId,
     state: sessionData.state,
     redirect_uri: `${domain.server}/stripe/token`,
     "stripe_user[business_type]": "individual",
@@ -365,7 +365,7 @@ export const onboardUser = async ({
   // 'stripe_user[state]': req.user.city || undefined,
 
   return {
-    url: `${processor.authorizeUri}?${querystring.stringify(parameters)}`,
+    url: `${stripeConfig.authorizeUri}?${querystring.stringify(parameters)}`,
   };
 };
 
@@ -380,11 +380,11 @@ export const assignStripeId = async ({
 
   const formData = new FormData();
   formData.append("grant_type", "authorization_code");
-  formData.append("client_id", processor.clientId);
-  formData.append("client_secret", processor.secretKey);
+  formData.append("client_id", stripeConfig.clientId);
+  formData.append("client_secret", stripeConfig.secretKey);
   formData.append("code", queryData.code);
 
-  const expressAuthorized = await axios.post(processor.tokenUri, formData, {
+  const expressAuthorized = await axios.post(stripeConfig.tokenUri, formData, {
     headers: formData.getHeaders(),
   });
 

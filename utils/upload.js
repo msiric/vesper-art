@@ -1,18 +1,12 @@
-import aws from "aws-sdk";
 import fs from "fs";
 import createError from "http-errors";
 import imageSize from "image-size";
 import sharp from "sharp";
 import { upload } from "../common/constants";
 import { rgbToHex } from "../common/helpers";
+import { uploadS3Object } from "../lib/s3";
 import { checkImageOrientation, formatError } from "./helpers";
 import { errors } from "./statuses";
-
-aws.config.update({
-  secretAccessKey: process.env.S3_SECRET,
-  accessKeyId: process.env.S3_ID,
-  region: process.env.S3_REGION,
-});
 
 const SHARP_FORMATS = {
   "image/png": { type: "png", animated: false },
@@ -179,34 +173,4 @@ export const dimensionsFilter = ({ fileHeight, fileWidth, fileType }) => {
   )
     return false;
   return true;
-};
-
-export const uploadS3Object = async ({
-  fileContent,
-  folderName,
-  fileName,
-  mimeType,
-}) => {
-  const fullPath = `${folderName}/${fileName}`;
-  const s3 = new aws.S3();
-  const params = {
-    Bucket: process.env.S3_BUCKET,
-    Key: fullPath,
-    Body: fileContent,
-    ACL: "public-read",
-    ContentType: mimeType,
-  };
-  const uploadedFile = await s3.upload(params).promise();
-  return uploadedFile.Location;
-};
-
-export const deleteS3Object = async ({ fileLink, folderName }) => {
-  const fileName = fileLink.split("/").slice(-1)[0];
-  const filePath = folderName + fileName;
-  const s3 = new aws.S3();
-  const params = {
-    Bucket: process.env.S3_BUCKET,
-    Key: filePath,
-  };
-  await s3.deleteObject(params).promise();
 };

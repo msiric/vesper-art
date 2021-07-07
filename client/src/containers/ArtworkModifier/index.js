@@ -110,7 +110,7 @@ const ArtworkModifier = ({ paramId }) => {
   useEffect(() => {
     Promise.all([
       fetchArtwork({ artworkId: paramId }),
-      fetchCapabilities({ stripeId }),
+      ...(stripeId && [fetchCapabilities({ stripeId })]),
     ]);
   }, []);
 
@@ -118,7 +118,7 @@ const ArtworkModifier = ({ paramId }) => {
     reset(setDefaultValues());
   }, [artwork.current]);
 
-  console.log(getValues(), artwork.current);
+  console.log(getValues(), artwork.current, loading);
 
   return (
     <Card>
