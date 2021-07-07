@@ -1,10 +1,9 @@
 import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { errors as validationErrors } from "../../common/validation";
-import { createAccessToken } from "../../utils/auth";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { errors as logicErrors, responses } from "../../utils/statuses";
-import { fakeUser, request, token } from "../utils/request";
+import { request, token } from "../utils/request";
 
 jest.useFakeTimers();
 
@@ -178,8 +177,7 @@ describe("Auth tests", () => {
 
   describe("/api/auth/logout", () => {
     it("should log the user out", async () => {
-      const newToken = createAccessToken({ userData: fakeUser });
-      const res = await request(app, newToken).post("/api/auth/logout").send();
+      const res = await request(app, token).post("/api/auth/logout").send();
       expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.accessToken).toEqual("");
       expect(res.body.user).toEqual("");
@@ -195,9 +193,8 @@ describe("Auth tests", () => {
   // needs a valid user in db to finish properly
   describe("/api/auth/refresh_token", () => {
     it("should return an empty access token", async () => {
-      const newToken = createAccessToken({ userData: fakeUser });
-      const cookie = newToken;
-      const res = await request(app, newToken, cookie)
+      const cookie = token;
+      const res = await request(app, token, cookie)
         .post("/api/auth/refresh_token")
         .send();
       expect(res.statusCode).toEqual(statusCodes.ok);
@@ -208,7 +205,7 @@ describe("Auth tests", () => {
   // needs a valid user in db to finish properly
   describe("/api/auth/verify_token/:tokenId", () => {
     /*   it("should verify user's token", async () => {
-            const res = await request(app, newToken).post("/api/auth/logout").send();
+            const res = await request(app, token).post("/api/auth/logout").send();
       expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.accessToken).toEqual("");
       expect(res.body.user).toEqual("");

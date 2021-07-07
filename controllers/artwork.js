@@ -129,45 +129,48 @@ export const postNewArtwork = async ({
       userId,
       connection,
     });
-    const foundAccount = foundUser.stripeId
-      ? await fetchStripeAccount({
-          accountId: foundUser.stripeId,
-        })
-      : null;
-    verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
-    const { coverId, mediaId, versionId, artworkId } = generateUuids({
-      coverId: null,
-      mediaId: null,
-      versionId: null,
-      artworkId: null,
-    });
-    await addNewCover({
-      coverId,
-      artworkUpload,
-      connection,
-    });
-    await addNewMedia({
-      mediaId,
-      artworkUpload,
-      connection,
-    });
-    await addNewVersion({
-      versionId,
-      artworkId,
-      coverId,
-      mediaId,
-      userId,
-      prevArtwork: { cover: null, media: null, artwork: null },
-      artworkData: formattedData,
-      connection,
-    });
-    await addNewArtwork({
-      artworkId,
-      versionId,
-      userId,
-      connection,
-    });
-    return formatResponse(responses.artworkCreated);
+    if (!isObjectEmpty(foundUser)) {
+      const foundAccount = foundUser.stripeId
+        ? await fetchStripeAccount({
+            accountId: foundUser.stripeId,
+          })
+        : null;
+      verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
+      const { coverId, mediaId, versionId, artworkId } = generateUuids({
+        coverId: null,
+        mediaId: null,
+        versionId: null,
+        artworkId: null,
+      });
+      await addNewCover({
+        coverId,
+        artworkUpload,
+        connection,
+      });
+      await addNewMedia({
+        mediaId,
+        artworkUpload,
+        connection,
+      });
+      await addNewVersion({
+        versionId,
+        artworkId,
+        coverId,
+        mediaId,
+        userId,
+        prevArtwork: { cover: null, media: null, artwork: null },
+        artworkData: formattedData,
+        connection,
+      });
+      await addNewArtwork({
+        artworkId,
+        versionId,
+        userId,
+        connection,
+      });
+      return formatResponse(responses.artworkCreated);
+    }
+    throw createError(...formatError(errors.userNotFound));
   }
   throw createError(...formatError(errors.artworkMediaMissing));
 };
@@ -205,56 +208,60 @@ export const updateArtwork = async ({
         userId,
         connection,
       });
-      const foundAccount = foundUser.stripeId
-        ? await fetchStripeAccount({
-            accountId: foundUser.stripeId,
-          })
-        : null;
-      verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
-      const { coverId, mediaId, versionId } = generateUuids({
-        coverId: null,
-        mediaId: null,
-        versionId: null,
-      });
-      const savedVersion = await addNewVersion({
-        versionId,
-        coverId: foundArtwork.current.cover.id,
-        mediaId: foundArtwork.current.media.id,
-        artworkId,
-        prevArtwork: foundArtwork.current,
-        artworkData: formattedData,
-        connection,
-      });
-      const foundOrder = await fetchOrderByVersion({
-        artworkId: foundArtwork.id,
-        versionId: foundArtwork.current.id,
-        connection,
-      });
-      const oldVersion = foundArtwork.current;
-      const savedArtwork = await updateArtworkVersion({
-        artworkId: foundArtwork.id,
-        currentId: versionId,
-        connection,
-      });
-      if (!foundOrder) {
-        /*         if (formattedData.artworkCover && formattedData.artworkMedia) {
-          await deleteS3Object({
-            fileLink: oldVersion.cover.source,
-            folderName: "artworkCovers/",
-          });
-
-          await deleteS3Object({
-            fileLink: oldVersion.media.source,
-            folderName: "artworkMedia/",
-          });
-        } */
-        await removeArtworkVersion({
-          versionId: oldVersion.id,
+      if (!isObjectEmpty(foundUser)) {
+        const foundAccount = foundUser.stripeId
+          ? await fetchStripeAccount({
+              accountId: foundUser.stripeId,
+            })
+          : null;
+        verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
+        const { coverId, mediaId, versionId } = generateUuids({
+          coverId: null,
+          mediaId: null,
+          versionId: null,
+        });
+        const savedVersion = await addNewVersion({
+          versionId,
+          coverId: foundArtwork.current.cover.id,
+          mediaId: foundArtwork.current.media.id,
+          artworkId,
+          prevArtwork: foundArtwork.current,
+          artworkData: formattedData,
           connection,
         });
+        const foundOrder = await fetchOrderByVersion({
+          artworkId: foundArtwork.id,
+          versionId: foundArtwork.current.id,
+          connection,
+        });
+        const oldVersion = foundArtwork.current;
+        const savedArtwork = await updateArtworkVersion({
+          artworkId: foundArtwork.id,
+          currentId: versionId,
+          connection,
+        });
+        if (!foundOrder) {
+          /*         if (formattedData.artworkCover && formattedData.artworkMedia) {
+        await deleteS3Object({
+          fileLink: oldVersion.cover.source,
+          folderName: "artworkCovers/",
+        });
+
+        await deleteS3Object({
+          fileLink: oldVersion.media.source,
+          folderName: "artworkMedia/",
+        });
+      } */
+          await removeArtworkVersion({
+            versionId: oldVersion.id,
+            connection,
+          });
+        }
+        return formatResponse(responses.artworkUpdated);
       }
-      return formatResponse(responses.artworkUpdated);
+      throw createError(...formatError(errors.userNotFound));
     }
+
     throw createError(...formatError(errors.artworkDetailsIdentical));
   }
   throw createError(...formatError(errors.artworkNotFound));

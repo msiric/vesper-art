@@ -1,9 +1,11 @@
+import path from "path";
 import app from "../../app";
 import { statusCodes } from "../../common/constants";
-import { errors as validationErrors } from "../../common/validation";
 import { closeConnection, connectToDatabase } from "../../utils/database";
-import { errors as logicErrors } from "../../utils/statuses";
+import { errors as logicErrors, responses } from "../../utils/statuses";
 import { request, token } from "../utils/request";
+
+const MEDIA_LOCATION = path.resolve(__dirname, "../../../test/media");
 
 jest.useFakeTimers();
 
@@ -42,7 +44,7 @@ describe("Artwork tests", () => {
       expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
     });
 
-    it("should throw a validation error if title is missing", async () => {
+    it("should throw a 400 error if media is missing", async () => {
       const res = await request(app, token).post("/api/artwork").send({
         artworkTitle: "test",
         artworkAvailability: "available",
@@ -54,8 +56,30 @@ describe("Artwork tests", () => {
         artworkVisibility: "visible",
         artworkDescription: "test",
       });
+      console.log("RESSSSSSS", res.body, res.error);
       expect(res.statusCode).toEqual(statusCodes.badRequest);
-      expect(res.body.message).toEqual(validationErrors.artworkTitleRequired);
+      expect(res.body.message).toEqual(logicErrors.artworkMediaMissing.message);
+    });
+
+    it("should create a new artwork", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "free")
+        .field("artworkLicense", "personal")
+        .field("artworkPersonal", 10)
+        .field("artworkUse", "included")
+        .field("artworkCommercial", 0)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.message).toEqual(responses.artworkCreated.message);
     });
   });
 });

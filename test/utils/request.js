@@ -1,4 +1,5 @@
 import supertest from "supertest";
+import { createAccessToken } from "../../utils/auth";
 
 export const fakeUser = {
   id: "649fc409-cc16-4d66-accf-c63e5e87a9fa",
@@ -9,6 +10,7 @@ export const fakeUser = {
 };
 
 export const token = "test";
+export const token = createAccessToken({ userData: fakeUser });
 
 export const request = (app, token = null, cookie = null) => {
   const config = {
