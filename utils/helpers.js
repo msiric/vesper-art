@@ -267,19 +267,11 @@ export const formatResponse = ({ status, message, expose, ...rest }) => ({
   ...rest,
 });
 
-export const handleDelegatedError = ({ err }) => {
-  if (err && typeof err.message !== "string") {
-    return {
-      ...err.message,
-      status:
-        err.name === "ValidationError"
-          ? statusCodes.badRequest
-          : err.status || statusCodes.internalError,
-    };
-  }
-  return {
-    status: err.status || statusCodes.internalError,
-    message: err.message || errors.internalServerError.message,
-    expose: !!err.expose,
-  };
-};
+export const handleDelegatedError = ({ err }) => ({
+  status:
+    err.name === "ValidationError"
+      ? statusCodes.badRequest
+      : err.status || statusCodes.internalError,
+  message: err.message || errors.internalServerError.message,
+  expose: !!err.expose,
+});

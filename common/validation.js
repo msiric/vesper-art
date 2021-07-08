@@ -316,64 +316,95 @@ export const errors = {
     message: "Invalid value",
     expose: true,
   },
+  invalidString: {
+    status: statusCodes.internalError,
+    message: "Value needs to be a string",
+    expose: true,
+  },
+  invalidNumber: {
+    status: statusCodes.internalError,
+    message: "Value needs to be a positive integer",
+    expose: true,
+  },
 };
 
 export const artworkValidation = Yup.object().shape({
-  artworkTitle: Yup.string().trim().required(errors.artworkTitleRequired),
+  artworkTitle: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(errors.artworkTitleRequired.message),
   artworkAvailability: Yup.string()
-    .matches(/(available|unavailable)/, errors.artworkAvailabilityInvalid)
-    .required(errors.artworkAvailabilityRequired),
+    .typeError(errors.invalidString.message)
+    .matches(
+      /(available|unavailable)/,
+      errors.artworkAvailabilityInvalid.message
+    )
+    .required(errors.artworkAvailabilityRequired.message),
   artworkType: Yup.string()
+    .typeError(errors.invalidString.message)
     .notRequired()
     .when("artworkAvailability", {
       is: "available",
       then: Yup.string()
-        .matches(/(commercial|free)/, errors.artworkTypeInvalid)
-        .required(errors.artworkTypeRequired),
-      otherwise: Yup.string().matches(
-        /(unavailable)/,
-        errors.artworkTypeInvalid
-      ),
+        .typeError(errors.invalidString.message)
+        .matches(/(commercial|free)/, errors.artworkTypeInvalid.message)
+        .required(errors.artworkTypeRequired.message),
+      otherwise: Yup.string()
+        .typeError(errors.invalidString.message)
+        .matches(/(unavailable)/, errors.artworkTypeInvalid.message)
+        .required(errors.artworkTypeRequired.message),
     }),
   artworkLicense: Yup.string()
+    .typeError(errors.invalidString.message)
     .notRequired()
     .when("artworkAvailability", {
       is: "available",
       then: Yup.string()
-        .matches(/(commercial|personal)/, errors.artworkLicenseInvalid)
-        .required(errors.artworkLicenseRequired),
-      otherwise: Yup.string().matches(
-        /(unavailable)/,
-        errors.artworkLicenseInvalid
-      ),
+        .typeError(errors.invalidString.message)
+        .matches(/(commercial|personal)/, errors.artworkLicenseInvalid.message)
+        .required(errors.artworkLicenseRequired.message),
+      otherwise: Yup.string()
+        .typeError(errors.invalidString.message)
+        .matches(/(unavailable)/, errors.artworkLicenseInvalid.message)
+        .required(errors.artworkLicenseRequired.message),
     }),
   artworkPersonal: Yup.number()
+    .typeError(errors.invalidNumber.message)
     .notRequired()
     .when(["artworkAvailability", "artworkType"], {
       is: (artworkAvailability, artworkType) =>
         artworkAvailability === "available" && artworkType === "commercial",
       then: Yup.number()
-        .positive(errors.artworkPersonalNegative)
         .integer()
-        .min(pricing.minimumPrice, errors.artworkPersonalMin)
-        .max(pricing.maximumPrice, errors.artworkPersonalMax)
-        .required(errors.artworkPersonalRequired),
-      otherwise: Yup.number().integer().min(0).max(0),
+        .positive(errors.artworkPersonalNegative.message)
+        .min(pricing.minimumPrice, errors.artworkPersonalMin.message)
+        .max(pricing.maximumPrice, errors.artworkPersonalMax.message)
+        .typeError(errors.invalidNumber.message)
+        .required(errors.artworkPersonalRequired.message),
+      otherwise: Yup.number()
+        .integer()
+        .min(0)
+        .max(0)
+        .typeError(errors.invalidNumber.message)
+        .required(errors.artworkPersonalRequired.message),
     }),
   artworkUse: Yup.string()
+    .typeError(errors.invalidString.message)
     .notRequired()
     .when(["artworkAvailability", "artworkLicense"], {
       is: (artworkAvailability, artworkLicense) =>
         artworkAvailability === "available" && artworkLicense === "commercial",
       then: Yup.string()
-        .matches(/(separate|included)/, errors.artworkUseInvalid)
-        .required(errors.artworkUseRequired),
-      otherwise: Yup.string().matches(
-        /(unavailable)/,
-        errors.artworkUseInvalid
-      ),
+        .typeError(errors.invalidString.message)
+        .matches(/(separate|included)/, errors.artworkUseInvalid.message)
+        .required(errors.artworkUseRequired.message),
+      otherwise: Yup.string()
+        .typeError(errors.invalidString.message)
+        .matches(/(unavailable)/, errors.artworkUseInvalid.message)
+        .required(errors.artworkUseRequired.message),
     }),
   artworkCommercial: Yup.number()
+    .typeError(errors.invalidNumber.message)
     .notRequired()
     .when(["artworkAvailability", "artworkLicense", "artworkUse"], {
       is: (artworkAvailability, artworkLicense, artworkUse) =>
@@ -381,88 +412,130 @@ export const artworkValidation = Yup.object().shape({
         artworkLicense === "commercial" &&
         artworkUse === "separate",
       then: Yup.number()
-        .positive(errors.artworkCommercialNegative)
         .integer()
-        .moreThan(Yup.ref("artworkPersonal"), errors.artworkCommercialMin)
-        .max(pricing.maximumPrice, errors.artworkCommercialMax)
-        .required(errors.artworkCommercialRequired),
-      otherwise: Yup.number().integer().min(0).max(0),
+        .positive(errors.artworkCommercialNegative.message)
+        .moreThan(
+          Yup.ref("artworkPersonal"),
+          errors.artworkCommercialMin.message
+        )
+        .max(pricing.maximumPrice, errors.artworkCommercialMax.message)
+        .typeError(errors.invalidNumber.message)
+        .required(errors.artworkCommercialRequired.message),
+      otherwise: Yup.number()
+        .integer()
+        .min(0)
+        .max(0)
+        .typeError(errors.invalidNumber.message)
+        .required(errors.artworkCommercialRequired.message),
     }),
   // artworkCategory: "",
   // artworkTags: Yup.array()
-  //   .of(Yup.string())
+  //   .of(Yup.string().typeError(errors.invalidString.message))
   //   .min(1, "At least one tag is required")
   //   .max(5, "At most five tags are permitted")
   //   .required("Artwork tags are required"),
   artworkVisibility: Yup.string()
-    .matches(/(visible|invisible)/, errors.artworkVisibilityInvalid)
-    .required(errors.artworkVisibilityRequired),
+    .typeError(errors.invalidString.message)
+    .matches(/(visible|invisible)/, errors.artworkVisibilityInvalid.message)
+    .required(errors.artworkVisibilityRequired.message),
   artworkDescription: Yup.string()
+    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.artworkDescriptionRequired),
+    .required(errors.artworkDescriptionRequired.message),
 });
 
 export const billingValidation = Yup.object().shape({
-  billingName: Yup.string().trim().required(errors.billingNameRequired),
-  billingSurname: Yup.string().trim().required(errors.billingSurnameRequired),
+  billingName: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(errors.billingNameRequired.message),
+  billingSurname: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(errors.billingSurnameRequired.message),
   billingEmail: Yup.string()
-    .email(errors.userEmailInvalid)
-    .required(errors.userEmailRequired),
-  billingAddress: Yup.string().trim().required(errors.billingAddressRequired),
-  billingZip: Yup.string().trim().required(errors.billingZipRequired),
-  billingCity: Yup.string().trim().required(errors.billingCityRequired),
-  billingCountry: Yup.string().trim().required(errors.billingCountryRequired),
+    .typeError(errors.invalidString.message)
+    .email(errors.userEmailInvalid.message)
+    .required(errors.userEmailRequired.message),
+  billingAddress: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(errors.billingAddressRequired.message),
+  billingZip: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(errors.billingZipRequired.message),
+  billingCity: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(errors.billingCityRequired.message),
+  billingCountry: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(errors.billingCountryRequired.message),
 });
 
 export const commentValidation = Yup.object().shape({
-  commentContent: Yup.string().trim().required(errors.commentContentRequired),
+  commentContent: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(errors.commentContentRequired.message),
 });
 
 export const discountValidation = Yup.object().shape({
-  discountCode: Yup.string().trim().required(errors.discountCodeRequired),
+  discountCode: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(errors.discountCodeRequired.message),
 });
 
 export const emailValidation = Yup.object().shape({
   userEmail: Yup.string()
-    .email(errors.userEmailInvalid)
+    .typeError(errors.invalidString.message)
+    .email(errors.userEmailInvalid.message)
     .trim()
-    .required(errors.userEmailRequired),
+    .required(errors.userEmailRequired.message),
 });
 
 export const licenseValidation = Yup.object().shape({
   // $TODO Needs licenseOwner, licenseArtwork, licensePrice for server validation
-  licenseAssignee: Yup.string().required(errors.licenseAssigneeRequired),
-  licenseCompany: Yup.string(),
+  licenseAssignee: Yup.string()
+    .typeError(errors.invalidString.message)
+    .required(errors.licenseAssigneeRequired.message),
+  licenseCompany: Yup.string().typeError(errors.invalidString.message),
   licenseType: Yup.string()
-    .matches(/(personal|commercial)/, errors.licenseTypeInvalid)
-    .required(errors.licenseTypeRequired),
+    .typeError(errors.invalidString.message)
+    .matches(/(personal|commercial)/, errors.licenseTypeInvalid.message)
+    .required(errors.licenseTypeRequired.message),
 });
 
 export const loginValidation = Yup.object().shape({
   userUsername: Yup.string()
+    .typeError(errors.invalidString.message)
     .trim()
-    .min(5, errors.userUsernameMin)
-    .max(20, errors.userUsernameMax)
+    .min(5, errors.userUsernameMin.message)
+    .max(20, errors.userUsernameMax.message)
     .lowercase()
-    .required(errors.userUsernameRequired),
+    .required(errors.userUsernameRequired.message),
   userPassword: Yup.string()
+    .typeError(errors.invalidString.message)
     .trim()
-    .min(8, errors.userPasswordMin)
-    .required(errors.userPasswordRequired),
+    .min(8, errors.userPasswordMin.message)
+    .required(errors.userPasswordRequired.message),
 });
 
 export const addArtwork = Yup.object().shape({
   artworkMedia: Yup.mixed()
-    .required(errors.artworkMediaRequired)
+    .required(errors.artworkMediaRequired.message)
     .test(
       "fileType",
-      errors.artworkMediaType,
+      errors.artworkMediaType.message,
       (value) => value && upload.artwork.mimeTypes.includes(value.type)
     )
     .test(
       "fileSize",
       // 1048576 = 1024 * 1024
-      errors.artworkMediaSize,
+      errors.artworkMediaSize.message,
       (value) => value && value.size <= upload.artwork.fileSize
     ),
 });
@@ -487,166 +560,237 @@ export const patchAvatar = Yup.object().shape({
   userMedia: Yup.mixed()
     .test(
       "fileType",
-      errors.userMediaType,
+      errors.userMediaType.message,
       (value) => !value || (value && upload.user.mimeTypes.includes(value.type))
     )
     .test(
       "fileSize",
-      errors.userMediaSize,
+      errors.userMediaSize.message,
       (value) => !value || (value && value.size <= upload.user.fileSize)
     ),
 });
 
 export const orderValidation = Yup.object().shape({
   orderBuyer: Yup.string()
-    .uuid(errors.invalidUUID)
-    .required(errors.requiredValue),
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .required(errors.requiredValue.message),
   orderSeller: Yup.string()
-    .uuid(errors.invalidUUID)
-    .required(errors.requiredValue),
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .required(errors.requiredValue.message),
   orderArtwork: Yup.string()
-    .uuid(errors.invalidUUID)
-    .required(errors.requiredValue),
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .required(errors.requiredValue.message),
   orderVersion: Yup.string()
-    .uuid(errors.invalidUUID)
-    .required(errors.requiredValue),
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .required(errors.requiredValue.message),
   orderDiscount: Yup.string()
-    .uuid(errors.invalidUUID)
-    .nullable(errors.requiredValue),
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .nullable(errors.requiredValue.message),
   orderLicense: Yup.string()
-    .uuid(errors.invalidUUID)
-    .required(errors.requiredValue),
-  orderSpent: Yup.number().integer().required(errors.requiredValue),
-  orderEarned: Yup.number().integer().required(errors.requiredValue),
-  orderFee: Yup.number().integer().required(errors.requiredValue),
-  orderIntent: Yup.string(errors.orderIntentInvalid).required(
-    errors.requiredValue
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .required(errors.requiredValue.message),
+  orderSpent: Yup.number()
+    .typeError(errors.invalidNumber.message)
+    .integer()
+    .required(errors.requiredValue.message),
+  orderEarned: Yup.number()
+    .typeError(errors.invalidNumber.message)
+    .integer()
+    .required(errors.requiredValue.message),
+  orderFee: Yup.number()
+    .typeError(errors.invalidNumber.message)
+    .integer()
+    .required(errors.requiredValue.message),
+  orderIntent: Yup.string(errors.orderIntentInvalid.message).required(
+    errors.requiredValue.message
   ),
 });
 
 export const downloadValidation = Yup.object().shape({
   orderBuyer: Yup.string()
-    .uuid(errors.invalidUUID)
-    .required(errors.requiredValue),
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .required(errors.requiredValue.message),
   orderSeller: Yup.string()
-    .uuid(errors.invalidUUID)
-    .required(errors.requiredValue),
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .required(errors.requiredValue.message),
   orderArtwork: Yup.string()
-    .uuid(errors.invalidUUID)
-    .required(errors.requiredValue),
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .required(errors.requiredValue.message),
   orderVersion: Yup.string()
-    .uuid(errors.invalidUUID)
-    .required(errors.requiredValue),
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .required(errors.requiredValue.message),
   orderDiscount: Yup.string()
-    .uuid(errors.invalidUUID)
-    .nullable(errors.requiredValue),
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .nullable(errors.requiredValue.message),
   orderLicense: Yup.string()
-    .uuid(errors.invalidUUID)
-    .required(errors.requiredValue),
-  orderSpent: Yup.number().integer().required(errors.requiredValue),
-  orderEarned: Yup.number().integer().required(errors.requiredValue),
-  orderFee: Yup.number().integer().required(errors.requiredValue),
+    .typeError(errors.invalidString.message)
+    .uuid(errors.invalidUUID.message)
+    .required(errors.requiredValue.message),
+  orderSpent: Yup.number()
+    .typeError(errors.invalidNumber.message)
+    .integer()
+    .required(errors.requiredValue.message),
+  orderEarned: Yup.number()
+    .typeError(errors.invalidNumber.message)
+    .integer()
+    .required(errors.requiredValue.message),
+  orderFee: Yup.number()
+    .typeError(errors.invalidNumber.message)
+    .integer()
+    .required(errors.requiredValue.message),
 });
 
 export const originValidation = Yup.object().shape({
   userBusinessAddress: Yup.string()
+    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.originCountryRequired),
+    .required(errors.originCountryRequired.message),
 });
 
 export const passwordValidation = Yup.object().shape({
-  userCurrent: Yup.string().required(errors.userPasswordRequired),
+  userCurrent: Yup.string()
+    .typeError(errors.invalidString.message)
+    .required(errors.userPasswordRequired.message),
   userPassword: Yup.string()
-    .min(8, errors.userPasswordMin)
-    .required(errors.userNewRequired),
-  userConfirm: Yup.string().when(["userPassword"], {
-    is: (userPassword) => userPassword && userPassword.trim() !== "",
-    then: Yup.string()
-      .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch)
-      .required(errors.userConfirmationRequired),
-    otherwise: Yup.string().required(errors.userConfirmationRequired),
-  }),
+    .typeError(errors.invalidString.message)
+    .min(8, errors.userPasswordMin.message)
+    .required(errors.userNewRequired.message),
+  userConfirm: Yup.string()
+    .typeError(errors.invalidString.message)
+    .when(["userPassword"], {
+      is: (userPassword) => userPassword && userPassword.trim() !== "",
+      then: Yup.string()
+        .typeError(errors.invalidString.message)
+        .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch.message)
+        .required(errors.userConfirmationRequired.message),
+      otherwise: Yup.string()
+        .typeError(errors.invalidString.message)
+        .required(errors.userConfirmationRequired.message),
+    }),
 });
 
 export const preferencesValidation = Yup.object().shape({
-  userFavorites: Yup.boolean().required(errors.favoritesPreferenceRequired),
+  userFavorites: Yup.boolean(errors.invalidValue.message).required(
+    errors.favoritesPreferenceRequired.message
+  ),
 });
 
 export const profileValidation = Yup.object().shape({
-  userDescription: Yup.string().trim().max(250, errors.userDescriptionMax),
-  userCountry: Yup.string().trim(),
+  userDescription: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .max(250, errors.userDescriptionMax.message),
+  userCountry: Yup.string().typeError(errors.invalidString.message).trim(),
 });
 
 export const resetValidation = Yup.object().shape({
   // $TODO Add proper password validation
   userPassword: Yup.string()
-    .min(8, errors.userPasswordMin)
-    .required(errors.userPasswordRequired),
-  userConfirm: Yup.string().when(["userPassword"], {
-    is: (userPassword) => userPassword && userPassword.trim() !== "",
-    then: Yup.string()
-      .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch)
-      .required(errors.userConfirmationRequired),
-    otherwise: Yup.string().required(errors.userConfirmationRequired),
-  }),
+    .typeError(errors.invalidString.message)
+    .min(8, errors.userPasswordMin.message)
+    .required(errors.userPasswordRequired.message),
+  userConfirm: Yup.string()
+    .typeError(errors.invalidString.message)
+    .when(["userPassword"], {
+      is: (userPassword) => userPassword && userPassword.trim() !== "",
+      then: Yup.string()
+        .typeError(errors.invalidString.message)
+        .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch.message)
+        .required(errors.userConfirmationRequired.message),
+      otherwise: Yup.string()
+        .typeError(errors.invalidString.message)
+        .required(errors.userConfirmationRequired.message),
+    }),
 });
 
 export const reviewValidation = Yup.object().shape({
   reviewRating: Yup.number()
-    .min(1, errors.reviewRatingMin)
-    .max(5, errors.reviewRatingMax)
-    .required(errors.reviewRatingRequired),
+    .typeError(errors.invalidNumber.message)
+    .min(1, errors.reviewRatingMin.message)
+    .max(5, errors.reviewRatingMax.message)
+    .required(errors.reviewRatingRequired.message),
 });
 
 export const searchValidation = Yup.object().shape({
-  searchQuery: Yup.string(),
+  searchQuery: Yup.string().typeError(errors.invalidString.message),
   searchType: Yup.string()
-    .matches(/(artwork|users)/, errors.searchTypeInvalid)
-    .required(errors.searchTypeRequired),
+    .typeError(errors.invalidString.message)
+    .matches(/(artwork|users)/, errors.searchTypeInvalid.message)
+    .required(errors.searchTypeRequired.message),
 });
 
 export const signupValidation = Yup.object().shape({
   userUsername: Yup.string()
+    .typeError(errors.invalidString.message)
     .trim()
-    .matches(/^([\w.]){0,}$/, errors.userUsernameInvalid)
-    .min(5, errors.userUsernameMin)
-    .max(20, errors.userUsernameMax)
+    .matches(/^([\w.]){0,}$/, errors.userUsernameInvalid.message)
+    .min(5, errors.userUsernameMin.message)
+    .max(20, errors.userUsernameMax.message)
     .lowercase()
-    .required(errors.userUsernameRequired),
+    .required(errors.userUsernameRequired.message),
   userEmail: Yup.string()
-    .email(errors.userEmailInvalid)
-    .required(errors.userEmailRequired),
+    .typeError(errors.invalidString.message)
+    .email(errors.userEmailInvalid.message)
+    .required(errors.userEmailRequired.message),
   userPassword: Yup.string()
-    .min(8, errors.userPasswordMin)
-    .required(errors.userPasswordRequired),
-  userConfirm: Yup.string().when(["userPassword"], {
-    is: (userPassword) => userPassword && userPassword.trim() !== "",
-    then: Yup.string()
-      .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch)
-      .required(errors.userConfirmationRequired),
-    otherwise: Yup.string().required(errors.userConfirmationRequired),
-  }),
+    .typeError(errors.invalidString.message)
+    .min(8, errors.userPasswordMin.message)
+    .required(errors.userPasswordRequired.message),
+  userConfirm: Yup.string()
+    .typeError(errors.invalidString.message)
+    .when(["userPassword"], {
+      is: (userPassword) => userPassword && userPassword.trim() !== "",
+      then: Yup.string()
+        .typeError(errors.invalidString.message)
+        .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch.message)
+        .required(errors.userConfirmationRequired.message),
+      otherwise: Yup.string()
+        .typeError(errors.invalidString.message)
+        .required(errors.userConfirmationRequired.message),
+    }),
 });
 
 export const ticketValidation = Yup.object().shape({
-  ticketTitle: Yup.string().trim().required(),
-  ticketBody: Yup.string().trim().required(),
+  ticketTitle: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(),
+  ticketBody: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(),
 });
 
 export const fingerprintValidation = Yup.object().shape({
   licenseFingerprint: Yup.string()
+    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.licenseFingerprintRequired),
+    .required(errors.licenseFingerprintRequired.message),
 });
 
 export const recoveryValidation = Yup.object().shape({
-  userUsername: Yup.string().required(errors.userUsernameRequired),
+  userUsername: Yup.string()
+    .typeError(errors.invalidString.message)
+    .required(errors.userUsernameRequired.message),
   userEmail: Yup.string()
-    .email(errors.userEmailInvalid)
-    .required(errors.userEmailRequired),
+    .typeError(errors.invalidString.message)
+    .email(errors.userEmailInvalid.message)
+    .required(errors.userEmailRequired.message),
   userPassword: Yup.string()
-    .min(8, errors.userPasswordMin)
-    .required(errors.userPasswordRequired),
+    .typeError(errors.invalidString.message)
+    .min(8, errors.userPasswordMin.message)
+    .required(errors.userPasswordRequired.message),
 });
 
 export const emptyValidation = Yup.object().shape({});

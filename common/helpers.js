@@ -39,6 +39,10 @@ export const isObjectEmpty = (object) => {
   return true;
 };
 
+export const isPositiveInteger = (value) => {
+  return Number.isInteger(value) && value > 0;
+};
+
 export const verifyVersionValidity = async ({
   data,
   foundUser,
@@ -162,7 +166,9 @@ export const formatArtworkValues = (data) => {
       data.artworkAvailability === "available" &&
       data.artworkType === "commercial"
         ? data.artworkUse === "separate" || data.artworkLicense === "personal"
-          ? currency(data.artworkPersonal).intValue
+          ? isPositiveInteger(data.artworkPersonal)
+            ? currency(data.artworkPersonal).intValue
+            : data.artworkPersonal
           : 0
         : 0,
     artworkCommercial:
@@ -170,8 +176,12 @@ export const formatArtworkValues = (data) => {
         ? data.artworkAvailability === "available" &&
           data.artworkLicense === "commercial" &&
           data.artworkUse === "separate"
-          ? currency(data.artworkCommercial).intValue
-          : currency(data.artworkPersonal).intValue
+          ? isPositiveInteger(data.artworkCommercial)
+            ? currency(data.artworkCommercial).intValue
+            : data.artworkCommercial
+          : isPositiveInteger(data.artworkPersonal)
+          ? currency(data.artworkPersonal).intValue
+          : data.artworkPersonal
         : 0,
     // $TODO restore after tags are implemented
     // artworkTags: JSON.parse(data.artworkTags),
