@@ -553,7 +553,6 @@ export const loginValidation = Yup.object().shape({
 
 export const addArtwork = Yup.object().shape({
   artworkMedia: Yup.mixed()
-    .test("fileRequired", errors.artworkMediaRequired.message, (value) => value)
     .test(
       "fileType",
       errors.artworkMediaType.message,
@@ -564,6 +563,11 @@ export const addArtwork = Yup.object().shape({
       // 1048576 = 1024 * 1024
       errors.artworkMediaSize.message,
       (value) => value && value.size <= upload.artwork.fileSize
+    )
+    .test(
+      "fileRequired",
+      errors.artworkMediaRequired.message,
+      (value) => value
     ),
 });
 
