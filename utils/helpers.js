@@ -273,5 +273,5 @@ export const handleDelegatedError = ({ err }) => ({
       ? statusCodes.badRequest
       : err.status || statusCodes.internalError,
   message: err.message || errors.internalServerError.message,
-  expose: !!err.expose,
+  expose: err.expose || true,
 });

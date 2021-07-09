@@ -157,25 +157,22 @@ export const formatArtworkValues = (data) => {
       data.artworkAvailability === "available"
         ? data.artworkLicense
         : "unavailable",
+    artworkPersonal:
+      data.artworkAvailability === "available" &&
+      data.artworkType === "commercial"
+        ? isPositiveInteger(data.artworkPersonal)
+          ? currency(data.artworkPersonal).intValue
+          : data.artworkPersonal
+        : 0,
     artworkUse:
       data.artworkAvailability === "available" &&
       data.artworkLicense === "commercial"
         ? data.artworkUse
         : "unavailable",
-    artworkPersonal:
-      data.artworkAvailability === "available" &&
-      data.artworkType === "commercial"
-        ? data.artworkUse === "separate" || data.artworkLicense === "personal"
-          ? isPositiveInteger(data.artworkPersonal)
-            ? currency(data.artworkPersonal).intValue
-            : data.artworkPersonal
-          : 0
-        : 0,
     artworkCommercial:
+      data.artworkAvailability === "available" &&
       data.artworkLicense === "commercial"
-        ? data.artworkAvailability === "available" &&
-          data.artworkLicense === "commercial" &&
-          data.artworkUse === "separate"
+        ? data.artworkUse === "separate"
           ? isPositiveInteger(data.artworkCommercial)
             ? currency(data.artworkCommercial).intValue
             : data.artworkCommercial

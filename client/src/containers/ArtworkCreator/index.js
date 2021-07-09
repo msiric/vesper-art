@@ -1,4 +1,3 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -13,6 +12,7 @@ import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import ArtworkForm from "../../forms/ArtworkForm/index";
+import { useArtworkValidator } from "../../hooks/useArtworkValidator";
 import artworkCreatorStyles from "./styles";
 
 const ArtworkCreator = () => {
@@ -24,6 +24,8 @@ const ArtworkCreator = () => {
     (state) => state.fetchCapabilities
   );
   const createArtwork = useArtworkCreate((state) => state.createArtwork);
+
+  const resolver = useArtworkValidator(artworkValidation.concat(addArtwork));
 
   const history = useHistory();
 
@@ -54,7 +56,7 @@ const ArtworkCreator = () => {
       // artworkCategory: "",
       // artworkTags: [],
     },
-    resolver: yupResolver(artworkValidation.concat(addArtwork)),
+    resolver,
   });
 
   const onSubmit = async (values) => {

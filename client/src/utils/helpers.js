@@ -6,7 +6,11 @@ import Retry from "../pages/Home/Retry";
 
 export const deleteEmptyValues = (values) => {
   for (let value in values) {
-    if (typeof values[value] !== "boolean" && !values[value])
+    if (
+      typeof values[value] !== "boolean" &&
+      isNaN(values[value]) &&
+      !values[value]
+    )
       delete values[value];
   }
   return values;

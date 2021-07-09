@@ -1,4 +1,3 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import {
   AddCircleRounded as UploadIcon,
   DeleteRounded as DeleteIcon,
@@ -18,6 +17,7 @@ import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import ArtworkForm from "../../forms/ArtworkForm/index";
+import { useArtworkValidator } from "../../hooks/useArtworkValidator";
 import artworkModifierClasses from "./styles";
 
 const ArtworkModifier = ({ paramId }) => {
@@ -34,6 +34,8 @@ const ArtworkModifier = ({ paramId }) => {
   );
   const updateArtwork = useArtworkUpdate((state) => state.updateArtwork);
   const toggleModal = useArtworkUpdate((state) => state.toggleModal);
+
+  const resolver = useArtworkValidator(artworkValidation);
 
   const setDefaultValues = () => ({
     artworkTitle: artwork.current.title,
@@ -67,12 +69,15 @@ const ArtworkModifier = ({ paramId }) => {
     reset,
   } = useForm({
     defaultValues: setDefaultValues(),
-    resolver: yupResolver(artworkValidation),
+    resolver: resolver,
   });
 
   const history = useHistory();
 
   const classes = artworkModifierClasses();
+
+  const isDisabled =
+    !isVersionDifferent(getValues(), artwork.current) || formState.isSubmitting;
 
   const onSubmit = async (values) => {
     await updateArtwork({ artworkId: artwork.id, values });
@@ -118,8 +123,6 @@ const ArtworkModifier = ({ paramId }) => {
     reset(setDefaultValues());
   }, [artwork.current]);
 
-  console.log(getValues(), artwork.current, loading);
-
   return (
     <Card>
       {renderHelpBox()}
@@ -153,10 +156,7 @@ const ArtworkModifier = ({ paramId }) => {
               padding
               submitting={formState.isSubmitting}
               loading={loading}
-              disabled={
-                !isVersionDifferent(getValues(), artwork.current) ||
-                formState.isSubmitting
-              }
+              disabled={isDisabled}
               startIcon={<UploadIcon />}
             >
               Publish

@@ -16,7 +16,6 @@ const Input = ({ name, setValue, trigger, loading = false, ...props }) => {
       displayType="input"
       thousandSeparator
       isNumericString
-      prefix="$"
       variant="outlined"
       margin="dense"
       loading={loading}

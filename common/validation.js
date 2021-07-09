@@ -3,326 +3,326 @@ import { pricing, statusCodes, upload } from "./constants";
 
 export const errors = {
   artworkTitleRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork title is required",
     expose: true,
   },
   artworkAvailabilityRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork availability is required",
     expose: true,
   },
   artworkAvailabilityInvalid: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork availability is invalid",
     expose: true,
   },
   artworkTypeRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork type is required",
     expose: true,
   },
   artworkTypeInvalid: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork type is invalid",
     expose: true,
   },
   artworkLicenseRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork license is required",
     expose: true,
   },
   artworkLicenseInvalid: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork license is invalid",
     expose: true,
   },
   artworkPersonalRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork price is required",
     expose: true,
   },
   artworkPersonalNegative: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork price cannot be negative",
     expose: true,
   },
   artworkPersonalMin: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: `Artwork price cannot be less than $${pricing.minimumPrice}`,
     expose: true,
   },
   artworkPersonalMax: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: `Artwork price cannot be greater than $${pricing.maximumPrice}`,
     expose: true,
   },
   artworkUseRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork use is required",
     expose: true,
   },
   artworkUseInvalid: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork use is invalid",
     expose: true,
   },
   artworkCommercialRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Commercial license is required",
     expose: true,
   },
   artworkCommercialNegative: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Commercial license cannot be negative",
     expose: true,
   },
   artworkCommercialMin: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message:
       "Commercial license cannot be less than the cost of the personal license",
     expose: true,
   },
   artworkCommercialMax: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: `Commercial license cannot be greater than ${pricing.maximumPrice}`,
     expose: true,
   },
   artworkVisibilityRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork visibility is required",
     expose: true,
   },
   artworkVisibilityInvalid: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork visibility is invalid",
     expose: true,
   },
   artworkDescriptionRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork description is required",
     expose: true,
   },
   billingNameRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "First name is required",
     expose: true,
   },
   billingSurnameRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Last name is required",
     expose: true,
   },
   billingAddressRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Address is required",
     expose: true,
   },
   billingZipRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Postal code is required",
     expose: true,
   },
   billingCityRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "City is required",
     expose: true,
   },
   billingCountryRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Country is required",
     expose: true,
   },
   commentContentRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Comment cannot be empty",
     expose: true,
   },
   discountCodeRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Discount cannot be empty",
     expose: true,
   },
   licenseAssigneeRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "License assignee is required",
     expose: true,
   },
   licenseTypeRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "License type is required",
     expose: true,
   },
   licenseTypeInvalid: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "License type is invalid",
     expose: true,
   },
   userUsernameRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Username is required",
     expose: true,
   },
   userUsernameMin: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Username must contain at least 5 characters",
     expose: true,
   },
   userUsernameMax: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Username cannot contain more than 20 characters",
     expose: true,
   },
   userPasswordRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Enter your password",
     expose: true,
   },
   userPasswordMin: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Password must contain at least 8 characters",
     expose: true,
   },
   artworkMediaRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Artwork needs to have a file",
     expose: true,
   },
   artworkMediaType: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: `File needs to be in one of the following formats: ${upload.artwork.mimeTypes}`,
     expose: true,
   },
   artworkMediaSize: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: `File needs to be less than ${
       upload.artwork.fileSize / 1048576
     }MB`,
     expose: true,
   },
   userMediaType: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: `File needs to be in one of the following formats: ${upload.user.mimeTypes}`,
     expose: true,
   },
   userMediaSize: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: `File needs to be less than ${upload.user.fileSize / 1048576}MB`,
     expose: true,
   },
   orderIntentInvalid: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Invalid intent",
     expose: true,
   },
   originCountryRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Country cannot be empty",
     expose: true,
   },
   userNewRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Enter new password",
     expose: true,
   },
   userConfirmationRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Confirm your password",
     expose: true,
   },
   userPasswordMismatch: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Passwords do not match",
     expose: true,
   },
   favoritesPreferenceRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Favorites need to have a value",
     expose: true,
   },
   userDescriptionMax: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Description cannot contain more than 250 characters",
     expose: true,
   },
   reviewRatingRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Rating cannot be empty",
     expose: true,
   },
   reviewRatingMin: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Rating cannot be less than 1",
     expose: true,
   },
   reviewRatingMax: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Rating cannot be greater than 5",
     expose: true,
   },
   searchTypeRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Search type is required",
     expose: true,
   },
   searchTypeInvalid: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Search type is invalid",
     expose: true,
   },
   userUsernameInvalid: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message:
       "Username can only contain letters, numbers, underscores and periods",
     expose: true,
   },
   userUsernameMin: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Username must contain at least 5 characters",
     expose: true,
   },
   userUsernameMax: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Username cannot contain more than 20 characters",
     expose: true,
   },
   licenseFingerprintRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Fingerprint cannot be empty",
     expose: true,
   },
   userEmailRequired: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Email is required",
     expose: true,
   },
   userEmailInvalid: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Invalid email",
     expose: true,
   },
   requiredValue: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Required value",
     expose: true,
   },
   invalidUUID: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Invalid UUID",
     expose: true,
   },
   invalidValue: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Invalid value",
     expose: true,
   },
   invalidString: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Value needs to be a string",
     expose: true,
   },
   invalidNumber: {
-    status: statusCodes.internalError,
+    status: statusCodes.badRequest,
     message: "Value needs to be a positive integer",
     expose: true,
   },
@@ -351,8 +351,7 @@ export const artworkValidation = Yup.object().shape({
         .required(errors.artworkTypeRequired.message),
       otherwise: Yup.string()
         .typeError(errors.invalidString.message)
-        .matches(/(unavailable)/, errors.artworkTypeInvalid.message)
-        .required(errors.artworkTypeRequired.message),
+        .matches(/(unavailable)/, errors.artworkTypeInvalid.message),
     }),
   artworkLicense: Yup.string()
     .typeError(errors.invalidString.message)
@@ -365,8 +364,7 @@ export const artworkValidation = Yup.object().shape({
         .required(errors.artworkLicenseRequired.message),
       otherwise: Yup.string()
         .typeError(errors.invalidString.message)
-        .matches(/(unavailable)/, errors.artworkLicenseInvalid.message)
-        .required(errors.artworkLicenseRequired.message),
+        .matches(/(unavailable)/, errors.artworkLicenseInvalid.message),
     }),
   artworkPersonal: Yup.number()
     .typeError(errors.invalidNumber.message)
@@ -385,8 +383,7 @@ export const artworkValidation = Yup.object().shape({
         .integer()
         .min(0)
         .max(0)
-        .typeError(errors.invalidNumber.message)
-        .required(errors.artworkPersonalRequired.message),
+        .typeError(errors.invalidNumber.message),
     }),
   artworkUse: Yup.string()
     .typeError(errors.invalidString.message)
@@ -400,27 +397,57 @@ export const artworkValidation = Yup.object().shape({
         .required(errors.artworkUseRequired.message),
       otherwise: Yup.string()
         .typeError(errors.invalidString.message)
-        .matches(/(unavailable)/, errors.artworkUseInvalid.message)
-        .required(errors.artworkUseRequired.message),
+        .matches(/(unavailable)/, errors.artworkUseInvalid.message),
     }),
   artworkCommercial: Yup.number()
     .typeError(errors.invalidNumber.message)
     .notRequired()
-    .when(["artworkAvailability", "artworkLicense", "artworkUse"], {
-      is: (artworkAvailability, artworkLicense, artworkUse) =>
-        artworkAvailability === "available" &&
-        artworkLicense === "commercial" &&
-        artworkUse === "separate",
+    .when(["artworkAvailability", "artworkLicense"], {
+      is: (artworkAvailability, artworkLicense) =>
+        artworkAvailability === "available" && artworkLicense === "commercial",
       then: Yup.number()
-        .integer()
-        .positive(errors.artworkCommercialNegative.message)
-        .moreThan(
-          Yup.ref("artworkPersonal"),
-          errors.artworkCommercialMin.message
-        )
-        .max(pricing.maximumPrice, errors.artworkCommercialMax.message)
         .typeError(errors.invalidNumber.message)
-        .required(errors.artworkCommercialRequired.message),
+        .when(["artworkUse"], {
+          is: (artworkUse) => artworkUse === "separate",
+          then: Yup.number()
+            .typeError(errors.invalidNumber.message)
+            .when(["artworkType"], {
+              is: (artworkType) => artworkType === "free",
+              then: Yup.number()
+                .typeError(errors.invalidNumber.message)
+                .positive(errors.artworkCommercialNegative.message)
+                .min(pricing.minimumPrice, errors.artworkCommercialMin.message)
+                .max(pricing.maximumPrice, errors.artworkCommercialMax.message)
+                .typeError(errors.invalidNumber.message)
+                .required(errors.artworkCommercialRequired.message),
+              otherwise: Yup.number()
+                .integer()
+                .positive(errors.artworkCommercialNegative.message)
+                .moreThan(
+                  Yup.ref("artworkPersonal"),
+                  errors.artworkCommercialMin.message
+                )
+                .max(pricing.maximumPrice, errors.artworkCommercialMax.message)
+                .typeError(errors.invalidNumber.message)
+                .required(errors.artworkCommercialRequired.message),
+            }),
+          otherwise: Yup.number()
+            .typeError(errors.invalidNumber.message)
+            .when(["artworkType"], {
+              is: (artworkType) => artworkType === "free",
+              then: Yup.number()
+                .typeError(errors.invalidNumber.message)
+                .positive(errors.artworkCommercialNegative.message)
+                .min(0)
+                .max(0)
+                .typeError(errors.invalidNumber.message),
+              otherwise: Yup.number()
+                .integer()
+                .min(Yup.ref("artworkPersonal"))
+                .max(Yup.ref("artworkPersonal"))
+                .typeError(errors.invalidNumber.message),
+            }),
+        }),
       otherwise: Yup.number()
         .integer()
         .min(0)
@@ -526,7 +553,7 @@ export const loginValidation = Yup.object().shape({
 
 export const addArtwork = Yup.object().shape({
   artworkMedia: Yup.mixed()
-    .required(errors.artworkMediaRequired.message)
+    .test("fileRequired", errors.artworkMediaRequired.message, (value) => value)
     .test(
       "fileType",
       errors.artworkMediaType.message,

@@ -1,7 +1,4 @@
-import Stripe from "stripe";
-import { stripe as stripeConfig } from "../../config/secret";
-
-const stripe = Stripe(stripeConfig.stripeSecret);
+import { stripe } from "../../lib/stripe";
 
 export const constructStripeEvent = async ({
   stripeBody,

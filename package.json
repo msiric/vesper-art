@@ -4,11 +4,12 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "jest": "jest ./dist",
     "run-tests": "jest --watchAll ./dist",
     "clean-tests": "node ./dist/test/index.js",
     "test-init": "set NODE_ENV=test&& concurrently \"npm run watch\" \"npm run run-tests\"",
     "test-watch": "npm run test-init",
-    "test": "jest ./dist",
+    "test": "set NODE_ENV=test&& concurrently \"npm run watch\" \"npm run jest\"",
     "watch": "tsc -w",
     "start-dev": "set NODE_ENV=local&& nodemon ./dist/bin/www",
     "start": "node ./dist/bin/www",

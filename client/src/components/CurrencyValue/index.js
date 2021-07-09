@@ -10,6 +10,7 @@ const CurrencyValue = ({
   thousandSeparator = true,
   decimalScale = 2,
   prefix = "$",
+  onValueChange,
   ...props
 }) => {
   const classes = currencyValueStyles();
@@ -17,12 +18,14 @@ const CurrencyValue = ({
   return (
     <SkeletonWrapper variant="text" loading={loading}>
       <NumberFormat
+        {...props}
         value={value}
         displayType={displayType}
         thousandSeparator={thousandSeparator}
         decimalScale={decimalScale}
         prefix={prefix}
-        {...props}
+        onChange={null}
+        onValueChange={onValueChange}
       />
     </SkeletonWrapper>
   );

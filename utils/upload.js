@@ -2,8 +2,9 @@ import fs from "fs";
 import createError from "http-errors";
 import imageSize from "image-size";
 import sharp from "sharp";
-import { upload } from "../common/constants";
+import { statusCodes, upload } from "../common/constants";
 import { rgbToHex } from "../common/helpers";
+import { errors as validationErrors } from "../common/validation";
 import { uploadS3Object } from "../lib/s3";
 import { checkImageOrientation, formatError } from "./helpers";
 import { errors } from "./statuses";
@@ -151,19 +152,12 @@ export const finalizeMediaUpload = async ({
 export const artworkFileFilter = (req, file, cb) => {
   if (upload.artwork.mimeTypes.includes(file.mimetype)) cb(null, true);
   else
-    cb(
-      new Error("Invalid mime type, only JPEG, PNG and GIF files are allowed"),
-      false
-    );
+    cb(createError(...formatError(validationErrors.artworkMediaType)), false);
 };
 
 export const userFileFilter = (req, file, cb) => {
   if (upload.user.mimeTypes.includes(file.mimetype)) cb(null, true);
-  else
-    cb(
-      new Error("Invalid mime type, only JPEG, PNG and GIF files are allowed"),
-      false
-    );
+  else cb(createError(...formatError(validationErrors.userMediaType)), false);
 };
 
 export const dimensionsFilter = ({ fileHeight, fileWidth, fileType }) => {

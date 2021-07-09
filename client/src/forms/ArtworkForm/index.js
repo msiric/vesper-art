@@ -102,18 +102,25 @@ const ArtworkForm = ({
             loading={loading}
           />
         )}
-        {artworkAvailability === "available" &&
-          artworkType === "commercial" && (
-            <PriceInput
+        {artworkAvailability === "available" && artworkType === "commercial" && (
+          <PriceInput
+            name="artworkPersonal"
+            value={getValues("artworkPersonal")}
+            setValue={setValue}
+            trigger={trigger}
+            label="Personal license price"
+            errors={errors}
+            loading={loading}
+          />
+          /*             <TextInput
               name="artworkPersonal"
-              value={getValues("artworkPersonal")}
-              setValue={setValue}
-              trigger={trigger}
+              type="text"
               label="Personal license price"
+              adornment="$"
               errors={errors}
               loading={loading}
-            />
-          )}
+            /> */
+        )}
         {artworkAvailability === "available" &&
           artworkLicense === "commercial" && (
             <SelectInput
@@ -153,6 +160,14 @@ const ArtworkForm = ({
               errors={errors}
               loading={loading}
             />
+            /*             <TextInput
+              name="artworkCommercial"
+              type="text"
+              label="Commercial license price"
+              adornment="$"
+              errors={errors}
+              loading={loading}
+            /> */
           )}
         <SelectInput
           name="artworkVisibility"

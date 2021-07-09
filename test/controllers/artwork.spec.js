@@ -40,7 +40,7 @@ describe("Artwork tests", () => {
         .field("artworkAvailability", "available")
         .field("artworkType", "free")
         .field("artworkLicense", "personal")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkVisibility", "visible")
@@ -72,13 +72,61 @@ describe("Artwork tests", () => {
         .field("artworkAvailability", "available")
         .field("artworkType", "free")
         .field("artworkLicense", "personal")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkVisibility", "visible")
         .field("artworkDescription", "test");
       expect(res.statusCode).toEqual(statusCodes.badRequest);
       expect(res.body.message).toEqual(logicErrors.artworkMediaMissing.message);
+    });
+
+    it("should throw a validation error if media has invalid dimensions", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(
+            __dirname,
+            `${MEDIA_LOCATION}/invalid_dimensions_art.jpg`
+          )
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "free")
+        .field("artworkLicense", "personal")
+        .field("artworkPersonal", pricing.minimumPrice + 10)
+        .field("artworkUse", "included")
+        .field("artworkCommercial", 0)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+      expect(res.statusCode).toEqual(statusCodes.badRequest);
+      expect(res.body.message).toEqual(
+        logicErrors.fileDimensionsInvalid.message
+      );
+    });
+
+    it("should throw a validation error if media has invalid extensions", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/invalid_extension.txt`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "free")
+        .field("artworkLicense", "personal")
+        .field("artworkPersonal", pricing.minimumPrice + 10)
+        .field("artworkUse", "included")
+        .field("artworkCommercial", 0)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+      console.log("RESSSSSSSSSSS", res.body);
+      expect(res.statusCode).toEqual(statusCodes.badRequest);
+      expect(res.body.message).toEqual(
+        validationErrors.artworkMediaType.message
+      );
     });
 
     it("should throw a validation error if title is missing", async () => {
@@ -91,7 +139,7 @@ describe("Artwork tests", () => {
         .field("artworkAvailability", "available")
         .field("artworkType", "free")
         .field("artworkLicense", "personal")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkVisibility", "visible")
@@ -113,7 +161,7 @@ describe("Artwork tests", () => {
         .field("artworkTitle", "test")
         .field("artworkType", "free")
         .field("artworkLicense", "personal")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkVisibility", "visible")
@@ -136,7 +184,7 @@ describe("Artwork tests", () => {
         .field("artworkAvailability", "invalid")
         .field("artworkType", "free")
         .field("artworkLicense", "personal")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkVisibility", "visible")
@@ -158,7 +206,7 @@ describe("Artwork tests", () => {
         .field("artworkTitle", "test")
         .field("artworkAvailability", "available")
         .field("artworkLicense", "personal")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkVisibility", "visible")
@@ -181,7 +229,7 @@ describe("Artwork tests", () => {
         .field("artworkAvailability", "available")
         .field("artworkType", "invalid")
         .field("artworkLicense", "personal")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkVisibility", "visible")
@@ -204,7 +252,7 @@ describe("Artwork tests", () => {
         .field("artworkAvailability", "unavailable")
         .field("artworkType", "invalid")
         .field("artworkLicense", "personal")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkVisibility", "visible")
@@ -224,7 +272,7 @@ describe("Artwork tests", () => {
         .field("artworkTitle", "test")
         .field("artworkAvailability", "available")
         .field("artworkType", "free")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkVisibility", "visible")
@@ -247,7 +295,7 @@ describe("Artwork tests", () => {
         .field("artworkAvailability", "available")
         .field("artworkType", "free")
         .field("artworkLicense", "invalid")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkVisibility", "visible")
@@ -287,7 +335,7 @@ describe("Artwork tests", () => {
           "artworkMedia",
           path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
         )
-        .field("artworkTitle", "actualtest")
+        .field("artworkTitle", "test")
         .field("artworkAvailability", "available")
         .field("artworkType", "commercial")
         .field("artworkLicense", "personal")
@@ -308,7 +356,7 @@ describe("Artwork tests", () => {
           "artworkMedia",
           path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
         )
-        .field("artworkTitle", "actualtest")
+        .field("artworkTitle", "test")
         .field("artworkAvailability", "available")
         .field("artworkType", "commercial")
         .field("artworkLicense", "personal")
@@ -331,7 +379,7 @@ describe("Artwork tests", () => {
           "artworkMedia",
           path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
         )
-        .field("artworkTitle", "actualtest")
+        .field("artworkTitle", "test")
         .field("artworkAvailability", "available")
         .field("artworkType", "commercial")
         .field("artworkLicense", "personal")
@@ -354,7 +402,226 @@ describe("Artwork tests", () => {
           "artworkMedia",
           path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
         )
-        .field("artworkTitle", "actualtest")
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "free")
+        .field("artworkLicense", "personal")
+        .field("artworkPersonal", 0)
+        .field("artworkUse", "included")
+        .field("artworkCommercial", 0)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.message).toEqual(responses.artworkCreated.message);
+    });
+
+    it("should throw a validation error if use is missing", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "free")
+        .field("artworkLicense", "commercial")
+        .field("artworkPersonal", 0)
+        .field("artworkCommercial", 0)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+
+      expect(res.statusCode).toEqual(statusCodes.badRequest);
+      expect(res.body.message).toEqual(
+        validationErrors.artworkUseRequired.message
+      );
+    });
+
+    it("should throw a validation error if use is invalid", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "free")
+        .field("artworkLicense", "commercial")
+        .field("artworkPersonal", 0)
+        .field("artworkUse", "invalid")
+        .field("artworkCommercial", 0)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+
+      expect(res.statusCode).toEqual(statusCodes.badRequest);
+      expect(res.body.message).toEqual(
+        validationErrors.artworkUseInvalid.message
+      );
+    });
+
+    it("should pass if use is invalid but artwork is available/personal", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "free")
+        .field("artworkLicense", "personal")
+        .field("artworkPersonal", 0)
+        .field("artworkUse", "invalid")
+        .field("artworkCommercial", 0)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.message).toEqual(responses.artworkCreated.message);
+    });
+
+    it("should throw a validation error if commercial is invalid", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "commercial")
+        .field("artworkLicense", "commercial")
+        .field("artworkPersonal", 20)
+        .field("artworkUse", "separate")
+        .field("artworkCommercial", 20)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+      expect(res.statusCode).toEqual(statusCodes.badRequest);
+      expect(res.body.message).toEqual(
+        validationErrors.artworkCommercialMin.message
+      );
+    });
+
+    it("should pass if commercial is invalid because commercial is included", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "commercial")
+        .field("artworkLicense", "commercial")
+        .field("artworkPersonal", 20)
+        .field("artworkUse", "included")
+        .field("artworkCommercial", 19)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.message).toEqual(responses.artworkCreated.message);
+    });
+
+    it("should throw a validation error if commercial is not an integer", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "commercial")
+        .field("artworkLicense", "commercial")
+        .field("artworkPersonal", 0)
+        .field("artworkUse", "separate")
+        .field("artworkCommercial", "invalid")
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+
+      expect(res.statusCode).toEqual(statusCodes.badRequest);
+      expect(res.body.message).toEqual(validationErrors.invalidNumber.message);
+    });
+
+    it("should throw a validation error if commercial is below the minimum price", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "commercial")
+        .field("artworkLicense", "commercial")
+        .field("artworkPersonal", pricing.minimumPrice)
+        .field("artworkUse", "separate")
+        .field("artworkCommercial", pricing.minimumPrice - 1)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+
+      expect(res.statusCode).toEqual(statusCodes.badRequest);
+      expect(res.body.message).toEqual(
+        validationErrors.artworkCommercialMin.message
+      );
+    });
+
+    it("should throw a validation error if commercial is above the maximum price", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "commercial")
+        .field("artworkLicense", "commercial")
+        .field("artworkPersonal", pricing.minimumPrice)
+        .field("artworkUse", "separate")
+        .field("artworkCommercial", pricing.maximumPrice + 1)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+
+      expect(res.statusCode).toEqual(statusCodes.badRequest);
+      expect(res.body.message).toEqual(
+        validationErrors.artworkCommercialMax.message
+      );
+    });
+
+    it("should throw a validation error if commercial is below the personal license price", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "commercial")
+        .field("artworkLicense", "commercial")
+        .field("artworkPersonal", pricing.minimumPrice + 10)
+        .field("artworkUse", "separate")
+        .field("artworkCommercial", pricing.minimumPrice + 5)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "test");
+
+      expect(res.statusCode).toEqual(statusCodes.badRequest);
+      expect(res.body.message).toEqual(
+        validationErrors.artworkCommercialMin.message
+      );
+    });
+
+    it("should pass if commercial is zero and artwork is not available/commercial/separate/personal", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_art.png`)
+        )
+        .field("artworkTitle", "test")
         .field("artworkAvailability", "available")
         .field("artworkType", "free")
         .field("artworkLicense", "personal")
@@ -379,7 +646,7 @@ describe("Artwork tests", () => {
         .field("artworkAvailability", "available")
         .field("artworkType", "free")
         .field("artworkLicense", "personal")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkDescription", "test");
@@ -401,7 +668,7 @@ describe("Artwork tests", () => {
         .field("artworkAvailability", "available")
         .field("artworkType", "free")
         .field("artworkLicense", "personal")
-        .field("artworkPersonal", 10)
+        .field("artworkPersonal", pricing.minimumPrice + 10)
         .field("artworkUse", "included")
         .field("artworkCommercial", 0)
         .field("artworkVisibility", "visible");
