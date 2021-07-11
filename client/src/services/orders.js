@@ -14,6 +14,7 @@ export const getOrder = {
   error: { message: "Failed to fetch order", variant: "error" },
 };
 export const getOrders = {
+  // datatable (cursor, limit not needed)
   request: async ({ display }) => await ax.get(`/api/orders/${display}`),
   success: { message: "Orders successfully fetched", variant: "success" },
   error: { message: "Failed to fetch orders", variant: "error" },

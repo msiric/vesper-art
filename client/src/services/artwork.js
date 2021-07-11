@@ -55,7 +55,8 @@ export const postComment = {
   error: { message: "Failed to post comment", variant: "error" },
 };
 export const editArtwork = {
-  request: async ({ artworkId }) => await ax.get(`/api/artwork/${artworkId}`),
+  request: async ({ artworkId }) =>
+    await ax.get(`/api/artwork/${artworkId}/edit`),
   success: { message: "Artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch artwork", variant: "error" },
 };

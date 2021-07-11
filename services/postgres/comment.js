@@ -1,4 +1,7 @@
+import { ArtworkVisibility } from "../../entities/Artwork";
 import { Comment } from "../../entities/Comment";
+
+const ARTWORK_VISIBILITY_STATUS = ArtworkVisibility.visible;
 
 // $Needs testing (mongo -> postgres)
 export const fetchCommentById = async ({
@@ -14,12 +17,17 @@ export const fetchCommentById = async ({
   const foundComment = await connection
     .getRepository(Comment)
     .createQueryBuilder("comment")
+    .leftJoinAndSelect("comment.artwork", "artwork")
     .leftJoinAndSelect("comment.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
-    .where("comment.id = :commentId AND comment.artworkId = :artworkId", {
-      commentId,
-      artworkId,
-    })
+    .where(
+      "comment.id = :commentId AND comment.artworkId = :artworkId AND artwork.visibility = :visibility",
+      {
+        commentId,
+        artworkId,
+        visibility: ARTWORK_VISIBILITY_STATUS,
+      }
+    )
     .getOne();
   console.log(foundComment);
   return foundComment;

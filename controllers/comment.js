@@ -29,9 +29,7 @@ export const postComment = async ({
 }) => {
   await commentValidation.validate({ commentContent });
   const foundArtwork = await fetchArtworkById({ artworkId, connection });
-  if (!foundArtwork) {
-    throw createError(...formatError(errors.artworkNotFound));
-  } else {
+  if (foundArtwork) {
     const { commentId, notificationId } = generateUuids({
       commentId: null,
       notificationId: null,
@@ -63,6 +61,7 @@ export const postComment = async ({
       payload: savedComment.raw[0],
     });
   }
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const patchComment = async ({
@@ -73,14 +72,18 @@ export const patchComment = async ({
   connection,
 }) => {
   await commentValidation.validate({ commentContent });
-  await editExistingComment({
-    commentId,
-    artworkId,
-    userId,
-    commentContent,
-    connection,
-  });
-  return formatResponse(responses.commentUpdated);
+  const foundArtwork = await fetchArtworkById({ artworkId, connection });
+  if (foundArtwork) {
+    await editExistingComment({
+      commentId,
+      artworkId,
+      userId,
+      commentContent,
+      connection,
+    });
+    return formatResponse(responses.commentUpdated);
+  }
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const deleteComment = async ({
@@ -89,11 +92,15 @@ export const deleteComment = async ({
   commentId,
   connection,
 }) => {
-  await removeExistingComment({
-    commentId,
-    artworkId,
-    userId,
-    connection,
-  });
-  return formatResponse(responses.commentDeleted);
+  const foundArtwork = await fetchArtworkById({ artworkId, connection });
+  if (foundArtwork) {
+    await removeExistingComment({
+      commentId,
+      artworkId,
+      userId,
+      connection,
+    });
+    return formatResponse(responses.commentDeleted);
+  }
+  throw createError(...formatError(errors.artworkNotFound));
 };

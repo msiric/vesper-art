@@ -45,6 +45,7 @@ import {
   fetchUserPurchases,
   fetchUserReviews,
   fetchUserSales,
+  fetchUserUploads,
   removeExistingIntent,
   removeUserAvatar,
 } from "../services/postgres/user";
@@ -100,7 +101,7 @@ export const getUserArtwork = async ({
 };
 
 export const getUserUploads = async ({ userId, cursor, limit, connection }) => {
-  const foundArtwork = await fetchUserArtwork({
+  const foundArtwork = await fetchUserUploads({
     userId,
     cursor,
     limit,
@@ -477,9 +478,8 @@ export const getUserMedia = async ({ userId, artworkId, connection }) => {
     connection,
   });
   if (foundMedia) {
-    const file = foundMedia.source.split("/").pop();
-    const url = getSignedS3Object({
-      fileLink: file,
+    const { url, file } = await getSignedS3Object({
+      fileLink: foundMedia.source,
       folderName: "artworkMedia/",
     });
     return { url, file };

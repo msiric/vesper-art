@@ -310,7 +310,7 @@ export const fetchOrderMedia = async ({ userId, orderId, connection }) => {
     )
     .getOne();
   console.log(foundOrder.version.media);
-  return foundOrder.version.media;
+  return foundOrder && foundOrder.version ? foundOrder.version.media : {};
 };
 
 export const fetchOrdersByArtwork = async ({

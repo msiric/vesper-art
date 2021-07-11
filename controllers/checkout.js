@@ -31,7 +31,7 @@ export const postDownload = async ({
   connection,
 }) => {
   const foundVersion = await fetchVersionDetails({ versionId, connection });
-  if (foundVersion && foundVersion.artwork.active) {
+  if (foundVersion) {
     await licenseValidation.validate({
       licenseAssignee,
       licenseCompany,
@@ -44,81 +44,75 @@ export const postDownload = async ({
       const licensePrice = foundVersion[licenseType];
       // $TODO Treba li dohvacat usera?
       const foundUser = await fetchUserById({ userId, connection });
-      if (foundVersion.artwork.active) {
+      if (foundUser) {
         if (foundVersion.id === foundVersion.artwork.currentId) {
           if (foundVersion.artwork.owner.id !== foundUser.id) {
-            if (foundUser && foundUser.active) {
-              const { licenseId, orderId, notificationId } = generateUuids({
-                licenseId: null,
-                orderId: null,
-                notificationId: null,
-              });
-              const savedLicense = await addNewLicense({
-                licenseId,
-                userId: foundUser.id,
-                artworkId: foundVersion.artwork.id,
-                licenseData: {
-                  licenseAssignee,
-                  licenseCompany,
-                  licenseType,
-                  licensePrice,
-                },
-                connection,
-              });
-              await downloadValidation.validate({
-                orderBuyer: foundUser.id,
-                orderSeller: foundVersion.artwork.owner.id,
-                orderArtwork: foundVersion.artwork.id,
-                orderVersion: foundVersion.id,
-                orderDiscount: null,
-                orderLicense: licenseId,
-                orderSpent: 0,
-                orderEarned: 0,
-                orderFee: 0,
-              });
-              const orderObject = {
-                buyerId: foundUser.id,
-                sellerId: foundVersion.artwork.owner.id,
-                artworkId: foundVersion.artwork.id,
-                versionId: foundVersion.id,
-                discountId: null,
-                licenseId,
-                review: null,
-                spent: 0,
-                earned: 0,
-                fee: 0,
-                type: "free",
-                status: "completed",
-                intentId: null,
-              };
-              const savedOrder = await addNewOrder({
-                orderId,
-                orderData: orderObject,
-                connection,
-              });
-              // new start
-              await addNewNotification({
-                notificationId,
-                notificationLink: orderId,
-                notificationRef: "",
-                notificationType: "order",
-                notificationReceiver: foundVersion.artwork.owner.id,
-                connection,
-              });
-              socketApi.sendNotification(
-                foundVersion.artwork.owner.id,
-                orderId
-              );
-              // new end
-              return formatResponse(responses.orderCreated);
-            }
-            throw createError(...formatError(errors.userNotFound));
+            const { licenseId, orderId, notificationId } = generateUuids({
+              licenseId: null,
+              orderId: null,
+              notificationId: null,
+            });
+            const savedLicense = await addNewLicense({
+              licenseId,
+              userId: foundUser.id,
+              artworkId: foundVersion.artwork.id,
+              licenseData: {
+                licenseAssignee,
+                licenseCompany,
+                licenseType,
+                licensePrice,
+              },
+              connection,
+            });
+            await downloadValidation.validate({
+              orderBuyer: foundUser.id,
+              orderSeller: foundVersion.artwork.owner.id,
+              orderArtwork: foundVersion.artwork.id,
+              orderVersion: foundVersion.id,
+              orderDiscount: null,
+              orderLicense: licenseId,
+              orderSpent: 0,
+              orderEarned: 0,
+              orderFee: 0,
+            });
+            const orderObject = {
+              buyerId: foundUser.id,
+              sellerId: foundVersion.artwork.owner.id,
+              artworkId: foundVersion.artwork.id,
+              versionId: foundVersion.id,
+              discountId: null,
+              licenseId,
+              review: null,
+              spent: 0,
+              earned: 0,
+              fee: 0,
+              type: "free",
+              status: "completed",
+              intentId: null,
+            };
+            const savedOrder = await addNewOrder({
+              orderId,
+              orderData: orderObject,
+              connection,
+            });
+            // new start
+            await addNewNotification({
+              notificationId,
+              notificationLink: orderId,
+              notificationRef: "",
+              notificationType: "order",
+              notificationReceiver: foundVersion.artwork.owner.id,
+              connection,
+            });
+            socketApi.sendNotification(foundVersion.artwork.owner.id, orderId);
+            // new end
+            return formatResponse(responses.orderCreated);
           }
           throw createError(...formatError(errors.artworkDownloadedByOwner));
         }
         throw createError(...formatError(errors.artworkVersionObsolete));
       }
-      throw createError(...formatError(errors.artworkNoLongerActive));
+      throw createError(...formatError(errors.userNotFound));
     }
     throw createError(...formatError(errors.artworkLicenseInvalid));
   }

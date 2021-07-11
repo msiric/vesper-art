@@ -6,6 +6,7 @@ import {
   getArtwork,
   getArtworkComments,
   getArtworkDetails,
+  getArtworkEdit,
   postNewArtwork,
   unfavoriteArtwork,
   updateArtwork,
@@ -78,6 +79,12 @@ router
       ...req.params,
     }))
   );
+
+router.route("/artwork/:artworkId/edit").get(
+  handler(getArtworkEdit, false, (req, res, next) => ({
+    ...req.params,
+  }))
+);
 
 router
   .route("/artwork/:artworkId/comments")

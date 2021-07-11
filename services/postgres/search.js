@@ -1,7 +1,9 @@
-import { Artwork } from "../../entities/Artwork";
+import { Artwork, ArtworkVisibility } from "../../entities/Artwork";
 import { Review } from "../../entities/Review";
 import { User } from "../../entities/User";
 import { calculateRating } from "../../utils/helpers";
+
+const ARTWORK_VISIBILITY_STATUS = ArtworkVisibility.visible;
 
 // $TODO version visible
 // $TODO active to const
@@ -20,10 +22,11 @@ export const fetchArtworkResults = async ({
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .where(
-      "version.title @@ plainto_tsquery(:query) AND artwork.active = :active",
+      "version.title @@ plainto_tsquery(:query) AND artwork.active = :active AND artwork.visibility = :visibility",
       {
         query: formattedQuery,
         active: true,
+        visibility: ARTWORK_VISIBILITY_STATUS,
       }
     )
     .orderBy(

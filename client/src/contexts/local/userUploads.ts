@@ -27,8 +27,6 @@ const initActions = (set, get) => ({
       const uploads = get().uploads;
       const { data } = await getUploads.request({
         userId,
-        cursor: uploads.cursor,
-        limit: uploads.limit,
       });
       set((state) => ({
         ...state,

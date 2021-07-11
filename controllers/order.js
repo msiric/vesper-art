@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import { s3, s3Params } from "../lib/s3";
+import { getSignedS3Object } from "../lib/s3";
 import { fetchOrderDetails, fetchOrderMedia } from "../services/postgres/order";
 import { fetchUserPurchases, fetchUserSales } from "../services/postgres/user";
 import { formatError } from "../utils/helpers";
@@ -75,9 +75,10 @@ export const getOrderMedia = async ({ userId, orderId, connection }) => {
     connection,
   });
   if (foundMedia) {
-    const file = foundMedia.source.split("/").pop();
-    const params = s3Params({ key: `artworkMedia/${file}` });
-    const url = s3.getSignedUrl("getObject", params);
+    const { url, file } = await getSignedS3Object({
+      fileLink: foundMedia.source,
+      folderName: "artworkMedia/",
+    });
     return { url, file };
   }
   throw createError(...formatError(errors.artworkNotFound));

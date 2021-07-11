@@ -20,10 +20,10 @@ import {
   fetchArtworkByOwner,
   fetchArtworkComments,
   fetchArtworkDetails,
+  fetchArtworkEdit,
   fetchArtworkMedia,
   fetchFavoriteByParents,
   fetchFavoritesCount,
-  fetchUserArtworks,
   removeArtworkVersion,
   removeExistingFavorite,
   updateArtworkVersion,
@@ -64,6 +64,15 @@ export const getArtworkDetails = async ({
   throw createError(...formatError(errors.artworkNotFound));
 };
 
+export const getArtworkEdit = async ({ artworkId, connection }) => {
+  const foundArtwork = await fetchArtworkEdit({
+    artworkId,
+    connection,
+  });
+  if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
+  throw createError(...formatError(errors.artworkNotFound));
+};
+
 export const getArtworkComments = async ({
   artworkId,
   cursor,
@@ -77,17 +86,6 @@ export const getArtworkComments = async ({
     connection,
   });
   return { comments: foundComments };
-};
-
-// $TODO handle in user controller?
-export const getUserArtwork = async ({ userId, cursor, limit, connection }) => {
-  const foundArtwork = await fetchUserArtworks({
-    userId,
-    cursor,
-    limit,
-    connection,
-  });
-  return { artwork: foundArtwork };
 };
 
 export const editArtwork = async ({ userId, artworkId, connection }) => {
@@ -166,6 +164,7 @@ export const postNewArtwork = async ({
         artworkId,
         versionId,
         userId,
+        artworkVisibility: formattedData.artworkVisibility,
         connection,
       });
       return formatResponse(responses.artworkCreated);
@@ -238,6 +237,7 @@ export const updateArtwork = async ({
         const savedArtwork = await updateArtworkVersion({
           artworkId: foundArtwork.id,
           currentId: versionId,
+          artworkVisibility: formattedData.artworkVisibility,
           connection,
         });
         if (!foundOrder) {
@@ -341,22 +341,25 @@ export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
     }),
     fetchArtworkById({ artworkId, connection }),
   ]);
-  if (foundArtwork.owner.id !== userId) {
-    if (!foundFavorite) {
-      const { favoriteId } = generateUuids({
-        favoriteId: null,
-      });
-      const savedFavorite = await addNewFavorite({
-        favoriteId,
-        userId,
-        artworkId,
-        connection,
-      });
-      return formatResponse(responses.artworkFavorited);
+  if (foundArtwork) {
+    if (foundArtwork.owner.id !== userId) {
+      if (!foundFavorite) {
+        const { favoriteId } = generateUuids({
+          favoriteId: null,
+        });
+        const savedFavorite = await addNewFavorite({
+          favoriteId,
+          userId,
+          artworkId,
+          connection,
+        });
+        return formatResponse(responses.artworkFavorited);
+      }
+      throw createError(...formatError(errors.artworkAlreadyFavorited));
     }
-    throw createError(...formatError(errors.artworkAlreadyFavorited));
+    throw createError(...formatError(errors.artworkFavoritedByOwner));
   }
-  throw createError(...formatError(errors.artworkFavoritedByOwner));
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
@@ -368,17 +371,20 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
     }),
     fetchArtworkById({ artworkId, connection }),
   ]);
-  if (foundArtwork.owner.id !== userId) {
-    if (foundFavorite) {
-      await removeExistingFavorite({
-        favoriteId: foundFavorite.id,
-        connection,
-      });
-      return formatResponse(responses.artworkUnfavorited);
+  if (foundArtwork) {
+    if (foundArtwork.owner.id !== userId) {
+      if (foundFavorite) {
+        await removeExistingFavorite({
+          favoriteId: foundFavorite.id,
+          connection,
+        });
+        return formatResponse(responses.artworkUnfavorited);
+      }
+      throw createError(...formatError(errors.artworkAlreadyUnfavorited));
     }
-    throw createError(...formatError(errors.artworkAlreadyUnfavorited));
+    throw createError(...formatError(errors.artworkUnfavoritedByOwner));
   }
-  throw createError(...formatError(errors.artworkUnfavoritedByOwner));
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 // needs transaction (done)

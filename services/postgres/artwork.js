@@ -1,5 +1,5 @@
 import { upload } from "../../common/constants";
-import { Artwork } from "../../entities/Artwork";
+import { Artwork, ArtworkVisibility } from "../../entities/Artwork";
 import { Comment } from "../../entities/Comment";
 import { Cover } from "../../entities/Cover";
 import { Favorite } from "../../entities/Favorite";
@@ -9,6 +9,8 @@ import { Version } from "../../entities/Version";
 import { calculateRating, resolveSubQuery } from "../../utils/helpers";
 
 const ARTWORK_ACTIVE_STATUS = true;
+const ARTWORK_VISIBILITY_STATUS = ArtworkVisibility.visible;
+const ARTWORK_INVISIBILITY_STATUS = ArtworkVisibility.invisible;
 
 // Only used when inserting comment
 // $TODO add appropriate visiblity tag
@@ -22,10 +24,14 @@ export const fetchArtworkById = async ({ artworkId, connection }) => {
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.owner", "owner")
-    .where("artwork.id = :artworkId AND artwork.active = :active", {
-      artworkId,
-      active: ARTWORK_ACTIVE_STATUS,
-    })
+    .where(
+      "artwork.id = :artworkId AND artwork.visibility = :visibility AND artwork.active = :active",
+      {
+        artworkId,
+        active: ARTWORK_ACTIVE_STATUS,
+        visibility: ARTWORK_VISIBILITY_STATUS,
+      }
+    )
     .getOne();
   console.log(foundArtwork);
   return foundArtwork;
@@ -49,10 +55,11 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .where(
-      `artwork.active = :active AND artwork.serial > 
+      `artwork.active = :active AND artwork.visibility = :visibility AND artwork.serial > 
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
       {
         active: ARTWORK_ACTIVE_STATUS,
+        visibility: ARTWORK_VISIBILITY_STATUS,
       }
     )
     .orderBy("artwork.serial", "ASC")
@@ -76,9 +83,14 @@ export const fetchVersionDetails = async ({ versionId, connection }) => {
     .leftJoinAndSelect("artwork.current", "current")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .leftJoinAndSelect("version.cover", "cover")
-    .where("version.id = :versionId", {
-      versionId,
-    })
+    .where(
+      "version.id = :versionId AND artwork.active = :active AND artwork.visibility = :visibility",
+      {
+        versionId,
+        active: ARTWORK_ACTIVE_STATUS,
+        visibility: ARTWORK_VISIBILITY_STATUS,
+      }
+    )
     .getOne();
   console.log(foundVersion);
   return foundVersion;
@@ -128,10 +140,14 @@ export const fetchArtworkDetails = async ({
       "favorite.artworkId = :artworkId",
       { artworkId }
     )
-    .where("artwork.id = :artworkId AND artwork.active = :active", {
-      artworkId,
-      active: ARTWORK_ACTIVE_STATUS,
-    })
+    .where(
+      "artwork.id = :artworkId AND artwork.active = :active AND artwork.visibility = :visibility",
+      {
+        artworkId,
+        active: ARTWORK_ACTIVE_STATUS,
+        visibility: ARTWORK_VISIBILITY_STATUS,
+      }
+    )
     .getOne();
   if (foundArtwork && foundArtwork.owner) {
     foundArtwork.owner.rating = calculateRating({
@@ -144,6 +160,29 @@ export const fetchArtworkDetails = async ({
       width: foundArtwork.current.media.width,
     };
   }
+  console.log(foundArtwork);
+  return foundArtwork;
+};
+
+export const fetchArtworkEdit = async ({ artworkId, connection }) => {
+  // const foundArtwork = await Artwork.findOne({
+  //   where: [{ id: artworkId, active: true }],
+  //   relations: ["owner", "current"],
+  // });
+  // return foundArtwork;
+
+  // $TODO find count of favorites
+  const foundArtwork = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .where("artwork.id = :artworkId AND artwork.active = :active", {
+      artworkId,
+      active: ARTWORK_ACTIVE_STATUS,
+    })
+    .getOne();
   console.log(foundArtwork);
   return foundArtwork;
 };
@@ -164,10 +203,11 @@ export const fetchArtworkComments = async ({
     .getRepository(Comment)
     .createQueryBuilder("comment");
   const foundComments = await queryBuilder
+    .leftJoinAndSelect("comment.artwork", "artwork")
     .leftJoinAndSelect("comment.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .where(
-      `comment.artworkId = :artworkId AND comment.serial < 
+      `comment.artworkId = :artworkId AND artwork.visibility = :visibility AND comment.serial < 
       ${resolveSubQuery(
         queryBuilder,
         "comment",
@@ -177,6 +217,7 @@ export const fetchArtworkComments = async ({
       )}`,
       {
         artworkId,
+        visibility: ARTWORK_VISIBILITY_STATUS,
       }
     )
     .orderBy("comment.serial", "DESC")
@@ -184,42 +225,6 @@ export const fetchArtworkComments = async ({
     .getMany();
   console.log(foundComments);
   return foundComments;
-};
-
-// $TODO add appropriate visiblity tag
-export const fetchUserArtworks = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  // return await Artwork.find({
-  //   where: [{ owner: userId, active: true }],
-  //   relations: ["current"],
-  //   skip: cursor,
-  //   take: limit,
-  // });
-  const queryBuilder = await connection
-    .getRepository(Artwork)
-    .createQueryBuilder("artwork");
-  const foundArtwork = await queryBuilder
-    .leftJoinAndSelect("artwork.owner", "owner")
-    .leftJoinAndSelect("owner.avatar", "avatar")
-    .leftJoinAndSelect("artwork.current", "version")
-    .leftJoinAndSelect("version.cover", "cover")
-    .where(
-      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
-    ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
-      {
-        userId,
-        active: ARTWORK_ACTIVE_STATUS,
-      }
-    )
-    .orderBy("artwork.serial", "ASC")
-    .limit(limit)
-    .getMany();
-  console.log(foundArtwork);
-  return foundArtwork;
 };
 
 // $TODO isto kao i prethodni service samo bez skip i limit
@@ -380,7 +385,6 @@ export const addNewVersion = async ({
         description: artworkData.artworkDescription,
         // $TODO restore after tags implementation
         /* tags: artworkUpload.fileDominant, */
-        visibility: artworkData.artworkVisibility,
         coverId,
         mediaId,
         artworkId,
@@ -397,6 +401,7 @@ export const addNewArtwork = async ({
   artworkId,
   versionId,
   userId,
+  artworkVisibility,
   connection,
 }) => {
   /*   const newArtwork = new Artwork();
@@ -416,6 +421,7 @@ export const addNewArtwork = async ({
         ownerId: userId,
         currentId: versionId,
         active: true,
+        visibility: artworkVisibility,
         generated: false,
       },
     ])
@@ -466,9 +472,14 @@ export const fetchFavoritesCount = async ({ artworkId, connection }) => {
   const foundFavorites = await connection
     .getRepository(Favorite)
     .createQueryBuilder("favorite")
-    .where("favorite.artworkId = :artworkId", {
-      artworkId,
-    })
+    .leftJoinAndSelect("favorite.artwork", "artwork")
+    .where(
+      "favorite.artworkId = :artworkId AND artwork.visibility = :visibility",
+      {
+        artworkId,
+        visibility: ARTWORK_VISIBILITY_STATUS,
+      }
+    )
     .getCount();
   console.log(foundFavorites);
   return foundFavorites;
@@ -525,12 +536,13 @@ export const removeArtworkVersion = async ({ versionId, connection }) => {
 export const updateArtworkVersion = async ({
   artworkId,
   currentId,
+  artworkVisibility,
   connection,
 }) => {
   const updatedArtwork = await connection
     .createQueryBuilder()
     .update(Artwork)
-    .set({ currentId })
+    .set({ currentId, visibility: artworkVisibility })
     .where("id = :artworkId AND active = :active", {
       artworkId,
       active: ARTWORK_ACTIVE_STATUS,
@@ -550,7 +562,11 @@ export const deactivateArtworkVersion = async ({ artworkId, connection }) => {
   const updatedArtwork = await connection
     .createQueryBuilder()
     .update(Artwork)
-    .set({ active: false, current: null })
+    .set({
+      active: false,
+      visibility: ARTWORK_INVISIBILITY_STATUS,
+      current: null,
+    })
     .where("id = :artworkId AND active = :active", {
       artworkId,
       active: ARTWORK_ACTIVE_STATUS,
@@ -572,7 +588,7 @@ export const deactivateExistingArtwork = async ({ artworkId, connection }) => {
   const updatedArtwork = await connection
     .createQueryBuilder()
     .update(Artwork)
-    .set({ active: false })
+    .set({ active: false, visibility: ARTWORK_INVISIBILITY_STATUS })
     .where("id = :artworkId AND active = :active", {
       artworkId,
       active: ARTWORK_ACTIVE_STATUS,
