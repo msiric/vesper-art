@@ -16,6 +16,19 @@ export const postReset = {
   success: { message: "Password successfully reset", variant: "success" },
   error: { message: "Failed to reset password", variant: "error" },
 };
+export const postRefresh = {
+  request: async () =>
+    await ax.post("/api/auth/refresh_token", {
+      headers: {
+        credentials: "include",
+      },
+    }),
+  success: {
+    message: "Access token successfully refreshed",
+    variant: "success",
+  },
+  error: { message: "Failed to refresh access token", variant: "error" },
+};
 export const postSignup = {
   request: async ({ data }) => await ax.post("/api/auth/signup", data),
   success: { message: "User successfully signed up", variant: "success" },

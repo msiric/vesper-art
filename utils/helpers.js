@@ -117,7 +117,12 @@ export const isAuthenticated = async (req, res, next) => {
       ignoreExpiration: true,
     });
     const data = jwt.decode(token);
-    if (Date.now() >= data.exp * 1000 || !data.active)
+    console.log("DATA", data);
+    if (!data.active)
+      return next(createError(...formatError(errors.forbiddenAccess)));
+    if (!data.verified)
+      return next(createError(...formatError(errors.forbiddenAccess)));
+    if (Date.now() >= data.exp * 1000)
       return next(createError(...formatError(errors.notAuthenticated)));
     res.locals.user = data;
   } catch (err) {
@@ -267,11 +272,41 @@ export const formatResponse = ({ status, message, expose, ...rest }) => ({
   ...rest,
 });
 
-export const handleDelegatedError = ({ err }) => ({
-  status:
-    err.name === "ValidationError"
-      ? statusCodes.badRequest
-      : err.status || statusCodes.internalError,
-  message: err.message || errors.internalServerError.message,
-  expose: err.expose || true,
-});
+export const handleDelegatedError = ({ err }) => {
+  return {
+    status:
+      err.name === "ValidationError"
+        ? statusCodes.badRequest
+        : err.status || statusCodes.internalError,
+    message: err.message || errors.internalServerError.message,
+    expose: err.expose || true,
+  };
+};
+
+export const formatTokenData = ({ user }) => {
+  const tokenPayload = {
+    id: user.id,
+    name: user.name,
+    jwtVersion: user.jwtVersion,
+    onboarded: !!user.stripeId,
+    active: user.active,
+    verified: user.verified,
+  };
+
+  const userInfo = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    avatar: user.avatar,
+    notifications: user.notifications,
+    active: user.active,
+    stripeId: user.stripeId,
+    country: user.country,
+    businessAddress: user.businessAddress,
+    jwtVersion: user.jwtVersion,
+    favorites: user.favorites,
+    intents: user.intents,
+  };
+
+  return { tokenPayload, userInfo };
+};

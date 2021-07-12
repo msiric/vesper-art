@@ -4,13 +4,14 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import useSound from "use-sound";
+import { auth } from "../../../../common/constants";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import Backdrop from "../../components/Backdrop";
 import { useAppStore } from "../../contexts/global/app";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
 import App from "../../pages/App/App";
-import { postLogout } from "../../services/user";
+import { postRefresh } from "../../services/auth";
 
 const ax = axios.create();
 export const socket = { instance: null, payload: null };
@@ -40,6 +41,11 @@ const Interceptor = () => {
 
   const history = useHistory();
   const { enqueueSnackbar } = useSnackbar();
+
+  const handleAuthError = () => {
+    resetUser();
+    if (history) history.push("/login");
+  };
 
   const getRefreshToken = async () => {
     try {
@@ -108,73 +114,58 @@ const Interceptor = () => {
             variant: "success",
           });
         }
-        return response;
+        return Promise.resolve(response);
       },
       async (error) => {
         console.log("ERROR", error);
-        if (error.response.status !== 401) {
+        if (
+          error.response &&
+          error.response.config.url === auth.refreshEndpoint
+        ) {
+          handleAuthError();
+          return Promise.reject(error);
+        }
+        if (
+          error.message === auth.errorMessage ||
+          (error.response && error.response.status === 401)
+        ) {
+          if (socket && socket.instance) socket.instance.emit("disconnectUser");
+          const { data } = await postRefresh.request();
+          updateUser({
+            token: data.accessToken,
+            email: data.user.email,
+            avatar: data.user.avatar,
+            stripeId: data.user.stripeId,
+            country: data.user.country,
+            favorites: data.user.favorites.reduce((object, item) => {
+              object[item.artworkId] = true;
+              return object;
+            }, {}),
+            intents: data.user.intents.reduce((object, item) => {
+              object[item.artworkId] = item.intentId;
+              return object;
+            }, {}),
+          });
+          updateEvents({
+            notifications: { count: data.user.notifications },
+          });
+          const config = error.config;
+          config._retry = true;
+          config.headers["Authorization"] = `Bearer ${data.accessToken}`;
+
+          return ax(config);
+        }
+        if (error.response && error.response.status !== 401) {
           if (error.response.data && error.response.data.expose) {
             enqueueSnackbar(error.response.data.message, {
               variant: "error",
             });
           }
-          return new Promise((resolve, reject) => {
-            reject(error);
-          });
+          return Promise.reject(error);
         }
-        socket.instance.emit("disconnectUser");
-        if (
-          error.config.url === "/api/auth/refresh_token" ||
-          error.response.message === "Forbidden"
-        ) {
-          await postLogout.request();
-          resetUser();
-          history.push("/login");
-
-          return new Promise((resolve, reject) => {
-            reject(error);
-          });
-        }
-        const { data } = await axios.post("/api/auth/refresh_token", {
-          headers: {
-            credentials: "include",
-          },
-        });
-        console.log("UPDATE REFRESH TOKEN");
-        updateUser({
-          token: data.accessToken,
-          email: data.user.email,
-          avatar: data.user.avatar,
-          stripeId: data.user.stripeId,
-          country: data.user.country,
-          favorites: data.user.favorites.reduce((object, item) => {
-            object[item.artworkId] = true;
-            return object;
-          }, {}),
-          intents: data.user.intents.reduce((object, item) => {
-            object[item.artworkId] = item.intentId;
-            return object;
-          }, {}),
-        });
-        updateEvents({
-          notifications: { count: data.user.notifications },
-        });
-        const config = error.config;
-        config.headers["Authorization"] = `Bearer ${data.accessToken}`;
-
-        return new Promise((resolve, reject) => {
-          axios
-            .request(config)
-            .then((response) => {
-              resolve(response);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return Promise.reject(error);
       }
     );
-
     handleSocket(token);
   };
 

@@ -67,7 +67,6 @@ export const tokens = {
   accessExpiry: process.env.ACCESS_TOKEN_EXPIRY,
   refreshToken: process.env.REFRESH_TOKEN_SECRET,
   refreshExpiry: process.env.REFRESH_TOKEN_EXPIRY,
-  refreshPath: "api/auth/refresh_token",
 };
 
 export const uuid = {

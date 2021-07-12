@@ -36,6 +36,7 @@ import { sendEmail } from "../utils/email";
 import {
   formatError,
   formatResponse,
+  formatTokenData,
   generateResetToken,
   generateUuids,
   generateVerificationToken,
@@ -58,6 +59,7 @@ export const postSignUp = async ({
   });
   const foundId = await fetchUserIdByCreds({
     userUsername,
+    userEmail,
     connection,
   });
   if (foundId) {
@@ -119,28 +121,7 @@ export const postLogIn = async ({
       }
     }
 
-    const tokenPayload = {
-      id: foundUser.id,
-      name: foundUser.name,
-      jwtVersion: foundUser.jwtVersion,
-      onboarded: !!foundUser.stripeId,
-      active: foundUser.active,
-    };
-
-    const userInfo = {
-      id: foundUser.id,
-      name: foundUser.name,
-      email: foundUser.email,
-      avatar: foundUser.avatar,
-      notifications: foundUser.notifications,
-      active: foundUser.active,
-      stripeId: foundUser.stripeId,
-      country: foundUser.country,
-      businessAddress: foundUser.businessAddress,
-      jwtVersion: foundUser.jwtVersion,
-      favorites: foundUser.favorites,
-      intents: foundUser.intents,
-    };
+    const { tokenPayload, userInfo } = formatTokenData({ user: foundUser });
 
     sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
 

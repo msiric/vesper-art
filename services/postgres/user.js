@@ -33,14 +33,18 @@ const USER_VERIFICATION_INFO = [
 ];
 const USER_AUTH_INFO = ["user.password", "user.jwtVersion"];
 
-export const fetchUserIdByCreds = async ({ userUsername, connection }) => {
+export const fetchUserIdByCreds = async ({
+  userUsername,
+  userEmail,
+  connection,
+}) => {
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
     .select("user.id")
     .where(
-      "(user.name = :name OR user.email = :name) AND user.active = :active",
-      { name: userUsername, active: USER_ACTIVE_STATUS }
+      "(user.name = :name OR user.email = :email) AND user.active = :active",
+      { name: userUsername, email: userEmail, active: USER_ACTIVE_STATUS }
     )
     .getOne();
   console.log(foundUser);

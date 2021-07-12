@@ -44,6 +44,11 @@ export const payment = featureFlags.stripe
     }
   : {};
 
+export const auth = {
+  refreshEndpoint: "/api/auth/refresh_token",
+  errorMessage: "Network Error",
+};
+
 export const statusCodes = {
   ok: 200,
   created: 201,

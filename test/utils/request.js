@@ -7,6 +7,7 @@ export const fakeUser = {
   onboarded: false,
   jwtVersion: 0,
   active: true,
+  verified: true,
 };
 
 export const token = "test";

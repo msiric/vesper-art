@@ -10,8 +10,9 @@ export const deleteEmptyValues = (values) => {
       typeof values[value] !== "boolean" &&
       isNaN(values[value]) &&
       !values[value]
-    )
+    ) {
       delete values[value];
+    }
   }
   return values;
 };
@@ -23,14 +24,17 @@ export const resolvePaginationId = (data) => {
 export const resolveAsyncError = (err, isInfinite = false) => {
   console.log(err);
   console.log(err.response);
-  const statusCode = err.response.data.status_code;
-  const notFound = statusCode === statusCodes.notFound;
-  const errorObj = isInfinite
-    ? { refetch: true, message: "" }
-    : notFound
-    ? { redirect: true, message: "" }
-    : { retry: true, message: "" };
-  return errorObj;
+  if (err && err.response) {
+    const statusCode = err.response.data.status_code;
+    const notFound = statusCode === statusCodes.notFound;
+    const errorObj = isInfinite
+      ? { refetch: true, message: "" }
+      : notFound
+      ? { redirect: true, message: "" }
+      : { retry: true, message: "" };
+    return errorObj;
+  }
+  return;
 };
 
 export const displayValidLicense = (use, type) => {
