@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import { renderFreeLicenses } from "../common/helpers";
+import { isObjectEmpty, renderFreeLicenses } from "../common/helpers";
 import { downloadValidation, licenseValidation } from "../common/validation";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/postgres/artwork";
@@ -12,7 +12,7 @@ import { errors, responses } from "../utils/statuses";
 
 export const getCheckout = async ({ userId, versionId, connection }) => {
   const foundVersion = await fetchVersionDetails({ versionId, connection });
-  if (foundVersion && foundVersion.artwork.active) {
+  if (!isObjectEmpty(foundVersion)) {
     return {
       version: foundVersion,
     };
@@ -31,7 +31,7 @@ export const postDownload = async ({
   connection,
 }) => {
   const foundVersion = await fetchVersionDetails({ versionId, connection });
-  if (foundVersion) {
+  if (!isObjectEmpty(foundVersion)) {
     await licenseValidation.validate({
       licenseAssignee,
       licenseCompany,
@@ -44,7 +44,7 @@ export const postDownload = async ({
       const licensePrice = foundVersion[licenseType];
       // $TODO Treba li dohvacat usera?
       const foundUser = await fetchUserById({ userId, connection });
-      if (foundUser) {
+      if (!isObjectEmpty(foundUser)) {
         if (foundVersion.id === foundVersion.artwork.currentId) {
           if (foundVersion.artwork.owner.id !== foundUser.id) {
             const { licenseId, orderId, notificationId } = generateUuids({
@@ -52,7 +52,7 @@ export const postDownload = async ({
               orderId: null,
               notificationId: null,
             });
-            const savedLicense = await addNewLicense({
+            await addNewLicense({
               licenseId,
               userId: foundUser.id,
               artworkId: foundVersion.artwork.id,

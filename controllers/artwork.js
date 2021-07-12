@@ -1,6 +1,7 @@
 import createError from "http-errors";
 import {
   formatArtworkValues,
+  isArrayEmpty,
   isObjectEmpty,
   isVersionDifferent,
   verifyVersionValidity,
@@ -197,7 +198,7 @@ export const updateArtwork = async ({
     userId,
     connection,
   });
-  if (foundArtwork) {
+  if (!isObjectEmpty(foundArtwork)) {
     const shouldUpdate = isVersionDifferent(
       formattedData,
       foundArtwork.current
@@ -289,7 +290,7 @@ export const deleteArtwork = async ({
         artworkId: foundArtwork.id,
         connection,
       });
-      if (!foundOrders.length) {
+      if (isArrayEmpty(foundOrders)) {
         const oldVersion = foundArtwork.current;
         await deactivateArtworkVersion({ artworkId, connection });
         await deleteS3Object({
@@ -341,13 +342,13 @@ export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
     }),
     fetchArtworkById({ artworkId, connection }),
   ]);
-  if (foundArtwork) {
+  if (!isObjectEmpty(foundArtwork)) {
     if (foundArtwork.owner.id !== userId) {
-      if (!foundFavorite) {
+      if (isObjectEmpty(foundFavorite)) {
         const { favoriteId } = generateUuids({
           favoriteId: null,
         });
-        const savedFavorite = await addNewFavorite({
+        await addNewFavorite({
           favoriteId,
           userId,
           artworkId,
@@ -371,9 +372,9 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
     }),
     fetchArtworkById({ artworkId, connection }),
   ]);
-  if (foundArtwork) {
+  if (!isObjectEmpty(foundArtwork)) {
     if (foundArtwork.owner.id !== userId) {
-      if (foundFavorite) {
+      if (!isObjectEmpty(foundFavorite)) {
         await removeExistingFavorite({
           favoriteId: foundFavorite.id,
           connection,

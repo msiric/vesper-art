@@ -85,13 +85,16 @@ export const receiveWebhookEvent = async ({
 
 export const getStripeUser = async ({ accountId }) => {
   const foundAccount = await fetchStripeAccount({ accountId });
-  return {
-    capabilities: {
-      cardPayments: foundAccount.capabilities.card_payments,
-      // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
-      platformPayments: foundAccount.capabilities.transfers,
-    },
-  };
+  if (!isObjectEmpty(foundAccount)) {
+    return {
+      capabilities: {
+        cardPayments: foundAccount.capabilities.card_payments,
+        // $TODO foundAccount.capabilities.platform_payments (platform_payments are deprecated, now called "transfers")
+        platformPayments: foundAccount.capabilities.transfers,
+      },
+    };
+  }
+  throw createError(...formatError(errors.userNotFound));
 };
 
 // $TODO just inserted needs heavy testing
@@ -172,142 +175,133 @@ export const managePaymentIntent = async ({
   connection,
 }) => {
   const foundUser = await fetchUserById({ userId, connection });
-  if (foundUser) {
+  if (!isObjectEmpty(foundUser)) {
     const foundVersion = await fetchVersionDetails({ versionId, connection });
-    if (foundVersion) {
-      if (foundVersion.artwork.active) {
-        if (foundVersion.id === foundVersion.artwork.currentId) {
-          if (foundVersion.artwork.owner.id !== foundUser.id) {
-            // FEATURE FLAG - discount
-            const foundDiscount =
-              discountId && featureFlags.discount
-                ? await fetchDiscountById({ discountId, connection })
-                : {};
-            if (!(discountId && isObjectEmpty(foundDiscount))) {
-              const foundIntent = await fetchIntentByParents({
-                userId: foundUser.id,
-                versionId: foundVersion.id,
-                connection,
+    if (!isObjectEmpty(foundVersion)) {
+      if (foundVersion.id === foundVersion.artwork.currentId) {
+        if (foundVersion.artwork.owner.id !== foundUser.id) {
+          // FEATURE FLAG - discount
+          const foundDiscount =
+            discountId && featureFlags.discount
+              ? await fetchDiscountById({ discountId, connection })
+              : {};
+          if (!(discountId && isObjectEmpty(foundDiscount))) {
+            const foundIntent = await fetchIntentByParents({
+              userId: foundUser.id,
+              versionId: foundVersion.id,
+              connection,
+            });
+            const verifiedIntent = !isObjectEmpty(foundIntent)
+              ? await retrieveStripeIntent({
+                  intentId: foundIntent.id,
+                  connection,
+                })
+              : {};
+            const shouldReinitialize =
+              isObjectEmpty(verifiedIntent) || !isIntentPending(verifiedIntent);
+            if (!(shouldReinitialize && !isObjectEmpty(foundDiscount))) {
+              const licenseData = shouldReinitialize
+                ? {
+                    licenseAssignee: artworkLicense.assignee,
+                    licenseCompany: artworkLicense.company,
+                    licenseType: artworkLicense.type,
+                  }
+                : { licenseType: artworkLicense.type };
+              const availableLicenses = renderCommercialLicenses({
+                version: foundVersion,
               });
-              const verifiedIntent = !isObjectEmpty(foundIntent)
-                ? await retrieveStripeIntent({
-                    intentId: foundIntent.id,
-                    connection,
-                  })
-                : {};
-              const shouldReinitialize =
-                isObjectEmpty(verifiedIntent) ||
-                !isIntentPending(verifiedIntent);
-              if (!(shouldReinitialize && !isObjectEmpty(foundDiscount))) {
-                const licenseData = shouldReinitialize
-                  ? {
-                      licenseAssignee: artworkLicense.assignee,
-                      licenseCompany: artworkLicense.company,
-                      licenseType: artworkLicense.type,
-                    }
-                  : { licenseType: artworkLicense.type };
-                const availableLicenses = renderCommercialLicenses({
-                  version: foundVersion,
-                });
-                if (
-                  availableLicenses.some(
-                    (item) => item.value === artworkLicense.type
-                  )
-                ) {
-                  shouldReinitialize
-                    ? await licenseValidation.validate({
-                        ...licenseData,
-                      })
-                    : await Yup.reach(
-                        licenseValidation,
-                        "licenseType"
-                      ).validate(licenseData.licenseType);
-                  const {
-                    buyerTotal,
-                    sellerTotal,
-                    platformTotal,
-                    licensePrice,
-                  } = calculateTotalCharge({
+              if (
+                availableLicenses.some(
+                  (item) => item.value === artworkLicense.type
+                )
+              ) {
+                shouldReinitialize
+                  ? await licenseValidation.validate({
+                      ...licenseData,
+                    })
+                  : await Yup.reach(licenseValidation, "licenseType").validate(
+                      licenseData.licenseType
+                    );
+                const { buyerTotal, sellerTotal, platformTotal, licensePrice } =
+                  calculateTotalCharge({
                     foundVersion,
                     foundDiscount,
                     licenseType: licenseData.licenseType,
                   });
-                  const orderData = {
-                    ...(shouldReinitialize && { buyerId: foundUser.id }),
-                    ...(shouldReinitialize && {
-                      sellerId: foundVersion.artwork.owner.id,
-                    }),
-                    ...(shouldReinitialize && {
-                      artworkId: foundVersion.artwork.id,
-                    }),
-                    ...(shouldReinitialize && {
-                      versionId: foundVersion.id,
-                    }),
-                    discountId: !isObjectEmpty(foundDiscount)
-                      ? foundDiscount.id
-                      : null,
-                    spent: buyerTotal,
-                    earned: sellerTotal,
-                    fee: platformTotal,
-                    licenseData: {
-                      ...licenseData,
-                      licensePrice: licensePrice,
-                    },
-                  };
-                  // remove succeeded/canceled intent
-                  if (
-                    !isObjectEmpty(verifiedIntent) &&
-                    !isIntentPending(verifiedIntent)
-                  ) {
-                    await removeExistingIntent({
-                      intentId: verifiedIntent.id,
+                const orderData = {
+                  ...(shouldReinitialize && { buyerId: foundUser.id }),
+                  ...(shouldReinitialize && {
+                    sellerId: foundVersion.artwork.owner.id,
+                  }),
+                  ...(shouldReinitialize && {
+                    artworkId: foundVersion.artwork.id,
+                  }),
+                  ...(shouldReinitialize && {
+                    versionId: foundVersion.id,
+                  }),
+                  discountId: !isObjectEmpty(foundDiscount)
+                    ? foundDiscount.id
+                    : null,
+                  spent: buyerTotal,
+                  earned: sellerTotal,
+                  fee: platformTotal,
+                  licenseData: {
+                    ...licenseData,
+                    licensePrice: licensePrice,
+                  },
+                };
+                // remove succeeded/canceled intent
+                if (
+                  !isObjectEmpty(verifiedIntent) &&
+                  !isIntentPending(verifiedIntent)
+                ) {
+                  await removeExistingIntent({
+                    intentId: verifiedIntent.id,
+                    connection,
+                  });
+                }
+                const paymentIntent = shouldReinitialize
+                  ? await constructStripeIntent({
+                      intentMethod: "card",
+                      intentAmount: buyerTotal,
+                      intentCurrency: "usd",
+                      intentFee: platformTotal,
+                      sellerId: foundVersion.artwork.owner.stripeId,
+                      orderData,
+                      connection,
+                    })
+                  : await updateStripeIntent({
+                      intentAmount: buyerTotal,
+                      intentFee: platformTotal,
+                      intentData: verifiedIntent,
+                      orderData,
                       connection,
                     });
-                  }
-                  const paymentIntent = shouldReinitialize
-                    ? await constructStripeIntent({
-                        intentMethod: "card",
-                        intentAmount: buyerTotal,
-                        intentCurrency: "usd",
-                        intentFee: platformTotal,
-                        sellerId: foundVersion.artwork.owner.stripeId,
-                        orderData,
-                        connection,
-                      })
-                    : await updateStripeIntent({
-                        intentAmount: buyerTotal,
-                        intentFee: platformTotal,
-                        intentData: verifiedIntent,
-                        orderData,
-                        connection,
-                      });
-                  // $TODO delete intent in the db if it succeeded or got canceled already
-                  const savedIntent =
-                    shouldReinitialize &&
-                    (await addNewIntent({
-                      intentId: paymentIntent.id,
-                      userId: foundUser.id,
-                      versionId: foundVersion.id,
-                      connection,
-                    }));
-                  return {
-                    intent: {
-                      id: paymentIntent.id,
-                      secret: paymentIntent.client_secret,
-                    },
-                  };
-                }
-                throw createError(...formatError(errors.artworkLicenseInvalid));
+                // $TODO delete intent in the db if it succeeded or got canceled already
+                const savedIntent =
+                  shouldReinitialize &&
+                  (await addNewIntent({
+                    intentId: paymentIntent.id,
+                    userId: foundUser.id,
+                    versionId: foundVersion.id,
+                    connection,
+                  }));
+                return {
+                  intent: {
+                    id: paymentIntent.id,
+                    secret: paymentIntent.client_secret,
+                  },
+                };
               }
-              throw createError(...formatError(errors.paymentNotProcessed));
+              throw createError(...formatError(errors.artworkLicenseInvalid));
             }
-            throw createError(...formatError(errors.discountNotApplied));
+            throw createError(...formatError(errors.paymentNotProcessed));
           }
-          throw createError(...formatError(errors.artworkDownloadedByOwner));
+          throw createError(...formatError(errors.discountNotApplied));
         }
-        throw createError(...formatError(errors.artworkVersionObsolete));
+        throw createError(...formatError(errors.artworkDownloadedByOwner));
       }
-      throw createError(...formatError(errors.artworkNoLongerActive));
+      throw createError(...formatError(errors.artworkVersionObsolete));
     }
     throw createError(...formatError(errors.artworkNotFound));
   }
@@ -420,7 +414,7 @@ export const fetchIntentById = async ({ userId, intentId, connection }) => {
 
 export const createPayout = async ({ userId, connection }) => {
   const foundUser = await fetchUserById({ userId, connection });
-  if (foundUser.stripeId) {
+  if (!isObjectEmpty(foundUser) && foundUser.stripeId) {
     const balance = await fetchStripeBalance({
       stripeId: foundUser.stripeId,
       connection,

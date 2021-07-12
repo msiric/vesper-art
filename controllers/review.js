@@ -21,14 +21,14 @@ export const postReview = async ({
     userId,
     connection,
   });
-  if (foundOrder) {
-    if (isObjectEmpty(foundOrder.review)) {
+  if (!isObjectEmpty(foundOrder)) {
+    if (!foundOrder.review) {
       const { reviewId, notificationId } = generateUuids({
         reviewId: null,
         notificationId: null,
       });
       // $TODO should this be saved or just returned?
-      const savedReview = await addNewReview({
+      await addNewReview({
         reviewId,
         orderData: foundOrder,
         reviewerId: userId,
@@ -41,7 +41,7 @@ export const postReview = async ({
           .add(reviewRating);
         const denominator = currency(foundOrder.seller.reviews).add(1);
         const newRating = currency(numerator).divide(denominator); */
-      const updatedOrder = await addOrderReview({
+      await addOrderReview({
         reviewId,
         orderId,
         userId,

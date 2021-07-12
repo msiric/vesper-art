@@ -1,6 +1,6 @@
 import argon2 from "argon2";
 import createError from "http-errors";
-import { isObjectEmpty } from "../common/helpers";
+import { isArrayEmpty, isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
   originValidation,
@@ -77,7 +77,7 @@ export const getUserProfile = async ({
     limit,
     connection,
   });
-  if (foundUser) return { user: foundUser };
+  if (!isObjectEmpty(foundUser)) return { user: foundUser };
   throw createError(...formatError(errors.userNotFound));
 };
 
@@ -136,16 +136,19 @@ export const getUserFavorites = async ({
     userUsername,
     connection,
   });
-  if (foundUser.displayFavorites) {
-    const foundFavorites = await fetchUserFavorites({
-      userId: foundUser.id,
-      cursor,
-      limit,
-      connection,
-    });
-    return { favorites: foundFavorites };
+  if (!isObjectEmpty(foundUser)) {
+    if (foundUser.displayFavorites) {
+      const foundFavorites = await fetchUserFavorites({
+        userId: foundUser.id,
+        cursor,
+        limit,
+        connection,
+      });
+      return { favorites: foundFavorites };
+    }
+    throw createError(...formatError(errors.userFavoritesNotAllowed));
   }
-  throw createError(...formatError(errors.userFavoritesNotAllowed));
+  throw createError(...formatError(errors.userNotFound));
 };
 
 // $TODO ne valja nista
@@ -158,11 +161,13 @@ export const getBuyerStatistics = async ({ userId, connection }) => {
     fetchUserFavorites({ userId, connection }),
     fetchUserPurchases({ userId, connection }),
   ]);
-  console.log("aaa", foundUser, foundFavorites, foundPurchases);
-  return {
-    purchases: foundPurchases,
-    favorites: foundFavorites,
-  };
+  if (!isObjectEmpty(foundUser)) {
+    return {
+      purchases: foundPurchases,
+      favorites: foundFavorites,
+    };
+  }
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const getSellerStatistics = async ({ userId, connection }) => {
@@ -174,13 +179,15 @@ export const getSellerStatistics = async ({ userId, connection }) => {
     fetchUserReviews({ userId, connection }),
     fetchUserSales({ userId, connection }),
   ]);
-  const balance = await fetchStripeBalance({
-    stripeId: foundUser.stripeId,
-    connection,
-  });
-  console.log("aaa", foundUser, foundReviews, foundSales);
-  const { amount } = balance.available[0];
-  return { sales: foundSales, amount, reviews: foundReviews };
+  if (!isObjectEmpty(foundUser)) {
+    const balance = await fetchStripeBalance({
+      stripeId: foundUser.stripeId,
+      connection,
+    });
+    const { amount } = balance.available[0];
+    return { sales: foundSales, amount, reviews: foundReviews };
+  }
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const getUserSales = async ({ userId, start, end, connection }) => {
@@ -212,7 +219,7 @@ export const updateUserOrigin = async ({
 }) => {
   await originValidation.validate({ userBusinessAddress });
   const foundUser = await fetchUserById({ userId, connection });
-  if (foundUser) {
+  if (!isObjectEmpty(foundUser)) {
     await editUserOrigin({
       userId: foundUser.id,
       userBusinessAddress,
@@ -241,65 +248,68 @@ export const updateUserProfile = async ({
   });
   await profileValidation.validate(userData);
   const foundUser = await fetchUserById({ userId, connection });
-  let avatarId = null;
-  if (avatarUpload.fileMedia) {
-    if (foundUser.avatar) {
-      await deleteS3Object({
-        fileLink: foundUser.avatar.source,
-        folderName: "userMedia/",
-      });
-      const updatedAvatar = await editUserAvatar({
-        userId: foundUser.id,
-        avatarUpload,
-        connection,
-      });
-      avatarId = updatedAvatar.raw[0].id;
-    } else {
-      ({ avatarId } = generateUuids({
-        avatarId: null,
-      }));
-      await addUserAvatar({
+  if (!isObjectEmpty(foundUser)) {
+    let avatarId = null;
+    if (avatarUpload.fileMedia) {
+      if (foundUser.avatar) {
+        await deleteS3Object({
+          fileLink: foundUser.avatar.source,
+          folderName: "userMedia/",
+        });
+        const updatedAvatar = await editUserAvatar({
+          userId: foundUser.id,
+          avatarUpload,
+          connection,
+        });
+        avatarId = updatedAvatar.raw[0].id;
+      } else {
+        ({ avatarId } = generateUuids({
+          avatarId: null,
+        }));
+        await addUserAvatar({
+          avatarId,
+          userId: foundUser.id,
+          avatarUpload,
+          connection,
+        });
+      }
+      await editUserProfile({
+        foundUser,
+        userData,
         avatarId,
-        userId: foundUser.id,
-        avatarUpload,
         connection,
       });
-    }
-    await editUserProfile({
-      foundUser,
-      userData,
-      avatarId,
-      connection,
-    });
-  } else {
-    if (!foundUser.avatar) {
-      avatarId = null;
-    }
-    await editUserProfile({
-      foundUser,
-      userData,
-      avatarId,
-      connection,
-    });
-    if (foundUser.avatar) {
-      await deleteS3Object({
-        fileLink: foundUser.avatar.source,
-        folderName: "userMedia/",
-      });
-      await removeUserAvatar({
-        userId: foundUser.id,
-        avatarId: foundUser.avatar.id,
+    } else {
+      if (!foundUser.avatar) {
+        avatarId = null;
+      }
+      await editUserProfile({
+        foundUser,
+        userData,
+        avatarId,
         connection,
       });
+      if (foundUser.avatar) {
+        await deleteS3Object({
+          fileLink: foundUser.avatar.source,
+          folderName: "userMedia/",
+        });
+        await removeUserAvatar({
+          userId: foundUser.id,
+          avatarId: foundUser.avatar.id,
+          connection,
+        });
+      }
     }
+    return formatResponse(responses.userDetailsUpdated);
   }
-  return formatResponse(responses.userDetailsUpdated);
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const getUserSettings = async ({ userId, connection }) => {
   // $TODO Minimize overhead
   const foundUser = await fetchUserById({ userId, connection });
-  if (foundUser) {
+  if (!isObjectEmpty(foundUser)) {
     // $TODO change name
     return { user: foundUser };
   }
@@ -418,7 +428,7 @@ export const updateUserPreferences = async ({
 
 export const deactivateUser = async ({ userId, response, connection }) => {
   const foundUser = await fetchUserById({ userId, connection });
-  if (foundUser) {
+  if (!isObjectEmpty(foundUser)) {
     const foundArtwork = await fetchUserMedia({
       userId,
       connection,
@@ -429,7 +439,7 @@ export const deactivateUser = async ({ userId, response, connection }) => {
         artworkId: artwork.id,
         connection,
       });
-      if (!foundOrders.length) {
+      if (isArrayEmpty(foundOrders)) {
         const oldVersion = artwork.current;
         await deactivateArtworkVersion({ artworkId: artwork.id, connection });
         await deleteS3Object({
@@ -477,7 +487,7 @@ export const getUserMedia = async ({ userId, artworkId, connection }) => {
     artworkId,
     connection,
   });
-  if (foundMedia) {
+  if (!isObjectEmpty(foundMedia)) {
     const { url, file } = await getSignedS3Object({
       fileLink: foundMedia.source,
       folderName: "artworkMedia/",

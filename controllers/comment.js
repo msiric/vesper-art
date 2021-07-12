@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { isObjectEmpty } from "../common/helpers";
 import { commentValidation } from "../common/validation";
 import socketApi from "../lib/socket";
 import { fetchArtworkById } from "../services/postgres/artwork";
@@ -29,7 +30,7 @@ export const postComment = async ({
 }) => {
   await commentValidation.validate({ commentContent });
   const foundArtwork = await fetchArtworkById({ artworkId, connection });
-  if (foundArtwork) {
+  if (!isObjectEmpty(foundArtwork)) {
     const { commentId, notificationId } = generateUuids({
       commentId: null,
       notificationId: null,
@@ -73,7 +74,7 @@ export const patchComment = async ({
 }) => {
   await commentValidation.validate({ commentContent });
   const foundArtwork = await fetchArtworkById({ artworkId, connection });
-  if (foundArtwork) {
+  if (!isObjectEmpty(foundArtwork)) {
     await editExistingComment({
       commentId,
       artworkId,
@@ -93,7 +94,7 @@ export const deleteComment = async ({
   connection,
 }) => {
   const foundArtwork = await fetchArtworkById({ artworkId, connection });
-  if (foundArtwork) {
+  if (!isObjectEmpty(foundArtwork)) {
     await removeExistingComment({
       commentId,
       artworkId,

@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { isObjectEmpty } from "../common/helpers";
 import { getSignedS3Object } from "../lib/s3";
 import { fetchOrderDetails, fetchOrderMedia } from "../services/postgres/order";
 import { fetchUserPurchases, fetchUserSales } from "../services/postgres/user";
@@ -33,7 +34,7 @@ export const getOrderDetails = async ({ userId, orderId, connection }) => {
     orderId,
     connection,
   });
-  if (foundOrder) {
+  if (!isObjectEmpty(foundOrder)) {
     // let decreaseNotif = false;
     // notif
     // if (req.query.ref) {
@@ -74,7 +75,7 @@ export const getOrderMedia = async ({ userId, orderId, connection }) => {
     orderId,
     connection,
   });
-  if (foundMedia) {
+  if (!isObjectEmpty(foundMedia)) {
     const { url, file } = await getSignedS3Object({
       fileLink: foundMedia.source,
       folderName: "artworkMedia/",

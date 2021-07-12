@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { isObjectEmpty } from "../common/helpers";
 import { discountValidation } from "../common/validation";
 import {
   addNewDiscount,
@@ -15,7 +16,7 @@ export const getDiscount = async ({ userId, discountCode, connection }) => {
     discountCode,
     connection,
   });
-  if (foundDiscount) {
+  if (!isObjectEmpty(foundDiscount)) {
     return formatResponse({
       ...responses.discountApplied,
       payload: foundDiscount,

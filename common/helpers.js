@@ -58,7 +58,8 @@ export const verifyVersionValidity = async ({
       throw createError(...formatError(errors.stripeOnboardingIncomplete));
     if (
       (data.artworkPersonal || data.artworkCommercial) &&
-      (foundAccount.capabilities.card_payments !== "active" ||
+      (!foundAccount ||
+        foundAccount.capabilities.card_payments !== "active" ||
         foundAccount.capabilities.transfers !== "active")
     ) {
       throw createError(...formatError(errors.stripeAccountIncomplete));

@@ -382,8 +382,6 @@ export const fetchUserProfile = async ({
       active: USER_ACTIVE_STATUS,
     })
     .getOne();
-  if (foundUser.active) {
-  }
   foundUser.rating = calculateRating({
     active: foundUser.active,
     reviews: foundUser.reviews,
