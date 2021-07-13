@@ -15,7 +15,7 @@ router
   .route("/notifications")
   // $TODO not tested
   .get(
-    isAuthenticated,
+    [isAuthenticated],
     handler(getNotifications, false, (req, res, next) => ({}))
   );
 

@@ -7,11 +7,12 @@ import {
 
 const router = express.Router();
 
+// $TODO only for test (remove in prod)
 router
   .route("/contact")
   // $TODO not tested
   .post(
-    isAuthenticated,
+    [isAuthenticated],
     handler(postTicket, true, (req, res, next) => ({
       userEmail: res.locals.user ? res.locals.user.email : null,
     }))

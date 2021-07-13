@@ -356,7 +356,12 @@ export const deleteUserIntent = async ({ userId, intentId, connection }) => {
 };
 
 // $TODO Update user context with new data
-export const updateUserEmail = async ({ userId, userEmail, connection }) => {
+export const updateUserEmail = async ({
+  userId,
+  userEmail,
+  response,
+  connection,
+}) => {
   await emailValidation.validate({ userEmail });
   const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
   if (emailUsed) {
@@ -379,6 +384,7 @@ export const updateUserEmail = async ({ userId, userEmail, connection }) => {
 
         <a href=${verificationLink}>Click here to verify</a>`,
     });
+    logUserOut(response);
     return formatResponse(responses.emailAddressUpdated);
   }
 };

@@ -90,9 +90,8 @@ export const fetchUserIdByVerificationToken = async ({
       "user.verificationToken = :tokenId AND user.verificationExpiry > :dateNow AND user.active = :active",
       {
         tokenId,
-        // $TODO add constant
         dateNow: new Date(),
-        active: true,
+        active: USER_ACTIVE_STATUS,
       }
     )
     .getOne();
@@ -175,10 +174,14 @@ export const fetchUserByResetToken = async ({ tokenId, connection }) => {
       ...USER_VERIFICATION_INFO,
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
-    .where("user.resetToken = :token AND user.resetExpiry > :dateNow", {
-      token: tokenId,
-      dateNow: new Date(),
-    })
+    .where(
+      "user.resetToken = :token AND user.resetExpiry > :dateNow AND user.active = :active",
+      {
+        token: tokenId,
+        dateNow: new Date(),
+        active: USER_ACTIVE_STATUS,
+      }
+    )
     .getOne();
   console.log(foundUser);
   return foundUser;
@@ -213,8 +216,7 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
     )
     .where("user.id = :userId AND user.active = :active", {
       userId,
-      // $TODO add const
-      active: true,
+      active: USER_ACTIVE_STATUS,
     })
     .getOne();
   // temporary hacky solution
@@ -333,7 +335,7 @@ export const editUserStripe = async ({ userId, stripeId, connection }) => {
     .set({ stripeId })
     .where("id = :userId AND active = :active", {
       userId,
-      active: ARTWORK_ACTIVE_STATUS,
+      active: USER_ACTIVE_STATUS,
     })
     .execute();
   console.log(updatedUser);
@@ -678,8 +680,7 @@ export const editUserProfile = async ({
     })
     .where("id = :userId AND active = :active", {
       userId: foundUser.id,
-      // $TODO wat?
-      active: ARTWORK_ACTIVE_STATUS,
+      active: USER_ACTIVE_STATUS,
     })
     .execute();
   console.log(updatedUser);
@@ -754,8 +755,7 @@ export const editUserEmail = async ({
     })
     .where("id = :userId AND active = :active", {
       userId,
-      // $TODO wat?
-      active: ARTWORK_ACTIVE_STATUS,
+      active: USER_ACTIVE_STATUS,
     })
     .execute();
   console.log(updatedUser);
@@ -780,8 +780,7 @@ export const editUserPassword = async ({
     .set({ password: hashedPassword })
     .where("id = :userId AND active = :active", {
       userId,
-      // $TODO wat?
-      active: ARTWORK_ACTIVE_STATUS,
+      active: USER_ACTIVE_STATUS,
     })
     .execute();
   console.log(updatedUser);
@@ -806,8 +805,7 @@ export const editUserPreferences = async ({
     .set({ displayFavorites: userFavorites })
     .where("id = :userId AND active = :active", {
       userId,
-      // $TODO wat?
-      active: ARTWORK_ACTIVE_STATUS,
+      active: USER_ACTIVE_STATUS,
     })
     .execute();
   console.log(updatedUser);
@@ -905,8 +903,7 @@ export const editUserOrigin = async ({
     .set({ businessAddress: userBusinessAddress })
     .where("id = :userId AND active = :active", {
       userId,
-      // $TODO wat?
-      active: ARTWORK_ACTIVE_STATUS,
+      active: USER_ACTIVE_STATUS,
     })
     .execute();
   console.log(updatedUser);
@@ -957,8 +954,7 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
     })
     .where("id = :userId AND active = :active", {
       userId,
-      // $TODO wat?
-      active: ARTWORK_ACTIVE_STATUS,
+      active: USER_ACTIVE_STATUS,
     })
     .execute();
   console.log(updatedUser);

@@ -63,6 +63,7 @@ router
     }))
   );
 
+// $TODO only for admin (remove in prod)
 router
   .route("/revoke_token/:userId")
   // $TODO not tested

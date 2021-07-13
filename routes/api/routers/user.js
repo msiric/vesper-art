@@ -210,6 +210,7 @@ router
     handler(updateUserEmail, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
+      response: res,
     }))
   );
 

@@ -81,6 +81,7 @@ router
   );
 
 router.route("/artwork/:artworkId/edit").get(
+  [isAuthenticated],
   handler(getArtworkEdit, false, (req, res, next) => ({
     ...req.params,
   }))
@@ -108,7 +109,6 @@ router
   .route("/artwork/:artworkId/comments/:commentId")
   // $TODO not tested
   .get(
-    [isAuthenticated],
     handler(getComment, false, (req, res, next) => ({
       ...req.params,
     }))
@@ -132,7 +132,6 @@ router
 router
   .route("/artwork/:artworkId/favorites")
   .get(
-    [isAuthenticated],
     handler(fetchArtworkFavorites, false, (req, res, next) => ({
       ...req.params,
     }))
