@@ -9,6 +9,7 @@ import { User } from "../../entities/User";
 import { calculateRating, resolveSubQuery } from "../../utils/helpers";
 
 const USER_ACTIVE_STATUS = true;
+const USER_VERIFIED_STATUS = true;
 const ARTWORK_ACTIVE_STATUS = true;
 const ARTWORK_VISIBILITY_STATUS = ArtworkVisibility.visible;
 const USER_ESSENTIAL_INFO = [
@@ -214,10 +215,14 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
       "favorite.ownerId = :userId",
       { userId }
     )
-    .where("user.id = :userId AND user.active = :active", {
-      userId,
-      active: USER_ACTIVE_STATUS,
-    })
+    .where(
+      "user.id = :userId AND user.active = :active AND user.verified = :verified",
+      {
+        userId,
+        active: USER_ACTIVE_STATUS,
+        verified: USER_VERIFIED_STATUS,
+      }
+    )
     .getOne();
   // temporary hacky solution
   foundUser.notifications = foundUser.notifications.length;
