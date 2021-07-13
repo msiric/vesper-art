@@ -67,6 +67,13 @@ export const statusCodes = {
   internalError: 500,
 };
 
+export const usernames = {
+  admin: true,
+  administrator: true,
+  mod: true,
+  moderator: true,
+};
+
 export const countries = [
   { text: "Afghanistan", value: "AF", supported: false },
   { text: "Åland Islands", value: "AX", supported: false },

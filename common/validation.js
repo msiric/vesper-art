@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { pricing, statusCodes, upload } from "./constants";
+import { pricing, statusCodes, upload, usernames } from "./constants";
 
 export const errors = {
   artworkTitleRequired: {
@@ -180,7 +180,7 @@ export const errors = {
   },
   userPasswordMin: {
     status: statusCodes.badRequest,
-    message: "Password must contain at least 8 characters",
+    message: "Password must contain at least 10 characters",
     expose: true,
   },
   artworkMediaRequired: {
@@ -274,6 +274,11 @@ export const errors = {
     status: statusCodes.badRequest,
     message:
       "Username can only contain letters, numbers, underscores and periods",
+    expose: true,
+  },
+  userUsernameBlacklisted: {
+    status: statusCodes.badRequest,
+    message: "Username not allowed",
     expose: true,
   },
   userUsernameMin: {
@@ -542,12 +547,11 @@ export const loginValidation = Yup.object().shape({
     .trim()
     .min(5, errors.userUsernameMin.message)
     .max(20, errors.userUsernameMax.message)
-    .lowercase()
     .required(errors.userUsernameRequired.message),
   userPassword: Yup.string()
     .typeError(errors.invalidString.message)
     .trim()
-    .min(8, errors.userPasswordMin.message)
+    .min(10, errors.userPasswordMin.message)
     .required(errors.userPasswordRequired.message),
 });
 
@@ -695,7 +699,7 @@ export const passwordValidation = Yup.object().shape({
     .required(errors.userPasswordRequired.message),
   userPassword: Yup.string()
     .typeError(errors.invalidString.message)
-    .min(8, errors.userPasswordMin.message)
+    .min(10, errors.userPasswordMin.message)
     .required(errors.userNewRequired.message),
   userConfirm: Yup.string()
     .typeError(errors.invalidString.message)
@@ -729,7 +733,7 @@ export const resetValidation = Yup.object().shape({
   // $TODO Add proper password validation
   userPassword: Yup.string()
     .typeError(errors.invalidString.message)
-    .min(8, errors.userPasswordMin.message)
+    .min(10, errors.userPasswordMin.message)
     .required(errors.userPasswordRequired.message),
   userConfirm: Yup.string()
     .typeError(errors.invalidString.message)
@@ -768,7 +772,11 @@ export const signupValidation = Yup.object().shape({
     .matches(/^([\w.]){0,}$/, errors.userUsernameInvalid.message)
     .min(5, errors.userUsernameMin.message)
     .max(20, errors.userUsernameMax.message)
-    .lowercase()
+    .test(
+      "isValidUsername",
+      errors.userUsernameBlacklisted.message,
+      (value) => !usernames[value]
+    )
     .required(errors.userUsernameRequired.message),
   userEmail: Yup.string()
     .typeError(errors.invalidString.message)
@@ -776,7 +784,7 @@ export const signupValidation = Yup.object().shape({
     .required(errors.userEmailRequired.message),
   userPassword: Yup.string()
     .typeError(errors.invalidString.message)
-    .min(8, errors.userPasswordMin.message)
+    .min(10, errors.userPasswordMin.message)
     .required(errors.userPasswordRequired.message),
   userConfirm: Yup.string()
     .typeError(errors.invalidString.message)
@@ -820,7 +828,7 @@ export const recoveryValidation = Yup.object().shape({
     .required(errors.userEmailRequired.message),
   userPassword: Yup.string()
     .typeError(errors.invalidString.message)
-    .min(8, errors.userPasswordMin.message)
+    .min(10, errors.userPasswordMin.message)
     .required(errors.userPasswordRequired.message),
 });
 
