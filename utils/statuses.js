@@ -74,7 +74,7 @@ export const errors = {
     expose: true,
   },
   userNotVerified: {
-    status: statusCodes.unauthorized,
+    status: statusCodes.forbidden,
     message: "Please verify your account",
     expose: true,
   },
@@ -225,7 +225,7 @@ export const errors = {
     expose: true,
   },
   notAuthorized: {
-    status: statusCodes.unauthorized,
+    status: statusCodes.forbidden,
     message: "Not authorized to request resource",
     expose: true,
   },
