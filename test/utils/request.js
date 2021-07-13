@@ -10,7 +10,6 @@ export const fakeUser = {
   verified: true,
 };
 
-export const token = "test";
 export const token = createAccessToken({ userData: fakeUser });
 
 export const request = (app, token = null, cookie = null) => {
