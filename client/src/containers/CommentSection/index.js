@@ -134,6 +134,7 @@ const CommentSection = ({
           loading={loading || fetching}
           error={error.refetch}
           empty="No comments yet"
+          type="list"
         >
           <List ref={commentsRef} className={classes.list} disablePadding>
             <Box>

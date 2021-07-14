@@ -32,6 +32,7 @@ const UserFavorites = ({ fixed }) => {
         loading={loading || fetching}
         error={error.refetch}
         empty="No favorites yet"
+        type="masonry"
       >
         <Masonry
           breakpointCols={breakpointColumns}

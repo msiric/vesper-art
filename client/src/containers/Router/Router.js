@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { Redirect, Route, Router, Switch } from "react-router-dom";
-import ProgressBar from "react-topbar-progress-indicator";
 import { featureFlags } from "../../../../common/constants";
+import TopBar from "../../components/TopBar";
 import { useUserStore } from "../../contexts/global/user";
 import AuthLayout from "../../layouts/AuthLayout";
 import MainLayout from "../../layouts/MainLayout";
@@ -235,7 +235,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
         if (!rest.token) {
           return (
             <AuthLayout>
-              <Suspense fallback={<ProgressBar />}>
+              <Suspense fallback={<TopBar />}>
                 <Component key={props.location.key} {...props} />
               </Suspense>
             </AuthLayout>
@@ -268,7 +268,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
       }
       return (
         <MainLayout>
-          <Suspense fallback={<ProgressBar />}>
+          <Suspense fallback={<TopBar />}>
             <Component key={props.location.key} {...props} />
           </Suspense>
         </MainLayout>

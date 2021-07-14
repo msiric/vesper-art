@@ -48,6 +48,7 @@ const NotificationsMenu = () => {
         loading={loading || fetching}
         error={error.refetch}
         empty="No notifications yet"
+        type="list"
       >
         <List
           className={`${classes.list} ${loading && classes.spinner}`}

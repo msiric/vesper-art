@@ -26,6 +26,7 @@ const ArtworkPanel = ({ type, fixed }) => {
         loading={loading || fetching}
         error={error.refetch}
         empty="No artwork found"
+        type="masonry"
       >
         <Masonry
           breakpointCols={breakpoints}

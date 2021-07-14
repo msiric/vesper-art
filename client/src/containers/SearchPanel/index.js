@@ -40,6 +40,7 @@ const SearchPanel = ({ type }) => {
         loading={loading || fetching}
         error={error.refetch}
         empty="No results matched your query"
+        type="masonry"
       >
         <Masonry
           breakpointCols={breakpointColumns}

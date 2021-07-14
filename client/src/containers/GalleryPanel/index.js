@@ -95,6 +95,7 @@ const GalleryPanel = ({ formatArtwork }) => {
         loading={loading || fetching}
         error={error.refetch}
         empty="No artwork in your gallery"
+        type="masonry"
       >
         <Masonry
           breakpointCols={breakpointColumns}
