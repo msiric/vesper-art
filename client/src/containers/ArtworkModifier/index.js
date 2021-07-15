@@ -74,10 +74,9 @@ const ArtworkModifier = ({ paramId }) => {
 
   const history = useHistory();
 
-  const classes = artworkModifierClasses();
+  const watchedValues = watch();
 
-  const isDisabled =
-    !isVersionDifferent(getValues(), artwork.current) || formState.isSubmitting;
+  const classes = artworkModifierClasses();
 
   const onSubmit = async (values) => {
     await updateArtwork({ artworkId: artwork.id, values });
@@ -112,6 +111,12 @@ const ArtworkModifier = ({ paramId }) => {
     ) : null;
   };
 
+  const isDisabled =
+    !isVersionDifferent(getValues(), {
+      ...artwork.current,
+      visibility: artwork.visibility,
+    }) || formState.isSubmitting;
+
   useEffect(() => {
     Promise.all([
       fetchArtwork({ artworkId: paramId }),
@@ -121,7 +126,7 @@ const ArtworkModifier = ({ paramId }) => {
 
   useEffect(() => {
     reset(setDefaultValues());
-  }, [artwork.current]);
+  }, [artwork]);
 
   return (
     <Card>
@@ -136,13 +141,12 @@ const ArtworkModifier = ({ paramId }) => {
               setValue={setValue}
               trigger={trigger}
               getValues={getValues}
-              watch={watch}
-              watchables={[
-                "artworkAvailability",
-                "artworkType",
-                "artworkLicense",
-                "artworkUse",
-              ]}
+              watchables={{
+                artworkAvailability: watchedValues.artworkAvailability,
+                artworkType: watchedValues.artworkType,
+                artworkLicense: watchedValues.artworkLicense,
+                artworkUse: watchedValues.artworkUse,
+              }}
               editable={false}
               loading={artworkLoading}
             />

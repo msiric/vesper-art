@@ -59,6 +59,8 @@ const ArtworkCreator = () => {
     resolver,
   });
 
+  const watchedValues = watch();
+
   const onSubmit = async (values) => {
     await createArtwork({ values });
     history.push({
@@ -109,13 +111,12 @@ const ArtworkCreator = () => {
               setValue={setValue}
               trigger={trigger}
               getValues={getValues}
-              watch={watch}
-              watchables={[
-                "artworkAvailability",
-                "artworkType",
-                "artworkLicense",
-                "artworkUse",
-              ]}
+              watchables={{
+                artworkAvailability: watchedValues.artworkAvailability,
+                artworkType: watchedValues.artworkType,
+                artworkLicense: watchedValues.artworkLicense,
+                artworkUse: watchedValues.artworkUse,
+              }}
               editable={true}
               loading={loading}
             />

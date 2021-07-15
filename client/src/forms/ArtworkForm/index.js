@@ -14,7 +14,6 @@ const ArtworkForm = ({
   setValue,
   trigger,
   getValues,
-  watch,
   watchables,
   editable,
   loading,
@@ -22,7 +21,7 @@ const ArtworkForm = ({
   const stripeId = useUserStore((state) => state.stripeId);
 
   const { artworkAvailability, artworkType, artworkLicense, artworkUse } =
-    watchables.length ? watch(watchables) : watch();
+    watchables;
 
   // FEATURE FLAG - stripe
   const isDisabled =

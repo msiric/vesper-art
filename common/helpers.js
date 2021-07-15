@@ -40,7 +40,12 @@ export const isObjectEmpty = (object) => {
 };
 
 export const isPositiveInteger = (value) => {
-  return Number.isInteger(value) && value > 0;
+  const convertedValue = parseInt(value);
+  return (
+    convertedValue !== NaN &&
+    Number.isInteger(convertedValue) &&
+    convertedValue > 0
+  );
 };
 
 export const verifyVersionValidity = async ({
@@ -90,7 +95,7 @@ export const isVersionDifferent = (currentValues, savedValues) => {
 
 export const renderFreeLicenses = ({ version }) => {
   return [
-    ...(version.type === "free" && version.use === "separate"
+    ...(version.type === "free" && version.use !== "included"
       ? [
           {
             value: "personal",
@@ -112,7 +117,7 @@ export const renderFreeLicenses = ({ version }) => {
 
 export const renderCommercialLicenses = ({ version }) => {
   return [
-    ...(version.type === "commercial"
+    ...(version.type === "commercial" && version.use !== "included"
       ? [
           {
             value: "personal",
@@ -121,7 +126,8 @@ export const renderCommercialLicenses = ({ version }) => {
         ]
       : []),
 
-    ...(version.license === "commercial" && version.use === "separate"
+    ...((version.license === "commercial" && version.use === "separate") ||
+    (version.type === "commercial" && version.use === "included")
       ? [
           {
             value: "commercial",
@@ -132,7 +138,7 @@ export const renderCommercialLicenses = ({ version }) => {
   ];
 };
 
-export const formatArtworkValues = (data) => {
+export const formatArtworkValues = (data, formatCurrency = false) => {
   return {
     ...data,
     // artworkType
@@ -161,7 +167,7 @@ export const formatArtworkValues = (data) => {
     artworkPersonal:
       data.artworkAvailability === "available" &&
       data.artworkType === "commercial"
-        ? isPositiveInteger(data.artworkPersonal)
+        ? isPositiveInteger(data.artworkPersonal) && formatCurrency
           ? currency(data.artworkPersonal).intValue
           : data.artworkPersonal
         : 0,
@@ -174,10 +180,10 @@ export const formatArtworkValues = (data) => {
       data.artworkAvailability === "available" &&
       data.artworkLicense === "commercial"
         ? data.artworkUse === "separate"
-          ? isPositiveInteger(data.artworkCommercial)
+          ? isPositiveInteger(data.artworkCommercial) && formatCurrency
             ? currency(data.artworkCommercial).intValue
             : data.artworkCommercial
-          : isPositiveInteger(data.artworkPersonal)
+          : isPositiveInteger(data.artworkPersonal) && formatCurrency
           ? currency(data.artworkPersonal).intValue
           : data.artworkPersonal
         : 0,

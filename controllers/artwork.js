@@ -122,7 +122,7 @@ export const postNewArtwork = async ({
     artworkUpload.fileDominant &&
     artworkUpload.fileOrientation
   ) {
-    const formattedData = formatArtworkValues(artworkData);
+    const formattedData = formatArtworkValues(artworkData, true);
     await artworkValidation.validate(formattedData);
     const foundUser = await fetchUserById({
       userId,
@@ -191,7 +191,7 @@ export const updateArtwork = async ({
     mimeType: artworkMimetype,
     fileType: "artwork",
   }); */
-  const formattedData = formatArtworkValues(artworkData);
+  const formattedData = formatArtworkValues(artworkData, true);
   await artworkValidation.validate(formattedData);
   const foundArtwork = await fetchArtworkMedia({
     artworkId,
