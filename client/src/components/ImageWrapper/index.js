@@ -17,7 +17,14 @@ const ImageWrapper = ({
 
   const classes = imageWrapperStyles({ height, placeholder });
 
-  return !loading && downloaded ? (
+  return loading ? (
+    <Box
+      className={classes.wrapper}
+      height={height}
+      width="100%"
+      loading={true}
+    />
+  ) : downloaded ? (
     redirect ? (
       <Box component={RouterLink} to={redirect}>
         <img className={classes.media} src={source} />
