@@ -104,8 +104,8 @@ const initActions = (set, get) => ({
           hasMore: data[display].length < state[display].limit ? false : true,
           cursor: resolvePaginationId(data[display]),
         },
-        elements: formattedArtwork.elements,
-        captions: formattedArtwork.captions,
+        elements: [...state.elements, ...formattedArtwork.elements],
+        captions: [...state.captions, ...formattedArtwork.captions],
       }));
     } catch (err) {
       console.log(err);
