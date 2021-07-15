@@ -55,28 +55,6 @@ const GlobalStyles = makeStyles((muiTheme) => ({
     ".illustrationPrimary": {
       fill: artepunktTheme.palette.primary.main,
     },
-    ".SRLElementWrapper": {
-      opacity: ({ isDownloading }) =>
-        isDownloading ? "0.3 !important" : "1 !important",
-      "&:last-of-type": {
-        "&::after": {
-          display: ({ isDownloading }) => (isDownloading ? "block" : "none"),
-          content: '""',
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          marginTop: -30,
-          marginLeft: -30,
-          width: 50,
-          height: 50,
-          borderRadius: 50,
-          border: `5px solid ${artepunktTheme.palette.primary.main}`,
-          borderTopColor: "black",
-          animation: `$loading 2s linear infinite`,
-          zIndex: 10000,
-        },
-      },
-    },
     ".MuiTableCell-body": {
       cursor: ({ hoverable }) => (hoverable ? "pointer" : "auto"),
     },

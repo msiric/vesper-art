@@ -43,9 +43,10 @@ import {
   fetchUserNotifications,
   fetchUserProfile,
   fetchUserPurchases,
+  fetchUserPurchasesWithMedia,
   fetchUserReviews,
   fetchUserSales,
-  fetchUserUploads,
+  fetchUserUploadsWithMedia,
   removeExistingIntent,
   removeUserAvatar,
 } from "../services/postgres/user";
@@ -101,13 +102,27 @@ export const getUserArtwork = async ({
 };
 
 export const getUserUploads = async ({ userId, cursor, limit, connection }) => {
-  const foundArtwork = await fetchUserUploads({
+  const foundArtwork = await fetchUserUploadsWithMedia({
     userId,
     cursor,
     limit,
     connection,
   });
-  return { artwork: foundArtwork };
+  const formattedUploads = [];
+  for (let upload of foundArtwork) {
+    const { url, file } = await getSignedS3Object({
+      fileLink: upload.current.media.source,
+      folderName: "artworkMedia/",
+    });
+    formattedUploads.push({
+      ...upload,
+      current: {
+        ...upload.current,
+        media: { ...upload.current.media, source: url },
+      },
+    });
+  }
+  return { artwork: formattedUploads };
 };
 
 export const getUserOwnership = async ({
@@ -116,14 +131,28 @@ export const getUserOwnership = async ({
   limit,
   connection,
 }) => {
-  const foundPurchases = await fetchUserPurchases({
+  const foundPurchases = await fetchUserPurchasesWithMedia({
     userId,
     cursor,
     limit,
     connection,
   });
+  const formattedPurchases = [];
+  for (let purchase of foundPurchases) {
+    const { url, file } = await getSignedS3Object({
+      fileLink: purchase.version.media.source,
+      folderName: "artworkMedia/",
+    });
+    formattedPurchases.push({
+      ...purchase,
+      version: {
+        ...purchase.version,
+        media: { ...purchase.version.media, source: url },
+      },
+    });
+  }
   // $TODO change name
-  return { purchases: foundPurchases };
+  return { purchases: formattedPurchases };
 };
 
 export const getUserFavorites = async ({

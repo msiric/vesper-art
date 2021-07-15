@@ -37,7 +37,7 @@
     "react-topbar-progress-indicator": "^4.1.0",
     "react-tracked": "^1.4.2",
     "recharts": "^1.8.5",
-    "simple-react-lightbox": "3.3.4-1",
+    "simple-react-lightbox": "^3.6.6",
     "socket.io-client": "^2.3.0",
     "use-sound": "^1.0.2",
     "yup": "^0.28.3",

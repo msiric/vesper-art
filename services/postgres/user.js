@@ -286,6 +286,41 @@ export const fetchUserPurchases = async ({
   return foundPurchases;
 };
 
+export const fetchUserPurchasesWithMedia = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  // return await Order.find({
+  //   where: [{ buyerId: userId }],
+  //   relations: ["seller", "version", "review"],
+  //   skip: cursor,
+  //   take: limit,
+  // });
+
+  const queryBuilder = await connection
+    .getRepository(Order)
+    .createQueryBuilder("order");
+  const foundPurchases = await queryBuilder
+    .leftJoinAndSelect("order.seller", "seller")
+    .leftJoinAndSelect("seller.avatar", "avatar")
+    .leftJoinAndSelect("order.version", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("version.media", "media")
+    .leftJoinAndSelect("order.review", "review")
+    .where(
+      `order.buyerId = :userId AND order.serial > 
+      ${resolveSubQuery(queryBuilder, "order", Order, cursor, -1)}`,
+      { userId }
+    )
+    .orderBy("order.serial", "ASC")
+    .limit(limit)
+    .getMany();
+  console.log(foundPurchases);
+  return foundPurchases;
+};
+
 // $Needs testing (mongo -> postgres)
 export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
   // return await Order.find({
@@ -458,6 +493,43 @@ export const fetchUserUploads = async ({
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("version.cover", "cover")
+    .where(
+      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
+      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
+      {
+        userId,
+        active: USER_ACTIVE_STATUS,
+      }
+    )
+    .orderBy("artwork.serial", "ASC")
+    .limit(limit)
+    .getMany();
+  console.log(foundArtwork);
+  return foundArtwork;
+};
+
+export const fetchUserUploadsWithMedia = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  //
+  // return await Artwork.find({
+  //   where: [{ owner: userId, active: true }],
+  //   relations: ["current"],
+  //   skip: cursor,
+  //   take: limit,
+  // });
+
+  const queryBuilder = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork");
+  const foundArtwork = await queryBuilder
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("version.media", "media")
     .where(
       `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,

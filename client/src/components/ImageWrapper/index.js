@@ -11,7 +11,7 @@ const ImageWrapper = ({
   source,
   placeholder,
   cover,
-  loading,
+  loading = false,
 }) => {
   const downloaded = useProgressiveImage(source);
 
@@ -33,12 +33,7 @@ const ImageWrapper = ({
       <img className={`${classes.media} ${classes.opacity}`} src={cover} />
     </Box>
   ) : (
-    <Box
-      className={classes.hiddenWrapper}
-      height={height}
-      width="100%"
-      loading={true}
-    >
+    <Box className={classes.hiddenWrapper} height={height} width="100%">
       <img className={`${classes.media} ${classes.hidden}`} src={source} />
     </Box>
   );

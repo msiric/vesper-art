@@ -42,13 +42,12 @@ const Gallery = () => {
 
   const formatArtwork = (artwork) => {
     const artworkIds = {};
-    const uniqueCovers = [];
-    const uniqueMedia = [];
+    const uniqueElements = [];
     const uniqueCaptions = [];
     for (let item in artwork) {
       if (!artworkIds[artwork[item].cover]) {
         const { r, g, b } = hexToRgb(artwork[item].dominant);
-        uniqueCovers.push({
+        uniqueElements.push({
           id: item,
           cover: artwork[item].cover,
           media: artwork[item].media,
@@ -59,12 +58,6 @@ const Gallery = () => {
             borderRadius: 4,
           },
           dominant: artwork[item].dominant,
-        });
-        uniqueMedia.push({
-          src: artwork[item].media ? artwork[item].media : artwork[item].cover,
-          thumbnail: artwork[item].cover,
-          height: artwork[item].height,
-          width: artwork[item].width,
         });
         uniqueCaptions.push({
           id: uniqueCaptions.length,
@@ -84,8 +77,7 @@ const Gallery = () => {
       }
     }
     return {
-      covers: uniqueCovers,
-      media: uniqueMedia,
+      elements: uniqueElements,
       captions: uniqueCaptions,
     };
   };

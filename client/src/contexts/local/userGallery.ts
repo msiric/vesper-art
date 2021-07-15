@@ -1,6 +1,5 @@
 import create from "zustand";
-import { getDownload } from "../../services/orders";
-import { getMedia, getOwnership, getUploads } from "../../services/user";
+import { getOwnership, getUploads } from "../../services/user";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
 const initialState = {
@@ -30,16 +29,13 @@ const initialState = {
       message: "",
     },
   },
-  covers: [],
-  media: [],
+  elements: [],
   captions: [],
-  index: null,
   display: "purchases",
   // display: {
   //   type: "purchases",
   //   label: "spent",
   // },
-  isDownloading: false,
 };
 
 const initState = () => ({ ...initialState });
@@ -76,7 +72,10 @@ const initActions = (set, get) => ({
             display === "purchases"
               ? item.version.cover.source
               : item.current.cover.source,
-          media: null,
+          media:
+            display === "purchases"
+              ? item.version.media.source
+              : item.current.media.source,
           dominant:
             display === "purchases"
               ? item.version.cover.dominant
@@ -105,8 +104,7 @@ const initActions = (set, get) => ({
           hasMore: data[display].length < state[display].limit ? false : true,
           cursor: resolvePaginationId(data[display]),
         },
-        covers: formattedArtwork.covers,
-        media: formattedArtwork.media,
+        elements: formattedArtwork.elements,
         captions: formattedArtwork.captions,
       }));
     } catch (err) {
@@ -122,62 +120,6 @@ const initActions = (set, get) => ({
           error: resolveAsyncError(err, true),
         },
       }));
-    }
-  },
-  toggleGallery: async ({
-    userId,
-    item,
-    index,
-    openLightbox,
-    formatArtwork,
-  }) => {
-    const covers = get().covers;
-    const display = get().display;
-    const selection = get()[display].data;
-    const foundMedia = item.media && covers[index].media === item.media;
-    const identifier = selection[item.cover].id;
-    if (foundMedia) {
-      set((state) => ({
-        ...state,
-        index,
-      }));
-      openLightbox(index);
-    } else {
-      set((state) => ({
-        ...state,
-        isDownloading: true,
-        index,
-      }));
-      const { data } =
-        display === "purchases"
-          ? await getDownload.request({ orderId: identifier })
-          : await getMedia.request({
-              userId,
-              artworkId: identifier,
-            });
-      let image: any = new Image();
-      image.src = data.url;
-      image.onload = () => {
-        const newArtwork = {
-          ...selection,
-          [item.cover]: {
-            ...selection[item.cover],
-            media: data.url,
-          },
-        };
-        const formattedArtwork = formatArtwork(newArtwork);
-        set((state) => ({
-          ...state,
-          [display]: { ...state[display], data: newArtwork },
-          covers: formattedArtwork.covers,
-          media: formattedArtwork.media,
-          captions: formattedArtwork.captions,
-          isDownloading: false,
-          index,
-        }));
-        image.onload = null;
-        image = null;
-      };
     }
   },
   changeSelection: ({ selection }) => {
