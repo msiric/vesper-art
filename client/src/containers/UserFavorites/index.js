@@ -13,7 +13,7 @@ const breakpointColumns = {
   500: 1,
 };
 
-const UserFavorites = ({ fixed }) => {
+const UserFavorites = ({ userUsername, type, fixed }) => {
   const elements = useUserArtwork((state) => state.favorites.data);
   const hasMore = useUserArtwork((state) => state.favorites.hasMore);
   const loading = useUserArtwork((state) => state.favorites.loading);
@@ -27,7 +27,7 @@ const UserFavorites = ({ fixed }) => {
     <Box>
       <InfiniteList
         dataLength={elements ? elements.length : 0}
-        next={fetchFavorites}
+        next={() => fetchFavorites({ userUsername })}
         hasMore={hasMore}
         loading={loading}
         fetching={fetching}
@@ -43,7 +43,7 @@ const UserFavorites = ({ fixed }) => {
           {elements.map((artwork) => (
             <ArtworkCard
               artwork={artwork}
-              type="favorite"
+              type={type}
               fixed={fixed}
               loading={loading}
             />

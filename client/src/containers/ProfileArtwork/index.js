@@ -25,6 +25,8 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const fetchFavorites = useUserArtwork((state) => state.fetchFavorites);
   const changeTab = useUserArtwork((state) => state.changeTab);
 
+  const userUsername = paramId;
+
   const isVisible = useVisibleElement(artworkRef, artworkFetched.current);
 
   const globalClasses = globalStyles();
@@ -33,7 +35,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   useEffect(() => {
     if (!artworkFetched.current && isVisible) {
       fetchArtwork({
-        userUsername: paramId,
+        userUsername,
       });
       artworkFetched.current = true;
     }
@@ -42,7 +44,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   useEffect(() => {
     if (!tabs.revealed && tabs.value === 1) {
       fetchFavorites({
-        userUsername: paramId,
+        userUsername,
       });
     }
   }, [tabs.value]);
@@ -71,9 +73,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 component: (
                   <Box className={classes.wrapper}>
                     <UserArtwork
-                      elements={artwork}
-                      hasMore={null}
-                      loadMore={fetchArtwork}
+                      userUsername={userUsername}
                       type="artwork"
                       fixed={true}
                     />
@@ -98,10 +98,8 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 component: (
                   <Box className={classes.wrapper}>
                     <UserFavorites
-                      elements={favorites}
-                      hasMore={null}
-                      loadMore={fetchFavorites}
-                      type="artwork"
+                      userUsername={userUsername}
+                      type="favorite"
                       fixed={true}
                     />
                   </Box>

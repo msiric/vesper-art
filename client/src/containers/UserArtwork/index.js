@@ -14,7 +14,7 @@ const breakpointColumns = {
   500: 1,
 };
 
-const UserArtwork = ({ type, fixed }) => {
+const UserArtwork = ({ userUsername, type, fixed }) => {
   const loading = useUserProfile((state) => state.profile.loading);
 
   const elements = useUserArtwork((state) => state.artwork.data);
@@ -29,7 +29,7 @@ const UserArtwork = ({ type, fixed }) => {
     <Box className={classes.container}>
       <InfiniteList
         dataLength={elements ? elements.length : 0}
-        next={fetchArtwork}
+        next={() => fetchArtwork({ userUsername })}
         hasMore={hasMore}
         loading={loading}
         fetching={fetching}
