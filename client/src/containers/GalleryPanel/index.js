@@ -1,7 +1,7 @@
 import React from "react";
 import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
-import { SRLWrapper } from "simple-react-lightbox";
+import SimpleReactLightbox, { SRLWrapper } from "simple-react-lightbox";
 import ImageWrapper from "../../components/ImageWrapper/index";
 import InfiniteList from "../../components/InfiniteList";
 import { useUserStore } from "../../contexts/global/user";
@@ -61,34 +61,39 @@ const GalleryPanel = ({ formatArtwork }) => {
 
   return (
     <Box>
-      <SRLWrapper options={options} customCaptions={captions}>
-        <InfiniteList
-          dataLength={elements.length}
-          next={() => fetchUser({ userId, userUsername, formatArtwork })}
-          hasMore={hasMore}
-          loading={loading || fetching}
-          error={error.refetch}
-          empty="No artwork in your gallery"
-          type="masonry"
-        >
-          <Masonry
-            breakpointCols={breakpointColumns}
-            className={classes.masonry}
-            columnClassName={classes.column}
-          >
-            {elements.map((item) => (
-              <Card className={classes.card}>
-                <ImageWrapper
-                  height={item.height}
-                  source={item.media}
-                  placeholder={item.dominant}
-                  loading={loading}
-                />
-              </Card>
-            ))}
-          </Masonry>
-        </InfiniteList>
-      </SRLWrapper>
+      <InfiniteList
+        dataLength={elements.length}
+        next={() => fetchUser({ userId, userUsername, formatArtwork })}
+        hasMore={hasMore}
+        loading={loading}
+        fetching={fetching}
+        error={error.refetch}
+        empty="No artwork in your gallery"
+        type="masonry"
+      >
+        {!loading && (
+          <SimpleReactLightbox>
+            <SRLWrapper options={options} customCaptions={captions}>
+              <Masonry
+                breakpointCols={breakpointColumns}
+                className={classes.masonry}
+                columnClassName={classes.column}
+              >
+                {elements.map((item) => (
+                  <Card className={classes.card} key={item.id}>
+                    <ImageWrapper
+                      height={item.height}
+                      source={item.media}
+                      placeholder={item.dominant}
+                      loading={loading}
+                    />
+                  </Card>
+                ))}
+              </Masonry>
+            </SRLWrapper>
+          </SimpleReactLightbox>
+        )}
+      </InfiniteList>
     </Box>
   );
 };

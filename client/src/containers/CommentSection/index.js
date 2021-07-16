@@ -131,7 +131,8 @@ const CommentSection = ({
             fetchComments({ artworkId, query, highlightRef, enqueueSnackbar })
           }
           hasMore={hasMore}
-          loading={loading || fetching}
+          loading={loading}
+          fetching={fetching}
           error={error.refetch}
           empty="No comments yet"
           type="list"

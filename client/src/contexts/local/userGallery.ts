@@ -43,20 +43,31 @@ const initState = () => ({ ...initialState });
 const initActions = (set, get) => ({
   fetchUser: async ({ userId, userUsername, formatArtwork }) => {
     try {
+      set((state) => ({
+        ...state,
+        [state.display]: {
+          ...state[state.display],
+          loading: !state[state.display].initialized,
+          fetching: state[state.display].initialized,
+          error: {
+            ...initialState[state.display].error,
+          },
+        },
+      }));
       const display = get().display;
-      const artwork = get().artwork;
-      const purchases = get().purchases;
+      const selection = get()[display];
+      const elements = get().elements;
       const { data } =
         display === "purchases"
           ? await getOwnership.request({
               userId,
-              cursor: purchases.cursor,
-              limit: purchases.limit,
+              cursor: selection.cursor,
+              limit: selection.limit,
             })
           : await getUploads.request({
               userId,
-              cursor: artwork.cursor,
-              limit: artwork.limit,
+              cursor: selection.cursor,
+              limit: selection.limit,
             });
       const newArtwork = data[display].reduce((object, item) => {
         object[
@@ -91,7 +102,7 @@ const initActions = (set, get) => ({
         };
         return object;
       }, {});
-      const formattedArtwork = formatArtwork(newArtwork);
+      const formattedArtwork = formatArtwork(newArtwork, elements.length);
       set((state) => ({
         ...state,
         [display]: {

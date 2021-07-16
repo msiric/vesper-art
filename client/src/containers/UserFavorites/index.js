@@ -29,7 +29,8 @@ const UserFavorites = ({ fixed }) => {
         dataLength={elements ? elements.length : 0}
         next={fetchFavorites}
         hasMore={hasMore}
-        loading={loading || fetching}
+        loading={loading}
+        fetching={fetching}
         error={error.refetch}
         empty="No favorites yet"
         type="masonry"

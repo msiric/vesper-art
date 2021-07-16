@@ -309,12 +309,12 @@ export const fetchUserPurchasesWithMedia = async ({
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("version.media", "media")
     .leftJoinAndSelect("order.review", "review")
+    .distinctOn(["order.artworkId"])
     .where(
       `order.buyerId = :userId AND order.serial > 
       ${resolveSubQuery(queryBuilder, "order", Order, cursor, -1)}`,
       { userId }
     )
-    .orderBy("order.serial", "ASC")
     .limit(limit)
     .getMany();
   console.log(foundPurchases);

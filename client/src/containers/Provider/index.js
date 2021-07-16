@@ -9,7 +9,6 @@ import {
 } from "@material-ui/icons";
 import { SnackbarProvider } from "notistack";
 import React, { createRef } from "react";
-import SimpleReactLightbox from "simple-react-lightbox";
 import { useAppStore } from "../../contexts/global/app";
 import globalStyles from "../../styles/global";
 import { artepunktTheme } from "../../styles/theme";
@@ -94,10 +93,8 @@ const Provider = () => {
           </IconButton>
         )}
       >
-        <SimpleReactLightbox>
-          <CssBaseline />
-          <Interceptor />
-        </SimpleReactLightbox>
+        <CssBaseline />
+        <Interceptor />
       </SnackbarProvider>
     </ThemeProvider>
   );

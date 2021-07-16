@@ -37,7 +37,8 @@ const SearchPanel = ({ type }) => {
         dataLength={elements ? elements.length : 0}
         next={fetchResults}
         hasMore={hasMore}
-        loading={loading || fetching}
+        loading={loading}
+        fetching={fetching}
         error={error.refetch}
         empty="No results matched your query"
         type="masonry"

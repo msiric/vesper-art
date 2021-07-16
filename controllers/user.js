@@ -108,20 +108,21 @@ export const getUserUploads = async ({ userId, cursor, limit, connection }) => {
     limit,
     connection,
   });
-  const formattedUploads = [];
-  for (let upload of foundArtwork) {
-    const { url, file } = await getSignedS3Object({
-      fileLink: upload.current.media.source,
-      folderName: "artworkMedia/",
-    });
-    formattedUploads.push({
-      ...upload,
-      current: {
-        ...upload.current,
-        media: { ...upload.current.media, source: url },
-      },
-    });
-  }
+  const formattedUploads = await Promise.all(
+    foundArtwork.map(async (upload) => {
+      const { url, file } = await getSignedS3Object({
+        fileLink: upload.current.media.source,
+        folderName: "artworkMedia/",
+      });
+      return {
+        ...upload,
+        current: {
+          ...upload.current,
+          media: { ...upload.current.media, source: url },
+        },
+      };
+    })
+  );
   return { artwork: formattedUploads };
 };
 
@@ -137,21 +138,21 @@ export const getUserOwnership = async ({
     limit,
     connection,
   });
-  const formattedPurchases = [];
-  for (let purchase of foundPurchases) {
-    const { url, file } = await getSignedS3Object({
-      fileLink: purchase.version.media.source,
-      folderName: "artworkMedia/",
-    });
-    formattedPurchases.push({
-      ...purchase,
-      version: {
-        ...purchase.version,
-        media: { ...purchase.version.media, source: url },
-      },
-    });
-  }
-  // $TODO change name
+  const formattedPurchases = await Promise.all(
+    foundPurchases.map(async (purchase) => {
+      const { url, file } = await getSignedS3Object({
+        fileLink: purchase.version.media.source,
+        folderName: "artworkMedia/",
+      });
+      return {
+        ...purchase,
+        version: {
+          ...purchase.version,
+          media: { ...purchase.version.media, source: url },
+        },
+      };
+    })
+  );
   return { purchases: formattedPurchases };
 };
 

@@ -40,10 +40,11 @@ const Gallery = () => {
 
   const location = useLocation();
 
-  const formatArtwork = (artwork) => {
+  const formatArtwork = (artwork, length) => {
     const artworkIds = {};
     const uniqueElements = [];
     const uniqueCaptions = [];
+    let counter = length;
     for (let item in artwork) {
       if (!artworkIds[artwork[item].cover]) {
         const { r, g, b } = hexToRgb(artwork[item].dominant);
@@ -60,7 +61,7 @@ const Gallery = () => {
           dominant: artwork[item].dominant,
         });
         uniqueCaptions.push({
-          id: uniqueCaptions.length,
+          id: counter,
           caption: (
             <Box className={classes.wrapper}>
               <Typography className={classes.title}>
@@ -74,6 +75,7 @@ const Gallery = () => {
           ),
         });
         artworkIds[artwork[item].cover] = true;
+        counter++;
       }
     }
     return {

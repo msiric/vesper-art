@@ -45,7 +45,8 @@ const NotificationsMenu = () => {
         dataLength={notifications ? notifications.length : 0}
         next={() => toggleMenu({ userId, fetching: true })}
         hasMore={hasMore}
-        loading={loading || fetching}
+        loading={loading}
+        fetching={fetching}
         error={error.refetch}
         empty="No notifications yet"
         type="list"

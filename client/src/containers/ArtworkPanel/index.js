@@ -23,7 +23,8 @@ const ArtworkPanel = ({ type, fixed }) => {
         dataLength={elements ? elements.length : 0}
         next={fetchArtwork}
         hasMore={hasMore}
-        loading={loading || fetching}
+        loading={loading}
+        fetching={fetching}
         error={error.refetch}
         empty="No artwork found"
         type="masonry"

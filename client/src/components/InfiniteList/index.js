@@ -16,6 +16,7 @@ const InfiniteList = ({
   next,
   hasMore,
   loading,
+  fetching,
   error,
   empty,
   height,
@@ -28,7 +29,7 @@ const InfiniteList = ({
   return (
     <InfiniteScroll
       dataLength={dataLength}
-      next={!loading ? next : () => []}
+      next={!loading && !fetching ? next : () => []}
       hasMore={hasMore}
       loader={!error && <LoadingSpinner styles={classes.spinner} />}
       className={classes.wrapper}
@@ -37,14 +38,15 @@ const InfiniteList = ({
     >
       {type === "masonry" && loading && <LinearProgress />}
       {children}
-      {!loading && !dataLength ? <EmptySection label={empty} /> : null}
+      {!loading && !fetching && !dataLength ? (
+        <EmptySection label={empty} />
+      ) : null}
       {error && (
         <Box className={classes.error}>
           <Typography>Error fetching data</Typography>
           <AsyncButton
             type="button"
             padding
-            loading={false}
             startIcon={<RefetchIcon />}
             onClick={next}
           >
