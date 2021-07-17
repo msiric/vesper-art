@@ -6,7 +6,7 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { featureFlags } from "../../../../common/constants";
-import { isVersionDifferent } from "../../../../common/helpers";
+import { isFormAltered } from "../../../../common/helpers";
 import { artworkValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import HelpBox from "../../components/HelpBox/index";
@@ -112,10 +112,7 @@ const ArtworkModifier = ({ paramId }) => {
   };
 
   const isDisabled =
-    !isVersionDifferent(getValues(), {
-      ...artwork.current,
-      visibility: artwork.visibility,
-    }) || formState.isSubmitting;
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   useEffect(() => {
     Promise.all([

@@ -57,8 +57,8 @@ const initActions = (set, get) => ({
     });
     set((state) => ({
       ...state,
-      artwork: {
-        ...state.artwork,
+      uploads: {
+        ...state.uploads,
         data: state.uploads.data.filter((item) => item.id !== artworkId),
       },
       modal: { ...state.modal, id: null, open: false },

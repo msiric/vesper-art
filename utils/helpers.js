@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import currency from "currency.js";
 import { addHours, isBefore, isValid } from "date-fns";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
@@ -309,4 +310,32 @@ export const formatTokenData = ({ user }) => {
   };
 
   return { tokenPayload, userInfo };
+};
+
+export const formattedClientKeys = {
+  artwork: {
+    artworkTitle: "title",
+    artworkType: "type",
+    artworkAvailability: "availability",
+    artworkLicense: "license",
+    artworkUse: "use",
+    artworkPersonal: "personal",
+    artworkCommercial: "commercial",
+    artworkDescription: "description",
+    artworkVisibility: "visibility",
+  },
+  email: {
+    userEmail: "email",
+  },
+  preferences: {
+    userFavorites: "displayFavorites",
+  },
+};
+
+export const formatArtworkPrices = (data) => {
+  return {
+    ...data,
+    artworkPersonal: currency(data.artworkPersonal).intValue,
+    artworkCommercial: currency(data.artworkCommercial).intValue,
+  };
 };

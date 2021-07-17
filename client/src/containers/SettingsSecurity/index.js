@@ -2,6 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { isFormAltered } from "../../../../common/helpers";
 import { passwordValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useUserSettings } from "../../contexts/local/userSettings";
@@ -16,19 +17,27 @@ const SettingsSecurity = ({ handleLogout }) => {
   const loading = useUserSettings((state) => state.user.loading);
   const updatePassword = useUserSettings((state) => state.updatePassword);
 
-  const { handleSubmit, formState, errors, control, reset } = useForm({
-    defaultValues: {
-      userCurrent: "",
-      userPassword: "",
-      userConfirm: "",
-    },
-    resolver: yupResolver(passwordValidation),
+  const setDefaultValues = () => ({
+    userCurrent: "",
+    userPassword: "",
+    userConfirm: "",
   });
+
+  const { handleSubmit, formState, errors, control, watch, getValues, reset } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(passwordValidation),
+    });
 
   const onSubmit = async (values) =>
     await updatePassword({ userId, values, handleLogout });
 
   const classes = settingsSecurityStyles();
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   return (
     <Card>
@@ -42,6 +51,7 @@ const SettingsSecurity = ({ handleLogout }) => {
               type="submit"
               fullWidth
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
               loading={loading}
               startIcon={<UploadIcon />}
             >

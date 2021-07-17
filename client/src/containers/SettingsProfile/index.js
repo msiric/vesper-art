@@ -2,6 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { isFormAltered } from "../../../../common/helpers";
 import { patchAvatar, profileValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useUserStore } from "../../contexts/global/user";
@@ -34,6 +35,7 @@ const SettingsProfile = () => {
     getValues,
     setValue,
     trigger,
+    watch,
     reset,
   } = useForm({
     defaultValues: setDefaultValues(),
@@ -43,7 +45,12 @@ const SettingsProfile = () => {
   const onSubmit = async (values) =>
     await updateProfile({ userId: user.id, values });
 
+  const watchedValues = watch();
+
   const classes = settingsProfileStyles();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   useEffect(() => {
     fetchSettings({ userId });
@@ -51,7 +58,7 @@ const SettingsProfile = () => {
 
   useEffect(() => {
     reset(setDefaultValues());
-  }, [user.description, user.country]);
+  }, [user.avatar, user.description, user.country]);
 
   return (
     <Card className={classes.container}>
@@ -73,6 +80,7 @@ const SettingsProfile = () => {
               type="submit"
               fullWidth
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
               loading={loading}
               startIcon={<UploadIcon />}
             >

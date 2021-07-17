@@ -2,8 +2,8 @@ import createError from "http-errors";
 import {
   formatArtworkValues,
   isArrayEmpty,
+  isFormAltered,
   isObjectEmpty,
-  isVersionDifferent,
   verifyVersionValidity,
 } from "../common/helpers";
 import { artworkValidation } from "../common/validation";
@@ -35,7 +35,13 @@ import {
 } from "../services/postgres/order";
 import { fetchStripeAccount } from "../services/postgres/stripe";
 import { fetchUserById } from "../services/postgres/user";
-import { formatError, formatResponse, generateUuids } from "../utils/helpers";
+import {
+  formatArtworkPrices,
+  formatError,
+  formatResponse,
+  formattedClientKeys,
+  generateUuids,
+} from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
 import { finalizeMediaUpload } from "../utils/upload";
 
@@ -122,8 +128,9 @@ export const postNewArtwork = async ({
     artworkUpload.fileDominant &&
     artworkUpload.fileOrientation
   ) {
-    const formattedData = formatArtworkValues(artworkData, true);
-    await artworkValidation.validate(formattedData);
+    const alteredData = formatArtworkValues(artworkData);
+    await artworkValidation.validate(alteredData);
+    const formattedData = formatArtworkPrices(alteredData);
     const foundUser = await fetchUserById({
       userId,
       connection,
@@ -191,17 +198,19 @@ export const updateArtwork = async ({
     mimeType: artworkMimetype,
     fileType: "artwork",
   }); */
-  const formattedData = formatArtworkValues(artworkData, true);
-  await artworkValidation.validate(formattedData);
+  const alteredData = formatArtworkValues(artworkData);
+  await artworkValidation.validate(alteredData);
+  const formattedData = formatArtworkPrices(alteredData);
   const foundArtwork = await fetchArtworkMedia({
     artworkId,
     userId,
     connection,
   });
   if (!isObjectEmpty(foundArtwork)) {
-    const shouldUpdate = isVersionDifferent(
+    const shouldUpdate = isFormAltered(
       formattedData,
-      foundArtwork.current
+      { ...foundArtwork.current, visibility: foundArtwork.visibility },
+      formattedClientKeys.artwork
     );
     if (shouldUpdate) {
       const foundUser = await fetchUserById({
@@ -262,7 +271,6 @@ export const updateArtwork = async ({
       }
       throw createError(...formatError(errors.userNotFound));
     }
-
     throw createError(...formatError(errors.artworkDetailsIdentical));
   }
   throw createError(...formatError(errors.artworkNotFound));

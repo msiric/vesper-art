@@ -73,20 +73,9 @@ export const verifyVersionValidity = async ({
   return;
 };
 
-export const isVersionDifferent = (currentValues, savedValues) => {
-  const mapper = {
-    artworkTitle: "title",
-    artworkType: "type",
-    artworkAvailability: "availability",
-    artworkLicense: "license",
-    artworkUse: "use",
-    artworkPersonal: "personal",
-    artworkCommercial: "commercial",
-    artworkDescription: "description",
-    artworkVisibility: "visibility",
-  };
-  for (let item of Object.keys(currentValues)) {
-    if (savedValues[mapper[item]] !== currentValues[item]) {
+export const isFormAltered = (currentValues, defaultValues) => {
+  for (let item in currentValues) {
+    if (defaultValues[item] !== currentValues[item]) {
       return true;
     }
   }
@@ -138,7 +127,7 @@ export const renderCommercialLicenses = ({ version }) => {
   ];
 };
 
-export const formatArtworkValues = (data, formatCurrency = false) => {
+export const formatArtworkValues = (data) => {
   return {
     ...data,
     // artworkType
@@ -167,9 +156,7 @@ export const formatArtworkValues = (data, formatCurrency = false) => {
     artworkPersonal:
       data.artworkAvailability === "available" &&
       data.artworkType === "commercial"
-        ? isPositiveInteger(data.artworkPersonal) && formatCurrency
-          ? currency(data.artworkPersonal).intValue
-          : data.artworkPersonal
+        ? data.artworkPersonal
         : 0,
     artworkUse:
       data.artworkAvailability === "available" &&
@@ -180,11 +167,7 @@ export const formatArtworkValues = (data, formatCurrency = false) => {
       data.artworkAvailability === "available" &&
       data.artworkLicense === "commercial"
         ? data.artworkUse === "separate"
-          ? isPositiveInteger(data.artworkCommercial) && formatCurrency
-            ? currency(data.artworkCommercial).intValue
-            : data.artworkCommercial
-          : isPositiveInteger(data.artworkPersonal) && formatCurrency
-          ? currency(data.artworkPersonal).intValue
+          ? data.artworkCommercial
           : data.artworkPersonal
         : 0,
     // $TODO restore after tags are implemented

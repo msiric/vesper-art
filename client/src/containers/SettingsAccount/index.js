@@ -4,6 +4,7 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import { emailValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useEventsStore } from "../../contexts/global/events";
@@ -30,10 +31,11 @@ const SettingsAccount = ({ handleLogout }) => {
     userEmail: loading ? "" : user.email,
   });
 
-  const { handleSubmit, formState, errors, control, reset } = useForm({
-    defaultValues: setDefaultValues(),
-    resolver: yupResolver(emailValidation),
-  });
+  const { handleSubmit, getValues, formState, errors, control, watch, reset } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(emailValidation),
+    });
 
   const onSubmit = async (values) => {
     await updateEmail({ userId: user.id, values, handleLogout });
@@ -42,6 +44,11 @@ const SettingsAccount = ({ handleLogout }) => {
     resetEvents();
     history.push("/login");
   };
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   useEffect(() => {
     reset(setDefaultValues());
@@ -59,6 +66,7 @@ const SettingsAccount = ({ handleLogout }) => {
               type="submit"
               fullWidth
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
               loading={loading}
               startIcon={<UploadIcon />}
             >

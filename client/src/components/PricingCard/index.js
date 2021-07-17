@@ -16,6 +16,7 @@ import ListItem from "../../domain/ListItem";
 import ListItemIcon from "../../domain/ListItemIcon";
 import ListItemText from "../../domain/ListItemText";
 import Typography from "../../domain/Typography";
+import CurrencyValue from "../CurrencyValue";
 import SyncButton from "../SyncButton/index";
 import pricingCardStyles from "./styles";
 
@@ -37,13 +38,22 @@ const PricingCard = ({
     <Card className={classes.container}>
       <CardContent className={classes.content}>
         <Box loading={loading} className={classes.dataWrapper}>
-          {price ? (
+          {!!price && (
             <Typography variant="h5" color="textSecondary">
               $
             </Typography>
-          ) : null}
+          )}
           <Box className={classes.priceWrapper}>
-            <Typography className={classes.price}>{price || "Free"}</Typography>
+            {!!price ? (
+              <CurrencyValue
+                displayType="text"
+                prefix={null}
+                value={price}
+                className={classes.price}
+              />
+            ) : (
+              <Typography className={classes.price}>Free</Typography>
+            )}
           </Box>
         </Box>
         <Divider />
