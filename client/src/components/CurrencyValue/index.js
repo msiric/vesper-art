@@ -24,7 +24,7 @@ const CurrencyValue = ({
         thousandSeparator={thousandSeparator}
         decimalScale={decimalScale}
         prefix={prefix}
-        onChange={null}
+        onChange={() => null}
         onValueChange={onValueChange}
       />
     </SkeletonWrapper>
