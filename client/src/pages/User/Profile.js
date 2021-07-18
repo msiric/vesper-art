@@ -1,4 +1,3 @@
-import { withSnackbar } from "notistack";
 import React, { useEffect, useRef } from "react";
 import ProfileArtwork from "../../containers/ProfileArtwork/index";
 import ProfileInfo from "../../containers/ProfileInfo/index";
@@ -50,4 +49,4 @@ const Profile = ({ match, location }) => {
   );
 };
 
-export default withSnackbar(Profile);
+export default Profile;

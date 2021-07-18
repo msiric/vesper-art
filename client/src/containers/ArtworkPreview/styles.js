@@ -15,6 +15,7 @@ const artworkPreviewStyles = makeStyles((muiTheme) => ({
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    wordBreak: "break-word",
   },
   imageWrapper: {
     display: "flex",

@@ -1,5 +1,4 @@
 import { makeStyles } from "@material-ui/core";
-import { withSnackbar } from "notistack";
 import React, { useEffect } from "react";
 import ArtworkPanel from "../../containers/ArtworkPanel/index";
 import HomeBanner from "../../containers/HomeBanner";
@@ -43,4 +42,4 @@ const Home = () => {
   ];
 };
 
-export default withSnackbar(Home);
+export default Home;

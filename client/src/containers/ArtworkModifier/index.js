@@ -1,6 +1,6 @@
 import {
   AddCircleRounded as UploadIcon,
-  DeleteRounded as DeleteIcon,
+  DeleteRounded as DeleteIcon
 } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -24,9 +24,9 @@ const ArtworkModifier = ({ paramId }) => {
   const stripeId = useUserStore((state) => state.stripeId);
 
   const artwork = useArtworkUpdate((state) => state.artwork.data);
-  const artworkLoading = useArtworkUpdate((state) => state.artwork.loading);
   const capabilities = useArtworkUpdate((state) => state.capabilities.data);
-  const loading = useArtworkUpdate((state) => state.capabilities.loading);
+  const artworkLoading = useArtworkUpdate((state) => state.artwork.loading);
+  const capabilitiesLoading = useArtworkUpdate((state) => state.capabilities.loading);
   const isDeleting = useArtworkUpdate((state) => state.isDeleting);
   const fetchArtwork = useArtworkUpdate((state) => state.fetchArtwork);
   const fetchCapabilities = useArtworkUpdate(
@@ -34,6 +34,8 @@ const ArtworkModifier = ({ paramId }) => {
   );
   const updateArtwork = useArtworkUpdate((state) => state.updateArtwork);
   const toggleModal = useArtworkUpdate((state) => state.toggleModal);
+
+  const loading = artworkLoading || capabilitiesLoading
 
   const resolver = useArtworkValidator(artworkValidation);
 
@@ -145,7 +147,7 @@ const ArtworkModifier = ({ paramId }) => {
                 artworkUse: watchedValues.artworkUse,
               }}
               editable={false}
-              loading={artworkLoading}
+              loading={loading}
             />
           </CardContent>
           <CardActions className={classes.actions}>

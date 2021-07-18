@@ -19,12 +19,18 @@ const commentCardStyles = makeStyles((muiTheme) => ({
   },
   wrapper: {
     display: "flex",
+    alignItems: "center",
   },
   owner: {
     textDecoration: "none",
+    color: "white",
+    "&:hover": {
+      color: artepunktTheme.palette.primary.main,
+    },
   },
   details: {
     marginLeft: 6,
+    fontSize: 12,
   },
 }));
 

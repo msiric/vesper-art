@@ -9,7 +9,7 @@ import {
 const initialState = {
   artwork: {
     data: [],
-    loading: true,
+    loading: false,
     fetching: false,
     initialized: false,
     hasMore: true,

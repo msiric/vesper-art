@@ -1,6 +1,5 @@
 import { makeStyles } from "@material-ui/core";
 import { LabelImportant as ItemIcon } from "@material-ui/icons";
-import { withSnackbar } from "notistack";
 import React, { useEffect } from "react";
 import { ReactComponent as VerifyLicense } from "../../assets/images/illustrations/verify_license.svg";
 import IllustrationCard from "../../components/IllustrationCard";
@@ -93,4 +92,4 @@ const Verifier = () => {
   );
 };
 
-export default withSnackbar(Verifier);
+export default Verifier;

@@ -1,6 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
-import { withSnackbar } from "notistack";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { fingerprintValidation } from "../../../../common/validation";
@@ -63,4 +62,4 @@ const VerifierCard = () => {
   );
 };
 
-export default withSnackbar(VerifierCard);
+export default VerifierCard;

@@ -1,4 +1,3 @@
-import { withSnackbar } from "notistack";
 import React from "react";
 import { formatDate, isObjectEmpty } from "../../../../common/helpers";
 import DataTable from "../../components/DataTable";
@@ -83,4 +82,4 @@ const LicenseSection = () => {
   );
 };
 
-export default withSnackbar(LicenseSection);
+export default LicenseSection;
