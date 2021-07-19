@@ -36,7 +36,25 @@ const LicenseSection = () => {
           },
         },
         {
+          name: "Buyer",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Seller",
+          options: {
+            sort: false,
+          },
+        },
+        {
           name: "Assignee",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Assignor",
           options: {
             sort: false,
           },
@@ -65,7 +83,10 @@ const LicenseSection = () => {
           license.id,
           license.fingerprint,
           license.type,
-          license.assignee,
+          license.owner.name,
+          license.artwork.owner.name,
+          license.assignee || "Hidden",
+          license.assignor || "Hidden",
           license.price,
           license.created && formatDate(license.created, "dd/MM/yy HH:mm"),
         ],

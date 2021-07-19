@@ -7,72 +7,20 @@ import {
 } from "../../../../common/helpers";
 import SelectInput from "../../controls/SelectInput/index";
 import TextInput from "../../controls/TextInput/index";
+import TextField from "../../domain/TextField";
 
-const LicenseFormStyles = makeStyles((muiTheme) => ({
-  fixed: {
-    height: "100%",
-  },
-  container: {
-    flex: 1,
-    height: "100%",
-  },
-  artwork: {
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  root: {
-    display: "flex",
-    width: "100%",
-  },
-  loader: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-  },
-  details: {
-    display: "flex",
-    width: "100%",
-  },
-  cover: {
-    minWidth: 50,
-    maxWidth: 200,
-    width: "100%",
-  },
-  controls: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: 16,
-    width: "100%",
-  },
-  playIcon: {
-    height: 38,
-    width: 38,
-  },
-  rightList: {
-    textAlign: "right",
-  },
-  manageLicenses: {
-    padding: "8px 16px",
-  },
-  content: {
-    display: "flex",
-    flexDirection: "column",
-  },
-}));
-
-const LicenseForm = ({ version, errors, isFree, loading }) => {
-  const classes = LicenseFormStyles();
-
+const LicenseForm = ({ version, errors, isFree, userName, loading }) => {
   return (
     <Box>
-      <TextInput
-        name="licenseAssignee"
+      <TextField
         type="text"
         label="License assignee"
-        errors={errors}
+        defaultValue={userName}
+        variant="outlined"
+        margin="dense"
+        disabled={true}
+        inputProps={{ readOnly: true }}
+        fullWidth
         loading={loading}
       />
       <TextInput

@@ -37,7 +37,13 @@ const LicenseCard = () => {
           },
         },
         {
-          name: "Assignee",
+          name: "Assignee identifier",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Assignor identifier",
           options: {
             sort: false,
           },
@@ -66,7 +72,8 @@ const LicenseCard = () => {
           license.id,
           license.fingerprint,
           license.type,
-          license.assignee,
+          license.assigneeIdentifier || "Hidden",
+          license.assignorIdentifier || "Hidden",
           license.price,
           license.created && formatDate(license.created, "dd/MM/yy HH:mm"),
         ],

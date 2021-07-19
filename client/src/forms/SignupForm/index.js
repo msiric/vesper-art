@@ -6,6 +6,13 @@ const SignupForm = ({ errors, loading }) => {
   return (
     <Box>
       <TextInput
+        name="userName"
+        type="text"
+        label="Full name"
+        errors={errors}
+        loading={loading}
+      />
+      <TextInput
         name="userUsername"
         type="text"
         label="Username"

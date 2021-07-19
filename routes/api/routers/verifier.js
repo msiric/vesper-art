@@ -9,7 +9,7 @@ router
   // $TODO not tested
   .post(
     handler(verifyLicense, true, (req, res, next) => ({
-      ...req.body,
+      licenseData: { ...req.body },
     }))
   );
 

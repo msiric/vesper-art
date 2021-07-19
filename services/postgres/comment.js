@@ -1,7 +1,7 @@
 import { ArtworkVisibility } from "../../entities/Artwork";
 import { Comment } from "../../entities/Comment";
 
-const ARTWORK_VISIBILITY_STATUS = ArtworkVisibility.visible;
+const VISIBILITY_STATUS = ArtworkVisibility.visible;
 
 // $Needs testing (mongo -> postgres)
 export const fetchCommentById = async ({
@@ -25,7 +25,7 @@ export const fetchCommentById = async ({
       {
         commentId,
         artworkId,
-        visibility: ARTWORK_VISIBILITY_STATUS,
+        visibility: VISIBILITY_STATUS,
       }
     )
     .getOne();

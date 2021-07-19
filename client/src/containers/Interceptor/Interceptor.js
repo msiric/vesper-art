@@ -65,6 +65,7 @@ const Interceptor = () => {
             token: data.accessToken,
             id: data.user.id,
             name: data.user.name,
+            fullName: data.user.fullName,
             email: data.user.email,
             avatar: data.user.avatar,
             stripeId: data.user.stripeId,

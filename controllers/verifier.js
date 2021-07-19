@@ -5,13 +5,14 @@ import { fetchLicenseByFingerprint } from "../services/postgres/license";
 import { formatError } from "../utils/helpers";
 import { errors } from "../utils/statuses";
 
-export const verifyLicense = async ({ licenseFingerprint, connection }) => {
-  await fingerprintValidation.validate({ licenseFingerprint });
+export const verifyLicense = async ({ licenseData, connection }) => {
+  await fingerprintValidation.validate(licenseData);
   const foundLicense = await fetchLicenseByFingerprint({
-    licenseFingerprint,
+    ...licenseData,
     connection,
   });
   if (!isObjectEmpty(foundLicense)) {
+    console.log(foundLicense);
     return { license: foundLicense };
   }
   throw createError(...formatError(errors.licenseNotFound));

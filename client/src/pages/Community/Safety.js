@@ -33,7 +33,7 @@ const TrustAndSafety = () => {
             Every license that was ever generated can be verified using the platform's 
             verifer system to ensure that your art is never stolen or used in a way that 
             is outside the scope of what the license permits.
-            This way, both you and the licensee are protected.
+            This way, both you and the license assignee are protected.
             When a commercial order is placed, you as a seller will receive 
             ${(1 - payment.appFee) * 100}% of the total order value.
             For example, if you price your artwork at $100 for personal or commercial usage, 

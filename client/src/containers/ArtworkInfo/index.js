@@ -31,13 +31,13 @@ const ArtworkInfo = () => {
   const changeTab = useArtworkDetails((state) => state.changeTab);
 
   const userId = useUserStore((state) => state.id);
+  const userName = useUserStore((state) => state.fullName);
 
   const history = useHistory();
   const classes = artworkInfoStyles();
 
   const setDefaultValues = () => ({
     licenseType: license,
-    licenseAssignee: "",
     licenseCompany: "",
   });
 
@@ -208,6 +208,7 @@ const ArtworkInfo = () => {
           >
             <LicenseForm
               version={artwork.current}
+              userName={userName}
               isFree={true}
               errors={errors}
               loading={loading}

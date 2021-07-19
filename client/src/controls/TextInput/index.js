@@ -9,6 +9,7 @@ const Input = ({
   variant = "outlined",
   loading = false,
   adornment = null,
+  readOnly = false,
   ...props
 }) => {
   const classes = textInputStyles();
@@ -19,6 +20,7 @@ const Input = ({
         startAdornment: adornment ? (
           <InputAdornment position="start">{adornment}</InputAdornment>
         ) : null,
+        readOnly,
       }}
       {...props}
       margin={margin}

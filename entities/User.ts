@@ -27,6 +27,9 @@ export class User extends BaseEntity {
   name: string;
 
   @Column()
+  fullName: string;
+
+  @Column()
   password: string;
 
   @OneToOne(() => Avatar, (avatar) => avatar.owner, {

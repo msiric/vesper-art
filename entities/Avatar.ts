@@ -27,8 +27,7 @@ export class Avatar extends BaseEntity {
   @OneToOne(() => User)
   owner: User;
 
-  // $TODO remove nullable
-  @Column({ nullable: true })
+  @Column()
   ownerId: string;
 
   @Column()

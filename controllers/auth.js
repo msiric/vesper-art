@@ -45,6 +45,7 @@ import { errors, responses } from "../utils/statuses";
 
 // needs transaction (not tested)
 export const postSignUp = async ({
+  userName,
   userEmail,
   userUsername,
   userPassword,
@@ -52,6 +53,7 @@ export const postSignUp = async ({
   connection,
 }) => {
   await signupValidation.validate({
+    userName,
     userEmail,
     userUsername,
     userPassword,
@@ -74,6 +76,7 @@ export const postSignUp = async ({
     await addNewUser({
       userId,
       userEmail,
+      userName,
       userUsername,
       hashedPassword,
       verificationToken,

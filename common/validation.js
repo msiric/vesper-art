@@ -57,6 +57,21 @@ export const errors = {
     message: `Artwork price cannot be greater than $${pricing.maximumPrice}`,
     expose: true,
   },
+  artworkLicenseMin: {
+    status: statusCodes.badRequest,
+    message: `License price cannot be less than $${pricing.minimumPrice}`,
+    expose: true,
+  },
+  artworkLicenseMax: {
+    status: statusCodes.badRequest,
+    message: `License price cannot be greater than $${pricing.maximumPrice}`,
+    expose: true,
+  },
+  artworkLicenseRequired: {
+    status: statusCodes.badRequest,
+    message: "License price is required",
+    expose: true,
+  },
   artworkUseRequired: {
     status: statusCodes.badRequest,
     message: "Artwork use is required",
@@ -148,6 +163,11 @@ export const errors = {
     message: "License assignee is required",
     expose: true,
   },
+  licenseAssignorRequired: {
+    status: statusCodes.badRequest,
+    message: "License assignor is required",
+    expose: true,
+  },
   licenseTypeRequired: {
     status: statusCodes.badRequest,
     message: "License type is required",
@@ -156,6 +176,11 @@ export const errors = {
   licenseTypeInvalid: {
     status: statusCodes.badRequest,
     message: "License type is invalid",
+    expose: true,
+  },
+  userNameRequired: {
+    status: statusCodes.badRequest,
+    message: "Full name is required",
     expose: true,
   },
   userUsernameRequired: {
@@ -530,15 +555,29 @@ export const emailValidation = Yup.object().shape({
 });
 
 export const licenseValidation = Yup.object().shape({
-  // $TODO Needs licenseOwner, licenseArtwork, licensePrice for server validation
-  licenseAssignee: Yup.string()
-    .typeError(errors.invalidString.message)
-    .required(errors.licenseAssigneeRequired.message),
   licenseCompany: Yup.string().typeError(errors.invalidString.message),
   licenseType: Yup.string()
     .typeError(errors.invalidString.message)
     .matches(/(personal|commercial)/, errors.licenseTypeInvalid.message)
     .required(errors.licenseTypeRequired.message),
+});
+
+export const licenseActors = Yup.object().shape({
+  licenseAssignee: Yup.string()
+    .typeError(errors.invalidString.message)
+    .required(errors.licenseAssigneeRequired.message),
+  licenseAssignor: Yup.string()
+    .typeError(errors.invalidString.message)
+    .required(errors.licenseAssignorRequired.message),
+});
+
+export const priceValidation = Yup.object().shape({
+  licensePrice: Yup.number()
+    .integer()
+    .typeError(errors.invalidNumber.message)
+    .min(0, errors.artworkLicenseMin.message)
+    .max(pricing.maximumPrice, errors.artworkLicenseMax.message)
+    .required(errors.artworkLicenseRequired.message),
 });
 
 export const loginValidation = Yup.object().shape({
@@ -766,6 +805,10 @@ export const searchValidation = Yup.object().shape({
 });
 
 export const signupValidation = Yup.object().shape({
+  userName: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim()
+    .required(errors.userNameRequired.message),
   userUsername: Yup.string()
     .typeError(errors.invalidString.message)
     .trim()
@@ -816,6 +859,12 @@ export const fingerprintValidation = Yup.object().shape({
     .typeError(errors.invalidString.message)
     .trim()
     .required(errors.licenseFingerprintRequired.message),
+  assigneeIdentifier: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim(),
+  assignorIdentifier: Yup.string()
+    .typeError(errors.invalidString.message)
+    .trim(),
 });
 
 export const recoveryValidation = Yup.object().shape({

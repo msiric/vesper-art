@@ -5,7 +5,12 @@ import querystring from "querystring";
 import * as Yup from "yup";
 import { appName, featureFlags } from "../common/constants";
 import { isObjectEmpty, renderCommercialLicenses } from "../common/helpers";
-import { licenseValidation, orderValidation } from "../common/validation";
+import {
+  licenseActors,
+  licenseValidation,
+  orderValidation,
+  priceValidation,
+} from "../common/validation";
 import { domain, stripe as stripeConfig } from "../config/secret";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/postgres/artwork";
@@ -36,6 +41,7 @@ import {
 } from "../services/postgres/user";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
 import { calculateTotalCharge } from "../utils/payment";
+import { USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";
 
 export const isIntentPending = (intent) => {
@@ -174,9 +180,17 @@ export const managePaymentIntent = async ({
   artworkLicense,
   connection,
 }) => {
-  const foundUser = await fetchUserById({ userId, connection });
+  const foundUser = await fetchUserById({
+    userId,
+    selection: USER_SELECTION["LICENSE_INFO"],
+    connection,
+  });
   if (!isObjectEmpty(foundUser)) {
-    const foundVersion = await fetchVersionDetails({ versionId, connection });
+    const foundVersion = await fetchVersionDetails({
+      versionId,
+      selection: USER_SELECTION["LICENSE_INFO"],
+      connection,
+    });
     if (!isObjectEmpty(foundVersion)) {
       if (foundVersion.id === foundVersion.artwork.currentId) {
         if (foundVersion.artwork.owner.id !== foundUser.id) {
@@ -200,13 +214,16 @@ export const managePaymentIntent = async ({
             const shouldReinitialize =
               isObjectEmpty(verifiedIntent) || !isIntentPending(verifiedIntent);
             if (!(shouldReinitialize && !isObjectEmpty(foundDiscount))) {
-              const licenseData = shouldReinitialize
-                ? {
-                    licenseAssignee: artworkLicense.assignee,
-                    licenseCompany: artworkLicense.company,
-                    licenseType: artworkLicense.type,
-                  }
-                : { licenseType: artworkLicense.type };
+              const licenseData = {
+                ...(shouldReinitialize && {
+                  licenseAssignee: foundUser.fullName,
+                }),
+                ...(shouldReinitialize && {
+                  licenseAssignor: foundVersion.artwork.owner.fullName,
+                }),
+                licenseCompany: artworkLicense.company,
+                licenseType: artworkLicense.type,
+              };
               const availableLicenses = renderCommercialLicenses({
                 version: foundVersion,
               });
@@ -215,13 +232,12 @@ export const managePaymentIntent = async ({
                   (item) => item.value === artworkLicense.type
                 )
               ) {
-                shouldReinitialize
-                  ? await licenseValidation.validate({
-                      ...licenseData,
-                    })
-                  : await Yup.reach(licenseValidation, "licenseType").validate(
-                      licenseData.licenseType
-                    );
+                const validationSchema = shouldReinitialize
+                  ? licenseValidation.concat(licenseActors)
+                  : licenseValidation;
+                await validationSchema.validate({
+                  ...licenseData,
+                });
                 const { buyerTotal, sellerTotal, platformTotal, licensePrice } =
                   calculateTotalCharge({
                     foundVersion,
@@ -247,7 +263,7 @@ export const managePaymentIntent = async ({
                   fee: platformTotal,
                   licenseData: {
                     ...licenseData,
-                    licensePrice: licensePrice,
+                    licensePrice,
                   },
                 };
                 // remove succeeded/canceled intent
@@ -447,13 +463,17 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     const discountId = orderData.discountId;
     const intentId = stripeIntent.id;
     console.log("IDS DECODED");
-    const { licenseAssignee, licenseCompany, licenseType, licensePrice } =
-      orderData.licenseData;
-    await licenseValidation.validate({
+    const {
       licenseAssignee,
+      licenseAssignor,
       licenseCompany,
       licenseType,
-    });
+      licensePrice,
+    } = orderData.licenseData;
+    await licenseValidation
+      .concat(licenseActors)
+      .concat(priceValidation)
+      .validate(orderData.licenseData);
     console.log("LICENSE VALIDATED");
     const { licenseId, orderId, notificationId } = generateUuids({
       licenseId: null,
@@ -463,13 +483,9 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     const savedLicense = await addNewLicense({
       licenseId,
       artworkId,
-      licenseData: {
-        licenseAssignee,
-        licenseCompany,
-        licenseType,
-        licensePrice,
-      },
+      licenseData: orderData.licenseData,
       userId: buyerId,
+      sellerId,
       connection,
     });
     console.log("LICENSE SAVED");

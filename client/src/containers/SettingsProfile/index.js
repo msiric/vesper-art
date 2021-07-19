@@ -73,6 +73,7 @@ const SettingsProfile = () => {
               trigger={trigger}
               editable={true}
               loading={loading}
+              userName={user.fullName}
             />
           </CardContent>
           <CardActions className={classes.actions}>

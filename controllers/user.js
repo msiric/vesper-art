@@ -57,6 +57,7 @@ import {
   generateUuids,
   generateVerificationToken,
 } from "../utils/helpers";
+import { USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";
 import { finalizeMediaUpload } from "../utils/upload";
 import { deleteUserNotifications } from "./notification";
@@ -338,7 +339,11 @@ export const updateUserProfile = async ({
 
 export const getUserSettings = async ({ userId, connection }) => {
   // $TODO Minimize overhead
-  const foundUser = await fetchUserById({ userId, connection });
+  const foundUser = await fetchUserById({
+    userId,
+    selection: USER_SELECTION["LICENSE_INFO"],
+    connection,
+  });
   if (!isObjectEmpty(foundUser)) {
     // $TODO change name
     return { user: foundUser };

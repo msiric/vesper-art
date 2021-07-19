@@ -30,6 +30,8 @@ const VerifierCard = () => {
   } = useForm({
     defaultValues: {
       licenseFingerprint: "",
+      assigneeIdentifier: "",
+      assignorIdentifier: "",
     },
     resolver: yupResolver(fingerprintValidation),
   });

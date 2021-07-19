@@ -1,6 +1,18 @@
+import { isObjectEmpty } from "../../common/helpers";
 import { Order } from "../../entities/Order";
 import { Review } from "../../entities/Review";
 import { calculateRating } from "../../utils/helpers";
+import {
+  ARTWORK_SELECTION,
+  AVATAR_SELECTION,
+  COVER_SELECTION,
+  DISCOUNT_SELECTION,
+  LICENSE_SELECTION,
+  ORDER_SELECTION,
+  REVIEW_SELECTION,
+  USER_SELECTION,
+  VERSION_SELECTION,
+} from "../../utils/selectors";
 
 // $Needs testing (mongo -> postgres)
 export const addNewOrder = async ({ orderId, orderData, connection }) => {
@@ -123,6 +135,23 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
     .leftJoinAndSelect("order.artwork", "artwork")
     .leftJoinAndSelect("order.review", "review")
     .leftJoinAndSelect("order.license", "license")
+    .select([
+      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["ASSIGNEE_INFO"](),
+      ...LICENSE_SELECTION["ASSIGNOR_INFO"](),
+      ...DISCOUNT_SELECTION["ESSENTIAL_INFO"](),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"]("buyerReview"),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"]("sellerReview"),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("buyer"),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("seller"),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"]("buyerAvatar"),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"]("sellerAvatar"),
+    ])
     .where(
       "(order.buyerId = :userId AND order.id = :orderId) OR (order.sellerId = :userId AND order.id = :orderId)",
       {
@@ -131,7 +160,18 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
       }
     )
     .getOne();
-  if (foundOrder) {
+  if (!isObjectEmpty(foundOrder)) {
+    if (foundOrder.seller.id === userId) {
+      delete foundOrder.spent;
+      delete foundOrder.fee;
+      delete foundOrder.license.assignee;
+      delete foundOrder.license.assigneeIdentifier;
+    }
+    if (foundOrder.buyer.id === userId) {
+      delete foundOrder.earned;
+      delete foundOrder.license.assignor;
+      delete foundOrder.license.assignorIdentifier;
+    }
     if (foundOrder.seller) {
       foundOrder.seller.rating = calculateRating({
         active: foundOrder.seller.active,

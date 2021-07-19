@@ -43,7 +43,8 @@ const STEPS = [
 const CheckoutProcessor = () => {
   const { id: versionId } = useParams();
 
-  const userIntents = useUserStore((state) => state.intents);
+  const userName = useUserStore((state) => state.fullName);
+
   const version = useOrderCheckout((state) => state.version.data);
   const intent = useOrderCheckout((state) => state.intent.data);
   const discount = useOrderCheckout((state) => state.discount.data);
@@ -86,7 +87,6 @@ const CheckoutProcessor = () => {
   } = useForm({
     defaultValues: {
       licenseType: licenseValue,
-      licenseAssignee: "",
       licenseCompany: "",
       billingName: "",
       billingSurname: "",
@@ -152,7 +152,7 @@ const CheckoutProcessor = () => {
         changeStep,
       });
     } else if (isFirstStep) {
-      await saveIntent({ values, userIntents, changeStep });
+      await saveIntent({ values, changeStep });
     } else {
       changeStep({ value: 1 });
     }
@@ -164,6 +164,7 @@ const CheckoutProcessor = () => {
         return (
           <LicenseForm
             version={version}
+            userName={userName}
             isFree={false}
             errors={errors}
             loading={intentLoading}

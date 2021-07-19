@@ -46,8 +46,6 @@ export class Artwork extends BaseEntity {
   @Column({
     type: "enum",
     enum: ArtworkVisibility,
-    // $TODO temp nullable, remove later
-    nullable: true,
   })
   visibility: ArtworkVisibility;
 

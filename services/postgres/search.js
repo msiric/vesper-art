@@ -3,7 +3,7 @@ import { Review } from "../../entities/Review";
 import { User } from "../../entities/User";
 import { calculateRating } from "../../utils/helpers";
 
-const ARTWORK_VISIBILITY_STATUS = ArtworkVisibility.visible;
+const VISIBILITY_STATUS = ArtworkVisibility.visible;
 
 // $TODO version visible
 // $TODO active to const
@@ -26,7 +26,7 @@ export const fetchArtworkResults = async ({
       {
         query: formattedQuery,
         active: true,
-        visibility: ARTWORK_VISIBILITY_STATUS,
+        visibility: VISIBILITY_STATUS,
       }
     )
     .orderBy(

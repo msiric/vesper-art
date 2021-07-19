@@ -222,6 +222,12 @@ export const generateUuids = ({ ...args }) => {
   return generatedUuids;
 };
 
+export const generateRandomBytes = ({ bytes }) => {
+  const buffer = crypto.randomBytes(bytes);
+  const randomBytes = buffer.toString("hex");
+  return randomBytes;
+};
+
 export const generateVerificationToken = () => {
   const verificationToken = genUuid();
   const verificationLink = `${domain.client}/verify_token/${verificationToken}`;
@@ -230,11 +236,21 @@ export const generateVerificationToken = () => {
 };
 
 export const generateResetToken = () => {
-  const buffer = crypto.randomBytes(20);
-  const resetToken = buffer.toString("hex");
+  const resetToken = generateRandomBytes({ bytes: 20 });
   const resetLink = `${domain.client}/reset_password/${resetToken}`;
   const resetExpiry = addHours(new Date(), 1);
   return { resetToken, resetLink, resetExpiry };
+};
+
+export const generateLicenseFingerprint = () => {
+  const licenseFingerprint = generateRandomBytes({ bytes: 20 });
+  return { licenseFingerprint };
+};
+
+export const generateLicenseIdentifiers = () => {
+  const licenseAssigneeIdentifier = generateRandomBytes({ bytes: 10 });
+  const licenseAssignorIdentifier = generateRandomBytes({ bytes: 10 });
+  return { licenseAssigneeIdentifier, licenseAssignorIdentifier };
 };
 
 export const resolveSubQuery = (
@@ -297,6 +313,7 @@ export const formatTokenData = ({ user }) => {
   const userInfo = {
     id: user.id,
     name: user.name,
+    fullName: user.fullName,
     email: user.email,
     avatar: user.avatar,
     notifications: user.notifications,

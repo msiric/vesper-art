@@ -1,6 +1,11 @@
 import createError from "http-errors";
 import { isObjectEmpty, renderFreeLicenses } from "../common/helpers";
-import { downloadValidation, licenseValidation } from "../common/validation";
+import {
+  downloadValidation,
+  licenseActors,
+  licenseValidation,
+  priceValidation,
+} from "../common/validation";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/postgres/artwork";
 import { addNewLicense } from "../services/postgres/license";
@@ -8,6 +13,7 @@ import { addNewNotification } from "../services/postgres/notification";
 import { addNewOrder } from "../services/postgres/order";
 import { fetchUserById } from "../services/postgres/user";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
+import { USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";
 
 export const getCheckout = async ({ userId, versionId, connection }) => {
@@ -25,26 +31,39 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
 export const postDownload = async ({
   userId,
   versionId,
-  licenseAssignee,
   licenseCompany,
   licenseType,
   connection,
 }) => {
-  const foundVersion = await fetchVersionDetails({ versionId, connection });
+  const foundVersion = await fetchVersionDetails({
+    versionId,
+    selection: USER_SELECTION["LICENSE_INFO"],
+    connection,
+  });
   if (!isObjectEmpty(foundVersion)) {
-    await licenseValidation.validate({
-      licenseAssignee,
-      licenseCompany,
-      licenseType,
+    const foundUser = await fetchUserById({
+      userId,
+      selection: USER_SELECTION["LICENSE_INFO"],
+      connection,
     });
-    const availableLicenses = renderFreeLicenses({
-      version: foundVersion,
-    });
-    if (availableLicenses.some((item) => item.value === licenseType)) {
-      const licensePrice = foundVersion[licenseType];
-      // $TODO Treba li dohvacat usera?
-      const foundUser = await fetchUserById({ userId, connection });
-      if (!isObjectEmpty(foundUser)) {
+    if (!isObjectEmpty(foundUser)) {
+      const availableLicenses = renderFreeLicenses({
+        version: foundVersion,
+      });
+      if (availableLicenses.some((item) => item.value === licenseType)) {
+        const licensePrice = foundVersion[licenseType];
+        const licenseData = {
+          licenseAssignee: foundUser.fullName,
+          licenseAssignor: foundVersion.artwork.owner.fullName,
+          licenseCompany,
+          licenseType,
+          licensePrice,
+        };
+        await licenseValidation
+          .concat(licenseActors)
+          .concat(priceValidation)
+          .validate(licenseData);
+        // $TODO Treba li dohvacat usera?
         if (foundVersion.id === foundVersion.artwork.currentId) {
           if (foundVersion.artwork.owner.id !== foundUser.id) {
             const { licenseId, orderId, notificationId } = generateUuids({
@@ -55,13 +74,9 @@ export const postDownload = async ({
             await addNewLicense({
               licenseId,
               userId: foundUser.id,
+              sellerId: foundVersion.artwork.owner.id,
               artworkId: foundVersion.artwork.id,
-              licenseData: {
-                licenseAssignee,
-                licenseCompany,
-                licenseType,
-                licensePrice,
-              },
+              licenseData,
               connection,
             });
             await downloadValidation.validate({
@@ -112,9 +127,9 @@ export const postDownload = async ({
         }
         throw createError(...formatError(errors.artworkVersionObsolete));
       }
-      throw createError(...formatError(errors.userNotFound));
+      throw createError(...formatError(errors.artworkLicenseInvalid));
     }
-    throw createError(...formatError(errors.artworkLicenseInvalid));
+    throw createError(...formatError(errors.userNotFound));
   }
   throw createError(...formatError(errors.artworkNotFound));
 };

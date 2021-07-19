@@ -1,4 +1,4 @@
-import { Artwork, ArtworkVisibility } from "../../entities/Artwork";
+import { Artwork } from "../../entities/Artwork";
 import { Avatar } from "../../entities/Avatar";
 import { Favorite } from "../../entities/Favorite";
 import { Intent } from "../../entities/Intent";
@@ -7,32 +7,7 @@ import { Order } from "../../entities/Order";
 import { Review } from "../../entities/Review";
 import { User } from "../../entities/User";
 import { calculateRating, resolveSubQuery } from "../../utils/helpers";
-
-const USER_ACTIVE_STATUS = true;
-const USER_VERIFIED_STATUS = true;
-const ARTWORK_ACTIVE_STATUS = true;
-const ARTWORK_VISIBILITY_STATUS = ArtworkVisibility.visible;
-const USER_ESSENTIAL_INFO = [
-  "user.id",
-  "user.email",
-  "user.name",
-  "user.avatar",
-  "user.description",
-  "user.country",
-  "user.active",
-  "user.created",
-];
-const USER_STRIPE_INFO = ["user.businessAddress", "user.stripeId"];
-const USER_DETAILED_INFO = ["user.customWork", "user.displayFavorites"];
-const USER_VERIFICATION_INFO = [
-  "user.resetToken",
-  "user.resetExpiry",
-  "user.jwtVersion",
-  "user.verificationToken",
-  "user.verificationExpiry",
-  "user.verified",
-];
-const USER_AUTH_INFO = ["user.password", "user.jwtVersion"];
+import { ARTWORK_SELECTION, USER_SELECTION } from "../../utils/selectors";
 
 export const fetchUserIdByCreds = async ({
   userUsername,
@@ -45,7 +20,11 @@ export const fetchUserIdByCreds = async ({
     .select("user.id")
     .where(
       "(user.name = :name OR user.email = :email) AND user.active = :active",
-      { name: userUsername, email: userEmail, active: USER_ACTIVE_STATUS }
+      {
+        name: userUsername,
+        email: userEmail,
+        active: USER_SELECTION["ACTIVE_STATUS"],
+      }
     )
     .getOne();
   console.log(foundUser);
@@ -59,7 +38,7 @@ export const fetchUserIdByUsername = async ({ userUsername, connection }) => {
     .select("user.id")
     .where("user.name = :name AND user.active = :active", {
       name: userUsername,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
   console.log(foundUser);
@@ -73,7 +52,7 @@ export const fetchUserIdByEmail = async ({ userEmail, connection }) => {
     .select("user.id")
     .where("user.email = :email AND user.active = :active", {
       email: userEmail,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
   console.log(foundUser);
@@ -92,7 +71,7 @@ export const fetchUserIdByVerificationToken = async ({
       {
         tokenId,
         dateNow: new Date(),
-        active: USER_ACTIVE_STATUS,
+        active: USER_SELECTION["ACTIVE_STATUS"],
       }
     )
     .getOne();
@@ -101,20 +80,21 @@ export const fetchUserIdByVerificationToken = async ({
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchUserById = async ({ userId, connection }) => {
+export const fetchUserById = async ({ userId, selection, connection }) => {
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
-      ...USER_ESSENTIAL_INFO,
-      ...USER_STRIPE_INFO,
-      ...USER_DETAILED_INFO,
-      ...USER_VERIFICATION_INFO,
+      ...USER_SELECTION["ESSENTIAL_INFO"],
+      ...USER_SELECTION["STRIPE_INFO"],
+      ...USER_SELECTION["DETAILED_INFO"],
+      ...USER_SELECTION["VERIFICATION_INFO"],
+      ...(selection ? selection : []),
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where("user.id = :userId AND user.active = :active", {
       userId,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
   console.log(foundUser);
@@ -126,15 +106,15 @@ export const fetchUserByUsername = async ({ userUsername, connection }) => {
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
-      ...USER_ESSENTIAL_INFO,
-      ...USER_STRIPE_INFO,
-      ...USER_DETAILED_INFO,
-      ...USER_VERIFICATION_INFO,
+      ...USER_SELECTION["ESSENTIAL_INFO"],
+      ...USER_SELECTION["STRIPE_INFO"],
+      ...USER_SELECTION["DETAILED_INFO"],
+      ...USER_SELECTION["VERIFICATION_INFO"],
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where("user.name = :userUsername AND user.active = :active", {
       userUsername,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
   console.log(foundUser);
@@ -147,15 +127,15 @@ export const fetchUserByEmail = async ({ userEmail, connection }) => {
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
-      ...USER_ESSENTIAL_INFO,
-      ...USER_STRIPE_INFO,
-      ...USER_DETAILED_INFO,
-      ...USER_VERIFICATION_INFO,
+      ...USER_SELECTION["ESSENTIAL_INFO"],
+      ...USER_SELECTION["STRIPE_INFO"],
+      ...USER_SELECTION["DETAILED_INFO"],
+      ...USER_SELECTION["VERIFICATION_INFO"],
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where("user.email = :email AND user.active = :active", {
       email: userEmail,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
   console.log(foundUser);
@@ -170,9 +150,9 @@ export const fetchUserByResetToken = async ({ tokenId, connection }) => {
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
-      ...USER_ESSENTIAL_INFO,
-      ...USER_AUTH_INFO,
-      ...USER_VERIFICATION_INFO,
+      ...USER_SELECTION["ESSENTIAL_INFO"],
+      ...USER_SELECTION["AUTH_INFO"],
+      ...USER_SELECTION["VERIFICATION_INFO"],
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where(
@@ -180,7 +160,7 @@ export const fetchUserByResetToken = async ({ tokenId, connection }) => {
       {
         token: tokenId,
         dateNow: new Date(),
-        active: USER_ACTIVE_STATUS,
+        active: USER_SELECTION["ACTIVE_STATUS"],
       }
     )
     .getOne();
@@ -219,8 +199,8 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
       "user.id = :userId AND user.active = :active AND user.verified = :verified",
       {
         userId,
-        active: USER_ACTIVE_STATUS,
-        verified: USER_VERIFIED_STATUS,
+        active: USER_SELECTION["ACTIVE_STATUS"],
+        verified: USER_SELECTION["VERIFIED_STATUS"],
       }
     )
     .getOne();
@@ -241,8 +221,8 @@ export const fetchSellerMedia = async ({ userId, artworkId, connection }) => {
       "artwork.id = :artworkId AND artwork.active = :active AND artwork.ownerId = :userId",
       {
         artworkId,
-        active: ARTWORK_ACTIVE_STATUS,
-        visibility: ARTWORK_VISIBILITY_STATUS,
+        active: ARTWORK_SELECTION["ACTIVE_STATUS"],
+        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
         userId,
       }
     )
@@ -375,7 +355,7 @@ export const editUserStripe = async ({ userId, stripeId, connection }) => {
     .set({ stripeId })
     .where("id = :userId AND active = :active", {
       userId,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
   console.log(updatedUser);
@@ -394,7 +374,10 @@ export const fetchUserProfile = async ({
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
-    .select([...USER_ESSENTIAL_INFO, ...USER_DETAILED_INFO])
+    .select([
+      ...USER_SELECTION["ESSENTIAL_INFO"],
+      ...USER_SELECTION["DETAILED_INFO"],
+    ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .leftJoinAndMapMany(
       "user.reviews",
@@ -408,7 +391,7 @@ export const fetchUserProfile = async ({
       Artwork,
       "artwork",
       "artwork.ownerId = :userId AND artwork.active = :active",
-      { userId, active: ARTWORK_ACTIVE_STATUS }
+      { userId, active: ARTWORK_SELECTION["ACTIVE_STATUS"] }
     )
     .leftJoinAndMapOne(
       "artwork.owner",
@@ -421,7 +404,7 @@ export const fetchUserProfile = async ({
     .leftJoinAndSelect("version.cover", "cover")
     .where("user.name = :name AND user.active = :active", {
       name: userUsername,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
   foundUser.rating = calculateRating({
@@ -459,8 +442,8 @@ export const fetchUserArtwork = async ({
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
       {
         userId,
-        active: USER_ACTIVE_STATUS,
-        visibility: ARTWORK_VISIBILITY_STATUS,
+        active: USER_SELECTION["ACTIVE_STATUS"],
+        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
       }
     )
     .orderBy("artwork.serial", "ASC")
@@ -498,7 +481,7 @@ export const fetchUserUploads = async ({
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
       {
         userId,
-        active: USER_ACTIVE_STATUS,
+        active: USER_SELECTION["ACTIVE_STATUS"],
       }
     )
     .orderBy("artwork.serial", "ASC")
@@ -535,7 +518,7 @@ export const fetchUserUploadsWithMedia = async ({
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
       {
         userId,
-        active: USER_ACTIVE_STATUS,
+        active: USER_SELECTION["ACTIVE_STATUS"],
       }
     )
     .orderBy("artwork.serial", "ASC")
@@ -567,7 +550,7 @@ export const fetchUserMedia = async ({ userId, cursor, limit, connection }) => {
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
       {
         userId,
-        active: USER_ACTIVE_STATUS,
+        active: USER_SELECTION["ACTIVE_STATUS"],
       }
     )
     .orderBy("artwork.serial", "ASC")
@@ -604,8 +587,8 @@ export const fetchUserFavorites = async ({
       ${resolveSubQuery(queryBuilder, "favorite", Favorite, cursor, -1)}`,
       {
         userId,
-        active: USER_ACTIVE_STATUS,
-        visibility: ARTWORK_VISIBILITY_STATUS,
+        active: USER_SELECTION["ACTIVE_STATUS"],
+        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
       }
     )
     .orderBy("favorite.serial", "ASC")
@@ -757,7 +740,7 @@ export const editUserProfile = async ({
     })
     .where("id = :userId AND active = :active", {
       userId: foundUser.id,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
   console.log(updatedUser);
@@ -832,7 +815,7 @@ export const editUserEmail = async ({
     })
     .where("id = :userId AND active = :active", {
       userId,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
   console.log(updatedUser);
@@ -857,7 +840,7 @@ export const editUserPassword = async ({
     .set({ password: hashedPassword })
     .where("id = :userId AND active = :active", {
       userId,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
   console.log(updatedUser);
@@ -882,7 +865,7 @@ export const editUserPreferences = async ({
     .set({ displayFavorites: userFavorites })
     .where("id = :userId AND active = :active", {
       userId,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
   console.log(updatedUser);
@@ -980,7 +963,7 @@ export const editUserOrigin = async ({
     .set({ businessAddress: userBusinessAddress })
     .where("id = :userId AND active = :active", {
       userId,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
   console.log(updatedUser);
@@ -1011,6 +994,7 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
     .update(User)
     .set({
       email: null,
+      fullName: "",
       name: null,
       password: "",
       avatar: null,
@@ -1031,7 +1015,7 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
     })
     .where("id = :userId AND active = :active", {
       userId,
-      active: USER_ACTIVE_STATUS,
+      active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
   console.log(updatedUser);

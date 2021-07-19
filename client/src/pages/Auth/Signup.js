@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 const Signup = () => {
   const { handleSubmit, formState, errors, control } = useForm({
     defaultValues: {
+      userName: "",
       userUsername: "",
       userEmail: "",
       userPassword: "",
@@ -42,14 +43,6 @@ const Signup = () => {
   const onSubmit = async (values) => {
     try {
       await postSignup.request({ data: values });
-      /*         enqueueSnackbar('Verification email sent', {
-          variant: 'success',
-          autoHideDuration: 1000,
-          anchorOrigin: {
-            vertical: 'top',
-            horizontal: 'center',
-          },
-        }); */
     } catch (err) {
       history.push({
         pathname: "/login",

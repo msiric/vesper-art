@@ -34,6 +34,12 @@ export class License extends BaseEntity {
   @Column()
   ownerId: string;
 
+  @ManyToOne(() => User)
+  seller: User;
+
+  @Column()
+  sellerId: string;
+
   @ManyToOne(() => Artwork)
   @JoinColumn()
   artwork: Artwork;
@@ -46,6 +52,15 @@ export class License extends BaseEntity {
 
   @Column()
   assignee: string;
+
+  @Column()
+  assigneeIdentifier: string;
+
+  @Column()
+  assignor: string;
+
+  @Column()
+  assignorIdentifier: string;
 
   @Column()
   company: string;
