@@ -1,12 +1,16 @@
-import { Artwork, ArtworkVisibility } from "../../entities/Artwork";
+import { Artwork } from "../../entities/Artwork";
 import { Review } from "../../entities/Review";
 import { User } from "../../entities/User";
 import { calculateRating } from "../../utils/helpers";
+import {
+  ARTWORK_SELECTION,
+  AVATAR_SELECTION,
+  COVER_SELECTION,
+  REVIEW_SELECTION,
+  USER_SELECTION,
+  VERSION_SELECTION,
+} from "../../utils/selectors";
 
-const VISIBILITY_STATUS = ArtworkVisibility.visible;
-
-// $TODO version visible
-// $TODO active to const
 export const fetchArtworkResults = async ({
   searchQuery,
   cursor,
@@ -21,12 +25,19 @@ export const fetchArtworkResults = async ({
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
+    .select([
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       "version.title @@ plainto_tsquery(:query) AND artwork.active = :active AND artwork.visibility = :visibility",
       {
         query: formattedQuery,
-        active: true,
-        visibility: VISIBILITY_STATUS,
+        active: ARTWORK_SELECTION.ACTIVE_STATUS,
+        visibility: ARTWORK_SELECTION.VISIBILITY_STATUS,
       }
     )
     .orderBy(
@@ -34,19 +45,10 @@ export const fetchArtworkResults = async ({
       "DESC"
     )
     .getMany();
-  // const foundArtworkTest = await connection
-  //   .getRepository(Artwork)
-  //   .createQueryBuilder("artwork")
-  //   .leftJoinAndSelect("artwork.current", "version")
-  //   .where(
-  //     `to_tsvector('simple',version.title) @@ to_tsquery('simple', :query) AND artwork.active = :active`,
-  //     { query: `${formattedQuery}:*`, active: true }
-  //   )
-  //   .getMany();
+
   return foundArtwork;
 };
 
-// $TODO active to const
 export const fetchUserResults = async ({
   searchQuery,
   cursor,
@@ -64,9 +66,14 @@ export const fetchUserResults = async ({
       "review",
       "review.revieweeId = user.id"
     )
+    .select([
+      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where("user.name @@ plainto_tsquery(:query) AND user.active = :active", {
       query: formattedQuery,
-      active: true,
+      active: USER_SELECTION.ACTIVE_STATUS,
     })
     .orderBy("ts_rank(to_tsvector(user.name), plainto_tsquery(:query))", "DESC")
     .getMany();

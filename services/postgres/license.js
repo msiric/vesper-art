@@ -10,8 +10,6 @@ import {
   USER_SELECTION,
 } from "../../utils/selectors";
 
-const LICENSE_ACTIVE_STATUS = true;
-
 export const fetchLicenseByFingerprint = async ({
   licenseFingerprint,
   assigneeIdentifier,
@@ -34,7 +32,7 @@ export const fetchLicenseByFingerprint = async ({
     ])
     .where("license.fingerprint = :fingerprint AND license.active = :active", {
       fingerprint: licenseFingerprint,
-      active: LICENSE_ACTIVE_STATUS,
+      active: LICENSE_SELECTION.ACTIVE_STATUS,
     })
     .getOne();
   if (!isObjectEmpty(foundLicense)) {
@@ -81,7 +79,7 @@ export const addNewLicense = async ({
         company: licenseData.licenseCompany,
         type: licenseData.licenseType,
         price: licenseData.licensePrice,
-        active: true,
+        active: LICENSE_SELECTION.ACTIVE_STATUS,
       },
     ])
     .execute();

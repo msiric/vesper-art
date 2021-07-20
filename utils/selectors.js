@@ -148,6 +148,7 @@ export const ORDER_SELECTION = {
 };
 
 export const LICENSE_SELECTION = {
+  ACTIVE_STATUS: true,
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.LICENSE) => [
     `${selector}.id`,
     `${selector}.fingerprint`,
