@@ -4,12 +4,15 @@ const DEFAULT_VALUES = {
   ARTWORK: "artwork",
   VERSION: "version",
   COVER: "cover",
+  MEDIA: "media",
   USER: "user",
   AVATAR: "avatar",
   ORDER: "order",
   LICENSE: "license",
   DISCOUNT: "discount",
   REVIEW: "review",
+  COMMENT: "comment",
+  FAVORITE: "favorite",
 };
 
 export const ARTWORK_SELECTION = {
@@ -19,6 +22,7 @@ export const ARTWORK_SELECTION = {
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.ARTWORK) => [
     `${selector}.id`,
     `${selector}.active`,
+    `${selector}.visibility`,
     `${selector}.created`,
   ],
   OWNER_INFO: (selector = DEFAULT_VALUES.ARTWORK) => [`${selector}.owner`],
@@ -45,6 +49,25 @@ export const VERSION_SELECTION = {
 
 export const COVER_SELECTION = {
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.COVER) => [
+    `${selector}.id`,
+    `${selector}.source`,
+    `${selector}.orientation`,
+    `${selector}.dominant`,
+    `${selector}.height`,
+    `${selector}.width`,
+    `${selector}.created`,
+  ],
+};
+
+export const MEDIA_SELECTION = {
+  STRIPPED_INFO: (selector = DEFAULT_VALUES.MEDIA) => [
+    `${selector}.id`,
+    `${selector}.orientation`,
+    `${selector}.dominant`,
+    `${selector}.height`,
+    `${selector}.width`,
+  ],
+  ESSENTIAL_INFO: (selector = DEFAULT_VALUES.MEDIA) => [
     `${selector}.id`,
     `${selector}.source`,
     `${selector}.orientation`,
@@ -150,6 +173,23 @@ export const REVIEW_SELECTION = {
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.REVIEW) => [
     `${selector}.id`,
     `${selector}.rating`,
+    `${selector}.created`,
+  ],
+};
+
+export const COMMENT_SELECTION = {
+  ESSENTIAL_INFO: (selector = DEFAULT_VALUES.COMMENT) => [
+    `${selector}.id`,
+    `${selector}.content`,
+    `${selector}.modified`,
+    `${selector}.created`,
+  ],
+};
+
+export const FAVORITE_SELECTION = {
+  STRIPPED_INFO: (selector = DEFAULT_VALUES.FAVORITE) => [`${selector}.id`],
+  ESSENTIAL_INFO: (selector = DEFAULT_VALUES.FAVORITE) => [
+    `${selector}.id`,
     `${selector}.created`,
   ],
 };

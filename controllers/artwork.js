@@ -18,7 +18,6 @@ import {
   deactivateExistingArtwork,
   fetchActiveArtworks,
   fetchArtworkById,
-  fetchArtworkByOwner,
   fetchArtworkComments,
   fetchArtworkDetails,
   fetchArtworkEdit,
@@ -93,16 +92,6 @@ export const getArtworkComments = async ({
     connection,
   });
   return { comments: foundComments };
-};
-
-export const editArtwork = async ({ userId, artworkId, connection }) => {
-  const foundArtwork = await fetchArtworkByOwner({
-    artworkId,
-    userId,
-    connection,
-  });
-  if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
-  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const postNewArtwork = async ({

@@ -128,18 +128,15 @@ const initActions = (set, get) => ({
         cursor: comments.cursor,
         limit: comments.limit,
       });
-      const {
-        highlightData,
-        foundHighlight,
-        fetchedHighlight,
-      } = await resolveHighlight(
-        artworkId,
-        comments,
-        data.comments,
-        query,
-        highlight,
-        enqueueSnackbar
-      );
+      const { highlightData, foundHighlight, fetchedHighlight } =
+        await resolveHighlight(
+          artworkId,
+          comments,
+          data.comments,
+          query,
+          highlight,
+          enqueueSnackbar
+        );
       set((state) => ({
         ...state,
         comments: {
@@ -227,10 +224,7 @@ const initActions = (set, get) => ({
     try {
       set((state) => ({
         ...state,
-        comments: {
-          ...state.comments,
-          isDeleting: true,
-        },
+        isDeleting: true,
       }));
       await deleteComment.request({
         artworkId,
