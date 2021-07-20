@@ -117,13 +117,11 @@ export const fetchUserPurchase = async ({ orderId, userId, connection }) => {
   const foundOrder = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
-    .leftJoinAndSelect("order.seller", "seller")
     .leftJoinAndSelect("order.review", "review")
     .select([
       ...ORDER_SELECTION["ESSENTIAL_INFO"](),
       ...ORDER_SELECTION["ARTWORK_INFO"](),
       ...ORDER_SELECTION["SELLER_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("seller"),
       ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
     ])
     .where("order.buyerId = :userId AND order.id = :orderId", {

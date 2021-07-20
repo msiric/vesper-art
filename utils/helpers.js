@@ -323,7 +323,6 @@ export const formatTokenData = ({ user }) => {
     businessAddress: user.businessAddress,
     jwtVersion: user.jwtVersion,
     favorites: user.favorites,
-    intents: user.intents,
   };
 
   return { tokenPayload, userInfo };

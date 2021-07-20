@@ -15,12 +15,14 @@ const DEFAULT_VALUES = {
   COMMENT: "comment",
   FAVORITE: "favorite",
   NOTIFICATION: "notification",
+  INTENT: "intent",
 };
 
 export const ARTWORK_SELECTION = {
   ACTIVE_STATUS: true,
   VISIBILITY_STATUS: ArtworkVisibility.visible,
   INVISIBILITY_STATUS: ArtworkVisibility.invisible,
+  STRIPPED_INFO: (selector = DEFAULT_VALUES.ARTWORK) => [`${selector}.id`],
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.ARTWORK) => [
     `${selector}.id`,
     `${selector}.active`,
@@ -210,6 +212,13 @@ export const NOTIFICATION_SELECTION = {
     `${selector}.ref`,
     `${selector}.type`,
     `${selector}.read`,
+    `${selector}.created`,
+  ],
+};
+
+export const INTENT_SELECTION = {
+  ESSENTIAL_INFO: (selector = DEFAULT_VALUES.INTENT) => [
+    `${selector}.id`,
     `${selector}.created`,
   ],
 };

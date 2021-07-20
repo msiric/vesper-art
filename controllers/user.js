@@ -6,19 +6,19 @@ import {
   originValidation,
   passwordValidation,
   preferencesValidation,
-  profileValidation,
+  profileValidation
 } from "../common/validation";
 import { deleteS3Object, getSignedS3Object } from "../lib/s3";
 import {
   deactivateArtworkVersion,
   deactivateExistingArtwork,
-  removeArtworkVersion,
+  removeArtworkVersion
 } from "../services/postgres/artwork";
 import { logUserOut } from "../services/postgres/auth";
 import {
   fetchOrdersByArtwork,
   fetchOrdersByBuyer,
-  fetchOrdersBySeller,
+  fetchOrdersBySeller
 } from "../services/postgres/order";
 import { fetchStripeBalance } from "../services/postgres/stripe";
 import {
@@ -48,16 +48,16 @@ import {
   fetchUserSales,
   fetchUserUploadsWithMedia,
   removeExistingIntent,
-  removeUserAvatar,
+  removeUserAvatar
 } from "../services/postgres/user";
 import { sendEmail } from "../utils/email";
 import {
   formatError,
   formatResponse,
   generateUuids,
-  generateVerificationToken,
+  generateVerificationToken
 } from "../utils/helpers";
-import { USER_SELECTION } from "../utils/selectors";
+import { AVATAR_SELECTION, USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";
 import { finalizeMediaUpload } from "../utils/upload";
 import { deleteUserNotifications } from "./notification";
@@ -278,7 +278,11 @@ export const updateUserProfile = async ({
     fileType: "user",
   });
   await profileValidation.validate(userData);
-  const foundUser = await fetchUserById({ userId, connection });
+  const foundUser = await fetchUserById({
+    userId,
+    selection: [...AVATAR_SELECTION["ESSENTIAL_INFO"]()],
+    connection,
+  });
   if (!isObjectEmpty(foundUser)) {
     let avatarId = null;
     if (avatarUpload.fileMedia) {
@@ -468,7 +472,7 @@ export const updateUserPreferences = async ({
 };
 
 export const deactivateUser = async ({ userId, response, connection }) => {
-  const foundUser = await fetchUserById({ userId, connection });
+  const foundUser = await fetchUserById({ userId, selection: [...AVATAR_SELECTION['ESSENTIAL_INFO']()], connection });
   if (!isObjectEmpty(foundUser)) {
     const foundArtwork = await fetchUserMedia({
       userId,

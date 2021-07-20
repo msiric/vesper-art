@@ -2,7 +2,6 @@ import axios from "axios";
 import FormData from "form-data";
 import createError from "http-errors";
 import querystring from "querystring";
-import * as Yup from "yup";
 import { appName, featureFlags } from "../common/constants";
 import { isObjectEmpty, renderCommercialLicenses } from "../common/helpers";
 import {
@@ -14,10 +13,7 @@ import {
 import { domain, stripe as stripeConfig } from "../config/secret";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/postgres/artwork";
-import {
-  fetchDiscountByCode,
-  fetchDiscountById,
-} from "../services/postgres/discount";
+import { fetchDiscountById } from "../services/postgres/discount";
 import { addNewLicense } from "../services/postgres/license";
 import { addNewNotification } from "../services/postgres/notification";
 import { addNewOrder } from "../services/postgres/order";
@@ -99,75 +95,6 @@ export const getStripeUser = async ({ accountId }) => {
         platformPayments: foundAccount.capabilities.transfers,
       },
     };
-  }
-  throw createError(...formatError(errors.userNotFound));
-};
-
-// $TODO just inserted needs heavy testing
-export const applyDiscount = async ({
-  userId,
-  versionId,
-  discountCode,
-  licenseType,
-  connection,
-}) => {
-  const foundUser = await fetchUserById({ userId, connection });
-  if (foundUser) {
-    const foundDiscount = await fetchDiscountByCode({
-      discountCode,
-      connection,
-    });
-    if (!isObjectEmpty(foundDiscount)) {
-      const foundVersion = await fetchVersionDetails({ versionId, connection });
-      await Yup.reach(licenseValidation, "licenseType").validate(licenseType);
-      if (foundVersion) {
-        if (foundVersion.artwork.active) {
-          if (foundVersion.id === foundVersion.artwork.currentId) {
-            if (foundVersion.artwork.owner.id !== foundUser.id) {
-              const foundIntent = await fetchIntentByParents({
-                userId: foundUser.id,
-                versionId: foundVersion.id,
-                connection,
-              });
-              if (!isObjectEmpty(foundIntent)) {
-                const { buyerTotal, sellerTotal, platformTotal, licensePrice } =
-                  calculateTotalCharge({
-                    foundVersion,
-                    foundDiscount,
-                    licenseType,
-                  });
-                const orderData = {
-                  discountId: foundDiscount.id,
-                  spent: buyerTotal,
-                  earned: sellerTotal,
-                  fee: platformTotal,
-                };
-                const paymentIntent = await updateStripeIntent({
-                  intentAmount: buyerTotal,
-                  intentFee: platformTotal,
-                  intentId: foundIntent.id,
-                  orderData,
-                  connection,
-                });
-                return {
-                  discount: foundDiscount,
-                  intent: {
-                    id: paymentIntent.id,
-                    secret: paymentIntent.client_secret,
-                  },
-                };
-              }
-              throw createError(...formatError(errors.discountNotApplied));
-            }
-            throw createError(...formatError(errors.artworkDownloadedByOwner));
-          }
-          throw createError(...formatError(errors.artworkVersionObsolete));
-        }
-        throw createError(...formatError(errors.artworkNoLongerActive));
-      }
-      throw createError(...formatError(errors.artworkNotFound));
-    }
-    throw createError(...formatError(errors.discountNotFound));
   }
   throw createError(...formatError(errors.userNotFound));
 };

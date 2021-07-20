@@ -66,10 +66,6 @@ const Login = () => {
             object[item.artworkId] = true;
             return object;
           }, {}),
-          intents: data.user.intents.reduce((object, item) => {
-            object[item.artworkId] = item.intentId;
-            return object;
-          }, {}),
         });
         setEvents({
           notifications: {

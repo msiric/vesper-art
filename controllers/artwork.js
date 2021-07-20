@@ -41,6 +41,7 @@ import {
   formattedClientKeys,
   generateUuids,
 } from "../utils/helpers";
+import { USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";
 import { finalizeMediaUpload } from "../utils/upload";
 
@@ -122,6 +123,7 @@ export const postNewArtwork = async ({
     const formattedData = formatArtworkPrices(alteredData);
     const foundUser = await fetchUserById({
       userId,
+      selection: [...USER_SELECTION["STRIPE_INFO"]()],
       connection,
     });
     if (!isObjectEmpty(foundUser)) {
@@ -204,6 +206,7 @@ export const updateArtwork = async ({
     if (shouldUpdate) {
       const foundUser = await fetchUserById({
         userId,
+        selection: [...USER_SELECTION["STRIPE_INFO"]()],
         connection,
       });
       if (!isObjectEmpty(foundUser)) {

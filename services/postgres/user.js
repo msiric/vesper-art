@@ -7,7 +7,19 @@ import { Order } from "../../entities/Order";
 import { Review } from "../../entities/Review";
 import { User } from "../../entities/User";
 import { calculateRating, resolveSubQuery } from "../../utils/helpers";
-import { ARTWORK_SELECTION, USER_SELECTION } from "../../utils/selectors";
+import {
+  ARTWORK_SELECTION,
+  AVATAR_SELECTION,
+  COVER_SELECTION,
+  FAVORITE_SELECTION,
+  INTENT_SELECTION,
+  MEDIA_SELECTION,
+  NOTIFICATION_SELECTION,
+  ORDER_SELECTION,
+  REVIEW_SELECTION,
+  USER_SELECTION,
+  VERSION_SELECTION,
+} from "../../utils/selectors";
 
 export const fetchUserIdByCreds = async ({
   userUsername,
@@ -17,7 +29,7 @@ export const fetchUserIdByCreds = async ({
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
-    .select("user.id")
+    .select([...USER_SELECTION["STRIPPED_INFO"]()])
     .where(
       "(user.name = :name OR user.email = :email) AND user.active = :active",
       {
@@ -35,7 +47,7 @@ export const fetchUserIdByUsername = async ({ userUsername, connection }) => {
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
-    .select("user.id")
+    .select([...USER_SELECTION["STRIPPED_INFO"]()])
     .where("user.name = :name AND user.active = :active", {
       name: userUsername,
       active: USER_SELECTION["ACTIVE_STATUS"],
@@ -49,7 +61,7 @@ export const fetchUserIdByEmail = async ({ userEmail, connection }) => {
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
-    .select("user.id")
+    .select([...USER_SELECTION["STRIPPED_INFO"]()])
     .where("user.email = :email AND user.active = :active", {
       email: userEmail,
       active: USER_SELECTION["ACTIVE_STATUS"],
@@ -66,6 +78,7 @@ export const fetchUserIdByVerificationToken = async ({
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
+    .select([...USER_SELECTION["STRIPPED_INFO"]()])
     .where(
       "user.verificationToken = :tokenId AND user.verificationExpiry > :dateNow AND user.active = :active",
       {
@@ -87,9 +100,6 @@ export const fetchUserById = async ({ userId, selection, connection }) => {
     .leftJoinAndSelect("user.avatar", "avatar")
     .select([
       ...USER_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["STRIPE_INFO"](),
-      ...USER_SELECTION["DETAILED_INFO"](),
-      ...USER_SELECTION["VERIFICATION_INFO"](),
       ...(selection ? selection : []),
     ])
     .where("user.id = :userId AND user.active = :active", {
@@ -106,10 +116,8 @@ export const fetchUserByUsername = async ({ userUsername, connection }) => {
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
-      ...USER_SELECTION["ESSENTIAL_INFO"],
-      ...USER_SELECTION["STRIPE_INFO"],
-      ...USER_SELECTION["DETAILED_INFO"],
-      ...USER_SELECTION["VERIFICATION_INFO"],
+      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["DETAILED_INFO"](),
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where("user.name = :userUsername AND user.active = :active", {
@@ -127,10 +135,8 @@ export const fetchUserByEmail = async ({ userEmail, connection }) => {
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
-      ...USER_SELECTION["ESSENTIAL_INFO"],
-      ...USER_SELECTION["STRIPE_INFO"],
-      ...USER_SELECTION["DETAILED_INFO"],
-      ...USER_SELECTION["VERIFICATION_INFO"],
+      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["VERIFICATION_INFO"](),
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where("user.email = :email AND user.active = :active", {
@@ -150,9 +156,8 @@ export const fetchUserByResetToken = async ({ tokenId, connection }) => {
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
-      ...USER_SELECTION["ESSENTIAL_INFO"],
+      ...USER_SELECTION["STRIPPED_INFO"],
       ...USER_SELECTION["AUTH_INFO"],
-      ...USER_SELECTION["VERIFICATION_INFO"],
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where(
@@ -175,13 +180,6 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
     .createQueryBuilder("user")
     .leftJoinAndSelect("user.avatar", "avatar")
     .leftJoinAndMapMany(
-      "user.intents",
-      Intent,
-      "intent",
-      "intent.ownerId = :userId",
-      { userId }
-    )
-    .leftJoinAndMapMany(
       "user.notifications",
       Notification,
       "notification",
@@ -195,6 +193,16 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
       "favorite.ownerId = :userId",
       { userId }
     )
+    .select([
+      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["AUTH_INFO"](),
+      ...USER_SELECTION["VERIFICATION_INFO"](),
+      ...USER_SELECTION["STRIPE_INFO"](),
+      ...USER_SELECTION["LICENSE_INFO"](),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+      ...NOTIFICATION_SELECTION["STRIPPED_INFO"](),
+      ...FAVORITE_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       "user.id = :userId AND user.active = :active AND user.verified = :verified",
       {
@@ -217,6 +225,7 @@ export const fetchSellerMedia = async ({ userId, artworkId, connection }) => {
     .createQueryBuilder("artwork")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.media", "media")
+    .select([...MEDIA_SELECTION["ESSENTIAL_INFO"]()])
     .where(
       "artwork.id = :artworkId AND artwork.active = :active AND artwork.ownerId = :userId",
       {
@@ -232,6 +241,7 @@ export const fetchSellerMedia = async ({ userId, artworkId, connection }) => {
 };
 
 // $Needs testing (mongo -> postgres)
+// $TODO remove @AfterLoad for earned, spent and fee
 export const fetchUserPurchases = async ({
   userId,
   cursor,
@@ -254,6 +264,14 @@ export const fetchUserPurchases = async ({
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
+    .select([
+      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("seller"),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       `order.buyerId = :userId AND order.serial > 
       ${resolveSubQuery(queryBuilder, "order", Order, cursor, -1)}`,
@@ -290,6 +308,15 @@ export const fetchUserPurchasesWithMedia = async ({
     .leftJoinAndSelect("version.media", "media")
     .leftJoinAndSelect("order.review", "review")
     .distinctOn(["order.artworkId"])
+    .select([
+      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("seller"),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+      ...MEDIA_SELECTION["ESSENTIAL_INFO"](),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       `order.buyerId = :userId AND order.serial > 
       ${resolveSubQuery(queryBuilder, "order", Order, cursor, -1)}`,
@@ -319,6 +346,14 @@ export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
+    .select([
+      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("buyer"),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       `order.sellerId = :userId AND order.serial > 
       ${resolveSubQuery(queryBuilder, "order", Order, cursor, -1)}`,
@@ -335,6 +370,7 @@ export const fetchUserReviews = async ({ userId, connection }) => {
   const foundReviews = await connection
     .getRepository(Review)
     .createQueryBuilder("review")
+    .select([...REVIEW_SELECTION["ESSENTIAL_INFO"]()])
     .where("review.revieweeId = :userId", {
       userId,
     })
@@ -374,10 +410,6 @@ export const fetchUserProfile = async ({
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
-    .select([
-      ...USER_SELECTION["ESSENTIAL_INFO"],
-      ...USER_SELECTION["DETAILED_INFO"],
-    ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .leftJoinAndMapMany(
       "user.reviews",
@@ -386,31 +418,23 @@ export const fetchUserProfile = async ({
       "review.revieweeId = :userId",
       { userId }
     )
-    .leftJoinAndMapMany(
-      "user.artwork",
-      Artwork,
-      "artwork",
-      "artwork.ownerId = :userId AND artwork.active = :active",
-      { userId, active: ARTWORK_SELECTION["ACTIVE_STATUS"] }
-    )
-    .leftJoinAndMapOne(
-      "artwork.owner",
-      User,
-      "owner",
-      "artwork.ownerId = :userId",
-      { userId }
-    )
-    .leftJoinAndSelect("artwork.current", "version")
-    .leftJoinAndSelect("version.cover", "cover")
+    .select([
+      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["DETAILED_INFO"](),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where("user.name = :name AND user.active = :active", {
       name: userUsername,
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
-  foundUser.rating = calculateRating({
-    active: foundUser.active,
-    reviews: foundUser.reviews,
-  });
+  if (foundUser) {
+    foundUser.rating = calculateRating({
+      active: foundUser.active,
+      reviews: foundUser.reviews,
+    });
+  }
   return foundUser;
 };
 
@@ -437,6 +461,12 @@ export const fetchUserArtwork = async ({
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("version.cover", "cover")
+    .select([
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       `artwork.ownerId = :userId AND artwork.active = :active AND artwork.visibility = :visibility AND artwork.serial > 
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
@@ -476,6 +506,12 @@ export const fetchUserUploads = async ({
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("version.cover", "cover")
+    .select([
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
@@ -513,6 +549,13 @@ export const fetchUserUploadsWithMedia = async ({
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("version.media", "media")
+    .select([
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+      ...MEDIA_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
@@ -545,6 +588,13 @@ export const fetchUserMedia = async ({ userId, cursor, limit, connection }) => {
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("version.media", "media")
+    .select([
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+      ...MEDIA_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
@@ -582,6 +632,13 @@ export const fetchUserFavorites = async ({
     .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
+    .select([
+      ...FAVORITE_SELECTION["ESSENTIAL_INFO"](),
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       `favorite.ownerId = :userId AND artwork.active = :active AND artwork.visibility = :visibility AND favorite.serial > 
       ${resolveSubQuery(queryBuilder, "favorite", Favorite, cursor, -1)}`,
@@ -596,42 +653,6 @@ export const fetchUserFavorites = async ({
     .getMany();
   console.log(foundFavorites);
   return foundFavorites;
-};
-
-// $Needs testing (mongo -> postgres)
-export const fetchUserStatistics = async ({ userId, connection }) => {
-  // return await User.findOne({
-  //   where: [{ id: userId, active: true }],
-  //   relations: [
-  //     "purchases",
-  //     "sales",
-  //     "purchases.version",
-  //     "purchases.license",
-  //     "sales.version",
-  //     "sales.license",
-  //   ],
-  // });
-
-  const foundStatistics = await connection
-    .getRepository(Order)
-    .createQueryBuilder("order")
-    .leftJoinAndSelect("order.seller", "seller")
-    .leftJoinAndSelect("seller.avatar", "avatar")
-    .leftJoinAndSelect("order.version", "version")
-    .leftJoinAndSelect("version.cover", "cover")
-    .leftJoinAndSelect("order.review", "review")
-    .leftJoinAndSelect("order.license", "license")
-    .where(
-      "order.buyerId = :userId AND order.status = :status OR order.sellerId = :userId AND order.status = :status",
-      {
-        userId,
-        // $TODO to const
-        status: "completed",
-      }
-    )
-    .getMany();
-  console.log(foundStatistics);
-  return foundStatistics;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -768,6 +789,7 @@ export const fetchUserNotifications = async ({
     .getRepository(Notification)
     .createQueryBuilder("notification");
   const foundNotifications = await queryBuilder
+    .select([...NOTIFICATION_SELECTION["ESSENTIAL_INFO"]()])
     .where(
       `notification.receiverId = :userId AND notification.serial < 
       ${resolveSubQuery(
@@ -872,28 +894,6 @@ export const editUserPreferences = async ({
   return updatedUser;
 };
 
-export const fetchIntentByCreds = async ({
-  intentId,
-  userId,
-  versionId,
-  connection,
-}) => {
-  const foundIntent = await connection
-    .getRepository(Intent)
-    .createQueryBuilder("intent")
-    .where(
-      "intent.id = :intentId AND intent.ownerId = :userId AND intent.versionId = :versionId",
-      {
-        intentId,
-        userId,
-        versionId,
-      }
-    )
-    .getOne();
-  console.log(foundIntent);
-  return foundIntent;
-};
-
 export const fetchIntentByParents = async ({
   userId,
   versionId,
@@ -902,6 +902,7 @@ export const fetchIntentByParents = async ({
   const foundIntent = await connection
     .getRepository(Intent)
     .createQueryBuilder("intent")
+    .select([...INTENT_SELECTION["ESSENTIAL_INFO"]()])
     .where("intent.ownerId = :userId AND intent.versionId = :versionId", {
       userId,
       versionId,

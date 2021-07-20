@@ -74,10 +74,6 @@ const Interceptor = () => {
               object[item.artworkId] = true;
               return object;
             }, {}),
-            intents: data.user.intents.reduce((object, item) => {
-              object[item.artworkId] = item.intentId;
-              return object;
-            }, {}),
           });
           setEvents({
             notifications: {
@@ -142,10 +138,6 @@ const Interceptor = () => {
               object[item.artworkId] = true;
               return object;
             }, {}),
-            intents: data.user.intents.reduce((object, item) => {
-              object[item.artworkId] = item.intentId;
-              return object;
-            }, {}),
           });
           updateEvents({
             notifications: { count: data.user.notifications },
@@ -193,10 +185,6 @@ const Interceptor = () => {
         country: data.user.country,
         favorites: data.user.favorites.reduce((object, item) => {
           object[item.artworkId] = true;
-          return object;
-        }, {}),
-        intents: data.user.intents.reduce((object, item) => {
-          object[item.artworkId] = item.intentId;
           return object;
         }, {}),
       });
