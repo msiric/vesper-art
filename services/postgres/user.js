@@ -84,14 +84,14 @@ export const fetchUserById = async ({ userId, selection, connection }) => {
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
+    .leftJoinAndSelect("user.avatar", "avatar")
     .select([
-      ...USER_SELECTION["ESSENTIAL_INFO"],
-      ...USER_SELECTION["STRIPE_INFO"],
-      ...USER_SELECTION["DETAILED_INFO"],
-      ...USER_SELECTION["VERIFICATION_INFO"],
+      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPE_INFO"](),
+      ...USER_SELECTION["DETAILED_INFO"](),
+      ...USER_SELECTION["VERIFICATION_INFO"](),
       ...(selection ? selection : []),
     ])
-    .leftJoinAndSelect("user.avatar", "avatar")
     .where("user.id = :userId AND user.active = :active", {
       userId,
       active: USER_SELECTION["ACTIVE_STATUS"],

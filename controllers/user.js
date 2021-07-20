@@ -341,7 +341,7 @@ export const getUserSettings = async ({ userId, connection }) => {
   // $TODO Minimize overhead
   const foundUser = await fetchUserById({
     userId,
-    selection: USER_SELECTION["LICENSE_INFO"],
+    selection: USER_SELECTION["LICENSE_INFO"](),
     connection,
   });
   if (!isObjectEmpty(foundUser)) {

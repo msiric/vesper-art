@@ -37,13 +37,12 @@ export const postDownload = async ({
 }) => {
   const foundVersion = await fetchVersionDetails({
     versionId,
-    selection: USER_SELECTION["LICENSE_INFO"],
     connection,
   });
   if (!isObjectEmpty(foundVersion)) {
     const foundUser = await fetchUserById({
       userId,
-      selection: USER_SELECTION["LICENSE_INFO"],
+      selection: USER_SELECTION["LICENSE_INFO"](),
       connection,
     });
     if (!isObjectEmpty(foundUser)) {

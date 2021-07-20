@@ -9,6 +9,7 @@ import { Version } from "../../entities/Version";
 import { calculateRating, resolveSubQuery } from "../../utils/helpers";
 import {
   ARTWORK_SELECTION,
+  COVER_SELECTION,
   USER_SELECTION,
   VERSION_SELECTION,
 } from "../../utils/selectors";
@@ -54,7 +55,12 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("artwork.owner", "owner")
-    .leftJoinAndSelect("owner.avatar", "avatar")
+    .select([
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
+    ])
     .where(
       `artwork.active = :active AND artwork.visibility = :visibility AND artwork.serial > 
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
@@ -71,11 +77,7 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchVersionDetails = async ({
-  versionId,
-  selection,
-  connection,
-}) => {
+export const fetchVersionDetails = async ({ versionId, connection }) => {
   // return await Version.findOne({
   //   where: [{ id: versionId }],
   //   relations: ["artwork", "artwork.owner"],
@@ -89,12 +91,12 @@ export const fetchVersionDetails = async ({
     .leftJoinAndSelect("user.avatar", "avatar")
     .leftJoinAndSelect("version.cover", "version.cover")
     .select([
-      ...VERSION_SELECTION["ESSENTIAL_INFO"],
-      ...ARTWORK_SELECTION["ARTWORK_ESSENTIAL_INFO"],
-      ...ARTWORK_SELECTION["ARTWORK_OWNER_INFO"],
-      ...ARTWORK_SELECTION["ARTWORK_CURRENT_INFO"],
-      ...USER_SELECTION["ESSENTIAL_INFO"],
-      ...(selection ? selection : []),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...ARTWORK_SELECTION["OWNER_INFO"](),
+      ...ARTWORK_SELECTION["CURRENT_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"](),
+      ...USER_SELECTION["LICENSE_INFO"](),
     ])
     .where(
       "version.id = :versionId AND artwork.active = :active AND artwork.visibility = :visibility",

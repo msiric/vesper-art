@@ -58,6 +58,10 @@ export const COVER_SELECTION = {
 export const USER_SELECTION = {
   ACTIVE_STATUS: true,
   VERIFIED_STATUS: true,
+  STRIPPED_INFO: (selector = DEFAULT_VALUES.USER) => [
+    `${selector}.id`,
+    `${selector}.name`,
+  ],
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.USER) => [
     `${selector}.id`,
     `${selector}.email`,
