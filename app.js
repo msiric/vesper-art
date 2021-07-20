@@ -60,7 +60,6 @@ const dirname = path.resolve();
   if (environment !== ENV_OPTIONS.TEST) {
     try {
       await connectToDatabase();
-      console.log("Connected to PostgreSQL");
     } catch (err) {
       console.log("DB error", err);
     }
