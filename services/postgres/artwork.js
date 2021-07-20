@@ -70,22 +70,26 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
   return foundArtwork;
 };
 
-export const fetchVersionDetails = async ({ versionId, connection }) => {
+export const fetchVersionDetails = async ({
+  versionId,
+  includeFullname = true,
+  connection,
+}) => {
   const foundVersion = await connection
     .getRepository(Version)
     .createQueryBuilder("version")
     .leftJoinAndSelect("version.artwork", "artwork")
-    .leftJoinAndSelect("artwork.owner", "user")
+    .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("artwork.current", "current")
-    .leftJoinAndSelect("user.avatar", "avatar")
+    .leftJoinAndSelect("owner.avatar", "avatar")
     .leftJoinAndSelect("version.cover", "version.cover")
     .select([
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
       ...ARTWORK_SELECTION["OWNER_INFO"](),
       ...ARTWORK_SELECTION["CURRENT_INFO"](),
-      ...USER_SELECTION["STRIPPED_INFO"](),
-      ...USER_SELECTION["LICENSE_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
+      ...(includeFullname ? USER_SELECTION["LICENSE_INFO"]("owner") : []),
     ])
     .where(
       "version.id = :versionId AND artwork.active = :active AND artwork.visibility = :visibility",

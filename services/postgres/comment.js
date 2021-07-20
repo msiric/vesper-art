@@ -3,17 +3,11 @@ import { Comment } from "../../entities/Comment";
 
 const VISIBILITY_STATUS = ArtworkVisibility.visible;
 
-// $Needs testing (mongo -> postgres)
 export const fetchCommentById = async ({
   artworkId,
   commentId,
   connection,
 }) => {
-  // return await Comment.findOne({
-  //   where: [{ id: commentId, artwork: artworkId }],
-  //   relations: ["owner"],
-  // });
-
   const foundComment = await connection
     .getRepository(Comment)
     .createQueryBuilder("comment")
@@ -33,7 +27,6 @@ export const fetchCommentById = async ({
   return foundComment;
 };
 
-// $Needs testing (mongo -> postgres)
 export const addNewComment = async ({
   commentId,
   artworkId,
@@ -41,14 +34,6 @@ export const addNewComment = async ({
   commentContent,
   connection,
 }) => {
-  /*   const newComment = new Comment();
-  newComment.artwork = artworkId;
-  newComment.owner = userId;
-  newComment.content = commentContent;
-  newComment.modified = false;
-  newComment.generated = false;
-  return await Comment.save(newComment); */
-
   const savedComment = await connection
     .createQueryBuilder()
     .insert()
@@ -69,7 +54,6 @@ export const addNewComment = async ({
   return savedComment;
 };
 
-// $Needs testing (mongo -> postgres)
 export const editExistingComment = async ({
   commentId,
   artworkId,
@@ -77,13 +61,6 @@ export const editExistingComment = async ({
   commentContent,
   connection,
 }) => {
-  /*   const foundComment = await Comment.findOne({
-    where: [{ id: commentId, artwork: artworkId, owner: userId }],
-  });
-  foundComment.content = commentContent;
-  foundComment.modified = true;
-  return await Comment.save(foundComment); */
-
   const updatedComment = await connection
     .createQueryBuilder()
     .update(Comment)
@@ -101,18 +78,12 @@ export const editExistingComment = async ({
   return updatedComment;
 };
 
-// $Needs testing (mongo -> postgres)
 export const removeExistingComment = async ({
   commentId,
   artworkId,
   userId,
   connection,
 }) => {
-  /*   const foundComment = await Comment.findOne({
-    where: [{ id: commentId, artwork: artworkId, owner: userId }],
-  });
-  return await Comment.remove(foundComment); */
-
   const deletedComment = await connection
     .createQueryBuilder()
     .delete()

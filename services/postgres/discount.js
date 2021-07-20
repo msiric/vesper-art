@@ -1,39 +1,28 @@
 import { Discount } from "../../entities/Discount";
+import { DISCOUNT_SELECTION } from "../../utils/selectors";
 
-// $Needs testing (mongo -> postgres)
 export const fetchDiscountByCode = async ({ discountCode, connection }) => {
-  // return await Discount.findOne({
-  //   where: [{ name: discountCode }],
-  // });
-
-  console.log("DISCOUNT", discountCode);
-
   const foundDiscount = await connection
     .getRepository(Discount)
     .createQueryBuilder("discount")
+    .select([...DISCOUNT_SELECTION["ESSENTIAL_INFO"]()])
     .where("discount.name = :name AND discount.active = :active", {
       name: discountCode,
-      // $TODO replace with a constant
-      active: true,
+      active: DISCOUNT_SELECTION.ACTIVE_STATUS,
     })
     .getOne();
   console.log(foundDiscount);
   return foundDiscount;
 };
 
-// $Needs testing (mongo -> postgres)
 export const fetchDiscountById = async ({ discountId, connection }) => {
-  // return await Discount.findOne({
-  //   where: [{ id: discountId }],
-  // });
-
   const foundDiscount = await connection
     .getRepository(Discount)
     .createQueryBuilder("discount")
+    .select([...DISCOUNT_SELECTION["ESSENTIAL_INFO"]()])
     .where("discount.id = :discountId AND discount.active = :active", {
       discountId,
-      // $TODO replace with a constant
-      active: true,
+      active: DISCOUNT_SELECTION.ACTIVE_STATUS,
     })
     .getOne();
   console.log(foundDiscount);

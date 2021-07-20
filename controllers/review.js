@@ -21,6 +21,7 @@ export const postReview = async ({
     userId,
     connection,
   });
+  console.log("FOUND ORDER", foundOrder);
   if (!isObjectEmpty(foundOrder)) {
     if (!foundOrder.review) {
       const { reviewId, notificationId } = generateUuids({
@@ -53,10 +54,10 @@ export const postReview = async ({
         notificationLink: foundOrder.id,
         notificationRef: reviewId,
         notificationType: "review",
-        notificationReceiver: foundOrder.seller,
+        notificationReceiver: foundOrder.sellerId,
         connection,
       });
-      socketApi.sendNotification(foundOrder.seller, foundOrder.id);
+      socketApi.sendNotification(foundOrder.sellerId, foundOrder.id);
       // new end
       return formatResponse(responses.reviewCreated);
     }

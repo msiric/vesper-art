@@ -37,7 +37,7 @@ const RatingModal = ({
     watch,
   } = useForm({
     defaultValues: {
-      artistRating: 0,
+      reviewRating: 0,
     },
     resolver: yupResolver(reviewValidation),
   });
@@ -62,7 +62,7 @@ const RatingModal = ({
           <Typography className={classes.title}>{promptTitle}</Typography>
           <Divider />
           <FormProvider control={control}>
-            <form onSubmit={handleSubmit(async () => await handleConfirm)}>
+            <form onSubmit={handleSubmit(handleConfirm)}>
               <CardContent>
                 <RatingForm
                   errors={errors}

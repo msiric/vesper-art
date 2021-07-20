@@ -12,18 +12,12 @@ import {
 
 const LICENSE_ACTIVE_STATUS = true;
 
-// $Needs testing (mongo -> postgres)
 export const fetchLicenseByFingerprint = async ({
   licenseFingerprint,
   assigneeIdentifier,
   assignorIdentifier,
   connection,
 }) => {
-  // return await License.findOne({
-  //   where: [{ fingerprint: licenseFingerprint, active: true }],
-  //   relations: ["artwork"],
-  // });
-
   const foundLicense = await connection
     .getRepository(License)
     .createQueryBuilder("license")
@@ -57,7 +51,6 @@ export const fetchLicenseByFingerprint = async ({
   return foundLicense;
 };
 
-// $Needs testing (mongo -> postgres)
 export const addNewLicense = async ({
   licenseId,
   userId,
@@ -66,17 +59,6 @@ export const addNewLicense = async ({
   licenseData,
   connection,
 }) => {
-  /*   const newLicense = new License();
-  newLicense.owner = userId;
-  newLicense.artwork = artworkData.id;
-  newLicense.fingerprint = crypto.randomBytes(20).toString("hex");
-  newLicense.assignee = licenseData.licenseAssignee;
-  newLicense.company = licenseData.licenseCompany;
-  newLicense.type = licenseData.licenseType;
-  newLicense.active = false;
-  newLicense.price = artworkData.current[licenseData.licenseType];
-  return newLicense; */
-
   const { licenseFingerprint } = generateLicenseFingerprint();
   const { licenseAssigneeIdentifier, licenseAssignorIdentifier } =
     generateLicenseIdentifiers();

@@ -1,4 +1,5 @@
 import { ArtworkVisibility } from "../entities/Artwork";
+import { OrderStatus } from "../entities/Order";
 
 const DEFAULT_VALUES = {
   ARTWORK: "artwork",
@@ -13,6 +14,7 @@ const DEFAULT_VALUES = {
   REVIEW: "review",
   COMMENT: "comment",
   FAVORITE: "favorite",
+  NOTIFICATION: "notification",
 };
 
 export const ARTWORK_SELECTION = {
@@ -131,13 +133,18 @@ export const AVATAR_SELECTION = {
 };
 
 export const ORDER_SELECTION = {
+  COMPLETED_STATUS: OrderStatus.completed,
+  CANCELED_STATUS: OrderStatus.canceled,
+  PROCESSING_STATUS: OrderStatus.processing,
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.ORDER) => [
     `${selector}.id`,
     `${selector}.status`,
     `${selector}.created`,
   ],
-  SELLER_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.earned`],
-  BUYER_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.spent`],
+  ARTWORK_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.artworkId`],
+  VERSION_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.versionId`],
+  SELLER_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.sellerId`],
+  BUYER_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.buyerId`],
 };
 
 export const LICENSE_SELECTION = {
@@ -190,6 +197,18 @@ export const FAVORITE_SELECTION = {
   STRIPPED_INFO: (selector = DEFAULT_VALUES.FAVORITE) => [`${selector}.id`],
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.FAVORITE) => [
     `${selector}.id`,
+    `${selector}.created`,
+  ],
+};
+
+export const NOTIFICATION_SELECTION = {
+  STRIPPED_INFO: (selector = DEFAULT_VALUES.NOTIFICATION) => [`${selector}.id`],
+  ESSENTIAL_INFO: (selector = DEFAULT_VALUES.NOTIFICATION) => [
+    `${selector}.id`,
+    `${selector}.link`,
+    `${selector}.ref`,
+    `${selector}.type`,
+    `${selector}.read`,
     `${selector}.created`,
   ],
 };

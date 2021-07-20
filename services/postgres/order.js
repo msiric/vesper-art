@@ -8,80 +8,22 @@ import {
   COVER_SELECTION,
   DISCOUNT_SELECTION,
   LICENSE_SELECTION,
+  MEDIA_SELECTION,
   ORDER_SELECTION,
   REVIEW_SELECTION,
   USER_SELECTION,
   VERSION_SELECTION,
 } from "../../utils/selectors";
 
-// $Needs testing (mongo -> postgres)
-export const addNewOrder = async ({ orderId, orderData, connection }) => {
-  /*   const newOrder = new Order();
-  newOrder.buyer = orderData.buyerId;
-  newOrder.seller = orderData.sellerId;
-  newOrder.artwork = orderData.artworkId;
-  newOrder.version = orderData.versionId;
-  newOrder.discount = orderData.discountId;
-  newOrder.license = orderData.licenseId;
-  newOrder.review = orderData.review;
-  newOrder.spent = orderData.spent;
-  newOrder.earned = orderData.earned;
-  newOrder.fee = orderData.fee;
-  newOrder.type = orderData.commercial ? "commercial" : "free";
-  newOrder.status = orderData.status;
-  newOrder.intent = orderData.intentId;
-  return await Order.save(newOrder); */
-
-  const savedOrder = await connection
-    .createQueryBuilder()
-    .insert()
-    .into(Order)
-    .values([
-      {
-        id: orderId,
-        buyerId: orderData.buyerId,
-        sellerId: orderData.sellerId,
-        artworkId: orderData.artworkId,
-        versionId: orderData.versionId,
-        licenseId: orderData.licenseId,
-        discountId: orderData.discountId,
-        reviewId: orderData.reviewId,
-        intentId: orderData.intentId,
-        spent: orderData.spent,
-        earned: orderData.earned,
-        fee: orderData.fee,
-        type: orderData.type ? "commercial" : "free",
-        status: orderData.status,
-      },
-    ])
-    .execute();
-  console.log(savedOrder);
-  return savedOrder;
-};
-
-// $Needs testing (mongo -> postgres)
 export const fetchOrderByVersion = async ({
   artworkId,
   versionId,
   connection,
 }) => {
-  // return await Order.findOne({
-  //   where: [{ artwork: artworkId, version: versionId }],
-  // });
-
   const foundOrder = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
-    .leftJoinAndSelect("order.buyer", "buyer")
-    .leftJoinAndSelect("buyer.avatar", "buyerAvatar")
-    .leftJoinAndSelect("order.seller", "seller")
-    .leftJoinAndSelect("seller.avatar", "sellerAvatar")
-    .leftJoinAndSelect("order.discount", "discount")
-    .leftJoinAndSelect("order.version", "version")
-    .leftJoinAndSelect("version.cover", "cover")
-    .leftJoinAndSelect("order.artwork", "artwork")
-    .leftJoinAndSelect("order.review", "review")
-    .leftJoinAndSelect("order.license", "license")
+    .select([...ORDER_SELECTION["ESSENTIAL_INFO"]()])
     .where("order.artworkId = :artworkId AND order.versionId = :versionId", {
       artworkId,
       versionId,
@@ -91,25 +33,7 @@ export const fetchOrderByVersion = async ({
   return foundOrder;
 };
 
-// $Needs testing (mongo -> postgres)
 export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
-  // return await Order.findOne({
-  //   where: [
-  //     { buyer: userId, id: orderId },
-  //     { seller: userId, id: orderId },
-  //   ],
-  //   relations: [
-  //     "buyer",
-  //     "seller",
-  //     "discount",
-  //     "version",
-  //     "artwork",
-  //     "review",
-  //     "license",
-  //     "license.artwork",
-  //   ],
-  // });
-
   const foundOrder = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
@@ -189,18 +113,19 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
   return foundOrder;
 };
 
-// $Needs testing (mongo -> postgres)
 export const fetchUserPurchase = async ({ orderId, userId, connection }) => {
-  // return await Order.findOne({
-  //   where: [{ buyer: userId, id: orderId }],
-  //   relations: ["buyer", "seller", "artwork", "artwork.review"],
-  // });
-
   const foundOrder = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.seller", "seller")
     .leftJoinAndSelect("order.review", "review")
+    .select([
+      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...ORDER_SELECTION["ARTWORK_INFO"](),
+      ...ORDER_SELECTION["SELLER_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("seller"),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where("order.buyerId = :userId AND order.id = :orderId", {
       userId,
       orderId,
@@ -210,19 +135,12 @@ export const fetchUserPurchase = async ({ orderId, userId, connection }) => {
   return foundOrder;
 };
 
-// $Needs testing (mongo -> postgres)
 export const addOrderReview = async ({
   orderId,
   userId,
   reviewId,
   connection,
 }) => {
-  /*   const foundOrder = await Order.findOne({
-    where: [{ buyer: userId, id: orderId }],
-  });
-  foundOrder.review = savedReview;
-  return await Order.save(foundOrder); */
-
   const updatedOrder = await connection
     .createQueryBuilder()
     .update(Order)
@@ -236,35 +154,12 @@ export const addOrderReview = async ({
   return updatedOrder;
 };
 
-// $Needs testing (mongo -> postgres)
-// $TODO does created get filtered correctly?
 export const fetchOrdersBySeller = async ({
   userId,
   start,
   end,
   connection,
 }) => {
-  // return start && end
-  //   ? await Order.find({
-  //       where: [
-  //         {
-  //           seller: userId,
-  //           created:
-  //             MoreThanOrEqual(new Date(start)) &&
-  //             LessThan(new Date(end)),
-  //         },
-  //       ],
-  //       relations: ["review", "version", "license"],
-  //     })
-  //   : await Order.find({
-  //       where: [
-  //         {
-  //           seller: userId,
-  //         },
-  //       ],
-  //       relations: ["review", "version", "license"],
-  //     });
-
   const foundOrders = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
@@ -272,6 +167,13 @@ export const fetchOrdersBySeller = async ({
     .leftJoinAndSelect("order.review", "review")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("order.license", "license")
+    .select([
+      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("buyer"),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       "order.sellerId = :userId AND order.created >= :startDate AND order.created <= :endDate",
       {
@@ -285,34 +187,12 @@ export const fetchOrdersBySeller = async ({
   return foundOrders;
 };
 
-// $Needs testing (mongo -> postgres)
 export const fetchOrdersByBuyer = async ({
   userId,
   start,
   end,
   connection,
 }) => {
-  // return start && end
-  //   ? await Order.find({
-  //       where: [
-  //         {
-  //           buyer: userId,
-  //           created:
-  //             MoreThanOrEqual(new Date(start)) &&
-  //             LessThan(new Date(end)),
-  //         },
-  //       ],
-  //       relations: ["review", "version", "license"],
-  //     })
-  //   : await Order.find({
-  //       where: [
-  //         {
-  //           buyer: userId,
-  //         },
-  //       ],
-  //       relations: ["review", "version", "license"],
-  //     });
-
   const foundOrders = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
@@ -320,6 +200,13 @@ export const fetchOrdersByBuyer = async ({
     .leftJoinAndSelect("order.review", "review")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("order.license", "license")
+    .select([
+      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"]("seller"),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       "order.buyerId = :userId AND order.created >= :startDate AND order.created <= :endDate",
       {
@@ -339,12 +226,16 @@ export const fetchOrderMedia = async ({ userId, orderId, connection }) => {
     .createQueryBuilder("order")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.media", "media")
+    .select([
+      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...MEDIA_SELECTION["ESSENTIAL_INFO"](),
+    ])
     .where(
       "order.id = :orderId AND order.status = :status AND (order.buyerId = :userId OR order.sellerId = :userId)",
       {
         orderId,
-        // $TODO to const
-        status: "completed",
+        status: ORDER_SELECTION.COMPLETED_STATUS,
         userId,
       }
     )
@@ -361,10 +252,10 @@ export const fetchOrdersByArtwork = async ({
   const foundOrders = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
-    .leftJoinAndSelect("order.seller", "seller")
-    .leftJoinAndSelect("order.review", "review")
-    .leftJoinAndSelect("order.version", "version")
-    .leftJoinAndSelect("order.license", "license")
+    .select([
+      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...ORDER_SELECTION["VERSION_INFO"](),
+    ])
     .where("order.sellerId = :userId AND order.artworkId = :artworkId", {
       userId,
       artworkId,
@@ -372,4 +263,32 @@ export const fetchOrdersByArtwork = async ({
     .getMany();
   console.log(foundOrders);
   return foundOrders;
+};
+
+export const addNewOrder = async ({ orderId, orderData, connection }) => {
+  const savedOrder = await connection
+    .createQueryBuilder()
+    .insert()
+    .into(Order)
+    .values([
+      {
+        id: orderId,
+        buyerId: orderData.buyerId,
+        sellerId: orderData.sellerId,
+        artworkId: orderData.artworkId,
+        versionId: orderData.versionId,
+        licenseId: orderData.licenseId,
+        discountId: orderData.discountId,
+        reviewId: orderData.reviewId,
+        intentId: orderData.intentId,
+        spent: orderData.spent,
+        earned: orderData.earned,
+        fee: orderData.fee,
+        type: orderData.type ? "commercial" : "free",
+        status: orderData.status,
+      },
+    ])
+    .execute();
+  console.log(savedOrder);
+  return savedOrder;
 };

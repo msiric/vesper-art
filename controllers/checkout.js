@@ -17,7 +17,11 @@ import { USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";
 
 export const getCheckout = async ({ userId, versionId, connection }) => {
-  const foundVersion = await fetchVersionDetails({ versionId, connection });
+  const foundVersion = await fetchVersionDetails({
+    versionId,
+    includeFullname: false,
+    connection,
+  });
   if (!isObjectEmpty(foundVersion)) {
     return {
       version: foundVersion,

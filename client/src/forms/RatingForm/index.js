@@ -6,9 +6,9 @@ const RatingForm = ({ setValue, getValues, errors, loading }) => {
   return (
     <Box>
       <RatingInput
-        value={getValues("artistRating")}
+        value={getValues("reviewRating")}
         setValue={setValue}
-        name="artistRating"
+        name="reviewRating"
         type="text"
         label=""
         errors={errors}
