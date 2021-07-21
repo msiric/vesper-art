@@ -1,4 +1,3 @@
-import bodyParser from "body-parser";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
@@ -27,15 +26,16 @@ const dirname = path.resolve();
     })
   );
 
-  app.use(
+  /*   app.use(
     bodyParser.json({
       verify: (req, res, buf) => {
         if (req.originalUrl.startsWith("/stripe")) req.rawBody = buf.toString();
       },
     })
-  );
+  ); */
 
   app.use(morgan("dev"));
+  app.use(express.json({ type: "application/json" }));
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use(

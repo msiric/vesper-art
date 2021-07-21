@@ -847,10 +847,13 @@ export const editUserPreferences = async ({
   foundUser.displayFavorites = userFavorites;
   return await User.save(foundUser); */
 
+  // $TODO teska debilana
+  const displayFavorites = userFavorites === "true";
+
   const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
-    .set({ displayFavorites: userFavorites })
+    .set({ displayFavorites })
     .where("id = :userId AND active = :active", {
       userId,
       active: USER_SELECTION["ACTIVE_STATUS"],
