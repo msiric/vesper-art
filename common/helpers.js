@@ -72,10 +72,16 @@ export const verifyVersionValidity = async ({
   return;
 };
 
-export const isFormAltered = (currentValues, defaultValues) => {
+export const isFormAltered = (currentValues, defaultValues, mapper = null) => {
   for (let item in currentValues) {
-    if (defaultValues[item] !== currentValues[item]) {
-      return true;
+    if (mapper) {
+      if (currentValues[item] !== defaultValues[mapper[item]]) {
+        return true;
+      }
+    } else {
+      if (currentValues[item] !== defaultValues[item]) {
+        return true;
+      }
     }
   }
   return false;

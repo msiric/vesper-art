@@ -1,6 +1,6 @@
 import {
   AddCircleRounded as UploadIcon,
-  DeleteRounded as DeleteIcon
+  DeleteRounded as DeleteIcon,
 } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -26,7 +26,9 @@ const ArtworkModifier = ({ paramId }) => {
   const artwork = useArtworkUpdate((state) => state.artwork.data);
   const capabilities = useArtworkUpdate((state) => state.capabilities.data);
   const artworkLoading = useArtworkUpdate((state) => state.artwork.loading);
-  const capabilitiesLoading = useArtworkUpdate((state) => state.capabilities.loading);
+  const capabilitiesLoading = useArtworkUpdate(
+    (state) => state.capabilities.loading
+  );
   const isDeleting = useArtworkUpdate((state) => state.isDeleting);
   const fetchArtwork = useArtworkUpdate((state) => state.fetchArtwork);
   const fetchCapabilities = useArtworkUpdate(
@@ -35,7 +37,7 @@ const ArtworkModifier = ({ paramId }) => {
   const updateArtwork = useArtworkUpdate((state) => state.updateArtwork);
   const toggleModal = useArtworkUpdate((state) => state.toggleModal);
 
-  const loading = artworkLoading || capabilitiesLoading
+  const loading = artworkLoading || capabilitiesLoading;
 
   const resolver = useArtworkValidator(artworkValidation);
 

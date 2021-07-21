@@ -38,7 +38,7 @@ import {
   formatArtworkPrices,
   formatError,
   formatResponse,
-  formattedClientKeys,
+  formattedArtworkKeys,
   generateUuids,
 } from "../utils/helpers";
 import { USER_SELECTION } from "../utils/selectors";
@@ -196,11 +196,23 @@ export const updateArtwork = async ({
   });
   if (!isObjectEmpty(foundArtwork)) {
     const shouldUpdate = isFormAltered(
-      formattedData,
-      { ...foundArtwork.current, visibility: foundArtwork.visibility },
-      formattedClientKeys.artwork
+      { ...formattedData, artworkVisibility: null },
+      { ...foundArtwork.current, visibility: null },
+      formattedArtworkKeys
     );
-    if (shouldUpdate) {
+    const visibilityChanged =
+      formattedData.artworkVisibility !== foundArtwork.visibility;
+    console.log(
+      "should update ",
+      shouldUpdate,
+      "visibility",
+      visibilityChanged,
+      "formatted data",
+      { ...formattedData, artworkVisibility: null },
+      "current art",
+      { ...foundArtwork.current, visibility: null }
+    );
+    if (shouldUpdate || visibilityChanged) {
       const foundUser = await fetchUserById({
         userId,
         selection: [...USER_SELECTION["STRIPE_INFO"]()],
@@ -213,46 +225,57 @@ export const updateArtwork = async ({
             })
           : null;
         verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
-        const { coverId, mediaId, versionId } = generateUuids({
-          coverId: null,
-          mediaId: null,
-          versionId: null,
-        });
-        const savedVersion = await addNewVersion({
-          versionId,
-          coverId: foundArtwork.current.cover.id,
-          mediaId: foundArtwork.current.media.id,
-          artworkId,
-          prevArtwork: foundArtwork.current,
-          artworkData: formattedData,
-          connection,
-        });
-        const foundOrder = await fetchOrderByVersion({
-          artworkId: foundArtwork.id,
-          versionId: foundArtwork.current.id,
-          connection,
-        });
-        const oldVersion = foundArtwork.current;
-        const savedArtwork = await updateArtworkVersion({
-          artworkId: foundArtwork.id,
-          currentId: versionId,
-          artworkVisibility: formattedData.artworkVisibility,
-          connection,
-        });
-        if (!foundOrder) {
-          /*         if (formattedData.artworkCover && formattedData.artworkMedia) {
-        await deleteS3Object({
-          fileLink: oldVersion.cover.source,
-          folderName: "artworkCovers/",
-        });
-
-        await deleteS3Object({
-          fileLink: oldVersion.media.source,
-          folderName: "artworkMedia/",
-        });
-      } */
-          await removeArtworkVersion({
-            versionId: oldVersion.id,
+        if (shouldUpdate) {
+          console.log("something changed which might include visibility");
+          const { coverId, mediaId, versionId } = generateUuids({
+            coverId: null,
+            mediaId: null,
+            versionId: null,
+          });
+          const savedVersion = await addNewVersion({
+            versionId,
+            coverId: foundArtwork.current.cover.id,
+            mediaId: foundArtwork.current.media.id,
+            artworkId,
+            prevArtwork: foundArtwork.current,
+            artworkData: formattedData,
+            connection,
+          });
+          const foundOrder = await fetchOrderByVersion({
+            artworkId: foundArtwork.id,
+            versionId: foundArtwork.current.id,
+            connection,
+          });
+          const oldVersion = foundArtwork.current;
+          const savedArtwork = await updateArtworkVersion({
+            artworkId: foundArtwork.id,
+            currentId: versionId,
+            artworkVisibility: formattedData.artworkVisibility,
+            connection,
+          });
+          if (!foundOrder) {
+            /*         if (formattedData.artworkCover && formattedData.artworkMedia) {
+          await deleteS3Object({
+            fileLink: oldVersion.cover.source,
+            folderName: "artworkCovers/",
+          });
+  
+          await deleteS3Object({
+            fileLink: oldVersion.media.source,
+            folderName: "artworkMedia/",
+          });
+        } */
+            await removeArtworkVersion({
+              versionId: oldVersion.id,
+              connection,
+            });
+          }
+        } else if (visibilityChanged) {
+          console.log("only visibility changed");
+          const savedArtwork = await updateArtworkVersion({
+            artworkId: foundArtwork.id,
+            currentId: foundArtwork.current.id,
+            artworkVisibility: formattedData.artworkVisibility,
             connection,
           });
         }
@@ -260,6 +283,7 @@ export const updateArtwork = async ({
       }
       throw createError(...formatError(errors.userNotFound));
     }
+    console.log("nothing changed");
     throw createError(...formatError(errors.artworkDetailsIdentical));
   }
   throw createError(...formatError(errors.artworkNotFound));
