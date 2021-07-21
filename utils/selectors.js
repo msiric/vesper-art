@@ -203,8 +203,10 @@ export const FAVORITE_SELECTION = {
   STRIPPED_INFO: (selector = DEFAULT_VALUES.FAVORITE) => [`${selector}.id`],
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.FAVORITE) => [
     `${selector}.id`,
-    `${selector}.artworkId`,
     `${selector}.created`,
+  ],
+  ARTWORK_INFO: (selector = DEFAULT_VALUES.FAVORITE) => [
+    `${selector}.artworkId`,
   ],
 };
 

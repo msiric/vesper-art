@@ -203,6 +203,7 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
       ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
       ...NOTIFICATION_SELECTION["STRIPPED_INFO"](),
       ...FAVORITE_SELECTION["ESSENTIAL_INFO"](),
+      ...FAVORITE_SELECTION["ARTWORK_INFO"](),
     ])
     // $TODO verified doesn't need to be checked (it's done in all the controllers)
     .where("user.id = :userId AND user.active = :active", {
