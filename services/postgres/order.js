@@ -133,25 +133,6 @@ export const fetchUserPurchase = async ({ orderId, userId, connection }) => {
   return foundOrder;
 };
 
-export const addOrderReview = async ({
-  orderId,
-  userId,
-  reviewId,
-  connection,
-}) => {
-  const updatedOrder = await connection
-    .createQueryBuilder()
-    .update(Order)
-    .set({ reviewId: reviewId })
-    .where('id = :orderId AND "buyerId" = :userId', {
-      orderId,
-      userId,
-    })
-    .execute();
-  console.log(updatedOrder);
-  return updatedOrder;
-};
-
 export const fetchOrdersBySeller = async ({
   userId,
   start,
@@ -167,7 +148,7 @@ export const fetchOrdersBySeller = async ({
     .leftJoinAndSelect("order.license", "license")
     .select([
       ...ORDER_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("buyer"),
+      ...USER_SELECTION["STRIPPED_INFO"]("buyer"),
       ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
@@ -200,7 +181,7 @@ export const fetchOrdersByBuyer = async ({
     .leftJoinAndSelect("order.license", "license")
     .select([
       ...ORDER_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("seller"),
+      ...USER_SELECTION["STRIPPED_INFO"]("seller"),
       ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
@@ -261,6 +242,25 @@ export const fetchOrdersByArtwork = async ({
     .getMany();
   console.log(foundOrders);
   return foundOrders;
+};
+
+export const addOrderReview = async ({
+  orderId,
+  userId,
+  reviewId,
+  connection,
+}) => {
+  const updatedOrder = await connection
+    .createQueryBuilder()
+    .update(Order)
+    .set({ reviewId: reviewId })
+    .where('id = :orderId AND "buyerId" = :userId', {
+      orderId,
+      userId,
+    })
+    .execute();
+  console.log(updatedOrder);
+  return updatedOrder;
 };
 
 export const addNewOrder = async ({ orderId, orderData, connection }) => {

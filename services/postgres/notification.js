@@ -1,27 +1,6 @@
 import { Notification } from "../../entities/Notification";
 import { NOTIFICATION_SELECTION } from "../../utils/selectors";
 
-// $TODO not used? can be deleted
-export const fetchNotificationById = async ({
-  userId,
-  notificationId,
-  connection,
-}) => {
-  const foundNotification = await connection
-    .getRepository(Notification)
-    .createQueryBuilder("notification")
-    .where(
-      "notification.id = :notificationId AND notification.receiver = :userId",
-      {
-        notificationId,
-        userId,
-      }
-    )
-    .getOne();
-  console.log(foundNotification);
-  return foundNotification;
-};
-
 export const fetchExistingNotifications = async ({ userId, connection }) => {
   const foundNotifications = await connection
     .getRepository(Notification)

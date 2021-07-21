@@ -42,17 +42,17 @@ export const postComment = async ({
       commentContent,
       connection,
     });
-    if (userId !== foundArtwork.owner.id) {
+    if (userId !== foundArtwork.ownerId) {
       const savedNotification = await addNewNotification({
         notificationId,
         notificationLink: foundArtwork.id,
         notificationRef: commentId,
         notificationType: "comment",
-        notificationReceiver: foundArtwork.owner.id,
+        notificationReceiver: foundArtwork.ownerId,
         connection,
       });
       socketApi.sendNotification(
-        foundArtwork.owner.id,
+        foundArtwork.ownerId,
         // $TODO maybe this can be done better
         savedNotification.raw[0]
       );

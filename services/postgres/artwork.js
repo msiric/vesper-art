@@ -23,10 +23,9 @@ export const fetchArtworkById = async ({ artworkId, connection }) => {
   const foundArtwork = await connection
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
-    .leftJoinAndSelect("artwork.owner", "owner")
     .select([
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
+      ...ARTWORK_SELECTION["OWNER_INFO"](),
     ])
     .where(
       "artwork.id = :artworkId AND artwork.visibility = :visibility AND artwork.active = :active",
@@ -72,7 +71,7 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
 
 export const fetchVersionDetails = async ({
   versionId,
-  includeFullname = true,
+  selection,
   connection,
 }) => {
   const foundVersion = await connection
@@ -80,16 +79,14 @@ export const fetchVersionDetails = async ({
     .createQueryBuilder("version")
     .leftJoinAndSelect("version.artwork", "artwork")
     .leftJoinAndSelect("artwork.owner", "owner")
-    .leftJoinAndSelect("artwork.current", "current")
-    .leftJoinAndSelect("owner.avatar", "avatar")
-    .leftJoinAndSelect("version.cover", "version.cover")
+    .leftJoinAndSelect("version.cover", "cover")
     .select([
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
-      ...ARTWORK_SELECTION["OWNER_INFO"](),
       ...ARTWORK_SELECTION["CURRENT_INFO"](),
       ...USER_SELECTION["STRIPPED_INFO"]("owner"),
-      ...(includeFullname ? USER_SELECTION["LICENSE_INFO"]("owner") : []),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+      ...(selection ? selection : []),
     ])
     .where(
       "version.id = :versionId AND artwork.active = :active AND artwork.visibility = :visibility",
@@ -161,11 +158,10 @@ export const fetchArtworkDetails = async ({
   return foundArtwork;
 };
 
-export const fetchArtworkEdit = async ({ artworkId, connection }) => {
+export const fetchArtworkEdit = async ({ userId, artworkId, connection }) => {
   const foundArtwork = await connection
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
-    .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .select([
@@ -173,10 +169,14 @@ export const fetchArtworkEdit = async ({ artworkId, connection }) => {
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
     ])
-    .where("artwork.id = :artworkId AND artwork.active = :active", {
-      artworkId,
-      active: ARTWORK_SELECTION["ACTIVE_STATUS"],
-    })
+    .where(
+      "artwork.id = :artworkId AND artwork.ownerId = :userId AND artwork.active = :active",
+      {
+        artworkId,
+        userId,
+        active: ARTWORK_SELECTION["ACTIVE_STATUS"],
+      }
+    )
     .getOne();
   console.log(foundArtwork);
   return foundArtwork;
@@ -226,15 +226,11 @@ export const fetchArtworkMedia = async ({ artworkId, userId, connection }) => {
   const foundArtwork = await connection
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
-    .leftJoinAndSelect("artwork.owner", "owner")
-    .leftJoinAndSelect("owner.avatar", "avatar")
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("version.media", "media")
     .select([
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
-      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
       ...MEDIA_SELECTION["ESSENTIAL_INFO"](),

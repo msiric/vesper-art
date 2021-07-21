@@ -112,8 +112,6 @@ export const postLogIn = async ({
 
     if (isObjectEmpty(foundUser)) {
       throw createError(...formatError(errors.userDoesNotExist));
-    } else if (!foundUser.active) {
-      throw createError(...formatError(errors.userNoLongerActive));
     } else if (!foundUser.verified) {
       throw createError(...formatError(errors.userNotVerified));
     } else {
@@ -265,8 +263,6 @@ export const updateEmail = async ({
 
     if (isObjectEmpty(foundUser)) {
       throw createError(...formatError(errors.userDoesNotExist));
-    } else if (!foundUser.active) {
-      throw createError(...formatError(errors.userNoLongerActive));
     } else if (foundUser.verified) {
       throw createError(...formatError(errors.userAlreadyVerified));
     } else {

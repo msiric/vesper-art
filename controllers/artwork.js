@@ -54,7 +54,6 @@ export const getArtwork = async ({ cursor, limit, connection }) => {
   return { artwork: foundArtwork };
 };
 
-// $TODO how to handle limiting comments?
 export const getArtworkDetails = async ({
   artworkId,
   cursor,
@@ -71,8 +70,9 @@ export const getArtworkDetails = async ({
   throw createError(...formatError(errors.artworkNotFound));
 };
 
-export const getArtworkEdit = async ({ artworkId, connection }) => {
+export const getArtworkEdit = async ({ userId, artworkId, connection }) => {
   const foundArtwork = await fetchArtworkEdit({
+    userId,
     artworkId,
     connection,
   });
@@ -173,9 +173,6 @@ export const postNewArtwork = async ({
   throw createError(...formatError(errors.artworkMediaMissing));
 };
 
-// $TODO
-// does it work in all cases?
-// needs testing
 export const updateArtwork = async ({
   userId,
   artworkId,
@@ -268,9 +265,6 @@ export const updateArtwork = async ({
   throw createError(...formatError(errors.artworkNotFound));
 };
 
-// $TODO
-// does it work in all cases?
-// needs testing
 export const deleteArtwork = async ({
   userId,
   artworkId,
@@ -332,7 +326,6 @@ export const fetchArtworkFavorites = async ({ artworkId, connection }) => {
   return { favorites: foundFavorites };
 };
 
-// needs transaction (done)
 export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
   const [foundFavorite, foundArtwork] = await Promise.all([
     fetchFavoriteByParents({
@@ -343,7 +336,7 @@ export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
     fetchArtworkById({ artworkId, connection }),
   ]);
   if (!isObjectEmpty(foundArtwork)) {
-    if (foundArtwork.owner.id !== userId) {
+    if (foundArtwork.ownerId !== userId) {
       if (isObjectEmpty(foundFavorite)) {
         const { favoriteId } = generateUuids({
           favoriteId: null,
@@ -373,7 +366,7 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
     fetchArtworkById({ artworkId, connection }),
   ]);
   if (!isObjectEmpty(foundArtwork)) {
-    if (foundArtwork.owner.id !== userId) {
+    if (foundArtwork.ownerId !== userId) {
       if (!isObjectEmpty(foundFavorite)) {
         await removeExistingFavorite({
           favoriteId: foundFavorite.id,
@@ -387,30 +380,3 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
   }
   throw createError(...formatError(errors.artworkNotFound));
 };
-
-// needs transaction (done)
-// $TODO validacija licenci?
-
-// Not used?
-// export const saveLicense = async ({
-//   userId,
-//   artworkId,
-//   license,
-//   connection,
-// }) => {
-//   const foundArtwork = await fetchArtworkDetails({ artworkId, connection });
-//   if (foundArtwork) {
-//     const { licenseId } = generateUuids({
-//       licenseId: null,
-//     });
-//     const savedLicense = await addNewLicense({
-//       licenseId,
-//       artworkId: foundArtwork.ic,
-//       licenseData: license,
-//       userId,
-//       connection,
-//     });
-//     return { message: "License saved", license: license };
-//   }
-//   throw createError(400, "Artwork not found");
-// };

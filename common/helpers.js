@@ -54,9 +54,8 @@ export const verifyVersionValidity = async ({
   foundAccount,
 }) => {
   if (data.artworkPersonal || data.artworkCommercial) {
-    if (!foundUser) throw createError(...formatError(errors.userNotFound));
+    // FEATURE FLAG - stripe
     if (!featureFlags.stripe) {
-      // FEATURE FLAG - stripe
       throw createError(...formatError(errors.commercialArtworkUnavailable));
     }
     if (!foundUser.stripeId)

@@ -99,7 +99,7 @@ export const fetchUserById = async ({ userId, selection, connection }) => {
     .createQueryBuilder("user")
     .leftJoinAndSelect("user.avatar", "avatar")
     .select([
-      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"](),
       ...(selection ? selection : []),
     ])
     .where("user.id = :userId AND user.active = :active", {
@@ -116,7 +116,7 @@ export const fetchUserByUsername = async ({ userUsername, connection }) => {
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
-      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"](),
       ...USER_SELECTION["DETAILED_INFO"](),
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
@@ -135,7 +135,7 @@ export const fetchUserByEmail = async ({ userEmail, connection }) => {
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
-      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"](),
       ...USER_SELECTION["VERIFICATION_INFO"](),
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
@@ -184,6 +184,7 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
       Notification,
       "notification",
       "notification.receiverId = :userId AND notification.read = :read",
+      // $TODO read const
       { userId, read: false }
     )
     .leftJoinAndMapMany(
@@ -203,17 +204,16 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
       ...NOTIFICATION_SELECTION["STRIPPED_INFO"](),
       ...FAVORITE_SELECTION["ESSENTIAL_INFO"](),
     ])
-    .where(
-      "user.id = :userId AND user.active = :active AND user.verified = :verified",
-      {
-        userId,
-        active: USER_SELECTION["ACTIVE_STATUS"],
-        verified: USER_SELECTION["VERIFIED_STATUS"],
-      }
-    )
+    // $TODO verified doesn't need to be checked (it's done in all the controllers)
+    .where("user.id = :userId AND user.active = :active", {
+      userId,
+      active: USER_SELECTION["ACTIVE_STATUS"],
+    })
     .getOne();
   // temporary hacky solution
-  foundUser.notifications = foundUser.notifications.length;
+  if (foundUser) {
+    foundUser.notifications = foundUser.notifications.length;
+  }
   console.log(foundUser);
   return foundUser;
 };
@@ -260,14 +260,12 @@ export const fetchUserPurchases = async ({
     .createQueryBuilder("order");
   const foundPurchases = await queryBuilder
     .leftJoinAndSelect("order.seller", "seller")
-    .leftJoinAndSelect("seller.avatar", "avatar")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
     .select([
       ...ORDER_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("seller"),
-      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("seller"),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
       ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
@@ -302,7 +300,6 @@ export const fetchUserPurchasesWithMedia = async ({
     .createQueryBuilder("order");
   const foundPurchases = await queryBuilder
     .leftJoinAndSelect("order.seller", "seller")
-    .leftJoinAndSelect("seller.avatar", "avatar")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("version.media", "media")
@@ -310,8 +307,7 @@ export const fetchUserPurchasesWithMedia = async ({
     .distinctOn(["order.artworkId"])
     .select([
       ...ORDER_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("seller"),
-      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("seller"),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
       ...MEDIA_SELECTION["ESSENTIAL_INFO"](),
@@ -342,14 +338,12 @@ export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
     .createQueryBuilder("order");
   const foundSales = await queryBuilder
     .leftJoinAndSelect("order.buyer", "buyer")
-    .leftJoinAndSelect("buyer.avatar", "avatar")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
     .select([
       ...ORDER_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("buyer"),
-      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("buyer"),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
       ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
@@ -377,25 +371,6 @@ export const fetchUserReviews = async ({ userId, connection }) => {
     .getMany();
   console.log(foundReviews);
   return foundReviews;
-};
-
-// $Needs testing (mongo -> postgres)
-export const editUserStripe = async ({ userId, stripeId, connection }) => {
-  /*   const foundUser = await User.findOne({ where: [{ id: userId }] });
-  foundUser.stripeId = stripeId;
-  return await User.save(foundUser); */
-
-  const updatedUser = await connection
-    .createQueryBuilder()
-    .update(User)
-    .set({ stripeId })
-    .where("id = :userId AND active = :active", {
-      userId,
-      active: USER_SELECTION["ACTIVE_STATUS"],
-    })
-    .execute();
-  console.log(updatedUser);
-  return updatedUser;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -464,7 +439,7 @@ export const fetchUserArtwork = async ({
     .select([
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
     ])
     .where(
@@ -474,50 +449,6 @@ export const fetchUserArtwork = async ({
         userId,
         active: USER_SELECTION["ACTIVE_STATUS"],
         visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
-      }
-    )
-    .orderBy("artwork.serial", "ASC")
-    .limit(limit)
-    .getMany();
-  console.log(foundArtwork);
-  return foundArtwork;
-};
-
-// $Needs testing (mongo -> postgres)
-// $TODO add appropriate visiblity tag
-export const fetchUserUploads = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  //
-  // return await Artwork.find({
-  //   where: [{ owner: userId, active: true }],
-  //   relations: ["current"],
-  //   skip: cursor,
-  //   take: limit,
-  // });
-
-  const queryBuilder = await connection
-    .getRepository(Artwork)
-    .createQueryBuilder("artwork");
-  const foundArtwork = await queryBuilder
-    .leftJoinAndSelect("artwork.current", "version")
-    .leftJoinAndSelect("artwork.owner", "owner")
-    .leftJoinAndSelect("version.cover", "cover")
-    .select([
-      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
-      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
-      ...COVER_SELECTION["ESSENTIAL_INFO"](),
-    ])
-    .where(
-      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
-      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
-      {
-        userId,
-        active: USER_SELECTION["ACTIVE_STATUS"],
       }
     )
     .orderBy("artwork.serial", "ASC")
@@ -552,7 +483,7 @@ export const fetchUserUploadsWithMedia = async ({
     .select([
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
       ...MEDIA_SELECTION["ESSENTIAL_INFO"](),
     ])
@@ -585,13 +516,11 @@ export const fetchUserMedia = async ({ userId, cursor, limit, connection }) => {
     .createQueryBuilder("artwork");
   const foundArtwork = await queryBuilder
     .leftJoinAndSelect("artwork.current", "version")
-    .leftJoinAndSelect("artwork.owner", "owner")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("version.media", "media")
     .select([
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
       ...MEDIA_SELECTION["ESSENTIAL_INFO"](),
     ])
@@ -635,7 +564,7 @@ export const fetchUserFavorites = async ({
     .select([
       ...FAVORITE_SELECTION["ESSENTIAL_INFO"](),
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
     ])
@@ -653,6 +582,85 @@ export const fetchUserFavorites = async ({
     .getMany();
   console.log(foundFavorites);
   return foundFavorites;
+};
+
+// $Needs testing (mongo -> postgres)
+export const fetchUserNotifications = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  // return await Notification.find({
+  //   where: [{ receiver: userId }],
+  //   skip: cursor,
+  //   take: limit,
+  //   relations: ["user"],
+  //   order: {
+  //     created: "DESC",
+  //   },
+  // });
+
+  const queryBuilder = await connection
+    .getRepository(Notification)
+    .createQueryBuilder("notification");
+  const foundNotifications = await queryBuilder
+    .select([...NOTIFICATION_SELECTION["ESSENTIAL_INFO"]()])
+    .where(
+      `notification.receiverId = :userId AND notification.serial < 
+      ${resolveSubQuery(
+        queryBuilder,
+        "notification",
+        Notification,
+        cursor,
+        Number.MAX_VALUE
+      )}`,
+      {
+        userId,
+      }
+    )
+    .orderBy("notification.serial", "DESC")
+    .limit(limit)
+    .getMany();
+  console.log(foundNotifications);
+  return foundNotifications;
+};
+
+export const fetchIntentByParents = async ({
+  userId,
+  versionId,
+  connection,
+}) => {
+  const foundIntent = await connection
+    .getRepository(Intent)
+    .createQueryBuilder("intent")
+    .select([...INTENT_SELECTION["ESSENTIAL_INFO"]()])
+    .where("intent.ownerId = :userId AND intent.versionId = :versionId", {
+      userId,
+      versionId,
+    })
+    .getOne();
+  console.log(foundIntent);
+  return foundIntent;
+};
+
+// $Needs testing (mongo -> postgres)
+export const editUserStripe = async ({ userId, stripeId, connection }) => {
+  /*   const foundUser = await User.findOne({ where: [{ id: userId }] });
+  foundUser.stripeId = stripeId;
+  return await User.save(foundUser); */
+
+  const updatedUser = await connection
+    .createQueryBuilder()
+    .update(User)
+    .set({ stripeId })
+    .where("id = :userId AND active = :active", {
+      userId,
+      active: USER_SELECTION["ACTIVE_STATUS"],
+    })
+    .execute();
+  console.log(updatedUser);
+  return updatedUser;
 };
 
 // $Needs testing (mongo -> postgres)
@@ -769,48 +777,6 @@ export const editUserProfile = async ({
 };
 
 // $Needs testing (mongo -> postgres)
-export const fetchUserNotifications = async ({
-  userId,
-  cursor,
-  limit,
-  connection,
-}) => {
-  // return await Notification.find({
-  //   where: [{ receiver: userId }],
-  //   skip: cursor,
-  //   take: limit,
-  //   relations: ["user"],
-  //   order: {
-  //     created: "DESC",
-  //   },
-  // });
-
-  const queryBuilder = await connection
-    .getRepository(Notification)
-    .createQueryBuilder("notification");
-  const foundNotifications = await queryBuilder
-    .select([...NOTIFICATION_SELECTION["ESSENTIAL_INFO"]()])
-    .where(
-      `notification.receiverId = :userId AND notification.serial < 
-      ${resolveSubQuery(
-        queryBuilder,
-        "notification",
-        Notification,
-        cursor,
-        Number.MAX_VALUE
-      )}`,
-      {
-        userId,
-      }
-    )
-    .orderBy("notification.serial", "DESC")
-    .limit(limit)
-    .getMany();
-  console.log(foundNotifications);
-  return foundNotifications;
-};
-
-// $Needs testing (mongo -> postgres)
 export const editUserEmail = async ({
   userId,
   userEmail,
@@ -892,24 +858,6 @@ export const editUserPreferences = async ({
     .execute();
   console.log(updatedUser);
   return updatedUser;
-};
-
-export const fetchIntentByParents = async ({
-  userId,
-  versionId,
-  connection,
-}) => {
-  const foundIntent = await connection
-    .getRepository(Intent)
-    .createQueryBuilder("intent")
-    .select([...INTENT_SELECTION["ESSENTIAL_INFO"]()])
-    .where("intent.ownerId = :userId AND intent.versionId = :versionId", {
-      userId,
-      versionId,
-    })
-    .getOne();
-  console.log(foundIntent);
-  return foundIntent;
 };
 
 // $Needs testing (mongo -> postgres)

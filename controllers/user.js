@@ -6,19 +6,19 @@ import {
   originValidation,
   passwordValidation,
   preferencesValidation,
-  profileValidation
+  profileValidation,
 } from "../common/validation";
 import { deleteS3Object, getSignedS3Object } from "../lib/s3";
 import {
   deactivateArtworkVersion,
   deactivateExistingArtwork,
-  removeArtworkVersion
+  removeArtworkVersion,
 } from "../services/postgres/artwork";
 import { logUserOut } from "../services/postgres/auth";
 import {
   fetchOrdersByArtwork,
   fetchOrdersByBuyer,
-  fetchOrdersBySeller
+  fetchOrdersBySeller,
 } from "../services/postgres/order";
 import { fetchStripeBalance } from "../services/postgres/stripe";
 import {
@@ -48,14 +48,14 @@ import {
   fetchUserSales,
   fetchUserUploadsWithMedia,
   removeExistingIntent,
-  removeUserAvatar
+  removeUserAvatar,
 } from "../services/postgres/user";
 import { sendEmail } from "../utils/email";
 import {
   formatError,
   formatResponse,
   generateUuids,
-  generateVerificationToken
+  generateVerificationToken,
 } from "../utils/helpers";
 import { AVATAR_SELECTION, USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";
@@ -345,7 +345,12 @@ export const getUserSettings = async ({ userId, connection }) => {
   // $TODO Minimize overhead
   const foundUser = await fetchUserById({
     userId,
-    selection: USER_SELECTION["LICENSE_INFO"](),
+    selection: [
+      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["LICENSE_INFO"](),
+      ...USER_SELECTION["DETAILED_INFO"](),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+    ],
     connection,
   });
   if (!isObjectEmpty(foundUser)) {
@@ -438,6 +443,9 @@ export const updateUserPassword = async ({
 }) => {
   const foundUser = await fetchUserByAuth({ userId, connection });
   if (!isObjectEmpty(foundUser)) {
+    if (!foundUser.verified) {
+      throw createError(...formatError(errors.userNotVerified));
+    }
     const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
     if (!isCurrentValid)
       throw createError(...formatError(errors.currentPasswordIncorrect));
@@ -472,7 +480,11 @@ export const updateUserPreferences = async ({
 };
 
 export const deactivateUser = async ({ userId, response, connection }) => {
-  const foundUser = await fetchUserById({ userId, selection: [...AVATAR_SELECTION['ESSENTIAL_INFO']()], connection });
+  const foundUser = await fetchUserById({
+    userId,
+    selection: [...AVATAR_SELECTION["ESSENTIAL_INFO"]()],
+    connection,
+  });
   if (!isObjectEmpty(foundUser)) {
     const foundArtwork = await fetchUserMedia({
       userId,

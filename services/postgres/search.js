@@ -24,13 +24,11 @@ export const fetchArtworkResults = async ({
     .leftJoinAndSelect("artwork.current", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("artwork.owner", "owner")
-    .leftJoinAndSelect("owner.avatar", "avatar")
     .select([
       ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
-      ...USER_SELECTION["ESSENTIAL_INFO"]("owner"),
-      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
     ])
     .where(
       "version.title @@ plainto_tsquery(:query) AND artwork.active = :active AND artwork.visibility = :visibility",

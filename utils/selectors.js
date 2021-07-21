@@ -29,7 +29,7 @@ export const ARTWORK_SELECTION = {
     `${selector}.visibility`,
     `${selector}.created`,
   ],
-  OWNER_INFO: (selector = DEFAULT_VALUES.ARTWORK) => [`${selector}.owner`],
+  OWNER_INFO: (selector = DEFAULT_VALUES.ARTWORK) => [`${selector}.ownerId`],
   CURRENT_INFO: (selector = DEFAULT_VALUES.ARTWORK) => [
     `${selector}.currentId`,
   ],
@@ -193,6 +193,9 @@ export const COMMENT_SELECTION = {
     `${selector}.content`,
     `${selector}.modified`,
     `${selector}.created`,
+  ],
+  ARTWORK_INFO: (selector = DEFAULT_VALUES.COMMENT) => [
+    `${selector}.artworkId`,
   ],
 };
 

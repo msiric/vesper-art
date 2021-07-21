@@ -49,6 +49,10 @@ export const updateAccessToken = async (req, res, next, connection) => {
     throw createError(...formatError(errors.forbiddenAccess));
   }
 
+  if (!foundUser.verified) {
+    throw createError(...formatError(errors.userNotVerified));
+  }
+
   const { tokenPayload, userInfo } = formatTokenData({ user: foundUser });
 
   sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));

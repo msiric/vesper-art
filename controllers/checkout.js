@@ -19,7 +19,6 @@ import { errors, responses } from "../utils/statuses";
 export const getCheckout = async ({ userId, versionId, connection }) => {
   const foundVersion = await fetchVersionDetails({
     versionId,
-    includeFullname: false,
     connection,
   });
   if (!isObjectEmpty(foundVersion)) {
@@ -41,6 +40,7 @@ export const postDownload = async ({
 }) => {
   const foundVersion = await fetchVersionDetails({
     versionId,
+    selection: [...USER_SELECTION["LICENSE_INFO"]("owner")],
     connection,
   });
   if (!isObjectEmpty(foundVersion)) {

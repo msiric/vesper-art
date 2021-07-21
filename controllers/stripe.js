@@ -109,12 +109,16 @@ export const managePaymentIntent = async ({
 }) => {
   const foundUser = await fetchUserById({
     userId,
-    selection: USER_SELECTION["LICENSE_INFO"](),
+    selection: [...USER_SELECTION["LICENSE_INFO"]()],
     connection,
   });
   if (!isObjectEmpty(foundUser)) {
     const foundVersion = await fetchVersionDetails({
       versionId,
+      selection: [
+        ...USER_SELECTION["LICENSE_INFO"]("owner"),
+        ...USER_SELECTION["STRIPE_INFO"]("owner"),
+      ],
       connection,
     });
     if (!isObjectEmpty(foundVersion)) {
