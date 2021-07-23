@@ -19,6 +19,11 @@ export enum LicenseType {
   commercial = "commercial",
 }
 
+export enum LicenseUsage {
+  individual = "individual",
+  business = "business",
+}
+
 @Entity()
 export class License extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -70,6 +75,14 @@ export class License extends BaseEntity {
     enum: LicenseType,
   })
   type: LicenseType;
+
+  // $TODO temp nullable, remove later
+  @Column({
+    type: "enum",
+    enum: LicenseUsage,
+    nullable: true,
+  })
+  usage: LicenseUsage;
 
   @Column()
   active: boolean;

@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getBoughtArtwork,
   getBoughtOrders,
   getOrderDetails,
   getOrderMedia,
@@ -27,6 +28,16 @@ router
   .get(
     isAuthenticated,
     handler(getBoughtOrders, false, (req, res, next) => ({}))
+  );
+
+router
+  .route("/orders/purchases/:artworkId")
+  // $TODO not tested
+  .get(
+    isAuthenticated,
+    handler(getBoughtArtwork, false, (req, res, next) => ({
+      ...req.params,
+    }))
   );
 
 router

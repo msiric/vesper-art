@@ -1,8 +1,9 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { isLicenseValid } from "../../../../common/helpers";
 import { licenseValidation } from "../../../../common/validation";
+import HelpBox from "../../components/HelpBox";
 import PricingCard from "../../components/PricingCard/index";
 import PromptModal from "../../components/PromptModal/index";
 import SwipeCard from "../../components/SwipeCard/index";
@@ -12,18 +13,21 @@ import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
+import Divider from "../../domain/Divider";
 import Typography from "../../domain/Typography";
 import LicenseForm from "../../forms/LicenseForm/index";
+import { useLicenseValidator } from "../../hooks/useLicenseValidator";
 import artworkInfoStyles from "./styles";
-
-// $TODO refactor needed (new domain components)
 
 const ArtworkInfo = () => {
   const artwork = useArtworkDetails((state) => state.artwork.data);
-  const loading = useArtworkDetails((state) => state.artwork.loading);
+  const artworkLoading = useArtworkDetails((state) => state.artwork.loading);
+  const orders = useArtworkDetails((state) => state.orders.data);
+  const ordersLoading = useArtworkDetails((state) => state.orders.loading);
   const license = useArtworkDetails((state) => state.license);
   const tabs = useArtworkDetails((state) => state.tabs);
   const modal = useArtworkDetails((state) => state.modal);
+  const fetchOrders = useArtworkDetails((state) => state.fetchOrders);
   const downloadArtwork = useArtworkDetails((state) => state.downloadArtwork);
   const purchaseArtwork = useArtworkDetails((state) => state.purchaseArtwork);
   const openModal = useArtworkDetails((state) => state.openModal);
@@ -33,12 +37,15 @@ const ArtworkInfo = () => {
   const userId = useUserStore((state) => state.id);
   const userName = useUserStore((state) => state.fullName);
 
+  const resolver = useLicenseValidator(licenseValidation);
+
   const history = useHistory();
   const classes = artworkInfoStyles();
 
   const setDefaultValues = () => ({
-    licenseType: license,
+    licenseUsage: "",
     licenseCompany: "",
+    licenseType: license,
   });
 
   const {
@@ -53,10 +60,17 @@ const ArtworkInfo = () => {
     reset,
   } = useForm({
     defaultValues: setDefaultValues(),
-    resolver: yupResolver(licenseValidation),
+    resolver,
   });
 
+  const watchedValues = watch();
+
   const isSeller = () => userId === artwork.owner.id;
+
+  const licenseStatus = isLicenseValid({
+    data: getValues(),
+    orders,
+  });
 
   useEffect(() => {
     reset(setDefaultValues());
@@ -99,11 +113,16 @@ const ArtworkInfo = () => {
                       handlePurchase={({ versionId, license }) =>
                         purchaseArtwork({ history, versionId, license })
                       }
-                      handleModalOpen={openModal}
+                      handleModalOpen={
+                        orders.length
+                          ? openModal
+                          : () => fetchOrders({ artworkId: artwork.id })
+                      }
+                      submitting={ordersLoading}
                     />
                   ),
                   error: null,
-                  loading: loading,
+                  loading: artworkLoading,
                 },
                 {
                   display: artwork.current.license === "commercial",
@@ -121,18 +140,23 @@ const ArtworkInfo = () => {
                       handlePurchase={({ versionId, license }) =>
                         purchaseArtwork({ history, versionId, license })
                       }
-                      handleModalOpen={openModal}
+                      handleModalOpen={
+                        orders.length
+                          ? openModal
+                          : () => fetchOrders({ artworkId: artwork.id })
+                      }
+                      submitting={ordersLoading}
                     />
                   ),
                   error: null,
-                  loading: loading,
+                  loading: artworkLoading,
                 },
               ],
             }}
             handleTabsChange={({ index }) => changeTab({ index })}
             handleChangeIndex={({ index }) => changeTab({ index })}
             margin="0px -16px"
-            loading={loading}
+            loading={artworkLoading}
           />
         ) : (
           <SwipeCard
@@ -159,7 +183,7 @@ const ArtworkInfo = () => {
                         This artwork cannot be purchased or downloaded since it
                         is preview only
                       </Typography>
-                      {!loading && isSeller() && (
+                      {!artworkLoading && isSeller() && (
                         <SyncButton
                           component={RouterLink}
                           to={`/artwork/${artwork.id}/edit`}
@@ -170,14 +194,14 @@ const ArtworkInfo = () => {
                     </Box>
                   ),
                   error: null,
-                  loading: loading,
+                  loading: artworkLoading,
                 },
               ],
             }}
             handleTabsChange={({ index }) => changeTab({ index })}
             handleChangeIndex={({ index }) => changeTab({ index })}
             margin="0px -16px"
-            loading={loading}
+            loading={artworkLoading}
           />
         )}
       </CardContent>
@@ -194,8 +218,33 @@ const ArtworkInfo = () => {
         promptTitle="License information"
         promptConfirm="Download"
         promptCancel="Close"
+        isDisabled={!licenseStatus.valid}
         isSubmitting={formState.isSubmitting}
       >
+        <HelpBox
+          type="alert"
+          label="You already own a license for this artwork"
+        >
+          <Box>
+            <Typography
+              noWrap
+              variant="body1"
+              component={RouterLink}
+              to="/orders"
+              className={classes.link}
+            >
+              Visit your orders
+            </Typography>
+          </Box>
+          {!licenseStatus.valid && (
+            <Box>
+              <Typography noWrap variant="body1">
+                {licenseStatus.state.message}
+              </Typography>
+            </Box>
+          )}
+        </HelpBox>
+        <Divider />
         <FormProvider control={control}>
           <form
             onSubmit={handleSubmit(
@@ -210,8 +259,11 @@ const ArtworkInfo = () => {
               version={artwork.current}
               userName={userName}
               isFree={true}
+              watchables={{
+                licenseUsage: watchedValues.licenseUsage,
+              }}
               errors={errors}
-              loading={loading}
+              loading={artworkLoading}
             />
           </form>
         </FormProvider>

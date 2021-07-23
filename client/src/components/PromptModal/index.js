@@ -17,6 +17,7 @@ const PromptModal = ({
   promptTitle,
   promptConfirm,
   promptCancel,
+  isDisabled,
   isSubmitting,
   children,
 }) => {
@@ -43,6 +44,7 @@ const PromptModal = ({
           <Box className={classes.actions}>
             <AsyncButton
               type="submit"
+              disabled={isDisabled}
               submitting={isSubmitting}
               onClick={handleConfirm}
               fullWidth

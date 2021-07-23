@@ -1,10 +1,22 @@
 import currency from "currency.js";
 import * as fns from "date-fns";
-import createError from "http-errors";
-import { formatError } from "../utils/helpers";
-import { errors } from "../utils/statuses";
-import { featureFlags } from "./constants";
 const { format } = fns;
+
+export const licenseErrors = {
+  companyError: {
+    message: "There is already a license assigned to the provided company",
+    identifier: "licenseCompanyExists",
+  },
+  identicalError: {
+    message: "There is already an identical license assigned to you",
+    identifier: "licenseAlreadyExists",
+  },
+  supersededError: {
+    message:
+      "There is already a commercial license assigned to you which superseded the currently selected license type",
+    identifier: "licenseTypeSuperseded",
+  },
+};
 
 export const formatDate = (date, form = "dd/MM/yy HH:mm") => {
   return format(new Date(date), form);
@@ -48,28 +60,41 @@ export const isPositiveInteger = (value) => {
   );
 };
 
-export const verifyVersionValidity = async ({
-  data,
-  foundUser,
-  foundAccount,
-}) => {
-  if (data.artworkPersonal || data.artworkCommercial) {
-    // FEATURE FLAG - stripe
-    if (!featureFlags.stripe) {
-      throw createError(...formatError(errors.commercialArtworkUnavailable));
+export const isLicenseValid = ({ data, orders }) => {
+  const filteredUsage = orders.filter(
+    (order) => order.license.usage === data.licenseUsage
+  );
+  if (filteredUsage.length) {
+    if (data.licenseUsage === "business") {
+      const filteredCompany = filteredUsage.filter(
+        (order) => order.license.company === data.licenseCompany
+      );
+      if (!filteredCompany.length) {
+        return { valid: true, state: { message: "", identifier: "" } };
+      }
+      return {
+        valid: false,
+        state: licenseErrors.companyError,
+      };
     }
-    if (!foundUser.stripeId)
-      throw createError(...formatError(errors.stripeOnboardingIncomplete));
-    if (
-      (data.artworkPersonal || data.artworkCommercial) &&
-      (!foundAccount ||
-        foundAccount.capabilities.card_payments !== "active" ||
-        foundAccount.capabilities.transfers !== "active")
-    ) {
-      throw createError(...formatError(errors.stripeAccountIncomplete));
+    const filteredType = filteredUsage.filter(
+      (order) => order.license.type === data.licenseType
+    );
+    if (filteredType.length) {
+      return {
+        valid: false,
+        state: licenseErrors.identicalError,
+      };
     }
+    if (data.licenseType !== "commercial") {
+      return {
+        valid: false,
+        state: licenseErrors.supersededError,
+      };
+    }
+    return { valid: true, state: { message: "", identifier: "" } };
   }
-  return;
+  return { valid: true, state: { message: "", identifier: "" } };
 };
 
 export const isFormAltered = (currentValues, defaultValues, mapper = null) => {
@@ -177,5 +202,13 @@ export const formatArtworkValues = (data) => {
         : 0,
     // $TODO restore after tags are implemented
     // artworkTags: JSON.parse(data.artworkTags),
+  };
+};
+
+export const formatLicenseValues = (data) => {
+  return {
+    ...data,
+    licenseCompany:
+      data.licenseUsage === "business" ? data.licenseCompany : "unavailable",
   };
 };

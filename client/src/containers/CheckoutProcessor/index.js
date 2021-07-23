@@ -86,8 +86,9 @@ const CheckoutProcessor = () => {
     reset,
   } = useForm({
     defaultValues: {
-      licenseType: licenseValue,
+      licenseUsage: "",
       licenseCompany: "",
+      licenseType: licenseValue,
       billingName: "",
       billingSurname: "",
       billingEmail: "",
@@ -100,7 +101,7 @@ const CheckoutProcessor = () => {
     shouldUnregister: false,
   });
 
-  const licenseType = watch("licenseType");
+  const watchedValues = watch();
 
   const licenseOptions =
     license === "personal"
@@ -166,6 +167,9 @@ const CheckoutProcessor = () => {
             version={version}
             userName={userName}
             isFree={false}
+            watchables={{
+              licenseUsage: watchedValues.licenseUsage,
+            }}
             errors={errors}
             loading={intentLoading}
           />
@@ -259,7 +263,7 @@ const CheckoutProcessor = () => {
           <Grid item xs={12} md={4}>
             <CheckoutSummary
               version={version}
-              license={licenseType}
+              watchables={{ licenseType: watchedValues.licenseType }}
               discount={discount}
               handleDiscountChange={changeDiscount}
               loading={versionLoading}

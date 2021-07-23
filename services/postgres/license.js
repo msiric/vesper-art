@@ -76,6 +76,7 @@ export const addNewLicense = async ({
         assigneeIdentifier: licenseAssigneeIdentifier,
         assignor: licenseData.licenseAssignor,
         assignorIdentifier: licenseAssignorIdentifier,
+        usage: licenseData.licenseUsage,
         company: licenseData.licenseCompany,
         type: licenseData.licenseType,
         price: licenseData.licensePrice,

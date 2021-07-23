@@ -19,6 +19,13 @@ export const getOrders = {
   success: { message: "Orders successfully fetched", variant: "success" },
   error: { message: "Failed to fetch orders", variant: "error" },
 };
+export const getPurchases = {
+  // datatable (cursor, limit not needed)
+  request: async ({ artworkId }) =>
+    await ax.get(`/api/orders/purchases/${artworkId}`),
+  success: { message: "Orders successfully fetched", variant: "success" },
+  error: { message: "Failed to fetch orders", variant: "error" },
+};
 export const getDownload = {
   request: async ({ orderId }) =>
     await ax.get(`/api/orders/${orderId}/download`),

@@ -178,6 +178,21 @@ export const errors = {
     message: "License type is invalid",
     expose: true,
   },
+  licenseCompanyInvalid: {
+    status: statusCodes.badRequest,
+    message: "License company is invalid",
+    expose: true,
+  },
+  licenseUsageInvalid: {
+    status: statusCodes.badRequest,
+    message: "License usage is invalid",
+    expose: true,
+  },
+  licenseCompanyRequired: {
+    status: statusCodes.badRequest,
+    message: "License company is required",
+    expose: true,
+  },
   userNameRequired: {
     status: statusCodes.badRequest,
     message: "Full name is required",
@@ -555,7 +570,22 @@ export const emailValidation = Yup.object().shape({
 });
 
 export const licenseValidation = Yup.object().shape({
-  licenseCompany: Yup.string().typeError(errors.invalidString.message),
+  licenseUsage: Yup.string()
+    .typeError(errors.invalidString.message)
+    .matches(/(individual|business)/, errors.licenseUsageInvalid.message)
+    .required(errors.licenseTypeRequired.message),
+  licenseCompany: Yup.string()
+    .typeError(errors.invalidString.message)
+    .notRequired()
+    .when(["licenseUsage"], {
+      is: (licenseUsage) => licenseUsage === "business",
+      then: Yup.string()
+        .typeError(errors.invalidString.message)
+        .required(errors.licenseCompanyRequired.message),
+      otherwise: Yup.string()
+        .typeError(errors.invalidString.message)
+        .matches(/(unavailable)/, errors.licenseCompanyInvalid.message),
+    }),
   licenseType: Yup.string()
     .typeError(errors.invalidString.message)
     .matches(/(personal|commercial)/, errors.licenseTypeInvalid.message)

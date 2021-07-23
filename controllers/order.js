@@ -2,7 +2,11 @@ import createError from "http-errors";
 import { isObjectEmpty } from "../common/helpers";
 import { getSignedS3Object } from "../lib/s3";
 import { fetchOrderDetails, fetchOrderMedia } from "../services/postgres/order";
-import { fetchUserPurchases, fetchUserSales } from "../services/postgres/user";
+import {
+  fetchArtworkOrders,
+  fetchUserPurchases,
+  fetchUserSales,
+} from "../services/postgres/user";
 import { formatError } from "../utils/helpers";
 import { errors } from "../utils/statuses";
 
@@ -25,6 +29,15 @@ export const getSoldOrders = async ({ userId, connection }) => {
 
 export const getBoughtOrders = async ({ userId, connection }) => {
   const foundPurchases = await fetchUserPurchases({ userId, connection });
+  return { purchases: foundPurchases };
+};
+
+export const getBoughtArtwork = async ({ userId, artworkId, connection }) => {
+  const foundPurchases = await fetchArtworkOrders({
+    userId,
+    artworkId,
+    connection,
+  });
   return { purchases: foundPurchases };
 };
 

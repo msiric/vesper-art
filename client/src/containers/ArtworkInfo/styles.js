@@ -14,6 +14,9 @@ const artworkInfoStyles = makeStyles((muiTheme) => ({
     textAlign: "center",
     margin: 8,
   },
+  link: {
+    color: "white",
+  },
 }));
 
 export default artworkInfoStyles;

@@ -2,6 +2,7 @@ import create from "zustand";
 import { renderFreeLicenses } from "../../../../common/helpers";
 import { getDetails } from "../../services/artwork";
 import { postDownload } from "../../services/checkout";
+import { getPurchases } from "../../services/orders";
 import { resolveAsyncError } from "../../utils/helpers";
 
 const initialState = {
@@ -9,6 +10,11 @@ const initialState = {
     data: { owner: {}, current: { cover: {}, media: {} } },
     loading: true,
     error: { retry: false, redirect: false, message: "" },
+  },
+  orders: {
+    data: [],
+    loading: false,
+    error: { retry: false, message: "" },
   },
   license: null,
   modal: {
@@ -51,8 +57,44 @@ const initActions = (set) => ({
       }));
     }
   },
+  fetchOrders: async ({ artworkId }) => {
+    try {
+      set((state) => ({
+        ...state,
+        orders: {
+          ...state.orders,
+          loading: true,
+        },
+      }));
+      const { data } = await getPurchases.request({
+        artworkId,
+      });
+      set((state) => ({
+        ...state,
+        orders: {
+          data: data.purchases,
+          loading: false,
+          error: { ...initialState.orders.error },
+        },
+        modal: {
+          ...state.modal,
+          open: true,
+        },
+      }));
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        orders: {
+          ...state.orders,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
+    }
+  },
   downloadArtwork: async ({ versionId, values }) => {
     try {
+      // $TODO either push to the /orders page or add the newly created order to the orders.data array
       await postDownload.request({
         versionId,
         data: values,

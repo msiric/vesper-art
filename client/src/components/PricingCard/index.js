@@ -16,6 +16,7 @@ import ListItem from "../../domain/ListItem";
 import ListItemIcon from "../../domain/ListItemIcon";
 import ListItemText from "../../domain/ListItemText";
 import Typography from "../../domain/Typography";
+import AsyncButton from "../AsyncButton";
 import CurrencyValue from "../CurrencyValue";
 import SyncButton from "../SyncButton/index";
 import pricingCardStyles from "./styles";
@@ -31,6 +32,7 @@ const PricingCard = ({
   handlePurchase,
   handleModalOpen,
   loading,
+  submitting,
 }) => {
   const classes = pricingCardStyles();
 
@@ -89,9 +91,13 @@ const PricingCard = ({
               Purchase
             </SyncButton>
           ) : (
-            <SyncButton startIcon={<DownloadIcon />} onClick={handleModalOpen}>
+            <AsyncButton
+              startIcon={<DownloadIcon />}
+              onClick={handleModalOpen}
+              submitting={submitting}
+            >
               Download
-            </SyncButton>
+            </AsyncButton>
           )
         ) : (
           <SyncButton

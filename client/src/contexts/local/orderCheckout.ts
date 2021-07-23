@@ -211,7 +211,7 @@ const initActions = (set, get) => ({
       const { data } = await postIntent.request({
         versionId: version.id,
         artworkLicense: {
-          assignee: values.licenseAssignee,
+          usage: values.licenseUsage,
           company: values.licenseCompany,
           type: values.licenseType,
         },

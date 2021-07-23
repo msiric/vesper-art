@@ -20,7 +20,7 @@ import checkoutSummaryStyles from "./styles";
 
 const CheckoutSummary = ({
   version,
-  license,
+  watchables,
   discount,
   handleDiscountChange,
   loading,
@@ -28,6 +28,8 @@ const CheckoutSummary = ({
   paying,
   step,
 }) => {
+  const { licenseType } = watchables;
+
   const [state, setState] = useState({
     summary: {
       license: null,
@@ -116,8 +118,8 @@ const CheckoutSummary = ({
   const classes = checkoutSummaryStyles();
 
   const recalculateValues = () => {
-    const selectedLicense = license;
-    const selectedAmount = version[license];
+    const selectedLicense = licenseType;
+    const selectedAmount = version[licenseType];
     const calculatedPrice = selectedLicense ? selectedAmount : 0;
     const calculatedFee = selectedAmount
       ? (
@@ -162,7 +164,7 @@ const CheckoutSummary = ({
     if (version.id) {
       recalculateValues();
     }
-  }, [version, license, discount]);
+  }, [version, licenseType, discount]);
 
   return (
     <Card className={classes.container}>

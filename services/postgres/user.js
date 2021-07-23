@@ -13,6 +13,7 @@ import {
   COVER_SELECTION,
   FAVORITE_SELECTION,
   INTENT_SELECTION,
+  LICENSE_SELECTION,
   MEDIA_SELECTION,
   NOTIFICATION_SELECTION,
   ORDER_SELECTION,
@@ -278,6 +279,26 @@ export const fetchUserPurchases = async ({
     )
     .orderBy("order.serial", "ASC")
     .limit(limit)
+    .getMany();
+  console.log(foundPurchases);
+  return foundPurchases;
+};
+
+export const fetchArtworkOrders = async ({ userId, artworkId, connection }) => {
+  console.log("AHJASHFIEUBGAKSJGHA", userId, artworkId);
+  const foundPurchases = await connection
+    .getRepository(Order)
+    .createQueryBuilder("order")
+    .leftJoinAndSelect("order.license", "license")
+    .select([
+      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["ASSIGNOR_INFO"](),
+    ])
+    .where("order.buyerId = :userId AND order.artworkId = :artworkId", {
+      userId,
+      artworkId,
+    })
     .getMany();
   console.log(foundPurchases);
   return foundPurchases;

@@ -347,3 +347,27 @@ export const formatArtworkPrices = (data) => {
     artworkCommercial: currency(data.artworkCommercial).intValue,
   };
 };
+
+export const verifyVersionValidity = async ({
+  data,
+  foundUser,
+  foundAccount,
+}) => {
+  if (data.artworkPersonal || data.artworkCommercial) {
+    // FEATURE FLAG - stripe
+    if (!featureFlags.stripe) {
+      throw createError(...formatError(errors.commercialArtworkUnavailable));
+    }
+    if (!foundUser.stripeId)
+      throw createError(...formatError(errors.stripeOnboardingIncomplete));
+    if (
+      (data.artworkPersonal || data.artworkCommercial) &&
+      (!foundAccount ||
+        foundAccount.capabilities.card_payments !== "active" ||
+        foundAccount.capabilities.transfers !== "active")
+    ) {
+      throw createError(...formatError(errors.stripeAccountIncomplete));
+    }
+  }
+  return;
+};

@@ -133,6 +133,11 @@ export const errors = {
     message: "License is not valid",
     expose: true,
   },
+  artworkLicenseExists: {
+    status: statusCodes.badRequest,
+    message: "License already exists for provided credentials",
+    expose: true,
+  },
   discountNotFound: {
     status: statusCodes.notFound,
     message: "Discount not found",
@@ -197,6 +202,22 @@ export const errors = {
   licenseNotFound: {
     status: statusCodes.notFound,
     message: "License not found",
+    expose: true,
+  },
+  licenseCompanyExists: {
+    status: statusCodes.badRequest,
+    message: "There is already a license assigned to the provided company",
+    expose: true,
+  },
+  licenseAlreadyExists: {
+    status: statusCodes.badRequest,
+    message: "There is already an identical license assigned to you",
+    expose: true,
+  },
+  licenseTypeSuperseded: {
+    status: statusCodes.badRequest,
+    message:
+      "There is already a commercial license assigned to you which superseded the currently selected license type",
     expose: true,
   },
   internalServerError: {

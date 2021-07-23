@@ -4,7 +4,6 @@ import {
   isArrayEmpty,
   isFormAltered,
   isObjectEmpty,
-  verifyVersionValidity,
 } from "../common/helpers";
 import { artworkValidation } from "../common/validation";
 import { deleteS3Object } from "../lib/s3";
@@ -40,6 +39,7 @@ import {
   formatResponse,
   formattedArtworkKeys,
   generateUuids,
+  verifyVersionValidity,
 } from "../utils/helpers";
 import { USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";

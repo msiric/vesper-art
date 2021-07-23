@@ -1,5 +1,4 @@
 import { Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import {
   renderCommercialLicenses,
@@ -9,7 +8,16 @@ import SelectInput from "../../controls/SelectInput/index";
 import TextInput from "../../controls/TextInput/index";
 import TextField from "../../domain/TextField";
 
-const LicenseForm = ({ version, errors, isFree, userName, loading }) => {
+const LicenseForm = ({
+  version,
+  errors,
+  isFree,
+  userName,
+  watchables,
+  loading,
+}) => {
+  const { licenseUsage } = watchables;
+
   return (
     <Box>
       <TextField
@@ -23,13 +31,31 @@ const LicenseForm = ({ version, errors, isFree, userName, loading }) => {
         fullWidth
         loading={loading}
       />
-      <TextInput
-        name="licenseCompany"
-        type="text"
-        label="License company"
+      <SelectInput
+        name="licenseUsage"
+        label="License usage"
         errors={errors}
+        options={[
+          {
+            value: "individual",
+            text: "Individual",
+          },
+          {
+            value: "business",
+            text: "Business",
+          },
+        ]}
         loading={loading}
       />
+      {licenseUsage === "business" && (
+        <TextInput
+          name="licenseCompany"
+          type="text"
+          label="License company"
+          errors={errors}
+          loading={loading}
+        />
+      )}
       <SelectInput
         name="licenseType"
         label="License type"
