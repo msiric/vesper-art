@@ -241,6 +241,15 @@ const ArtworkInfo = () => {
               <Typography noWrap variant="body1">
                 {licenseStatus.state.message}
               </Typography>
+              <Typography
+                component={RouterLink}
+                to={`/orders/${licenseStatus.ref.id}`}
+                noWrap
+                variant="body1"
+                className={classes.link}
+              >
+                Click here to visit your order
+              </Typography>
             </Box>
           )}
         </HelpBox>

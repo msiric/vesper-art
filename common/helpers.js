@@ -70,11 +70,16 @@ export const isLicenseValid = ({ data, orders }) => {
         (order) => order.license.company === data.licenseCompany
       );
       if (!filteredCompany.length) {
-        return { valid: true, state: { message: "", identifier: "" } };
+        return {
+          valid: true,
+          state: { message: "", identifier: "" },
+          ref: null,
+        };
       }
       return {
         valid: false,
         state: licenseErrors.companyError,
+        ref: filteredCompany[0],
       };
     }
     const filteredType = filteredUsage.filter(
@@ -84,17 +89,19 @@ export const isLicenseValid = ({ data, orders }) => {
       return {
         valid: false,
         state: licenseErrors.identicalError,
+        ref: filteredType[0],
       };
     }
     if (data.licenseType !== "commercial") {
       return {
         valid: false,
         state: licenseErrors.supersededError,
+        ref: filteredType[0],
       };
     }
-    return { valid: true, state: { message: "", identifier: "" } };
+    return { valid: true, state: { message: "", identifier: "" }, ref: null };
   }
-  return { valid: true, state: { message: "", identifier: "" } };
+  return { valid: true, state: { message: "", identifier: "" }, ref: null };
 };
 
 export const isFormAltered = (currentValues, defaultValues, mapper = null) => {
