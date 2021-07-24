@@ -221,38 +221,40 @@ const ArtworkInfo = () => {
         isDisabled={!licenseStatus.valid}
         isSubmitting={formState.isSubmitting}
       >
-        <HelpBox
-          type="alert"
-          label="You already own a license for this artwork"
-        >
-          <Box>
-            <Typography
-              noWrap
-              variant="body1"
-              component={RouterLink}
-              to="/orders"
-              className={classes.link}
-            >
-              Visit your orders
-            </Typography>
-          </Box>
-          {!licenseStatus.valid && (
+        {!!orders.length && (
+          <HelpBox
+            type="alert"
+            label="You already own a license for this artwork"
+          >
             <Box>
-              <Typography noWrap variant="body1">
-                {licenseStatus.state.message}
-              </Typography>
               <Typography
-                component={RouterLink}
-                to={`/orders/${licenseStatus.ref.id}`}
                 noWrap
                 variant="body1"
+                component={RouterLink}
+                to="/orders"
                 className={classes.link}
               >
-                Click here to visit your order
+                Visit your orders
               </Typography>
             </Box>
-          )}
-        </HelpBox>
+            {!licenseStatus.valid && (
+              <Box>
+                <Typography noWrap variant="body1">
+                  {licenseStatus.state.message}
+                </Typography>
+                <Typography
+                  component={RouterLink}
+                  to={`/orders/${licenseStatus.ref.id}`}
+                  noWrap
+                  variant="body1"
+                  className={classes.link}
+                >
+                  Click here to visit your order
+                </Typography>
+              </Box>
+            )}
+          </HelpBox>
+        )}
         <Divider />
         <FormProvider control={control}>
           <form
