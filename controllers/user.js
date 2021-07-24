@@ -280,7 +280,10 @@ export const updateUserProfile = async ({
   await profileValidation.validate(userData);
   const foundUser = await fetchUserById({
     userId,
-    selection: [...AVATAR_SELECTION["ESSENTIAL_INFO"]()],
+    selection: [
+      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+    ],
     connection,
   });
   if (!isObjectEmpty(foundUser)) {

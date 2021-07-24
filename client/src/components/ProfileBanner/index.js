@@ -19,7 +19,15 @@ const ProfileBanner = ({ profile, loading }) => {
 
   return (
     <Card className={classes.container}>
-      <Box className={classes.banner}></Box>
+      <Box className={classes.banner}>
+        <Box className={classes.share}>
+          <ShareButton
+            link={`/user/${profile.name}`}
+            type="profile"
+            shouldResize={true}
+          />
+        </Box>
+      </Box>
       <Box className={classes.content}>
         <Box className={classes.infoWrapper}>
           <Box className={classes.avatarWrapper}>
@@ -44,6 +52,7 @@ const ProfileBanner = ({ profile, loading }) => {
                     variant="body1"
                     color="textSecondary"
                     component="p"
+                    className={classes.value}
                   >
                     {profile.rating}
                   </Typography>
@@ -56,6 +65,7 @@ const ProfileBanner = ({ profile, loading }) => {
                     variant="body1"
                     color="textSecondary"
                     component="p"
+                    className={classes.value}
                   >
                     {profile.country}
                   </Typography>
@@ -63,14 +73,16 @@ const ProfileBanner = ({ profile, loading }) => {
               )}
               <Box className={classes.item}>
                 <MemberIcon fontSize="small" className={classes.icon} />
-                <Typography variant="body1" color="textSecondary" component="p">
-                  {!loading && formatDate(profile.created, "MMM yy")}
+                <Typography
+                  variant="body1"
+                  color="textSecondary"
+                  component="p"
+                  className={classes.value}
+                >
+                  {!loading && formatDate(profile.created, "MMM ''yy")}
                 </Typography>
               </Box>
             </Box>
-          </Box>
-          <Box className={classes.share}>
-            <ShareButton link={`/user/${profile.name}`} type="profile" />
           </Box>
         </Box>
         <Box className={classes.descriptionWrapper}>
@@ -82,7 +94,6 @@ const ProfileBanner = ({ profile, loading }) => {
           >
             Description
           </Typography>
-
           <Typography
             variant="body2"
             color="inherit"

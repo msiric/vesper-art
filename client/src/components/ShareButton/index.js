@@ -7,7 +7,14 @@ import SkeletonWrapper from "../SkeletonWrapper/index";
 import SyncButton from "../SyncButton/index";
 import shareButtonStyles from "./styles";
 
-const ShareButton = ({ link, type, labeled, loading = false, ...props }) => {
+const ShareButton = ({
+  link,
+  type,
+  labeled,
+  loading = false,
+  shouldResize = false,
+  ...props
+}) => {
   const [state, setState] = useState({
     modal: {
       open: false,
@@ -55,7 +62,7 @@ const ShareButton = ({ link, type, labeled, loading = false, ...props }) => {
             onClick={() => handleModalOpen()}
             {...props}
           >
-            <ShareIcon />
+            <ShareIcon className={shouldResize ? classes.icon : ""} />
           </IconButton>
         </SkeletonWrapper>
       )}

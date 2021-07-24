@@ -17,9 +17,18 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: artepunktTheme.palette.action.disabledBackground,
+    position: "relative",
+  },
+  share: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
   },
   content: {
     padding: 24, // $TODO add global padding
+    [muiTheme.breakpoints.down("xs")]: {
+      padding: 12,
+    },
   },
   infoWrapper: {
     display: "flex",
@@ -27,10 +36,10 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     justifyContent: "flex-start",
     marginTop: "-70px",
     [muiTheme.breakpoints.down("sm")]: {
-      marginTop: "-45px",
+      marginTop: "-52px",
     },
     [muiTheme.breakpoints.down("xs")]: {
-      marginTop: "-32.5px",
+      marginTop: "-34px",
     },
   },
   avatarWrapper: {
@@ -59,12 +68,12 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     alignItems: "flex-start",
     justifyContent: "center",
     flexDirection: "column",
-    marginTop: "12px",
+    flexGrow: 1,
+    marginTop: "20px",
     marginLeft: "12px",
     [muiTheme.breakpoints.down("sm")]: {
-      marginTop: "24px",
+      marginTop: "10px",
       marginLeft: "10px",
-      maxWidth: "52%",
     },
     [muiTheme.breakpoints.down("xs")]: {
       marginTop: "16px",
@@ -83,7 +92,7 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
       whiteSpace: "nowrap",
       overflow: "hidden",
       textOverflow: "ellipsis",
-      maxWidth: "100%",
+      maxWidth: "95%",
     },
   },
   detailsWrapper: {
@@ -96,16 +105,17 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
+    [muiTheme.breakpoints.down("xs")]: {
+      marginRight: 4,
+    },
   },
   icon: {
     marginRight: 3,
   },
-  share: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    marginTop: "6px",
-    flexGrow: "1",
+  value: {
+    [muiTheme.breakpoints.down("xs")]: {
+      fontSize: 12,
+    },
   },
   descriptionWrapper: {
     display: "flex",
