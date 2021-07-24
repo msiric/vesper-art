@@ -575,6 +575,7 @@ export const licenseValidation = Yup.object().shape({
     .matches(/(individual|business)/, errors.licenseUsageInvalid.message)
     .required(errors.licenseTypeRequired.message),
   licenseCompany: Yup.string()
+    .trim()
     .typeError(errors.invalidString.message)
     .notRequired()
     .when(["licenseUsage"], {

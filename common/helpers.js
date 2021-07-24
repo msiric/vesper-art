@@ -18,6 +18,11 @@ export const licenseErrors = {
   },
 };
 
+export const trimAllSpaces = (value) =>
+  typeof value === "string"
+    ? value.replace(/^\s+|\s+$/g, "").replace(/\s+/g, " ")
+    : value;
+
 export const formatDate = (date, form = "dd/MM/yy HH:mm") => {
   return format(new Date(date), form);
 };
@@ -67,7 +72,7 @@ export const isLicenseValid = ({ data, orders }) => {
   if (filteredUsage.length) {
     if (data.licenseUsage === "business") {
       const filteredCompany = filteredUsage.filter(
-        (order) => order.license.company === data.licenseCompany
+        (order) => order.license.company === trimAllSpaces(data.licenseCompany)
       );
       if (!filteredCompany.length) {
         return {

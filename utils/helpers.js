@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import { getConnection } from "typeorm";
 import * as uuidJs from "uuid";
 import { statusCodes } from "../common/constants";
+import { trimAllSpaces } from "../common/helpers";
 import { domain, tokens, uuid } from "../config/secret";
 import {
   evaluateTransaction,
@@ -196,6 +197,8 @@ export const sanitizeData = (data) => {
           });
         } else if (typeof data[key] === "object") {
           obj[key] = sanitizeData(data[key]);
+        } else if (typeof data[key] === "string") {
+          obj[key] = escapeHTML(trimAllSpaces(data[key]));
         } else {
           obj[key] = escapeHTML(data[key]);
         }
