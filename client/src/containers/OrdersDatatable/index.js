@@ -67,6 +67,15 @@ const OrdersDatatable = () => {
           },
         },
         {
+          name: "Assignee",
+          options: {
+            sortCompare: (order) => (obj1, obj2) =>
+              obj1.data.localeCompare(obj2.data, "en", {
+                numeric: true,
+              }) * (order === "asc" ? 1 : -1),
+          },
+        },
+        {
           name: "Rating",
           options: {
             customBodyRender: (value) =>
@@ -99,6 +108,11 @@ const OrdersDatatable = () => {
           ? order.seller && order.seller.name
           : order.buyer && order.buyer.name,
         display === "purchases" ? order.spent : order.earned,
+        display === "purchases"
+          ? order.license.usage === "business"
+            ? order.license.company
+            : order.license.assignee
+          : "Hidden",
         order.review,
         order.created,
       ])}

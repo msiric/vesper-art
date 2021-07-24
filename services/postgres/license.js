@@ -24,6 +24,7 @@ export const fetchLicenseByFingerprint = async ({
     .leftJoinAndSelect("artwork.owner", "seller")
     .select([
       ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["USAGE_INFO"](),
       ...LICENSE_SELECTION["ASSIGNEE_INFO"](),
       ...LICENSE_SELECTION["ASSIGNOR_INFO"](),
       ...USER_SELECTION["ESSENTIAL_INFO"]("buyer"),
@@ -38,6 +39,8 @@ export const fetchLicenseByFingerprint = async ({
   if (!isObjectEmpty(foundLicense)) {
     if (foundLicense.assigneeIdentifier !== assigneeIdentifier) {
       delete foundLicense.assignee;
+      delete foundLicense.usage;
+      delete foundLicense.company;
       delete foundLicense.assigneeIdentifier;
     }
     if (foundLicense.assignorIdentifier !== assignorIdentifier) {

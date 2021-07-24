@@ -262,6 +262,7 @@ export const fetchUserPurchases = async ({
     .createQueryBuilder("order");
   const foundPurchases = await queryBuilder
     .leftJoinAndSelect("order.seller", "seller")
+    .leftJoinAndSelect("order.license", "license")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
@@ -271,6 +272,9 @@ export const fetchUserPurchases = async ({
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
       ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["ASSIGNOR_INFO"](),
+      ...LICENSE_SELECTION["USAGE_INFO"](),
     ])
     .where(
       `order.buyerId = :userId AND order.serial > 
@@ -285,7 +289,6 @@ export const fetchUserPurchases = async ({
 };
 
 export const fetchArtworkOrders = async ({ userId, artworkId, connection }) => {
-  console.log("AHJASHFIEUBGAKSJGHA", userId, artworkId);
   const foundPurchases = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
@@ -293,6 +296,7 @@ export const fetchArtworkOrders = async ({ userId, artworkId, connection }) => {
     .select([
       ...ORDER_SELECTION["ESSENTIAL_INFO"](),
       ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["USAGE_INFO"](),
       ...LICENSE_SELECTION["ASSIGNOR_INFO"](),
     ])
     .where("order.buyerId = :userId AND order.artworkId = :artworkId", {
@@ -360,6 +364,7 @@ export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
     .createQueryBuilder("order");
   const foundSales = await queryBuilder
     .leftJoinAndSelect("order.buyer", "buyer")
+    .leftJoinAndSelect("order.license", "license")
     .leftJoinAndSelect("order.version", "version")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
@@ -369,6 +374,7 @@ export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
       ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
     ])
     .where(
       `order.sellerId = :userId AND order.serial > 

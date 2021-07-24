@@ -37,6 +37,12 @@ const LicenseCard = () => {
           },
         },
         {
+          name: "Assignee",
+          options: {
+            sort: false,
+          },
+        },
+        {
           name: "Assignee identifier",
           options: {
             sort: false,
@@ -72,6 +78,9 @@ const LicenseCard = () => {
           license.id,
           license.fingerprint,
           license.type,
+          license.usage === "business"
+            ? license.company || "Hidden"
+            : license.assignee || "Hidden",
           license.assigneeIdentifier || "Hidden",
           license.assignorIdentifier || "Hidden",
           license.price,

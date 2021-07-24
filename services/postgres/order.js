@@ -62,6 +62,7 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
     .select([
       ...ORDER_SELECTION["ESSENTIAL_INFO"](),
       ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["USAGE_INFO"](),
       ...LICENSE_SELECTION["ASSIGNEE_INFO"](),
       ...LICENSE_SELECTION["ASSIGNOR_INFO"](),
       ...DISCOUNT_SELECTION["ESSENTIAL_INFO"](),
@@ -89,6 +90,8 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
       delete foundOrder.spent;
       delete foundOrder.fee;
       delete foundOrder.license.assignee;
+      delete foundOrder.license.company;
+      delete foundOrder.license.usage;
       delete foundOrder.license.assigneeIdentifier;
     }
     if (foundOrder.buyer.id === userId) {

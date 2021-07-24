@@ -156,9 +156,9 @@ export const LICENSE_SELECTION = {
     `${selector}.fingerprint`,
     `${selector}.type`,
     `${selector}.price`,
-    `${selector}.usage`,
     `${selector}.created`,
   ],
+  USAGE_INFO: (selector = DEFAULT_VALUES.LICENSE) => [`${selector}.usage`],
   ASSIGNEE_INFO: (selector = DEFAULT_VALUES.LICENSE) => [
     `${selector}.assignor`,
     `${selector}.assignorIdentifier`,

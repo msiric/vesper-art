@@ -85,7 +85,9 @@ const LicenseSection = () => {
           license.type,
           license.owner.name,
           license.artwork.owner.name,
-          license.assignee || "Hidden",
+          license.usage === "business"
+            ? license.company || "Hidden"
+            : license.assignee || "Hidden",
           license.assignor || "Hidden",
           license.price,
           license.created && formatDate(license.created, "dd/MM/yy HH:mm"),
