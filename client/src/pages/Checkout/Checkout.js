@@ -27,7 +27,7 @@ const Checkout = ({ location }) => {
       <CheckoutContent />
     </Container>
   ) : (
-    renderError({ retry, redirect, message })
+    renderError({ retry, redirect, message, reinitializeState })
   );
 };
 

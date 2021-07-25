@@ -88,7 +88,7 @@ const Verifier = () => {
       </Grid>
     </Container>
   ) : (
-    renderError({ retry, redirect, message })
+    renderError({ retry, redirect, message, reinitializeState })
   );
 };
 

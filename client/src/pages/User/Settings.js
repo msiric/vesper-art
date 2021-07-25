@@ -85,7 +85,7 @@ const Settings = ({ location }) => {
       <SettingsWrapper />
     </Container>
   ) : (
-    renderError({ retry, redirect, message })
+    renderError({ retry, redirect, message, reinitializeState })
   );
 };
 

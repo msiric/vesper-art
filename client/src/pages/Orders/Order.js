@@ -92,7 +92,7 @@ const Order = ({ match }) => {
       <RatingWrapper paramId={paramId} />
     </Container>
   ) : (
-    renderError({ retry, redirect, message })
+    renderError({ retry, redirect, message, reinitializeState })
   );
 };
 

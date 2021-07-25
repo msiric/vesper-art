@@ -25,7 +25,7 @@ export const resolveAsyncError = (err, isInfinite = false) => {
   console.log(err);
   console.log(err.response);
   if (err && err.response) {
-    const statusCode = err.response.data.status_code;
+    const statusCode = err.response.data.status;
     const notFound = statusCode === statusCodes.notFound;
     const errorObj = isInfinite
       ? { refetch: true, message: "" }
@@ -50,7 +50,12 @@ export const containsErrors = (...errors) => errors.some((error) => error);
 export const renderError = (...errors) => {
   for (let error of errors) {
     if (error.retry) {
-      return <Retry message={error.message} />;
+      return (
+        <Retry
+          message={error.message}
+          reinitializeState={error.reinitializeState}
+        />
+      );
     }
     if (error.redirect) {
       return <Redirect message={error.message} />;

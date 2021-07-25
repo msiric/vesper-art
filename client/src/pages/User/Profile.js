@@ -45,7 +45,7 @@ const Profile = ({ match, location }) => {
       </Grid>
     </Container>
   ) : (
-    renderError({ retry, redirect, message })
+    renderError({ retry, redirect, message, reinitializeState })
   );
 };
 
