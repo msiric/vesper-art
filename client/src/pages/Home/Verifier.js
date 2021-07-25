@@ -29,7 +29,7 @@ const useVerifierStyles = makeStyles((muiTheme) => ({
     background: artepunktTheme.palette.background.paper,
     padding: 24,
     margin: 0,
-    borderRadius: artepunktTheme.shape.borderRadius,
+    borderRadius: muiTheme.shape.borderRadius,
     boxShadow:
       "0px 3px 5px -1px rgb(0 0 0 / 20%), 0px 6px 10px 0px rgb(0 0 0 / 14%), 0px 1px 18px 0px rgb(0 0 0 / 12%)",
   },

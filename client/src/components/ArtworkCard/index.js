@@ -127,7 +127,7 @@ const ArtworkCard = ({
         </Box>
         <Box>
           <IconButton aria-label="Artwork price">
-            <Typography noWrap>
+            <Typography noWrap className={classes.price}>
               {item.data.availability === "available"
                 ? item.data.license === "commercial"
                   ? item.data.use === "included"

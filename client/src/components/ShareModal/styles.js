@@ -11,7 +11,7 @@ const shareModalStyles = makeStyles((muiTheme) => ({
     backgroundColor: muiTheme.palette.background.paper,
     boxShadow: muiTheme.shadows[5],
     padding: muiTheme.spacing(2),
-    borderRadius: muiTheme.spacing(0.5),
+    borderRadius: muiTheme.shape.borderRadius,
   },
   title: {
     paddingBottom: muiTheme.spacing(2),
@@ -21,7 +21,7 @@ const shareModalStyles = makeStyles((muiTheme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "column",
-    marginTop: muiTheme.spacing(4),
+    marginTop: muiTheme.spacing(2),
   },
   wrapper: {
     display: "flex",
@@ -58,6 +58,9 @@ const shareModalStyles = makeStyles((muiTheme) => ({
   },
   popper: {
     zIndex: 10000,
+  },
+  cancel: {
+    marginTop: muiTheme.spacing(3),
   },
 }));
 

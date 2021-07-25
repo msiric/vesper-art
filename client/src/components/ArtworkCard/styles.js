@@ -13,10 +13,10 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     position: "relative",
     "&:hover": {
       "& $header": {
-        height: 60,
+        height: 50,
       },
       "& $footer": {
-        height: 60,
+        height: 50,
       },
     },
   },
@@ -64,6 +64,7 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
   title: {
     color: "white",
     textDecoration: "none",
+    fontSize: "1.1rem",
     "&:hover": {
       textDecoration: "underline",
     },
@@ -71,9 +72,13 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
   owner: {
     color: "white",
     textDecoration: "none",
+    fontSize: "1rem",
     "&:hover": {
       textDecoration: "underline",
     },
+  },
+  price: {
+    fontSize: "1rem",
   },
   button: {
     color: "white",

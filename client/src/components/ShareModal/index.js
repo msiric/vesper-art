@@ -186,6 +186,7 @@ const ShareModal = ({
                   onClick={() => handleClose({ callback: handlePopperClose })}
                   onMouseEnter={handlePopperOpen}
                   onMouseLeave={handlePopperClose}
+                  className={classes.cancel}
                 >
                   {promptCancel}
                 </SyncButton>
