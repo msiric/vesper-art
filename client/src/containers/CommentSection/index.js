@@ -94,7 +94,6 @@ const CommentSection = ({
     <Card>
       <CardContent>
         <MainHeading text="Comments" className={classes.heading} />
-        <Divider />
         <FormProvider control={control}>
           <form
             onSubmit={handleSubmit(

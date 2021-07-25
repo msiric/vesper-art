@@ -16,7 +16,7 @@ const OrderPreview = () => {
   const classes = orderPreviewStyles();
 
   return (
-    <Card>
+    <Card className={classes.container}>
       <Box className={classes.wrapper}>
         <ImageWrapper
           height={version.cover.height || 500}

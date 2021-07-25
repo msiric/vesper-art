@@ -112,6 +112,7 @@ export const artepunktTheme = createMuiTheme({
       elevation: 6,
     },
   },
+  shape: { borderRadius: 20 },
 });
 
 artepunktTheme.spacing.grid = artepunktTheme.spacing.unit * 2;
@@ -129,6 +130,12 @@ artepunktTheme.overrides.MuiToolbar = {
       paddingLeft: 16,
       paddingRight: 16,
     },
+  },
+};
+
+artepunktTheme.overrides.MuiDivider = {
+  root: {
+    width: "100%",
   },
 };
 

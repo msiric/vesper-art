@@ -55,6 +55,16 @@ const GlobalStyles = makeStyles((muiTheme) => ({
     ".illustrationPrimary": {
       fill: artepunktTheme.palette.primary.main,
     },
+    ".MuiTableCell-footer": {
+      borderTop: "1px solid rgb(81, 81, 81)",
+      borderBottom: "none",
+    },
+    ".MuiTableRow-root:last-of-type > .MuiTableCell-body": {
+      borderBottom: "none",
+    },
+    ".MuiTableBody-root>tr:nth-child(odd)": {
+      backgroundColor: "transparent",
+    },
     ".MuiTableCell-body": {
       cursor: ({ hoverable }) => (hoverable ? "pointer" : "auto"),
     },

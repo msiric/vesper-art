@@ -4,8 +4,8 @@ import SwipeCard from "../../components/SwipeCard/index";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import { useUserProfile } from "../../contexts/local/userProfile";
 import Box from "../../domain/Box";
+import Card from "../../domain/Card";
 import Grid from "../../domain/Grid";
-import Paper from "../../domain/Paper";
 import useVisibleElement from "../../hooks/useVisibleElement";
 import globalStyles from "../../styles/global";
 import UserArtwork from "../UserArtwork/index";
@@ -51,7 +51,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
 
   return (
     <Grid item xs={12}>
-      <Paper ref={artworkRef} className={classes.paper}>
+      <Card ref={artworkRef} className={classes.paper}>
         <SwipeCard
           tabs={{
             value: tabs.value,
@@ -121,7 +121,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
           handleTabsChange={changeTab}
           loading={loading || artworkLoading}
         />
-      </Paper>
+      </Card>
     </Grid>
   );
 };

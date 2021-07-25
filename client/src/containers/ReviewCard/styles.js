@@ -8,7 +8,7 @@ const reviewCardStyles = makeStyles((muiTheme) => ({
   },
   highlight: {
     border: "2px transparent solid",
-    borderRadius: "4px",
+    borderRadius: muiTheme.shape.borderRadius,
     animation: "$blink 0.8s",
     animationIterationCount: 3,
     backgroundColor: "#525252",

@@ -7,7 +7,7 @@ const helpBoxStyles = makeStyles((muiTheme) => ({
     alignItems: "center",
     flexDirection: "column",
     border: "1px solid",
-    borderRadius: 4,
+    borderRadius: muiTheme.shape.borderRadius,
     padding: 8,
     width: "100%",
   },
