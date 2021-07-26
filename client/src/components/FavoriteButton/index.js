@@ -58,7 +58,7 @@ const FavoriteButton = ({
   return labeled ? (
     <AsyncButton
       startIcon={favorited ? <FavoritedIcon /> : <FavoriteIcon />}
-      disabled={state.loading}
+      submitting={state.loading}
       onClick={() =>
         favorited
           ? handleUnsaveArtwork(artwork.id)

@@ -19,7 +19,7 @@ const promptModalStyles = makeStyles((muiTheme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: muiTheme.spacing(4),
+    marginTop: muiTheme.spacing(3),
   },
 }));
 

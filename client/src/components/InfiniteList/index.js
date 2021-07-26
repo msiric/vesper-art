@@ -38,7 +38,7 @@ const InfiniteList = ({
     >
       {type === "masonry" && loading && <LinearProgress />}
       {children}
-      {!loading && !fetching && !dataLength ? (
+      {!loading && !fetching && !dataLength && !error ? (
         <EmptySection label={empty} />
       ) : null}
       {error && (

@@ -19,7 +19,7 @@ const commentCardStyles = makeStyles((muiTheme) => ({
   },
   wrapper: {
     display: "flex",
-    alignItems: "center",
+    flexDirection: "column",
   },
   owner: {
     textDecoration: "none",
@@ -29,8 +29,23 @@ const commentCardStyles = makeStyles((muiTheme) => ({
     },
   },
   details: {
+    display: "flex",
+    alignItems: "center",
+  },
+  modified: {
     marginLeft: 6,
-    fontSize: 12,
+    fontSize: 11,
+  },
+  created: {
+    fontSize: 11,
+  },
+  actions: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  form: {
+    margin: "4px 0",
   },
 }));
 

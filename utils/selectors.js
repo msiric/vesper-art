@@ -88,6 +88,7 @@ export const USER_SELECTION = {
   STRIPPED_INFO: (selector = DEFAULT_VALUES.USER) => [
     `${selector}.id`,
     `${selector}.name`,
+    `${selector}.active`,
   ],
   ESSENTIAL_INFO: (selector = DEFAULT_VALUES.USER) => [
     `${selector}.id`,

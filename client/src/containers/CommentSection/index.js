@@ -21,7 +21,7 @@ import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
 import List from "../../domain/List";
-import AddCommentForm from "../../forms/CommentForm/index";
+import CommentForm from "../../forms/CommentForm/index";
 import useVisibleElement from "../../hooks/useVisibleElement";
 import commentSectionStyles from "./styles";
 
@@ -118,7 +118,7 @@ const CommentSection = ({
                 })
             )}
           >
-            <AddCommentForm errors={errors} loading={loading} />
+            <CommentForm errors={errors} loading={loading} />
             <AsyncButton
               type="submit"
               fullWidth

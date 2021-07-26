@@ -14,6 +14,10 @@ const ratingModalStyles = makeStyles((muiTheme) => ({
     maxWidth: 320,
     width: "100%",
   },
+  rating: {
+    marginTop: muiTheme.spacing(2),
+    marginBottom: muiTheme.spacing(3),
+  },
   title: {
     paddingBottom: muiTheme.spacing(2),
   },

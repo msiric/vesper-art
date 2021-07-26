@@ -21,7 +21,7 @@ import ListItemAvatar from "../../domain/ListItemAvatar";
 import ListItemSecondaryAction from "../../domain/ListItemSecondaryAction";
 import ListItemText from "../../domain/ListItemText";
 import Typography from "../../domain/Typography";
-import AddCommentForm from "../../forms/CommentForm/index";
+import CommentForm from "../../forms/CommentForm/index";
 import { renderRedirectLink, renderUserData } from "../../utils/helpers";
 import commentCardStyles from "./styles";
 
@@ -100,29 +100,31 @@ const CommentCard = ({
                     ? `${renderUserData({
                         data: comment.owner.name,
                         isUsername: true,
-                      })} 👤`
+                      })} 🎨`
                     : renderUserData({
                         data: comment.owner.name,
                         isUsername: true,
                       })}
                 </Typography>
-                <Typography
-                  component="span"
-                  loading={loading}
-                  className={classes.details}
-                >
-                  {`${formatDistance(
-                    new Date(comment.created),
-                    new Date()
-                  )} ago`}
-                </Typography>
-                <Typography
-                  component="span"
-                  loading={loading}
-                  className={classes.details}
-                >
-                  {comment.modified ? "(edited)" : null}
-                </Typography>
+                <Box className={classes.details}>
+                  <Typography
+                    component="span"
+                    loading={loading}
+                    className={classes.created}
+                  >
+                    {`${formatDistance(
+                      new Date(comment.created),
+                      new Date()
+                    )} ago`}
+                  </Typography>
+                  <Typography
+                    component="span"
+                    loading={loading}
+                    className={classes.modified}
+                  >
+                    {comment.modified ? "(edited)" : null}
+                  </Typography>
+                </Box>
               </Box>
             )
           }
@@ -130,6 +132,7 @@ const CommentCard = ({
             edits[comment.id] ? (
               <FormProvider control={control}>
                 <form
+                  className={classes.form}
                   onSubmit={handleSubmit(
                     async () =>
                       await handleCommentEdit({
@@ -139,27 +142,28 @@ const CommentCard = ({
                       })
                   )}
                 >
-                  <AddCommentForm errors={errors} loading={loading} />
-                  <AsyncButton
-                    type="submit"
-                    fullWidth
-                    padding
-                    submitting={formState.isSubmitting}
-                    disabled={isDisabled}
-                    loading={loading}
-                    startIcon={<UploadIcon />}
-                  >
-                    Publish
-                  </AsyncButton>
-                  <SyncButton
-                    type="button"
-                    color="warning"
-                    onClick={() =>
-                      handleCommentClose({ commentId: comment.id })
-                    }
-                  >
-                    Cancel
-                  </SyncButton>
+                  <CommentForm errors={errors} loading={loading} />
+                  <Box className={classes.actions}>
+                    <AsyncButton
+                      type="submit"
+                      fullWidth
+                      submitting={formState.isSubmitting}
+                      disabled={isDisabled}
+                      loading={loading}
+                      startIcon={<UploadIcon />}
+                    >
+                      Publish
+                    </AsyncButton>
+                    <SyncButton
+                      type="button"
+                      color="warning"
+                      onClick={() =>
+                        handleCommentClose({ commentId: comment.id })
+                      }
+                    >
+                      Cancel
+                    </SyncButton>
+                  </Box>
                 </form>
               </FormProvider>
             ) : (

@@ -7,8 +7,6 @@ import { reviewValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import Backdrop from "../../domain/Backdrop";
 import Box from "../../domain/Box";
-import CardActions from "../../domain/CardActions";
-import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
 import Fade from "../../domain/Fade";
 import Modal from "../../domain/Modal";
@@ -71,7 +69,7 @@ const RatingModal = ({
           <Divider />
           <FormProvider control={control}>
             <form onSubmit={handleSubmit(handleConfirm)}>
-              <CardContent>
+              <Box className={classes.rating}>
                 <RatingForm
                   errors={errors}
                   setValue={setValue}
@@ -80,12 +78,11 @@ const RatingModal = ({
                   watch={watch}
                   loading={loading}
                 />
-              </CardContent>
-              <CardActions className={classes.actions}>
+              </Box>
+              <Box className={classes.actions}>
                 <AsyncButton
                   type="submit"
                   fullWidth
-                  padding
                   submitting={formState.isSubmitting}
                   disabled={isDisabled}
                   startIcon={<UploadIcon />}
@@ -95,7 +92,7 @@ const RatingModal = ({
                 <SyncButton type="button" color="dark" onClick={handleClose}>
                   {promptCancel}
                 </SyncButton>
-              </CardActions>
+              </Box>
             </form>
           </FormProvider>
         </Box>

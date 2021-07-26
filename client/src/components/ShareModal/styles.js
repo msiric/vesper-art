@@ -21,10 +21,11 @@ const shareModalStyles = makeStyles((muiTheme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "column",
-    marginTop: muiTheme.spacing(2),
   },
   wrapper: {
     display: "flex",
+    marginTop: muiTheme.spacing(2),
+    marginBottom: muiTheme.spacing(3),
   },
   button: {
     display: "flex",
@@ -58,9 +59,6 @@ const shareModalStyles = makeStyles((muiTheme) => ({
   },
   popper: {
     zIndex: 10000,
-  },
-  cancel: {
-    marginTop: muiTheme.spacing(3),
   },
 }));
 

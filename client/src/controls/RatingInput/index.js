@@ -21,6 +21,7 @@ const Input = ({
   return (
     <FormControl variant="outlined" margin="dense" fullWidth>
       <FormControlLabel
+        className={classes.wrapper}
         control={
           <Rating
             {...props}
