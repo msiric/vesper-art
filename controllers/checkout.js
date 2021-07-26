@@ -6,9 +6,9 @@ import {
   renderFreeLicenses,
 } from "../common/helpers";
 import {
-  downloadValidation,
-  licenseActors,
+  actorsValidation,
   licenseValidation,
+  orderValidation,
   priceValidation,
 } from "../common/validation";
 import socketApi from "../lib/socket";
@@ -70,7 +70,7 @@ export const postDownload = async ({
           licensePrice,
         });
         await licenseValidation
-          .concat(licenseActors)
+          .concat(actorsValidation)
           .concat(priceValidation)
           .validate(licenseData);
         const foundOrders = await fetchArtworkOrders({
@@ -99,7 +99,7 @@ export const postDownload = async ({
                 licenseData,
                 connection,
               });
-              await downloadValidation.validate({
+              await orderValidation.validate({
                 orderBuyer: foundUser.id,
                 orderSeller: foundVersion.artwork.owner.id,
                 orderArtwork: foundVersion.artwork.id,

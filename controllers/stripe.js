@@ -10,7 +10,8 @@ import {
   renderCommercialLicenses,
 } from "../common/helpers";
 import {
-  licenseActors,
+  actorsValidation,
+  intentValidation,
   licenseValidation,
   orderValidation,
   priceValidation,
@@ -170,7 +171,7 @@ export const managePaymentIntent = async ({
                 )
               ) {
                 const validationSchema = shouldReinitialize
-                  ? licenseValidation.concat(licenseActors)
+                  ? licenseValidation.concat(actorsValidation)
                   : licenseValidation;
                 await validationSchema.validate({
                   ...licenseData,
@@ -427,7 +428,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
       licensePrice,
     } = orderData.licenseData;
     await licenseValidation
-      .concat(licenseActors)
+      .concat(actorsValidation)
       .concat(priceValidation)
       .validate(orderData.licenseData);
     console.log("LICENSE VALIDATED");
@@ -445,7 +446,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
       connection,
     });
     console.log("LICENSE SAVED");
-    await orderValidation.validate({
+    await orderValidation.concat(intentValidation).validate({
       orderBuyer: buyerId,
       orderSeller: sellerId,
       orderArtwork: artworkId,

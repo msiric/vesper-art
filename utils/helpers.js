@@ -6,7 +6,7 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { getConnection } from "typeorm";
 import * as uuidJs from "uuid";
-import { statusCodes } from "../common/constants";
+import { generatedData, statusCodes } from "../common/constants";
 import { trimAllSpaces } from "../common/helpers";
 import { domain, tokens, uuid } from "../config/secret";
 import {
@@ -253,13 +253,19 @@ export const generateResetToken = () => {
 };
 
 export const generateLicenseFingerprint = () => {
-  const licenseFingerprint = generateRandomBytes({ bytes: 20 });
+  const licenseFingerprint = generateRandomBytes({
+    bytes: generatedData.fingerprint,
+  });
   return { licenseFingerprint };
 };
 
 export const generateLicenseIdentifiers = () => {
-  const licenseAssigneeIdentifier = generateRandomBytes({ bytes: 10 });
-  const licenseAssignorIdentifier = generateRandomBytes({ bytes: 10 });
+  const licenseAssigneeIdentifier = generateRandomBytes({
+    bytes: generatedData.identifier,
+  });
+  const licenseAssignorIdentifier = generateRandomBytes({
+    bytes: generatedData.identifier,
+  });
   return { licenseAssigneeIdentifier, licenseAssignorIdentifier };
 };
 

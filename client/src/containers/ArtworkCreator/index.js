@@ -4,7 +4,10 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { featureFlags, pricing } from "../../../../common/constants";
 import { isFormAltered } from "../../../../common/helpers";
-import { addArtwork, artworkValidation } from "../../../../common/validation";
+import {
+  artworkValidation,
+  mediaValidation,
+} from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import HelpBox from "../../components/HelpBox/index";
 import { useUserStore } from "../../contexts/global/user";
@@ -26,7 +29,9 @@ const ArtworkCreator = () => {
   );
   const createArtwork = useArtworkCreate((state) => state.createArtwork);
 
-  const resolver = useArtworkValidator(artworkValidation.concat(addArtwork));
+  const resolver = useArtworkValidator(
+    artworkValidation.concat(mediaValidation)
+  );
 
   const history = useHistory();
 

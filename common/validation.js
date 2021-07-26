@@ -1,10 +1,93 @@
 import * as Yup from "yup";
-import { pricing, statusCodes, upload, usernames } from "./constants";
+import {
+  generatedData,
+  pricing,
+  statusCodes,
+  upload,
+  usernames,
+} from "./constants";
+
+export const ranges = {
+  firstName: {
+    max: 35,
+  },
+  lastName: {
+    max: 35,
+  },
+  fullName: {
+    max: 70,
+  },
+  email: {
+    max: 320,
+  },
+  password: {
+    min: 10,
+    max: 300,
+  },
+  username: {
+    min: 5,
+    max: 20,
+  },
+  artworkTitle: {
+    max: 70,
+  },
+  artworkDescription: {
+    max: 300,
+  },
+  address: {
+    max: 300,
+  },
+  postalCode: {
+    max: 12,
+  },
+  city: {
+    max: 100,
+  },
+  country: {
+    max: "not sure",
+  },
+  comment: {
+    max: 300,
+  },
+  discountCode: {
+    max: 50,
+  },
+  company: {
+    max: 100,
+  },
+  intentId: {
+    exact: 27,
+  },
+  profileDescription: {
+    max: 250,
+  },
+  searchQuery: {
+    max: 100,
+  },
+  licenseFingerprint: {
+    exact: generatedData.fingerprint,
+  },
+  licenseIdentifier: {
+    exact: generatedData.identifier,
+  },
+  freePricing: {
+    exact: 0,
+  },
+  reviewRating: {
+    min: 1,
+    max: 5,
+  },
+};
 
 export const errors = {
   artworkTitleRequired: {
     status: statusCodes.badRequest,
     message: "Artwork title is required",
+    expose: true,
+  },
+  artworkTitleMax: {
+    status: statusCodes.badRequest,
+    message: `Artwork title cannot contain more than ${ranges.artworkTitle.max} characters`,
     expose: true,
   },
   artworkAvailabilityRequired: {
@@ -118,9 +201,19 @@ export const errors = {
     message: "Artwork description is required",
     expose: true,
   },
+  artworkDescriptionMax: {
+    status: statusCodes.badRequest,
+    message: `Artwork description cannot contain more than ${ranges.artworkDescription.max} characters`,
+    expose: true,
+  },
   billingNameRequired: {
     status: statusCodes.badRequest,
     message: "First name is required",
+    expose: true,
+  },
+  billingNameMax: {
+    status: statusCodes.badRequest,
+    message: `First name cannot contain more than ${ranges.firstName.max} characters`,
     expose: true,
   },
   billingSurnameRequired: {
@@ -128,9 +221,19 @@ export const errors = {
     message: "Last name is required",
     expose: true,
   },
+  billingSurnameMax: {
+    status: statusCodes.badRequest,
+    message: `Last name cannot contain more than ${ranges.lastName.max} characters`,
+    expose: true,
+  },
   billingAddressRequired: {
     status: statusCodes.badRequest,
     message: "Address is required",
+    expose: true,
+  },
+  billingAddressMax: {
+    status: statusCodes.badRequest,
+    message: `Address cannot contain more than ${ranges.address.max} characters`,
     expose: true,
   },
   billingZipRequired: {
@@ -138,9 +241,19 @@ export const errors = {
     message: "Postal code is required",
     expose: true,
   },
+  billingZipMax: {
+    status: statusCodes.badRequest,
+    message: `Postal code cannot contain more than ${ranges.postalCode.max} characters`,
+    expose: true,
+  },
   billingCityRequired: {
     status: statusCodes.badRequest,
     message: "City is required",
+    expose: true,
+  },
+  billingCityMax: {
+    status: statusCodes.badRequest,
+    message: `City cannot contain more than ${ranges.city.max} characters`,
     expose: true,
   },
   billingCountryRequired: {
@@ -148,9 +261,19 @@ export const errors = {
     message: "Country is required",
     expose: true,
   },
+  billingCountryMax: {
+    status: statusCodes.badRequest,
+    message: `Country cannot contain more than ${ranges.country.max} characters`,
+    expose: true,
+  },
   commentContentRequired: {
     status: statusCodes.badRequest,
     message: "Comment cannot be empty",
+    expose: true,
+  },
+  commentContentMax: {
+    status: statusCodes.badRequest,
+    message: `Comment cannot contain more than ${ranges.comment.max} characters`,
     expose: true,
   },
   discountCodeRequired: {
@@ -158,14 +281,29 @@ export const errors = {
     message: "Discount cannot be empty",
     expose: true,
   },
+  discountCodeMax: {
+    status: statusCodes.badRequest,
+    message: `Discount code cannot contain more than ${ranges.discountCode.max} characters`,
+    expose: true,
+  },
   licenseAssigneeRequired: {
     status: statusCodes.badRequest,
     message: "License assignee is required",
     expose: true,
   },
+  licenseAssigneeMax: {
+    status: statusCodes.badRequest,
+    message: `License assignee cannot contain more than ${ranges.fullName.max} characters`,
+    expose: true,
+  },
   licenseAssignorRequired: {
     status: statusCodes.badRequest,
     message: "License assignor is required",
+    expose: true,
+  },
+  licenseAssignorMax: {
+    status: statusCodes.badRequest,
+    message: `License assignor cannot contain more than ${ranges.fullName.max} characters`,
     expose: true,
   },
   licenseTypeRequired: {
@@ -193,9 +331,19 @@ export const errors = {
     message: "License company is required",
     expose: true,
   },
+  licenseCompanyMax: {
+    status: statusCodes.badRequest,
+    message: `License company cannot contain more than ${ranges.company.max} characters`,
+    expose: true,
+  },
   userNameRequired: {
     status: statusCodes.badRequest,
     message: "Full name is required",
+    expose: true,
+  },
+  userNameMax: {
+    status: statusCodes.badRequest,
+    message: `Full name cannot contain more than ${ranges.fullName.max} characters`,
     expose: true,
   },
   userUsernameRequired: {
@@ -205,12 +353,12 @@ export const errors = {
   },
   userUsernameMin: {
     status: statusCodes.badRequest,
-    message: "Username must contain at least 5 characters",
+    message: `Username must contain at least ${ranges.username.min} characters`,
     expose: true,
   },
   userUsernameMax: {
     status: statusCodes.badRequest,
-    message: "Username cannot contain more than 20 characters",
+    message: `Username cannot contain more than ${ranges.username.max} characters`,
     expose: true,
   },
   userPasswordRequired: {
@@ -220,7 +368,12 @@ export const errors = {
   },
   userPasswordMin: {
     status: statusCodes.badRequest,
-    message: "Password must contain at least 10 characters",
+    message: `Password must contain at least ${ranges.password.min} characters`,
+    expose: true,
+  },
+  userPasswordMax: {
+    status: statusCodes.badRequest,
+    message: `Password cannot contain more than ${ranges.password.max} characters`,
     expose: true,
   },
   artworkMediaRequired: {
@@ -255,9 +408,19 @@ export const errors = {
     message: "Invalid intent",
     expose: true,
   },
+  orderIntentExact: {
+    status: statusCodes.badRequest,
+    message: "Intent ID is invalid",
+    expose: true,
+  },
   originCountryRequired: {
     status: statusCodes.badRequest,
     message: "Country cannot be empty",
+    expose: true,
+  },
+  originCountryMax: {
+    status: statusCodes.badRequest,
+    message: `Country cannot contain more than ${ranges.country.max} characters`,
     expose: true,
   },
   userNewRequired: {
@@ -282,7 +445,7 @@ export const errors = {
   },
   userDescriptionMax: {
     status: statusCodes.badRequest,
-    message: "Description cannot contain more than 250 characters",
+    message: `Description cannot contain more than ${ranges.profileDescription.max} characters`,
     expose: true,
   },
   reviewRatingRequired: {
@@ -292,12 +455,17 @@ export const errors = {
   },
   reviewRatingMin: {
     status: statusCodes.badRequest,
-    message: "Rating cannot be less than 1",
+    message: `Rating cannot be less than ${ranges.reviewRating.min}`,
     expose: true,
   },
   reviewRatingMax: {
     status: statusCodes.badRequest,
-    message: "Rating cannot be greater than 5",
+    message: `Rating cannot be greater than ${ranges.reviewRating.max}`,
+    expose: true,
+  },
+  searchQueryMax: {
+    status: statusCodes.badRequest,
+    message: `Search query cannot contain more than ${ranges.searchQuery.max} characters`,
     expose: true,
   },
   searchTypeRequired: {
@@ -321,19 +489,24 @@ export const errors = {
     message: "Username not allowed",
     expose: true,
   },
-  userUsernameMin: {
-    status: statusCodes.badRequest,
-    message: "Username must contain at least 5 characters",
-    expose: true,
-  },
-  userUsernameMax: {
-    status: statusCodes.badRequest,
-    message: "Username cannot contain more than 20 characters",
-    expose: true,
-  },
   licenseFingerprintRequired: {
     status: statusCodes.badRequest,
-    message: "Fingerprint cannot be empty",
+    message: "License fingerprint cannot be empty",
+    expose: true,
+  },
+  licenseFingerprintExact: {
+    status: statusCodes.badRequest,
+    message: "License fingerprint is invalid",
+    expose: true,
+  },
+  assigneeIdentifierExact: {
+    status: statusCodes.badRequest,
+    message: "Assignee identifier is invalid",
+    expose: true,
+  },
+  assignorIdentifierExact: {
+    status: statusCodes.badRequest,
+    message: "Assignor identifier is invalid",
     expose: true,
   },
   userEmailRequired: {
@@ -341,9 +514,19 @@ export const errors = {
     message: "Email is required",
     expose: true,
   },
+  userEmailMax: {
+    status: statusCodes.badRequest,
+    message: `Email cannot contain more than ${ranges.email.max} characters`,
+    expose: true,
+  },
   userEmailInvalid: {
     status: statusCodes.badRequest,
     message: "Invalid email",
+    expose: true,
+  },
+  userCountryMax: {
+    status: statusCodes.badRequest,
+    message: `Country contain more than ${ranges.country.max} characters`,
     expose: true,
   },
   requiredValue: {
@@ -373,18 +556,59 @@ export const errors = {
   },
 };
 
+const userUsername = Yup.string()
+  .trim()
+  .typeError(errors.invalidString.message)
+  .required(errors.userUsernameRequired.message)
+  .matches(/^([\w.]){0,}$/, errors.userUsernameInvalid.message)
+  .min(ranges.username.min, errors.userUsernameMin.message)
+  .max(ranges.username.max, errors.userUsernameMax.message)
+  .test(
+    "isValidUsername",
+    errors.userUsernameBlacklisted.message,
+    (value) => !usernames[value]
+  );
+
+const userEmail = Yup.string()
+  .email(errors.userEmailInvalid.message)
+  .trim()
+  .typeError(errors.invalidString.message)
+  .required(errors.userEmailRequired.message)
+  .max(ranges.email.max, errors.userEmailMax.message);
+
+const userPassword = (error = "userPasswordRequired") =>
+  Yup.string()
+    .typeError(errors.invalidString.message)
+    .required(errors[error].message)
+    .min(ranges.password.min, errors.userPasswordMin.message)
+    .max(ranges.password.max, errors.userPasswordMax.message);
+
+const userConfirm = Yup.string()
+  .typeError(errors.invalidString.message)
+  .when(["userPassword"], {
+    is: (userPassword) => userPassword && userPassword.trim() !== "",
+    then: Yup.string()
+      .typeError(errors.invalidString.message)
+      .required(errors.userConfirmationRequired.message)
+      .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch.message),
+    otherwise: Yup.string()
+      .typeError(errors.invalidString.message)
+      .required(errors.userConfirmationRequired.message),
+  });
+
 export const artworkValidation = Yup.object().shape({
   artworkTitle: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.artworkTitleRequired.message),
+    .typeError(errors.invalidString.message)
+    .required(errors.artworkTitleRequired.message)
+    .max(ranges.artworkTitle.max, errors.artworkTitleMax.message),
   artworkAvailability: Yup.string()
     .typeError(errors.invalidString.message)
+    .required(errors.artworkAvailabilityRequired.message)
     .matches(
       /(available|unavailable)/,
       errors.artworkAvailabilityInvalid.message
-    )
-    .required(errors.artworkAvailabilityRequired.message),
+    ),
   artworkType: Yup.string()
     .typeError(errors.invalidString.message)
     .notRequired()
@@ -392,8 +616,8 @@ export const artworkValidation = Yup.object().shape({
       is: "available",
       then: Yup.string()
         .typeError(errors.invalidString.message)
-        .matches(/(commercial|free)/, errors.artworkTypeInvalid.message)
-        .required(errors.artworkTypeRequired.message),
+        .required(errors.artworkTypeRequired.message)
+        .matches(/(commercial|free)/, errors.artworkTypeInvalid.message),
       otherwise: Yup.string()
         .typeError(errors.invalidString.message)
         .matches(/(unavailable)/, errors.artworkTypeInvalid.message),
@@ -405,8 +629,8 @@ export const artworkValidation = Yup.object().shape({
       is: "available",
       then: Yup.string()
         .typeError(errors.invalidString.message)
-        .matches(/(commercial|personal)/, errors.artworkLicenseInvalid.message)
-        .required(errors.artworkLicenseRequired.message),
+        .required(errors.artworkLicenseRequired.message)
+        .matches(/(commercial|personal)/, errors.artworkLicenseInvalid.message),
       otherwise: Yup.string()
         .typeError(errors.invalidString.message)
         .matches(/(unavailable)/, errors.artworkLicenseInvalid.message),
@@ -420,14 +644,14 @@ export const artworkValidation = Yup.object().shape({
       then: Yup.number()
         .integer()
         .positive(errors.artworkPersonalNegative.message)
-        .min(pricing.minimumPrice, errors.artworkPersonalMin.message)
-        .max(pricing.maximumPrice, errors.artworkPersonalMax.message)
         .typeError(errors.invalidNumber.message)
-        .required(errors.artworkPersonalRequired.message),
+        .required(errors.artworkPersonalRequired.message)
+        .min(pricing.minimumPrice, errors.artworkPersonalMin.message)
+        .max(pricing.maximumPrice, errors.artworkPersonalMax.message),
       otherwise: Yup.number()
         .integer()
-        .min(0)
-        .max(0)
+        .min(ranges.freePricing.exact)
+        .max(ranges.freePricing.exact)
         .typeError(errors.invalidNumber.message),
     }),
   artworkUse: Yup.string()
@@ -461,20 +685,20 @@ export const artworkValidation = Yup.object().shape({
               then: Yup.number()
                 .typeError(errors.invalidNumber.message)
                 .positive(errors.artworkCommercialNegative.message)
-                .min(pricing.minimumPrice, errors.artworkCommercialMin.message)
-                .max(pricing.maximumPrice, errors.artworkCommercialMax.message)
                 .typeError(errors.invalidNumber.message)
-                .required(errors.artworkCommercialRequired.message),
+                .required(errors.artworkCommercialRequired.message)
+                .min(pricing.minimumPrice, errors.artworkCommercialMin.message)
+                .max(pricing.maximumPrice, errors.artworkCommercialMax.message),
               otherwise: Yup.number()
                 .integer()
                 .positive(errors.artworkCommercialNegative.message)
+                .typeError(errors.invalidNumber.message)
+                .required(errors.artworkCommercialRequired.message)
                 .moreThan(
                   Yup.ref("artworkPersonal"),
                   errors.artworkCommercialMin.message
                 )
-                .max(pricing.maximumPrice, errors.artworkCommercialMax.message)
-                .typeError(errors.invalidNumber.message)
-                .required(errors.artworkCommercialRequired.message),
+                .max(pricing.maximumPrice, errors.artworkCommercialMax.message),
             }),
           otherwise: Yup.number()
             .typeError(errors.invalidNumber.message)
@@ -483,22 +707,22 @@ export const artworkValidation = Yup.object().shape({
               then: Yup.number()
                 .typeError(errors.invalidNumber.message)
                 .positive(errors.artworkCommercialNegative.message)
-                .min(0)
-                .max(0)
-                .typeError(errors.invalidNumber.message),
+                .typeError(errors.invalidNumber.message)
+                .min(ranges.freePricing.exact)
+                .max(ranges.freePricing.exact),
               otherwise: Yup.number()
                 .integer()
+                .typeError(errors.invalidNumber.message)
                 .min(Yup.ref("artworkPersonal"))
-                .max(Yup.ref("artworkPersonal"))
-                .typeError(errors.invalidNumber.message),
+                .max(Yup.ref("artworkPersonal")),
             }),
         }),
       otherwise: Yup.number()
         .integer()
-        .min(0)
-        .max(0)
         .typeError(errors.invalidNumber.message)
-        .required(errors.artworkCommercialRequired.message),
+        .required(errors.artworkCommercialRequired.message)
+        .min(ranges.freePricing.exact)
+        .max(ranges.freePricing.exact),
     }),
   // artworkCategory: "",
   // artworkTags: Yup.array()
@@ -508,72 +732,74 @@ export const artworkValidation = Yup.object().shape({
   //   .required("Artwork tags are required"),
   artworkVisibility: Yup.string()
     .typeError(errors.invalidString.message)
-    .matches(/(visible|invisible)/, errors.artworkVisibilityInvalid.message)
-    .required(errors.artworkVisibilityRequired.message),
+    .required(errors.artworkVisibilityRequired.message)
+    .matches(/(visible|invisible)/, errors.artworkVisibilityInvalid.message),
   artworkDescription: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.artworkDescriptionRequired.message),
+    .typeError(errors.invalidString.message)
+    .required(errors.artworkDescriptionRequired.message)
+    .max(ranges.artworkDescription.max, errors.artworkDescriptionMax.message),
 });
 
 export const billingValidation = Yup.object().shape({
   billingName: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.billingNameRequired.message),
+    .typeError(errors.invalidString.message)
+    .required(errors.billingNameRequired.message)
+    .max(ranges.firstName.max, errors.billingNameMax.message),
   billingSurname: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.billingSurnameRequired.message),
-  billingEmail: Yup.string()
     .typeError(errors.invalidString.message)
-    .email(errors.userEmailInvalid.message)
-    .required(errors.userEmailRequired.message),
+    .required(errors.billingSurnameRequired.message)
+    .max(ranges.lastName.max, errors.billingSurnameMax.message),
+  billingEmail: userEmail,
   billingAddress: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.billingAddressRequired.message),
+    .typeError(errors.invalidString.message)
+    .required(errors.billingAddressRequired.message)
+    .max(ranges.address.max, errors.billingSurnameMax.message),
   billingZip: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.billingZipRequired.message),
+    .typeError(errors.invalidString.message)
+    .required(errors.billingZipRequired.message)
+    .max(ranges.postalCode.max, errors.billingZipMax.message),
   billingCity: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.billingCityRequired.message),
+    .typeError(errors.invalidString.message)
+    .required(errors.billingCityRequired.message)
+    .max(ranges.city.max, errors.billingCityMax.message),
   billingCountry: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.billingCountryRequired.message),
+    .typeError(errors.invalidString.message)
+    .required(errors.billingCountryRequired.message)
+    .max(ranges.country.max, errors.billingCountryMax.message),
 });
 
 export const commentValidation = Yup.object().shape({
   commentContent: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.commentContentRequired.message),
+    .typeError(errors.invalidString.message)
+    .required(errors.commentContentRequired.message)
+    .max(ranges.comment.max, errors.commentContentMax.message),
 });
 
 export const discountValidation = Yup.object().shape({
   discountCode: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.discountCodeRequired.message),
+    .typeError(errors.invalidString.message)
+    .required(errors.discountCodeRequired.message)
+    .max(ranges.discountCode.max, errors.discountCodeMax.message),
 });
 
 export const emailValidation = Yup.object().shape({
-  userEmail: Yup.string()
-    .typeError(errors.invalidString.message)
-    .email(errors.userEmailInvalid.message)
-    .trim()
-    .required(errors.userEmailRequired.message),
+  userEmail,
 });
 
 export const licenseValidation = Yup.object().shape({
   licenseUsage: Yup.string()
     .typeError(errors.invalidString.message)
-    .matches(/(individual|business)/, errors.licenseUsageInvalid.message)
-    .required(errors.licenseTypeRequired.message),
+    .required(errors.licenseTypeRequired.message)
+    .matches(/(individual|business)/, errors.licenseUsageInvalid.message),
   licenseCompany: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
@@ -581,51 +807,48 @@ export const licenseValidation = Yup.object().shape({
     .when(["licenseUsage"], {
       is: (licenseUsage) => licenseUsage === "business",
       then: Yup.string()
+        .trim()
         .typeError(errors.invalidString.message)
-        .required(errors.licenseCompanyRequired.message),
+        .required(errors.licenseCompanyRequired.message)
+        .max(ranges.company.max, errors.licenseCompanyMax.message),
       otherwise: Yup.string()
         .typeError(errors.invalidString.message)
         .matches(/(unavailable)/, errors.licenseCompanyInvalid.message),
     }),
   licenseType: Yup.string()
     .typeError(errors.invalidString.message)
-    .matches(/(personal|commercial)/, errors.licenseTypeInvalid.message)
-    .required(errors.licenseTypeRequired.message),
+    .required(errors.licenseTypeRequired.message)
+    .matches(/(personal|commercial)/, errors.licenseTypeInvalid.message),
 });
 
-export const licenseActors = Yup.object().shape({
+export const actorsValidation = Yup.object().shape({
   licenseAssignee: Yup.string()
+    .trim()
     .typeError(errors.invalidString.message)
-    .required(errors.licenseAssigneeRequired.message),
+    .required(errors.licenseAssigneeRequired.message)
+    .max(ranges.fullName.max, errors.licenseAssigneeMax.message),
   licenseAssignor: Yup.string()
+    .trim()
     .typeError(errors.invalidString.message)
-    .required(errors.licenseAssignorRequired.message),
+    .required(errors.licenseAssignorRequired.message)
+    .max(ranges.fullName.max, errors.licenseAssignorMax.message),
 });
 
 export const priceValidation = Yup.object().shape({
   licensePrice: Yup.number()
     .integer()
     .typeError(errors.invalidNumber.message)
-    .min(0, errors.artworkLicenseMin.message)
-    .max(pricing.maximumPrice, errors.artworkLicenseMax.message)
-    .required(errors.artworkLicenseRequired.message),
+    .required(errors.artworkLicenseRequired.message)
+    .min(ranges.freePricing.exact, errors.artworkLicenseMin.message)
+    .max(pricing.maximumPrice, errors.artworkLicenseMax.message),
 });
 
 export const loginValidation = Yup.object().shape({
-  userUsername: Yup.string()
-    .typeError(errors.invalidString.message)
-    .trim()
-    .min(5, errors.userUsernameMin.message)
-    .max(20, errors.userUsernameMax.message)
-    .required(errors.userUsernameRequired.message),
-  userPassword: Yup.string()
-    .typeError(errors.invalidString.message)
-    .trim()
-    .min(10, errors.userPasswordMin.message)
-    .required(errors.userPasswordRequired.message),
+  userUsername,
+  userPassword: userPassword(),
 });
 
-export const addArtwork = Yup.object().shape({
+export const mediaValidation = Yup.object().shape({
   artworkMedia: Yup.mixed()
     .test(
       "fileType",
@@ -661,7 +884,7 @@ export const addArtwork = Yup.object().shape({
     ),
 }); */
 
-export const patchAvatar = Yup.object().shape({
+export const avatarValidation = Yup.object().shape({
   userMedia: Yup.mixed()
     .test(
       "fileType",
@@ -675,241 +898,156 @@ export const patchAvatar = Yup.object().shape({
     ),
 });
 
-export const orderValidation = Yup.object().shape({
-  orderBuyer: Yup.string()
-    .typeError(errors.invalidString.message)
-    .uuid(errors.invalidUUID.message)
-    .required(errors.requiredValue.message),
-  orderSeller: Yup.string()
-    .typeError(errors.invalidString.message)
-    .uuid(errors.invalidUUID.message)
-    .required(errors.requiredValue.message),
-  orderArtwork: Yup.string()
-    .typeError(errors.invalidString.message)
-    .uuid(errors.invalidUUID.message)
-    .required(errors.requiredValue.message),
-  orderVersion: Yup.string()
-    .typeError(errors.invalidString.message)
-    .uuid(errors.invalidUUID.message)
-    .required(errors.requiredValue.message),
-  orderDiscount: Yup.string()
-    .typeError(errors.invalidString.message)
-    .uuid(errors.invalidUUID.message)
-    .nullable(errors.requiredValue.message),
-  orderLicense: Yup.string()
-    .typeError(errors.invalidString.message)
-    .uuid(errors.invalidUUID.message)
-    .required(errors.requiredValue.message),
-  orderSpent: Yup.number()
-    .typeError(errors.invalidNumber.message)
-    .integer()
-    .required(errors.requiredValue.message),
-  orderEarned: Yup.number()
-    .typeError(errors.invalidNumber.message)
-    .integer()
-    .required(errors.requiredValue.message),
-  orderFee: Yup.number()
-    .typeError(errors.invalidNumber.message)
-    .integer()
-    .required(errors.requiredValue.message),
-  orderIntent: Yup.string(errors.orderIntentInvalid.message).required(
-    errors.requiredValue.message
-  ),
+export const intentValidation = Yup.object().shape({
+  orderIntent: Yup.string(errors.orderIntentInvalid.message)
+    .required(errors.requiredValue.message)
+    .max(ranges.intentId.exact, errors.orderIntentExact.message)
+    .max(ranges.intentId.exact, errors.orderIntentExact.message),
 });
 
-export const downloadValidation = Yup.object().shape({
+export const orderValidation = Yup.object().shape({
   orderBuyer: Yup.string()
-    .typeError(errors.invalidString.message)
     .uuid(errors.invalidUUID.message)
+    .typeError(errors.invalidString.message)
     .required(errors.requiredValue.message),
   orderSeller: Yup.string()
-    .typeError(errors.invalidString.message)
     .uuid(errors.invalidUUID.message)
+    .typeError(errors.invalidString.message)
     .required(errors.requiredValue.message),
   orderArtwork: Yup.string()
-    .typeError(errors.invalidString.message)
     .uuid(errors.invalidUUID.message)
+    .typeError(errors.invalidString.message)
     .required(errors.requiredValue.message),
   orderVersion: Yup.string()
-    .typeError(errors.invalidString.message)
     .uuid(errors.invalidUUID.message)
+    .typeError(errors.invalidString.message)
     .required(errors.requiredValue.message),
   orderDiscount: Yup.string()
-    .typeError(errors.invalidString.message)
     .uuid(errors.invalidUUID.message)
+    .typeError(errors.invalidString.message)
     .nullable(errors.requiredValue.message),
   orderLicense: Yup.string()
-    .typeError(errors.invalidString.message)
     .uuid(errors.invalidUUID.message)
+    .typeError(errors.invalidString.message)
     .required(errors.requiredValue.message),
   orderSpent: Yup.number()
-    .typeError(errors.invalidNumber.message)
     .integer()
+    .typeError(errors.invalidNumber.message)
     .required(errors.requiredValue.message),
   orderEarned: Yup.number()
-    .typeError(errors.invalidNumber.message)
     .integer()
+    .typeError(errors.invalidNumber.message)
     .required(errors.requiredValue.message),
   orderFee: Yup.number()
-    .typeError(errors.invalidNumber.message)
     .integer()
+    .typeError(errors.invalidNumber.message)
     .required(errors.requiredValue.message),
 });
 
 export const originValidation = Yup.object().shape({
   userBusinessAddress: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.originCountryRequired.message),
+    .typeError(errors.invalidString.message)
+    .required(errors.originCountryRequired.message)
+    .max(ranges.address.max, errors.originCountryMax.message),
 });
 
 export const passwordValidation = Yup.object().shape({
-  userCurrent: Yup.string()
-    .typeError(errors.invalidString.message)
-    .required(errors.userPasswordRequired.message),
-  userPassword: Yup.string()
-    .typeError(errors.invalidString.message)
-    .min(10, errors.userPasswordMin.message)
-    .required(errors.userNewRequired.message),
-  userConfirm: Yup.string()
-    .typeError(errors.invalidString.message)
-    .when(["userPassword"], {
-      is: (userPassword) => userPassword && userPassword.trim() !== "",
-      then: Yup.string()
-        .typeError(errors.invalidString.message)
-        .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch.message)
-        .required(errors.userConfirmationRequired.message),
-      otherwise: Yup.string()
-        .typeError(errors.invalidString.message)
-        .required(errors.userConfirmationRequired.message),
-    }),
+  userCurrent: userPassword(),
+  userPassword: userPassword("userNewRequired"),
+  userConfirm,
 });
 
 export const preferencesValidation = Yup.object().shape({
-  userFavorites: Yup.boolean(errors.invalidValue.message).required(
-    errors.favoritesPreferenceRequired.message
-  ),
+  userFavorites: Yup.boolean()
+    .typeError(errors.invalidValue.message)
+    .required(errors.favoritesPreferenceRequired.message),
 });
 
 export const profileValidation = Yup.object().shape({
   userDescription: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .max(250, errors.userDescriptionMax.message),
-  userCountry: Yup.string().typeError(errors.invalidString.message).trim(),
+    .typeError(errors.invalidString.message)
+    .max(ranges.profileDescription.max, errors.userDescriptionMax.message),
+  userCountry: Yup.string()
+    .trim()
+    .typeError(errors.invalidString.message)
+    .max(ranges.country.max, errors.userCountryMax.message),
 });
 
 export const resetValidation = Yup.object().shape({
-  // $TODO Add proper password validation
-  userPassword: Yup.string()
-    .typeError(errors.invalidString.message)
-    .min(10, errors.userPasswordMin.message)
-    .required(errors.userPasswordRequired.message),
-  userConfirm: Yup.string()
-    .typeError(errors.invalidString.message)
-    .when(["userPassword"], {
-      is: (userPassword) => userPassword && userPassword.trim() !== "",
-      then: Yup.string()
-        .typeError(errors.invalidString.message)
-        .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch.message)
-        .required(errors.userConfirmationRequired.message),
-      otherwise: Yup.string()
-        .typeError(errors.invalidString.message)
-        .required(errors.userConfirmationRequired.message),
-    }),
+  userPassword: userPassword(),
+  userConfirm,
 });
 
 export const reviewValidation = Yup.object().shape({
   reviewRating: Yup.number()
     .typeError(errors.invalidNumber.message)
-    .min(1, errors.reviewRatingMin.message)
-    .max(5, errors.reviewRatingMax.message)
-    .required(errors.reviewRatingRequired.message),
+    .required(errors.reviewRatingRequired.message)
+    .min(ranges.reviewRating.min, errors.reviewRatingMin.message)
+    .max(ranges.reviewRating.max, errors.reviewRatingMax.message),
 });
 
 export const searchValidation = Yup.object().shape({
-  searchQuery: Yup.string().typeError(errors.invalidString.message),
+  searchQuery: Yup.string()
+    .trim()
+    .typeError(errors.invalidString.message)
+    .max(ranges.searchQuery.max, errors.searchQueryMax.message),
   searchType: Yup.string()
     .typeError(errors.invalidString.message)
-    .matches(/(artwork|users)/, errors.searchTypeInvalid.message)
-    .required(errors.searchTypeRequired.message),
+    .required(errors.searchTypeRequired.message)
+    .matches(/(artwork|users)/, errors.searchTypeInvalid.message),
 });
 
 export const signupValidation = Yup.object().shape({
   userName: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
-    .required(errors.userNameRequired.message),
-  userUsername: Yup.string()
     .typeError(errors.invalidString.message)
-    .trim()
-    .matches(/^([\w.]){0,}$/, errors.userUsernameInvalid.message)
-    .min(5, errors.userUsernameMin.message)
-    .max(20, errors.userUsernameMax.message)
-    .test(
-      "isValidUsername",
-      errors.userUsernameBlacklisted.message,
-      (value) => !usernames[value]
-    )
-    .required(errors.userUsernameRequired.message),
-  userEmail: Yup.string()
-    .typeError(errors.invalidString.message)
-    .email(errors.userEmailInvalid.message)
-    .required(errors.userEmailRequired.message),
-  userPassword: Yup.string()
-    .typeError(errors.invalidString.message)
-    .min(10, errors.userPasswordMin.message)
-    .required(errors.userPasswordRequired.message),
-  userConfirm: Yup.string()
-    .typeError(errors.invalidString.message)
-    .when(["userPassword"], {
-      is: (userPassword) => userPassword && userPassword.trim() !== "",
-      then: Yup.string()
-        .typeError(errors.invalidString.message)
-        .oneOf([Yup.ref("userPassword")], errors.userPasswordMismatch.message)
-        .required(errors.userConfirmationRequired.message),
-      otherwise: Yup.string()
-        .typeError(errors.invalidString.message)
-        .required(errors.userConfirmationRequired.message),
-    }),
+    .required(errors.userNameRequired.message)
+    .max(ranges.fullName.max, errors.userNameMax.message),
+  userUsername,
+  userEmail,
+  userPassword: userPassword(),
+  userConfirm,
 });
 
 export const ticketValidation = Yup.object().shape({
   ticketTitle: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
+    .typeError(errors.invalidString.message)
     .required(),
   ticketBody: Yup.string()
-    .typeError(errors.invalidString.message)
     .trim()
+    .typeError(errors.invalidString.message)
     .required(),
 });
 
 export const fingerprintValidation = Yup.object().shape({
   licenseFingerprint: Yup.string()
     .typeError(errors.invalidString.message)
-    .trim()
-    .required(errors.licenseFingerprintRequired.message),
+    .required(errors.licenseFingerprintRequired.message)
+    .max(
+      ranges.licenseFingerprint.exact,
+      errors.licenseFingerprintExact.message
+    ),
   assigneeIdentifier: Yup.string()
     .typeError(errors.invalidString.message)
-    .trim(),
+    .max(
+      ranges.licenseIdentifier.exact,
+      errors.assigneeIdentifierExact.message
+    ),
   assignorIdentifier: Yup.string()
     .typeError(errors.invalidString.message)
-    .trim(),
+    .max(
+      ranges.licenseIdentifier.exact,
+      errors.assignorIdentifierExact.message
+    ),
 });
 
 export const recoveryValidation = Yup.object().shape({
-  userUsername: Yup.string()
-    .typeError(errors.invalidString.message)
-    .required(errors.userUsernameRequired.message),
-  userEmail: Yup.string()
-    .typeError(errors.invalidString.message)
-    .email(errors.userEmailInvalid.message)
-    .required(errors.userEmailRequired.message),
-  userPassword: Yup.string()
-    .typeError(errors.invalidString.message)
-    .min(10, errors.userPasswordMin.message)
-    .required(errors.userPasswordRequired.message),
+  userUsername,
+  userEmail,
+  userPassword: userPassword(),
 });
 
 export const emptyValidation = Yup.object().shape({});

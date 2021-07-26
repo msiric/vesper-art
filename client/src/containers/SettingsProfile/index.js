@@ -3,7 +3,10 @@ import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { isFormAltered } from "../../../../common/helpers";
-import { patchAvatar, profileValidation } from "../../../../common/validation";
+import {
+  avatarValidation,
+  profileValidation,
+} from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
@@ -39,7 +42,7 @@ const SettingsProfile = () => {
     reset,
   } = useForm({
     defaultValues: setDefaultValues(),
-    resolver: yupResolver(profileValidation.concat(patchAvatar)),
+    resolver: yupResolver(profileValidation.concat(avatarValidation)),
   });
 
   const onSubmit = async (values) =>

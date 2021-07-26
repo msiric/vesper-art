@@ -74,6 +74,11 @@ export const usernames = {
   moderator: true,
 };
 
+export const generatedData = {
+  fingerprint: 20,
+  identifier: 10,
+};
+
 export const countries = [
   { text: "Afghanistan", value: "AF", supported: false },
   { text: "Åland Islands", value: "AX", supported: false },
