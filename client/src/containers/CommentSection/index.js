@@ -5,6 +5,7 @@ import queryString from "query-string";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import CommentCard from "../../components/CommentCard/index";
@@ -67,13 +68,20 @@ const CommentSection = ({
   const query = queryString.parse(location.search);
   const classes = commentSectionStyles();
 
-  const { getValues, handleSubmit, formState, errors, control, reset } =
+  const setDefaultValues = () => ({
+    commentContent: "",
+  });
+
+  const { getValues, handleSubmit, formState, errors, control, watch, reset } =
     useForm({
-      defaultValues: {
-        commentContent: "",
-      },
+      defaultValues: setDefaultValues(),
       resolver: yupResolver(commentValidation),
     });
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   useEffect(() => {
     if (
@@ -116,6 +124,7 @@ const CommentSection = ({
               fullWidth
               padding
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
               loading={loading}
               startIcon={<UploadIcon />}
             >

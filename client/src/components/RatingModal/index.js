@@ -2,6 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { isFormAltered } from "../../../../common/helpers";
 import { reviewValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import Backdrop from "../../domain/Backdrop";
@@ -26,6 +27,10 @@ const RatingModal = ({
   promptCancel,
   loading,
 }) => {
+  const setDefaultValues = () => ({
+    reviewRating: 0,
+  });
+
   const {
     handleSubmit,
     formState,
@@ -36,11 +41,14 @@ const RatingModal = ({
     getValues,
     watch,
   } = useForm({
-    defaultValues: {
-      reviewRating: 0,
-    },
+    defaultValues: setDefaultValues(),
     resolver: yupResolver(reviewValidation),
   });
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   const classes = ratingModalStyles();
 
@@ -79,6 +87,7 @@ const RatingModal = ({
                   fullWidth
                   padding
                   submitting={formState.isSubmitting}
+                  disabled={isDisabled}
                   startIcon={<UploadIcon />}
                 >
                   {promptConfirm}

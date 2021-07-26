@@ -25,9 +25,7 @@ const Input = ({
           <Rating
             {...props}
             value={value}
-            onChange={(e, value) =>
-              setValue(name, value || 0, { shouldValidate: true })
-            }
+            onChange={(e, value) => setValue(name, value || 0)}
             size="large"
             loading={loading}
           />

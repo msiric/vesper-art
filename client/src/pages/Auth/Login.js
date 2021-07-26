@@ -4,6 +4,7 @@ import { LockRounded as LoginAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import { loginValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useEventsStore } from "../../contexts/global/events";
@@ -36,16 +37,24 @@ const Login = () => {
   const notifications = useEventsStore((state) => state.notifications);
   const setEvents = useEventsStore((state) => state.setEvents);
 
-  const { handleSubmit, formState, errors, control } = useForm({
-    defaultValues: {
-      userUsername: "",
-      userPassword: "",
-    },
-    resolver: yupResolver(loginValidation),
+  const setDefaultValues = () => ({
+    userUsername: "",
+    userPassword: "",
   });
+
+  const { handleSubmit, getValues, formState, errors, watch, control } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(loginValidation),
+    });
 
   const history = useHistory();
   const classes = useStyles();
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   const onSubmit = async (values) => {
     try {
@@ -100,6 +109,7 @@ const Login = () => {
               fullWidth
               padding
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
             >
               Sign in
             </AsyncButton>

@@ -4,6 +4,7 @@ import { MeetingRoomRounded as SignupAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import { signupValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import Avatar from "../../domain/Avatar";
@@ -29,16 +30,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Signup = () => {
-  const { handleSubmit, formState, errors, control } = useForm({
-    defaultValues: {
-      userName: "",
-      userUsername: "",
-      userEmail: "",
-      userPassword: "",
-      userConfirm: "",
-    },
-    resolver: yupResolver(signupValidation),
+  const setDefaultValues = () => ({
+    userName: "",
+    userUsername: "",
+    userEmail: "",
+    userPassword: "",
+    userConfirm: "",
   });
+
+  const { handleSubmit, getValues, formState, errors, watch, control } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(signupValidation),
+    });
 
   const onSubmit = async (values) => {
     try {
@@ -53,6 +57,11 @@ const Signup = () => {
 
   const history = useHistory();
   const classes = useStyles();
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   return (
     <Container component="main" maxWidth="xs">
@@ -71,6 +80,7 @@ const Signup = () => {
               fullWidth
               padding
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
             >
               Sign up
             </AsyncButton>

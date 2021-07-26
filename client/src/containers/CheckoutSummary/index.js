@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { featureFlags, payment } from "../../../../common/constants";
+import { isFormAltered } from "../../../../common/helpers";
 import { discountValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import CheckoutCard from "../../components/CheckoutCard/index";
@@ -95,6 +96,10 @@ const CheckoutSummary = ({
     />,
   ];
 
+  const setDefaultValues = () => ({
+    discountCode: "",
+  });
+
   const {
     handleSubmit,
     formState,
@@ -105,11 +110,14 @@ const CheckoutSummary = ({
     getValues,
     watch,
   } = useForm({
-    defaultValues: {
-      discountCode: "",
-    },
+    defaultValues: setDefaultValues(),
     resolver: yupResolver(discountValidation),
   });
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   const onSubmit = async (values) => await handleDiscountChange({ values });
 
@@ -205,7 +213,7 @@ const CheckoutSummary = ({
                   submitting={formState.isSubmitting}
                   loading={loading}
                   submitting={submitting}
-                  disabled={paying}
+                  disabled={isDisabled || paying}
                   startIcon={<UploadIcon />}
                 >
                   Apply

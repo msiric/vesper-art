@@ -78,8 +78,6 @@ const ArtworkModifier = ({ paramId }) => {
 
   const history = useHistory();
 
-  const watchedValues = watch();
-
   const classes = artworkModifierClasses();
 
   const onSubmit = async (values) => {
@@ -114,6 +112,8 @@ const ArtworkModifier = ({ paramId }) => {
       ) : null
     ) : null;
   };
+
+  const watchedValues = watch();
 
   const isDisabled =
     !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
@@ -160,8 +160,8 @@ const ArtworkModifier = ({ paramId }) => {
               color="primary"
               padding
               submitting={formState.isSubmitting}
-              loading={loading}
               disabled={isDisabled}
+              loading={loading}
               startIcon={<UploadIcon />}
             >
               Publish

@@ -7,6 +7,7 @@ import { formatDistance } from "date-fns";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import { commentValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import SyncButton from "../../components/SyncButton/index";
@@ -42,11 +43,16 @@ const CommentCard = ({
     commentContent: comment.content,
   });
 
-  const { getValues, handleSubmit, formState, errors, control, reset } =
+  const { getValues, handleSubmit, formState, errors, control, watch, reset } =
     useForm({
       defaultValues: setDefaultValues(),
       resolver: yupResolver(commentValidation),
     });
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   const history = useHistory();
   const classes = commentCardStyles();
@@ -139,6 +145,7 @@ const CommentCard = ({
                     fullWidth
                     padding
                     submitting={formState.isSubmitting}
+                    disabled={isDisabled}
                     loading={loading}
                     startIcon={<UploadIcon />}
                   >

@@ -8,6 +8,7 @@ import {
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { countries } from "../../../../common/constants";
+import { isFormAltered } from "../../../../common/helpers";
 import { originValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import HelpBox from "../../components/HelpBox/index";
@@ -59,13 +60,22 @@ const Onboarding = () => {
   const globalClasses = globalStyles();
   const classes = useOnboardingStyles();
 
-  const { handleSubmit, formState, errors, control, setValue, getValues } =
-    useForm({
-      defaultValues: {
-        userBusinessAddress: "",
-      },
-      resolver: yupResolver(originValidation),
-    });
+  const setDefaultValues = () => ({
+    userBusinessAddress: "",
+  });
+
+  const {
+    handleSubmit,
+    getValues,
+    formState,
+    errors,
+    control,
+    setValue,
+    watch,
+  } = useForm({
+    defaultValues: setDefaultValues(),
+    resolver: yupResolver(originValidation),
+  });
 
   const onboardingItems = [
     { icon: <LabelIcon />, label: "Complete the onboarding process" },
@@ -102,6 +112,11 @@ const Onboarding = () => {
       console.log(err);
     }
   };
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   return (
     <Container className={globalClasses.gridContainer}>
@@ -171,6 +186,7 @@ const Onboarding = () => {
                       fullWidth
                       padding
                       submitting={formState.isSubmitting}
+                      disabled={isDisabled}
                       startIcon={<UploadIcon />}
                     >
                       Continue

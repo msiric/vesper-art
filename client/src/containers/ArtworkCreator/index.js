@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { featureFlags, pricing } from "../../../../common/constants";
+import { isFormAltered } from "../../../../common/helpers";
 import { addArtwork, artworkValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import HelpBox from "../../components/HelpBox/index";
@@ -31,6 +32,21 @@ const ArtworkCreator = () => {
 
   const classes = artworkCreatorStyles();
 
+  const setDefaultValues = () => ({
+    artworkMedia: null,
+    artworkTitle: "",
+    artworkType: "",
+    artworkAvailability: "",
+    artworkLicense: "",
+    artworkUse: "",
+    artworkPersonal: pricing.minimumPrice,
+    artworkCommercial: pricing.minimumPrice + 10,
+    artworkVisibility: "",
+    artworkDescription: "",
+    // artworkCategory: "",
+    // artworkTags: [],
+  });
+
   const {
     handleSubmit,
     formState,
@@ -42,24 +58,14 @@ const ArtworkCreator = () => {
     watch,
     reset,
   } = useForm({
-    defaultValues: {
-      artworkMedia: "",
-      artworkTitle: "",
-      artworkType: "",
-      artworkAvailability: "",
-      artworkLicense: "",
-      artworkUse: "",
-      artworkPersonal: pricing.minimumPrice,
-      artworkCommercial: pricing.minimumPrice + 10,
-      artworkVisibility: "",
-      artworkDescription: "",
-      // artworkCategory: "",
-      // artworkTags: [],
-    },
+    defaultValues: setDefaultValues(),
     resolver,
   });
 
   const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   const onSubmit = async (values) => {
     await createArtwork({ values });
@@ -129,6 +135,7 @@ const ArtworkCreator = () => {
               color="primary"
               padding
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
               loading={loading}
               startIcon={<UploadIcon />}
             >

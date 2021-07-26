@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import { isLicenseValid } from "../../../../common/helpers";
+import { isFormAltered, isLicenseValid } from "../../../../common/helpers";
 import { licenseValidation } from "../../../../common/validation";
 import HelpBox from "../../components/HelpBox";
 import PricingCard from "../../components/PricingCard/index";
@@ -71,6 +71,11 @@ const ArtworkInfo = () => {
     data: getValues(),
     orders,
   });
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) ||
+    formState.isSubmitting ||
+    !licenseStatus.valid;
 
   useEffect(() => {
     reset(setDefaultValues());
@@ -218,7 +223,7 @@ const ArtworkInfo = () => {
         promptTitle="License information"
         promptConfirm="Download"
         promptCancel="Close"
-        isDisabled={!licenseStatus.valid}
+        isDisabled={isDisabled}
         isSubmitting={formState.isSubmitting}
       >
         {!!orders.length && (

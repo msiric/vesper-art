@@ -4,6 +4,7 @@ import { VpnKeyRounded as RecoveryAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import { emailValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton";
 import Avatar from "../../domain/Avatar";
@@ -35,12 +36,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ForgotPassword = () => {
-  const { handleSubmit, formState, errors, control } = useForm({
-    defaultValues: {
-      userEmail: "",
-    },
-    resolver: yupResolver(emailValidation),
+  const setDefaultValues = () => ({
+    userEmail: "",
   });
+
+  const { handleSubmit, getValues, formState, errors, watch, control } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(emailValidation),
+    });
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   const history = useHistory();
   const classes = useStyles();
@@ -79,7 +88,8 @@ const ForgotPassword = () => {
                 type="submit"
                 fullWidth
                 className={classes.submit}
-                disabled={formState.isSubmitting}
+                submitting={formState.isSubmitting}
+                disabled={isDisabled}
               >
                 Send recovery link
               </AsyncButton>

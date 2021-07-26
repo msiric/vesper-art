@@ -305,7 +305,7 @@ export const handleDelegatedError = ({ err }) => {
       err.name === "ValidationError"
         ? statusCodes.badRequest
         : err.status || statusCodes.internalError,
-    message: err.message || errors.internalServerError.message,
+    message: err.expose ? err.message : errors.internalServerError.message,
     expose: err.expose || true,
   };
 };

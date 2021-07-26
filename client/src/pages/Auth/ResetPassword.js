@@ -4,6 +4,7 @@ import { KeyboardRounded as ResetAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import { passwordValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton";
 import SyncButton from "../../components/SyncButton";
@@ -34,6 +35,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ResetPassword = ({ match }) => {
+  const setDefaultValues = () => ({
+    userCurrent: "",
+    userPassword: "",
+    userConfirm: "",
+  });
+
   const {
     handleSubmit,
     formState,
@@ -44,11 +51,7 @@ const ResetPassword = ({ match }) => {
     getValues,
     watch,
   } = useForm({
-    defaultValues: {
-      userCurrent: "",
-      userPassword: "",
-      userConfirm: "",
-    },
+    defaultValues: setDefaultValues(),
     resolver: yupResolver(passwordValidation),
   });
 
@@ -68,6 +71,11 @@ const ResetPassword = ({ match }) => {
     }
   };
 
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+
   return (
     <Container component="main" maxWidth="xs">
       <Box className={classes.wrapper}>
@@ -77,7 +85,6 @@ const ResetPassword = ({ match }) => {
         <Typography component="h1" variant="h5">
           Reset your password
         </Typography>
-
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent>
@@ -93,7 +100,11 @@ const ResetPassword = ({ match }) => {
               <SyncButton component={Link} to="/login" color="primary">
                 Log in
               </SyncButton>
-              <AsyncButton type="submit" disabled={formState.isSubmitting}>
+              <AsyncButton
+                type="submit"
+                submitting={formState.isSubmitting}
+                disabled={isDisabled}
+              >
                 Reset password
               </AsyncButton>
             </CardActions>

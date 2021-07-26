@@ -2,6 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { isFormAltered } from "../../../../common/helpers";
 import { fingerprintValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
@@ -17,6 +18,12 @@ const VerifierCard = () => {
 
   const classes = verifierCardStyles();
 
+  const setDefaultValues = () => ({
+    licenseFingerprint: "",
+    assigneeIdentifier: "",
+    assignorIdentifier: "",
+  });
+
   const {
     handleSubmit,
     formState,
@@ -28,13 +35,14 @@ const VerifierCard = () => {
     watch,
     reset,
   } = useForm({
-    defaultValues: {
-      licenseFingerprint: "",
-      assigneeIdentifier: "",
-      assignorIdentifier: "",
-    },
+    defaultValues: setDefaultValues(),
     resolver: yupResolver(fingerprintValidation),
   });
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   return (
     <Card>
@@ -53,6 +61,7 @@ const VerifierCard = () => {
               fullWidth
               padding
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
               startIcon={<UploadIcon />}
             >
               Verify

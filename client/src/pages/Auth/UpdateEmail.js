@@ -4,6 +4,7 @@ import { MailOutlineRounded as EmailAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import { recoveryValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton/index";
 import Avatar from "../../domain/Avatar";
@@ -29,14 +30,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UpdateEmail = () => {
-  const { handleSubmit, formState, errors, control } = useForm({
-    defaultValues: {
-      userUsername: "",
-      userPassword: "",
-      userEmail: "",
-    },
-    resolver: yupResolver(recoveryValidation),
+  const setDefaultValues = () => ({
+    userUsername: "",
+    userPassword: "",
+    userEmail: "",
   });
+
+  const { handleSubmit, getValues, formState, errors, watch, control } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(recoveryValidation),
+    });
 
   const onSubmit = async (values) => {
     try {
@@ -57,6 +61,11 @@ const UpdateEmail = () => {
   const history = useHistory();
   const classes = useStyles();
 
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+
   return (
     <Container component="main" maxWidth="xs">
       <Box className={classes.wrapper}>
@@ -74,6 +83,7 @@ const UpdateEmail = () => {
               fullWidth
               padding
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
             >
               Update email
             </AsyncButton>

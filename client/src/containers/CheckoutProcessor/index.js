@@ -4,6 +4,7 @@ import { useElements, useStripe } from "@stripe/react-stripe-js";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory, useLocation, useParams } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import {
   billingValidation,
   emptyValidation,
@@ -74,6 +75,19 @@ const CheckoutProcessor = () => {
   const globalClasses = globalStyles();
   const classes = checkoutProcessorStyles();
 
+  const setDefaultValues = () => ({
+    licenseUsage: "",
+    licenseCompany: "",
+    licenseType: licenseValue,
+    billingName: "",
+    billingSurname: "",
+    billingEmail: "",
+    billingAddress: "",
+    billingZip: "",
+    billingCity: "",
+    billingCountry: "",
+  });
+
   const {
     handleSubmit,
     formState,
@@ -85,23 +99,15 @@ const CheckoutProcessor = () => {
     watch,
     reset,
   } = useForm({
-    defaultValues: {
-      licenseUsage: "",
-      licenseCompany: "",
-      licenseType: licenseValue,
-      billingName: "",
-      billingSurname: "",
-      billingEmail: "",
-      billingAddress: "",
-      billingZip: "",
-      billingCity: "",
-      billingCountry: "",
-    },
+    defaultValues: setDefaultValues(),
     resolver: yupResolver(checkoutValidation[step.current]),
     shouldUnregister: false,
   });
 
   const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   const licenseOptions =
     license === "personal"
@@ -250,7 +256,7 @@ const CheckoutProcessor = () => {
                         type="submit"
                         loading={versionLoading}
                         submitting={formState.isSubmitting}
-                        disabled={discountLoading}
+                        disabled={isDisabled || discountLoading}
                       >
                         {step.current === step.length - 1 ? "Pay" : "Next"}
                       </AsyncButton>
