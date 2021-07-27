@@ -30,7 +30,7 @@ const footerStyles = makeStyles((muiTheme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "18px 0",
+    height: 75,
   },
   copyright: {
     display: "flex",

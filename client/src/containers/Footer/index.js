@@ -145,7 +145,7 @@ const Footer = () => {
             </Grid>
           </Grid>
           <Divider />
-          <Grid container className={classes.dislaimers}>
+          <Grid container className={classes.disclaimers}>
             <Grid item xs={12} sm={6} className={classes.copyright}>
               <img
                 src={LogoDesktop}
