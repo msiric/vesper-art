@@ -4,6 +4,7 @@ import { artepunktTheme } from "../../styles/theme";
 const commentCardStyles = makeStyles((muiTheme) => ({
   container: {
     padding: "0 12px",
+    position: "relative",
   },
   highlight: {
     border: "2px transparent solid",
@@ -28,16 +29,14 @@ const commentCardStyles = makeStyles((muiTheme) => ({
       color: artepunktTheme.palette.primary.main,
     },
   },
-  details: {
-    display: "flex",
-    alignItems: "center",
-  },
   modified: {
     marginLeft: 6,
     fontSize: 11,
+    color: "white",
   },
   created: {
     fontSize: 11,
+    color: "white",
   },
   actions: {
     display: "flex",
@@ -46,6 +45,16 @@ const commentCardStyles = makeStyles((muiTheme) => ({
   },
   form: {
     margin: "4px 0",
+  },
+  menu: {
+    top: 6,
+    transform: "none",
+  },
+  button: {
+    padding: 0,
+  },
+  content: {
+    wordBreak: "break-word",
   },
 }));
 

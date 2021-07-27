@@ -67,6 +67,7 @@ const CommentCard = ({
     <Box ref={isHighlight() ? highlightRef : null} key={comment.id}>
       <ListItem
         disableGutters
+        alignItems="flex-start"
         className={`${classes.container} ${
           isHighlight() ? classes.highlight : ""
         }`}
@@ -106,25 +107,6 @@ const CommentCard = ({
                         isUsername: true,
                       })}
                 </Typography>
-                <Box className={classes.details}>
-                  <Typography
-                    component="span"
-                    loading={loading}
-                    className={classes.created}
-                  >
-                    {`${formatDistance(
-                      new Date(comment.created),
-                      new Date()
-                    )} ago`}
-                  </Typography>
-                  <Typography
-                    component="span"
-                    loading={loading}
-                    className={classes.modified}
-                  >
-                    {comment.modified ? "(edited)" : null}
-                  </Typography>
-                </Box>
               </Box>
             )
           }
@@ -167,14 +149,33 @@ const CommentCard = ({
                 </form>
               </FormProvider>
             ) : (
-              <Typography loading={loading}>
-                {comment.content || "Could not load content"}
-              </Typography>
+              <Box>
+                <Typography loading={loading} className={classes.content}>
+                  {comment.content || "Could not load content"}
+                </Typography>
+                <Typography
+                  component="span"
+                  loading={loading}
+                  className={classes.created}
+                >
+                  {`${formatDistance(
+                    new Date(comment.created),
+                    new Date()
+                  )} ago`}
+                </Typography>
+                <Typography
+                  component="span"
+                  loading={loading}
+                  className={classes.modified}
+                >
+                  {comment.modified ? "(edited)" : null}
+                </Typography>
+              </Box>
             )
           }
         />
         {edits[comment.id] || comment.owner.id !== userId ? null : (
-          <ListItemSecondaryAction>
+          <ListItemSecondaryAction className={classes.menu}>
             <IconButton
               onClick={(e) =>
                 handlePopoverOpen({
@@ -184,6 +185,7 @@ const CommentCard = ({
               }
               edge="end"
               aria-label="More"
+              className={classes.button}
             >
               <MoreIcon />
             </IconButton>
