@@ -243,7 +243,7 @@ artepunktTheme.overrides.MuiFormHelperText = {
 artepunktTheme.overrides.MuiTableBody = {
   root: {
     "&>tr:nth-child(odd)": {
-      backgroundColor: "#3d3d3d",
+      backgroundColor: "#303030",
     },
   },
 };

@@ -19,7 +19,6 @@ const initActions = (set) => ({
         ...state,
         license: {
           ...state.license,
-          loading: true,
           error: { ...initialState.license.error },
         },
       }));

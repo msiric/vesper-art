@@ -7,12 +7,21 @@ import Grid from "../../domain/Grid";
 const verifierFormStyles = makeStyles((muiTheme) => ({
   container: {
     display: "flex",
+    [muiTheme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+    },
   },
   assignee: {
     marginRight: 6,
+    [muiTheme.breakpoints.down("xs")]: {
+      marginRight: 0,
+    },
   },
   assignor: {
     marginLeft: 6,
+    [muiTheme.breakpoints.down("xs")]: {
+      marginLeft: 0,
+    },
   },
 }));
 
@@ -24,7 +33,7 @@ const VerifierForm = ({ errors, loading }) => {
       <TextInput
         name="licenseFingerprint"
         type="text"
-        label="Enter license fingerprint"
+        label="License fingerprint"
         errors={errors}
         loading={loading}
       />
@@ -33,7 +42,7 @@ const VerifierForm = ({ errors, loading }) => {
           className={classes.assignee}
           name="assigneeIdentifier"
           type="text"
-          label="Enter assignee identifier"
+          label="Assignee identifier"
           errors={errors}
           loading={loading}
         />
@@ -41,7 +50,7 @@ const VerifierForm = ({ errors, loading }) => {
           className={classes.assignor}
           name="assignorIdentifier"
           type="text"
-          label="Enter assignor identifier"
+          label="Assignor identifier"
           errors={errors}
           loading={loading}
         />

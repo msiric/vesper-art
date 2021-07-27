@@ -65,10 +65,12 @@ export const ranges = {
     max: 100,
   },
   licenseFingerprint: {
-    exact: generatedData.fingerprint,
+    // because of hex value (if 20 is passed to randomBytes, 40 characters will get returned, hence the doubling)
+    exact: generatedData.fingerprint * 2,
   },
   licenseIdentifier: {
-    exact: generatedData.identifier,
+    // because of hex value (if 10 is passed to randomBytes, 20 characters will get returned, hence the doubling)
+    exact: generatedData.identifier * 2,
   },
   freePricing: {
     exact: 0,

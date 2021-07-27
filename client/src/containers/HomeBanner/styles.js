@@ -42,12 +42,21 @@ const Styles = makeStyles((muiTheme) => ({
     width: "100%",
     marginBottom: 16,
     padding: 16,
+    [muiTheme.breakpoints.down("md")]: {
+      padding: 0,
+    },
   },
   bannerHeading: {
     textAlign: "center",
     fontSize: 24,
     fontWeight: "bold",
     width: "60%",
+    [muiTheme.breakpoints.down("md")]: {
+      width: "80%",
+    },
+    [muiTheme.breakpoints.down("xs")]: {
+      width: "100%",
+    },
   },
   bannerActions: {
     display: "flex",

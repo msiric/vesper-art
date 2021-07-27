@@ -21,6 +21,7 @@ const emptySectionStyles = makeStyles((muiTheme) => ({
   },
   label: {
     textTransform: "none",
+    textAlign: "center",
   },
 }));
 

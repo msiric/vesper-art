@@ -62,9 +62,6 @@ const GlobalStyles = makeStyles((muiTheme) => ({
     ".MuiTableRow-root:last-of-type > .MuiTableCell-body": {
       borderBottom: "none",
     },
-    ".MuiTableBody-root>tr:nth-child(odd)": {
-      backgroundColor: "transparent",
-    },
     ".MuiTableCell-body": {
       cursor: ({ hoverable }) => (hoverable ? "pointer" : "auto"),
     },
