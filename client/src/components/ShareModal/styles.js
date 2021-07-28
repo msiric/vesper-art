@@ -6,6 +6,7 @@ const shareModalStyles = makeStyles((muiTheme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    margin: "0 12px",
   },
   content: {
     backgroundColor: muiTheme.palette.background.paper,
@@ -50,6 +51,10 @@ const shareModalStyles = makeStyles((muiTheme) => ({
           fill: `${artepunktTheme.palette.primary.main} !important`,
         },
       },
+    },
+    [muiTheme.breakpoints.down("xs")]: {
+      width: 41,
+      height: 41,
     },
   },
   copy: {

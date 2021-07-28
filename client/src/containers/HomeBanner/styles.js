@@ -74,6 +74,9 @@ const Styles = makeStyles((muiTheme) => ({
     width: "100%",
     height: "100%",
     padding: "0 32px",
+    [muiTheme.breakpoints.down("md")]: {
+      padding: 0,
+    },
   },
   verifierIcon: {
     fontSize: 56,

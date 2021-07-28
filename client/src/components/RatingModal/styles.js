@@ -5,6 +5,7 @@ const ratingModalStyles = makeStyles((muiTheme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    margin: "0 12px",
   },
   content: {
     backgroundColor: muiTheme.palette.background.paper,

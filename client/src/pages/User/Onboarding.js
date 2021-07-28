@@ -31,10 +31,7 @@ const useOnboardingStyles = makeStyles((muiTheme) => ({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    padding: 8,
-  },
-  helpBox: {
-    margin: 4,
+    padding: 0,
   },
   icon: {
     fontSize: 150,
@@ -127,7 +124,6 @@ const Onboarding = () => {
               <HelpBox
                 type="alert"
                 label="Stripe currently only supports countries found in the dropdown below"
-                className={classes.helpBox}
               />
               <MonetizationIcon className={classes.icon} />
               {stripeId ? (
