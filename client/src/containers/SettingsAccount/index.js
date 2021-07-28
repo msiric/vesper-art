@@ -12,7 +12,7 @@ import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
 import EmailForm from "../../forms/EmailForm/index";
-import { socket } from "../Interceptor/Interceptor";
+import { socket } from "../Interceptor/indexx";
 import settingsAccountStyles from "./styles";
 
 const SettingsAccount = ({ handleLogout }) => {

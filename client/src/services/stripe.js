@@ -1,4 +1,4 @@
-import { ax } from "../containers/Interceptor/Interceptor";
+import { ax } from "../containers/Interceptor/indexx";
 
 export const getUser = {
   request: async ({ stripeId }) => await ax.get(`/stripe/account/${stripeId}`),

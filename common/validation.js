@@ -44,7 +44,8 @@ export const ranges = {
     max: 100,
   },
   country: {
-    max: "not sure",
+    // $TODO not sure if this is correct
+    max: 2,
   },
   comment: {
     max: 300,

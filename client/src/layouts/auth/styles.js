@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
-import { artepunktTheme } from "../styles/theme";
+import { artepunktTheme } from "../../styles/theme";
 
 const AuthLayoutStyles = makeStyles((muiTheme) => ({
   appRoot: {

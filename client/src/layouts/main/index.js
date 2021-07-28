@@ -1,17 +1,19 @@
-import { Backdrop, Box, CircularProgress } from "@material-ui/core";
 import React from "react";
-import Footer from "../containers/Footer/index";
-import Header from "../containers/Header/index";
-import { useAppStore } from "../contexts/global/app";
-import MainLayoutStyles from "./MainLayout.style";
+import Footer from "../../containers/Footer/index";
+import Header from "../../containers/Header/index";
+import { useAppStore } from "../../contexts/global/app";
+import Backdrop from "../../domain/Backdrop";
+import Box from "../../domain/Box";
+import CircularProgress from "../../domain/CircularProgress";
+import mainStyles from "./styles";
 
 const MainLayout = ({ children }) => {
   const loading = useAppStore((state) => state.loading);
 
-  const classes = MainLayoutStyles();
+  const classes = mainStyles();
 
   return (
-    <div className={classes.appRoot}>
+    <Box className={classes.appRoot}>
       {loading ? (
         <Backdrop className={classes.appBackdrop} open={loading}>
           <CircularProgress color="primary" />
@@ -23,7 +25,7 @@ const MainLayout = ({ children }) => {
           <Footer />,
         ]
       )}
-    </div>
+    </Box>
   );
 };
 

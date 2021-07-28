@@ -1,4 +1,4 @@
-import { ax } from "../containers/Interceptor/Interceptor";
+import { ax } from "../containers/Interceptor/indexx";
 
 export const getCheckout = {
   request: async ({ versionId }) => await ax.get(`/api/checkout/${versionId}`),

@@ -4,7 +4,7 @@ import PromptModal from "../../components/PromptModal/index";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
-import { socket } from "../Interceptor/Interceptor";
+import { socket } from "../Interceptor/indexx";
 
 const SettingsWrapper = ({ location }) => {
   const resetUser = useUserStore((state) => state.resetUser);

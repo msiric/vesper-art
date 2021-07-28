@@ -32,7 +32,7 @@ import Menu from "../../domain/Menu";
 import MenuItem from "../../domain/MenuItem";
 import Toolbar from "../../domain/Toolbar";
 import SearchForm from "../../forms/SearchForm";
-import { socket } from "../Interceptor/Interceptor";
+import { socket } from "../Interceptor/indexx";
 import NotificationMenu from "../NotificationMenu";
 import HeaderStyles from "./styles";
 

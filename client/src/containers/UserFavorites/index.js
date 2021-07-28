@@ -24,7 +24,7 @@ const UserFavorites = ({ userUsername, type, fixed }) => {
   const classes = userFavoritesStyles();
 
   return (
-    <Box>
+    <Box className={classes.container}>
       <InfiniteList
         dataLength={elements ? elements.length : 0}
         next={() => fetchFavorites({ userUsername })}

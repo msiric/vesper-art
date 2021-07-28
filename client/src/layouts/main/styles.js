@@ -1,12 +1,11 @@
 import { makeStyles } from "@material-ui/core/styles";
-import { artepunktTheme } from "../styles/theme";
+import { artepunktTheme } from "../../styles/theme";
 
 const MainLayoutStyles = makeStyles((muiTheme) => ({
   appRoot: {
     display: "flex",
     flexFlow: "column",
-    minHeight: "100vh",
-    height: "100%",
+    flexGrow: 1,
   },
   appBackdrop: {
     display: "flex",
@@ -19,6 +18,8 @@ const MainLayoutStyles = makeStyles((muiTheme) => ({
   },
   appContainer: {
     width: "100%",
+    display: "flex",
+    flexDirection: "column",
     flexGrow: 1,
     marginTop: artepunktTheme.margin.container,
     marginBottom: artepunktTheme.margin.container,

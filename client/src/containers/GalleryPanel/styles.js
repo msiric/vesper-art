@@ -1,6 +1,9 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const galleryPanelStyles = makeStyles((muiTheme) => ({
+  container: {
+    padding: "16px 0",
+  },
   card: {
     display: "flex",
     justifyContent: "center",

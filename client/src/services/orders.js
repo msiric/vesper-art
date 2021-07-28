@@ -1,4 +1,4 @@
-import { ax } from "../containers/Interceptor/Interceptor";
+import { ax } from "../containers/Interceptor/indexx";
 
 export const postReview = {
   request: async ({ orderId, reviewRating }) =>

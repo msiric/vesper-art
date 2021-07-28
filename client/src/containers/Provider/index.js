@@ -12,7 +12,7 @@ import React, { createRef } from "react";
 import { useAppStore } from "../../contexts/global/app";
 import globalStyles from "../../styles/global";
 import { artepunktTheme } from "../../styles/theme";
-import Interceptor from "../Interceptor/Interceptor";
+import Interceptor from "../Interceptor/indexx";
 
 const useStyles = makeStyles(() => ({
   wrapper: {

@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/index";
-import { socket } from "../../containers/Interceptor/Interceptor";
+import { socket } from "../../containers/Interceptor/indexx";
 import SettingsAccount from "../../containers/SettingsAccount/index";
 import SettingsActions from "../../containers/SettingsActions/index";
 import SettingsPreferences from "../../containers/SettingsPreferences/index";

@@ -1,84 +1,98 @@
+import { makeStyles } from "@material-ui/core/styles";
 import React, { lazy, Suspense } from "react";
 import { Redirect, Route, Router, Switch } from "react-router-dom";
-import { featureFlags } from "../../../../common/constants";
-import TopBar from "../../components/TopBar";
-import { useUserStore } from "../../contexts/global/user";
-import AuthLayout from "../../layouts/AuthLayout";
-import MainLayout from "../../layouts/MainLayout";
-import history from "../../utils/history";
+import { featureFlags } from "../../common/constants";
+import LoadingSpinner from "./components/LoadingSpinner";
+import TopBar from "./components/TopBar";
+import { useUserStore } from "./contexts/global/user";
+import Box from "./domain/Box";
+import AuthLayout from "./layouts/auth";
+import MainLayout from "./layouts/main";
+import history from "./utils/history";
+
+const useRouterStyles = makeStyles((muiTheme) => ({
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItem: "center",
+    minHeight: "86vh",
+    width: "100%",
+  },
+}));
 
 const routes = [
   // Artwork router
   {
     path: "/my_artwork",
-    Component: lazy(() => import("../../pages/Artwork/MyArtwork")),
+    Component: lazy(() => import("./pages/Artwork/MyArtwork")),
     exact: true,
     type: "protected",
   },
   {
     path: "/artwork/add",
-    Component: lazy(() => import("../../pages/Artwork/AddArtwork")),
+    Component: lazy(() => import("./pages/Artwork/AddArtwork")),
     exact: true,
     type: "protected",
   },
   {
     path: "/artwork/:id",
-    Component: lazy(() => import("../../pages/Artwork/ArtworkDetails")),
+    Component: lazy(() => import("./pages/Artwork/ArtworkDetails")),
     exact: true,
     type: "public",
   },
   {
     path: "/artwork/:id/edit",
-    Component: lazy(() => import("../../pages/Artwork/EditArtwork")),
+    Component: lazy(() => import("./pages/Artwork/EditArtwork")),
     exact: true,
     type: "protected",
   },
   // Auth router
   {
     path: "/signup",
-    Component: lazy(() => import("../../pages/Auth/Signup")),
+    Component: lazy(() => import("./pages/Auth/Signup")),
     exact: true,
     type: "auth",
   },
   {
     path: "/login",
-    Component: lazy(() => import("../../pages/Auth/Login")),
+    Component: lazy(() => import("./pages/Auth/Login")),
     exact: true,
     type: "auth",
   },
   {
     path: "/account_restoration",
-    Component: lazy(() => import("../../pages/Auth/AccountRestoration")),
+    Component: lazy(() => import("./pages/Auth/AccountRestoration")),
     exact: true,
     type: "auth",
   },
   {
     path: "/resend_token",
-    Component: lazy(() => import("../../pages/Auth/ResendToken")),
+    Component: lazy(() => import("./pages/Auth/ResendToken")),
     exact: true,
     type: "auth",
   },
   {
     path: "/verify_token/:id",
-    Component: lazy(() => import("../../pages/Auth/VerifyToken")),
+    Component: lazy(() => import("./pages/Auth/VerifyToken")),
     exact: true,
     type: "public",
   },
   {
     path: "/forgot_password",
-    Component: lazy(() => import("../../pages/Auth/ForgotPassword")),
+    Component: lazy(() => import("./pages/Auth/ForgotPassword")),
     exact: true,
     type: "auth",
   },
   {
     path: "/reset_password/:id",
-    Component: lazy(() => import("../../pages/Auth/ResetPassword")),
+    Component: lazy(() => import("./pages/Auth/ResetPassword")),
     exact: true,
     type: "public",
   },
   {
     path: "/update_email",
-    Component: lazy(() => import("../../pages/Auth/UpdateEmail")),
+    Component: lazy(() => import("./pages/Auth/UpdateEmail")),
     exact: true,
     type: "auth",
   },
@@ -86,7 +100,7 @@ const routes = [
   // {
   //   path: "/conversations",
   //   Component: lazy(() =>
-  //     import("../../pages/Conversations/Conversations")
+  //     import("./pages/Conversations/Conversations")
   //   ),
   //   exact: true,
   //   type: "protected",
@@ -94,44 +108,44 @@ const routes = [
   // Home router
   {
     path: "/",
-    Component: lazy(() => import("../../pages/Home/Home")),
+    Component: lazy(() => import("./pages/Home/Home")),
     exact: true,
     type: "public",
   },
   {
     path: "/verifier",
-    Component: lazy(() => import("../../pages/Home/Verifier")),
+    Component: lazy(() => import("./pages/Home/Verifier")),
     exact: true,
     type: "public",
   },
   {
     path: "/search",
-    Component: lazy(() => import("../../pages/Home/SearchResults")),
+    Component: lazy(() => import("./pages/Home/SearchResults")),
     exact: true,
     type: "public",
   },
   {
     path: "/how_it_works",
-    Component: lazy(() => import("../../pages/Home/HowItWorks")),
+    Component: lazy(() => import("./pages/Home/HowItWorks")),
     exact: true,
     type: "public",
   },
   // Community router
   {
     path: "/start_selling",
-    Component: lazy(() => import("../../pages/Community/Selling")),
+    Component: lazy(() => import("./pages/Community/Selling")),
     exact: true,
     type: "public",
   },
   {
     path: "/start_buying",
-    Component: lazy(() => import("../../pages/Community/Buying")),
+    Component: lazy(() => import("./pages/Community/Buying")),
     exact: true,
     type: "public",
   },
   {
     path: "/community_guidelines",
-    Component: lazy(() => import("../../pages/Community/Safety")),
+    Component: lazy(() => import("./pages/Community/Safety")),
     exact: true,
     type: "public",
   },
@@ -139,7 +153,7 @@ const routes = [
   // {
   //   path: "/notifications",
   //   Component: lazy(() =>
-  //     import("../../pages/Notifications/Notifications")
+  //     import("./pages/Notifications/Notifications")
   //   ),
   //   exact: true,
   //   type: "protected",
@@ -148,13 +162,13 @@ const routes = [
   // Checkout router
   // {
   //   path: '/cart',
-  //   Component: lazy(() => import('../../pages/Checkout/Cart')),
+  //   Component: lazy(() => import('./pages/Checkout/Cart')),
   //   exact: true,
   //   type: 'protected',
   // },
   // {
   //   path: '/checkout',
-  //   Component: lazy(() => import('../../pages/Checkout/Checkout')),
+  //   Component: lazy(() => import('./pages/Checkout/Checkout')),
   //   exact: true,
   //   type: 'protected',
   // },
@@ -163,7 +177,7 @@ const routes = [
     ? [
         {
           path: "/checkout/:id",
-          Component: lazy(() => import("../../pages/Checkout/Checkout")),
+          Component: lazy(() => import("./pages/Checkout/Checkout")),
           exact: true,
           type: "protected",
         },
@@ -172,38 +186,38 @@ const routes = [
   // Orders router
   {
     path: "/orders",
-    Component: lazy(() => import("../../pages/Orders/Orders")),
+    Component: lazy(() => import("./pages/Orders/Orders")),
     exact: true,
     type: "protected",
   },
   {
     path: "/orders/:id",
-    Component: lazy(() => import("../../pages/Orders/Order")),
+    Component: lazy(() => import("./pages/Orders/Order")),
     exact: true,
     type: "protected",
   },
   // User router
   {
     path: "/user/:id",
-    Component: lazy(() => import("../../pages/User/Profile")),
+    Component: lazy(() => import("./pages/User/Profile")),
     exact: true,
     type: "public",
   },
   {
     path: "/gallery",
-    Component: lazy(() => import("../../pages/User/Gallery")),
+    Component: lazy(() => import("./pages/User/Gallery")),
     exact: true,
     type: "protected",
   },
   {
     path: "/dashboard",
-    Component: lazy(() => import("../../pages/User/Dashboard")),
+    Component: lazy(() => import("./pages/User/Dashboard")),
     exact: true,
     type: "protected",
   },
   {
     path: "/settings",
-    Component: lazy(() => import("../../pages/User/Settings")),
+    Component: lazy(() => import("./pages/User/Settings")),
     exact: true,
     type: "protected",
   },
@@ -212,7 +226,7 @@ const routes = [
     ? [
         {
           path: "/onboarding",
-          Component: lazy(() => import("../../pages/User/Onboarding")),
+          Component: lazy(() => import("./pages/User/Onboarding")),
           exact: true,
           type: "protected",
         },
@@ -221,11 +235,22 @@ const routes = [
   // 404
   {
     path: "/404",
-    Component: lazy(() => import("../../pages/Home/NotFound")),
+    Component: lazy(() => import("./pages/Home/NotFound")),
     exact: true,
     type: "public",
   },
 ];
+
+const LoadingWrapper = () => {
+  const classes = useRouterStyles();
+
+  return (
+    <Box className={classes.wrapper}>
+      <TopBar />
+      <LoadingSpinner />
+    </Box>
+  );
+};
 
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   <Route
@@ -268,7 +293,7 @@ const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
       }
       return (
         <MainLayout>
-          <Suspense fallback={<TopBar />}>
+          <Suspense fallback={<LoadingWrapper />}>
             <Component key={props.location.key} {...props} />
           </Suspense>
         </MainLayout>
@@ -306,4 +331,9 @@ const AppRouter = () => {
     </Router>
   );
 };
-export default AppRouter;
+
+const App = () => {
+  return <AppRouter />;
+};
+
+export default App;

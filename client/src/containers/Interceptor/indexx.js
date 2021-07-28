@@ -5,12 +5,12 @@ import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import useSound from "use-sound";
 import { auth } from "../../../../common/constants";
+import App from "../../App";
 import notificationSound from "../../assets/sounds/notification-sound.wav";
 import Backdrop from "../../components/Backdrop";
 import { useAppStore } from "../../contexts/global/app";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
-import App from "../../pages/App/App";
 import { postRefresh } from "../../services/auth";
 
 const ax = axios.create();

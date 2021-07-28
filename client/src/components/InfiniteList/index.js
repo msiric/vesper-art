@@ -24,7 +24,7 @@ const InfiniteList = ({
   children,
   ...props
 }) => {
-  const classes = infiniteListStyles({ height });
+  const classes = infiniteListStyles();
 
   return (
     <InfiniteScroll

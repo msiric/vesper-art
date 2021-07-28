@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const infiniteListStyles = makeStyles((muiTheme) => ({
   wrapper: {
-    overflow: ({ height }) => (height ? "auto" : "hidden !important"),
+    overflow: "visible !important",
   },
   spinner: {
     margin: "12px 0",

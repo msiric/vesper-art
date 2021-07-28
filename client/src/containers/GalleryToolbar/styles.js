@@ -4,6 +4,7 @@ const galleryToolbarStyles = makeStyles((muiTheme) => ({
   container: {
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
   },
 }));
 

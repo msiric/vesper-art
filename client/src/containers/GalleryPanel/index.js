@@ -60,7 +60,7 @@ const GalleryPanel = ({ formatArtwork }) => {
   };
 
   return (
-    <Box>
+    <Box className={classes.container}>
       <InfiniteList
         dataLength={elements.length}
         next={() => fetchUser({ userId, userUsername, formatArtwork })}
