@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "../../styles/theme";
 
-const HeaderStyles = makeStyles((muiTheme) => ({
+const headerStyles = makeStyles((muiTheme) => ({
   container: {
     backgroundColor: artepunktTheme.palette.background.paper,
   },
@@ -37,4 +37,4 @@ const HeaderStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-export default HeaderStyles;
+export default headerStyles;
