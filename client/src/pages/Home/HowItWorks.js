@@ -16,6 +16,7 @@ import { ReactComponent as WorkingArtist } from "../../assets/images/illustratio
 import IllustrationCard from "../../components/IllustrationCard";
 import MainHeading from "../../components/MainHeading";
 import SyncButton from "../../components/SyncButton";
+import WizardTimeline from "../../components/WizardTimeline";
 import Card from "../../domain/Card";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
@@ -120,6 +121,12 @@ const HowItWorks = () => {
             by utilizing a system based on licenses as a means of transparency and non-repudiation while maintaining user anonymity.
             Get up to speed with how ${appName} works in six simple steps from the perspective of both parties involved`}
           </Typography>
+        </Grid>
+        <Grid item sm={12} md={12}>
+          <WizardTimeline illustrations={SELLER_ILLUSTRATIONS} />
+        </Grid>
+        <Grid item sm={12} md={12}>
+          <WizardTimeline illustrations={BUYER_ILLUSTRATIONS} />
         </Grid>
         <Grid item sm={12} md={6}>
           <Card>
