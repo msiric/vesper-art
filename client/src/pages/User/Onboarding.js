@@ -14,8 +14,8 @@ import AsyncButton from "../../components/AsyncButton/index";
 import HelpBox from "../../components/HelpBox/index";
 import ListItems from "../../components/ListItems/index";
 import { useUserStore } from "../../contexts/global/user";
+import Box from "../../domain/Box";
 import Card from "../../domain/Card";
-import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
@@ -31,16 +31,28 @@ const useOnboardingStyles = makeStyles((muiTheme) => ({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    padding: 0,
+    padding: 16,
   },
   icon: {
     fontSize: 150,
+  },
+  heading: {
+    marginBottom: 24,
+    textAlign: "center",
   },
   text: {
     marginBottom: 4,
   },
   label: {
-    alignSelf: "flex-start",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  list: {
+    margin: "18px 0",
+  },
+  form: {
+    maxWidth: 250,
+    width: "100%",
   },
   actions: {
     display: "flex",
@@ -120,19 +132,19 @@ const Onboarding = () => {
       <Grid container spacing={2}>
         <Grid item sm={12}>
           <Card>
+            <HelpBox
+              type="alert"
+              label="Stripe currently only supports countries found in the dropdown below"
+            />
             <CardContent className={classes.content}>
-              <HelpBox
-                type="alert"
-                label="Stripe currently only supports countries found in the dropdown below"
-              />
               <MonetizationIcon className={classes.icon} />
               {stripeId ? (
-                <Typography className={classes.text} variant="subtitle1">
+                <Typography className={classes.heading} variant="subtitle1">
                   You already went through the onboarding process
                 </Typography>
               ) : (
-                <>
-                  <Typography className={classes.text} variant="h4">
+                <Box>
+                  <Typography className={classes.heading} variant="h4">
                     Start getting paid
                   </Typography>
                   <Typography className={classes.text} color="textSecondary">
@@ -140,7 +152,7 @@ const Onboarding = () => {
                     your personal bank and details secure. Click on continue to
                     set up your payments on Stripe.
                   </Typography>
-                  <ListItems items={onboardingItems} />
+                  <ListItems className={classes.list} items={onboardingItems} />
                   {/* $TODO Refactor supportedCountries */}
                   {userAddress ? (
                     countries[userAddress] &&
@@ -165,29 +177,28 @@ const Onboarding = () => {
                       Please select your registered business address
                     </Typography>
                   )}
-                </>
+                </Box>
               )}
               <FormProvider control={control}>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <CardContent>
-                    <OnboardingForm
-                      errors={errors}
-                      getValues={getValues}
-                      setValue={setValue}
-                    />
-                  </CardContent>
-                  <CardActions className={classes.actions}>
-                    <AsyncButton
-                      type="submit"
-                      fullWidth
-                      padding
-                      submitting={formState.isSubmitting}
-                      disabled={isDisabled}
-                      startIcon={<UploadIcon />}
-                    >
-                      Continue
-                    </AsyncButton>
-                  </CardActions>
+                <form
+                  className={classes.form}
+                  onSubmit={handleSubmit(onSubmit)}
+                >
+                  <OnboardingForm
+                    errors={errors}
+                    getValues={getValues}
+                    setValue={setValue}
+                  />
+                  <AsyncButton
+                    type="submit"
+                    fullWidth
+                    padding
+                    submitting={formState.isSubmitting}
+                    disabled={isDisabled}
+                    startIcon={<UploadIcon />}
+                  >
+                    Continue
+                  </AsyncButton>
                 </form>
               </FormProvider>
             </CardContent>
