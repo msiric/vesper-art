@@ -1,6 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
-import React from "react";
+import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { isFormAltered } from "../../../../common/helpers";
 import { fingerprintValidation } from "../../../../common/validation";
@@ -13,6 +13,7 @@ import VerifierForm from "../../forms/VerifierForm/index";
 import verifierCardStyles from "./styles";
 
 const VerifierCard = () => {
+  const license = useLicenseVerifier((state) => state.license.data);
   const loading = useLicenseVerifier((state) => state.license.loading);
   const fetchLicense = useLicenseVerifier((state) => state.fetchLicense);
 
@@ -43,6 +44,10 @@ const VerifierCard = () => {
 
   const isDisabled =
     !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+
+  useEffect(() => {
+    reset(setDefaultValues());
+  }, [license]);
 
   return (
     <Card>

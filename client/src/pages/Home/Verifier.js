@@ -11,7 +11,6 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global";
 import { artepunktTheme } from "../../styles/theme";
-import { containsErrors, renderError } from "../../utils/helpers";
 
 const useVerifierStyles = makeStyles((muiTheme) => ({
   list: {
@@ -66,7 +65,7 @@ const Verifier = () => {
     };
   }, []);
 
-  return !containsErrors(retry, redirect) ? (
+  return (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={7}>
@@ -87,8 +86,6 @@ const Verifier = () => {
         </Grid>
       </Grid>
     </Container>
-  ) : (
-    renderError({ retry, redirect, message, reinitializeState })
   );
 };
 
