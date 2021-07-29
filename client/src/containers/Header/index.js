@@ -1,11 +1,11 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   AccountCircleRounded as AccountIcon,
-  NotificationsRounded as NotificationsIcon
+  NotificationsRounded as NotificationsIcon,
 } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link, useHistory } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import { searchValidation } from "../../../../common/validation";
 import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import SyncButton from "../../components/SyncButton";
@@ -51,34 +51,34 @@ const Header = () => {
   return (
     <>
       <AppBar position="static" className={classes.container}>
-        <Toolbar>
-          <img
-            src={LogoDesktop}
-            alt="Logo"
-            onClick={() => history.push("/")}
-            className={classes.logo}
-          />
-          <Box className={classes.search}>
-            <FormProvider control={control}>
-              <form
-                onSubmit={handleSubmit((values) =>
-                  searchQuery({ values, history })
-                )}
-              >
-                <SearchForm
-                  handleToggle={toggleSearch}
-                  handleSubmit={handleSubmit}
-                  getValues={getValues}
-                  setValue={setValue}
-                  errors={errors}
-                />
-              </form>
-            </FormProvider>
-          </Box>
-          <Box className={classes.grow} />
-          {authenticated ? (
-            <>
-              <Box className={classes.wrapper}>
+        <Toolbar className={classes.toolbar}>
+          <Box className={classes.wrapper}>
+            <img
+              src={LogoDesktop}
+              alt="Logo"
+              onClick={() => history.push("/")}
+              className={classes.logo}
+            />
+            <Box className={classes.search}>
+              <FormProvider control={control}>
+                <form
+                  onSubmit={handleSubmit((values) =>
+                    searchQuery({ values, history })
+                  )}
+                >
+                  <SearchForm
+                    handleToggle={toggleSearch}
+                    handleSubmit={handleSubmit}
+                    getValues={getValues}
+                    setValue={setValue}
+                    errors={errors}
+                  />
+                </form>
+              </FormProvider>
+            </Box>
+            <Box className={classes.grow} />
+            {authenticated ? (
+              <Box className={classes.actions}>
                 {/*                 <IconButton aria-label="Show messages" color="inherit">
                   <Badge badgeContent={store.user.messages} color="primary">
                     <MailIcon />
@@ -103,30 +103,45 @@ const Header = () => {
                   <AccountIcon />
                 </IconButton>
               </Box>
-            </>
-          ) : (
-            <>
-              <Box className={classes.wrapper}>
+            ) : (
+              <Box className={classes.actions}>
                 <SyncButton
-                  component={Link}
-                  variant="outlined"
+                  component={RouterLink}
+                  variant="text"
                   to="/login"
-                  color="primary"
+                  color="default"
                   className={classes.margin}
                 >
                   Log in
                 </SyncButton>
                 <SyncButton
-                  component={Link}
-                  variant="outlined"
+                  component={RouterLink}
+                  variant="text"
                   to="/signup"
                   color="primary"
                 >
                   Sign up
                 </SyncButton>
               </Box>
-            </>
-          )}
+            )}
+          </Box>
+          <Box className={classes.searchMobile}>
+            <FormProvider control={control}>
+              <form
+                onSubmit={handleSubmit((values) =>
+                  searchQuery({ values, history })
+                )}
+              >
+                <SearchForm
+                  handleToggle={toggleSearch}
+                  handleSubmit={handleSubmit}
+                  getValues={getValues}
+                  setValue={setValue}
+                  errors={errors}
+                />
+              </form>
+            </FormProvider>
+          </Box>
         </Toolbar>
       </AppBar>
       <AccountMenu />
