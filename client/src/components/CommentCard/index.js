@@ -155,6 +155,7 @@ const CommentCard = ({
                 </Typography>
                 <Typography
                   component="span"
+                  variant="subtitle2"
                   loading={loading}
                   className={classes.created}
                 >
@@ -165,6 +166,7 @@ const CommentCard = ({
                 </Typography>
                 <Typography
                   component="span"
+                  variant="subtitle2"
                   loading={loading}
                   className={classes.modified}
                 >

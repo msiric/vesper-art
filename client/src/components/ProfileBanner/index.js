@@ -96,7 +96,7 @@ const ProfileBanner = ({ profile, loading }) => {
           </Typography>
           <Typography
             variant="body2"
-            color="inherit"
+            color="textSecondary"
             loading={loading}
             className={classes.description}
           >
