@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 import {
+  countries,
   generatedData,
   pricing,
   statusCodes,
@@ -532,6 +533,16 @@ export const errors = {
     message: `Country contain more than ${ranges.country.max} characters`,
     expose: true,
   },
+  invalidUserCountry: {
+    status: statusCodes.badRequest,
+    message: "Selected country is invalid",
+    expose: true,
+  },
+  invalidStripeCountry: {
+    status: statusCodes.badRequest,
+    message: "Selected country is not currently supported by Stripe",
+    expose: true,
+  },
   requiredValue: {
     status: statusCodes.badRequest,
     message: "Required value",
@@ -558,6 +569,12 @@ export const errors = {
     expose: true,
   },
 };
+
+export const validateUserCountry = (value) =>
+  countries.some((item) => item.value === value);
+
+export const validateStripeCountry = (value) =>
+  countries.some((item) => item.supported === true && item.value === value);
 
 const userUsername = Yup.string()
   .trim()
@@ -775,7 +792,10 @@ export const billingValidation = Yup.object().shape({
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.billingCountryRequired.message)
-    .max(ranges.country.max, errors.billingCountryMax.message),
+    .max(ranges.country.max, errors.billingCountryMax.message)
+    .test("isValidCountry", errors.invalidUserCountry.message, (value) =>
+      validateUserCountry(value)
+    ),
 });
 
 export const commentValidation = Yup.object().shape({
@@ -952,7 +972,10 @@ export const originValidation = Yup.object().shape({
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.originCountryRequired.message)
-    .max(ranges.address.max, errors.originCountryMax.message),
+    .max(ranges.address.max, errors.originCountryMax.message)
+    .test("isValidCountry", errors.invalidStripeCountry.message, (value) =>
+      validateStripeCountry(value)
+    ),
 });
 
 export const passwordValidation = Yup.object().shape({
@@ -975,7 +998,10 @@ export const profileValidation = Yup.object().shape({
   userCountry: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
-    .max(ranges.country.max, errors.userCountryMax.message),
+    .max(ranges.country.max, errors.userCountryMax.message)
+    .test("isValidCountry", errors.invalidUserCountry.message, (value) =>
+      validateUserCountry(value)
+    ),
 });
 
 export const resetValidation = Yup.object().shape({

@@ -306,12 +306,16 @@ export const formatResponse = ({ status, message, expose, ...rest }) => ({
 });
 
 export const handleDelegatedError = ({ err }) => {
+  const validationError = "ValidationError";
   return {
     status:
-      err.name === "ValidationError"
+      err.name === validationError
         ? statusCodes.badRequest
         : err.status || statusCodes.internalError,
-    message: err.expose ? err.message : errors.internalServerError.message,
+    message:
+      err.name === validationError || err.expose
+        ? err.message
+        : errors.internalServerError.message,
     expose: err.expose || true,
   };
 };
