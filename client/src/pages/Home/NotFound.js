@@ -11,7 +11,13 @@ import globalStyles from "../../styles/global";
 
 const useNotFoundStyles = makeStyles((muiTheme) => ({
   illustration: {
-    height: 350,
+    maxHeight: 350,
+    height: "100%",
+    width: "100%",
+    marginTop: muiTheme.spacing(4),
+  },
+  wrapper: {
+    width: "100%",
   },
   card: {
     display: "flex",
@@ -32,8 +38,8 @@ const NotFound = () => {
 
   return (
     <Container className={globalClasses.gridContainer}>
-      <Grid container spacing={2}>
-        <Grid item sm={12}>
+      <Grid container>
+        <Grid item sm={12} className={classes.wrapper}>
           <Card className={classes.card}>
             <MainHeading text="Page not found" />
             <FourOhFour className={classes.illustration} />

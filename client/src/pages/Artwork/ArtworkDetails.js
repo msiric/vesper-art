@@ -41,6 +41,9 @@ const useArtworkStyles = makeStyles((muiTheme) => ({
   container: {
     position: "relative",
   },
+  item: {
+    width: "100%",
+  },
   previewWrapper: {
     display: "flex",
     height: "100%",
@@ -89,7 +92,7 @@ const ArtworkDetails = ({ match }) => {
   return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2} className={classes.container}>
-        <Grid item sm={12} md={8}>
+        <Grid item sm={12} md={8} className={classes.item}>
           <Box className={classes.previewWrapper}>
             <ArtworkPreview paramId={paramId} />
           </Box>

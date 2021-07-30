@@ -10,8 +10,13 @@ import globalStyles from "../../styles/global";
 
 const useRetryStyles = makeStyles((muiTheme) => ({
   illustration: {
+    maxHeight: 350,
+    height: "100%",
+    width: "100%",
     marginTop: muiTheme.spacing(4),
-    height: 350,
+  },
+  wrapper: {
+    width: "100%",
   },
   card: {
     display: "flex",
@@ -32,8 +37,8 @@ const Retry = ({ message, reinitializeState = window.location.reload }) => {
 
   return (
     <Container className={globalClasses.gridContainer}>
-      <Grid container spacing={2}>
-        <Grid item sm={12}>
+      <Grid container>
+        <Grid item sm={12} className={classes.wrapper}>
           <Card className={classes.card}>
             <MainHeading text="An error occurred" />
             <RedirectUser className={classes.illustration} />

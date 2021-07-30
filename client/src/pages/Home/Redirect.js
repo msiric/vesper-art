@@ -11,8 +11,13 @@ import globalStyles from "../../styles/global";
 
 const useRedirectStyles = makeStyles((muiTheme) => ({
   illustration: {
+    maxHeight: 350,
+    height: "100%",
+    width: "100%",
     marginTop: muiTheme.spacing(4),
-    height: 350,
+  },
+  wrapper: {
+    width: "100%",
   },
   card: {
     display: "flex",
@@ -33,8 +38,8 @@ const Redirect = () => {
 
   return (
     <Container className={globalClasses.gridContainer}>
-      <Grid container spacing={2}>
-        <Grid item sm={12}>
+      <Grid container>
+        <Grid item sm={12} className={classes.wrapper}>
           <Card className={classes.card}>
             <MainHeading text="Can't find requested resource" />
             <RedirectUser className={classes.illustration} />
