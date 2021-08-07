@@ -13,11 +13,9 @@ import { ReactComponent as SelectArtwork } from "../../assets/images/illustratio
 import { ReactComponent as StripePayment } from "../../assets/images/illustrations/stripe_payment.svg";
 import { ReactComponent as UploadArtwork } from "../../assets/images/illustrations/upload_artwork.svg";
 import { ReactComponent as WorkingArtist } from "../../assets/images/illustrations/working_artist.svg";
-import IllustrationCard from "../../components/IllustrationCard";
 import MainHeading from "../../components/MainHeading";
 import SyncButton from "../../components/SyncButton";
 import WizardTimeline from "../../components/WizardTimeline";
-import Card from "../../domain/Card";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
@@ -127,30 +125,6 @@ const HowItWorks = () => {
         </Grid>
         <Grid item sm={12} md={12}>
           <WizardTimeline illustrations={BUYER_ILLUSTRATIONS} />
-        </Grid>
-        <Grid item sm={12} md={6}>
-          <Card>
-            <MainHeading text="Sellers" className={classes.heading} />
-            {SELLER_ILLUSTRATIONS.map((item) => (
-              <IllustrationCard
-                heading={item.heading}
-                paragraph={item.paragraph}
-                illustration={item.illustration}
-              />
-            ))}
-          </Card>
-        </Grid>
-        <Grid item sm={12} md={6}>
-          <Card>
-            <MainHeading text="Buyers" className={classes.heading} />
-            {BUYER_ILLUSTRATIONS.map((item) => (
-              <IllustrationCard
-                heading={item.heading}
-                paragraph={item.paragraph}
-                illustration={item.illustration}
-              />
-            ))}
-          </Card>
         </Grid>
         <Grid item sm={12}>
           <Typography>Join the platform and get started</Typography>

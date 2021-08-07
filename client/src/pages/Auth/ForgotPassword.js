@@ -9,8 +9,6 @@ import { emailValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
-import CardActions from "../../domain/CardActions";
-import CardContent from "../../domain/CardContent";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Link from "../../domain/Link";
@@ -20,7 +18,6 @@ import { postRecover } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
-    marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -29,9 +26,8 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
   },
-  actions: {
-    display: "flex",
-    justifyContent: "space-between",
+  form: {
+    width: "100%",
   },
 }));
 
@@ -79,21 +75,17 @@ const ForgotPassword = () => {
           Recover your password
         </Typography>
         <FormProvider control={control}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <CardContent>
-              <EmailForm errors={errors} />
-            </CardContent>
-            <CardActions className={classes.actions}>
-              <AsyncButton
-                type="submit"
-                fullWidth
-                className={classes.submit}
-                submitting={formState.isSubmitting}
-                disabled={isDisabled}
-              >
-                Send recovery link
-              </AsyncButton>
-            </CardActions>
+          <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+            <EmailForm errors={errors} />
+            <AsyncButton
+              type="submit"
+              fullWidth
+              padding
+              submitting={formState.isSubmitting}
+              disabled={isDisabled}
+            >
+              Send recovery link
+            </AsyncButton>
             <Grid container>
               <Grid item xs>
                 <Link

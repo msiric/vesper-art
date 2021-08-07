@@ -18,7 +18,6 @@ import { postEmail } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
-    marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -26,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
+  },
+  form: {
+    width: "100%",
   },
 }));
 
@@ -76,7 +78,7 @@ const UpdateEmail = () => {
           Update email
         </Typography>
         <FormProvider control={control}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
             <RecoveryForm errors={errors} />
             <AsyncButton
               type="submit"

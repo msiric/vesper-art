@@ -1,9 +1,10 @@
 import { makeStyles } from "@material-ui/core/styles";
-import { artepunktTheme } from "../../styles/theme";
 
 const AuthLayoutStyles = makeStyles((muiTheme) => ({
   appRoot: {
     display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     flexFlow: "column",
     flexGrow: 1,
   },
@@ -16,13 +17,21 @@ const AuthLayoutStyles = makeStyles((muiTheme) => ({
     zIndex: muiTheme.zIndex.drawer + 1,
     color: "#fff",
   },
-  appContainer: {
-    width: "100%",
+  appWrapper: {
     display: "flex",
     flexDirection: "column",
-    flexGrow: 1,
-    marginTop: artepunktTheme.margin.container,
-    marginBottom: artepunktTheme.margin.container,
+    alignItems: "center",
+    margin: 24,
+  },
+  appLogo: {
+    width: 175,
+    marginBottom: 12,
+    cursor: "pointer",
+    display: "block",
+  },
+  appContainer: {
+    maxWidth: 700,
+    padding: "24px 0",
   },
 }));
 

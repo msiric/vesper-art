@@ -9,8 +9,6 @@ import { emailValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
-import CardActions from "../../domain/CardActions";
-import CardContent from "../../domain/CardContent";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Link from "../../domain/Link";
@@ -19,8 +17,7 @@ import EmailForm from "../../forms/EmailForm/index";
 import { postResend } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
+  wrapper: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -29,9 +26,8 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
   },
-  actions: {
-    display: "flex",
-    justifyContent: "space-between",
+  form: {
+    width: "100%",
   },
 }));
 
@@ -68,7 +64,7 @@ const ResendToken = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box className={classes.paper}>
+      <Box className={classes.wrapper}>
         <Avatar className={classes.avatar}>
           <TokenAvatar />
         </Avatar>
@@ -76,21 +72,17 @@ const ResendToken = () => {
           Resend verification token
         </Typography>
         <FormProvider control={control}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <CardContent>
-              <EmailForm errors={errors} />
-            </CardContent>
-            <CardActions className={classes.actions}>
-              <AsyncButton
-                type="submit"
-                fullWidth
-                className={classes.submit}
-                submitting={formState.isSubmitting}
-                disabled={isDisabled}
-              >
-                Send verification token
-              </AsyncButton>
-            </CardActions>
+          <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+            <EmailForm errors={errors} />
+            <AsyncButton
+              type="submit"
+              fullWidth
+              padding
+              submitting={formState.isSubmitting}
+              disabled={isDisabled}
+            >
+              Send verification token
+            </AsyncButton>
             <Grid container>
               <Grid item xs>
                 <Link

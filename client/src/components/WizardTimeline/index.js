@@ -10,12 +10,20 @@ import TimelineOppositeContent from "@material-ui/lab/TimelineOppositeContent";
 import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
 import React from "react";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((muiTheme) => ({
+  container: {
+    padding: 0,
+  },
+  heading: {
+    [muiTheme.breakpoints.down("xs")]: {
+      display: "none",
+    },
+  },
   paper: {
     padding: "6px 16px",
   },
   secondaryTail: {
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: muiTheme.palette.secondary.main,
   },
   wrapper: {
     height: 350,
@@ -33,6 +41,26 @@ const useStyles = makeStyles((theme) => ({
       top: "50%",
       transform: "translate(-50%, -50%)",
     },
+    [muiTheme.breakpoints.down("sm")]: {
+      width: 175,
+      height: 175,
+    },
+    [muiTheme.breakpoints.down(600)]: {
+      width: 125,
+      height: 125,
+    },
+    [muiTheme.breakpoints.down(500)]: {
+      width: 110,
+      height: 110,
+    },
+    [muiTheme.breakpoints.down(450)]: {
+      width: 100,
+      height: 100,
+    },
+    [muiTheme.breakpoints.down(400)]: {
+      width: 90,
+      height: 90,
+    },
   },
 }));
 
@@ -40,10 +68,10 @@ const WizardTimeline = ({ illustrations }) => {
   const classes = useStyles();
 
   return (
-    <Timeline align="alternate">
+    <Timeline align="alternate" className={classes.container}>
       {illustrations.map((item) => (
         <TimelineItem>
-          <TimelineOppositeContent>
+          <TimelineOppositeContent className={classes.heading}>
             <Typography variant="body2" color="textSecondary">
               tesutlja
             </Typography>

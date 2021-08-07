@@ -18,7 +18,6 @@ import { postSignup } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
-    marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -26,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
+  },
+  form: {
+    width: "100%",
   },
 }));
 
@@ -73,7 +75,7 @@ const Signup = () => {
           Sign up
         </Typography>
         <FormProvider control={control}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
             <SignupForm errors={errors} />
             <AsyncButton
               type="submit"

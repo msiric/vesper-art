@@ -3,15 +3,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import { KeyboardRounded as ResetAvatar } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { isFormAltered } from "../../../../common/helpers";
 import { passwordValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton";
-import SyncButton from "../../components/SyncButton";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
-import CardActions from "../../domain/CardActions";
-import CardContent from "../../domain/CardContent";
 import Container from "../../domain/Container";
 import Typography from "../../domain/Typography";
 import EditPasswordForm from "../../forms/PasswordForm/index";
@@ -19,7 +16,6 @@ import { postReset } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
-    marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -28,9 +24,8 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
   },
-  actions: {
-    display: "flex",
-    justifyContent: "space-between",
+  form: {
+    width: "100%",
   },
 }));
 
@@ -86,28 +81,23 @@ const ResetPassword = ({ match }) => {
           Reset your password
         </Typography>
         <FormProvider control={control}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <CardContent>
-              <EditPasswordForm
-                errors={errors}
-                setValue={setValue}
-                trigger={trigger}
-                getValues={getValues}
-                watch={watch}
-              />
-            </CardContent>
-            <CardActions className={classes.actions}>
-              <SyncButton component={Link} to="/login" color="primary">
-                Log in
-              </SyncButton>
-              <AsyncButton
-                type="submit"
-                submitting={formState.isSubmitting}
-                disabled={isDisabled}
-              >
-                Reset password
-              </AsyncButton>
-            </CardActions>
+          <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+            <EditPasswordForm
+              errors={errors}
+              setValue={setValue}
+              trigger={trigger}
+              getValues={getValues}
+              watch={watch}
+            />
+            <AsyncButton
+              type="submit"
+              fullWidth
+              padding
+              submitting={formState.isSubmitting}
+              disabled={isDisabled}
+            >
+              Reset password
+            </AsyncButton>
           </form>
         </FormProvider>
       </Box>

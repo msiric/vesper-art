@@ -51,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
   },
+  content: {
+    padding: "12px 0",
+  },
 }));
 
 const AccountRestoration = () => {
@@ -58,7 +61,7 @@ const AccountRestoration = () => {
   const globalClasses = globalStyles();
 
   return (
-    <Container className={globalClasses.gridContainer}>
+    <Container>
       <Grid container className={classes.wrapper}>
         <Grid item sm={12} className={classes.headerWrapper}>
           <Avatar className={classes.avatar}>
@@ -68,8 +71,10 @@ const AccountRestoration = () => {
             Account restoration
           </Typography>
         </Grid>
+      </Grid>
+      <Grid container spacing={2} className={classes.content}>
         {RESTORATION_CARDS.map((card) => (
-          <Grid item sm={12} md={3}>
+          <Grid item xs={12} sm={4}>
             <RestorationCard {...card} />
           </Grid>
         ))}

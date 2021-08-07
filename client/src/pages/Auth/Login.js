@@ -20,7 +20,6 @@ import { postLogin } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
-    marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -28,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
+  },
+  form: {
+    width: "100%",
   },
 }));
 
@@ -102,7 +104,7 @@ const Login = () => {
           Sign in
         </Typography>
         <FormProvider control={control}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
             <LoginForm errors={errors} />
             <AsyncButton
               type="submit"
@@ -123,7 +125,7 @@ const Login = () => {
                   Trouble logging in?
                 </Link>
               </Grid>
-              <Grid item>
+              <Grid item xs>
                 <Link component={RouterLink} to="/signup" variant="body2">
                   Don't have an account? Sign up
                 </Link>

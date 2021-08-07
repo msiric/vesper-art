@@ -1,14 +1,17 @@
 import React from "react";
-import Footer from "../../containers/Footer/index";
+import { useHistory } from "react-router-dom";
+import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
 import { useAppStore } from "../../contexts/global/app";
 import Backdrop from "../../domain/Backdrop";
 import Box from "../../domain/Box";
+import Card from "../../domain/Card";
 import CircularProgress from "../../domain/CircularProgress";
 import authStyles from "./styles";
 
 const AuthLayout = ({ children }) => {
   const loading = useAppStore((state) => state.loading);
 
+  const history = useHistory();
   const classes = authStyles();
 
   return (
@@ -18,10 +21,15 @@ const AuthLayout = ({ children }) => {
           <CircularProgress color="inherit" />
         </Backdrop>
       ) : (
-        <>
-          <Box className={classes.appContainer}>{children}</Box>
-          <Footer />
-        </>
+        <Box className={classes.appWrapper}>
+          <img
+            src={LogoDesktop}
+            alt="Logo"
+            onClick={() => history.push("/")}
+            className={classes.appLogo}
+          />
+          <Card className={classes.appContainer}>{children}</Card>
+        </Box>
       )}
     </Box>
   );

@@ -76,7 +76,7 @@ const routes = [
     path: "/verify_token/:id",
     Component: lazy(() => import("./pages/Auth/VerifyToken")),
     exact: true,
-    type: "public",
+    type: "auth",
   },
   {
     path: "/forgot_password",
@@ -88,7 +88,7 @@ const routes = [
     path: "/reset_password/:id",
     Component: lazy(() => import("./pages/Auth/ResetPassword")),
     exact: true,
-    type: "public",
+    type: "auth",
   },
   {
     path: "/update_email",
