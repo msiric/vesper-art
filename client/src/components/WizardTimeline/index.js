@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CustomizedTimeline({ illustrations }) {
+const WizardTimeline = ({ illustrations }) => {
   const classes = useStyles();
 
   return (
@@ -66,4 +66,6 @@ export default function CustomizedTimeline({ illustrations }) {
       ))}
     </Timeline>
   );
-}
+};
+
+export default WizardTimeline;
