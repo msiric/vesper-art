@@ -16,18 +16,23 @@ import Typography from "../../domain/Typography";
 import SignupForm from "../../forms/SignupForm/index";
 import { postSignup } from "../../services/auth";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((muiTheme) => ({
   wrapper: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
   avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
+    margin: muiTheme.spacing(1),
+    backgroundColor: muiTheme.palette.primary.main,
   },
   form: {
     width: "100%",
+  },
+  actions: {
+    [muiTheme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+    },
   },
 }));
 
@@ -86,9 +91,14 @@ const Signup = () => {
             >
               Sign up
             </AsyncButton>
-            <Grid container>
+            <Grid container className={classes.actions}>
               <Grid item>
-                <Link component={RouterLink} to="/login" variant="body2">
+                <Link
+                  component={RouterLink}
+                  to="/login"
+                  variant="body2"
+                  color="secondary"
+                >
                   Already have an account? Log in
                 </Link>
               </Grid>

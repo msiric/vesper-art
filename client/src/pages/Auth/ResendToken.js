@@ -16,18 +16,23 @@ import Typography from "../../domain/Typography";
 import EmailForm from "../../forms/EmailForm/index";
 import { postResend } from "../../services/auth";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((muiTheme) => ({
   wrapper: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
   avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
+    margin: muiTheme.spacing(1),
+    backgroundColor: muiTheme.palette.primary.main,
   },
   form: {
     width: "100%",
+  },
+  actions: {
+    [muiTheme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+    },
   },
 }));
 
@@ -83,12 +88,13 @@ const ResendToken = () => {
             >
               Send verification token
             </AsyncButton>
-            <Grid container>
+            <Grid container className={classes.actions}>
               <Grid item xs>
                 <Link
                   component={RouterLink}
                   to="/account_restoration"
                   variant="body2"
+                  color="secondary"
                 >
                   Back to account restoration
                 </Link>

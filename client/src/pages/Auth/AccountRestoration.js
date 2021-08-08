@@ -34,7 +34,7 @@ const RESTORATION_CARDS = [
   },
 ];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((muiTheme) => ({
   wrapper: {
     display: "flex",
     justifyContent: "center",
@@ -48,11 +48,16 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
+    margin: muiTheme.spacing(1),
+    backgroundColor: muiTheme.palette.primary.main,
   },
   content: {
     padding: "12px 0",
+  },
+  actions: {
+    [muiTheme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+    },
   },
 }));
 
@@ -79,9 +84,14 @@ const AccountRestoration = () => {
           </Grid>
         ))}
       </Grid>
-      <Grid container>
+      <Grid container className={classes.actions}>
         <Grid item xs>
-          <Link component={RouterLink} to="/login" variant="body2">
+          <Link
+            component={RouterLink}
+            to="/login"
+            variant="body2"
+            color="secondary"
+          >
             Back to login
           </Link>
         </Grid>
