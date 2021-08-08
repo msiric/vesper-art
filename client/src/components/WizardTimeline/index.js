@@ -69,11 +69,11 @@ const WizardTimeline = ({ illustrations }) => {
 
   return (
     <Timeline align="alternate" className={classes.container}>
-      {illustrations.map((item) => (
+      {illustrations.map((item, index) => (
         <TimelineItem>
           <TimelineOppositeContent className={classes.heading}>
-            <Typography variant="body2" color="textSecondary">
-              tesutlja
+            <Typography variant="h4" color="textSecondary">
+              {`${index + 1}.`}
             </Typography>
           </TimelineOppositeContent>
           <TimelineSeparator className={classes.wrapper}>

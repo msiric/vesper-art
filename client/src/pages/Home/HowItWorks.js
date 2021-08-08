@@ -1,5 +1,6 @@
 import { makeStyles } from "@material-ui/core";
-import React from "react";
+import React, { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { appName } from "../../../../common/constants";
 import { ReactComponent as ArtworkGallery } from "../../assets/images/illustrations/artwork_gallery.svg";
 import { ReactComponent as BrowseArtwork } from "../../assets/images/illustrations/browse_artwork.svg";
@@ -14,8 +15,10 @@ import { ReactComponent as StripePayment } from "../../assets/images/illustratio
 import { ReactComponent as UploadArtwork } from "../../assets/images/illustrations/upload_artwork.svg";
 import { ReactComponent as WorkingArtist } from "../../assets/images/illustrations/working_artist.svg";
 import MainHeading from "../../components/MainHeading";
+import SwipeCard from "../../components/SwipeCard";
 import SyncButton from "../../components/SyncButton";
 import WizardTimeline from "../../components/WizardTimeline";
+import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
@@ -24,6 +27,36 @@ import globalStyles from "../../styles/global";
 const useInstructionsStyles = makeStyles((muiTheme) => ({
   heading: {
     textAlign: "center",
+  },
+  paragraph: {
+    margin: "16px 0",
+  },
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    maxWidth: 850,
+    width: "100%",
+    margin: "0 auto",
+    textAlign: "center",
+  },
+  actions: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+  },
+  buttons: {
+    display: "flex",
+    justifyContent: "space-between",
+    [muiTheme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+      height: 80,
+    },
+  },
+  label: {
+    marginBottom: 16,
+    [muiTheme.breakpoints.down("xs")]: {
+      fontSize: "1.8rem",
+    },
   },
 }));
 
@@ -106,34 +139,85 @@ const BUYER_ILLUSTRATIONS = [
 ];
 
 const HowItWorks = () => {
+  const [state, setState] = useState({ tab: 0 });
+
   const globalClasses = globalStyles();
   const classes = useInstructionsStyles();
 
+  const changeTab = ({ index }) => {
+    setState((prevState) => ({ ...prevState, tab: index }));
+  };
+
   return (
     <Container className={globalClasses.gridContainer}>
-      <Grid container spacing={2}>
+      <Grid container>
         <Grid item sm={12}>
           <MainHeading text="How it works" />
-          <Typography>
+          <Typography className={classes.paragraph}>
             {`${appName} is a digital art marketplace that allows art lovers to view, download and purchase art from other artists while protecting both sides 
             by utilizing a system based on licenses as a means of transparency and non-repudiation while maintaining user anonymity.
             Get up to speed with how ${appName} works in six simple steps from the perspective of both parties involved`}
           </Typography>
         </Grid>
-        <Grid item sm={12} md={12}>
-          <WizardTimeline illustrations={SELLER_ILLUSTRATIONS} />
-        </Grid>
-        <Grid item sm={12} md={12}>
-          <WizardTimeline illustrations={BUYER_ILLUSTRATIONS} />
-        </Grid>
-        <Grid item sm={12}>
-          <Typography>Join the platform and get started</Typography>
-          <SyncButton>Sign up</SyncButton>
-          <Typography>
-            Want to learn more? Click on one of the pages below
-          </Typography>
-          <SyncButton>{`Selling on ${appName}`}</SyncButton>
-          <SyncButton>{`Buying on ${appName}`}</SyncButton>
+        <SwipeCard
+          tabs={{
+            value: state.tab,
+            headings: [
+              {
+                display: true,
+                label: "For artists",
+                props: {},
+              },
+              {
+                display: true,
+                label: "For collectors",
+                props: {},
+              },
+            ],
+            items: [
+              {
+                display: true,
+                iterable: false,
+                content: null,
+                component: (
+                  <WizardTimeline illustrations={SELLER_ILLUSTRATIONS} />
+                ),
+                error: null,
+                loading: false,
+              },
+              {
+                display: true,
+                iterable: false,
+                content: null,
+                component: (
+                  <WizardTimeline illustrations={BUYER_ILLUSTRATIONS} />
+                ),
+                error: null,
+                loading: false,
+              },
+            ],
+          }}
+          handleTabsChange={({ index }) => changeTab({ index })}
+          handleChangeIndex={({ index }) => changeTab({ index })}
+          loading={false}
+        />
+        <Grid item sm={12} className={classes.wrapper}>
+          <Box className={classes.actions}>
+            <Typography variant="h4" className={classes.label}>
+              Want to learn more? Click on one of the buttons below
+            </Typography>
+            <Box className={classes.buttons}>
+              <SyncButton
+                component={RouterLink}
+                to="/start_selling"
+                color="secondary"
+              >{`Selling on ${appName}`}</SyncButton>
+              <SyncButton
+                component={RouterLink}
+                to="/start_buying"
+              >{`Buying on ${appName}`}</SyncButton>
+            </Box>
+          </Box>
         </Grid>
       </Grid>
     </Container>

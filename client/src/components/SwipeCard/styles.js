@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const swipeCardStyles = makeStyles((muiTheme) => ({
   container: {
     height: "100%",
+    width: "100%",
     "&> div": {
       display: "flex",
       alignItems: "center",

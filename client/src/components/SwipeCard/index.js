@@ -13,7 +13,7 @@ const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
 
   return (
     <Box className={classes.container} m={margin}>
-      <AppBar position="static" color="transparent" className={classes.bar}>
+      <AppBar position="static" color="inherit" className={classes.bar}>
         <Tabs
           value={tabs.value}
           onChange={(e, value) => handleTabsChange({ index: value })}
