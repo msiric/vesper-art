@@ -1,21 +1,55 @@
+import { makeStyles } from "@material-ui/core";
 import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { appName, payment } from "../../../../common/constants";
-import MainHeading from "../../components/MainHeading";
+import SyncButton from "../../components/SyncButton";
+import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
 import globalStyles from "../../styles/global";
 
+const useSellingStyles = makeStyles((muiTheme) => ({
+  paragraph: {
+    marginTop: 16,
+  },
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    margin: "0 auto",
+  },
+  actions: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+  },
+  buttons: {
+    display: "flex",
+    justifyContent: "space-between",
+    [muiTheme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+      height: 80,
+    },
+  },
+  label: {
+    marginBottom: 16,
+    [muiTheme.breakpoints.down("xs")]: {
+      fontSize: "1.8rem",
+    },
+  },
+}));
+
 const Selling = () => {
   const globalClasses = globalStyles();
+  const classes = useSellingStyles();
 
   return (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item sm={12}>
-          <MainHeading text={`Selling on ${appName}`} />
-          <Typography>Signing Up</Typography>
-          <Typography>
+          <Typography variant="h4">{`Selling on ${appName}`}</Typography>
+          <Typography className={classes.paragraph}>
             {`Signing up is free and required for users to start selling art on 
             ${appName}. When you sign up, you will be able to download, 
             purchase and upload your own artwork. 
@@ -49,6 +83,19 @@ const Selling = () => {
             handling disputes).
             For more information, see the Terms of Service.`}
           </Typography>
+        </Grid>
+        <Grid item sm={12} className={classes.wrapper}>
+          <Box className={classes.actions}>
+            <Typography variant="h4" className={classes.label}>
+              {`Learn about buying on ${appName}`}
+            </Typography>
+            <Box className={classes.buttons}>
+              <SyncButton
+                component={RouterLink}
+                to="/start_buying"
+              >{`Buying on ${appName}`}</SyncButton>
+            </Box>
+          </Box>
         </Grid>
       </Grid>
     </Container>
