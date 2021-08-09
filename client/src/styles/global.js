@@ -49,7 +49,7 @@ const GlobalStyles = makeStyles((muiTheme) => ({
     margin: 0,
   },
   searchType: {
-    display: "none",
+    display: "none !important",
   },
   "@global": {
     ".illustrationPrimary": {
@@ -57,10 +57,10 @@ const GlobalStyles = makeStyles((muiTheme) => ({
     },
     ".MuiTableCell-footer": {
       borderTop: "1px solid rgb(81, 81, 81)",
-      borderBottom: "none",
+      borderBottom: "none !important",
     },
     ".MuiTableRow-root:last-of-type > .MuiTableCell-body": {
-      borderBottom: "none",
+      borderBottom: "none !important",
     },
     ".MuiTableCell-body": {
       cursor: ({ hoverable }) => (hoverable ? "pointer" : "auto"),
