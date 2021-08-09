@@ -106,7 +106,7 @@ const Input = ({
       <Avatar
         className={`${classes.avatar} ${isDynamic ? classes.artwork : ""} ${
           isDynamic && loading ? classes.sizing : ""
-        } ${isDynamic && !state.file ? classes.minHeight : ""}`}
+        } ${isDynamic && (!state.file || error) ? classes.minHeight : ""}`}
         onClick={showFileUpload}
         shape={shape}
         variant={variant}
