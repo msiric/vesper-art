@@ -43,10 +43,12 @@ const ArtworkForm = ({
         errors={errors}
         preview={preview}
         shape="square"
+        variant="square"
         height={400}
         width="100%"
         noEmpty={false}
         editable={editable}
+        isDynamic={true}
         loading={loading}
       />
       <Box>

@@ -22,10 +22,10 @@ const Input = ({
   title,
   preview,
   shape,
-  height,
-  width,
+  variant,
   noEmpty,
   editable,
+  isDynamic = false,
   loading = false,
 }) => {
   const [state, setState] = useState({
@@ -103,12 +103,15 @@ const Input = ({
           {title}
         </Typography>
       )}
-
       <Avatar
-        className={classes.avatar}
+        className={`${classes.avatar} ${isDynamic ? classes.artwork : ""} ${
+          isDynamic && loading ? classes.sizing : ""
+        } ${isDynamic && !state.file ? classes.minHeight : ""}`}
         onClick={showFileUpload}
         shape={shape}
-        style={{ height, width }}
+        variant={variant}
+        width={isDynamic ? "100%" : ""}
+        maxWidth={isDynamic ? 650 : ""}
         loading={loading}
       >
         {state.loading ? (
@@ -136,7 +139,9 @@ const Input = ({
         )}
         {state.file && (
           <img
-            className={classes.preview}
+            className={`${classes.preview} ${
+              isDynamic ? classes.artworkPreview : ""
+            } ${error ? classes.hidden : ""}`}
             src={state.imagePreviewUrl}
             alt="..."
           />
@@ -146,7 +151,6 @@ const Input = ({
         <Typography
           variant="caption"
           color={artepunktTheme.palette.error.main}
-          noWrap
           className={classes.helper}
         >
           {helperText}

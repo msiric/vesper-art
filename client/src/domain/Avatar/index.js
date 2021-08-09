@@ -7,11 +7,23 @@ const StyledAvatar = withStyles({})(MaterialAvatar);
 
 const Avatar = forwardRef(
   (
-    { loading = false, variant = "circle", shape = "circle", ...props },
+    {
+      loading = false,
+      variant = "circle",
+      shape = "circle",
+      width,
+      maxWidth,
+      ...props
+    },
     ref
   ) => {
     return (
-      <SkeletonWrapper variant={variant} loading={loading}>
+      <SkeletonWrapper
+        variant={variant}
+        loading={loading}
+        width={width}
+        style={{ maxWidth }}
+      >
         <StyledAvatar ref={ref} variant={shape} {...props} />
       </SkeletonWrapper>
     );

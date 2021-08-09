@@ -73,20 +73,18 @@ const EditArtwork = ({ match }) => {
     capabilitiesRedirect
   ) ? (
     <Container className={globalClasses.gridContainer}>
-      <Grid container spacing={2}>
-        {artworkLoading || capabilitiesLoading || artwork.id ? (
-          <Grid item sm={12} className={classes.wrapper}>
-            <MainHeading
-              text="Edit artwork"
-              className={globalClasses.mainHeading}
-            />
-            <ArtworkModifier paramId={paramId} />
-          </Grid>
-        ) : (
-          // $TODO push to home and display error notification
-          "Ne postoji"
-        )}
-      </Grid>
+      {artworkLoading || capabilitiesLoading || artwork.id ? (
+        <Grid item sm={12} className={classes.wrapper}>
+          <MainHeading
+            text="Edit artwork"
+            className={globalClasses.mainHeading}
+          />
+          <ArtworkModifier paramId={paramId} />
+        </Grid>
+      ) : (
+        // $TODO push to home and display error notification
+        "Ne postoji"
+      )}
       <PromptModal
         open={modal.open}
         handleConfirm={handleDeleteArtwork}
