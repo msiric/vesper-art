@@ -89,6 +89,7 @@ const imageInputStyles = makeStyles((muiTheme) => ({
   },
   helper: {
     marginTop: 3,
+    textAlign: "center",
   },
   icon: {
     color: "white",
