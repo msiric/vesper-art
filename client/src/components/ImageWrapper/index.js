@@ -15,15 +15,10 @@ const ImageWrapper = ({
 }) => {
   const downloaded = useProgressiveImage(source);
 
-  const classes = imageWrapperStyles({ height, placeholder });
+  const classes = imageWrapperStyles({ height, loading, placeholder });
 
   return loading ? (
-    <Box
-      className={classes.wrapper}
-      height={height}
-      width="100%"
-      loading={true}
-    />
+    <Box className={classes.wrapper} width="100%" loading={true} />
   ) : downloaded ? (
     redirect ? (
       <Box component={RouterLink} to={redirect}>
@@ -40,7 +35,7 @@ const ImageWrapper = ({
       <img className={`${classes.media} ${classes.opacity}`} src={cover} />
     </Box>
   ) : (
-    <Box className={classes.hiddenWrapper} height={height} width="100%">
+    <Box className={classes.hiddenWrapper} width="100%">
       <img className={`${classes.media} ${classes.hidden}`} src={source} />
     </Box>
   );

@@ -13,6 +13,13 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
     width: "100%",
     display: "flex",
     justifyContent: "center",
+    height: ({ height, loading }) => (loading ? height : "auto"),
+    [muiTheme.breakpoints.down("sm")]: {
+      height: ({ height, loading }) => (loading ? height / 1.25 : "auto"),
+    },
+    [muiTheme.breakpoints.down("xs")]: {
+      height: ({ height, loading }) => (loading ? height / 2.25 : "auto"),
+    },
   },
   spinner: {
     position: "absolute",
