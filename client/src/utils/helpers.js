@@ -74,3 +74,6 @@ export const getBarState = () => ({
   visible: !featureFlags.payment,
   message: "Purchasing artwork is temporarily disabled",
 });
+
+export const capitalizeWord = ({ value }) =>
+  value ? value[0].toUpperCase() + value.slice(1).toLowerCase() : value;

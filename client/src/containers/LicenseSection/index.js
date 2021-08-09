@@ -63,7 +63,7 @@ const LicenseSection = () => {
           name: "Value",
           options: {
             sort: false,
-            customBodyRender: (value, tableMeta, updateValue) =>
+            customBodyRender: (value) =>
               typeof value !== "undefined"
                 ? value
                   ? `$${value}`

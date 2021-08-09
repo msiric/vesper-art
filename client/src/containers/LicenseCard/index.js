@@ -4,13 +4,12 @@ import Datatable from "../../components/DataTable/index";
 import EmptySection from "../../components/EmptySection/index";
 import SubHeading from "../../components/SubHeading/index";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
+import { capitalizeWord } from "../../utils/helpers";
 import licenseCardStyles from "./styles";
 
 const LicenseCard = () => {
   const license = useOrderDetails((state) => state.order.data.license);
   const loading = useOrderDetails((state) => state.order.loading);
-
-  console.log("LICENSE", license);
 
   const classes = licenseCardStyles();
 
@@ -33,6 +32,7 @@ const LicenseCard = () => {
         {
           name: "Type",
           options: {
+            customBodyRender: (value) => capitalizeWord({ value }) || "/",
             sort: false,
           },
         },
@@ -58,7 +58,7 @@ const LicenseCard = () => {
           name: "Value",
           options: {
             sort: false,
-            customBodyRender: (value, tableMeta, updateValue) =>
+            customBodyRender: (value) =>
               typeof value !== "undefined"
                 ? value
                   ? `$${value}`

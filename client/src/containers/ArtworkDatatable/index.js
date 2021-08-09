@@ -12,6 +12,7 @@ import { useUserStore } from "../../contexts/global/user";
 import { useUserUploads } from "../../contexts/local/userUploads";
 import Box from "../../domain/Box";
 import IconButton from "../../domain/IconButton";
+import { capitalizeWord } from "../../utils/helpers";
 
 const ArtworkDatatable = () => {
   const userId = useUserStore((state) => state.id);
@@ -80,17 +81,22 @@ const ArtworkDatatable = () => {
               }) * (order === "asc" ? 1 : -1),
           },
         },
-        "Availability",
+        {
+          name: "Availability",
+          options: {
+            customBodyRender: (value) => capitalizeWord({ value }) || "/",
+          },
+        },
         {
           name: "Type",
           options: {
-            customBodyRender: (value, tableMeta, updateValue) => value || "/",
+            customBodyRender: (value) => capitalizeWord({ value }) || "/",
           },
         },
         {
           name: "Personal license",
           options: {
-            customBodyRender: (value, tableMeta, updateValue) =>
+            customBodyRender: (value) =>
               value.use === "included"
                 ? "/"
                 : value.amount
@@ -105,7 +111,7 @@ const ArtworkDatatable = () => {
         {
           name: "Commercial license",
           options: {
-            customBodyRender: (value, tableMeta, updateValue) =>
+            customBodyRender: (value) =>
               value.license === "personal"
                 ? "/"
                 : value.amount
