@@ -19,8 +19,11 @@ const RangeInput = ({
       startText={fromLabel}
       endText={toLabel}
       value={selectedDate}
-      onChange={(date) => handleChange(date)}
+      onChange={() => null}
+      onAccept={(date) => handleChange(date)}
       inputFormat="dd/MM/yyyy"
+      autoOk={false}
+      disableFuture={true}
       loading={loading}
       renderInput={(startProps, endProps) => (
         <>
