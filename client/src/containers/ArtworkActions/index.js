@@ -35,16 +35,22 @@ const ArtworkActions = () => {
       </CardContent>
       <Divider />
       <CardActions className={classes.footer}>
-        <Box loading={loading} className={classes.actions}>
+        <Box className={classes.actions}>
           {artwork.owner && artwork.owner.id !== userId && (
             <FavoriteButton
               artwork={artwork}
               favorited={userFavorites[artwork.id]}
               labeled
               handleCallback={toggleFavorite}
+              loading={loading}
             />
           )}
-          <ShareButton link={`/artwork/${artwork.id}`} type="artwork" labeled />
+          <ShareButton
+            link={`/artwork/${artwork.id}`}
+            type="artwork"
+            labeled
+            loading={loading}
+          />
         </Box>
       </CardActions>
     </Card>

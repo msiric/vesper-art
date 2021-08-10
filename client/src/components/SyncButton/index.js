@@ -9,6 +9,7 @@ const SyncButton = ({
   color = "primary",
   handleClick,
   padding,
+  fullWidth,
   children,
   ...props
 }) => {
@@ -20,6 +21,7 @@ const SyncButton = ({
         color={color}
         outline={variant}
         onClick={handleClick}
+        fullWidth={fullWidth}
         loading={loading}
         {...props}
       >
