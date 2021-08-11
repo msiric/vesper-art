@@ -40,9 +40,19 @@ const ProfileBanner = ({ profile, loading }) => {
           </Box>
           <Box className={classes.aboutWrapper}>
             <Typography loading={loading} variant="h4" className={classes.name}>
-              {profile.name}
+              {!loading ? profile.name : "Username"}
             </Typography>
-            <Box className={classes.detailsWrapper} loading={loading}>
+            <Box className={classes.detailsWrapper}>
+              {loading && (
+                <Typography
+                  variant="body1"
+                  color="textSecondary"
+                  component="p"
+                  loading={loading}
+                >
+                  Fetching user details
+                </Typography>
+              )}
               {profile.rating > 0 && (
                 <Box className={classes.item}>
                   <StarIcon fontSize="small" className={classes.icon} />
@@ -69,17 +79,19 @@ const ProfileBanner = ({ profile, loading }) => {
                   </Typography>
                 </Box>
               )}
-              <Box className={classes.item}>
-                <MemberIcon fontSize="small" className={classes.icon} />
-                <Typography
-                  variant="body1"
-                  color="textSecondary"
-                  component="p"
-                  className={classes.value}
-                >
-                  {!loading && formatDate(profile.created, "MMM ''yy")}
-                </Typography>
-              </Box>
+              {profile.created && (
+                <Box className={classes.item}>
+                  <MemberIcon fontSize="small" className={classes.icon} />
+                  <Typography
+                    variant="body1"
+                    color="textSecondary"
+                    component="p"
+                    className={classes.value}
+                  >
+                    {!loading && formatDate(profile.created, "MMM ''yy")}
+                  </Typography>
+                </Box>
+              )}
             </Box>
           </Box>
         </Box>
@@ -98,7 +110,9 @@ const ProfileBanner = ({ profile, loading }) => {
             loading={loading}
             className={classes.description}
           >
-            {profile.description || "Nothing here yet"}
+            {!loading
+              ? profile.description || "Nothing here yet"
+              : "Fetching user description details"}
           </Typography>
         </Box>
       </Box>
