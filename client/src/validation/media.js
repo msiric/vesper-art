@@ -37,8 +37,12 @@ export const avatarValidation = Yup.object().shape({
   userMedia: Yup.mixed()
     .test(
       "fileType",
-      `File needs to be in one of the following formats: ${upload.user.mimeTypes}`,
-      (value) => !value || (value && upload.user.mimeTypes.includes(value.type))
+      `File needs to be in one of the following formats: ${Object.keys(
+        upload.user.mimeTypes
+      ).map((item) => upload.user.mimeTypes[item].label)}`,
+      (value) =>
+        !value ||
+        (value && Object.keys(upload.user.mimeTypes).includes(value.type))
     )
     .test(
       "fileSize",

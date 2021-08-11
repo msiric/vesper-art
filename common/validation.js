@@ -7,6 +7,7 @@ import {
   upload,
   usernames,
 } from "./constants";
+import { formatMimeTypes } from "./helpers";
 
 export const ranges = {
   firstName: {
@@ -387,7 +388,9 @@ export const errors = {
   },
   artworkMediaType: {
     status: statusCodes.badRequest,
-    message: `File needs to be in one of the following formats: ${upload.artwork.mimeTypes}`,
+    message: `File needs to be in one of the following formats: ${formatMimeTypes(
+      upload.artwork.mimeTypes
+    )}`,
     expose: true,
   },
   artworkMediaSize: {
@@ -399,7 +402,9 @@ export const errors = {
   },
   userMediaType: {
     status: statusCodes.badRequest,
-    message: `File needs to be in one of the following formats: ${upload.user.mimeTypes}`,
+    message: `File needs to be in one of the following formats: ${formatMimeTypes(
+      upload.user.mimeTypes
+    )}`,
     expose: true,
   },
   userMediaSize: {
@@ -876,7 +881,8 @@ export const mediaValidation = Yup.object().shape({
     .test(
       "fileType",
       errors.artworkMediaType.message,
-      (value) => value && upload.artwork.mimeTypes.includes(value.type)
+      (value) =>
+        value && Object.keys(upload.artwork.mimeTypes).includes(value.type)
     )
     .test(
       "fileSize",
@@ -891,28 +897,14 @@ export const mediaValidation = Yup.object().shape({
     ),
 });
 
-/* export const updateArtwork = Yup.object().shape({
-  artworkMedia: Yup.mixed()
-    .test(
-      "fileType",
-      `File needs to be in one of the following formats: ${upload.artwork.mimeTypes}`,
-      (value) =>
-        !value || (value && upload.artwork.mimeTypes.includes(value.type))
-    )
-    .test(
-      "fileSize",
-      // 1048576 = 1024 * 1024
-      `File needs to be less than ${upload.artwork.fileSize / 1048576}MB`,
-      (value) => !value || (value && value.size <= upload.artwork.fileSize)
-    ),
-}); */
-
 export const avatarValidation = Yup.object().shape({
   userMedia: Yup.mixed()
     .test(
       "fileType",
       errors.userMediaType.message,
-      (value) => !value || (value && upload.user.mimeTypes.includes(value.type))
+      (value) =>
+        !value ||
+        (value && Object.keys(upload.user.mimeTypes).includes(value.type))
     )
     .test(
       "fileSize",

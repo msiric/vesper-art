@@ -25,6 +25,7 @@ const commentCardStyles = makeStyles((muiTheme) => ({
   owner: {
     textDecoration: "none",
     color: "white",
+    alignSelf: "flex-start",
     "&:hover": {
       color: artepunktTheme.palette.primary.main,
     },

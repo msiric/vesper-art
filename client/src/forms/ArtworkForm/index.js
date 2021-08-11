@@ -1,15 +1,12 @@
 import { Box } from "@material-ui/core";
-import React, { useState } from "react";
+import React from "react";
 import { featureFlags, upload } from "../../../../common/constants";
+import UploadPopover from "../../components/UploadPopover";
 import { useUserStore } from "../../contexts/global/user";
 import ImageInput from "../../controls/ImageInput/index";
 import PriceInput from "../../controls/PriceInput/index";
 import SelectInput from "../../controls/SelectInput/index";
 import TextInput from "../../controls/TextInput/index";
-import Link from "../../domain/Link";
-import Paper from "../../domain/Paper";
-import Popper from "../../domain/Popper";
-import Typography from "../../domain/Typography";
 
 const ArtworkForm = ({
   capabilities,
@@ -22,7 +19,6 @@ const ArtworkForm = ({
   editable,
   loading,
 }) => {
-  const [state, setState] = useState({ popper: { open: false, anchor: null } });
   const stripeId = useUserStore((state) => state.stripeId);
 
   const { artworkAvailability, artworkType, artworkLicense, artworkUse } =
@@ -37,18 +33,6 @@ const ArtworkForm = ({
         capabilities.cardPayments === "active" &&
         capabilities.platformPayments === "active"
       ));
-
-  const handleClick = (event) => {
-    event.preventDefault();
-    setState((prevState) => ({
-      ...prevState,
-      popper: {
-        ...prevState.popper,
-        open: !prevState.popper.open,
-        anchor: prevState.popper.anchor ? null : event.currentTarget,
-      },
-    }));
-  };
 
   return (
     <Box>
@@ -68,29 +52,16 @@ const ArtworkForm = ({
         isDynamic={true}
         loading={loading}
       />
-      <Box>
-        <Link component="button" variant="body2" onClick={handleClick}>
-          What kind of file to upload?
-        </Link>
-        <Popper
-          open={state.popper.open}
-          anchorEl={state.popper.anchor}
-          transition
-        >
-          <Paper>
-            <Typography>{`Make sure the size of your artwork doesn't exceed ${
-              upload.artwork.fileSize / 1024 / 1024
-            } MB.`}</Typography>
-            <Typography>{`Minimum file dimensions are: ${upload.artwork.fileDimensions.height}x${upload.artwork.fileDimensions.width}.`}</Typography>
-            <Typography>{`Allowed file types are: ${upload.artwork.mimeTypes.map(
-              (item, index) =>
-                index === upload.artwork.mimeTypes.length - 1
-                  ? `${item}.`
-                  : ` ${item}`
-            )}`}</Typography>
-          </Paper>
-        </Popper>
-      </Box>
+      <UploadPopover
+        label="What kind of file to upload?"
+        size={upload.artwork.fileSize / 1024 / 1024}
+        dimensions={{
+          height: upload.artwork.fileDimensions.height,
+          width: upload.artwork.fileDimensions.width,
+        }}
+        aspectRatio={upload.artwork.fileRatio}
+        types={upload.artwork.mimeTypes}
+      />
       <Box>
         <TextInput
           name="artworkTitle"

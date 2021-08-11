@@ -224,3 +224,14 @@ export const formatLicenseValues = (data) => {
       data.licenseUsage === "business" ? data.licenseCompany : "unavailable",
   };
 };
+
+export const formatMimeTypes = (values) => {
+  const mimeTypes = Object.keys(values);
+  return mimeTypes
+    .map((item, index) =>
+      index === mimeTypes.length - 1
+        ? `${values[item].label}.`
+        : `${values[item].label}, `
+    )
+    .join("");
+};

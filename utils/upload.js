@@ -9,20 +9,11 @@ import { uploadS3Object } from "../lib/s3";
 import { checkImageOrientation, formatError } from "./helpers";
 import { errors } from "./statuses";
 
-const SHARP_FORMATS = {
-  "image/png": { type: "png", animated: false },
-  "image/jpg": { type: "jpeg", animated: false },
-  "image/jpeg": { type: "jpeg", animated: false },
-  "image/gif": { type: "gif", animated: true },
-};
-
-const ALLOWED_RATIO = 5;
-
 export const userS3Upload = async ({ filePath, fileName, mimeType }) => {
   const sharpMedia = await sharp(filePath, {
-    animated: SHARP_FORMATS[mimeType].animated,
+    animated: upload.user.mimeTypes[mimeType].animated,
   })
-    [SHARP_FORMATS[mimeType].type]()
+    [upload.user.mimeTypes[mimeType].type]()
     .toBuffer();
   const {
     dominant: { r, g, b },
@@ -39,15 +30,15 @@ export const userS3Upload = async ({ filePath, fileName, mimeType }) => {
 
 export const artworkS3Upload = async ({ filePath, fileName, mimeType }) => {
   const sharpMedia = await sharp(filePath, {
-    animated: SHARP_FORMATS[mimeType].animated,
+    animated: upload.artwork.mimeTypes[mimeType].animated,
   })
-    [SHARP_FORMATS[mimeType].type]()
+    [upload.artwork.mimeTypes[mimeType].type]()
     .toBuffer();
   const sharpCover = await sharp(filePath, {
-    animated: SHARP_FORMATS[mimeType].animated,
+    animated: upload.artwork.mimeTypes[mimeType].animated,
   })
     .resize(upload.artwork.fileTransform.width)
-    [SHARP_FORMATS[mimeType].type]({ quality: 100 })
+    [upload.artwork.mimeTypes[mimeType].type]({ quality: 100 })
     .toBuffer();
   const {
     dominant: { r, g, b },
@@ -75,7 +66,7 @@ export const artworkS3Upload = async ({ filePath, fileName, mimeType }) => {
 export const verifyAspectRatio = async ({ fileHeight, fileWidth }) => {
   const difference =
     Math.max(fileHeight, fileWidth) / Math.min(fileHeight, fileWidth);
-  return difference <= ALLOWED_RATIO;
+  return difference <= upload.artwork.fileRatio;
 };
 
 export const verifyDimensions = async ({ filePath, fileType }) => {
@@ -150,13 +141,15 @@ export const finalizeMediaUpload = async ({
 };
 
 export const artworkFileFilter = (req, file, cb) => {
-  if (upload.artwork.mimeTypes.includes(file.mimetype)) cb(null, true);
+  if (Object.keys(upload.artwork.mimeTypes).includes(file.mimetype))
+    cb(null, true);
   else
     cb(createError(...formatError(validationErrors.artworkMediaType)), false);
 };
 
 export const userFileFilter = (req, file, cb) => {
-  if (upload.user.mimeTypes.includes(file.mimetype)) cb(null, true);
+  if (Object.keys(upload.user.mimeTypes).includes(file.mimetype))
+    cb(null, true);
   else cb(createError(...formatError(validationErrors.userMediaType)), false);
 };
 

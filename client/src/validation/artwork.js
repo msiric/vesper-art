@@ -2,19 +2,6 @@ import * as Yup from "yup";
 import { pricing } from "../../../common/constants";
 
 export const artworkValidation = Yup.object().shape({
-  /*   artworkMedia: Yup.mixed()
-    .required('Artwork needs to have a file')
-    .test(
-      'fileSize',
-      // 1048576 = 1024 * 1024
-      `File needs to be less than ${upload.artwork.fileSize / 1048576}MB`,
-      (value) => value && value.size <= upload.artwork.fileSize
-    )
-    .test(
-      'fileType',
-      `File needs to be in one of the following formats: ${upload.artwork.mimeTypes}`,
-      (value) => value && upload.artwork.mimeTypes.includes(value.type)
-    ), */
   artworkTitle: Yup.string().trim().required("Artwork title is required"),
   artworkAvailability: Yup.string()
     .matches(/(available|unavailable)/)

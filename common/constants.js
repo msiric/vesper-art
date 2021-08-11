@@ -1,4 +1,11 @@
+const MIME_TYPES = {
+  "image/jpeg": { type: "jpeg", label: "JPG", animated: false },
+  "image/png": { type: "png", label: "PNG", animated: false },
+  // $TODO add support for "image/gif",
+  /*   "image/gif": { type: "gif", label: 'GIF', animated: true }, */
+};
 const TRANSFORMED_WIDTH = 640;
+const ALLOWED_RATIO = 4;
 
 export const appName = "Diagon";
 
@@ -17,14 +24,16 @@ export const upload = {
       height: (fileHeight, fileWidth) =>
         fileHeight / (fileWidth / TRANSFORMED_WIDTH),
     },
+    fileRatio: ALLOWED_RATIO,
     // $TODO add support for "image/gif",
-    mimeTypes: ["image/jpeg", "image/png"],
+    mimeTypes: MIME_TYPES,
   },
   user: {
     fileSize: 5 * 1024 * 1024,
     fileDimensions: { height: 150, width: 150 },
     fileTransform: { width: 150 },
-    mimeTypes: ["image/jpeg", "image/png"],
+    fileRatio: ALLOWED_RATIO,
+    mimeTypes: MIME_TYPES,
   },
 };
 
