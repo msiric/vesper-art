@@ -7,6 +7,7 @@ import ListItems from "../../components/ListItems";
 import LicenseSection from "../../containers/LicenseSection/index";
 import VerifierCard from "../../containers/VerifierCard/index";
 import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
+import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import globalStyles from "../../styles/global";
@@ -69,8 +70,9 @@ const Verifier = () => {
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={7}>
-          <VerifierCard />
-          <br />
+          <Box className={globalClasses.bottomSpacing}>
+            <VerifierCard />
+          </Box>
           <LicenseSection />
         </Grid>
         <Grid item xs={12} md={5}>

@@ -2,7 +2,6 @@ import React from "react";
 import DropdownItems from "../../components/DropdownItems";
 import { useUserOrders } from "../../contexts/local/userOrders";
 import Grid from "../../domain/Grid";
-import globalStyles from "../../styles/global";
 import ordersToolbarStyles from "./styles";
 
 const OrderToolbar = () => {
@@ -15,7 +14,6 @@ const OrderToolbar = () => {
     { value: "sales", text: "Sales" },
   ];
 
-  const globalClasses = globalStyles();
   const classes = ordersToolbarStyles();
 
   return (

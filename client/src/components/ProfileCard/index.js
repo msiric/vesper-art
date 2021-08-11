@@ -59,7 +59,17 @@ const ProfileCard = ({ user, loading }) => {
             isUsername: true,
           })}
         </Typography>
-        <Box className={classes.info} loading={loading}>
+        <Box className={classes.info}>
+          {loading && (
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              component="p"
+              loading={loading}
+            >
+              Fetching user details
+            </Typography>
+          )}
           {user.rating > 0 && (
             <Box className={classes.rating}>
               <StarIcon fontSize="small" className={classes.icon} />
@@ -101,11 +111,13 @@ const ProfileCard = ({ user, loading }) => {
           loading={loading}
           className={classes.description}
         >
-          {renderUserData({
-            data: user.description,
-            isUsername: false,
-            fallback: `${user.active ? "Nothing here yet" : "[deleted]"}`,
-          })}
+          {!loading
+            ? renderUserData({
+                data: user.description,
+                isUsername: false,
+                fallback: `${user.active ? "Nothing here yet" : "[deleted]"}`,
+              })
+            : "Fetching user description"}
         </Typography>
       </CardContent>
     </Card>

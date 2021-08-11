@@ -17,13 +17,14 @@ export const upload = {
       height: (fileHeight, fileWidth) =>
         fileHeight / (fileWidth / TRANSFORMED_WIDTH),
     },
-    mimeTypes: ["image/jpg", "image/jpeg", "image/gif", "image/png"],
+    // $TODO add support for "image/gif",
+    mimeTypes: ["image/jpeg", "image/png"],
   },
   user: {
     fileSize: 5 * 1024 * 1024,
     fileDimensions: { height: 150, width: 150 },
     fileTransform: { width: 150 },
-    mimeTypes: ["image/jpg", "image/jpeg", "image/png"],
+    mimeTypes: ["image/jpeg", "image/png"],
   },
 };
 

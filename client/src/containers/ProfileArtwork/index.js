@@ -7,7 +7,6 @@ import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Grid from "../../domain/Grid";
 import useVisibleElement from "../../hooks/useVisibleElement";
-import globalStyles from "../../styles/global";
 import UserArtwork from "../UserArtwork/index";
 import UserFavorites from "../UserFavorites/index";
 import profileArtworkStyles from "./styles";
@@ -29,7 +28,6 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
 
   const isVisible = useVisibleElement(artworkRef, artworkFetched.current);
 
-  const globalClasses = globalStyles();
   const classes = profileArtworkStyles();
 
   useEffect(() => {

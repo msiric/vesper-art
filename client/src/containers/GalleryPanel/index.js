@@ -8,7 +8,6 @@ import { useUserStore } from "../../contexts/global/user";
 import { useUserGallery } from "../../contexts/local/userGallery";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
-import globalStyles from "../../styles/global";
 import { artepunktTheme } from "../../styles/theme";
 import galleryPanelStyles from "./styles";
 
@@ -34,7 +33,6 @@ const GalleryPanel = ({ formatArtwork }) => {
 
   const history = useHistory();
 
-  const globalClasses = globalStyles();
   const classes = galleryPanelStyles();
 
   const options = {

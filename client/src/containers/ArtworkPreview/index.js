@@ -4,7 +4,6 @@ import ImageWrapper from "../../components/ImageWrapper/index";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
-import Divider from "../../domain/Divider";
 import Typography from "../../domain/Typography";
 import artworkPreviewStyles from "./styles";
 
@@ -28,7 +27,6 @@ const ArtworkPreview = ({ paramId }) => {
           version.title
         }, ${new Date(version.created).getFullYear()}`}</Typography>
       </Box>
-      <Divider />
       <Box className={classes.imageWrapper}>
         <ImageWrapper
           height={version.height || 500}
@@ -38,10 +36,8 @@ const ArtworkPreview = ({ paramId }) => {
         />
       </Box>
       <Box>
-        <Divider />
-        <br />
         <Typography loading={loading} className={classes.description}>
-          {version.description}
+          {!loading ? version.description : "Fetching artwork description"}
         </Typography>
         <Box className={classes.disclaimerWrapper}>
           <Typography

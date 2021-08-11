@@ -10,7 +10,6 @@ import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
-import globalStyles from "../../styles/global";
 import homeBannerStyles from "./styles";
 
 const HomeBanner = () => {
@@ -26,7 +25,6 @@ const HomeBanner = () => {
     setBar();
   }, []);
 
-  const globalClasses = globalStyles();
   const classes = homeBannerStyles();
 
   return [

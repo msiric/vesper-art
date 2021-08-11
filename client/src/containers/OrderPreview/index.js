@@ -4,7 +4,6 @@ import ImageWrapper from "../../components/ImageWrapper/index";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
-import Divider from "../../domain/Divider";
 import Typography from "../../domain/Typography";
 import orderPreviewStyles from "./styles";
 
@@ -25,7 +24,6 @@ const OrderPreview = () => {
           loading={loading}
         />
       </Box>
-      <Divider />
       <Box>
         <Typography className={classes.title} loading={loading}>{`${
           version.title

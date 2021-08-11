@@ -11,7 +11,6 @@ import Step from "../../domain/Step";
 import StepConnector from "../../domain/StepConnector";
 import StepLabel from "../../domain/StepLabel";
 import Stepper from "../../domain/Stepper";
-import globalStyles from "../../styles/global";
 import checkoutStepperStyles from "./styles";
 
 const STEPS = [
@@ -64,7 +63,6 @@ const StepperIcons = ({ active, completed, icon }) => {
 };
 
 const CheckoutStepper = ({ step }) => {
-  const globalClasses = globalStyles();
   const classes = checkoutStepperStyles();
 
   return (

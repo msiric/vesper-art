@@ -124,6 +124,7 @@ const OrdersDatatable = () => {
       searchable={true}
       pagination={true}
       addOptions={{ enabled: false, title: "", route: "" }}
+      customPadding={true}
     />
   );
 };

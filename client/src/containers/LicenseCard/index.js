@@ -2,7 +2,6 @@ import React from "react";
 import { formatDate } from "../../../../common/helpers";
 import Datatable from "../../components/DataTable/index";
 import EmptySection from "../../components/EmptySection/index";
-import SubHeading from "../../components/SubHeading/index";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import { capitalizeWord } from "../../utils/helpers";
 import licenseCardStyles from "./styles";
@@ -15,7 +14,7 @@ const LicenseCard = () => {
 
   return (
     <Datatable
-      title={<SubHeading text="License" loading={loading} />}
+      title="License"
       columns={[
         {
           name: "Id",
@@ -74,18 +73,23 @@ const LicenseCard = () => {
         },
       ]}
       data={[
-        [
-          license.id,
-          license.fingerprint,
-          license.type,
-          license.usage === "business"
-            ? license.company || "Hidden"
-            : license.assignee || "Hidden",
-          license.assigneeIdentifier || "Hidden",
-          license.assignorIdentifier || "Hidden",
-          license.price,
-          license.created && formatDate(license.created, "dd/MM/yy HH:mm"),
-        ],
+        ...(!loading
+          ? [
+              [
+                license.id,
+                license.fingerprint,
+                license.type,
+                license.usage === "business"
+                  ? license.company || "Hidden"
+                  : license.assignee || "Hidden",
+                license.assigneeIdentifier || "Hidden",
+                license.assignorIdentifier || "Hidden",
+                license.price,
+                license.created &&
+                  formatDate(license.created, "dd/MM/yy HH:mm"),
+              ],
+            ]
+          : []),
       ]}
       empty={<EmptySection label="License not found" loading={loading} />}
       loading={loading}
@@ -95,6 +99,7 @@ const LicenseCard = () => {
       searchable={false}
       pagination={false}
       addOptions={{ enabled: false, title: "", route: "" }}
+      className="NoTableFooter"
     />
   );
 };

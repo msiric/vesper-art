@@ -169,6 +169,7 @@ const ArtworkDatatable = () => {
         title: "Add artwork",
         route: "artwork/add",
       }}
+      customPadding={true}
     />
   );
 };

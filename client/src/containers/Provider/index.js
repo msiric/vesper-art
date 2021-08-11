@@ -10,7 +10,6 @@ import {
 import { SnackbarProvider } from "notistack";
 import React, { createRef } from "react";
 import { useAppStore } from "../../contexts/global/app";
-import globalStyles from "../../styles/global";
 import { artepunktTheme } from "../../styles/theme";
 import Interceptor from "../Interceptor/indexx";
 
@@ -41,7 +40,6 @@ const Provider = () => {
 
   const notistackRef = createRef();
 
-  const globalClasses = globalStyles();
   const classes = useStyles();
 
   const iconItems = {

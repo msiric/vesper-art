@@ -11,7 +11,6 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Link from "../../domain/Link";
 import Typography from "../../domain/Typography";
-import globalStyles from "../../styles/global";
 
 const RESTORATION_CARDS = [
   {
@@ -63,7 +62,6 @@ const useStyles = makeStyles((muiTheme) => ({
 
 const AccountRestoration = () => {
   const classes = useStyles();
-  const globalClasses = globalStyles();
 
   return (
     <Container>

@@ -24,6 +24,7 @@ const artworkPreviewStyles = makeStyles((muiTheme) => ({
   },
   description: {
     wordBreak: "break-word",
+    marginTop: 8,
     marginBottom: 8,
   },
   disclaimerWrapper: {

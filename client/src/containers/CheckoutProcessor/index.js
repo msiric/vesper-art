@@ -26,7 +26,6 @@ import Grid from "../../domain/Grid";
 import BillingForm from "../../forms/BillingForm/index";
 import LicenseForm from "../../forms/LicenseForm/index";
 import PaymentForm from "../../forms/PaymentForm/index";
-import globalStyles from "../../styles/global";
 import checkoutProcessorStyles from "./styles";
 
 const checkoutValidation = [
@@ -72,7 +71,6 @@ const CheckoutProcessor = () => {
   const licenseValue =
     location.state && location.state.license ? location.state.license : license;
 
-  const globalClasses = globalStyles();
   const classes = checkoutProcessorStyles();
 
   const setDefaultValues = () => ({
@@ -277,7 +275,6 @@ const CheckoutProcessor = () => {
               paying={intentLoading}
               step={step}
             />
-            <br />
           </Grid>
         </>
       ) : (

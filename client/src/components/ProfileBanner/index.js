@@ -9,12 +9,10 @@ import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Typography from "../../domain/Typography";
-import globalStyles from "../../styles/global";
 import ShareButton from "../ShareButton/index";
 import profileBannerStyles from "./styles";
 
 const ProfileBanner = ({ profile, loading }) => {
-  const globalClasses = globalStyles();
   const classes = profileBannerStyles();
 
   return (

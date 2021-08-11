@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { artepunktTheme } from "./theme";
 
-const GlobalStyles = makeStyles((muiTheme) => ({
+const globalStyles = makeStyles((muiTheme) => ({
   gridContainer: {
     padding: artepunktTheme.padding.containerLg,
     margin: artepunktTheme.margin.containerLg,
@@ -12,9 +12,6 @@ const GlobalStyles = makeStyles((muiTheme) => ({
   },
   bottomSpacing: {
     marginBottom: artepunktTheme.spacing.grid,
-  },
-  rightSpacing: {
-    marginRight: artepunktTheme.spacing.grid,
   },
   responsiveSpacing: {
     marginRight: 0,
@@ -28,28 +25,11 @@ const GlobalStyles = makeStyles((muiTheme) => ({
       marginBottom: artepunktTheme.spacing.grid,
     },
   },
-  elementSpacing: {
-    margin: artepunktTheme.margin.elementLg,
-    [muiTheme.breakpoints.down("sm")]: {
-      margin: artepunktTheme.margin.elementSm,
-    },
-  },
   elementWidth: {
     width: "100%",
   },
   mainHeading: {
     marginBottom: 24,
-  },
-  dropdownOption: {
-    [muiTheme.breakpoints.down("sm")]: {
-      width: "100%",
-    },
-  },
-  searchQuery: {
-    margin: 0,
-  },
-  searchType: {
-    display: "none !important",
   },
   "@global": {
     ".illustrationPrimary": {
@@ -65,6 +45,37 @@ const GlobalStyles = makeStyles((muiTheme) => ({
     ".MuiTableCell-body": {
       cursor: ({ hoverable }) => (hoverable ? "pointer" : "auto"),
     },
+    ".MuiSelect-select:focus": {
+      borderRadius: artepunktTheme.shape.borderRadius,
+    },
+    ".MuiTablePagination-toolbar": {
+      [muiTheme.breakpoints.down("xs")]: {
+        display: "flex",
+        flexDirection: "column",
+        padding: 0,
+        marginTop: 10,
+      },
+    },
+    ".MuiTablePagination-actions": {
+      [muiTheme.breakpoints.down("xs")]: {
+        marginLeft: 0,
+        marginRight: 0,
+      },
+    },
+    ".MuiTablePagination-selectRoot": {
+      [muiTheme.breakpoints.down("xs")]: {
+        marginLeft: "0 !important",
+        marginRight: "0 !important",
+      },
+    },
+    ".MuiTableCell-footer > div": {
+      [muiTheme.breakpoints.down("xs")]: {
+        justifyContent: "center",
+      },
+    },
+    ".NoTableFooter .MuiTableBody-root>tr:nth-child(odd)": {
+      background: "transparent",
+    },
     "@keyframes loading": {
       "0%": {
         transform: "rotate(0deg)",
@@ -76,4 +87,4 @@ const GlobalStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-export default GlobalStyles;
+export default globalStyles;
