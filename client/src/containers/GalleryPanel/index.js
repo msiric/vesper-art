@@ -67,9 +67,10 @@ const GalleryPanel = ({ formatArtwork }) => {
         fetching={fetching}
         error={error.refetch}
         empty="No artwork in your gallery"
+        customPadding={true}
         type="masonry"
       >
-        {!loading && (
+        {!loading && !fetching ? (
           <SimpleReactLightbox>
             <SRLWrapper options={options} customCaptions={captions}>
               <Masonry
@@ -90,7 +91,7 @@ const GalleryPanel = ({ formatArtwork }) => {
               </Masonry>
             </SRLWrapper>
           </SimpleReactLightbox>
-        )}
+        ) : null}
       </InfiniteList>
     </Box>
   );

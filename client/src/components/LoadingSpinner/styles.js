@@ -20,6 +20,9 @@ const loadingSpinnerStyles = makeStyles((muiTheme) => ({
       color: "rgba(255, 255, 255, 0.31)",
     },
   },
+  customPadding: {
+    padding: "154px 0",
+  },
 }));
 
 export default loadingSpinnerStyles;

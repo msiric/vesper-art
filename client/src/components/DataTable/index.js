@@ -76,7 +76,7 @@ const DataTable = ({
     textLabels: {
       body: {
         noMatch: loading ? (
-          <LoadingSpinner styles={customPadding && classes.spinner} />
+          <LoadingSpinner customPadding={customPadding} />
         ) : (
           empty
         ),
