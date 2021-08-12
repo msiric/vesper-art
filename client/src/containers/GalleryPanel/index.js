@@ -57,6 +57,25 @@ const GalleryPanel = ({ formatArtwork }) => {
     },
   };
 
+  const masonryElement = (
+    <Masonry
+      breakpointCols={breakpointColumns}
+      className={classes.masonry}
+      columnClassName={classes.column}
+    >
+      {elements.map((item) => (
+        <Card className={classes.card} key={item.id}>
+          <ImageWrapper
+            height={item.height}
+            source={item.media}
+            placeholder={item.dominant}
+            loading={loading}
+          />
+        </Card>
+      ))}
+    </Masonry>
+  );
+
   return (
     <Box className={classes.container}>
       <InfiniteList
@@ -67,31 +86,18 @@ const GalleryPanel = ({ formatArtwork }) => {
         fetching={fetching}
         error={error.refetch}
         empty="No artwork in your gallery"
-        customPadding={true}
         type="masonry"
       >
-        {!loading && !fetching ? (
-          <SimpleReactLightbox>
-            <SRLWrapper options={options} customCaptions={captions}>
-              <Masonry
-                breakpointCols={breakpointColumns}
-                className={classes.masonry}
-                columnClassName={classes.column}
-              >
-                {elements.map((item) => (
-                  <Card className={classes.card} key={item.id}>
-                    <ImageWrapper
-                      height={item.height}
-                      source={item.media}
-                      placeholder={item.dominant}
-                      loading={loading}
-                    />
-                  </Card>
-                ))}
-              </Masonry>
-            </SRLWrapper>
-          </SimpleReactLightbox>
-        ) : null}
+        {!loading &&
+          (!fetching ? (
+            <SimpleReactLightbox>
+              <SRLWrapper options={options} customCaptions={captions}>
+                {masonryElement}
+              </SRLWrapper>
+            </SimpleReactLightbox>
+          ) : (
+            masonryElement
+          ))}
       </InfiniteList>
     </Box>
   );
