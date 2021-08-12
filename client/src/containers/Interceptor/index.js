@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import openSocket from "socket.io-client";
 import useSound from "use-sound";
 import { auth } from "../../../../common/constants";
@@ -12,6 +11,7 @@ import { useAppStore } from "../../contexts/global/app";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
 import { postRefresh } from "../../services/auth";
+import history from "../../utils/history";
 
 const ax = axios.create();
 export const socket = { instance: null, payload: null };
@@ -39,7 +39,6 @@ const Interceptor = () => {
 
   const classes = {};
 
-  const history = useHistory();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleAuthError = () => {
@@ -114,7 +113,12 @@ const Interceptor = () => {
         return Promise.resolve(response);
       },
       async (error) => {
-        console.log("ERROR", error);
+        if (
+          error.response &&
+          error.response.data.message === auth.loginMessage
+        ) {
+          return history.push("/login");
+        }
         if (
           error.response &&
           error.response.config.url === auth.refreshEndpoint

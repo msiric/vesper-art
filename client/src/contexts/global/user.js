@@ -184,7 +184,7 @@ const initActions = (set, get) => ({
       toggleMenu({ event: window.event });
       resetUser();
       resetEvents();
-      history.push("/login");
+      history.push(window.location.pathname);
     } catch (err) {
       console.log(err);
     }
