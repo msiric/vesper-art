@@ -11,7 +11,7 @@ import { SnackbarProvider } from "notistack";
 import React, { createRef } from "react";
 import { useAppStore } from "../../contexts/global/app";
 import { artepunktTheme } from "../../styles/theme";
-import Interceptor from "../Interceptor/indexx";
+import Interceptor from "../Interceptor";
 
 const useStyles = makeStyles(() => ({
   wrapper: {

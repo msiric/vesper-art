@@ -1,4 +1,4 @@
-import { ax } from "../containers/Interceptor/indexx";
+import { ax } from "../containers/Interceptor";
 
 export const getUser = {
   request: async ({ userUsername }) =>

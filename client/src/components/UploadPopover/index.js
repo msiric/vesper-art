@@ -7,7 +7,14 @@ import Popover from "../../domain/Popover";
 import Typography from "../../domain/Typography";
 import popperStyles from "./styles";
 
-const UploadPopover = ({ label, size, dimensions, aspectRatio, types }) => {
+const UploadPopover = ({
+  label,
+  size,
+  dimensions,
+  aspectRatio,
+  types,
+  loading,
+}) => {
   const [state, setState] = useState({ open: false, anchor: null });
 
   const classes = popperStyles();
@@ -23,7 +30,12 @@ const UploadPopover = ({ label, size, dimensions, aspectRatio, types }) => {
 
   return (
     <Box className={classes.container}>
-      <Link component="button" variant="body2" onClick={handleToggle}>
+      <Link
+        component="button"
+        variant="body2"
+        onClick={handleToggle}
+        loading={loading}
+      >
         {label}
       </Link>
       <Popover

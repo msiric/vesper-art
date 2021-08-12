@@ -61,6 +61,7 @@ const ArtworkForm = ({
         }}
         aspectRatio={upload.artwork.fileRatio}
         types={upload.artwork.mimeTypes}
+        loading={loading}
       />
       <Box>
         <TextInput
