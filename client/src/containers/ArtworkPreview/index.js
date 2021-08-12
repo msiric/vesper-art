@@ -32,6 +32,7 @@ const ArtworkPreview = ({ paramId }) => {
           height={version.height || 500}
           source={version.cover.source}
           placeholder={version.cover.dominant}
+          addOverlay={true}
           loading={loading}
         />
       </Box>

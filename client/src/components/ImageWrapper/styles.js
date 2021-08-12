@@ -36,6 +36,17 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
   opacity: {
     opacity: 0.5,
   },
+  overlay: {
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      zIndex: 99,
+    },
+  },
 }));
 
 export default imageWrapperStyles;

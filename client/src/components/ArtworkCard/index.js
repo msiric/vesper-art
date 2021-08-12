@@ -95,7 +95,6 @@ const ArtworkCard = ({
         disableTypography
         className={classes.header}
       />
-
       <ImageWrapper
         redirect={`/artwork/${item.id}`}
         height={item.data.height}
@@ -103,6 +102,7 @@ const ArtworkCard = ({
         placeholder={
           item.data.cover ? item.data.cover.dominant : item.data.dominant
         }
+        addOverlay={true}
         loading={loading}
       />
       <CardActions disableSpacing className={classes.footer}>
