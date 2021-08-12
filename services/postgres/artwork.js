@@ -459,7 +459,7 @@ export const deactivateArtworkVersion = async ({ artworkId, connection }) => {
     .update(Artwork)
     .set({
       active: false,
-      visibility: ARTWORK_SELECTION["ARTWORK_INVISIBILITY_STATUS"],
+      visibility: ARTWORK_SELECTION["INVISIBILITY_STATUS"],
       current: null,
     })
     .where("id = :artworkId AND active = :active", {
@@ -477,7 +477,7 @@ export const deactivateExistingArtwork = async ({ artworkId, connection }) => {
     .update(Artwork)
     .set({
       active: false,
-      visibility: ARTWORK_SELECTION["ARTWORK_INVISIBILITY_STATUS"],
+      visibility: ARTWORK_SELECTION["INVISIBILITY_STATUS"],
     })
     .where("id = :artworkId AND active = :active", {
       artworkId,
