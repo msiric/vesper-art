@@ -39,7 +39,7 @@ const PromptModal = ({
       <Fade in={open}>
         <Box className={classes.content}>
           <Typography className={classes.title}>{promptTitle}</Typography>
-          <Divider />
+          <Divider className={classes.divider} />
           {children && <Box>{children}</Box>}
           <Box className={classes.actions}>
             <AsyncButton

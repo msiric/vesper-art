@@ -13,7 +13,6 @@ import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
-import Divider from "../../domain/Divider";
 import Typography from "../../domain/Typography";
 import LicenseForm from "../../forms/LicenseForm/index";
 import { useLicenseValidator } from "../../hooks/useLicenseValidator";
@@ -214,6 +213,7 @@ const ArtworkInfo = () => {
           downloadArtwork({
             versionId: artwork.current.id,
             values: getValues(),
+            history,
           })
         )}
         handleClose={closeModal}
@@ -227,38 +227,32 @@ const ArtworkInfo = () => {
         {!!orders.length && (
           <HelpBox
             type="alert"
-            label="You already own a license for this artwork"
+            label={
+              licenseStatus.valid
+                ? "You already own a license for this artwork"
+                : licenseStatus.state.message
+            }
+            margin="8px 0"
           >
-            <Box>
+            <Box className={classes.alert}>
               <Typography
-                noWrap
-                variant="body1"
-                component={RouterLink}
-                to="/orders"
                 className={classes.link}
+                component={RouterLink}
+                to={
+                  licenseStatus.valid
+                    ? "/orders"
+                    : `/orders/${licenseStatus.ref.id}`
+                }
+                variant="body1"
+                noWrap
               >
-                Visit your orders
+                {licenseStatus.valid
+                  ? "Visit your orders"
+                  : "Click here to visit your order"}
               </Typography>
             </Box>
-            {!licenseStatus.valid && (
-              <Box>
-                <Typography noWrap variant="body1">
-                  {licenseStatus.state.message}
-                </Typography>
-                <Typography
-                  component={RouterLink}
-                  to={`/orders/${licenseStatus.ref.id}`}
-                  noWrap
-                  variant="body1"
-                  className={classes.link}
-                >
-                  Click here to visit your order
-                </Typography>
-              </Box>
-            )}
           </HelpBox>
         )}
-        <Divider />
         <FormProvider control={control}>
           <form
             onSubmit={handleSubmit(

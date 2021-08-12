@@ -20,7 +20,7 @@ const ratingModalStyles = makeStyles((muiTheme) => ({
     marginBottom: muiTheme.spacing(3),
   },
   title: {
-    paddingBottom: muiTheme.spacing(2),
+    paddingBottom: muiTheme.spacing(1),
   },
   actions: {
     display: "flex",

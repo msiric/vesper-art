@@ -14,7 +14,10 @@ const promptModalStyles = makeStyles((muiTheme) => ({
     borderRadius: muiTheme.shape.borderRadius,
   },
   title: {
-    paddingBottom: muiTheme.spacing(2),
+    paddingBottom: muiTheme.spacing(1),
+  },
+  divider: {
+    marginBottom: muiTheme.spacing(1),
   },
   actions: {
     display: "flex",

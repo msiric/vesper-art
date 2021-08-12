@@ -92,7 +92,7 @@ const initActions = (set) => ({
       }));
     }
   },
-  downloadArtwork: async ({ versionId, values }) => {
+  downloadArtwork: async ({ versionId, values, history }) => {
     try {
       // $TODO either push to the /orders page or add the newly created order to the orders.data array
       await postDownload.request({
@@ -106,6 +106,7 @@ const initActions = (set) => ({
           open: false,
         },
       }));
+      history.push("/orders");
     } catch (err) {
       console.log(err);
     }
