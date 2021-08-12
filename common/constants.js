@@ -2,7 +2,7 @@ const MIME_TYPES = {
   "image/jpeg": { type: "jpeg", label: "JPG", animated: false },
   "image/png": { type: "png", label: "PNG", animated: false },
   // $TODO add support for "image/gif",
-  /*   "image/gif": { type: "gif", label: 'GIF', animated: true }, */
+  /*  "image/gif": { type: "gif", label: "GIF", animated: true }, */
 };
 const TRANSFORMED_WIDTH = 640;
 const ALLOWED_RATIO = 4;

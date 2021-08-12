@@ -1,3 +1,4 @@
+import gifResize from "@gumlet/gif-resize";
 import fs from "fs";
 import createError from "http-errors";
 import imageSize from "image-size";
@@ -9,18 +10,22 @@ import { uploadS3Object } from "../lib/s3";
 import { checkImageOrientation, formatError } from "./helpers";
 import { errors } from "./statuses";
 
+const isGif = (mimeType) => mimeType === "image/gif";
+
 export const userS3Upload = async ({ filePath, fileName, mimeType }) => {
-  const sharpMedia = await sharp(filePath, {
-    animated: upload.user.mimeTypes[mimeType].animated,
-  })
-    [upload.user.mimeTypes[mimeType].type]()
-    .toBuffer();
+  const fileMedia = isGif(mimeType)
+    ? await fs.promises.readFile(filePath)
+    : await sharp(filePath, {
+        animated: upload.user.mimeTypes[mimeType].animated,
+      })
+        [upload.user.mimeTypes[mimeType].type]()
+        .toBuffer();
   const {
     dominant: { r, g, b },
   } = await sharp(filePath).stats();
   const userDominant = rgbToHex(r, g, b);
   const userMediaPath = await uploadS3Object({
-    fileContent: sharpMedia,
+    fileContent: fileMedia,
     folderName: "userMedia",
     fileName,
     mimeType,
@@ -29,29 +34,35 @@ export const userS3Upload = async ({ filePath, fileName, mimeType }) => {
 };
 
 export const artworkS3Upload = async ({ filePath, fileName, mimeType }) => {
-  const sharpMedia = await sharp(filePath, {
-    animated: upload.artwork.mimeTypes[mimeType].animated,
-  })
-    [upload.artwork.mimeTypes[mimeType].type]()
-    .toBuffer();
-  const sharpCover = await sharp(filePath, {
-    animated: upload.artwork.mimeTypes[mimeType].animated,
-  })
-    .resize(upload.artwork.fileTransform.width)
-    [upload.artwork.mimeTypes[mimeType].type]({ quality: 100 })
-    .toBuffer();
+  const fileMedia = isGif(mimeType)
+    ? await fs.promises.readFile(filePath)
+    : await sharp(filePath, {
+        animated: upload.artwork.mimeTypes[mimeType].animated,
+      })
+        [upload.artwork.mimeTypes[mimeType].type]()
+        .toBuffer();
+  const fileCover = isGif(mimeType)
+    ? await gifResize({
+        width: upload.artwork.fileTransform.width,
+      })(fileMedia)
+    : await sharp(filePath, {
+        animated: upload.artwork.mimeTypes[mimeType].animated,
+      })
+        .resize(upload.artwork.fileTransform.width)
+        [upload.artwork.mimeTypes[mimeType].type]({ quality: 100 })
+        .toBuffer();
   const {
     dominant: { r, g, b },
   } = await sharp(filePath).stats();
   const artworkDominant = rgbToHex(r, g, b);
   const artworkCoverPath = await uploadS3Object({
-    fileContent: sharpCover,
+    fileContent: fileCover,
     folderName: "artworkCovers",
     fileName,
     mimeType,
   });
   const artworkMediaPath = await uploadS3Object({
-    fileContent: sharpMedia,
+    fileContent: fileMedia,
     folderName: "artworkMedia",
     fileName,
     mimeType,
