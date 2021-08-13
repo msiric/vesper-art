@@ -7,7 +7,7 @@ const MIME_TYPES = {
 const TRANSFORMED_WIDTH = 640;
 const ALLOWED_RATIO = 4;
 
-export const appName = "Diagon";
+export const appName = "Vesper";
 
 export const featureFlags = {
   stripe: true,

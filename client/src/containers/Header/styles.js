@@ -23,7 +23,7 @@ const headerStyles = makeStyles((muiTheme) => ({
     flex: 1,
   },
   logo: {
-    width: 100,
+    width: 130,
     cursor: "pointer",
     display: "block",
   },

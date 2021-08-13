@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
+import LogoDesktop from "../../assets/images/logo/logo4.svg";
 import { useAppStore } from "../../contexts/global/app";
 import Backdrop from "../../domain/Backdrop";
 import Box from "../../domain/Box";

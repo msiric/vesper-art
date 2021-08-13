@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { searchValidation } from "../../../../common/validation";
-import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
+import LogoDesktop from "../../assets/images/logo/logo4.svg";
 import SyncButton from "../../components/SyncButton";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";

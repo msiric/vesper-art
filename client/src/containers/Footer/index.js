@@ -11,7 +11,7 @@ import {
 import React from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { appName } from "../../../../common/constants";
-import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
+import LogoDesktop from "../../assets/images/logo/logo4.svg";
 import footerStyles from "./styles";
 
 const Footer = () => {
