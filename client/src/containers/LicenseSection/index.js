@@ -4,15 +4,20 @@ import DataTable from "../../components/DataTable";
 import EmptySection from "../../components/EmptySection";
 import SubHeading from "../../components/SubHeading";
 import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
+import Card from "../../domain/Card";
 
 const LicenseSection = () => {
   const license = useLicenseVerifier((state) => state.license.data);
   const loading = useLicenseVerifier((state) => state.license.loading);
 
   return loading || !license ? (
-    <EmptySection label="Enter license fingerprint to inspect the details" />
+    <Card>
+      <EmptySection label="Enter license fingerprint to inspect the details" />
+    </Card>
   ) : isObjectEmpty(license) ? (
-    <EmptySection label="License not found" />
+    <Card>
+      <EmptySection label="License not found" />
+    </Card>
   ) : (
     <DataTable
       title={<SubHeading text="License" loading={loading} />}
@@ -101,6 +106,7 @@ const LicenseSection = () => {
       searchable={false}
       pagination={false}
       addOptions={{ enabled: false, title: "", route: "" }}
+      className="NoTableFooter"
     />
   );
 };

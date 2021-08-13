@@ -1,6 +1,7 @@
 import { makeStyles } from "@material-ui/core";
 import { LabelImportant as ItemIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { ReactComponent as VerifyLicense } from "../../assets/images/illustrations/verify_license.svg";
 import IllustrationCard from "../../components/IllustrationCard";
 import ListItems from "../../components/ListItems";
@@ -10,6 +11,7 @@ import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
 import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
+import Link from "../../domain/Link";
 import globalStyles from "../../styles/global";
 import { artepunktTheme } from "../../styles/theme";
 
@@ -47,13 +49,14 @@ const Verifier = () => {
   const verifierOptions = [
     {
       icon: <ItemIcon />,
-      label: "Enter license fingerprint",
+      label: "Enter license fingerprint to get back basic license information",
     },
     {
       icon: <ItemIcon />,
-      label: "Get back license information",
+      label:
+        "Enter the assignee/assignor identifier to get back detailed information",
     },
-    { icon: <ItemIcon />, label: "Verify data" },
+    { icon: <ItemIcon />, label: "Verify the validity of the license" },
   ];
 
   const reinitializeState = () => {
@@ -80,7 +83,17 @@ const Verifier = () => {
             heading="Verify your license"
             paragraph="Make sure it's used by the right person"
             body={
-              <ListItems className={classes.list} items={verifierOptions} />
+              <Box>
+                <ListItems className={classes.list} items={verifierOptions} />
+                <Link
+                  component={RouterLink}
+                  to="/how_it_works"
+                  variant="body2"
+                  color="primary"
+                >
+                  Learn more
+                </Link>
+              </Box>
             }
             illustration={<VerifyLicense className={classes.illustration} />}
             className={classes.card}
