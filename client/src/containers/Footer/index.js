@@ -39,7 +39,7 @@ const Footer = () => {
           <Grid container className={classes.navigation}>
             <Grid item className={classes.item}>
               <Typography variant="h6" className={classes.heading}>
-                Who are we
+                About
               </Typography>
               <List>
                 <ListItem disableGutters>
@@ -57,7 +57,7 @@ const Footer = () => {
                     component={RouterLink}
                     to="/about"
                   >
-                    About
+                    {`What is ${appName}`}
                   </Typography>
                 </ListItem>
                 <ListItem disableGutters>
@@ -90,15 +90,6 @@ const Footer = () => {
                     to="/start_buying"
                   >{`Buying on ${appName}`}</Typography>
                 </ListItem>
-                <ListItem disableGutters>
-                  <Typography
-                    className={classes.link}
-                    component={RouterLink}
-                    to="/community_guidelines"
-                  >
-                    Trust &amp; safety
-                  </Typography>
-                </ListItem>
               </List>
             </Grid>
             <Grid item className={classes.item}>
@@ -121,7 +112,7 @@ const Footer = () => {
                     component={RouterLink}
                     to="/contact"
                   >
-                    Contact us
+                    Reach out
                   </Typography>
                 </ListItem>
               </List>
