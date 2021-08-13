@@ -32,7 +32,7 @@ const InfiniteList = ({
       dataLength={dataLength}
       next={!loading && !fetching ? next : () => []}
       hasMore={hasMore}
-      loader={!error && <LoadingSpinner customPadding={customPadding} />}
+      loader={!error && <LoadingSpinner styles={!customPadding && classes.spinner} customPadding={customPadding} />}
       className={classes.wrapper}
       height={height}
       {...props}
