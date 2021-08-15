@@ -90,6 +90,15 @@ const Footer = () => {
                     to="/start_buying"
                   >{`Buying on ${appName}`}</Typography>
                 </ListItem>
+                <ListItem disableGutters>
+                  <Typography
+                    className={classes.link}
+                    component={RouterLink}
+                    to="/license_information"
+                  >
+                    License information
+                  </Typography>
+                </ListItem>
               </List>
             </Grid>
             <Grid item className={classes.item}>
@@ -101,9 +110,9 @@ const Footer = () => {
                   <Typography
                     className={classes.link}
                     component={RouterLink}
-                    to="/support"
+                    to="/faq"
                   >
-                    FAQ &amp; support
+                    FAQ
                   </Typography>
                 </ListItem>
                 <ListItem disableGutters>
@@ -144,8 +153,12 @@ const Footer = () => {
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} className={classes.disclosures}>
-              <Link to={""}>Privacy Policy</Link>{" "}
-              <Link to={""}>Terms of Service</Link>{" "}
+              <Link component={RouterLink} to="/privacy_policy">
+                Privacy Policy
+              </Link>
+              <Link component={RouterLink} to={""}>
+                Terms of Service
+              </Link>
             </Grid>
           </Grid>
         </Container>

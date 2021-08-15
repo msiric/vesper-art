@@ -149,7 +149,9 @@ const HowItWorks = () => {
   };
 
   return (
-    <Container className={globalClasses.gridContainer}>
+    <Container
+      className={`${globalClasses.gridContainer} ${globalClasses.smallContainer}`}
+    >
       <Grid container>
         <Grid item sm={12}>
           <MainHeading text="How it works" />
