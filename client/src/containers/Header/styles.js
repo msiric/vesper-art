@@ -22,11 +22,6 @@ const headerStyles = makeStyles((muiTheme) => ({
   grow: {
     flex: 1,
   },
-  logo: {
-    width: 130,
-    cursor: "pointer",
-    display: "block",
-  },
   search: {
     position: "relative",
     marginRight: muiTheme.spacing(2),

@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import LogoDesktop from "../../assets/images/logo/logo4.svg";
+import LogoItem from "../../components/LogoItem";
 import { useAppStore } from "../../contexts/global/app";
 import Backdrop from "../../domain/Backdrop";
 import Box from "../../domain/Box";
@@ -22,12 +22,7 @@ const AuthLayout = ({ children }) => {
         </Backdrop>
       ) : (
         <Box className={classes.appWrapper}>
-          <img
-            src={LogoDesktop}
-            alt="Logo"
-            onClick={() => history.push("/")}
-            className={classes.appLogo}
-          />
+          <LogoItem style={classes.appLogo} />
           <Card className={classes.appContainer}>{children}</Card>
         </Box>
       )}

@@ -11,7 +11,7 @@ import {
 import React from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { appName } from "../../../../common/constants";
-import LogoDesktop from "../../assets/images/logo/logo4.svg";
+import LogoItem from "../../components/LogoItem";
 import footerStyles from "./styles";
 
 const Footer = () => {
@@ -138,12 +138,7 @@ const Footer = () => {
           <Divider />
           <Grid container className={classes.disclaimers}>
             <Grid item xs={12} sm={6} className={classes.copyright}>
-              <img
-                src={LogoDesktop}
-                alt="Logo"
-                onClick={() => history.push("/")}
-                className={classes.logo}
-              />
+              <LogoItem />
               <Typography className={classes.link} component={RouterLink} to="">
                 Copyright &copy; {new Date().getFullYear()}
               </Typography>

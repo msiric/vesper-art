@@ -9,6 +9,8 @@ const ALLOWED_RATIO = 4;
 
 export const appName = "Vesper";
 
+export const domainName = "vesperart.co";
+
 export const featureFlags = {
   stripe: true,
   payment: true,

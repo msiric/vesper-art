@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { searchValidation } from "../../../../common/validation";
-import LogoDesktop from "../../assets/images/logo/logo4.svg";
+import LogoItem from "../../components/LogoItem";
 import SyncButton from "../../components/SyncButton";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
@@ -53,12 +53,7 @@ const Header = () => {
       <AppBar position="static" className={classes.container}>
         <Toolbar className={classes.toolbar}>
           <Box className={classes.wrapper}>
-            <img
-              src={LogoDesktop}
-              alt="Logo"
-              onClick={() => history.push("/")}
-              className={classes.logo}
-            />
+            <LogoItem />
             <Box className={classes.search}>
               <FormProvider control={control}>
                 <form
