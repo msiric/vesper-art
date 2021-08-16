@@ -55,13 +55,16 @@ const About = () => {
     >
       <Grid container spacing={2}>
         <Grid item sm={12}>
-          {!featureFlags.stripe && (
-            <HelpBox
-              type="alert"
-              label={unavailableMessage}
-              margin="0 0 12px 0"
-            />
-          )}
+          {
+            // FEATURE FLAG - stripe
+            !featureFlags.stripe && (
+              <HelpBox
+                type="alert"
+                label={unavailableMessage}
+                margin="0 0 12px 0"
+              />
+            )
+          }
           <Typography variant="h4">{`What is ${appName}`}</Typography>
           <Typography className={classes.paragraph}>
             {`${appName} is on a mission to transform the way artists upload, showcase and sell their artwork. 

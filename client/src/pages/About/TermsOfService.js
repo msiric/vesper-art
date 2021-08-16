@@ -61,13 +61,16 @@ const TermsOfService = () => {
     >
       <Grid container spacing={2}>
         <Grid item sm={12}>
-          {!featureFlags.stripe && (
-            <HelpBox
-              type="alert"
-              label={unavailableMessage}
-              margin="0 0 12px 0"
-            />
-          )}
+          {
+            // FEATURE FLAG - stripe
+            !featureFlags.stripe && (
+              <HelpBox
+                type="alert"
+                label={unavailableMessage}
+                margin="0 0 12px 0"
+              />
+            )
+          }
           <Typography variant="h4">Terms of service</Typography>
           <Typography variant="h5" className={classes.heading}>
             {`Introduction`}

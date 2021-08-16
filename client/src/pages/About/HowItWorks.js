@@ -159,13 +159,16 @@ const HowItWorks = () => {
     >
       <Grid container>
         <Grid item sm={12}>
-          {!featureFlags.stripe && (
-            <HelpBox
-              type="alert"
-              label={unavailableMessage}
-              margin="0 0 12px 0"
-            />
-          )}
+          {
+            // FEATURE FLAG - stripe
+            !featureFlags.stripe && (
+              <HelpBox
+                type="alert"
+                label={unavailableMessage}
+                margin="0 0 12px 0"
+              />
+            )
+          }
           <MainHeading text="How it works" />
           <Typography className={classes.paragraph}>
             {`${appName} is a digital art marketplace that allows art lovers to view, download and purchase art from other artists while protecting both sides 

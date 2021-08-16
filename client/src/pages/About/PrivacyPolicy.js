@@ -57,13 +57,16 @@ const PrivacyPolicy = () => {
     >
       <Grid container spacing={2}>
         <Grid item sm={12}>
-          {!featureFlags.stripe && (
-            <HelpBox
-              type="alert"
-              label={unavailableMessage}
-              margin="0 0 12px 0"
-            />
-          )}
+          {
+            // FEATURE FLAG - stripe
+            !featureFlags.stripe && (
+              <HelpBox
+                type="alert"
+                label={unavailableMessage}
+                margin="0 0 12px 0"
+              />
+            )
+          }
           <Typography variant="h4">Privacy policy</Typography>
           <Typography className={classes.paragraph}>
             {`This Platform was built with your privacy in mind. This Privacy Policy (Policy) describes how your Personal Information is collected, used, shared, and secured when you visit the Platform (www.${domainName}).
