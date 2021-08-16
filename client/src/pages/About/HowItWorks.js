@@ -1,7 +1,11 @@
 import { makeStyles } from "@material-ui/core";
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { appName } from "../../../../common/constants";
+import {
+  appName,
+  featureFlags,
+  unavailableMessage,
+} from "../../../../common/constants";
 import { ReactComponent as ArtworkGallery } from "../../assets/images/illustrations/artwork_gallery.svg";
 import { ReactComponent as BrowseArtwork } from "../../assets/images/illustrations/browse_artwork.svg";
 import { ReactComponent as DisplayCollection } from "../../assets/images/illustrations/display_collection.svg";
@@ -14,6 +18,7 @@ import { ReactComponent as SelectArtwork } from "../../assets/images/illustratio
 import { ReactComponent as StripePayment } from "../../assets/images/illustrations/stripe_payment.svg";
 import { ReactComponent as UploadArtwork } from "../../assets/images/illustrations/upload_artwork.svg";
 import { ReactComponent as WorkingArtist } from "../../assets/images/illustrations/working_artist.svg";
+import HelpBox from "../../components/HelpBox";
 import MainHeading from "../../components/MainHeading";
 import SwipeCard from "../../components/SwipeCard";
 import SyncButton from "../../components/SyncButton";
@@ -154,6 +159,13 @@ const HowItWorks = () => {
     >
       <Grid container>
         <Grid item sm={12}>
+          {!featureFlags.stripe && (
+            <HelpBox
+              type="alert"
+              label={unavailableMessage}
+              margin="0 0 12px 0"
+            />
+          )}
           <MainHeading text="How it works" />
           <Typography className={classes.paragraph}>
             {`${appName} is a digital art marketplace that allows art lovers to view, download and purchase art from other artists while protecting both sides 

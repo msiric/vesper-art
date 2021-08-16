@@ -1,7 +1,12 @@
 import { makeStyles } from "@material-ui/core";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { appName } from "../../../../common/constants";
+import {
+  appName,
+  featureFlags,
+  unavailableMessage,
+} from "../../../../common/constants";
+import HelpBox from "../../components/HelpBox";
 import SyncButton from "../../components/SyncButton";
 import Box from "../../domain/Box";
 import Container from "../../domain/Container";
@@ -50,6 +55,13 @@ const About = () => {
     >
       <Grid container spacing={2}>
         <Grid item sm={12}>
+          {!featureFlags.stripe && (
+            <HelpBox
+              type="alert"
+              label={unavailableMessage}
+              margin="0 0 12px 0"
+            />
+          )}
           <Typography variant="h4">{`What is ${appName}`}</Typography>
           <Typography className={classes.paragraph}>
             {`${appName} is on a mission to transform the way artists upload, showcase and sell their artwork. 

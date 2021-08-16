@@ -17,6 +17,9 @@ export const featureFlags = {
   discount: true,
 };
 
+export const unavailableMessage =
+  "Please note that information regarding purchasing and selling licenses for commercial artwork is not currently applicable. This feature is not yet available and is coming soon.";
+
 export const upload = {
   artwork: {
     fileSize: 10 * 1024 * 1024,

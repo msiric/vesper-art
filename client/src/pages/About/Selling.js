@@ -1,7 +1,13 @@
 import { makeStyles } from "@material-ui/core";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { appName, payment } from "../../../../common/constants";
+import {
+  appName,
+  featureFlags,
+  payment,
+  unavailableMessage,
+} from "../../../../common/constants";
+import HelpBox from "../../components/HelpBox";
 import SyncButton from "../../components/SyncButton";
 import Box from "../../domain/Box";
 import Container from "../../domain/Container";
@@ -50,6 +56,13 @@ const Selling = () => {
     >
       <Grid container spacing={2}>
         <Grid item sm={12}>
+          {!featureFlags.stripe && (
+            <HelpBox
+              type="alert"
+              label={unavailableMessage}
+              margin="0 0 12px 0"
+            />
+          )}
           <Typography variant="h4">{`Selling on ${appName}`}</Typography>
           <Typography className={classes.paragraph}>
             {`Signing up is free and required for artists to start selling art on ${appName}. When you sign up, you will be able to upload, sell and control the way users can interact with your artwork. 

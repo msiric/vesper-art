@@ -1,6 +1,11 @@
 import { makeStyles } from "@material-ui/core";
 import React from "react";
-import { appName } from "../../../../common/constants";
+import {
+  appName,
+  featureFlags,
+  unavailableMessage,
+} from "../../../../common/constants";
+import HelpBox from "../../components/HelpBox";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
@@ -47,6 +52,13 @@ const LicenseInformation = () => {
     >
       <Grid container spacing={2}>
         <Grid item sm={12}>
+          {!featureFlags.stripe && (
+            <HelpBox
+              type="alert"
+              label={unavailableMessage}
+              margin="0 0 12px 0"
+            />
+          )}
           <Typography variant="h4">License information</Typography>
           <Typography className={classes.paragraph}>
             {`When downloading or purchasing artwork on ${appName}, you will be assigned a license based on the information you entered. 
