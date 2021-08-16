@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
-import React, { lazy, Suspense } from "react";
-import { Redirect, Route, Router, Switch } from "react-router-dom";
+import React, { lazy, Suspense, useEffect } from "react";
+import { Redirect, Route, Router, Switch, useLocation } from "react-router-dom";
 import { featureFlags } from "../../common/constants";
 import LoadingSpinner from "./components/LoadingSpinner";
 import TopBar from "./components/TopBar";
@@ -277,55 +277,63 @@ const LoadingWrapper = () => {
   );
 };
 
-const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
-  <Route
-    {...rest}
-    render={(props) => {
-      if (rest.type === "auth") {
-        if (!rest.token) {
-          return (
-            <AuthLayout>
-              <Suspense fallback={<TopBar />}>
-                <Component key={props.location.key} {...props} />
-              </Suspense>
-            </AuthLayout>
-          );
-        } else {
-          return (
-            <Redirect
-              to={{
-                pathname: "/",
-                state: {
-                  from: props.location,
-                },
-              }}
-            />
-          );
+const AppRoute = ({ component: Component, layout: Layout, ...rest }) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
+  return (
+    <Route
+      {...rest}
+      render={(props) => {
+        if (rest.type === "auth") {
+          if (!rest.token) {
+            return (
+              <AuthLayout>
+                <Suspense fallback={<TopBar />}>
+                  <Component key={props.location.key} {...props} />
+                </Suspense>
+              </AuthLayout>
+            );
+          } else {
+            return (
+              <Redirect
+                to={{
+                  pathname: "/",
+                  state: {
+                    from: props.location,
+                  },
+                }}
+              />
+            );
+          }
+        } else if (rest.type === "protected") {
+          if (!rest.token) {
+            return (
+              <Redirect
+                to={{
+                  pathname: "/login",
+                  state: {
+                    from: rest.location,
+                  },
+                }}
+              />
+            );
+          }
         }
-      } else if (rest.type === "protected") {
-        if (!rest.token) {
-          return (
-            <Redirect
-              to={{
-                pathname: "/login",
-                state: {
-                  from: rest.location,
-                },
-              }}
-            />
-          );
-        }
-      }
-      return (
-        <MainLayout>
-          <Suspense fallback={<LoadingWrapper />}>
-            <Component key={props.location.key} {...props} />
-          </Suspense>
-        </MainLayout>
-      );
-    }}
-  />
-);
+        return (
+          <MainLayout>
+            <Suspense fallback={<LoadingWrapper />}>
+              <Component key={props.location.key} {...props} />
+            </Suspense>
+          </MainLayout>
+        );
+      }}
+    />
+  );
+};
 
 const AppRouter = () => {
   const userToken = useUserStore((state) => state.token);
