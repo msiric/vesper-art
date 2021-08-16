@@ -2,6 +2,7 @@ import create from "zustand";
 import { getArtwork } from "../../services/artwork";
 import {
   getBarState,
+  getWrapperState,
   resolveAsyncError,
   resolvePaginationId,
 } from "../../utils/helpers";
@@ -21,6 +22,10 @@ const initialState = {
     },
   },
   bar: {
+    visible: false,
+    message: "",
+  },
+  wrapper: {
     visible: false,
     message: "",
   },
@@ -80,6 +85,16 @@ const initActions = (set, get) => ({
       bar: {
         ...state.bar,
         ...barState,
+      },
+    }));
+  },
+  setWrapper: () => {
+    const wrapperState = getWrapperState();
+    set((state) => ({
+      ...state,
+      wrapper: {
+        ...state.wrapper,
+        ...wrapperState,
       },
     }));
   },

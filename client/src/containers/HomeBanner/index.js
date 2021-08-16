@@ -15,22 +15,35 @@ import homeBannerStyles from "./styles";
 const HomeBanner = () => {
   const authenticated = useUserStore((state) => state.authenticated);
 
-  const visible = useHomeArtwork((state) => state.bar.visible);
-  const message = useHomeArtwork((state) => state.bar.message);
+  const barVisible = useHomeArtwork((state) => state.bar.visible);
+  const barMessage = useHomeArtwork((state) => state.bar.message);
+  const wrapperVisible = useHomeArtwork((state) => state.wrapper.visible);
+  const wrapperMessage = useHomeArtwork((state) => state.wrapper.message);
   const setBar = useHomeArtwork((state) => state.setBar);
+  const setWrapper = useHomeArtwork((state) => state.setWrapper);
   const fetchArtwork = useHomeArtwork((state) => state.fetchArtwork);
 
   useEffect(() => {
     fetchArtwork();
     setBar();
+    setWrapper();
   }, []);
 
   const classes = homeBannerStyles();
 
   return [
     <Grid item xs={12} md={9}>
-      {visible && <HelpBox type="alert" label={message} />}
+      {barVisible && (
+        <HelpBox type="alert" label={barMessage} margin="0 0 12px 0" />
+      )}
       <Card className={classes.banner}>
+        {wrapperVisible && (
+          <Box className={classes.beta}>
+            <Typography className={classes.message}>
+              {wrapperMessage}
+            </Typography>
+          </Box>
+        )}
         <CardContent className={classes.content}>
           <Box className={classes.wrapper}>
             <Typography className={classes.bannerHeading}>

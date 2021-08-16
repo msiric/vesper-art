@@ -75,5 +75,11 @@ export const getBarState = () => ({
   message: "Purchasing artwork is temporarily disabled",
 });
 
+// FEATURE FLAG (not really) - beta
+export const getWrapperState = () => ({
+  visible: true,
+  message: "Beta",
+});
+
 export const capitalizeWord = ({ value }) =>
   value ? value[0].toUpperCase() + value.slice(1).toLowerCase() : value;

@@ -1,5 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 import Banner from "../../assets/images/banner/banner.jpg";
+import { artepunktTheme } from "../../styles/theme";
 
 const Styles = makeStyles((muiTheme) => ({
   banner: {
@@ -45,6 +46,21 @@ const Styles = makeStyles((muiTheme) => ({
     [muiTheme.breakpoints.down("md")]: {
       padding: 0,
     },
+  },
+  beta: {
+    position: "absolute",
+    top: "10px",
+    right: "-40px",
+    transform: "rotateY(0deg) rotate(45deg)",
+    background: "white",
+    width: 136,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  message: {
+    color: artepunktTheme.palette.primary.main,
+    fontSize: 24,
   },
   bannerHeading: {
     textAlign: "center",
