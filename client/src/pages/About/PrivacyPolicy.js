@@ -1,6 +1,7 @@
 import { makeStyles } from "@material-ui/core";
 import React from "react";
 import { domainName } from "../../../../common/constants";
+import ListItems from "../../components/ListItems";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
@@ -60,28 +61,70 @@ const PrivacyPolicy = () => {
             {`Personal Information Collected`}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Information may be collected that is reasonably capable of identifying you as an individual (Personal Information). Personal Information does not include anonymous or aggregate information that does not identify you as an individual.
-            - **Creating a User Account**: If you sign up to use the Platform, you are required to provide your full name. Additionally, you might provide your location, website and biographical information.
-            - **Visiting the Site**: Basic analytics data is collected when you access or use the Platform through Cookies. See more about the Cookies Policy below for more information about the Cookies used and data collected.`}
+            {`Information may be collected that is reasonably capable of identifying you as an individual (Personal Information). Personal Information does not include anonymous or aggregate information that does not identify you as an individual.`}
           </Typography>
+          <Typography className={classes.paragraph}>
+            {`Creating a User Account:`}
+          </Typography>
+          <ListItems
+            noPadding={true}
+            items={[
+              {
+                label: `If you sign up to use the Platform, you are required to provide your full name. Additionally, you might provide your location, website and biographical information.`,
+                icon: null,
+              },
+            ]}
+          />
+          <Typography className={classes.paragraph}>
+            {`Visiting the Site:`}
+          </Typography>
+          <ListItems
+            noPadding={true}
+            items={[
+              {
+                label: `Basic analytics data is collected when you access or use the Platform through Cookies. See more about the Cookies Policy below for more information about the Cookies used and data collected.`,
+                icon: null,
+              },
+            ]}
+          />
           <Typography variant="h5" className={classes.heading}>
             {`What Is Done With The Collected Information`}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`Personal Information is collected in order to:
-            - Make the Platform work and enable you to list, collect and purchase/sell digital art;
-            - Provide you with critical updates, confirmations, or security alerts;
-            - Provide support or respond to your comments or questions;
-            - Personalize and improve your experience;
-            - Analyze and improve the Platform.`}
+            {`Personal Information is collected in order to:`}
           </Typography>
+          <ListItems
+            noPadding={true}
+            items={[
+              {
+                label: `make the Platform work and enable you to list, collect and purchase/sell digital art;`,
+                icon: null,
+              },
+              {
+                label: `provide you with critical updates, confirmations, or security alerts;`,
+                icon: null,
+              },
+              {
+                label: `provide support or respond to your comments or questions;`,
+                icon: null,
+              },
+              {
+                label: `personalize and improve your experience;`,
+                icon: null,
+              },
+              {
+                label: `analyze and improve the Platform.`,
+                icon: null,
+              },
+            ]}
+          />
           <Typography
             variant="h5"
             className={classes.heading}
           >{`Cookies`}</Typography>
           <Typography className={classes.paragraph}>
             {`Basic analytics data is collected through Cookies when you access or use the Platform. 
-            A “**Cookie**” is a small piece of data or text file stored on the local hard disk of your computer or mobile device. 
+            A Cookie is a small piece of data or text file stored on the local hard disk of your computer or mobile device. 
             These include first-party Cookies used by the platform and third-party Cookies. Some Cookies are only stored temporarily and destroyed each time you close your web browser. 
             Others may remain on your browser and may collect and store data for a period of time after you have left the Platform.`}
           </Typography>
@@ -89,15 +132,35 @@ const PrivacyPolicy = () => {
             {`How are Cookies used`}
           </Typography>
           <Typography className={classes.paragraph}>
-            {`- **Functionality:** The Platform uses Cookies to ensure the Platform functions properly, including authentication and page loads.
-            - **Google Analytics:** Google Analytics is used to understand how users interact with the Platform. `}
+            {`Functionality:`}
           </Typography>
+          <ListItems
+            noPadding={true}
+            items={[
+              {
+                label: `the Platform uses Cookies to ensure the Platform functions properly, including authentication and page loads.`,
+                icon: null,
+              },
+            ]}
+          />
+          <Typography className={classes.paragraph}>
+            {`Google Analytics:`}
+          </Typography>
+          <ListItems
+            noPadding={true}
+            items={[
+              {
+                label: `Google Analytics is used to understand how users interact with the Platform.`,
+                icon: null,
+              },
+            ]}
+          />
           <Typography
             variant="h5"
             className={classes.heading}
           >{`Your Rights`}</Typography>
           <Typography className={classes.paragraph}>
-            {`You may reach out at [p](mailto:info@${domainName}) to erase, update or correct any Personal Information that was collected about you.`}
+            {`You may reach out at info@${domainName} to erase, update or correct any Personal Information that was collected about you.`}
           </Typography>
           <Typography variant="h5" className={classes.heading}>
             {`Minors and Children`}

@@ -168,6 +168,12 @@ const routes = [
     exact: true,
     type: "public",
   },
+  {
+    path: "/terms_of_service",
+    Component: lazy(() => import("./pages/About/TermsOfService")),
+    exact: true,
+    type: "public",
+  },
   // Notifications router
   // {
   //   path: "/notifications",

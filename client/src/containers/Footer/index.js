@@ -20,19 +20,6 @@ const Footer = () => {
   const history = useHistory();
 
   return (
-    // old
-    // <footer className={classes.footerContainer}>
-    //   <Container>
-    //     <Typography variant="body2" color="textSecondary">
-    //       {"Copyright © "}
-    //       <Link color="inherit" href="https://material-ui.com/">
-    //         Material UI
-    //       </Link>{" "}
-    //       {new Date().getFullYear()}
-    //       {"."}
-    //     </Typography>
-    //   </Container>
-    // </footer>
     <footer className={classes.container}>
       <Toolbar>
         <Container>
@@ -156,7 +143,7 @@ const Footer = () => {
               <Link component={RouterLink} to="/privacy_policy">
                 Privacy Policy
               </Link>
-              <Link component={RouterLink} to={""}>
+              <Link component={RouterLink} to={"/terms_of_service"}>
                 Terms of Service
               </Link>
             </Grid>
