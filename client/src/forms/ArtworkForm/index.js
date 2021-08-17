@@ -28,11 +28,7 @@ const ArtworkForm = ({
   const isDisabled =
     !featureFlags.stripe ||
     !stripeId ||
-    (stripeId &&
-      !(
-        capabilities.cardPayments === "active" &&
-        capabilities.platformPayments === "active"
-      ));
+    (stripeId && !(capabilities.platformPayments === "active"));
 
   return (
     <Box>

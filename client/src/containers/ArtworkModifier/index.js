@@ -103,11 +103,9 @@ const ArtworkModifier = ({ paramId }) => {
         <HelpBox type="alert" label={stripeDisabled} />
       ) : !stripeId ? (
         <HelpBox type="alert" label={notOnboarded} />
-      ) : capabilities.cardPayments === "pending" ||
-        capabilities.platformPayments === "pending" ? (
+      ) : capabilities.platformPayments === "pending" ? (
         <HelpBox type="alert" label={pendingVerification} />
-      ) : capabilities.cardPayments !== "active" ||
-        capabilities.platformPayments !== "active" ? (
+      ) : capabilities.platformPayments !== "active" ? (
         <HelpBox type="alert" label={incompleteInformation} />
       ) : null
     ) : null;
