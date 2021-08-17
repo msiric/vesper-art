@@ -12,6 +12,7 @@ const promptModalStyles = makeStyles((muiTheme) => ({
     boxShadow: muiTheme.shadows[5],
     padding: muiTheme.spacing(2),
     borderRadius: muiTheme.shape.borderRadius,
+    maxWidth: 400,
   },
   title: {
     paddingBottom: muiTheme.spacing(1),
