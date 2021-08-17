@@ -79,6 +79,12 @@ const globalStyles = makeStyles((muiTheme) => ({
     ".NoTableFooter .MuiTableBody-root>tr:nth-child(odd)": {
       background: "transparent",
     },
+    "[class*='MUIDataTableSearch-main']": {
+      [muiTheme.breakpoints.down("xs")]: {
+        display: "flex",
+        justifyContent: "center",
+      },
+    },
     "@keyframes loading": {
       "0%": {
         transform: "rotate(0deg)",
