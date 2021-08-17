@@ -61,6 +61,7 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
     .leftJoinAndSelect("order.license", "license")
     .select([
       ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...ORDER_SELECTION["DETAILED_INFO"](),
       ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
       ...LICENSE_SELECTION["USAGE_INFO"](),
       ...LICENSE_SELECTION["ASSIGNEE_INFO"](),

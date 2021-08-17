@@ -56,7 +56,6 @@ export const constructStripeIntent = async ({
     amount: intentAmount,
     currency: intentCurrency,
     application_fee_amount: intentFee,
-    on_behalf_of: sellerId,
     transfer_data: {
       destination: sellerId,
     },

@@ -21,8 +21,8 @@ export const getOrders = {
 };
 export const getPurchases = {
   // datatable (cursor, limit not needed)
-  request: async ({ artworkId }) =>
-    await ax.get(`/api/orders/purchases/${artworkId}`),
+  request: async ({ versionId }) =>
+    await ax.get(`/api/orders/purchases/${versionId}`),
   success: { message: "Orders successfully fetched", variant: "success" },
   error: { message: "Failed to fetch orders", variant: "error" },
 };

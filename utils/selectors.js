@@ -144,6 +144,11 @@ export const ORDER_SELECTION = {
     `${selector}.status`,
     `${selector}.created`,
   ],
+  DETAILED_INFO: (selector = DEFAULT_VALUES.ORDER) => [
+    `${selector}.spent`,
+    `${selector}.earned`,
+    `${selector}.fee`,
+  ],
   ARTWORK_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.artworkId`],
   VERSION_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.versionId`],
   SELLER_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.sellerId`],

@@ -2,7 +2,6 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const checkoutStepperStyles = makeStyles((muiTheme) => ({
   wrapper: {
-    height: "100%",
     width: "100%",
   },
   icon: {

@@ -57,7 +57,7 @@ const initActions = (set) => ({
       }));
     }
   },
-  fetchOrders: async ({ artworkId }) => {
+  fetchOrders: async ({ versionId }) => {
     try {
       set((state) => ({
         ...state,
@@ -67,7 +67,7 @@ const initActions = (set) => ({
         },
       }));
       const { data } = await getPurchases.request({
-        artworkId,
+        versionId,
       });
       set((state) => ({
         ...state,

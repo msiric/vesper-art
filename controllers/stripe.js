@@ -56,7 +56,7 @@ export const receiveWebhookEvent = async ({
   stripeBody,
   connection,
 }) => {
-  console.log("$TEST CHECKOUT RECEIVED WEBHOOK");
+  console.log("$TEST CHECKOUT RECEIVED WEBHOOK", stripeSignature, stripeBody);
   const stripeSecret = stripeConfig.webhookSecret;
   let stripeEvent;
 
@@ -67,7 +67,7 @@ export const receiveWebhookEvent = async ({
       stripeSignature,
     });
   } catch (err) {
-    console.log("$TEST CHECKOUT event error");
+    console.log("$TEST CHECKOUT event error", err);
   }
 
   console.log("$TEST CHECKOUT stripe event", stripeEvent.type);
@@ -81,7 +81,7 @@ export const receiveWebhookEvent = async ({
         await processTransaction({ stripeIntent: paymentIntent, connection });
       }
       break;
-    case "payment_intent.failed":
+    case "payment_intent.payment_failed":
       console.log("$TEST CHECKOUT Failed payment");
       break;
     default:
@@ -409,6 +409,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     const discountId = orderData.discountId;
     const intentId = stripeIntent.id;
     console.log("IDS DECODED");
+    console.log("ORDER DATA", orderData);
     const {
       licenseAssignee,
       licenseAssignor,
@@ -488,6 +489,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     // new end
     return formatResponse(responses.paymentProcessed);
   } catch (err) {
+    console.log("TRANSACTION FAILED", err);
     const foundIntent = await retrieveStripeIntent({
       intentId: stripeIntent.id,
       connection,

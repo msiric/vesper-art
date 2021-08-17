@@ -4,7 +4,7 @@ import { useElements, useStripe } from "@stripe/react-stripe-js";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory, useLocation, useParams } from "react-router-dom";
-import { isFormAltered } from "../../../../common/helpers";
+import { isFormAltered, isLicenseValid } from "../../../../common/helpers";
 import {
   billingValidation,
   emptyValidation,
@@ -13,6 +13,7 @@ import {
 import AsyncButton from "../../components/AsyncButton";
 import CheckoutStatus from "../../components/CheckoutStatus";
 import CheckoutStepper from "../../components/CheckoutStepper";
+import LicenseAlert from "../../components/LicenseAlert";
 import ListItems from "../../components/ListItems";
 import SyncButton from "../../components/SyncButton";
 import CheckoutSummary from "../../containers/CheckoutSummary/index";
@@ -26,13 +27,8 @@ import Grid from "../../domain/Grid";
 import BillingForm from "../../forms/BillingForm/index";
 import LicenseForm from "../../forms/LicenseForm/index";
 import PaymentForm from "../../forms/PaymentForm/index";
+import { useLicenseValidator } from "../../hooks/useLicenseValidator";
 import checkoutProcessorStyles from "./styles";
-
-const checkoutValidation = [
-  licenseValidation,
-  billingValidation,
-  emptyValidation,
-];
 
 const STEPS = [
   "License information",
@@ -46,6 +42,7 @@ const CheckoutProcessor = () => {
   const userName = useUserStore((state) => state.fullName);
 
   const version = useOrderCheckout((state) => state.version.data);
+  const orders = useOrderCheckout((state) => state.orders.data);
   const intent = useOrderCheckout((state) => state.intent.data);
   const discount = useOrderCheckout((state) => state.discount.data);
   const license = useOrderCheckout((state) => state.license);
@@ -59,6 +56,7 @@ const CheckoutProcessor = () => {
   const changeDiscount = useOrderCheckout((state) => state.changeDiscount);
   const changeStep = useOrderCheckout((state) => state.changeStep);
   const fetchCheckout = useOrderCheckout((state) => state.fetchCheckout);
+  const fetchOrders = useOrderCheckout((state) => state.fetchOrders);
   const saveIntent = useOrderCheckout((state) => state.saveIntent);
   const submitPayment = useOrderCheckout((state) => state.submitPayment);
   const reflectErrors = useOrderCheckout((state) => state.reflectErrors);
@@ -72,6 +70,10 @@ const CheckoutProcessor = () => {
     location.state && location.state.license ? location.state.license : license;
 
   const classes = checkoutProcessorStyles();
+
+  const licenseResolver = useLicenseValidator(licenseValidation);
+
+  const checkoutValidation = [{}, billingValidation, emptyValidation];
 
   const setDefaultValues = () => ({
     licenseUsage: "",
@@ -98,14 +100,24 @@ const CheckoutProcessor = () => {
     reset,
   } = useForm({
     defaultValues: setDefaultValues(),
-    resolver: yupResolver(checkoutValidation[step.current]),
+    resolver:
+      step.current === 0
+        ? licenseResolver
+        : yupResolver(checkoutValidation[step.current]),
     shouldUnregister: false,
   });
 
   const watchedValues = watch();
 
+  const licenseStatus = isLicenseValid({
+    data: getValues(),
+    orders,
+  });
+
   const isDisabled =
-    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+    !isFormAltered(getValues(), setDefaultValues()) ||
+    formState.isSubmitting ||
+    !licenseStatus.valid;
 
   const licenseOptions =
     license === "personal"
@@ -210,7 +222,10 @@ const CheckoutProcessor = () => {
   };
 
   useEffect(() => {
-    fetchCheckout({ license: licenseValue, versionId });
+    Promise.all([
+      fetchCheckout({ license: licenseValue, versionId }),
+      fetchOrders({ versionId }),
+    ]);
   }, []);
 
   return (
@@ -222,8 +237,11 @@ const CheckoutProcessor = () => {
               <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
                 <Card elevation={5} className={classes.card}>
                   <CardContent className={classes.content}>
+                    {!!orders.length && (
+                      <LicenseAlert licenseStatus={licenseStatus} />
+                    )}
                     {stripe ? (
-                      <Box>
+                      <Box className={classes.wrapper}>
                         {step.current !== STEPS.length && (
                           <CheckoutStepper step={step} />
                         )}

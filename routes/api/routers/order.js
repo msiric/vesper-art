@@ -31,7 +31,7 @@ router
   );
 
 router
-  .route("/orders/purchases/:artworkId")
+  .route("/orders/purchases/:versionId")
   // $TODO not tested
   .get(
     isAuthenticated,

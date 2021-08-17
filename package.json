@@ -14,7 +14,7 @@
     "start-dev": "set NODE_ENV=local&& nodemon ./dist/bin/www",
     "start": "node ./dist/bin/www",
     "client": "cd client && npm start",
-    "webhook": "stripe listen --forward-to localhost:5000/stripe/hooks",
+    "webhook": "stripe listen --forward-to localhost:5000/webhook/events",
     "dev": "npx kill-port 3000 && npx kill-port 5000 && set NODE_ENV=development&& concurrently --kill-others \"npm run watch\" \"npm run start-dev\" \"npm run client\" \"npm run webhook\"",
     "prod": "set NODE_ENV=production&& cd client && npm install && npm build && cd .. && node ./dist/bin/www",
     "postinstall": "tsc",

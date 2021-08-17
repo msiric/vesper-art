@@ -155,6 +155,16 @@ export const errors = {
     message: `License price cannot be greater than $${pricing.maximumPrice}`,
     expose: true,
   },
+  artworkLicenseFree: {
+    status: statusCodes.badRequest,
+    message: "Free license cannot have a price",
+    expose: true,
+  },
+  artworkLicenseMax: {
+    status: statusCodes.badRequest,
+    message: `License price cannot be greater than $${pricing.maximumPrice}`,
+    expose: true,
+  },
   artworkLicenseRequired: {
     status: statusCodes.badRequest,
     message: "License price is required",
@@ -862,13 +872,26 @@ export const actorsValidation = Yup.object().shape({
     .max(ranges.fullName.max, errors.licenseAssignorMax.message),
 });
 
+// for commercial artwork
 export const priceValidation = Yup.object().shape({
   licensePrice: Yup.number()
     .integer()
     .typeError(errors.invalidNumber.message)
     .required(errors.artworkLicenseRequired.message)
-    .min(ranges.freePricing.exact, errors.artworkLicenseMin.message)
-    .max(pricing.maximumPrice, errors.artworkLicenseMax.message),
+    // multiplied by 100 to accommodate for the integer value being passed for currencies
+    .min(ranges.freePricing.exact * 100, errors.artworkLicenseMin.message)
+    // multiplied by 100 to accommodate for the integer value being passed for currencies
+    .max(pricing.maximumPrice * 100, errors.artworkLicenseMax.message),
+});
+
+// for free downloads
+export const freeValidation = Yup.object().shape({
+  licensePrice: Yup.number()
+    .integer()
+    .typeError(errors.invalidNumber.message)
+    .required(errors.artworkLicenseRequired.message)
+    .min(0, errors.artworkLicenseFree.message)
+    .max(0, errors.artworkLicenseFree.message),
 });
 
 export const loginValidation = Yup.object().shape({

@@ -12,6 +12,7 @@ import { featureFlags, statusCodes } from "./common/constants";
 import { domain, environment, ENV_OPTIONS, mongo } from "./config/secret";
 import api from "./routes/api/index";
 import stripe from "./routes/stripe/index";
+import hooks from "./routes/webhooks/index";
 import { connectToDatabase } from "./utils/database";
 import { sanitizeBody, sanitizeParams, sanitizeQuery } from "./utils/helpers";
 
@@ -35,7 +36,6 @@ const dirname = path.resolve();
   ); */
 
   app.use(morgan("dev"));
-  app.use(express.json({ type: "application/json" }));
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use(
@@ -85,6 +85,12 @@ const dirname = path.resolve();
   // );
 
   // app.use(rateLimiter);
+
+  // FEATURE FLAG - stripe
+  featureFlags.stripe &&
+    app.use("/webhook", sanitizeParams, sanitizeQuery, sanitizeBody, hooks);
+
+  app.use(express.json({ type: "application/json" }));
 
   app.use("/api", sanitizeParams, sanitizeQuery, sanitizeBody, api);
   // FEATURE FLAG - stripe

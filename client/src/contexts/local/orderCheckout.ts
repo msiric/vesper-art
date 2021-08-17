@@ -6,6 +6,7 @@ import {
 import create from "zustand";
 import { isObjectEmpty } from "../../../../common/helpers";
 import { getCheckout, getDiscount } from "../../services/checkout";
+import { getPurchases } from "../../services/orders";
 import { postIntent } from "../../services/stripe";
 import { resolveAsyncError } from "../../utils/helpers";
 
@@ -20,6 +21,11 @@ const initialState = {
   version: {
     data: { artwork: { owner: {} }, cover: {}, media: {} },
     loading: true,
+    error: { retry: false, redirect: false, message: "" },
+  },
+  orders: {
+    data: [],
+    loading: false,
     error: { retry: false, redirect: false, message: "" },
   },
   license: "",
@@ -68,6 +74,41 @@ const initActions = (set, get) => ({
         ...state,
         version: {
           ...state.version,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
+    }
+  },
+  fetchOrders: async ({ versionId }) => {
+    try {
+      set((state) => ({
+        ...state,
+        orders: {
+          ...state.orders,
+          loading: true,
+        },
+      }));
+      const { data } = await getPurchases.request({
+        versionId,
+      });
+      set((state) => ({
+        ...state,
+        orders: {
+          data: data.purchases,
+          loading: false,
+          error: { ...initialState.orders.error },
+        },
+        modal: {
+          ...state.modal,
+          open: true,
+        },
+      }));
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        orders: {
+          ...state.orders,
           loading: false,
           error: resolveAsyncError(err),
         },
@@ -217,7 +258,6 @@ const initActions = (set, get) => ({
         },
         discountId: discount ? discount.id : null,
       });
-
       set((state) => ({
         ...state,
         secret: data.intent.secret,

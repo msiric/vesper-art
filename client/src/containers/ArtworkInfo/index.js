@@ -3,7 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { isFormAltered, isLicenseValid } from "../../../../common/helpers";
 import { licenseValidation } from "../../../../common/validation";
-import HelpBox from "../../components/HelpBox";
+import LicenseAlert from "../../components/LicenseAlert";
 import PricingCard from "../../components/PricingCard/index";
 import PromptModal from "../../components/PromptModal/index";
 import SwipeCard from "../../components/SwipeCard/index";
@@ -120,7 +120,7 @@ const ArtworkInfo = () => {
                       handleModalOpen={
                         orders.length
                           ? openModal
-                          : () => fetchOrders({ artworkId: artwork.id })
+                          : () => fetchOrders({ versionId: artwork.current.id })
                       }
                       submitting={ordersLoading}
                     />
@@ -147,7 +147,7 @@ const ArtworkInfo = () => {
                       handleModalOpen={
                         orders.length
                           ? openModal
-                          : () => fetchOrders({ artworkId: artwork.id })
+                          : () => fetchOrders({ versionId: artwork.current.id })
                       }
                       submitting={ordersLoading}
                     />
@@ -224,35 +224,7 @@ const ArtworkInfo = () => {
         isDisabled={isDisabled}
         isSubmitting={formState.isSubmitting}
       >
-        {!!orders.length && (
-          <HelpBox
-            type="alert"
-            label={
-              licenseStatus.valid
-                ? "You already own a license for this artwork"
-                : licenseStatus.state.message
-            }
-            margin="8px 0"
-          >
-            <Box className={classes.alert}>
-              <Typography
-                className={classes.link}
-                component={RouterLink}
-                to={
-                  licenseStatus.valid
-                    ? "/orders"
-                    : `/orders/${licenseStatus.ref.id}`
-                }
-                variant="body1"
-                noWrap
-              >
-                {licenseStatus.valid
-                  ? "Visit your orders"
-                  : "Click here to visit your order"}
-              </Typography>
-            </Box>
-          </HelpBox>
-        )}
+        {!!orders.length && <LicenseAlert licenseStatus={licenseStatus} />}
         <FormProvider control={control}>
           <form
             onSubmit={handleSubmit(

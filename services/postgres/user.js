@@ -288,7 +288,7 @@ export const fetchUserPurchases = async ({
   return foundPurchases;
 };
 
-export const fetchArtworkOrders = async ({ userId, artworkId, connection }) => {
+export const fetchArtworkOrders = async ({ userId, versionId, connection }) => {
   const foundPurchases = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
@@ -299,9 +299,9 @@ export const fetchArtworkOrders = async ({ userId, artworkId, connection }) => {
       ...LICENSE_SELECTION["USAGE_INFO"](),
       ...LICENSE_SELECTION["ASSIGNOR_INFO"](),
     ])
-    .where("order.buyerId = :userId AND order.artworkId = :artworkId", {
+    .where("order.buyerId = :userId AND order.versionId = :versionId", {
       userId,
-      artworkId,
+      versionId,
     })
     .getMany();
   console.log(foundPurchases);

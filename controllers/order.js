@@ -32,10 +32,10 @@ export const getBoughtOrders = async ({ userId, connection }) => {
   return { purchases: foundPurchases };
 };
 
-export const getBoughtArtwork = async ({ userId, artworkId, connection }) => {
+export const getBoughtArtwork = async ({ userId, versionId, connection }) => {
   const foundPurchases = await fetchArtworkOrders({
     userId,
-    artworkId,
+    versionId,
     connection,
   });
   return { purchases: foundPurchases };

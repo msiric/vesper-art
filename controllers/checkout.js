@@ -7,9 +7,9 @@ import {
 } from "../common/helpers";
 import {
   actorsValidation,
+  freeValidation,
   licenseValidation,
   orderValidation,
-  priceValidation,
 } from "../common/validation";
 import socketApi from "../lib/socket";
 import { fetchVersionDetails } from "../services/postgres/artwork";
@@ -71,7 +71,7 @@ export const postDownload = async ({
         });
         await licenseValidation
           .concat(actorsValidation)
-          .concat(priceValidation)
+          .concat(freeValidation)
           .validate(licenseData);
         const foundOrders = await fetchArtworkOrders({
           userId,
