@@ -51,6 +51,7 @@ const CheckoutProcessor = () => {
   const paymentSuccess = useOrderCheckout((state) => state.payment.success);
   const paymentMessage = useOrderCheckout((state) => state.payment.message);
   const versionLoading = useOrderCheckout((state) => state.version.loading);
+  const ordersLoading = useOrderCheckout((state) => state.orders.loading);
   const intentLoading = useOrderCheckout((state) => state.intent.loading);
   const discountLoading = useOrderCheckout((state) => state.discount.loading);
   const changeDiscount = useOrderCheckout((state) => state.changeDiscount);
@@ -69,11 +70,17 @@ const CheckoutProcessor = () => {
   const licenseValue =
     location.state && location.state.license ? location.state.license : license;
 
+  const initialLoading = versionLoading || ordersLoading;
+
   const classes = checkoutProcessorStyles();
 
   const licenseResolver = useLicenseValidator(licenseValidation);
 
-  const checkoutValidation = [{}, billingValidation, emptyValidation];
+  const checkoutValidation = [
+    emptyValidation,
+    billingValidation,
+    emptyValidation,
+  ];
 
   const setDefaultValues = () => ({
     licenseUsage: "",
@@ -230,7 +237,7 @@ const CheckoutProcessor = () => {
 
   return (
     <Grid container spacing={2} className={classes.container}>
-      {versionLoading || version.id ? (
+      {initialLoading || version.id ? (
         <>
           <Grid item xs={12} md={8}>
             <FormProvider control={control}>
@@ -250,7 +257,7 @@ const CheckoutProcessor = () => {
                           {step.current === 0 && (
                             <ListItems
                               items={licenseOptions}
-                              loading={versionLoading}
+                              loading={initialLoading}
                             />
                           )}
                         </Box>
@@ -264,13 +271,13 @@ const CheckoutProcessor = () => {
                           step.current === 0 || intentLoading || discountLoading
                         }
                         onClick={() => changeStep({ value: -1 })}
-                        loading={versionLoading}
+                        loading={initialLoading}
                       >
                         Back
                       </SyncButton>
                       <AsyncButton
                         type="submit"
-                        loading={versionLoading}
+                        loading={initialLoading}
                         submitting={formState.isSubmitting}
                         disabled={isDisabled || discountLoading}
                       >
@@ -288,7 +295,7 @@ const CheckoutProcessor = () => {
               watchables={{ licenseType: watchedValues.licenseType }}
               discount={discount}
               handleDiscountChange={changeDiscount}
-              loading={versionLoading}
+              loading={initialLoading}
               submitting={discountLoading}
               paying={intentLoading}
               step={step}

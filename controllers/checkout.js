@@ -75,7 +75,7 @@ export const postDownload = async ({
           .validate(licenseData);
         const foundOrders = await fetchArtworkOrders({
           userId,
-          artworkId: foundVersion.artwork.id,
+          versionId: foundVersion.id,
           connection,
         });
         const licenseStatus = isLicenseValid({
