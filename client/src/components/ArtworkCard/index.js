@@ -1,6 +1,7 @@
 import { EditRounded as EditIcon } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { formatArtworkPrice } from "../../../../common/helpers";
 import { useUserStore } from "../../contexts/global/user";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
@@ -133,22 +134,26 @@ const ArtworkCard = ({
                   ? item.data.use === "included"
                     ? `- / ${
                         item.data.commercial
-                          ? `$${item.data.commercial}`
+                          ? formatArtworkPrice({ price: item.data.commercial })
                           : " Free"
                       }`
                     : `${
-                        item.data.personal ? `$${item.data.personal}` : " Free"
+                        item.data.personal
+                          ? formatArtworkPrice({ price: item.data.personal })
+                          : " Free"
                       }
                     /
                       ${
                         item.data.commercial
-                          ? `$${item.data.commercial}`
+                          ? formatArtworkPrice({ price: item.data.commercial })
                           : item.data.personal
                           ? item.data.personal
                           : " Free"
                       }`
                   : `${
-                      item.data.personal ? `$${item.data.personal}` : " Free"
+                      item.data.personal
+                        ? formatArtworkPrice({ price: item.data.personal })
+                        : " Free"
                     } / -`
                 : "Preview only"}
             </Typography>

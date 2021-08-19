@@ -1,5 +1,9 @@
 import React from "react";
-import { formatDate, isObjectEmpty } from "../../../../common/helpers";
+import {
+  formatArtworkPrice,
+  formatDate,
+  isObjectEmpty,
+} from "../../../../common/helpers";
 import DataTable from "../../components/DataTable";
 import EmptySection from "../../components/EmptySection";
 import SubHeading from "../../components/SubHeading";
@@ -68,12 +72,7 @@ const LicenseSection = () => {
           name: "Value",
           options: {
             sort: false,
-            customBodyRender: (value) =>
-              typeof value !== "undefined"
-                ? value
-                  ? `$${value}`
-                  : "Free"
-                : null,
+            customBodyRender: (value) => formatArtworkPrice({ price: value }),
           },
         },
         {

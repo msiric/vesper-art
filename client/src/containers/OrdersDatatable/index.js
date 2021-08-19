@@ -1,6 +1,6 @@
 import { Rating } from "@material-ui/lab";
 import React, { useEffect } from "react";
-import { formatDate } from "../../../../common/helpers";
+import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
 import ArtworkThumbnail from "../../components/ArtworkThumbnail/index";
 import Datatable from "../../components/DataTable/index";
 import EmptySection from "../../components/EmptySection/index";
@@ -59,7 +59,7 @@ const OrdersDatatable = () => {
         {
           name: "Amount",
           options: {
-            customBodyRender: (value) => (value ? `$${value}` : "Free"),
+            customBodyRender: (value) => formatArtworkPrice({ price: value }),
             sortCompare:
               (order) =>
               ({ data: previous }, { data: next }) =>

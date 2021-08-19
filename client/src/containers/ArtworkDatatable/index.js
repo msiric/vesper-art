@@ -4,7 +4,7 @@ import {
 } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { formatDate } from "../../../../common/helpers";
+import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
 import ArtworkThumbnail from "../../components/ArtworkThumbnail/index";
 import Datatable from "../../components/DataTable/index";
 import EmptySection from "../../components/EmptySection/index";
@@ -97,11 +97,9 @@ const ArtworkDatatable = () => {
           name: "Personal license",
           options: {
             customBodyRender: (value) =>
-              value.use === "included"
-                ? "/"
-                : value.amount
-                ? `$${value.amount}`
-                : "Free",
+              formatArtworkPrice({
+                price: value.amount,
+              }),
             sortCompare:
               (order) =>
               ({ data: previous }, { data: next }) =>
@@ -112,11 +110,9 @@ const ArtworkDatatable = () => {
           name: "Commercial license",
           options: {
             customBodyRender: (value) =>
-              value.license === "personal"
-                ? "/"
-                : value.amount
-                ? `$${value.amount}`
-                : "Free",
+              formatArtworkPrice({
+                price: value.amount,
+              }),
             sortCompare:
               (order) =>
               ({ data: previous }, { data: next }) =>
@@ -147,10 +143,15 @@ const ArtworkDatatable = () => {
         artwork.current.title,
         artwork.current.availability,
         artwork.current.type,
-        { use: artwork.current.use, amount: artwork.current.personal },
         {
-          license: artwork.current.license,
+          amount: artwork.current.personal,
+          availability: artwork.current.availability,
+          use: artwork.current.use,
+        },
+        {
           amount: artwork.current.commercial,
+          availability: artwork.current.availability,
+          use: artwork.current.use,
         },
         artwork.current.created,
         actionsColumn(artwork.id),

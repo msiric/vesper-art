@@ -1,5 +1,5 @@
 import React from "react";
-import { formatDate } from "../../../../common/helpers";
+import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
 import Datatable from "../../components/DataTable/index";
 import EmptySection from "../../components/EmptySection/index";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
@@ -57,12 +57,7 @@ const LicenseCard = () => {
           name: "Value",
           options: {
             sort: false,
-            customBodyRender: (value) =>
-              typeof value !== "undefined"
-                ? value
-                  ? `$${value}`
-                  : "Free"
-                : null,
+            customBodyRender: (value) => formatArtworkPrice({ price: value }),
           },
         },
         {

@@ -28,11 +28,11 @@ export const artworkValidation = Yup.object().shape({
       is: (artworkAvailability, artworkType) =>
         artworkAvailability === "available" && artworkType === "commercial",
       then: Yup.number()
-        .positive("Artwork price cannot be negative")
+        .positive("Personal license cannot be negative")
         .integer()
         .min(pricing.minimumPrice)
         .max(pricing.maximumPrice)
-        .required("Artwork price is required"),
+        .required("Personal license is required"),
     }),
   artworkUse: Yup.string()
     .notRequired()

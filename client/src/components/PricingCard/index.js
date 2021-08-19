@@ -7,6 +7,7 @@ import {
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { featureFlags } from "../../../../common/constants";
+import { formatArtworkPrice } from "../../../../common/helpers";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
@@ -17,7 +18,6 @@ import ListItemIcon from "../../domain/ListItemIcon";
 import ListItemText from "../../domain/ListItemText";
 import Typography from "../../domain/Typography";
 import AsyncButton from "../AsyncButton";
-import CurrencyValue from "../CurrencyValue";
 import SyncButton from "../SyncButton/index";
 import pricingCardStyles from "./styles";
 
@@ -46,16 +46,9 @@ const PricingCard = ({
             </Typography>
           )}
           <Box className={classes.priceWrapper}>
-            {!!price ? (
-              <CurrencyValue
-                displayType="text"
-                prefix={null}
-                value={price}
-                className={classes.price}
-              />
-            ) : (
-              <Typography className={classes.price}>Free</Typography>
-            )}
+            <Typography className={classes.price}>
+              {formatArtworkPrice({ price, prefix: "", free: "Free" })}
+            </Typography>
           </Box>
         </Box>
         <Divider />

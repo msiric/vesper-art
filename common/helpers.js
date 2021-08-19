@@ -235,3 +235,11 @@ export const formatMimeTypes = (values) => {
     )
     .join("");
 };
+
+export const formatArtworkPrice = ({ price, prefix = "$", free = "Free" }) =>
+  price && price > 0
+    ? `${prefix}${currency(price, {
+        precision: 0,
+        separator: ",",
+      }).format()}`
+    : free;

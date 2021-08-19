@@ -7,7 +7,7 @@ import {
   upload,
   usernames,
 } from "./constants";
-import { formatMimeTypes } from "./helpers";
+import { formatArtworkPrice, formatMimeTypes } from "./helpers";
 
 export const ranges = {
   firstName: {
@@ -127,32 +127,40 @@ export const errors = {
   },
   artworkPersonalRequired: {
     status: statusCodes.badRequest,
-    message: "Artwork price is required",
+    message: "Personal license is required",
     expose: true,
   },
   artworkPersonalNegative: {
     status: statusCodes.badRequest,
-    message: "Artwork price cannot be negative",
+    message: "Personal license cannot be negative",
     expose: true,
   },
   artworkPersonalMin: {
     status: statusCodes.badRequest,
-    message: `Artwork price cannot be less than $${pricing.minimumPrice}`,
+    message: `Personal license cannot be less than ${formatArtworkPrice({
+      price: pricing.minimumPrice,
+    })}`,
     expose: true,
   },
   artworkPersonalMax: {
     status: statusCodes.badRequest,
-    message: `Artwork price cannot be greater than $${pricing.maximumPrice}`,
+    message: `Personal license cannot be greater than ${formatArtworkPrice({
+      price: pricing.maximumPrice,
+    })}`,
     expose: true,
   },
   artworkLicenseMin: {
     status: statusCodes.badRequest,
-    message: `License price cannot be less than $${pricing.minimumPrice}`,
+    message: `License price cannot be less than ${formatArtworkPrice({
+      price: pricing.minimumPrice,
+    })}`,
     expose: true,
   },
   artworkLicenseMax: {
     status: statusCodes.badRequest,
-    message: `License price cannot be greater than $${pricing.maximumPrice}`,
+    message: `License price cannot be greater than ${formatArtworkPrice({
+      price: pricing.maximumPrice,
+    })}`,
     expose: true,
   },
   artworkLicenseFree: {
@@ -162,7 +170,9 @@ export const errors = {
   },
   artworkLicenseMax: {
     status: statusCodes.badRequest,
-    message: `License price cannot be greater than $${pricing.maximumPrice}`,
+    message: `License price cannot be greater than ${formatArtworkPrice({
+      price: pricing.maximumPrice,
+    })}`,
     expose: true,
   },
   artworkLicenseRequired: {
@@ -198,7 +208,9 @@ export const errors = {
   },
   artworkCommercialMax: {
     status: statusCodes.badRequest,
-    message: `Commercial license cannot be greater than ${pricing.maximumPrice}`,
+    message: `Commercial license cannot be greater than ${formatArtworkPrice({
+      price: pricing.maximumPrice,
+    })}`,
     expose: true,
   },
   artworkVisibilityRequired: {

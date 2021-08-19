@@ -1,5 +1,5 @@
 import React from "react";
-import { formatDate } from "../../../../common/helpers";
+import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
 import Datatable from "../../components/DataTable/index";
 import EmptySection from "../../components/EmptySection/index";
 import { useUserStore } from "../../contexts/global/user";
@@ -54,12 +54,7 @@ const OrderCard = () => {
           name: isSeller() ? "Earned" : "Spent",
           options: {
             sort: false,
-            customBodyRender: (value) =>
-              typeof value !== "undefined"
-                ? value
-                  ? `$${value}`
-                  : "Free"
-                : null,
+            customBodyRender: (value) => formatArtworkPrice({ price: value }),
           },
         },
         {
