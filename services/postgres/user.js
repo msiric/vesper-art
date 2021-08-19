@@ -268,6 +268,7 @@ export const fetchUserPurchases = async ({
     .leftJoinAndSelect("order.review", "review")
     .select([
       ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...ORDER_SELECTION["BUYER_SPENT"](),
       ...USER_SELECTION["STRIPPED_INFO"]("seller"),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
@@ -370,6 +371,7 @@ export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
     .leftJoinAndSelect("order.review", "review")
     .select([
       ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...ORDER_SELECTION["SELLER_EARNED"](),
       ...USER_SELECTION["STRIPPED_INFO"]("buyer"),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),

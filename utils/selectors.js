@@ -153,6 +153,11 @@ export const ORDER_SELECTION = {
   VERSION_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.versionId`],
   SELLER_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.sellerId`],
   BUYER_INFO: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.buyerId`],
+  SELLER_EARNED: (selector = DEFAULT_VALUES.ORDER) => [`${selector}.earned`],
+  BUYER_SPENT: (selector = DEFAULT_VALUES.ORDER) => [
+    `${selector}.spent`,
+    `${selector}.fee`,
+  ],
 };
 
 export const LICENSE_SELECTION = {
