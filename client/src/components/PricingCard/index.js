@@ -47,7 +47,7 @@ const PricingCard = ({
           )}
           <Box className={classes.priceWrapper}>
             <Typography className={classes.price}>
-              {formatArtworkPrice({ price, prefix: "", free: "Free" })}
+              {formatArtworkPrice({ price, prefix: "", freeFormat: "Free" })}
             </Typography>
           </Box>
         </Box>

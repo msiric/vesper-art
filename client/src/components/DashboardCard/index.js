@@ -16,7 +16,8 @@ const DashboardCard = ({ currency, data, label, loading }) => {
           {formatArtworkPrice({
             price: data,
             prefix: currency ? "$" : "",
-            free: currency ? "$0" : 0,
+            freeFormat: currency ? "$0" : 0,
+            withPrecision: currency,
           })}
         </Typography>
       </CardContent>

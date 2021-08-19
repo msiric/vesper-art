@@ -236,10 +236,15 @@ export const formatMimeTypes = (values) => {
     .join("");
 };
 
-export const formatArtworkPrice = ({ price, prefix = "$", free = "Free" }) =>
+export const formatArtworkPrice = ({
+  price,
+  prefix = "$",
+  freeFormat = "Free",
+  withPrecision = false,
+}) =>
   price && price > 0
     ? `${prefix}${currency(price, {
-        precision: 0,
         separator: ",",
+        precision: withPrecision ? 2 : 0,
       }).format()}`
-    : free;
+    : freeFormat;

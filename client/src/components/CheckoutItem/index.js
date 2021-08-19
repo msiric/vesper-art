@@ -1,6 +1,7 @@
 import AnimatedNumber from "animated-number-react";
 import React from "react";
 import NumberFormat from "react-number-format";
+import { formatArtworkPrice } from "../../../../common/helpers";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index";
 import Box from "../../domain/Box";
 import ListItem from "../../domain/ListItem";
@@ -18,7 +19,8 @@ const CheckoutItem = ({
   animate,
   loading,
 }) => {
-  const formatValue = (value) => `$${value.toFixed(2)}`;
+  const formatValue = (value) =>
+    formatArtworkPrice({ price: value, withPrecision: true });
 
   const classes = checkoutItemStyles();
 

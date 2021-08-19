@@ -54,7 +54,8 @@ const OrderCard = () => {
           name: isSeller() ? "Earned" : "Spent",
           options: {
             sort: false,
-            customBodyRender: (value) => formatArtworkPrice({ price: value }),
+            customBodyRender: (value) =>
+              formatArtworkPrice({ price: value, withPrecision: true }),
           },
         },
         {

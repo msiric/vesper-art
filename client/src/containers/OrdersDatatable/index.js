@@ -59,7 +59,8 @@ const OrdersDatatable = () => {
         {
           name: "Amount",
           options: {
-            customBodyRender: (value) => formatArtworkPrice({ price: value }),
+            customBodyRender: (value) =>
+              formatArtworkPrice({ price: value, withPrecision: true }),
             sortCompare:
               (order) =>
               ({ data: previous }, { data: next }) =>
