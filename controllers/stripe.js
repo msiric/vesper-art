@@ -70,11 +70,9 @@ export const receiveWebhookEvent = async ({
     console.log("$TEST CHECKOUT event error", err);
   }
 
-  console.log("$TEST CHECKOUT stripe event", stripeEvent.type);
-
   switch (stripeEvent.type) {
     case "payment_intent.succeeded":
-      console.log("$TEST CHECKOUT Payment success");
+      console.log("$TEST CHECKOUT Payment success", stripeEvent.type);
       // FEATURE FLAG - payment
       if (featureFlags.payment) {
         const paymentIntent = stripeEvent.data.object;
@@ -82,10 +80,10 @@ export const receiveWebhookEvent = async ({
       }
       break;
     case "payment_intent.payment_failed":
-      console.log("$TEST CHECKOUT Failed payment");
+      console.log("$TEST CHECKOUT Failed payment", stripeEvent.type);
       break;
     default:
-      console.log("$TEST CHECKOUT Invalid event");
+      console.log("$TEST CHECKOUT Invalid event", stripeEvent.type);
   }
 
   console.log("$TEST CHECKOUT done");
@@ -489,6 +487,7 @@ const processTransaction = async ({ stripeIntent, connection }) => {
     });
     socketApi.sendNotification(sellerId, orderId);
     // new end
+    console.log("ORDER PROCESSED (END)");
     return formatResponse(responses.paymentProcessed);
   } catch (err) {
     console.log("TRANSACTION FAILED", err);
