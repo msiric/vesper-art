@@ -257,6 +257,17 @@ const routes = [
         },
       ]
     : []),
+  // FEATURE FLAG - stripe
+  ...(featureFlags.stripe
+    ? [
+        {
+          path: "/onboarded",
+          Component: lazy(() => import("./pages/User/Onboarded")),
+          exact: true,
+          type: "protected",
+        },
+      ]
+    : []),
   // 404
   {
     path: "/404",

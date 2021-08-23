@@ -362,7 +362,8 @@ export const assignStripeId = async ({
   sessionData.id = null;
   sessionData.name = null;
 
-  return { redirect: `${domain.client}/user/${username}` };
+  // STRIPE ONBOARDING REDIRECT
+  return { redirect: `${domain.client}/onboarded` };
 };
 
 export const fetchIntentById = async ({ userId, intentId, connection }) => {

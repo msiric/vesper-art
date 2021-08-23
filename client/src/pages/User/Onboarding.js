@@ -49,6 +49,7 @@ const useOnboardingStyles = makeStyles((muiTheme) => ({
   },
   list: {
     margin: "18px 0",
+    width: "100%",
   },
   form: {
     maxWidth: 250,
@@ -57,6 +58,11 @@ const useOnboardingStyles = makeStyles((muiTheme) => ({
   actions: {
     display: "flex",
     justifyContent: "space-between",
+  },
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
 }));
 
@@ -143,7 +149,7 @@ const Onboarding = () => {
                   You already went through the onboarding process
                 </Typography>
               ) : (
-                <Box>
+                <Box className={classes.wrapper}>
                   <Typography className={classes.heading} variant="h4">
                     Start getting paid
                   </Typography>
@@ -177,30 +183,30 @@ const Onboarding = () => {
                       Please select your registered business address
                     </Typography>
                   )}
+                  <FormProvider control={control}>
+                    <form
+                      className={classes.form}
+                      onSubmit={handleSubmit(onSubmit)}
+                    >
+                      <OnboardingForm
+                        errors={errors}
+                        getValues={getValues}
+                        setValue={setValue}
+                      />
+                      <AsyncButton
+                        type="submit"
+                        fullWidth
+                        padding
+                        submitting={formState.isSubmitting}
+                        disabled={isDisabled}
+                        startIcon={<UploadIcon />}
+                      >
+                        Continue
+                      </AsyncButton>
+                    </form>
+                  </FormProvider>
                 </Box>
               )}
-              <FormProvider control={control}>
-                <form
-                  className={classes.form}
-                  onSubmit={handleSubmit(onSubmit)}
-                >
-                  <OnboardingForm
-                    errors={errors}
-                    getValues={getValues}
-                    setValue={setValue}
-                  />
-                  <AsyncButton
-                    type="submit"
-                    fullWidth
-                    padding
-                    submitting={formState.isSubmitting}
-                    disabled={isDisabled}
-                    startIcon={<UploadIcon />}
-                  >
-                    Continue
-                  </AsyncButton>
-                </form>
-              </FormProvider>
             </CardContent>
           </Card>
         </Grid>
