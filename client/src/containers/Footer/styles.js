@@ -66,6 +66,17 @@ const footerStyles = makeStyles((muiTheme) => ({
       justifyContent: "center",
     },
   },
+  button: {
+    "&:first-child": {
+      marginRight: 6,
+    },
+    "&:last-child": {
+      marginLeft: 6,
+    },
+    "&:not(:first-child):not(:last-child)": {
+      margin: "0 6px",
+    },
+  },
 }));
 
 export default footerStyles;

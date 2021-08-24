@@ -8,16 +8,28 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
+import {
+  Facebook as FacebookIcon,
+  Instagram as InstagramIcon,
+  Reddit as RedditIcon,
+  Twitter as TwitterIcon,
+} from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { appName } from "../../../../common/constants";
+import { socialLinks } from "../../common/constants";
 import LogoItem from "../../components/LogoItem";
+import IconButton from "../../domain/IconButton";
 import footerStyles from "./styles";
 
 const Footer = () => {
   const classes = footerStyles();
 
   const history = useHistory();
+
+  const redirectUser = ({ link }) => {
+    window.open(link);
+  };
 
   return (
     <footer className={classes.container}>
@@ -118,16 +130,38 @@ const Footer = () => {
                 Connect
               </Typography>
               <List>
-                <Typography
-                  className={classes.link}
-                  component={RouterLink}
-                  to=""
-                ></Typography>
-                <Typography
-                  className={classes.link}
-                  component={RouterLink}
-                  to=""
-                ></Typography>
+                <IconButton
+                  aria-label="Facebook"
+                  onClick={() => redirectUser({ link: socialLinks.facebook })}
+                  className={classes.button}
+                  edge="start"
+                >
+                  <FacebookIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="Instagram"
+                  onClick={() => redirectUser({ link: socialLinks.instagram })}
+                  className={classes.button}
+                  edge="start"
+                >
+                  <InstagramIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="Twitter"
+                  onClick={() => redirectUser({ link: socialLinks.twitter })}
+                  className={classes.button}
+                  edge="start"
+                >
+                  <TwitterIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="Reddit"
+                  onClick={() => redirectUser({ link: socialLinks.reddit })}
+                  className={classes.button}
+                  edge="start"
+                >
+                  <RedditIcon />
+                </IconButton>
               </List>
             </Grid>
           </Grid>
