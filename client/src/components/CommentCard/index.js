@@ -53,23 +53,23 @@ const CommentCard = ({
 
   const isDisabled =
     !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+  const isHighlight = queryRef && queryRef === comment.id;
+  const shouldBlink = isHighlight && highlightRef.current;
 
   const history = useHistory();
   const classes = commentCardStyles();
-
-  const isHighlight = () => queryRef && queryRef === comment.id;
 
   useEffect(() => {
     reset(setDefaultValues());
   }, [comment.content]);
 
   return (
-    <Box ref={isHighlight() ? highlightRef : null} key={comment.id}>
+    <Box ref={isHighlight ? highlightRef : null} key={comment.id}>
       <ListItem
         disableGutters
         alignItems="flex-start"
         className={`${classes.container} ${
-          isHighlight() ? classes.highlight : ""
+          shouldBlink ? classes.highlight : ""
         }`}
       >
         <ListItemAvatar>

@@ -1,6 +1,6 @@
 import create from "zustand";
 import { getDownload, getOrder, postReview } from "../../services/orders";
-import { resolveAsyncError } from "../../utils/helpers";
+import { resolveAsyncError, scrollToHighlight } from "../../utils/helpers";
 
 const initialState = {
   order: {
@@ -18,14 +18,6 @@ const initialState = {
   modal: {
     open: false,
   },
-};
-
-const scrollToHighlight = (highlightRef) => {
-  if (highlightRef.current)
-    highlightRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
 };
 
 const initState = () => ({ ...initialState });

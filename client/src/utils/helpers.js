@@ -83,3 +83,11 @@ export const getWrapperState = () => ({
 
 export const capitalizeWord = ({ value }) =>
   value ? value[0].toUpperCase() + value.slice(1).toLowerCase() : value;
+
+export const scrollToHighlight = (highlightRef) => {
+  if (highlightRef.current)
+    highlightRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+};

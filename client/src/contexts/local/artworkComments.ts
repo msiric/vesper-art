@@ -7,7 +7,11 @@ import {
   patchComment,
   postComment,
 } from "../../services/artwork";
-import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
+import {
+  resolveAsyncError,
+  resolvePaginationId,
+  scrollToHighlight,
+} from "../../utils/helpers";
 
 const initialState = {
   comments: {
@@ -38,14 +42,6 @@ const initialState = {
     open: false,
   },
   isDeleting: false,
-};
-
-const scrollToHighlight = (highlightRef) => {
-  if (highlightRef.current)
-    highlightRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
 };
 
 const fetchHighlight = async (artworkId, commentId) => {

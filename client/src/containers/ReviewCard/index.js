@@ -30,6 +30,7 @@ const ReviewCard = ({ paramId, highlightRef }) => {
   const shouldReview = userId === buyer.id;
   const isActive = artwork.active;
   const isHighlight = query && query.notif === "review";
+  const shouldBlink = isHighlight && highlightRef.current;
 
   const history = useHistory();
   const classes = reviewCardStyles();
@@ -41,7 +42,7 @@ const ReviewCard = ({ paramId, highlightRef }) => {
   return (
     <Card
       ref={isHighlight ? highlightRef : null}
-      className={`${classes.container} ${isHighlight ? classes.highlight : ""}`}
+      className={`${classes.container} ${shouldBlink ? classes.highlight : ""}`}
     >
       <CardContent className={classes.card}>
         <SubHeading text="Review" loading={loading} />
