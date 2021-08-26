@@ -67,6 +67,7 @@ const footerStyles = makeStyles((muiTheme) => ({
     },
   },
   button: {
+    color: "white",
     "&:first-child": {
       marginRight: 6,
     },

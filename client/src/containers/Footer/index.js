@@ -27,10 +27,6 @@ const Footer = () => {
 
   const history = useHistory();
 
-  const redirectUser = ({ link }) => {
-    window.open(link);
-  };
-
   return (
     <footer className={classes.container}>
       <Toolbar>
@@ -132,7 +128,7 @@ const Footer = () => {
               <List>
                 <IconButton
                   aria-label="Facebook"
-                  onClick={() => redirectUser({ link: socialLinks.facebook })}
+                  href={socialLinks.facebook}
                   className={classes.button}
                   edge="start"
                 >
@@ -140,7 +136,7 @@ const Footer = () => {
                 </IconButton>
                 <IconButton
                   aria-label="Instagram"
-                  onClick={() => redirectUser({ link: socialLinks.instagram })}
+                  href={socialLinks.instagram}
                   className={classes.button}
                   edge="start"
                 >
@@ -148,7 +144,7 @@ const Footer = () => {
                 </IconButton>
                 <IconButton
                   aria-label="Twitter"
-                  onClick={() => redirectUser({ link: socialLinks.twitter })}
+                  href={socialLinks.twitter}
                   className={classes.button}
                   edge="start"
                 >
@@ -156,7 +152,7 @@ const Footer = () => {
                 </IconButton>
                 <IconButton
                   aria-label="Reddit"
-                  onClick={() => redirectUser({ link: socialLinks.reddit })}
+                  href={socialLinks.reddit}
                   className={classes.button}
                   edge="start"
                 >
