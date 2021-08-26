@@ -4,8 +4,8 @@ import { isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
   loginValidation,
-  passwordValidation,
   recoveryValidation,
+  resetValidation,
   signupValidation,
 } from "../common/validation";
 import {
@@ -180,24 +180,19 @@ export const forgotPassword = async ({ userEmail, connection }) => {
 // needs transaction (not tested)
 export const resetPassword = async ({
   tokenId,
-  userCurrent,
   userPassword,
   userConfirm,
   connection,
 }) => {
   const foundUser = await fetchUserByResetToken({ tokenId, connection });
   if (!isObjectEmpty(foundUser)) {
-    const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
-    if (!isCurrentValid)
-      throw createError(...formatError(errors.currentPasswordIncorrect));
     const isPasswordValid = await argon2.verify(
       foundUser.password,
       userPassword
     );
     if (isPasswordValid)
       throw createError(...formatError(errors.newPasswordIdentical));
-    await passwordValidation.validate({
-      userCurrent,
+    await resetValidation.validate({
       userPassword,
       userConfirm,
     });
@@ -263,8 +258,6 @@ export const updateEmail = async ({
 
     if (isObjectEmpty(foundUser)) {
       throw createError(...formatError(errors.userDoesNotExist));
-    } else if (foundUser.verified) {
-      throw createError(...formatError(errors.userAlreadyVerified));
     } else {
       const isValid = await argon2.verify(foundUser.password, userPassword);
 

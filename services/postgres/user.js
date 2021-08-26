@@ -157,8 +157,8 @@ export const fetchUserByResetToken = async ({ tokenId, connection }) => {
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
-      ...USER_SELECTION["STRIPPED_INFO"],
-      ...USER_SELECTION["AUTH_INFO"],
+      ...USER_SELECTION["STRIPPED_INFO"](),
+      ...USER_SELECTION["AUTH_INFO"](),
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where(

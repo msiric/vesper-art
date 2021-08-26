@@ -5,13 +5,13 @@ import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { isFormAltered } from "../../../../common/helpers";
-import { passwordValidation } from "../../../../common/validation";
+import { resetValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Typography from "../../domain/Typography";
-import EditPasswordForm from "../../forms/PasswordForm/index";
+import ResetPasswordForm from "../../forms/ResetForm";
 import { postReset } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
 
 const ResetPassword = ({ match }) => {
   const setDefaultValues = () => ({
-    userCurrent: "",
     userPassword: "",
     userConfirm: "",
   });
@@ -47,7 +46,7 @@ const ResetPassword = ({ match }) => {
     watch,
   } = useForm({
     defaultValues: setDefaultValues(),
-    resolver: yupResolver(passwordValidation),
+    resolver: yupResolver(resetValidation),
   });
 
   const history = useHistory();
@@ -82,7 +81,7 @@ const ResetPassword = ({ match }) => {
         </Typography>
         <FormProvider control={control}>
           <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
-            <EditPasswordForm
+            <ResetPasswordForm
               errors={errors}
               setValue={setValue}
               trigger={trigger}

@@ -314,7 +314,7 @@ export const responses = {
   },
   passwordReset: {
     status: statusCodes.ok,
-    message: "Password reset",
+    message: "Password reset link successfully sent",
     expose: true,
   },
   passwordUpdated: {

@@ -1032,7 +1032,7 @@ export const profileValidation = Yup.object().shape({
 });
 
 export const resetValidation = Yup.object().shape({
-  userPassword: userPassword(),
+  userPassword: userPassword("userNewRequired"),
   userConfirm,
 });
 
