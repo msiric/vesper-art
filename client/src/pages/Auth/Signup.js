@@ -52,14 +52,7 @@ const Signup = () => {
     });
 
   const onSubmit = async (values) => {
-    try {
-      await postSignup.request({ data: values });
-    } catch (err) {
-      history.push({
-        pathname: "/login",
-        state: { message: "An error occurred" },
-      });
-    }
+    await postSignup.request({ data: values });
   };
 
   const history = useHistory();
