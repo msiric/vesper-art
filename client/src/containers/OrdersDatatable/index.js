@@ -39,19 +39,23 @@ const OrdersDatatable = () => {
         {
           name: "Title",
           options: {
-            sortCompare: (order) => (obj1, obj2) =>
-              obj1.data.localeCompare(obj2.data, "en", {
-                numeric: true,
-              }) * (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                previous.localeCompare(next, "en", {
+                  numeric: true,
+                }) * (order === "asc" ? 1 : -1),
           },
         },
         {
           name: display === "purchases" ? "Seller" : "Buyer",
           options: {
-            sortCompare: (order) => (obj1, obj2) =>
-              obj1.data.localeCompare(obj2.data, "en", {
-                numeric: true,
-              }) * (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                previous.localeCompare(next, "en", {
+                  numeric: true,
+                }) * (order === "asc" ? 1 : -1),
             customBodyRender: (value) =>
               renderUserData({ data: value, isUsername: true }),
           },
@@ -70,10 +74,12 @@ const OrdersDatatable = () => {
         {
           name: "Assignee",
           options: {
-            sortCompare: (order) => (obj1, obj2) =>
-              obj1.data.localeCompare(obj2.data, "en", {
-                numeric: true,
-              }) * (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                previous.localeCompare(next, "en", {
+                  numeric: true,
+                }) * (order === "asc" ? 1 : -1),
           },
         },
         {

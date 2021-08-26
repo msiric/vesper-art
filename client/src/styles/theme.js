@@ -150,12 +150,6 @@ artepunktTheme.overrides.MUIDataTableHeadCell = {
   },
 };
 
-artepunktTheme.overrides.MUIDataTableBodyCell = {
-  root: {
-    wordBreak: "break-word",
-  },
-};
-
 artepunktTheme.overrides.MUIDataTableSearch = {
   searchIcon: {
     display: "none",

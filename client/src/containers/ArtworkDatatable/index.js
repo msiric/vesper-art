@@ -75,10 +75,12 @@ const ArtworkDatatable = () => {
         {
           name: "Title",
           options: {
-            sortCompare: (order) => (obj1, obj2) =>
-              obj1.data.localeCompare(obj2.data, "en", {
-                numeric: true,
-              }) * (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                previous.localeCompare(next, "en", {
+                  numeric: true,
+                }) * (order === "asc" ? 1 : -1),
           },
         },
         {
@@ -120,6 +122,18 @@ const ArtworkDatatable = () => {
           },
         },
         {
+          name: "Visibility",
+          options: {
+            customBodyRender: (value) => capitalizeWord({ value }) || "/",
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                previous.localeCompare(next, "en", {
+                  numeric: true,
+                }) * (order === "asc" ? 1 : -1),
+          },
+        },
+        {
           name: "Date",
           options: {
             customBodyRender: (value) => formatDate(value, "dd/MM/yy HH:mm"),
@@ -153,6 +167,7 @@ const ArtworkDatatable = () => {
           availability: artwork.current.availability,
           use: artwork.current.use,
         },
+        artwork.visibility,
         artwork.current.created,
         actionsColumn(artwork.id),
       ])}
