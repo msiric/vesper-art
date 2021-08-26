@@ -18,6 +18,7 @@ const DashboardCard = ({ currency, data, label, loading }) => {
             prefix: currency ? "$" : "",
             freeFormat: currency ? "$0" : 0,
             withPrecision: currency,
+            withAbbreviation: currency,
           })}
         </Typography>
       </CardContent>

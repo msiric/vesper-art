@@ -134,25 +134,37 @@ const ArtworkCard = ({
                   ? item.data.use === "included"
                     ? `- / ${
                         item.data.commercial
-                          ? formatArtworkPrice({ price: item.data.commercial })
+                          ? formatArtworkPrice({
+                              price: item.data.commercial,
+                              withAbbreviation: true,
+                            })
                           : " Free"
                       }`
                     : `${
                         item.data.personal
-                          ? formatArtworkPrice({ price: item.data.personal })
+                          ? formatArtworkPrice({
+                              price: item.data.personal,
+                              withAbbreviation: true,
+                            })
                           : " Free"
                       }
                     /
                       ${
                         item.data.commercial
-                          ? formatArtworkPrice({ price: item.data.commercial })
+                          ? formatArtworkPrice({
+                              price: item.data.commercial,
+                              withAbbreviation: true,
+                            })
                           : item.data.personal
                           ? item.data.personal
                           : " Free"
                       }`
                   : `${
                       item.data.personal
-                        ? formatArtworkPrice({ price: item.data.personal })
+                        ? formatArtworkPrice({
+                            price: item.data.personal,
+                            withAbbreviation: true,
+                          })
                         : " Free"
                     } / -`
                 : "Preview only"}

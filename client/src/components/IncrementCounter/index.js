@@ -1,3 +1,4 @@
+import abbreviate from "number-abbreviate";
 import React, { useEffect, useState } from "react";
 import Typography from "../../domain/Typography";
 import incrementCounterStyles from "./styles";
@@ -38,7 +39,9 @@ const IncrementCounter = ({ newValue = 0 }) => {
     <div className={classes.container}>
       <div className={classes.wrapper}>
         <span className={classes[animationValue]}>
-          <Typography className={classes.value}>{value}</Typography>
+          <Typography className={classes.value}>
+            {abbreviate(value, 2)}
+          </Typography>
         </span>
       </div>
     </div>

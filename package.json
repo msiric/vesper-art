@@ -63,6 +63,7 @@
     "multer-s3-transform": "^2.3.2",
     "nodemailer": "^6.2.1",
     "nodemon": "^1.19.1",
+    "number-abbreviate": "^2.0.0",
     "pdfkit": "^0.10.0",
     "pg": "^8.5.1",
     "query-string": "^6.11.1",

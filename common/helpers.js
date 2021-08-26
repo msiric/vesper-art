@@ -1,5 +1,6 @@
 import currency from "currency.js";
 import * as fns from "date-fns";
+import abbreviate from "number-abbreviate";
 const { format } = fns;
 
 export const licenseErrors = {
@@ -241,10 +242,13 @@ export const formatArtworkPrice = ({
   prefix = "$",
   freeFormat = "Free",
   withPrecision = false,
+  withAbbreviation = false,
 }) =>
   price && price > 0
-    ? `${prefix}${currency(price, {
-        separator: ",",
-        precision: withPrecision ? 2 : 0,
-      }).format()}`
+    ? withAbbreviation
+      ? `${prefix}${abbreviate(price, 2)}`
+      : `${prefix}${currency(price, {
+          separator: ",",
+          precision: withPrecision ? 2 : 0,
+        }).format()}`
     : freeFormat;
