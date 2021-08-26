@@ -84,15 +84,12 @@ const ArtworkDatatable = () => {
           },
         },
         {
-          name: "Availability",
-          options: {
-            customBodyRender: (value) => capitalizeWord({ value }) || "/",
-          },
-        },
-        {
           name: "Type",
           options: {
-            customBodyRender: (value) => capitalizeWord({ value }) || "/",
+            customBodyRender: (value) =>
+              capitalizeWord({
+                value: value === "unavailable" ? "preview only" : value,
+              }) || "/",
           },
         },
         {
@@ -155,7 +152,6 @@ const ArtworkDatatable = () => {
         artwork.id,
         artwork.current.cover.source,
         artwork.current.title,
-        artwork.current.availability,
         artwork.current.type,
         {
           amount: artwork.current.personal,
