@@ -38,13 +38,13 @@ const Input = ({
   const classes = imageInputStyles({ editable });
 
   useEffect(() => {
-    if (preview && !state.imagePreviewUrl)
+    if (!loading && preview && !state.imagePreviewUrl)
       setState((prevState) => ({
         ...prevState,
         file: preview,
         imagePreviewUrl: preview,
       }));
-  }, [preview]);
+  }, [preview, loading]);
 
   const showFileUpload = async (e) => {
     if (editable) {
