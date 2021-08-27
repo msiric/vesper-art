@@ -1,8 +1,15 @@
-export const breakpoints = {
+export const breakpointsFullWidth = {
   default: 4,
   1100: 3,
   700: 2,
   500: 1,
+};
+
+export const breakpointsFixedWidth = {
+  default: 4,
+  1200: 3,
+  800: 2,
+  600: 1,
 };
 
 export const socialLinks = {

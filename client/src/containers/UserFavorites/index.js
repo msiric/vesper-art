@@ -1,17 +1,11 @@
 import React from "react";
 import Masonry from "react-masonry-css";
+import { breakpointsFixedWidth } from "../../common/constants";
 import ArtworkCard from "../../components/ArtworkCard/index";
 import InfiniteList from "../../components/InfiniteList/index";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import Box from "../../domain/Box";
 import userFavoritesStyles from "./styles";
-
-const breakpointColumns = {
-  default: 4,
-  1100: 3,
-  700: 2,
-  500: 1,
-};
 
 const UserFavorites = ({ userUsername, type, fixed }) => {
   const elements = useUserArtwork((state) => state.favorites.data);
@@ -36,7 +30,7 @@ const UserFavorites = ({ userUsername, type, fixed }) => {
         type="masonry"
       >
         <Masonry
-          breakpointCols={breakpointColumns}
+          breakpointCols={breakpointsFixedWidth}
           className={classes.masonry}
           columnClassName={classes.column}
         >

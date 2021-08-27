@@ -1,6 +1,6 @@
 import React from "react";
 import Masonry from "react-masonry-css";
-import { breakpoints } from "../../common/constants";
+import { breakpointsFullWidth } from "../../common/constants";
 import ArtworkCard from "../../components/ArtworkCard/index";
 import InfiniteList from "../../components/InfiniteList/index";
 import { useHomeArtwork } from "../../contexts/local/homeArtwork";
@@ -30,7 +30,7 @@ const ArtworkPanel = ({ type, fixed }) => {
         type="masonry"
       >
         <Masonry
-          breakpointCols={breakpoints}
+          breakpointCols={breakpointsFullWidth}
           className={classes.masonry}
           columnClassName={classes.column}
         >

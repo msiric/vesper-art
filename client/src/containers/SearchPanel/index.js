@@ -1,19 +1,13 @@
 import React, { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { useLocation } from "react-router-dom";
+import { breakpointsFullWidth } from "../../common/constants";
 import ArtworkCard from "../../components/ArtworkCard/index";
 import InfiniteList from "../../components/InfiniteList/index";
 import ProfileCard from "../../components/ProfileCard/index";
 import { useSearchResults } from "../../contexts/local/searchResults";
 import Box from "../../domain/Box";
 import searchPanelStyles from "./styles";
-
-const breakpointColumns = {
-  default: 4,
-  1100: 3,
-  700: 2,
-  500: 1,
-};
 
 const SearchPanel = ({ type }) => {
   const elements = useSearchResults((state) => state[type].data);
@@ -44,7 +38,7 @@ const SearchPanel = ({ type }) => {
         type="masonry"
       >
         <Masonry
-          breakpointCols={breakpointColumns}
+          breakpointCols={breakpointsFullWidth}
           className={classes.masonry}
           columnClassName={classes.column}
         >
