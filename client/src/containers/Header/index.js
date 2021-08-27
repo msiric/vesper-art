@@ -17,6 +17,7 @@ import Box from "../../domain/Box";
 import IconButton from "../../domain/IconButton";
 import Toolbar from "../../domain/Toolbar";
 import SearchForm from "../../forms/SearchForm";
+import globalStyles from "../../styles/global";
 import AccountMenu from "../AccountMenu";
 import NotificationMenu from "../NotificationMenu";
 import headerStyles from "./styles";
@@ -42,6 +43,7 @@ const Header = () => {
 
   const history = useHistory();
 
+  const globalClasses = globalStyles();
   const classes = headerStyles();
 
   useEffect(() => {
@@ -51,7 +53,9 @@ const Header = () => {
   return (
     <>
       <AppBar position="static" className={classes.container}>
-        <Toolbar className={classes.toolbar}>
+        <Toolbar
+          className={`${classes.toolbar} ${globalClasses.largeContainer}`}
+        >
           <Box className={classes.wrapper}>
             <LogoItem />
             <Box className={classes.search}>

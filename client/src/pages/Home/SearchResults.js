@@ -6,11 +6,12 @@ import { useHistory, useLocation } from "react-router-dom";
 import SearchPanel from "../../containers/SearchPanel/index";
 import { useSearchResults } from "../../contexts/local/searchResults";
 import Grid from "../../domain/Grid";
+import globalStyles from "../../styles/global";
 
 const useSearchStyles = makeStyles((muiTheme) => ({
   container: {
     width: "100%",
-    margin: 0,
+    margin: "0 auto",
   },
 }));
 
@@ -22,6 +23,7 @@ const SearchResults = () => {
 
   const query = queryString.parse(location.search);
 
+  const globalClasses = globalStyles();
   const classes = useSearchStyles();
 
   const reinitializeState = () => {
@@ -35,7 +37,11 @@ const SearchResults = () => {
   }, []);
 
   return (
-    <Grid container className={classes.container} spacing={3}>
+    <Grid
+      container
+      className={`${classes.container} ${globalClasses.largeContainer}`}
+      spacing={3}
+    >
       {query.q && (query.t === "artwork" || query.t === "users") ? (
         <Grid item xs={12}>
           <SearchPanel type={query.t} />

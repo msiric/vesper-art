@@ -13,6 +13,8 @@ const headerStyles = makeStyles((muiTheme) => ({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+    width: "100%",
+    margin: "0 auto",
   },
   wrapper: {
     display: "flex",

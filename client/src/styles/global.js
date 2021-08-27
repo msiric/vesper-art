@@ -10,6 +10,9 @@ const globalStyles = makeStyles((muiTheme) => ({
       margin: artepunktTheme.margin.containerSm,
     },
   },
+  largeContainer: {
+    maxWidth: 2600,
+  },
   smallContainer: {
     maxWidth: 768,
   },
