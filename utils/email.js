@@ -9,6 +9,7 @@ export const sendEmail = async ({
   emailReceiver,
   emailSubject,
   emailContent,
+  emailAttachments,
 }) => {
   try {
     const smtpTransport = nodemailer.createTransport({
@@ -22,6 +23,7 @@ export const sendEmail = async ({
       to: emailReceiver,
       subject: emailSubject,
       html: emailContent,
+      attachments: emailAttachments,
     };
     const sentEmail = await smtpTransport.sendMail(mailOptions);
     return sentEmail;

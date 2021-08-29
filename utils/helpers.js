@@ -6,7 +6,12 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { getConnection } from "typeorm";
 import * as uuidJs from "uuid";
-import { generatedData, statusCodes } from "../common/constants";
+import {
+  appName,
+  appPalette,
+  generatedData,
+  statusCodes,
+} from "../common/constants";
 import { trimAllSpaces } from "../common/helpers";
 import { domain, tokens, uuid } from "../config/secret";
 import {
@@ -388,4 +393,33 @@ export const verifyVersionValidity = async ({
     }
   }
   return;
+};
+
+export const formatEmailContent = ({
+  replacementValues,
+  replacementAttachments,
+}) => {
+  const formattedProps = {
+    logo: `cid:logo@${appName}.com`,
+    banner: `cid:banner@${appName}.com`,
+    primary: appPalette.primary.main,
+    secondary: "#1f1f1f",
+    app: appName,
+    date: new Date().getFullYear(),
+    ...replacementValues,
+  };
+  const formattedAttachments = [
+    {
+      filename: "logo.svg",
+      path: "common/assets/logo.svg",
+      cid: `logo@${appName}.com`,
+    },
+    {
+      filename: "banner.jpg",
+      path: "common/assets/banner.jpg",
+      cid: `banner@${appName}.com`,
+    },
+    ...replacementAttachments,
+  ];
+  return { formattedProps, formattedAttachments };
 };

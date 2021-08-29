@@ -48,7 +48,7 @@ code {
 .SRLContainer:after {
   content: "";
   display: block;
-  background-image: url("./assets/images/logo/logo.svg");
+  background-image: url("../../common/assets/logo.svg");
   background-size: contain;
   background-repeat: no-repeat;
   width: 70px;

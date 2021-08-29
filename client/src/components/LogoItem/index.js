@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import LogoDesktop from "../../assets/images/logo/logo.svg";
+import LogoDesktop from "../../../../common/assets/logo.svg";
 import { useHomeArtwork } from "../../contexts/local/homeArtwork";
 import logoItemStyles from "./styles";
 

@@ -8,6 +8,7 @@ import {
   preferencesValidation,
   profileValidation,
 } from "../common/validation";
+import { renderEmail } from "../emails/template";
 import { deleteS3Object, getSignedS3Object } from "../lib/s3";
 import {
   deactivateArtworkVersion,
@@ -52,6 +53,7 @@ import {
 } from "../services/postgres/user";
 import { sendEmail } from "../utils/email";
 import {
+  formatEmailContent,
   formatError,
   formatResponse,
   generateUuids,
@@ -409,30 +411,41 @@ export const updateUserEmail = async ({
   response,
   connection,
 }) => {
-  await emailValidation.validate({ userEmail });
-  const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
-  if (emailUsed) {
-    throw createError(...formatError(errors.emailAlreadyExists));
-  } else {
-    const { verificationToken, verificationLink, verificationExpiry } =
-      generateVerificationToken();
-    await editUserEmail({
-      userId,
-      userEmail,
-      verificationToken,
-      verificationExpiry,
-      connection,
-    });
-    await sendEmail({
-      emailReceiver: userEmail,
-      emailSubject: "Please confirm your email",
-      emailContent: `Hello,
-        Please click on the link to verify your email:
-
-        <a href=${verificationLink}>Click here to verify</a>`,
-    });
-    logUserOut(response);
-    return formatResponse(responses.emailAddressUpdated);
+  try {
+    await emailValidation.validate({ userEmail });
+    const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
+    if (emailUsed) {
+      throw createError(...formatError(errors.emailAlreadyExists));
+    } else {
+      const { verificationToken, verificationLink, verificationExpiry } =
+        generateVerificationToken();
+      await editUserEmail({
+        userId,
+        userEmail,
+        verificationToken,
+        verificationExpiry,
+        connection,
+      });
+      const emailValues = formatEmailContent({
+        replacementValues: {
+          heading: "Verify new email",
+          text: "You are receiving this because you have changed your email address. Please click on the button below to continue.",
+          button: "Confirm email",
+          redirect: verificationLink,
+        },
+        replacementAttachments: [],
+      });
+      await sendEmail({
+        emailReceiver: userEmail,
+        emailSubject: "Confirm your email",
+        emailContent: renderEmail({ ...emailValues.formattedProps }),
+        emailAttachments: emailValues.formattedAttachments,
+      });
+      logUserOut(response);
+      return formatResponse(responses.emailAddressUpdated);
+    }
+  } catch (err) {
+    console.log("errrrr", err);
   }
 };
 

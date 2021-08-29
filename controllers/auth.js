@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import createError from "http-errors";
+import { appName } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
@@ -8,6 +9,7 @@ import {
   resetValidation,
   signupValidation,
 } from "../common/validation";
+import { renderEmail } from "../emails/template.js";
 import {
   addNewUser,
   editUserResetToken,
@@ -34,6 +36,7 @@ import {
 } from "../utils/auth";
 import { sendEmail } from "../utils/email";
 import {
+  formatEmailContent,
   formatError,
   formatResponse,
   formatTokenData,
@@ -83,13 +86,20 @@ export const postSignUp = async ({
       verificationExpiry,
       connection,
     });
+    const emailValues = formatEmailContent({
+      replacementValues: {
+        heading: `You are one step away from joining ${appName}`,
+        text: "Please click on the button below to verify your email",
+        button: "Confirm email",
+        redirect: verificationLink,
+      },
+      replacementAttachments: [],
+    });
     await sendEmail({
       emailReceiver: userEmail,
-      emailSubject: "Please confirm your email",
-      emailContent: `Hello,
-        Please click on the link to verify your email:
-
-        <a href=${verificationLink}>Click here to verify</a>`,
+      emailSubject: "Confirm your email",
+      emailContent: renderEmail({ ...emailValues.formattedProps }),
+      emailAttachments: emailValues.formattedAttachments,
     });
     return formatResponse(responses.userSignedUp);
   }
@@ -166,13 +176,20 @@ export const forgotPassword = async ({ userEmail, connection }) => {
     resetExpiry,
     connection,
   });
+  const emailValues = formatEmailContent({
+    replacementValues: {
+      heading: "Reset your password",
+      text: "You are receiving this because you have requested to reset the password for your account. Please click on the button below to continue.",
+      button: "Reset password",
+      redirect: resetLink,
+    },
+    replacementAttachments: [],
+  });
   await sendEmail({
     emailReceiver: userEmail,
     emailSubject: "Reset your password",
-    emailContent: `You are receiving this because you have requested to reset the password for your account.
-          Please click on the following link, or paste this into your browser to complete the process:
-          
-          <a href="${resetLink}"</a>`,
+    emailContent: renderEmail({ ...emailValues.formattedProps }),
+    emailAttachments: emailValues.formattedAttachments,
   });
   return formatResponse(responses.passwordReset);
 };
@@ -222,13 +239,20 @@ export const resendToken = async ({ userEmail, connection }) => {
         verificationExpiry,
         connection,
       });
+      const emailValues = formatEmailContent({
+        replacementValues: {
+          heading: "Confirm your email",
+          text: "You are receiving this because you have requested a new verification token to verify your account. Please click on the button below to continue.",
+          button: "Verify account",
+          redirect: verificationLink,
+        },
+        replacementAttachments: [],
+      });
       await sendEmail({
         emailReceiver: userEmail,
-        emailSubject: "Please confirm your email",
-        emailContent: `Hello,
-          Please click on the link to verify your email:
-  
-          <a href=${verificationLink}>Click here to verify</a>`,
+        emailSubject: "Verify your account",
+        emailContent: renderEmail({ ...emailValues.formattedProps }),
+        emailAttachments: emailValues.formattedAttachments,
       });
       return formatResponse(responses.verificationTokenResent);
     }
@@ -279,13 +303,20 @@ export const updateEmail = async ({
         verificationExpiry,
         connection,
       });
+      const emailValues = formatEmailContent({
+        replacementValues: {
+          heading: "Verify new email",
+          text: "You are receiving this because you have changed your email address. Please click on the button below to continue.",
+          button: "Confirm email",
+          redirect: verificationLink,
+        },
+        replacementAttachments: [],
+      });
       await sendEmail({
         emailReceiver: userEmail,
-        emailSubject: "Please confirm your email",
-        emailContent: `Hello,
-        Please click on the link to verify your email:
-  
-        <a href=${verificationLink}>Click here to verify</a>`,
+        emailSubject: "Confirm your email",
+        emailContent: renderEmail({ ...emailValues.formattedProps }),
+        emailAttachments: emailValues.formattedAttachments,
       });
       logUserOut(response);
       return formatResponse(responses.emailAddressUpdated);
