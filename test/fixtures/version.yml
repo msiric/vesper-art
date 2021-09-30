@@ -1,0 +1,17 @@
+  fixtures:
+  - Version:
+      id: 5697f6c5-9099-44d8-a6f4-3cabd66ae019
+      artworkId: ''
+      title: ''
+      category: ''
+      tags: [],
+      description: '',
+      availability: ''
+      type: ''
+      license: ''
+      use: ''
+      personal: ''
+      commercial: ''
+      coverId: ''
+      mediaId: ''
+

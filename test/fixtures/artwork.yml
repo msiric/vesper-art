@@ -1,6 +1,11 @@
 fixtures:
   - Artwork:
-
+      id: ""
+      ownerId: ""
+      currentId: ""
+      active: ""
+      visibility: ""
+      generated: ""
   - Artwork:
 
   - Artwork:
