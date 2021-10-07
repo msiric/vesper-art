@@ -456,7 +456,7 @@ const artwork = [
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636412.jpg",
       width: "3840",
-      height: "2160",
+      height: "2065",
       dominant: "#36154B",
       orientation: "landscape",
     },
@@ -464,7 +464,7 @@ const artwork = [
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636412.jpg",
       width: "640",
-      height: "360",
+      height: "344",
       dominant: "#36154B",
       orientation: "landscape",
     },
