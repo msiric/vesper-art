@@ -223,11 +223,6 @@ export const errors = {
     message: "Artwork visibility is invalid",
     expose: true,
   },
-  artworkDescriptionRequired: {
-    status: statusCodes.badRequest,
-    message: "Artwork description is required",
-    expose: true,
-  },
   artworkDescriptionMax: {
     status: statusCodes.badRequest,
     message: `Artwork description cannot contain more than ${ranges.artworkDescription.max} characters`,
@@ -784,7 +779,6 @@ export const artworkValidation = Yup.object().shape({
   artworkDescription: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
-    .required(errors.artworkDescriptionRequired.message)
     .max(ranges.artworkDescription.max, errors.artworkDescriptionMax.message),
 });
 

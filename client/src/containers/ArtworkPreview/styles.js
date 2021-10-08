@@ -9,26 +9,23 @@ const artworkPreviewStyles = makeStyles((muiTheme) => ({
     justifyContent: "space-between",
     padding: 16,
   },
-  titleWrapper: {
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    wordBreak: "break-word",
-  },
   imageWrapper: {
     display: "flex",
     justifyContent: "center",
     maxHeight: 700,
   },
+  title: {
+    marginTop: 8,
+    fontSize: 24,
+    fontWeight: "bold",
+    wordBreak: "break-word",
+  },
   description: {
     wordBreak: "break-word",
-    marginTop: 8,
     marginBottom: 8,
   },
   disclaimerWrapper: {
-    margin: "8px 0",
+    margin: "8px 0 0 0",
   },
   disclaimer: {
     fontSize: 12,

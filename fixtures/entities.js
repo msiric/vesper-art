@@ -20,7 +20,7 @@ const version = {
 
 const artwork = [
   {
-    title: "",
+    title: "Black Tree of Harmony",
     description: "",
     ...version,
     media: {
@@ -41,7 +41,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "the connection",
     description: "",
     ...version,
     media: {
@@ -62,7 +62,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Triumph",
     description: "",
     ...version,
     media: {
@@ -83,7 +83,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "The Man Who Deceived the Gods",
     description: "",
     ...version,
     media: {
@@ -104,7 +104,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Wildflower",
     description: "",
     ...version,
     media: {
@@ -125,7 +125,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "nightmare",
     description: "",
     ...version,
     media: {
@@ -146,7 +146,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Hellhound",
     description: "",
     ...version,
     media: {
@@ -167,7 +167,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "A Magical Night",
     description: "",
     ...version,
     media: {
@@ -188,7 +188,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Selfie",
     description: "",
     ...version,
     media: {
@@ -209,7 +209,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "PROGRESSION",
     description: "",
     ...version,
     media: {
@@ -230,7 +230,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "modern home",
     description: "",
     ...version,
     media: {
@@ -251,7 +251,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "GEISHA",
     description: "",
     ...version,
     media: {
@@ -272,7 +272,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "moonlight howl",
     description: "",
     ...version,
     media: {
@@ -293,7 +293,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "amalgamation",
     description: "",
     ...version,
     media: {
@@ -314,7 +314,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Halloween",
     description: "",
     ...version,
     media: {
@@ -335,7 +335,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Good catch",
     description: "",
     ...version,
     media: {
@@ -356,7 +356,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "moonhole",
     description: "",
     ...version,
     media: {
@@ -377,7 +377,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Sunset",
     description: "",
     ...version,
     media: {
@@ -398,7 +398,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Beacon of Light",
     description: "",
     ...version,
     media: {
@@ -419,7 +419,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "MYSTIC NIGHT",
     description: "",
     ...version,
     media: {
@@ -440,7 +440,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "monke",
     description: "",
     ...version,
     media: {
@@ -461,7 +461,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Daydreaming",
     description: "",
     ...version,
     media: {
@@ -482,7 +482,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Colourful",
     description: "",
     ...version,
     media: {
@@ -503,7 +503,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Independence",
     description: "",
     ...version,
     media: {
@@ -524,7 +524,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "pspspspspspspspspspsps",
     description: "",
     ...version,
     media: {
@@ -545,7 +545,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "Revelation",
     description: "",
     ...version,
     media: {
@@ -566,7 +566,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "I want you",
     description: "",
     ...version,
     media: {
@@ -587,7 +587,7 @@ const artwork = [
     },
   },
   {
-    title: "",
+    title: "swimming with the fishes",
     description: "",
     ...version,
     media: {

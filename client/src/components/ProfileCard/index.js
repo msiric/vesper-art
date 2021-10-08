@@ -70,7 +70,7 @@ const ProfileCard = ({ user, loading }) => {
               Fetching user details
             </Typography>
           )}
-          {user.rating > 0 && (
+          {!loading && user.rating > 0 && (
             <Box className={classes.rating}>
               <StarIcon fontSize="small" className={classes.icon} />
               <Typography variant="body1" color="textSecondary" component="p">
@@ -81,7 +81,7 @@ const ProfileCard = ({ user, loading }) => {
               </Typography>
             </Box>
           )}
-          {user.country && (
+          {!loading && user.country && (
             <Box className={classes.country}>
               <LocationIcon fontSize="small" className={classes.icon} />
               <Typography variant="body2" color="textSecondary" component="p">
@@ -92,7 +92,7 @@ const ProfileCard = ({ user, loading }) => {
               </Typography>
             </Box>
           )}
-          {user.created && (
+          {!loading && user.created && (
             <Box className={classes.joined}>
               <MemberIcon fontSize="small" className={classes.icon} />
               <Typography variant="body2" color="textSecondary" component="p">
