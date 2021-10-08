@@ -1,7 +1,28 @@
 import { admin } from "../config/secret";
 
+const general = {
+  id: "",
+  ownerId: "",
+  currentId: "",
+  active: true,
+  visibility: "visible",
+  generated: true,
+};
+
+const version = {
+  availability: "unavailable",
+  type: "unavailable",
+  license: "unavailable",
+  use: "unavailable",
+  personal: "0",
+  commercial: "0",
+};
+
 const artwork = [
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636387.jpg",
@@ -20,6 +41,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636388.jpg",
@@ -38,6 +62,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636389.jpg",
@@ -56,6 +83,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636390.jpg",
@@ -74,6 +104,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636391.jpg",
@@ -92,6 +125,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636392.jpg",
@@ -110,6 +146,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636393.jpg",
@@ -128,6 +167,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636394.jpg",
@@ -146,6 +188,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636395.jpg",
@@ -164,6 +209,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636396.jpg",
@@ -182,6 +230,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636397.jpg",
@@ -200,6 +251,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636398.jpg",
@@ -218,6 +272,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636399.jpg",
@@ -236,6 +293,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636400.jpg",
@@ -254,6 +314,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636401.jpg",
@@ -272,6 +335,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636402.jpg",
@@ -290,6 +356,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636403.jpg",
@@ -308,6 +377,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636404.jpg",
@@ -326,6 +398,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636405.jpg",
@@ -344,6 +419,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636406.jpg",
@@ -362,6 +440,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636407.jpg",
@@ -380,6 +461,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636408.jpg",
@@ -398,6 +482,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636409.jpg",
@@ -416,6 +503,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636410.jpg",
@@ -434,6 +524,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636411.jpg",
@@ -452,6 +545,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636412.jpg",
@@ -470,6 +566,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636413.jpg",
@@ -488,6 +587,9 @@ const artwork = [
     },
   },
   {
+    title: "",
+    description: "",
+    ...version,
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636414.jpg",
@@ -546,55 +648,52 @@ export const entities = [
         dominant: "",
         height: "",
         width: "",
+        ...avatar,
       },
     },
-    artwork: [
-      {
+    artwork: artwork.map((item) => ({
+      data: {
+        ...general,
+      },
+      version: {
         data: {
           id: "",
-          ownerId: "",
-          currentId: "",
-          active: true,
-          visibility: "visible",
-          generated: true,
+          artworkId: "",
+          title: "",
+          description: "",
+          availability: "",
+          type: "",
+          license: "",
+          use: "",
+          personal: "",
+          commercial: "",
+          coverId: "",
+          mediaId: "",
+          ...item,
         },
-        version: {
+        media: {
           data: {
             id: "",
-            artworkId: "",
-            title: "",
-            description: "",
-            availability: "",
-            type: "",
-            license: "",
-            use: "",
-            personal: "",
-            commercial: "",
-            coverId: "",
-            mediaId: "",
+            source: "",
+            orientation: "",
+            dominant: "",
+            height: "",
+            width: "",
+            ...item.media,
           },
-          media: {
-            data: {
-              id: "",
-              source: "",
-              orientation: "",
-              dominant: "",
-              height: "",
-              width: "",
-            },
-          },
-          cover: {
-            data: {
-              id: "",
-              source: "",
-              orientation: "",
-              dominant: "",
-              height: "",
-              width: "",
-            },
+        },
+        cover: {
+          data: {
+            id: "",
+            source: "",
+            orientation: "",
+            dominant: "",
+            height: "",
+            width: "",
+            ...item.cover,
           },
         },
       },
-    ],
+    })),
   },
 ];
