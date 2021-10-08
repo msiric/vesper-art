@@ -507,6 +507,15 @@ const artwork = [
   },
 ];
 
+const avatar = {
+  source:
+    "https://vesper-testing.s3.eu-central-1.amazonaws.com/userMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636386.png",
+  width: "898",
+  height: "1280",
+  dominant: "#B9B9B9",
+  orientation: "portrait",
+};
+
 export const entities = [
   {
     data: {
