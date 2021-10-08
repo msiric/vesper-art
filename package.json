@@ -18,7 +18,8 @@
     "dev": "npx kill-port 3000 && npx kill-port 5000 && set NODE_ENV=development&& concurrently --kill-others \"npm run watch\" \"npm run start-dev\" \"npm run client\" \"npm run webhook\"",
     "prod": "set NODE_ENV=production&& cd client && npm install && npm build && cd .. && node ./dist/bin/www",
     "postinstall": "tsc && copyfiles ./common/assets/* ./dist",
-    "heroku-postbuild": "cd client && npm install && npm run build"
+    "heroku-postbuild": "cd client && npm install && npm run build",
+    "seed-db": "set NODE_ENV=local&& node ./dist/fixtures/index"
   },
   "author": "",
   "license": "ISC",

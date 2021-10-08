@@ -20,9 +20,11 @@ const version = {
 
 const artwork = [
   {
-    title: "Black Tree of Harmony",
-    description: "",
-    ...version,
+    details: {
+      title: "Black Tree of Harmony",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636387.jpg",
@@ -41,9 +43,11 @@ const artwork = [
     },
   },
   {
-    title: "the connection",
-    description: "",
-    ...version,
+    details: {
+      title: "the connection",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636388.jpg",
@@ -62,12 +66,14 @@ const artwork = [
     },
   },
   {
-    title: "Triumph",
-    description: "",
-    ...version,
+    details: {
+      title: "Triumph",
+      description: "",
+      ...version,
+    },
     media: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636389.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636389.png",
       width: "1920",
       height: "1920",
       dominant: "#E37324",
@@ -75,7 +81,7 @@ const artwork = [
     },
     cover: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636389.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636389.png",
       width: "640",
       height: "640",
       dominant: "#E37324",
@@ -83,12 +89,14 @@ const artwork = [
     },
   },
   {
-    title: "The Man Who Deceived the Gods",
-    description: "",
-    ...version,
+    details: {
+      title: "The Man Who Deceived the Gods",
+      description: "",
+      ...version,
+    },
     media: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636390.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636390.png",
       width: "1920",
       height: "1352",
       dominant: "#040404",
@@ -96,7 +104,7 @@ const artwork = [
     },
     cover: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636390.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636390.png",
       width: "640",
       height: "451",
       dominant: "#040404",
@@ -104,9 +112,11 @@ const artwork = [
     },
   },
   {
-    title: "Wildflower",
-    description: "",
-    ...version,
+    details: {
+      title: "Wildflower",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636391.jpg",
@@ -125,9 +135,11 @@ const artwork = [
     },
   },
   {
-    title: "nightmare",
-    description: "",
-    ...version,
+    details: {
+      title: "nightmare",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636392.jpg",
@@ -146,12 +158,14 @@ const artwork = [
     },
   },
   {
-    title: "Hellhound",
-    description: "",
-    ...version,
+    details: {
+      title: "Hellhound",
+      description: "",
+      ...version,
+    },
     media: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636393.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636393.png",
       width: "1761",
       height: "1920",
       dominant: "#ADDCDE",
@@ -159,7 +173,7 @@ const artwork = [
     },
     cover: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636393.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636393.png",
       width: "640",
       height: "698",
       dominant: "#ADDCDE",
@@ -167,9 +181,11 @@ const artwork = [
     },
   },
   {
-    title: "A Magical Night",
-    description: "",
-    ...version,
+    details: {
+      title: "A Magical Night",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636394.jpg",
@@ -188,12 +204,14 @@ const artwork = [
     },
   },
   {
-    title: "Selfie",
-    description: "",
-    ...version,
+    details: {
+      title: "Selfie",
+      description: "",
+      ...version,
+    },
     media: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636395.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636395.png",
       width: "1920",
       height: "1920",
       dominant: "#E3C3DB",
@@ -201,7 +219,7 @@ const artwork = [
     },
     cover: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636395.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636395.png",
       width: "640",
       height: "640",
       dominant: "#E3C3DB",
@@ -209,9 +227,11 @@ const artwork = [
     },
   },
   {
-    title: "PROGRESSION",
-    description: "",
-    ...version,
+    details: {
+      title: "PROGRESSION",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636396.jpg",
@@ -230,9 +250,11 @@ const artwork = [
     },
   },
   {
-    title: "modern home",
-    description: "",
-    ...version,
+    details: {
+      title: "modern home",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636397.jpg",
@@ -251,12 +273,14 @@ const artwork = [
     },
   },
   {
-    title: "GEISHA",
-    description: "",
-    ...version,
+    details: {
+      title: "GEISHA",
+      description: "",
+      ...version,
+    },
     media: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636398.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636398.png",
       width: "1389",
       height: "1920",
       dominant: "#040404",
@@ -264,7 +288,7 @@ const artwork = [
     },
     cover: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636398.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636398.png",
       width: "640",
       height: "885",
       dominant: "#040404",
@@ -272,9 +296,11 @@ const artwork = [
     },
   },
   {
-    title: "moonlight howl",
-    description: "",
-    ...version,
+    details: {
+      title: "moonlight howl",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636399.jpg",
@@ -293,9 +319,11 @@ const artwork = [
     },
   },
   {
-    title: "amalgamation",
-    description: "",
-    ...version,
+    details: {
+      title: "amalgamation",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636400.jpg",
@@ -314,9 +342,11 @@ const artwork = [
     },
   },
   {
-    title: "Halloween",
-    description: "",
-    ...version,
+    details: {
+      title: "Halloween",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636401.jpg",
@@ -335,12 +365,14 @@ const artwork = [
     },
   },
   {
-    title: "Good catch",
-    description: "",
-    ...version,
+    details: {
+      title: "Good catch",
+      description: "",
+      ...version,
+    },
     media: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636402.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636402.png",
       width: "1281",
       height: "1920",
       dominant: "#227593",
@@ -348,7 +380,7 @@ const artwork = [
     },
     cover: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636402.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636402.png",
       width: "640",
       height: "959",
       dominant: "#227593",
@@ -356,9 +388,11 @@ const artwork = [
     },
   },
   {
-    title: "moonhole",
-    description: "",
-    ...version,
+    details: {
+      title: "moonhole",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636403.jpg",
@@ -377,9 +411,11 @@ const artwork = [
     },
   },
   {
-    title: "Sunset",
-    description: "",
-    ...version,
+    details: {
+      title: "Sunset",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636404.jpg",
@@ -398,9 +434,11 @@ const artwork = [
     },
   },
   {
-    title: "Beacon of Light",
-    description: "",
-    ...version,
+    details: {
+      title: "Beacon of Light",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636405.jpg",
@@ -419,9 +457,11 @@ const artwork = [
     },
   },
   {
-    title: "MYSTIC NIGHT",
-    description: "",
-    ...version,
+    details: {
+      title: "MYSTIC NIGHT",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636406.jpg",
@@ -440,12 +480,14 @@ const artwork = [
     },
   },
   {
-    title: "monke",
-    description: "",
-    ...version,
+    details: {
+      title: "monke",
+      description: "",
+      ...version,
+    },
     media: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636407.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636407.png",
       width: "1920",
       height: "1887",
       dominant: "#367CBA",
@@ -453,7 +495,7 @@ const artwork = [
     },
     cover: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636407.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636407.png",
       width: "640",
       height: "629",
       dominant: "#367CBA",
@@ -461,9 +503,11 @@ const artwork = [
     },
   },
   {
-    title: "Daydreaming",
-    description: "",
-    ...version,
+    details: {
+      title: "Daydreaming",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636408.jpg",
@@ -482,9 +526,11 @@ const artwork = [
     },
   },
   {
-    title: "Colourful",
-    description: "",
-    ...version,
+    details: {
+      title: "Colourful",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636409.jpg",
@@ -503,12 +549,14 @@ const artwork = [
     },
   },
   {
-    title: "Independence",
-    description: "",
-    ...version,
+    details: {
+      title: "Independence",
+      description: "",
+      ...version,
+    },
     media: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636410.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636410.png",
       width: "1435",
       height: "1920",
       dominant: "#F53839",
@@ -516,7 +564,7 @@ const artwork = [
     },
     cover: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636410.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636410.png",
       width: "640",
       height: "856",
       dominant: "#F53839",
@@ -524,9 +572,11 @@ const artwork = [
     },
   },
   {
-    title: "pspspspspspspspspspsps",
-    description: "",
-    ...version,
+    details: {
+      title: "pspspspspspspspspspsps",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636411.jpg",
@@ -545,9 +595,11 @@ const artwork = [
     },
   },
   {
-    title: "Revelation",
-    description: "",
-    ...version,
+    details: {
+      title: "Revelation",
+      description: "",
+      ...version,
+    },
     media: {
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636412.jpg",
@@ -566,12 +618,14 @@ const artwork = [
     },
   },
   {
-    title: "I want you",
-    description: "",
-    ...version,
+    details: {
+      title: "I want you",
+      description: "",
+      ...version,
+    },
     media: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636413.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636413.png",
       width: "1915",
       height: "1920",
       dominant: "#FB3434",
@@ -579,7 +633,7 @@ const artwork = [
     },
     cover: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636413.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636413.png",
       width: "640",
       height: "642",
       dominant: "#FB3434",
@@ -587,12 +641,14 @@ const artwork = [
     },
   },
   {
-    title: "swimming with the fishes",
-    description: "",
-    ...version,
+    details: {
+      title: "swimming with the fishes",
+      description: "",
+      ...version,
+    },
     media: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636414.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636414.png",
       width: "1920",
       height: "1224",
       dominant: "#040404",
@@ -600,7 +656,7 @@ const artwork = [
     },
     cover: {
       source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636414.jpg",
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636414.png",
       width: "640",
       height: "408",
       dominant: "#040404",
@@ -626,7 +682,7 @@ export const entities = [
       fullName: "Artista",
       name: admin.username,
       password: admin.password,
-      avatarId: "",
+      avatarId: null,
       description: "Just vibin'",
       country: "HR",
       businessAddress: "",
@@ -669,7 +725,7 @@ export const entities = [
           commercial: "",
           coverId: "",
           mediaId: "",
-          ...item,
+          ...item.details,
         },
         media: {
           data: {
