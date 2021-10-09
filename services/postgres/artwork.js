@@ -55,14 +55,20 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
       ...USER_SELECTION["STRIPPED_INFO"]("owner"),
     ])
     .where(
-      `artwork.active = :active AND artwork.visibility = :visibility AND artwork.serial > 
-      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
+      `artwork.active = :active AND artwork.visibility = :visibility AND artwork.serial < 
+      ${resolveSubQuery(
+        queryBuilder,
+        "artwork",
+        Artwork,
+        cursor,
+        Number.MAX_VALUE
+      )}`,
       {
         active: ARTWORK_SELECTION["ACTIVE_STATUS"],
         visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
       }
     )
-    .orderBy("artwork.serial", "ASC")
+    .orderBy("artwork.serial", "DESC")
     .limit(limit)
     .getMany();
   console.log(foundArtwork);
