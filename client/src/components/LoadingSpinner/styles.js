@@ -6,6 +6,7 @@ const loadingSpinnerStyles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
+    maxWidth: "100%",
   },
   item: {
     display: "flex",
