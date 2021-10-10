@@ -29,7 +29,7 @@ const Footer = () => {
 
   return (
     <footer className={classes.container}>
-      <Toolbar>
+      <Toolbar disableGutters>
         <Container>
           <Grid container className={classes.navigation}>
             <Grid item className={classes.item}>
@@ -130,7 +130,6 @@ const Footer = () => {
                   aria-label="Facebook"
                   href={socialLinks.facebook}
                   className={classes.button}
-                  edge="start"
                 >
                   <FacebookIcon />
                 </IconButton>
@@ -138,7 +137,6 @@ const Footer = () => {
                   aria-label="Instagram"
                   href={socialLinks.instagram}
                   className={classes.button}
-                  edge="start"
                 >
                   <InstagramIcon />
                 </IconButton>
@@ -146,7 +144,6 @@ const Footer = () => {
                   aria-label="Twitter"
                   href={socialLinks.twitter}
                   className={classes.button}
-                  edge="start"
                 >
                   <TwitterIcon />
                 </IconButton>
@@ -154,7 +151,6 @@ const Footer = () => {
                   aria-label="Reddit"
                   href={socialLinks.reddit}
                   className={classes.button}
-                  edge="start"
                 >
                   <RedditIcon />
                 </IconButton>

@@ -48,17 +48,19 @@ const ArtworkForm = ({
         isDynamic={true}
         loading={loading}
       />
-      <UploadPopover
-        label="What kind of file to upload?"
-        size={upload.artwork.fileSize / 1024 / 1024}
-        dimensions={{
-          height: upload.artwork.fileDimensions.height,
-          width: upload.artwork.fileDimensions.width,
-        }}
-        aspectRatio={upload.artwork.fileRatio}
-        types={upload.artwork.mimeTypes}
-        loading={loading}
-      />
+      {editable && (
+        <UploadPopover
+          label="What kind of file to upload?"
+          size={upload.artwork.fileSize / 1024 / 1024}
+          dimensions={{
+            height: upload.artwork.fileDimensions.height,
+            width: upload.artwork.fileDimensions.width,
+          }}
+          aspectRatio={upload.artwork.fileRatio}
+          types={upload.artwork.mimeTypes}
+          loading={loading}
+        />
+      )}
       <Box>
         <TextInput
           name="artworkTitle"

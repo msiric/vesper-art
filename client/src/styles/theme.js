@@ -54,6 +54,7 @@ export const Avatar = styled(MuiAvatar)(compose(sizing, spacing, borders));
 export const artepunktTheme = createMuiTheme({
   typography: {
     fontFamily: [
+      "Plus Jakarta Display",
       "Poppins",
       "system-ui",
       "-apple-system",

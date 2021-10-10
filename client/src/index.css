@@ -1,3 +1,10 @@
+@font-face {
+  font-family: "Plus Jakarta Display";
+  font-weight: normal;
+  font-style: normal;
+  src: url("./assets/fonts/PlusJakartaSans-Regular.woff");
+}
+
 html {
   height: 100%;
 }
@@ -7,9 +14,9 @@ body {
   flex-direction: column;
   height: 100%;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: "Plus Jakarta Display", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -51,8 +58,8 @@ code {
   background-image: url("../../common/assets/logo.svg");
   background-size: contain;
   background-repeat: no-repeat;
-  width: 70px;
-  height: 20px;
+  width: 100px;
+  height: 35px;
   top: 5px;
   left: 5px;
   position: absolute;
