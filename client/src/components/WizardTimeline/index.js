@@ -82,7 +82,7 @@ const WizardTimeline = ({ illustrations }) => {
             </TimelineDot>
             <TimelineConnector />
           </TimelineSeparator>
-          <TimelineContent>
+          <TimelineContent className={classes.description}>
             <Paper elevation={3} className={classes.paper}>
               <Typography variant="h6" component="h1">
                 {item.heading}

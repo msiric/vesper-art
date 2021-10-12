@@ -13,6 +13,7 @@ const ShareButton = ({
   labeled,
   loading = false,
   shouldResize = false,
+  fontSize,
   ...props
 }) => {
   const [state, setState] = useState({
@@ -48,7 +49,7 @@ const ShareButton = ({
     <Box>
       {labeled ? (
         <SyncButton
-          startIcon={<ShareIcon />}
+          startIcon={<ShareIcon fontSize={fontSize || "medium"} />}
           onClick={() => handleModalOpen()}
           loading={loading}
           {...props}
@@ -62,7 +63,10 @@ const ShareButton = ({
             onClick={() => handleModalOpen()}
             {...props}
           >
-            <ShareIcon className={shouldResize ? classes.icon : ""} />
+            <ShareIcon
+              className={shouldResize ? classes.icon : ""}
+              fontSize={fontSize || "medium"}
+            />
           </IconButton>
         </SkeletonWrapper>
       )}

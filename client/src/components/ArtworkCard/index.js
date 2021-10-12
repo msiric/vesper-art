@@ -96,16 +96,18 @@ const ArtworkCard = ({
         disableTypography
         className={classes.header}
       />
-      <ImageWrapper
-        redirect={`/artwork/${item.id}`}
-        height={item.data.height}
-        source={item.data.cover ? item.data.cover.source : ""}
-        placeholder={
-          item.data.cover ? item.data.cover.dominant : item.data.dominant
-        }
-        addOverlay={true}
-        loading={loading}
-      />
+      <Box className={classes.imageContainer}>
+        <ImageWrapper
+          redirect={`/artwork/${item.id}`}
+          height={item.data.height}
+          source={item.data.cover ? item.data.cover.source : ""}
+          placeholder={
+            item.data.cover ? item.data.cover.dominant : item.data.dominant
+          }
+          addOverlay={true}
+          loading={loading}
+        />
+      </Box>
       <CardActions disableSpacing className={classes.footer}>
         <Box className={classes.buttonWrapper} loading={loading}>
           {item.owner.id === userId ? (
@@ -114,40 +116,47 @@ const ArtworkCard = ({
               component={RouterLink}
               to={`/artwork/${artwork.id}/edit`}
               className={classes.button}
+              size="small"
             >
-              <EditIcon />
+              <EditIcon fontSize="small" />
             </IconButton>
           ) : (
             <FavoriteButton
               artwork={item}
               favorited={userFavorites[item.id]}
               handleCallback={handleArtworkSave}
+              size="small"
+              fontSize="small"
             />
           )}
-          <ShareButton link={`/artwork/${artwork.id}`} type="artwork" />
+          <ShareButton
+            link={`/artwork/${artwork.id}`}
+            type="artwork"
+            size="small"
+            fontSize="small"
+          />
         </Box>
         <Box>
-          <IconButton aria-label="Artwork price">
-            <Typography noWrap className={classes.price}>
-              {item.data.availability === "available"
-                ? item.data.license === "commercial"
-                  ? item.data.use === "included"
-                    ? `- / ${
-                        item.data.commercial
-                          ? formatArtworkPrice({
-                              price: item.data.commercial,
-                              withAbbreviation: true,
-                            })
-                          : " Free"
-                      }`
-                    : `${
-                        item.data.personal
-                          ? formatArtworkPrice({
-                              price: item.data.personal,
-                              withAbbreviation: true,
-                            })
-                          : " Free"
-                      }
+          <Typography noWrap className={classes.price}>
+            {item.data.availability === "available"
+              ? item.data.license === "commercial"
+                ? item.data.use === "included"
+                  ? `- / ${
+                      item.data.commercial
+                        ? formatArtworkPrice({
+                            price: item.data.commercial,
+                            withAbbreviation: true,
+                          })
+                        : " Free"
+                    }`
+                  : `${
+                      item.data.personal
+                        ? formatArtworkPrice({
+                            price: item.data.personal,
+                            withAbbreviation: true,
+                          })
+                        : " Free"
+                    }
                     /
                       ${
                         item.data.commercial
@@ -159,17 +168,16 @@ const ArtworkCard = ({
                           ? item.data.personal
                           : " Free"
                       }`
-                  : `${
-                      item.data.personal
-                        ? formatArtworkPrice({
-                            price: item.data.personal,
-                            withAbbreviation: true,
-                          })
-                        : " Free"
-                    } / -`
-                : "Preview only"}
-            </Typography>
-          </IconButton>
+                : `${
+                    item.data.personal
+                      ? formatArtworkPrice({
+                          price: item.data.personal,
+                          withAbbreviation: true,
+                        })
+                      : " Free"
+                  } / -`
+              : "Preview only"}
+          </Typography>
         </Box>
       </CardActions>
     </Card>

@@ -13,12 +13,21 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     position: "relative",
     "&:hover": {
       "& $header": {
-        height: 50,
+        height: 42,
       },
       "& $footer": {
-        height: 50,
+        height: 42,
+      },
+      "& $imageContainer": {
+        filter: "blur(4px)",
+        opacity: 0.5,
       },
     },
+  },
+  imageContainer: {
+    height: "100%",
+    width: "100%",
+    transition: "opacity 0.5s, filter 0.5s",
   },
   header: {
     "& div": {
@@ -33,7 +42,6 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     padding: 0,
     position: "absolute",
     top: 0,
-    backgroundColor: "rgba(0,0,0,0.5)",
     transition: "height 0.5s",
     display: "flex",
     justifyContent: "left",
@@ -46,11 +54,10 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
       color: "white",
     },
     width: "100%",
+    padding: "0 12px",
     height: 0,
-    padding: 0,
     position: "absolute",
     bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.5)",
     transition: "height 0.5s",
     display: "flex",
     justifyContent: "space-between",
@@ -64,21 +71,31 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
   title: {
     color: "white",
     textDecoration: "none",
-    fontSize: "1.1rem",
+    fontSize: "1rem",
+    fontWeight: "bold",
     "&:hover": {
       textDecoration: "underline",
+    },
+    [muiTheme.breakpoints.down("md")]: {
+      fontSize: "0.8rem",
     },
   },
   owner: {
     color: "white",
     textDecoration: "none",
-    fontSize: "1rem",
+    fontSize: "0.8rem",
     "&:hover": {
       textDecoration: "underline",
     },
+    [muiTheme.breakpoints.down("md")]: {
+      fontSize: "0.8rem",
+    },
+  },
+  priceWrapper: {
+    padding: 0,
   },
   price: {
-    fontSize: "1rem",
+    fontSize: "0.8rem",
   },
   button: {
     color: "white",

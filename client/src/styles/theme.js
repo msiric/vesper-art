@@ -219,6 +219,7 @@ artepunktTheme.overrides.MuiFormHelperText = {
 
 artepunktTheme.overrides.MuiTableBody = {
   root: {
+    wordBreak: "break-word",
     "&>tr:nth-child(odd)": {
       backgroundColor: "#3d3d3d",
     },

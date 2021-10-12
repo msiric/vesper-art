@@ -29,7 +29,7 @@ const OrderPreview = () => {
           version.title
         }, ${new Date(version.created).getFullYear()}`}</Typography>
         <Typography variant="body2" loading={loading}>
-          {version.description || "Loading..."}
+          {version.description || "No description"}
         </Typography>
       </Box>
     </Card>

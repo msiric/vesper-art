@@ -82,6 +82,14 @@ const globalStyles = makeStyles((muiTheme) => ({
     ".NoTableFooter .MuiTableBody-root>tr:nth-child(odd)": {
       background: "transparent",
     },
+    ".MuiTimelineItem-alignAlternate:nth-child(even) .MuiTimelineItem-content":
+      {
+        paddingLeft: 0,
+        textAlign: "left",
+      },
+    ".MuiTimelineItem-alignAlternate:nth-child(odd) .MuiTimelineItem-content": {
+      paddingRight: 0,
+    },
     "[class*='MUIDataTableSearch-main']": {
       [muiTheme.breakpoints.down("xs")]: {
         display: "flex",

@@ -19,11 +19,6 @@ import globalStyles from "../../styles/global";
 import { containsErrors, renderError } from "../../utils/helpers";
 
 const useSettingsStyles = makeStyles((muiTheme) => ({
-  container: {
-    width: "100%",
-    padding: 0,
-    margin: "16px 0",
-  },
   wrapper: {
     display: "flex",
     flexDirection: "column",
