@@ -1,6 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  AddCircleRounded as UploadIcon,
+  CheckRounded as SaveIcon,
+  CloseRounded as CloseIcon,
   MoreVertRounded as MoreIcon,
 } from "@material-ui/icons";
 import { formatDistance } from "date-fns";
@@ -132,7 +133,7 @@ const CommentCard = ({
                       submitting={formState.isSubmitting}
                       disabled={isDisabled}
                       loading={loading}
-                      startIcon={<UploadIcon />}
+                      startIcon={<SaveIcon />}
                     >
                       Publish
                     </AsyncButton>
@@ -142,6 +143,7 @@ const CommentCard = ({
                       onClick={() =>
                         handleCommentClose({ commentId: comment.id })
                       }
+                      startIcon={<CloseIcon />}
                     >
                       Cancel
                     </SyncButton>

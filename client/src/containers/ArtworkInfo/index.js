@@ -1,3 +1,7 @@
+import {
+  EditOutlined as EditIcon,
+  GetAppOutlined as DownloadIcon,
+} from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
@@ -189,6 +193,7 @@ const ArtworkInfo = () => {
                         <SyncButton
                           component={RouterLink}
                           to={`/artwork/${artwork.id}/edit`}
+                          startIcon={<EditIcon />}
                         >
                           Edit artwork
                         </SyncButton>
@@ -222,6 +227,7 @@ const ArtworkInfo = () => {
         promptCancel="Close"
         isDisabled={isDisabled}
         isSubmitting={formState.isSubmitting}
+        startIcon={<DownloadIcon />}
       >
         {!!orders.length && <LicenseAlert licenseStatus={licenseStatus} />}
         <FormProvider control={control}>

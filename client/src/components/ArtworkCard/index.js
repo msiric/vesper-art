@@ -1,4 +1,4 @@
-import { EditRounded as EditIcon } from "@material-ui/icons";
+import { EditOutlined as EditIcon } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { formatArtworkPrice } from "../../../../common/helpers";
@@ -99,7 +99,7 @@ const ArtworkCard = ({
       <Box className={classes.imageContainer}>
         <ImageWrapper
           redirect={`/artwork/${item.id}`}
-          height={item.data.height}
+          height={item.data.cover.height}
           source={item.data.cover ? item.data.cover.source : ""}
           placeholder={
             item.data.cover ? item.data.cover.dominant : item.data.dominant

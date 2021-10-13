@@ -2,6 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const artworkPreviewStyles = makeStyles((muiTheme) => ({
   container: {
+    minHeight: 500,
     width: "100%",
     backgroundColor: muiTheme.palette.background.paper,
     display: "flex",
@@ -12,6 +13,7 @@ const artworkPreviewStyles = makeStyles((muiTheme) => ({
   imageWrapper: {
     display: "flex",
     justifyContent: "center",
+    height: "100%",
     maxHeight: 700,
   },
   title: {

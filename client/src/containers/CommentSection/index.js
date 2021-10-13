@@ -1,5 +1,8 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
+import {
+  ArrowUpwardRounded as SubmitIcon,
+  DeleteOutlineRounded as DeleteIcon,
+} from "@material-ui/icons";
 import { useSnackbar } from "notistack";
 import queryString from "query-string";
 import React, { useEffect } from "react";
@@ -126,7 +129,7 @@ const CommentSection = ({
               submitting={formState.isSubmitting}
               disabled={isDisabled}
               loading={loading}
-              startIcon={<UploadIcon />}
+              startIcon={<SubmitIcon />}
             >
               Post
             </AsyncButton>
@@ -197,6 +200,7 @@ const CommentSection = ({
         promptConfirm="Delete"
         promptCancel="Cancel"
         isSubmitting={isDeleting}
+        startIcon={<DeleteIcon />}
       />
     </Card>
   );

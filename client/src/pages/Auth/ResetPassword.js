@@ -1,6 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { makeStyles } from "@material-ui/core/styles";
-import { KeyboardRounded as ResetAvatar } from "@material-ui/icons";
+import {
+  KeyboardRounded as ResetAvatar,
+  RotateLeftOutlined as PasswordIcon,
+} from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
@@ -94,6 +97,7 @@ const ResetPassword = ({ match }) => {
               padding
               submitting={formState.isSubmitting}
               disabled={isDisabled}
+              startIcon={<PasswordIcon />}
             >
               Reset password
             </AsyncButton>

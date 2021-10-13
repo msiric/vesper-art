@@ -1,5 +1,8 @@
 import { makeStyles } from "@material-ui/core";
-import { SupervisorAccountRounded as WelcomeIcon } from "@material-ui/icons";
+import {
+  PersonOutlineRounded as ProfileIcon,
+  SupervisorAccountRounded as WelcomeIcon,
+} from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import SyncButton from "../../components/SyncButton";
@@ -10,6 +13,7 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
 import globalStyles from "../../styles/global";
+
 const useOnboardedStyles = makeStyles((muiTheme) => ({
   content: {
     display: "flex",
@@ -69,6 +73,7 @@ const Onboarded = () => {
                   <SyncButton
                     component={RouterLink}
                     to={`/user/${userUsername}`}
+                    startIcon={<ProfileIcon />}
                   >
                     Visit
                   </SyncButton>

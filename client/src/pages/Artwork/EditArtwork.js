@@ -1,4 +1,5 @@
 import { makeStyles } from "@material-ui/core";
+import { DeleteOutlineRounded as DeleteIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import MainHeading from "../../components/MainHeading/index";
@@ -94,6 +95,7 @@ const EditArtwork = ({ match }) => {
         promptConfirm="Delete"
         promptCancel="Cancel"
         isSubmitting={isDeleting}
+        startIcon={<DeleteIcon />}
       />
     </Container>
   ) : (

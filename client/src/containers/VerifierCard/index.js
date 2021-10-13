@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
+import { AssignmentTurnedInOutlined as VerifyIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { isFormAltered } from "../../../../common/helpers";
@@ -67,7 +67,7 @@ const VerifierCard = () => {
               padding
               submitting={formState.isSubmitting}
               disabled={isDisabled}
-              startIcon={<UploadIcon />}
+              startIcon={<VerifyIcon />}
             >
               Verify
             </AsyncButton>

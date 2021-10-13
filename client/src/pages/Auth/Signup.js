@@ -1,6 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { makeStyles } from "@material-ui/core/styles";
-import { MeetingRoomRounded as SignupAvatar } from "@material-ui/icons";
+import {
+  ExitToAppOutlined as SignupIcon,
+  MeetingRoomRounded as SignupAvatar,
+} from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
@@ -81,6 +84,7 @@ const Signup = () => {
               padding
               submitting={formState.isSubmitting}
               disabled={isDisabled}
+              startIcon={<SignupIcon />}
             >
               Sign up
             </AsyncButton>

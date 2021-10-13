@@ -1,3 +1,4 @@
+import { AccountBalanceRounded as StripeIcon } from "@material-ui/icons";
 import React from "react";
 import AsyncButton from "../../components/AsyncButton/index";
 import DropdownItems from "../../components/DropdownItems/index";
@@ -31,6 +32,7 @@ const DashboardToolbar = () => {
           <AsyncButton
             variant="outlined"
             onClick={() => redirectDashboard({ stripeId })}
+            startIcon={<StripeIcon />}
           >
             Stripe dashboard
           </AsyncButton>

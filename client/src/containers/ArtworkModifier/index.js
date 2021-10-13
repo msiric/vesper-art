@@ -1,6 +1,6 @@
 import {
-  AddCircleRounded as UploadIcon,
-  DeleteRounded as DeleteIcon,
+  CheckRounded as SaveIcon,
+  DeleteOutlineRounded as DeleteIcon,
 } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -160,7 +160,7 @@ const ArtworkModifier = ({ paramId }) => {
               submitting={formState.isSubmitting}
               disabled={isDisabled}
               loading={loading}
-              startIcon={<UploadIcon />}
+              startIcon={<SaveIcon />}
             >
               Publish
             </AsyncButton>

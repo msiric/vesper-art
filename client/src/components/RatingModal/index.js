@@ -1,5 +1,8 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
+import {
+  ArrowUpwardRounded as SubmitIcon,
+  CloseRounded as CloseIcon,
+} from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { isFormAltered } from "../../../../common/helpers";
@@ -85,11 +88,16 @@ const RatingModal = ({
                   fullWidth
                   submitting={formState.isSubmitting}
                   disabled={isDisabled}
-                  startIcon={<UploadIcon />}
+                  startIcon={<SubmitIcon />}
                 >
                   {promptConfirm}
                 </AsyncButton>
-                <SyncButton type="button" color="dark" onClick={handleClose}>
+                <SyncButton
+                  type="button"
+                  color="dark"
+                  onClick={handleClose}
+                  startIcon={<CloseIcon />}
+                >
                   {promptCancel}
                 </SyncButton>
               </Box>

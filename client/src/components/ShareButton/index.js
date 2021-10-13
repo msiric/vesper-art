@@ -1,4 +1,4 @@
-import { ShareRounded as ShareIcon } from "@material-ui/icons";
+import { ShareOutlined as ShareIcon } from "@material-ui/icons";
 import React, { useState } from "react";
 import Box from "../../domain/Box";
 import IconButton from "../../domain/IconButton";
@@ -13,7 +13,7 @@ const ShareButton = ({
   labeled,
   loading = false,
   shouldResize = false,
-  fontSize,
+  fontSize = "medium",
   ...props
 }) => {
   const [state, setState] = useState({
@@ -49,7 +49,7 @@ const ShareButton = ({
     <Box>
       {labeled ? (
         <SyncButton
-          startIcon={<ShareIcon fontSize={fontSize || "medium"} />}
+          startIcon={<ShareIcon fontSize={fontSize} />}
           onClick={() => handleModalOpen()}
           loading={loading}
           {...props}
@@ -65,7 +65,7 @@ const ShareButton = ({
           >
             <ShareIcon
               className={shouldResize ? classes.icon : ""}
-              fontSize={fontSize || "medium"}
+              fontSize={fontSize}
             />
           </IconButton>
         </SkeletonWrapper>

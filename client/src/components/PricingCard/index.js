@@ -1,8 +1,8 @@
 import {
   CheckRounded as CheckIcon,
-  EditRounded as EditIcon,
-  GetAppRounded as DownloadIcon,
-  ShoppingCartRounded as PurchaseIcon,
+  EditOutlined as EditIcon,
+  GetAppOutlined as DownloadIcon,
+  ShoppingCartOutlined as PurchaseIcon,
 } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";

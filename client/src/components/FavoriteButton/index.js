@@ -14,6 +14,7 @@ const FavoriteButton = ({
   favorited,
   labeled,
   handleCallback,
+  fontSize = "medium",
   ...props
 }) => {
   const [state, setState] = useState({ loading: false });
@@ -57,7 +58,13 @@ const FavoriteButton = ({
 
   return labeled ? (
     <AsyncButton
-      startIcon={favorited ? <FavoritedIcon /> : <FavoriteIcon />}
+      startIcon={
+        favorited ? (
+          <FavoritedIcon fontSize={fontSize} />
+        ) : (
+          <FavoriteIcon fontSize={fontSize} />
+        )
+      }
       submitting={state.loading}
       onClick={() =>
         favorited
@@ -79,7 +86,11 @@ const FavoriteButton = ({
       disabled={state.loading}
       {...props}
     >
-      {favorited ? <FavoritedIcon /> : <FavoriteIcon />}
+      {favorited ? (
+        <FavoritedIcon fontSize={fontSize} />
+      ) : (
+        <FavoriteIcon fontSize={fontSize} />
+      )}
     </IconButton>
   );
 };

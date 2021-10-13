@@ -1,6 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { makeStyles } from "@material-ui/core/styles";
-import { LinkRounded as TokenAvatar } from "@material-ui/icons";
+import {
+  LinkRounded as TokenAvatar,
+  MailOutlineRounded as TokenIcon,
+} from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
@@ -85,6 +88,7 @@ const ResendToken = () => {
               padding
               submitting={formState.isSubmitting}
               disabled={isDisabled}
+              startIcon={<TokenIcon />}
             >
               Send verification token
             </AsyncButton>

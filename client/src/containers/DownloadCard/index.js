@@ -1,4 +1,4 @@
-import { GetAppRounded as DownloadIcon } from "@material-ui/icons";
+import { GetAppOutlined as DownloadIcon } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import AsyncButton from "../../components/AsyncButton/index";

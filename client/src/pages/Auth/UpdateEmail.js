@@ -1,6 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { makeStyles } from "@material-ui/core/styles";
-import { MailOutlineRounded as EmailAvatar } from "@material-ui/icons";
+import {
+  AlternateEmailRounded as EmailIcon,
+  MailOutlineRounded as EmailAvatar,
+} from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
@@ -91,6 +94,7 @@ const UpdateEmail = () => {
               padding
               submitting={formState.isSubmitting}
               disabled={isDisabled}
+              startIcon={<EmailIcon />}
             >
               Update email
             </AsyncButton>

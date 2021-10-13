@@ -1,6 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CardActions, CardContent } from "@material-ui/core";
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
+import { CheckRounded as SaveIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
@@ -68,7 +68,7 @@ const SettingsAccount = ({ handleLogout }) => {
               submitting={formState.isSubmitting}
               disabled={isDisabled}
               loading={loading}
-              startIcon={<UploadIcon />}
+              startIcon={<SaveIcon />}
             >
               Save
             </AsyncButton>

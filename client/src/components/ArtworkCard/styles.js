@@ -11,15 +11,16 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     textDecoration: "none",
     boxShadow: "none",
     position: "relative",
+    minHeight: 160,
     "&:hover": {
       "& $header": {
-        height: 42,
+        height: 44,
       },
       "& $footer": {
-        height: 42,
+        height: 44,
       },
       "& $imageContainer": {
-        filter: "blur(4px)",
+        filter: "blur(6px)",
         opacity: 0.5,
       },
     },

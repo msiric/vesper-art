@@ -1,6 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { makeStyles } from "@material-ui/core/styles";
-import { LockRounded as LoginAvatar } from "@material-ui/icons";
+import {
+  LockOpenRounded as LoginIcon,
+  LockRounded as LoginAvatar,
+} from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
@@ -117,6 +120,7 @@ const Login = () => {
               padding
               submitting={formState.isSubmitting}
               disabled={isDisabled}
+              startIcon={<LoginIcon />}
             >
               Sign in
             </AsyncButton>

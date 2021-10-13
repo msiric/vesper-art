@@ -1,3 +1,4 @@
+import { DeleteForeverOutlined as DeactivateIcon } from "@material-ui/icons";
 import React from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper/index";
 import SyncButton from "../../components/SyncButton/index";
@@ -28,7 +29,9 @@ const SettingsActions = () => {
       </CardContent>
       <CardActions className={classes.actions}>
         <SkeletonWrapper loading={loading}>
-          <SyncButton onClick={toggleModal}>Deactivate</SyncButton>
+          <SyncButton onClick={toggleModal} startIcon={<DeactivateIcon />}>
+            Deactivate
+          </SyncButton>
         </SkeletonWrapper>
       </CardActions>
     </Card>

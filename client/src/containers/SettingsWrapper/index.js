@@ -1,3 +1,4 @@
+import { DeleteForeverOutlined as DeactivateIcon } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import PromptModal from "../../components/PromptModal/index";
@@ -40,6 +41,7 @@ const SettingsWrapper = ({ location }) => {
       promptConfirm="Deactivate"
       promptCancel="Cancel"
       isSubmitting={isDeactivating}
+      startIcon={<DeactivateIcon />}
     />
   );
 };

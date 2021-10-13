@@ -1,5 +1,8 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
+import {
+  ArrowUpwardRounded as SubmitIcon,
+  RemoveRounded as RemoveIcon,
+} from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
@@ -200,6 +203,7 @@ const CheckoutSummary = ({
               onClick={() =>
                 handleDiscountChange({ values: { discountCode: null } })
               }
+              startIcon={<RemoveIcon />}
             >
               Remove discount
             </AsyncButton>
@@ -214,7 +218,7 @@ const CheckoutSummary = ({
                   loading={loading}
                   submitting={submitting}
                   disabled={isDisabled || paying}
-                  startIcon={<UploadIcon />}
+                  startIcon={<SubmitIcon />}
                 >
                   Apply
                 </AsyncButton>

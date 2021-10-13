@@ -1,6 +1,10 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { makeStyles } from "@material-ui/core/styles";
-import { VpnKeyRounded as RecoveryAvatar } from "@material-ui/icons";
+import {
+  NavigateBeforeRounded as BackIcon,
+  SendOutlined as SendIcon,
+  VpnKeyRounded as RecoveryAvatar,
+} from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
@@ -81,6 +85,7 @@ const ForgotPassword = () => {
               padding
               submitting={formState.isSubmitting}
               disabled={isDisabled}
+              startIcon={<SendIcon />}
             >
               Send recovery link
             </AsyncButton>
@@ -91,6 +96,7 @@ const ForgotPassword = () => {
                   to="/account_restoration"
                   variant="body2"
                   color="secondary"
+                  startIcon={<BackIcon />}
                 >
                   Back to account restoration
                 </Link>

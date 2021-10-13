@@ -1,5 +1,10 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CheckRounded as CheckIcon } from "@material-ui/icons";
+import {
+  CheckRounded as CheckIcon,
+  CreditCardRounded as PayIcon,
+  NavigateBeforeRounded as BackIcon,
+  NavigateNextRounded as NextIcon,
+} from "@material-ui/icons";
 import { useElements, useStripe } from "@stripe/react-stripe-js";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -272,6 +277,7 @@ const CheckoutProcessor = () => {
                         }
                         onClick={() => changeStep({ value: -1 })}
                         loading={initialLoading}
+                        startIcon={<BackIcon />}
                       >
                         Back
                       </SyncButton>
@@ -280,6 +286,13 @@ const CheckoutProcessor = () => {
                         loading={initialLoading}
                         submitting={formState.isSubmitting}
                         disabled={isDisabled || discountLoading}
+                        startIcon={
+                          step.current === step.length - 1 ? (
+                            <PayIcon />
+                          ) : (
+                            <NextIcon />
+                          )
+                        }
                       >
                         {step.current === step.length - 1 ? "Pay" : "Next"}
                       </AsyncButton>

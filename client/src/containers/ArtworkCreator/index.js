@@ -1,4 +1,4 @@
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
+import { ArrowUpwardRounded as SubmitIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
@@ -140,7 +140,7 @@ const ArtworkCreator = () => {
               submitting={formState.isSubmitting}
               disabled={isDisabled}
               loading={loading}
-              startIcon={<UploadIcon />}
+              startIcon={<SubmitIcon />}
             >
               Publish
             </AsyncButton>

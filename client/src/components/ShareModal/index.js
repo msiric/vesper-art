@@ -1,4 +1,7 @@
-import { LinkRounded as CopyIcon } from "@material-ui/icons";
+import {
+  CloseRounded as CloseIcon,
+  LinkRounded as CopyIcon,
+} from "@material-ui/icons";
 import React, { useEffect, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
@@ -187,6 +190,7 @@ const ShareModal = ({
                   onMouseEnter={handlePopperOpen}
                   onMouseLeave={handlePopperClose}
                   className={classes.cancel}
+                  startIcon={<CloseIcon />}
                 >
                   {promptCancel}
                 </SyncButton>

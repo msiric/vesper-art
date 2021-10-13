@@ -1,4 +1,5 @@
 import { makeStyles } from "@material-ui/core";
+import { HomeOutlined as HomeIcon } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { ReactComponent as RedirectUser } from "../../assets/images/illustrations/redirect_user.svg";
@@ -47,6 +48,7 @@ const Redirect = () => {
               component={RouterLink}
               to="/"
               className={classes.button}
+              startIcon={<HomeIcon />}
             >
               Go home
             </SyncButton>

@@ -1,4 +1,5 @@
 import { makeStyles } from "@material-ui/core";
+import { HomeOutlined as HomeIcon } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { ReactComponent as FourOhFour } from "../../assets/images/illustrations/not_found.svg";
@@ -47,6 +48,7 @@ const NotFound = () => {
               component={RouterLink}
               to="/"
               className={classes.button}
+              startIcon={<HomeIcon />}
             >
               Go home
             </SyncButton>

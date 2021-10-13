@@ -1,11 +1,11 @@
 import {
-  DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon,
+  DeleteOutlineRounded as DeleteIcon,
+  EditOutlined as EditIcon,
 } from "@material-ui/icons";
 import React from "react";
 import Box from "../../domain/Box";
-import Button from "../../domain/Button";
 import Popover from "../../domain/Popover";
+import SyncButton from "../SyncButton";
 import commentPopoverStyles from "./styles";
 
 const CommentPopover = ({
@@ -35,22 +35,22 @@ const CommentPopover = ({
       className={classes.popover}
     >
       <Box>
-        <Button
+        <SyncButton
           outline="text"
           startIcon={<EditIcon />}
           onClick={() => handleCommentOpen({ commentId: id })}
           fullWidth
         >
           Edit
-        </Button>
-        <Button
+        </SyncButton>
+        <SyncButton
           outline="text"
           startIcon={<DeleteIcon />}
           onClick={() => handleModalOpen({ commentId: id })}
           fullWidth
         >
           Delete
-        </Button>
+        </SyncButton>
       </Box>
     </Popover>
   );

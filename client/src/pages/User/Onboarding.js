@@ -1,9 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { makeStyles } from "@material-ui/core";
 import {
-  AddCircleRounded as UploadIcon,
   LabelImportantRounded as LabelIcon,
   MonetizationOnRounded as MonetizationIcon,
+  NextWeekOutlined as OnboardIcon,
 } from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -199,7 +199,7 @@ const Onboarding = () => {
                         padding
                         submitting={formState.isSubmitting}
                         disabled={isDisabled}
-                        startIcon={<UploadIcon />}
+                        startIcon={<OnboardIcon />}
                       >
                         Continue
                       </AsyncButton>

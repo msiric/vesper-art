@@ -1,4 +1,5 @@
 import { makeStyles } from "@material-ui/core";
+import { ShoppingBasketOutlined as BuyingIcon } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -151,6 +152,7 @@ const FAQ = () => {
               <SyncButton
                 component={RouterLink}
                 to="/start_buying"
+                startIcon={<BuyingIcon />}
               >{`Buying on ${appName}`}</SyncButton>
             </Box>
           </Box>

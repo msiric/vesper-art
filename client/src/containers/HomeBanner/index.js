@@ -1,3 +1,8 @@
+import {
+  AssignmentTurnedInOutlined as VerifyIcon,
+  ExitToAppOutlined as SignupIcon,
+  InfoOutlined as InfoIcon,
+} from "@material-ui/icons";
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 import React, { useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -57,6 +62,7 @@ const HomeBanner = () => {
                 component={RouterLink}
                 to="/signup"
                 className={classes.bannerButton}
+                startIcon={<SignupIcon />}
               >
                 Sign up
               </SyncButton>
@@ -66,6 +72,7 @@ const HomeBanner = () => {
               to="/how_it_works"
               color="default"
               className={classes.bannerButton}
+              startIcon={<InfoIcon />}
             >
               How it works
             </SyncButton>
@@ -87,6 +94,7 @@ const HomeBanner = () => {
               component={RouterLink}
               to="/verifier"
               variant="outlined"
+              startIcon={<VerifyIcon />}
             >
               Verify license
             </SyncButton>

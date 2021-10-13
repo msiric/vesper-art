@@ -1,6 +1,6 @@
 import {
-  DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon,
+  DeleteOutlineRounded as DeleteIcon,
+  EditOutlined as EditIcon,
 } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";

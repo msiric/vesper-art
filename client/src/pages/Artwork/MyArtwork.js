@@ -1,3 +1,4 @@
+import { DeleteOutlineRounded as DeleteIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import PromptModal from "../../components/PromptModal/index";
 import ArtworkDatatable from "../../containers/ArtworkDatatable/index";
@@ -49,6 +50,7 @@ const MyArtwork = ({}) => {
         promptConfirm="Delete"
         promptCancel="Cancel"
         isSubmitting={isDeleting}
+        startIcon={<DeleteIcon />}
       />
     </Container>
   ) : (
