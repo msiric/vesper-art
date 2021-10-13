@@ -8,7 +8,9 @@ const IllustrationCard = ({
   heading,
   paragraph,
   body,
+  reverseOrder,
   illustration,
+  illustrationClass,
   ...props
 }) => {
   const classes = illustrationCardStyles();
@@ -18,9 +20,13 @@ const IllustrationCard = ({
       <Box className={classes.wrapper}>
         <Typography className={classes.heading}>{heading}</Typography>
         <Typography className={classes.paragraph}>{paragraph}</Typography>
-        {body ? body : null}
       </Box>
-      <Card className={classes.label}>{illustration}</Card>
+      <Box className={`${classes.wrapper} ${reverseOrder && classes.reverse}`}>
+        <Box>{body ? body : null}</Box>
+        <Card className={`${classes.label} ${illustrationClass}`}>
+          {illustration}
+        </Card>
+      </Box>
     </Box>
   );
 };

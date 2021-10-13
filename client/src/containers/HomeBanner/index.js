@@ -3,7 +3,6 @@ import {
   ExitToAppOutlined as SignupIcon,
   InfoOutlined as InfoIcon,
 } from "@material-ui/icons";
-import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 import React, { useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import HelpBox from "../../components/HelpBox";
@@ -84,9 +83,11 @@ const HomeBanner = () => {
       <Card className={classes.verifier}>
         <CardContent className={classes.content}>
           <Box className={classes.wrapper}>
-            <AssignmentIndIcon className={classes.verifierIcon} />
             <Typography className={classes.verifierHeading}>
-              Need to verify a license? Head to the platform's verifier
+              Need to verify a license?
+            </Typography>
+            <Typography className={classes.verifierText}>
+              Head to the platform's verifier
             </Typography>
           </Box>
           <Box className={classes.verifierButton}>

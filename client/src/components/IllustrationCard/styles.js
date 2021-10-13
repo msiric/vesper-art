@@ -9,11 +9,16 @@ const illustrationCardStyles = makeStyles((muiTheme) => ({
     margin: "128px 0",
   },
   wrapper: {
+    display: "flex",
+    flexDirection: "column",
     textAlign: "center",
     width: "70%",
-    marginBottom: 36,
+  },
+  reverse: {
+    flexDirection: "column-reverse",
   },
   label: {
+    margin: "0 auto",
     width: "70%",
     paddingBottom: "70%",
     borderRadius: "50%",
@@ -34,6 +39,7 @@ const illustrationCardStyles = makeStyles((muiTheme) => ({
   heading: {
     fontWeight: "bold",
     marginLeft: 8,
+    marginBottom: 8,
     fontSize: 24,
   },
   paragraph: {

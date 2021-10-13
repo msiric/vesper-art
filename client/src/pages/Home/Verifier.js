@@ -18,10 +18,15 @@ import { artepunktTheme } from "../../styles/theme";
 const useVerifierStyles = makeStyles((muiTheme) => ({
   list: {
     width: "100%",
-    marginTop: 20,
   },
   illustration: {
-    width: "60%",
+    width: "40%",
+    paddingBottom: "40%",
+    marginTop: 20,
+    marginBottom: 12,
+    "&>svg": {
+      width: "65%",
+    },
   },
   card: {
     display: "flex",
@@ -81,7 +86,7 @@ const Verifier = () => {
         <Grid item xs={12} md={5}>
           <IllustrationCard
             heading="Verify your license"
-            paragraph="Make sure it's used by the right person"
+            paragraph="Make sure it's used the right way by the right person"
             body={
               <Box>
                 <ListItems className={classes.list} items={verifierOptions} />
@@ -95,8 +100,10 @@ const Verifier = () => {
                 </Link>
               </Box>
             }
-            illustration={<VerifyLicense className={classes.illustration} />}
+            illustration={<VerifyLicense />}
             className={classes.card}
+            illustrationClass={classes.illustration}
+            reverseOrder
           />
         </Grid>
       </Grid>

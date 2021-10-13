@@ -94,11 +94,13 @@ const Styles = makeStyles((muiTheme) => ({
       padding: 0,
     },
   },
-  verifierIcon: {
-    fontSize: 56,
-    marginBottom: 12,
-  },
   verifierHeading: {
+    fontSize: 24,
+    marginBottom: 8,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  verifierText: {
     textAlign: "center",
   },
   verifierButton: {

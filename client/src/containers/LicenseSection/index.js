@@ -9,10 +9,13 @@ import EmptySection from "../../components/EmptySection";
 import SubHeading from "../../components/SubHeading";
 import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
 import Card from "../../domain/Card";
+import licenseSectionStyles from "./styles";
 
 const LicenseSection = () => {
   const license = useLicenseVerifier((state) => state.license.data);
   const loading = useLicenseVerifier((state) => state.license.loading);
+
+  const classes = licenseSectionStyles();
 
   return loading || !license ? (
     <Card>
