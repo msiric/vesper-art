@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import currency from "currency.js";
-import { addHours, isBefore, isValid } from "date-fns";
+import { addHours, endOfDay, isBefore, isValid, startOfDay } from "date-fns";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
@@ -169,7 +169,7 @@ export const sanitizeQuery = (req, res, next) => {
   if (req && res && next) {
     const isValid = sanitizeUrl(req.query, VALID_QUERIES);
     if (isValid) {
-      req.query = sanitizeData(req.query);
+      req.query = sanitizeDates(sanitizeData(req.query));
       return next();
     }
     return next(createError(...formatError(errors.routeQueryInvalid)));
@@ -207,7 +207,6 @@ export const sanitizeData = (data) => {
         } else if (typeof data[key] === "object") {
           obj[key] = sanitizeData(data[key]);
         } else if (typeof data[key] === "string") {
-          console.log("KEY", key, "DATA", data[key], TRIM_KEYS[key]);
           obj[key] = TRIM_KEYS[key]
             ? escapeHTML(trimAllSpaces(data[key]))
             : escapeHTML(data[key]);
@@ -217,6 +216,19 @@ export const sanitizeData = (data) => {
         return obj;
       }, {})
     : data;
+};
+
+export const sanitizeDates = (data) => {
+  for (let param in data) {
+    const value = data[param];
+    if (param === "start") {
+      data[param] = startOfDay(new Date(data[param]));
+    }
+    if (param === "end") {
+      data[param] = endOfDay(new Date(data[param]));
+    }
+  }
+  return data;
 };
 
 export const checkImageOrientation = (width, height) => {
