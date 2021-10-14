@@ -17,24 +17,3 @@ export const verifyLicense = async ({ licenseData, connection }) => {
   }
   throw createError(...formatError(errors.licenseNotFound));
 };
-
-export const displayLicense = async (req, res, next) => {
-  try {
-    const doc = new PDFDocument();
-
-    let finalString = "";
-    const stream = doc.pipe(new Base64Encode());
-
-    doc.end();
-
-    stream.on("data", function (chunk) {
-      finalString += chunk;
-    });
-
-    stream.on("end", function () {
-      res.json({ pdf: finalString });
-    });
-  } catch (err) {
-    next(err, res);
-  }
-};
