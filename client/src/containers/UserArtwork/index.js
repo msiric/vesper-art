@@ -8,7 +8,7 @@ import { useUserProfile } from "../../contexts/local/userProfile";
 import Box from "../../domain/Box";
 import userArtworkStyles from "./styles";
 
-const UserArtwork = ({ userUsername, type, fixed }) => {
+const UserArtwork = ({ userUsername, shouldPause, type, fixed }) => {
   const loading = useUserProfile((state) => state.profile.loading);
 
   const elements = useUserArtwork((state) => state.artwork.data);
@@ -27,6 +27,7 @@ const UserArtwork = ({ userUsername, type, fixed }) => {
         hasMore={hasMore}
         loading={loading}
         fetching={fetching}
+        shouldPause={shouldPause}
         error={error.refetch}
         empty="No artwork yet"
         type="masonry"

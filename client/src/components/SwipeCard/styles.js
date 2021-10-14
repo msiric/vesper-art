@@ -26,6 +26,9 @@ const swipeCardStyles = makeStyles((muiTheme) => ({
     alignItems: "center",
     height: "100%",
   },
+  hidden: {
+    display: "none",
+  },
 }));
 
 export default swipeCardStyles;

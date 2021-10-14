@@ -7,7 +7,7 @@ import { useUserArtwork } from "../../contexts/local/userArtwork";
 import Box from "../../domain/Box";
 import userFavoritesStyles from "./styles";
 
-const UserFavorites = ({ userUsername, type, fixed }) => {
+const UserFavorites = ({ userUsername, shouldPause, type, fixed }) => {
   const elements = useUserArtwork((state) => state.favorites.data);
   const hasMore = useUserArtwork((state) => state.favorites.hasMore);
   const loading = useUserArtwork((state) => state.favorites.loading);
@@ -25,6 +25,7 @@ const UserFavorites = ({ userUsername, type, fixed }) => {
         hasMore={hasMore}
         loading={loading}
         fetching={fetching}
+        shouldPause={shouldPause}
         error={error.refetch}
         empty="No favorites yet"
         type="masonry"

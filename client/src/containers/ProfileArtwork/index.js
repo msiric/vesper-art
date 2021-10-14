@@ -74,6 +74,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                       userUsername={userUsername}
                       type="artwork"
                       fixed={true}
+                      shouldPause={tabs.value !== 0}
                     />
                   </Box>
                 ),
@@ -99,6 +100,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                       userUsername={userUsername}
                       type="favorite"
                       fixed={true}
+                      shouldPause={tabs.value !== 1}
                     />
                   </Box>
                 ),

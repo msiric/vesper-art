@@ -10,8 +10,6 @@ import swipeCardStyles from "./styles";
 const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
   const classes = swipeCardStyles();
 
-  const shouldRender = (value, index) => value === index;
-
   return (
     <Box className={classes.container} m={margin}>
       <AppBar position="static" color="inherit" className={classes.bar}>
@@ -41,17 +39,21 @@ const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
           {tabs.items
             .filter((tab) => tab.display === true)
             .map((item, index) => (
-              <Box className={classes.wrapper}>
+              <Box
+                className={`${classes.wrapper} ${
+                  tabs.value !== index && classes.hidden
+                }`}
+              >
                 {item.loading ? (
                   <LoadingSpinner />
                 ) : item.iterable ? (
                   item.content ? (
-                    shouldRender(tabs.value, index) && item.component
+                    item.component
                   ) : (
-                    shouldRender(tabs.value, index) && item.error
+                    item.error
                   )
                 ) : (
-                  shouldRender(tabs.value, index) && item.component
+                  item.component
                 )}
               </Box>
             ))}
