@@ -179,7 +179,7 @@ export const forgotPassword = async ({ userEmail, connection }) => {
   const emailValues = formatEmailContent({
     replacementValues: {
       heading: "Reset your password",
-      text: "You are receiving this because you have requested to reset the password for your account. Please click on the button below to continue.",
+      text: "You are receiving this because you have requested to reset the password for your account. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
       button: "Reset password",
       redirect: resetLink,
     },
@@ -242,7 +242,7 @@ export const resendToken = async ({ userEmail, connection }) => {
       const emailValues = formatEmailContent({
         replacementValues: {
           heading: "Confirm your email",
-          text: "You are receiving this because you have requested a new verification token to verify your account. Please click on the button below to continue.",
+          text: "You are receiving this because you have requested a new verification token to verify your account. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
           button: "Verify account",
           redirect: verificationLink,
         },
@@ -306,7 +306,7 @@ export const updateEmail = async ({
       const emailValues = formatEmailContent({
         replacementValues: {
           heading: "Verify new email",
-          text: "You are receiving this because you have changed your email address. Please click on the button below to continue.",
+          text: "You are receiving this because you have changed your email address. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
           button: "Confirm email",
           redirect: verificationLink,
         },

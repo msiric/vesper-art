@@ -429,7 +429,7 @@ export const updateUserEmail = async ({
       const emailValues = formatEmailContent({
         replacementValues: {
           heading: "Verify new email",
-          text: "You are receiving this because you have changed your email address. Please click on the button below to continue.",
+          text: "You are receiving this because you have changed your email address. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
           button: "Confirm email",
           redirect: verificationLink,
         },
