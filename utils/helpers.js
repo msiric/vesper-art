@@ -33,6 +33,10 @@ const TRIM_KEYS = {
   licenseCompany: true,
 };
 
+const LOWERCASE_KEYS = {
+  userEmail: true,
+};
+
 const VALID_PARAMS = {
   // better validation for stripeId?
   accountId: { isValid: (value) => isValidString(value) },
@@ -207,9 +211,13 @@ export const sanitizeData = (data) => {
         } else if (typeof data[key] === "object") {
           obj[key] = sanitizeData(data[key]);
         } else if (typeof data[key] === "string") {
-          obj[key] = TRIM_KEYS[key]
-            ? escapeHTML(trimAllSpaces(data[key]))
-            : escapeHTML(data[key]);
+          if (TRIM_KEYS[key]) {
+            data[key] = trimAllSpaces(data[key]);
+          }
+          if (LOWERCASE_KEYS[key]) {
+            data[key] = data[key].toLowerCase();
+          }
+          obj[key] = escapeHTML(data[key]);
         } else {
           obj[key] = escapeHTML(data[key]);
         }

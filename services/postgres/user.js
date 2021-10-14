@@ -792,10 +792,8 @@ export const editUserProfile = async ({
     .update(User)
     .set({
       avatarId: avatarId,
-      description: userData.userDescription
-        ? userData.userDescription
-        : foundUser.description,
-      country: userData.userCountry ? userData.userCountry : foundUser.country,
+      description: userData.userDescription,
+      country: userData.userCountry,
     })
     .where("id = :userId AND active = :active", {
       userId: foundUser.id,

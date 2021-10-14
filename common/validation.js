@@ -593,7 +593,7 @@ export const errors = {
 };
 
 export const validateUserCountry = (value) =>
-  countries.some((item) => item.value === value);
+  value === "" || countries.some((item) => item.value === value);
 
 export const validateStripeCountry = (value) =>
   countries.some((item) => item.supported === true && item.value === value);

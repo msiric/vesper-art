@@ -411,41 +411,37 @@ export const updateUserEmail = async ({
   response,
   connection,
 }) => {
-  try {
-    await emailValidation.validate({ userEmail });
-    const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
-    if (emailUsed) {
-      throw createError(...formatError(errors.emailAlreadyExists));
-    } else {
-      const { verificationToken, verificationLink, verificationExpiry } =
-        generateVerificationToken();
-      await editUserEmail({
-        userId,
-        userEmail,
-        verificationToken,
-        verificationExpiry,
-        connection,
-      });
-      const emailValues = formatEmailContent({
-        replacementValues: {
-          heading: "Verify new email",
-          text: "You are receiving this because you have changed your email address. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
-          button: "Confirm email",
-          redirect: verificationLink,
-        },
-        replacementAttachments: [],
-      });
-      await sendEmail({
-        emailReceiver: userEmail,
-        emailSubject: "Confirm your email",
-        emailContent: renderEmail({ ...emailValues.formattedProps }),
-        emailAttachments: emailValues.formattedAttachments,
-      });
-      logUserOut(response);
-      return formatResponse(responses.emailAddressUpdated);
-    }
-  } catch (err) {
-    console.log("errrrr", err);
+  await emailValidation.validate({ userEmail });
+  const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
+  if (emailUsed) {
+    throw createError(...formatError(errors.emailAlreadyExists));
+  } else {
+    const { verificationToken, verificationLink, verificationExpiry } =
+      generateVerificationToken();
+    await editUserEmail({
+      userId,
+      userEmail,
+      verificationToken,
+      verificationExpiry,
+      connection,
+    });
+    const emailValues = formatEmailContent({
+      replacementValues: {
+        heading: "Verify new email",
+        text: "You are receiving this because you have changed your email address. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
+        button: "Confirm email",
+        redirect: verificationLink,
+      },
+      replacementAttachments: [],
+    });
+    await sendEmail({
+      emailReceiver: userEmail,
+      emailSubject: "Confirm your email",
+      emailContent: renderEmail({ ...emailValues.formattedProps }),
+      emailAttachments: emailValues.formattedAttachments,
+    });
+    logUserOut(response);
+    return formatResponse(responses.emailAddressUpdated);
   }
 };
 
