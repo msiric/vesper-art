@@ -431,8 +431,8 @@ export const formatEmailContent = ({
   };
   const formattedAttachments = [
     {
-      filename: "logo.svg",
-      path: "common/assets/logo.svg",
+      filename: "logo.png",
+      path: "common/assets/logo.png",
       cid: `logo@${appName}.com`,
     },
     {
