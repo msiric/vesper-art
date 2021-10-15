@@ -12,6 +12,7 @@ const ImageWrapper = ({
   placeholder,
   cover,
   addOverlay = false,
+  shouldCover = false,
   loading = false,
 }) => {
   const downloaded = useProgressiveImage(source);
@@ -19,7 +20,7 @@ const ImageWrapper = ({
   const classes = imageWrapperStyles({ height, loading, placeholder });
 
   return loading ? (
-    <Box className={classes.wrapper} width="100%" loading={true} />
+    <Box className={classes.wrapper} loading={true} width="100%" />
   ) : downloaded ? (
     redirect ? (
       <Box
@@ -27,11 +28,17 @@ const ImageWrapper = ({
         to={redirect}
         className={`${addOverlay && classes.overlay}`}
       >
-        <img className={classes.media} src={source} />
+        <img
+          className={`${classes.media} ${shouldCover && classes.coverParent}`}
+          src={source}
+        />
       </Box>
     ) : (
       <Box className={`${classes.wrapper} ${addOverlay && classes.overlay}`}>
-        <img className={classes.media} src={source} />
+        <img
+          className={`${classes.media} ${shouldCover && classes.coverParent}`}
+          src={source}
+        />
       </Box>
     )
   ) : cover ? (

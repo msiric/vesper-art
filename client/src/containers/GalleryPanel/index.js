@@ -63,6 +63,7 @@ const GalleryPanel = ({ formatArtwork }) => {
             height={item.height}
             source={item.media}
             placeholder={item.dominant}
+            shouldCover={true}
             loading={loading}
           />
         </Card>

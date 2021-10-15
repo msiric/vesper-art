@@ -105,6 +105,7 @@ const ArtworkCard = ({
             item.data.cover ? item.data.cover.dominant : item.data.dominant
           }
           addOverlay={true}
+          shouldCover={true}
           loading={loading}
         />
       </Box>

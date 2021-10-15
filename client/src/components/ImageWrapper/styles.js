@@ -4,7 +4,7 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
   media: {
     display: "block",
     width: "100%",
-    height: "auto",
+    height: "100%",
     objectFit: "contain",
     borderRadius: 4,
   },
@@ -25,8 +25,8 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
     position: "absolute",
   },
   hiddenWrapper: {
-    height: ({ height }) => height,
     background: ({ placeholder }) => placeholder,
+    height: "100%",
     width: "100%",
     filter: "blur(8px)",
   },
@@ -46,6 +46,9 @@ const imageWrapperStyles = makeStyles((muiTheme) => ({
       left: 0,
       zIndex: 99,
     },
+  },
+  coverParent: {
+    objectFit: "cover",
   },
 }));
 
