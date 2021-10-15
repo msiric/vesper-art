@@ -170,27 +170,30 @@ export const verifyRegisterToken = async ({ tokenId, connection }) => {
 export const forgotPassword = async ({ userEmail, connection }) => {
   await emailValidation.validate({ userEmail });
   const { resetToken, resetLink, resetExpiry } = generateResetToken();
-  await editUserResetToken({
-    userEmail,
-    resetToken,
-    resetExpiry,
-    connection,
-  });
-  const emailValues = formatEmailContent({
-    replacementValues: {
-      heading: "Reset your password",
-      text: "You are receiving this because you have requested to reset the password for your account. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
-      button: "Reset password",
-      redirect: resetLink,
-    },
-    replacementAttachments: [],
-  });
-  await sendEmail({
-    emailReceiver: userEmail,
-    emailSubject: "Reset your password",
-    emailContent: renderEmail({ ...emailValues.formattedProps }),
-    emailAttachments: emailValues.formattedAttachments,
-  });
+  const userId = await fetchUserIdByEmail({ userEmail, connection });
+  if (userId) {
+    await editUserResetToken({
+      userEmail,
+      resetToken,
+      resetExpiry,
+      connection,
+    });
+    const emailValues = formatEmailContent({
+      replacementValues: {
+        heading: "Reset your password",
+        text: "You are receiving this because you have requested to reset the password for your account. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
+        button: "Reset password",
+        redirect: resetLink,
+      },
+      replacementAttachments: [],
+    });
+    await sendEmail({
+      emailReceiver: userEmail,
+      emailSubject: "Reset your password",
+      emailContent: renderEmail({ ...emailValues.formattedProps }),
+      emailAttachments: emailValues.formattedAttachments,
+    });
+  }
   return formatResponse(responses.passwordReset);
 };
 
@@ -254,11 +257,11 @@ export const resendToken = async ({ userEmail, connection }) => {
         emailContent: renderEmail({ ...emailValues.formattedProps }),
         emailAttachments: emailValues.formattedAttachments,
       });
-      return formatResponse(responses.verificationTokenResent);
+    } else {
+      throw createError(...formatError(errors.userAlreadyVerified));
     }
-    throw createError(...formatError(errors.userAlreadyVerified));
   }
-  throw createError(...formatError(errors.emailNotFound));
+  return formatResponse(responses.verificationTokenResent);
 };
 
 export const updateEmail = async ({
@@ -290,10 +293,8 @@ export const updateEmail = async ({
       }
     }
 
-    const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
-    if (emailUsed) {
-      throw createError(...formatError(errors.emailAlreadyExists));
-    } else {
+    const foundEmail = await fetchUserIdByEmail({ userEmail, connection });
+    if (!foundEmail) {
       const { verificationToken, verificationLink, verificationExpiry } =
         generateVerificationToken();
       await editUserEmail({
@@ -318,9 +319,8 @@ export const updateEmail = async ({
         emailContent: renderEmail({ ...emailValues.formattedProps }),
         emailAttachments: emailValues.formattedAttachments,
       });
-      logUserOut(response);
-      return formatResponse(responses.emailAddressUpdated);
     }
+    return formatResponse(responses.emailAddressUpdated);
   }
   throw createError(...formatError(errors.userDoesNotExist));
 };

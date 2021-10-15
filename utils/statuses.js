@@ -312,24 +312,24 @@ export const responses = {
     message: "Token successfully verified",
     expose: true,
   },
-  passwordReset: {
-    status: statusCodes.ok,
-    message: "Password reset link successfully sent",
-    expose: true,
-  },
   passwordUpdated: {
     status: statusCodes.ok,
     message: "Password updated successfully",
     expose: true,
   },
+  passwordReset: {
+    status: statusCodes.ok,
+    message: "Reset link sent if the email is valid",
+    expose: true,
+  },
   verificationTokenResent: {
     status: statusCodes.ok,
-    message: "Verification link successfully sent",
+    message: "Verification link sent if the email is valid",
     expose: true,
   },
   emailAddressUpdated: {
     status: statusCodes.ok,
-    message: "Email address successfully updated",
+    message: "Verification link sent if the email is available",
     expose: true,
   },
   orderCreated: {

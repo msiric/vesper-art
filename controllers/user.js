@@ -412,10 +412,8 @@ export const updateUserEmail = async ({
   connection,
 }) => {
   await emailValidation.validate({ userEmail });
-  const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
-  if (emailUsed) {
-    throw createError(...formatError(errors.emailAlreadyExists));
-  } else {
+  const foundEmail = await fetchUserIdByEmail({ userEmail, connection });
+  if (!foundEmail) {
     const { verificationToken, verificationLink, verificationExpiry } =
       generateVerificationToken();
     await editUserEmail({
@@ -441,8 +439,8 @@ export const updateUserEmail = async ({
       emailAttachments: emailValues.formattedAttachments,
     });
     logUserOut(response);
-    return formatResponse(responses.emailAddressUpdated);
   }
+  return formatResponse(responses.emailAddressUpdated);
 };
 
 // needs transaction (done)
