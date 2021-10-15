@@ -70,28 +70,32 @@ const ArtworkCard = ({
     <Card className={classes.container}>
       <CardHeader
         title={
-          <Typography
-            noWrap
-            variant="h6"
-            component={RouterLink}
-            to={`/artwork/${item.id}`}
-            loading={loading}
-            className={classes.title}
-          >
-            {item.data.title}
-          </Typography>
+          <Box className={classes.labelWrapper}>
+            <Typography
+              noWrap
+              variant="h6"
+              component={RouterLink}
+              to={`/artwork/${item.id}`}
+              loading={loading}
+              className={classes.title}
+            >
+              {item.data.title}
+            </Typography>
+          </Box>
         }
         subheader={
-          <Typography
-            noWrap
-            variant="body1"
-            component={RouterLink}
-            to={`/user/${item.owner.name}`}
-            loading={loading}
-            className={classes.owner}
-          >
-            {item.owner.name}
-          </Typography>
+          <Box className={classes.labelWrapper}>
+            <Typography
+              noWrap
+              variant="body1"
+              component={RouterLink}
+              to={`/user/${item.owner.name}`}
+              loading={loading}
+              className={classes.owner}
+            >
+              {item.owner.name}
+            </Typography>
+          </Box>
         }
         disableTypography
         className={classes.header}

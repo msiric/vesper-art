@@ -31,10 +31,7 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     transition: "opacity 0.5s, filter 0.5s",
   },
   header: {
-    "& div": {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
+    "&>div": {
       overflow: "hidden",
       padding: 12,
     },
@@ -65,6 +62,11 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     alignItems: "center",
     overflow: "hidden",
     zIndex: 100,
+  },
+  labelWrapper: {
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
   },
   buttonWrapper: {
     display: "flex",
