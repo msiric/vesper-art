@@ -12,7 +12,6 @@ export const verifyLicense = async ({ licenseData, connection }) => {
     connection,
   });
   if (!isObjectEmpty(foundLicense)) {
-    console.log(foundLicense);
     return { license: foundLicense };
   }
   throw createError(...formatError(errors.licenseNotFound));

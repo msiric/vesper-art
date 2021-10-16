@@ -23,7 +23,6 @@ export const fetchCommentById = async ({
       }
     )
     .getOne();
-  console.log(foundComment);
   return foundComment;
 };
 
@@ -50,7 +49,6 @@ export const addNewComment = async ({
     ])
     .returning("*")
     .execute();
-  console.log(savedComment);
   return savedComment;
 };
 
@@ -74,7 +72,6 @@ export const editExistingComment = async ({
       }
     )
     .execute();
-  console.log(updatedComment);
   return updatedComment;
 };
 
@@ -97,6 +94,5 @@ export const removeExistingComment = async ({
       }
     )
     .execute();
-  console.log(deletedComment);
   return deletedComment;
 };

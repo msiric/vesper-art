@@ -21,7 +21,6 @@ export const postReview = async ({
     userId,
     connection,
   });
-  console.log("FOUND ORDER", foundOrder);
   if (!isObjectEmpty(foundOrder)) {
     if (!foundOrder.review) {
       const { reviewId, notificationId } = generateUuids({

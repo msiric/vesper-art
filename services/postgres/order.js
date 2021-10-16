@@ -29,7 +29,6 @@ export const fetchOrderByVersion = async ({
       versionId,
     })
     .getOne();
-  console.log(foundOrder);
   return foundOrder;
 };
 
@@ -113,7 +112,6 @@ export const fetchOrderDetails = async ({ userId, orderId, connection }) => {
       });
     }
   }
-  console.log(foundOrder);
   return foundOrder;
 };
 
@@ -133,7 +131,6 @@ export const fetchUserPurchase = async ({ orderId, userId, connection }) => {
       orderId,
     })
     .getOne();
-  console.log(foundOrder);
   return foundOrder;
 };
 
@@ -166,7 +163,6 @@ export const fetchOrdersBySeller = async ({
       }
     )
     .getMany();
-  console.log(foundOrders);
   return foundOrders;
 };
 
@@ -199,7 +195,6 @@ export const fetchOrdersByBuyer = async ({
       }
     )
     .getMany();
-  console.log(foundOrders);
   return foundOrders;
 };
 
@@ -223,7 +218,6 @@ export const fetchOrderMedia = async ({ userId, orderId, connection }) => {
       }
     )
     .getOne();
-  console.log(foundOrder.version.media);
   return foundOrder && foundOrder.version ? foundOrder.version.media : {};
 };
 
@@ -244,7 +238,6 @@ export const fetchOrdersByArtwork = async ({
       artworkId,
     })
     .getMany();
-  console.log(foundOrders);
   return foundOrders;
 };
 
@@ -263,7 +256,6 @@ export const addOrderReview = async ({
       userId,
     })
     .execute();
-  console.log(updatedOrder);
   return updatedOrder;
 };
 
@@ -291,6 +283,5 @@ export const addNewOrder = async ({ orderId, orderData, connection }) => {
       },
     ])
     .execute();
-  console.log(savedOrder);
   return savedOrder;
 };

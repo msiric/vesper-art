@@ -48,7 +48,6 @@ export const fetchLicenseByFingerprint = async ({
       delete foundLicense.assignorIdentifier;
     }
   }
-  console.log(foundLicense);
   return foundLicense;
 };
 
@@ -87,6 +86,5 @@ export const addNewLicense = async ({
       },
     ])
     .execute();
-  console.log(savedLicense);
   return savedLicense;
 };

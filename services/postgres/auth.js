@@ -30,7 +30,6 @@ export const addNewUser = async ({
       },
     ])
     .execute();
-  console.log(savedUser);
   return savedUser;
 };
 
@@ -53,7 +52,6 @@ export const revokeAccessToken = async ({ userId, connection }) => {
       active: USER_SELECTION.ACTIVE_STATUS,
     })
     .execute();
-  console.log(updatedUser);
   return updatedUser;
 };
 
@@ -72,7 +70,6 @@ export const editUserResetToken = async ({
       active: USER_SELECTION.ACTIVE_STATUS,
     })
     .execute();
-  console.log(updatedUser);
   return updatedUser;
 };
 
@@ -94,7 +91,6 @@ export const resetUserPassword = async ({
       }
     )
     .execute();
-  console.log(updatedUser);
   return updatedUser;
 };
 
@@ -112,6 +108,5 @@ export const resetVerificationToken = async ({ tokenId, connection }) => {
       }
     )
     .execute();
-  console.log(updatedUser);
   return updatedUser;
 };

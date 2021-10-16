@@ -23,6 +23,5 @@ export const addNewReview = async ({
       },
     ])
     .execute();
-  console.log(savedReview);
   return savedReview;
 };

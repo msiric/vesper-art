@@ -9,6 +9,7 @@ import * as uuidJs from "uuid";
 import {
   appName,
   appPalette,
+  featureFlags,
   generatedData,
   statusCodes,
 } from "../common/constants";
@@ -331,7 +332,6 @@ export const formatResponse = ({ status, message, expose, ...rest }) => ({
 });
 
 export const handleDelegatedError = ({ err }) => {
-  console.log("err", err);
   const validationError = "ValidationError";
   return {
     status:

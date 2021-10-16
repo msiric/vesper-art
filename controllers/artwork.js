@@ -202,16 +202,6 @@ export const updateArtwork = async ({
     );
     const visibilityChanged =
       formattedData.artworkVisibility !== foundArtwork.visibility;
-    console.log(
-      "should update ",
-      shouldUpdate,
-      "visibility",
-      visibilityChanged,
-      "formatted data",
-      { ...formattedData, artworkVisibility: null },
-      "current art",
-      { ...foundArtwork.current, visibility: null }
-    );
     if (shouldUpdate || visibilityChanged) {
       const foundUser = await fetchUserById({
         userId,
@@ -226,7 +216,6 @@ export const updateArtwork = async ({
           : null;
         verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
         if (shouldUpdate) {
-          console.log("something changed which might include visibility");
           const { coverId, mediaId, versionId } = generateUuids({
             coverId: null,
             mediaId: null,
@@ -271,7 +260,6 @@ export const updateArtwork = async ({
             });
           }
         } else if (visibilityChanged) {
-          console.log("only visibility changed");
           const savedArtwork = await updateArtworkVersion({
             artworkId: foundArtwork.id,
             currentId: foundArtwork.current.id,
@@ -283,7 +271,6 @@ export const updateArtwork = async ({
       }
       throw createError(...formatError(errors.userNotFound));
     }
-    console.log("nothing changed");
     throw createError(...formatError(errors.artworkDetailsIdentical));
   }
   throw createError(...formatError(errors.artworkNotFound));

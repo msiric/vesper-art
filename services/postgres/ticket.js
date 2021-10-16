@@ -22,6 +22,5 @@ export const addNewTicket = async ({
       },
     ])
     .execute();
-  console.log(savedTicket);
   return savedTicket;
 };

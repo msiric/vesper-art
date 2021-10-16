@@ -36,7 +36,6 @@ export const fetchArtworkById = async ({ artworkId, connection }) => {
       }
     )
     .getOne();
-  console.log(foundArtwork);
   return foundArtwork;
 };
 
@@ -71,7 +70,6 @@ export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
     .orderBy("artwork.serial", "DESC")
     .limit(limit)
     .getMany();
-  console.log(foundArtwork);
   return foundArtwork;
 };
 
@@ -103,7 +101,6 @@ export const fetchVersionDetails = async ({
       }
     )
     .getOne();
-  console.log(foundVersion);
   return foundVersion;
 };
 
@@ -160,7 +157,6 @@ export const fetchArtworkDetails = async ({
     });
     foundArtwork.favorites = foundArtwork.favorites.length;
   }
-  console.log(foundArtwork);
   return foundArtwork;
 };
 
@@ -184,7 +180,6 @@ export const fetchArtworkEdit = async ({ userId, artworkId, connection }) => {
       }
     )
     .getOne();
-  console.log(foundArtwork);
   return foundArtwork;
 };
 
@@ -224,7 +219,6 @@ export const fetchArtworkComments = async ({
     .orderBy("comment.serial", "DESC")
     .limit(limit)
     .getMany();
-  console.log(foundComments);
   return foundComments;
 };
 
@@ -250,7 +244,6 @@ export const fetchArtworkMedia = async ({ artworkId, userId, connection }) => {
       }
     )
     .getOne();
-  console.log(foundArtwork);
   return foundArtwork;
 };
 
@@ -267,7 +260,6 @@ export const fetchFavoritesCount = async ({ artworkId, connection }) => {
       }
     )
     .getCount();
-  console.log(foundFavorites);
   return foundFavorites;
 };
 
@@ -285,7 +277,6 @@ export const fetchFavoriteByParents = async ({
       artworkId,
     })
     .getOne();
-  console.log(foundFavorite);
   return foundFavorite;
 };
 
@@ -308,7 +299,6 @@ export const addNewCover = async ({ coverId, artworkUpload, connection }) => {
       },
     ])
     .execute();
-  console.log(savedCover);
   return savedCover;
 };
 
@@ -328,7 +318,6 @@ export const addNewMedia = async ({ mediaId, artworkUpload, connection }) => {
       },
     ])
     .execute();
-  console.log(savedMedia);
   return savedMedia;
 };
 
@@ -366,7 +355,6 @@ export const addNewVersion = async ({
       },
     ])
     .execute();
-  console.log(savedVersion);
   return savedVersion;
 };
 
@@ -392,7 +380,6 @@ export const addNewArtwork = async ({
       },
     ])
     .execute();
-  console.log(savedArtwork);
   return savedArtwork;
 };
 
@@ -414,7 +401,6 @@ export const addNewFavorite = async ({
       },
     ])
     .execute();
-  console.log(savedFavorite);
   return savedFavorite;
 };
 
@@ -425,7 +411,6 @@ export const removeExistingFavorite = async ({ favoriteId, connection }) => {
     .from(Favorite)
     .where("id = :favoriteId", { favoriteId })
     .execute();
-  console.log(deletedFavorite);
   return deletedFavorite;
 };
 
@@ -436,7 +421,6 @@ export const removeArtworkVersion = async ({ versionId, connection }) => {
     .from(Version)
     .where("id = :versionId", { versionId })
     .execute();
-  console.log(deletedVersion);
   return deletedVersion;
 };
 
@@ -455,7 +439,6 @@ export const updateArtworkVersion = async ({
       active: ARTWORK_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
-  console.log(updatedArtwork);
   return updatedArtwork;
 };
 
@@ -473,7 +456,6 @@ export const deactivateArtworkVersion = async ({ artworkId, connection }) => {
       active: ARTWORK_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
-  console.log(updatedArtwork);
   return updatedArtwork;
 };
 
@@ -490,6 +472,5 @@ export const deactivateExistingArtwork = async ({ artworkId, connection }) => {
       active: ARTWORK_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
-  console.log(updatedArtwork);
   return updatedArtwork;
 };

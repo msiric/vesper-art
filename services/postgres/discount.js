@@ -11,7 +11,6 @@ export const fetchDiscountByCode = async ({ discountCode, connection }) => {
       active: DISCOUNT_SELECTION.ACTIVE_STATUS,
     })
     .getOne();
-  console.log(foundDiscount);
   return foundDiscount;
 };
 
@@ -25,7 +24,6 @@ export const fetchDiscountById = async ({ discountId, connection }) => {
       active: DISCOUNT_SELECTION.ACTIVE_STATUS,
     })
     .getOne();
-  console.log(foundDiscount);
   return foundDiscount;
 };
 
@@ -43,6 +41,5 @@ export const addNewDiscount = async ({ discountData, connection }) => {
       },
     ])
     .execute();
-  console.log(savedDiscount);
   return savedDiscount;
 };

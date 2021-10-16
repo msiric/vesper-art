@@ -11,7 +11,6 @@ export const fetchExistingNotifications = async ({ userId, connection }) => {
     })
     .addOrderBy("notification.created", "DESC")
     .getMany();
-  console.log(foundNotifications);
   return foundNotifications;
 };
 
@@ -39,7 +38,6 @@ export const addNewNotification = async ({
     ])
     .returning("*")
     .execute();
-  console.log(savedNotification);
   return savedNotification;
 };
 
@@ -57,7 +55,6 @@ export const editReadNotification = async ({
       userId,
     })
     .execute();
-  console.log(updatedNotification);
   return updatedNotification;
 };
 
@@ -75,7 +72,6 @@ export const editUnreadNotification = async ({
       userId,
     })
     .execute();
-  console.log(updatedNotification);
   return updatedNotification;
 };
 
@@ -88,6 +84,5 @@ export const removeAllNotifications = async ({ userId, connection }) => {
       userId,
     })
     .execute();
-  console.log(deletedNotifications);
   return deletedNotifications;
 };

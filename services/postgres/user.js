@@ -40,7 +40,6 @@ export const fetchUserIdByCreds = async ({
       }
     )
     .getOne();
-  console.log(foundUser);
   return foundUser ? foundUser.id : null;
 };
 
@@ -54,7 +53,6 @@ export const fetchUserIdByUsername = async ({ userUsername, connection }) => {
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
-  console.log(foundUser);
   return foundUser ? foundUser.id : null;
 };
 
@@ -68,7 +66,6 @@ export const fetchUserIdByEmail = async ({ userEmail, connection }) => {
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
-  console.log(foundUser);
   return foundUser ? foundUser.id : null;
 };
 
@@ -89,7 +86,6 @@ export const fetchUserIdByVerificationToken = async ({
       }
     )
     .getOne();
-  console.log(foundUser);
   return foundUser ? foundUser.id : null;
 };
 
@@ -108,17 +104,21 @@ export const fetchUserById = async ({ userId, selection, connection }) => {
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
-  console.log(foundUser);
   return foundUser;
 };
 
-export const fetchUserByUsername = async ({ userUsername, connection }) => {
+export const fetchUserByUsername = async ({
+  userUsername,
+  selection,
+  connection,
+}) => {
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
     .select([
       ...USER_SELECTION["STRIPPED_INFO"](),
       ...USER_SELECTION["DETAILED_INFO"](),
+      ...(selection ? selection : []),
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
     .where("user.name = :userUsername AND user.active = :active", {
@@ -126,7 +126,6 @@ export const fetchUserByUsername = async ({ userUsername, connection }) => {
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
-  console.log(foundUser);
   return foundUser;
 };
 
@@ -145,7 +144,6 @@ export const fetchUserByEmail = async ({ userEmail, connection }) => {
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .getOne();
-  console.log(foundUser);
   return foundUser;
 };
 
@@ -170,7 +168,6 @@ export const fetchUserByResetToken = async ({ tokenId, connection }) => {
       }
     )
     .getOne();
-  console.log(foundUser);
   return foundUser;
 };
 
@@ -216,7 +213,6 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
   if (foundUser) {
     foundUser.notifications = foundUser.notifications.length;
   }
-  console.log(foundUser);
   return foundUser;
 };
 
@@ -238,7 +234,6 @@ export const fetchSellerMedia = async ({ userId, artworkId, connection }) => {
       }
     )
     .getOne();
-  console.log(foundArtwork.current.media);
   return foundArtwork && foundArtwork.current ? foundArtwork.current.media : {};
 };
 
@@ -285,7 +280,6 @@ export const fetchUserPurchases = async ({
     .orderBy("order.serial", "ASC")
     .limit(limit)
     .getMany();
-  console.log(foundPurchases);
   return foundPurchases;
 };
 
@@ -305,7 +299,6 @@ export const fetchArtworkOrders = async ({ userId, versionId, connection }) => {
       versionId,
     })
     .getMany();
-  console.log(foundPurchases);
   return foundPurchases;
 };
 
@@ -347,7 +340,6 @@ export const fetchUserPurchasesWithMedia = async ({
     )
     .limit(limit)
     .getMany();
-  console.log(foundPurchases);
   return foundPurchases;
 };
 
@@ -386,7 +378,6 @@ export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
     .orderBy("order.serial", "ASC")
     .limit(limit)
     .getMany();
-  console.log(foundSales);
   return foundSales;
 };
 
@@ -399,7 +390,6 @@ export const fetchUserReviews = async ({ userId, connection }) => {
       userId,
     })
     .getMany();
-  console.log(foundReviews);
   return foundReviews;
 };
 
@@ -484,7 +474,6 @@ export const fetchUserArtwork = async ({
     .orderBy("artwork.serial", "ASC")
     .limit(limit)
     .getMany();
-  console.log(foundArtwork);
   return foundArtwork;
 };
 
@@ -528,7 +517,6 @@ export const fetchUserUploadsWithMedia = async ({
     .orderBy("artwork.serial", "ASC")
     .limit(limit)
     .getMany();
-  console.log(foundArtwork);
   return foundArtwork;
 };
 
@@ -565,7 +553,6 @@ export const fetchUserMedia = async ({ userId, cursor, limit, connection }) => {
     .orderBy("artwork.serial", "ASC")
     .limit(limit)
     .getMany();
-  console.log(foundArtwork);
   return foundArtwork;
 };
 
@@ -610,7 +597,6 @@ export const fetchUserFavorites = async ({
     .orderBy("favorite.serial", "ASC")
     .limit(limit)
     .getMany();
-  console.log(foundFavorites);
   return foundFavorites;
 };
 
@@ -652,7 +638,6 @@ export const fetchUserNotifications = async ({
     .orderBy("notification.serial", "DESC")
     .limit(limit)
     .getMany();
-  console.log(foundNotifications);
   return foundNotifications;
 };
 
@@ -670,7 +655,6 @@ export const fetchIntentByParents = async ({
       versionId,
     })
     .getOne();
-  console.log(foundIntent);
   return foundIntent;
 };
 
@@ -689,7 +673,6 @@ export const editUserStripe = async ({ userId, stripeId, connection }) => {
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
-  console.log(updatedUser);
   return updatedUser;
 };
 
@@ -725,7 +708,6 @@ export const addUserAvatar = async ({
       },
     ])
     .execute();
-  console.log(savedAvatar);
   return savedAvatar;
 };
 
@@ -755,7 +737,6 @@ export const editUserAvatar = async ({ userId, avatarUpload, connection }) => {
     })
     .returning("*")
     .execute();
-  console.log(updatedAvatar);
   return updatedAvatar;
 };
 
@@ -769,7 +750,6 @@ export const removeUserAvatar = async ({ userId, avatarId, connection }) => {
       userId,
     })
     .execute();
-  console.log(deletedAvatar);
   return deletedAvatar;
 };
 
@@ -800,7 +780,6 @@ export const editUserProfile = async ({
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
-  console.log(updatedUser);
   return updatedUser;
 };
 
@@ -834,7 +813,6 @@ export const editUserEmail = async ({
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
-  console.log(updatedUser);
   return updatedUser;
 };
 
@@ -859,7 +837,6 @@ export const editUserPassword = async ({
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
-  console.log(updatedUser);
   return updatedUser;
 };
 
@@ -887,7 +864,6 @@ export const editUserPreferences = async ({
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
-  console.log(updatedUser);
   return updatedUser;
 };
 
@@ -898,7 +874,6 @@ export const addNewIntent = async ({
   versionId,
   connection,
 }) => {
-  console.log("INTENT CREATION", intentId, userId, versionId);
   const savedIntent = await connection
     .createQueryBuilder()
     .insert()
@@ -911,7 +886,6 @@ export const addNewIntent = async ({
       },
     ])
     .execute();
-  console.log(savedIntent);
   return savedIntent;
 };
 
@@ -924,7 +898,6 @@ export const removeExistingIntent = async ({ intentId, connection }) => {
       intentId,
     })
     .execute();
-  console.log(deletedIntent);
   return deletedIntent;
 };
 
@@ -946,7 +919,6 @@ export const editUserOrigin = async ({
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
-  console.log(updatedUser);
   return updatedUser;
 };
 
@@ -998,6 +970,5 @@ export const deactivateExistingUser = async ({ userId, connection }) => {
       active: USER_SELECTION["ACTIVE_STATUS"],
     })
     .execute();
-  console.log(updatedUser);
   return updatedUser;
 };
