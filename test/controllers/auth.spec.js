@@ -3,7 +3,7 @@ import { statusCodes } from "../../common/constants";
 import { errors as validationErrors } from "../../common/validation";
 import { admin } from "../../config/secret";
 import { fetchUserByUsername } from "../../services/postgres/user";
-import { createAccessToken } from "../../utils/auth";
+import { createAccessToken, createRefreshToken } from "../../utils/auth";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { formatTokenData } from "../../utils/helpers";
 import { USER_SELECTION } from "../../utils/selectors";
@@ -11,13 +11,15 @@ import { errors as logicErrors, responses } from "../../utils/statuses";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
+jest.setTimeout(3 * 60 * 1000);
 
 let connection;
 let user;
+let cookie;
 let token;
 
 describe("Auth tests", () => {
-  beforeAll(async () => {
+  beforeAll(async (done) => {
     connection = await connectToDatabase();
     user = await fetchUserByUsername({
       userUsername: admin.username,
@@ -31,7 +33,9 @@ describe("Auth tests", () => {
       connection,
     });
     const { tokenPayload } = formatTokenData({ user });
+    cookie = createRefreshToken({ userData: tokenPayload });
     token = createAccessToken({ userData: tokenPayload });
+    done();
   });
 
   afterAll(async () => {
@@ -213,13 +217,21 @@ describe("Auth tests", () => {
 
   // needs a valid user in db to finish properly
   describe("/api/auth/refresh_token", () => {
-    it("should return an empty access token", async () => {
-      const cookie = token;
+    it("should return a new access token if refresh token is valid", async () => {
       const res = await request(app, token, cookie)
         .post("/api/auth/refresh_token")
         .send();
       expect(res.statusCode).toEqual(statusCodes.ok);
-      expect(res.body.accessToken).toEqual("");
+      expect(res.body.accessToken).toBeTruthy();
+    });
+  });
+
+  describe("/api/auth/refresh_token", () => {
+    it("should return a 403 error if refresh token is invalid", async () => {
+      const res = await request(app, token, "invalid cookie")
+        .post("/api/auth/refresh_token")
+        .send();
+      expect(res.statusCode).toEqual(statusCodes.forbidden);
     });
   });
 

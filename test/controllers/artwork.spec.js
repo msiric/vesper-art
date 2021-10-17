@@ -4,7 +4,7 @@ import { pricing, statusCodes } from "../../common/constants";
 import { errors as validationErrors } from "../../common/validation";
 import { admin } from "../../config/secret";
 import { fetchUserByUsername } from "../../services/postgres/user";
-import { createAccessToken } from "../../utils/auth";
+import { createAccessToken, createRefreshToken } from "../../utils/auth";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { formatTokenData } from "../../utils/helpers";
 import { USER_SELECTION } from "../../utils/selectors";
@@ -15,13 +15,15 @@ import { request } from "../utils/request";
 const MEDIA_LOCATION = path.resolve(__dirname, "../../../test/media");
 
 jest.useFakeTimers();
+jest.setTimeout(3 * 60 * 1000);
 
 let connection;
 let user;
+let cookie;
 let token;
 
 describe("Artwork tests", () => {
-  beforeAll(async () => {
+  beforeAll(async (done) => {
     connection = await connectToDatabase();
     user = await fetchUserByUsername({
       userUsername: admin.username,
@@ -35,7 +37,9 @@ describe("Artwork tests", () => {
       connection,
     });
     const { tokenPayload } = formatTokenData({ user });
+    cookie = createRefreshToken({ userData: tokenPayload });
     token = createAccessToken({ userData: tokenPayload });
+    done();
   });
 
   afterAll(async () => {
@@ -524,7 +528,8 @@ describe("Artwork tests", () => {
       expect(res.statusCode).toEqual(statusCodes.badRequest);
     });
 
-    it("should throw a 422 if commercial is invalid but included and user is not onboarded", async () => {
+    // $TODO create a user that is not onboarded
+    it.skip("should throw a 422 if commercial is invalid but included and user is not onboarded", async () => {
       const res = await request(app, token)
         .post("/api/artwork")
         .attach(
@@ -537,7 +542,7 @@ describe("Artwork tests", () => {
         .field("artworkLicense", "commercial")
         .field("artworkPersonal", 20)
         .field("artworkUse", "included")
-        .field("artworkCommercial", 19)
+        .field("artworkCommercial", "")
         .field("artworkVisibility", "visible")
         .field("artworkDescription", "");
       expect(res.body.message).toEqual(
