@@ -20,6 +20,10 @@ const version = {
 
 export const artwork = [
   {
+    general: {
+      ...general,
+      visibility: "invisibile",
+    },
     details: {
       title: "Black Tree of Harmony",
       description: "",
@@ -43,6 +47,10 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+      active: false,
+    },
     details: {
       title: "the connection",
       description: "",
@@ -66,6 +74,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Triumph",
       description: "",
@@ -89,6 +100,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "The Man Who Deceived the Gods",
       description: "",
@@ -112,6 +126,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Wildflower",
       description: "",
@@ -135,6 +152,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "nightmare",
       description: "",
@@ -158,6 +178,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Hellhound",
       description: "",
@@ -181,6 +204,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "A Magical Night",
       description: "",
@@ -204,6 +230,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Selfie",
       description: "",
@@ -227,6 +256,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "PROGRESSION",
       description: "",
@@ -250,6 +282,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "modern home",
       description: "",
@@ -273,6 +308,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "GEISHA",
       description: "",
@@ -296,6 +334,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "moonlight howl",
       description: "",
@@ -319,6 +360,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "amalgamation",
       description: "",
@@ -342,6 +386,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Halloween",
       description: "",
@@ -365,6 +412,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Good catch",
       description: "",
@@ -388,6 +438,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "moonhole",
       description: "",
@@ -411,6 +464,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Sunset",
       description: "",
@@ -434,6 +490,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Beacon of Light",
       description: "",
@@ -457,6 +516,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "MYSTIC NIGHT",
       description: "",
@@ -480,6 +542,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "monke",
       description: "",
@@ -503,6 +568,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Daydreaming",
       description: "",
@@ -526,6 +594,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Colourful",
       description: "",
@@ -549,6 +620,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Independence",
       description: "",
@@ -572,6 +646,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "pspspspspspspspspspsps",
       description: "",
@@ -595,6 +672,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Revelation",
       description: "",
@@ -618,6 +698,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "I want you",
       description: "",
@@ -641,6 +724,9 @@ export const artwork = [
     },
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "swimming with the fishes",
       description: "",
@@ -707,9 +793,9 @@ export const entities = [
         ...avatar,
       },
     },
-    artwork: artwork.map((item) => ({
+    artwork: artwork.map((item, index) => ({
       data: {
-        ...general,
+        ...item.general,
       },
       version: {
         data: {

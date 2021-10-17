@@ -3,13 +3,14 @@ import app from "../../app";
 import { pricing, statusCodes } from "../../common/constants";
 import { errors as validationErrors } from "../../common/validation";
 import { admin } from "../../config/secret";
+import { fetchActiveArtworks } from "../../services/postgres/artwork";
 import { fetchUserByUsername } from "../../services/postgres/user";
 import { createAccessToken, createRefreshToken } from "../../utils/auth";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { formatTokenData } from "../../utils/helpers";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors as logicErrors, responses } from "../../utils/statuses";
-import { artwork } from "../fixtures/entities";
+import { artwork as artworkEntity } from "../fixtures/entities";
 import { request } from "../utils/request";
 
 const MEDIA_LOCATION = path.resolve(__dirname, "../../../test/media");
@@ -19,23 +20,27 @@ jest.setTimeout(3 * 60 * 1000);
 
 let connection;
 let user;
+let artwork;
 let cookie;
 let token;
 
 describe("Artwork tests", () => {
   beforeAll(async (done) => {
     connection = await connectToDatabase();
-    user = await fetchUserByUsername({
-      userUsername: admin.username,
-      selection: [
-        ...USER_SELECTION["ESSENTIAL_INFO"](),
-        ...USER_SELECTION["STRIPE_INFO"](),
-        ...USER_SELECTION["VERIFICATION_INFO"](),
-        ...USER_SELECTION["AUTH_INFO"](),
-        ...USER_SELECTION["LICENSE_INFO"](),
-      ],
-      connection,
-    });
+    [user, artwork] = await Promise.all([
+      fetchUserByUsername({
+        userUsername: admin.username,
+        selection: [
+          ...USER_SELECTION["ESSENTIAL_INFO"](),
+          ...USER_SELECTION["STRIPE_INFO"](),
+          ...USER_SELECTION["VERIFICATION_INFO"](),
+          ...USER_SELECTION["AUTH_INFO"](),
+          ...USER_SELECTION["LICENSE_INFO"](),
+        ],
+        connection,
+      }),
+      fetchActiveArtworks({ connection }),
+    ]);
     const { tokenPayload } = formatTokenData({ user });
     cookie = createRefreshToken({ userData: tokenPayload });
     token = createAccessToken({ userData: tokenPayload });
@@ -51,7 +56,13 @@ describe("Artwork tests", () => {
     it("should fetch active artwork", async () => {
       const res = await request(app).get("/api/artwork").query({});
       expect(res.statusCode).toEqual(statusCodes.ok);
-      expect(res.body.artwork.length).toEqual(artwork.length);
+      expect(res.body.artwork.length).toEqual(
+        artworkEntity.filter(
+          (item) =>
+            item.general.visibility === "visible" &&
+            item.general.active === true
+        ).length
+      );
     });
 
     it("should create a new artwork", async () => {
@@ -131,7 +142,7 @@ describe("Artwork tests", () => {
       expect(res.statusCode).toEqual(statusCodes.badRequest);
     });
 
-    it("should throw a validation error if media has invalid extensions", async () => {
+    it("should throw a validation error if media has an invalid extension", async () => {
       const res = await request(app, token)
         .post("/api/artwork")
         .attach(
@@ -150,6 +161,26 @@ describe("Artwork tests", () => {
       expect(res.body.message).toEqual(
         validationErrors.artworkMediaType.message
       );
+      expect(res.statusCode).toEqual(statusCodes.badRequest);
+    });
+
+    it("should throw a validation error if media has an invalid ratio", async () => {
+      const res = await request(app, token)
+        .post("/api/artwork")
+        .attach(
+          "artworkMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/invalid_ratio.jpg`)
+        )
+        .field("artworkTitle", "test")
+        .field("artworkAvailability", "available")
+        .field("artworkType", "free")
+        .field("artworkLicense", "personal")
+        .field("artworkPersonal", pricing.minimumPrice + 10)
+        .field("artworkUse", "included")
+        .field("artworkCommercial", 0)
+        .field("artworkVisibility", "visible")
+        .field("artworkDescription", "");
+      expect(res.body.message).toEqual(logicErrors.aspectRatioInvalid.message);
       expect(res.statusCode).toEqual(statusCodes.badRequest);
     });
 
@@ -683,4 +714,43 @@ describe("Artwork tests", () => {
       expect(res.statusCode).toEqual(statusCodes.badRequest);
     });
   });
+
+  describe("/api/artwork/:artworkId", () => {
+    it("should fetch a visible and active artwork", async () => {
+      const visibleArtwork = artwork.filter(
+        (item) => (item.visibility = "visible")
+      );
+      const res = await request(app)
+        .get(`/api/artwork/${visibleArtwork[0].id}`)
+        .query({});
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.artwork).toBeTruthy();
+    });
+
+    it("should throw a validation error if artwork id is invalid", async () => {
+      const res = await request(app).get("/api/artwork/invalidId").query({});
+      expect(res.statusCode).toEqual(validationErrors.invalidUUID.message);
+    });
+
+    it("should throw a 404 error if artwork is not visible", async () => {
+      const invisibleArtwork = artwork.filter(
+        (item) => (item.visibility = "invisible")
+      );
+      const res = await request(app)
+        .get(`/api/artwork/${invisibleArtwork[0].id}`)
+        .query({});
+      expect(res.statusCode).toEqual(statusCodes.notFound);
+    });
+
+    it("should throw a 404 error if artwork is not active", async () => {
+      const inactiveArtwork = artwork.filter((item) => item.active === false);
+      const res = await request(app)
+        .get(`/api/artwork/${inactiveArtwork[0].id}`)
+        .query({});
+      expect(res.statusCode).toEqual(statusCodes.notFound);
+    });
+  });
+
+  // $TODO test patch artwork (same as post without the media)
+  // $TODO test delete artwork
 });
