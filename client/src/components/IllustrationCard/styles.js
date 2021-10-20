@@ -13,6 +13,9 @@ const illustrationCardStyles = makeStyles((muiTheme) => ({
     flexDirection: "column",
     textAlign: "center",
     width: "70%",
+    [muiTheme.breakpoints.down("xs")]: {
+      width: "100%",
+    },
   },
   reverse: {
     flexDirection: "column-reverse",
@@ -34,6 +37,9 @@ const illustrationCardStyles = makeStyles((muiTheme) => ({
       transform: "translate(-50%,-50%)",
       width: "80%",
       height: "auto",
+    },
+    [muiTheme.breakpoints.down("xs")]: {
+      width: "100%",
     },
   },
   heading: {

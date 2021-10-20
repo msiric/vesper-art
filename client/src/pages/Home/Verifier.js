@@ -19,6 +19,20 @@ const useVerifierStyles = makeStyles((muiTheme) => ({
   list: {
     width: "100%",
   },
+  dataWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    "&>div:last-child": {
+      height: "100%",
+    },
+  },
+  guideWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    "&>div:last-child": {
+      height: "100%",
+    },
+  },
   illustration: {
     width: "40%",
     paddingBottom: "40%",
@@ -77,13 +91,13 @@ const Verifier = () => {
   return (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={7}>
+        <Grid item xs={12} md={7} className={classes.dataWrapper}>
           <Box className={globalClasses.bottomSpacing}>
             <VerifierCard />
           </Box>
           <LicenseSection />
         </Grid>
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} md={5} className={classes.guideWrapper}>
           <IllustrationCard
             heading="Verify your license"
             paragraph="Make sure it's used the right way by the right person"

@@ -18,7 +18,7 @@ const LicenseSection = () => {
   const classes = licenseSectionStyles();
 
   return loading || !license ? (
-    <Card>
+    <Card className={classes.emptyWrapper}>
       <EmptySection label="Enter license fingerprint to inspect the details" />
     </Card>
   ) : isObjectEmpty(license) ? (
