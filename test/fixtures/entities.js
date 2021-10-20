@@ -751,6 +751,85 @@ export const artwork = [
   },
 ];
 
+export const orders = [
+  {
+    id: "",
+    buyerId: "",
+    sellerId: "",
+    artworkId: "",
+    versionId: "",
+    licenseId: "",
+    discountId: "",
+    reviewId: "",
+    intentId: "",
+    spent: "0",
+    earned: "0",
+    fee: "0",
+    type: "commercial",
+    status: "completed",
+  },
+];
+
+export const notifications = [
+  {
+    id: "",
+    receiverId: "",
+    link: "",
+    ref: "",
+    type: "order",
+    read: true,
+  },
+];
+
+export const reviews = [
+  {
+    id: "",
+    orderId: "",
+    artworkId: "",
+    reviewerId: "",
+    revieweeId: "",
+    rating: 5,
+  },
+];
+
+export const licenses = [
+  {
+    id: "",
+    ownerId: "",
+    sellerId: "",
+    artworkId: "",
+    fingerprint: "",
+    assignee: "Artista",
+    assigneeIdentifier: "",
+    assignor: "Random User",
+    assignorIdentifier: "",
+    company: "unavailable",
+    type: "commercial",
+    usage: "individual",
+    active: true,
+    price: 0,
+  },
+];
+
+export const favorites = [
+  {
+    id: "",
+    ownerId: "",
+    artworkId: "",
+  },
+];
+
+export const comments = [
+  {
+    id: "",
+    ownerId: "",
+    artworkId: "",
+    content: "",
+    modified: false,
+    generated: false,
+  },
+];
+
 export const avatar = {
   source:
     "https://vesper-testing.s3.eu-central-1.amazonaws.com/userMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636386.png",
