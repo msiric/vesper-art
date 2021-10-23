@@ -18,6 +18,7 @@ import { artepunktTheme } from "../../styles/theme";
 const useVerifierStyles = makeStyles((muiTheme) => ({
   list: {
     width: "100%",
+    marginBottom: 14,
   },
   dataWrapper: {
     display: "flex",
@@ -78,6 +79,11 @@ const Verifier = () => {
       icon: <ItemIcon />,
       label:
         "Enter the assignee/assignor identifier to get back detailed information",
+    },
+    {
+      icon: <ItemIcon />,
+      label:
+        "You cannot see sensitive information about the other party unless you receive their identifier",
     },
     { icon: <ItemIcon />, label: "Verify the validity of the license" },
   ];
