@@ -108,7 +108,7 @@ const LicenseSection = () => {
       searchable={false}
       pagination={false}
       addOptions={{ enabled: false, title: "", route: "" }}
-      className="NoTableFooter"
+      className="NoTableFooter VerifierTable"
     />
   );
 };

@@ -23,6 +23,8 @@ const useVerifierStyles = makeStyles((muiTheme) => ({
     display: "flex",
     flexDirection: "column",
     "&>div:last-child": {
+      display: "flex",
+      flexDirection: "column",
       height: "100%",
     },
   },
@@ -30,6 +32,8 @@ const useVerifierStyles = makeStyles((muiTheme) => ({
     display: "flex",
     flexDirection: "column",
     "&>div:last-child": {
+      display: "flex",
+      flexDirection: "column",
       height: "100%",
     },
   },

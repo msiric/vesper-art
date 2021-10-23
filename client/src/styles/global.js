@@ -41,8 +41,60 @@ const globalStyles = makeStyles((muiTheme) => ({
     ".illustrationPrimary": {
       fill: artepunktTheme.palette.primary.main,
     },
+    // $TODO gadljivo
+    ".VerifierTable": {
+      display: "flex",
+      "& thead, tbody": {
+        display: "flex",
+        width: "100%",
+      },
+      "& tr": {
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        height: "100%",
+        borderTop: "solid 2px rgba(0, 0, 0, 0.15) !important",
+        "& th:first-child": {
+          minHeight: 76,
+        },
+        "& td:first-child": {
+          minHeight: 76,
+        },
+      },
+      "& td, th": {
+        width: "calc(100%)",
+        display: "inline-block",
+        fontSize: "16px",
+        boxSizing: "border-box",
+        border: "none",
+        minHeight: 54,
+        height: "100%",
+      },
+      [muiTheme.breakpoints.down(959.95)]: {
+        "& thead": {
+          display: "none",
+        },
+        "& td": {
+          minHeight: "auto",
+        },
+        "& tr": {
+          "& th:first-child": {
+            minHeight: "auto !important",
+          },
+          "& td:first-child": {
+            minHeight: "auto !important",
+          },
+        },
+      },
+    },
+    ".MuiTableCell-root": {
+      background: "transparent !important",
+    },
     ".MuiTableCell-footer": {
       borderTop: "1px solid rgb(81, 81, 81)",
+      borderBottom: "none !important",
+    },
+    ".MuiTableRow-root": {
       borderBottom: "none !important",
     },
     ".MuiTableRow-root:last-of-type > .MuiTableCell-body": {
