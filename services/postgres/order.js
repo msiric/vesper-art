@@ -278,7 +278,7 @@ export const addNewOrder = async ({ orderId, orderData, connection }) => {
         spent: orderData.spent,
         earned: orderData.earned,
         fee: orderData.fee,
-        type: orderData.type ? "commercial" : "free",
+        type: orderData.type,
         status: orderData.status,
       },
     ])

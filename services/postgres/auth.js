@@ -10,6 +10,7 @@ export const addNewUser = async ({
   hashedPassword,
   verificationToken,
   verificationExpiry,
+  verified,
   connection,
 }) => {
   const savedUser = await connection
@@ -27,6 +28,7 @@ export const addNewUser = async ({
         avatar: null,
         verificationToken,
         verificationExpiry,
+        verified,
       },
     ])
     .execute();

@@ -789,6 +789,7 @@ export const editUserEmail = async ({
   userEmail,
   verificationToken,
   verificationExpiry,
+  verified,
   connection,
 }) => {
   /*   const foundUser = await User.findOne({
@@ -806,7 +807,7 @@ export const editUserEmail = async ({
       email: userEmail,
       verificationToken,
       verificationExpiry,
-      verified: false,
+      verified,
     })
     .where("id = :userId AND active = :active", {
       userId,

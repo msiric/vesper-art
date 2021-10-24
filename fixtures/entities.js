@@ -1,27 +1,39 @@
 import { admin } from "../config/secret";
+import { ArtworkVisibility } from "../entities/Artwork";
+import { OrderStatus, OrderType } from "../entities/Order";
+import {
+  VersionAvailability,
+  VersionLicense,
+  VersionType,
+  VersionUse,
+} from "../entities/Version";
 
 const general = {
   id: "",
   ownerId: "",
   currentId: "",
   active: true,
-  visibility: "visible",
+  visibility: ArtworkVisibility.visible,
   generated: true,
 };
 
 const version = {
-  availability: "unavailable",
-  type: "unavailable",
-  license: "unavailable",
-  use: "unavailable",
+  availability: VersionAvailability.available,
+  type: VersionType.unavailable,
+  license: VersionLicense.unavailable,
+  use: VersionUse.unavailable,
   personal: "0",
   commercial: "0",
 };
 
 const artwork = [
   {
+    general: {
+      ...general,
+      active: false,
+    },
     details: {
-      title: "Black Tree of Harmony",
+      title: "Inactive",
       description: "",
       ...version,
     },
@@ -41,10 +53,16 @@ const artwork = [
       dominant: "#8FA891",
       orientation: "square",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+      visibility: ArtworkVisibility.invisible,
+    },
     details: {
-      title: "the connection",
+      title: "Invisible",
       description: "",
       ...version,
     },
@@ -64,10 +82,15 @@ const artwork = [
       dominant: "#DAD9DB",
       orientation: "square",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
-      title: "Triumph",
+      title: "Preview only",
       description: "",
       ...version,
     },
@@ -87,12 +110,21 @@ const artwork = [
       dominant: "#E37324",
       orientation: "square",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
-      title: "The Man Who Deceived the Gods",
+      title: "Free but personal",
       description: "",
       ...version,
+      availability: VersionAvailability.available,
+      type: VersionType.free,
+      license: VersionLicense.personal,
+      use: VersionUse.unavailable,
     },
     media: {
       source:
@@ -110,12 +142,21 @@ const artwork = [
       dominant: "#040404",
       orientation: "landscape",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
-      title: "Wildflower",
+      title: "Free but commercial (included)",
       description: "",
       ...version,
+      availability: VersionAvailability.available,
+      type: VersionType.free,
+      license: VersionLicense.commercial,
+      use: VersionUse.included,
     },
     media: {
       source:
@@ -133,12 +174,22 @@ const artwork = [
       dominant: "#C9A08B",
       orientation: "portrait",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
-      title: "nightmare",
+      title: "Free but commercial (separate)",
       description: "",
       ...version,
+      availability: VersionAvailability.available,
+      type: VersionType.free,
+      license: VersionLicense.commercial,
+      use: VersionUse.separate,
+      commercial: 20,
     },
     media: {
       source:
@@ -156,12 +207,22 @@ const artwork = [
       dominant: "#21616B",
       orientation: "landscape",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
-      title: "Hellhound",
+      title: "Commercial but personal",
       description: "",
       ...version,
+      availability: VersionAvailability.available,
+      type: VersionType.commercial,
+      license: VersionLicense.personal,
+      use: VersionUse.unavailable,
+      personal: 10,
     },
     media: {
       source:
@@ -179,12 +240,23 @@ const artwork = [
       dominant: "#ADDCDE",
       orientation: "portrait",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
-      title: "A Magical Night",
+      title: "Commercial but commercial (included)",
       description: "",
       ...version,
+      availability: VersionAvailability.available,
+      type: VersionType.commercial,
+      license: VersionLicense.commercial,
+      use: VersionUse.included,
+      personal: 10,
+      commercial: 10,
     },
     media: {
       source:
@@ -202,12 +274,23 @@ const artwork = [
       dominant: "#27221D",
       orientation: "landscape",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
-      title: "Selfie",
+      title: "Commercial but commercial (separate)",
       description: "",
       ...version,
+      availability: VersionAvailability.available,
+      type: VersionType.commercial,
+      license: VersionLicense.commercial,
+      use: VersionUse.separate,
+      personal: 10,
+      commercial: 20,
     },
     media: {
       source:
@@ -225,10 +308,15 @@ const artwork = [
       dominant: "#E3C3DB",
       orientation: "square",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
-      title: "PROGRESSION",
+      title: "Has comments",
       description: "",
       ...version,
     },
@@ -248,10 +336,32 @@ const artwork = [
       dominant: "#0C060C",
       orientation: "square",
     },
+    favorites: [{}],
+    comments: [
+      {
+        id: "",
+        ownerId: "",
+        artworkId: "",
+        content: "Test comment 1",
+        modified: false,
+        generated: false,
+      },
+      {
+        id: "",
+        ownerId: "",
+        artworkId: "",
+        content: "Test comment 2",
+        modified: true,
+        generated: false,
+      },
+    ],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
-      title: "modern home",
+      title: "Has favorites",
       description: "",
       ...version,
     },
@@ -271,8 +381,19 @@ const artwork = [
       dominant: "#CFCFD2",
       orientation: "landscape",
     },
+    favorites: [
+      {
+        id: "",
+        ownerId: "",
+        artworkId: "",
+      },
+    ],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "GEISHA",
       description: "",
@@ -294,8 +415,13 @@ const artwork = [
       dominant: "#040404",
       orientation: "portrait",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "moonlight howl",
       description: "",
@@ -317,8 +443,13 @@ const artwork = [
       dominant: "#083B82",
       orientation: "landscape",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "amalgamation",
       description: "",
@@ -340,8 +471,13 @@ const artwork = [
       dominant: "#E5DAD2",
       orientation: "portrait",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Halloween",
       description: "",
@@ -363,8 +499,13 @@ const artwork = [
       dominant: "#261E1C",
       orientation: "square",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Good catch",
       description: "",
@@ -386,8 +527,13 @@ const artwork = [
       dominant: "#227593",
       orientation: "portrait",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "moonhole",
       description: "",
@@ -409,8 +555,13 @@ const artwork = [
       dominant: "#040505",
       orientation: "square",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Sunset",
       description: "",
@@ -432,8 +583,13 @@ const artwork = [
       dominant: "#FB6904",
       orientation: "portrait",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Beacon of Light",
       description: "",
@@ -455,8 +611,13 @@ const artwork = [
       dominant: "#2B323A",
       orientation: "landscape",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "MYSTIC NIGHT",
       description: "",
@@ -478,8 +639,13 @@ const artwork = [
       dominant: "#494E58",
       orientation: "portrait",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "monke",
       description: "",
@@ -501,8 +667,13 @@ const artwork = [
       dominant: "#367CBA",
       orientation: "landscape",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Daydreaming",
       description: "",
@@ -524,8 +695,13 @@ const artwork = [
       dominant: "#040404",
       orientation: "landscape",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Colourful",
       description: "",
@@ -547,8 +723,13 @@ const artwork = [
       dominant: "#3A3939",
       orientation: "portrait",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Independence",
       description: "",
@@ -570,8 +751,13 @@ const artwork = [
       dominant: "#F53839",
       orientation: "portrait",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "pspspspspspspspspspsps",
       description: "",
@@ -593,8 +779,13 @@ const artwork = [
       dominant: "#D6A34F",
       orientation: "square",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "Revelation",
       description: "",
@@ -616,8 +807,13 @@ const artwork = [
       dominant: "#36154B",
       orientation: "landscape",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "I want you",
       description: "",
@@ -639,8 +835,13 @@ const artwork = [
       dominant: "#FB3434",
       orientation: "portrait",
     },
+    favorites: [{}],
+    comments: [{}],
   },
   {
+    general: {
+      ...general,
+    },
     details: {
       title: "swimming with the fishes",
       description: "",
@@ -662,6 +863,8 @@ const artwork = [
       dominant: "#040404",
       orientation: "landscape",
     },
+    favorites: [{}],
+    comments: [{}],
   },
 ];
 
@@ -674,12 +877,58 @@ const avatar = {
   orientation: "portrait",
 };
 
+const orders = [
+  {
+    details: {
+      id: "",
+      buyerId: "",
+      sellerId: "",
+      artworkId: "",
+      versionId: "",
+      licenseId: "",
+      discountId: "",
+      reviewId: "",
+      intentId: "",
+      spent: 0,
+      earned: 0,
+      fee: 0,
+      type: OrderType.free,
+      status: OrderStatus.completed,
+    },
+    license: {
+      id: "",
+      ownerId: "",
+      sellerId: "",
+      artworkId: "",
+      fingerprint: "",
+      assignee: "",
+      assigneeIdentifier: "",
+      assignor: "",
+      assignorIdentifier: "",
+      company: "",
+      type: "",
+      usage: "",
+      active: true,
+      price: 0,
+    },
+    review: {
+      id: "",
+      orderId: "",
+      artworkId: "",
+      reviewerId: "",
+      revieweeId: "",
+      rating: 5,
+    },
+  },
+];
+
+// $TODO MISSING STRIPE ID TESTS
 export const entities = [
   {
     data: {
       id: "",
       email: "garmonbozia05@gmail.com",
-      fullName: "Artista",
+      fullName: "Valid user",
       name: admin.username,
       password: admin.password,
       avatarId: null,
@@ -709,7 +958,7 @@ export const entities = [
     },
     artwork: artwork.map((item) => ({
       data: {
-        ...general,
+        ...item.general,
       },
       version: {
         data: {
@@ -751,5 +1000,327 @@ export const entities = [
         },
       },
     })),
+    notifications: [
+      {
+        id: "",
+        receiverId: "",
+        link: "",
+        ref: "",
+        type: "",
+        read: false,
+      },
+    ],
+  },
+  {
+    data: {
+      id: "",
+      email: "test@test.com",
+      fullName: "No display favorites",
+      name: "noDisplayFavorites",
+      password: admin.password,
+      avatarId: null,
+      description: "Just vibin'",
+      country: "FR",
+      businessAddress: "",
+      displayFavorites: false,
+      resetToken: "",
+      jwtVersion: 0,
+      stripeId: "",
+      verificationToken: "",
+      verified: true,
+      active: true,
+      generated: false,
+    },
+    avatar: {},
+    // $TODO Split artwork
+    artwork: artwork.map((item) => ({
+      data: {
+        ...item.general,
+      },
+      version: {
+        data: {
+          id: "",
+          artworkId: "",
+          title: "",
+          description: "",
+          availability: "",
+          type: "",
+          license: "",
+          use: "",
+          personal: "",
+          commercial: "",
+          coverId: "",
+          mediaId: "",
+          ...item.details,
+        },
+        media: {
+          data: {
+            id: "",
+            source: "",
+            orientation: "",
+            dominant: "",
+            height: "",
+            width: "",
+            ...item.media,
+          },
+        },
+        cover: {
+          data: {
+            id: "",
+            source: "",
+            orientation: "",
+            dominant: "",
+            height: "",
+            width: "",
+            ...item.cover,
+          },
+        },
+      },
+    })),
+    notifications: [
+      {
+        id: "",
+        receiverId: "",
+        link: "",
+        ref: "",
+        type: "",
+        read: false,
+      },
+    ],
+  },
+  {
+    data: {
+      id: "",
+      email: null,
+      fullName: "",
+      name: null,
+      password: "",
+      avatarId: null,
+      description: "",
+      country: "",
+      businessAddress: "",
+      displayFavorites: false,
+      resetToken: "",
+      resetExpiry: null,
+      jwtVersion: 0,
+      stripeId: "",
+      verificationToken: "",
+      verificationExpiry: null,
+      verified: false,
+      active: false,
+      generated: false,
+      created: null,
+      updated: null,
+    },
+    avatar: {},
+    artwork: [],
+    notifications: [
+      {
+        id: "",
+        receiverId: "",
+        link: "",
+        ref: "",
+        type: "",
+        read: false,
+      },
+    ],
+  },
+  {
+    data: {
+      id: "",
+      email: "test2@test.com",
+      fullName: "Valid Reset token",
+      name: "validResetToken",
+      password: admin.password,
+      avatarId: null,
+      description: "",
+      country: "US",
+      businessAddress: "",
+      displayFavorites: true,
+      resetToken: "",
+      jwtVersion: 0,
+      stripeId: "",
+      verificationToken: "",
+      verified: true,
+      active: true,
+      generated: false,
+    },
+    avatar: {},
+    artwork: [],
+    notifications: [
+      {
+        id: "",
+        receiverId: "",
+        link: "",
+        ref: "",
+        type: "",
+        read: false,
+      },
+    ],
+  },
+  {
+    data: {
+      id: "",
+      email: "test3@test.com",
+      fullName: "Invalid Reset token",
+      name: "invalidResetToken",
+      password: admin.password,
+      avatarId: null,
+      description: "",
+      country: "US",
+      businessAddress: "",
+      displayFavorites: true,
+      resetToken: "",
+      jwtVersion: 0,
+      stripeId: "",
+      verificationToken: "",
+      verified: true,
+      active: true,
+      generated: false,
+    },
+    avatar: {},
+    artwork: [],
+    notifications: [
+      {
+        id: "",
+        receiverId: "",
+        link: "",
+        ref: "",
+        type: "",
+        read: false,
+      },
+    ],
+  },
+  {
+    data: {
+      id: "",
+      email: "test4@test.com",
+      fullName: "Expired Reset token",
+      name: "expiredResetToken",
+      password: admin.password,
+      avatarId: null,
+      description: "",
+      country: "US",
+      businessAddress: "",
+      displayFavorites: true,
+      resetToken: "",
+      jwtVersion: 0,
+      stripeId: "",
+      verificationToken: "",
+      verified: true,
+      active: true,
+      generated: false,
+    },
+    avatar: {},
+    artwork: [],
+    notifications: [
+      {
+        id: "",
+        receiverId: "",
+        link: "",
+        ref: "",
+        type: "",
+        read: false,
+      },
+    ],
+  },
+  {
+    data: {
+      id: "",
+      email: "test5@test.com",
+      fullName: "Valid Verification token",
+      name: "validVerificationToken",
+      password: admin.password,
+      avatarId: null,
+      description: "",
+      country: "US",
+      businessAddress: "",
+      displayFavorites: true,
+      resetToken: "",
+      jwtVersion: 0,
+      stripeId: "",
+      verificationToken: "",
+      verified: true,
+      active: true,
+      generated: false,
+    },
+    avatar: {},
+    artwork: [],
+    notifications: [
+      {
+        id: "",
+        receiverId: "",
+        link: "",
+        ref: "",
+        type: "",
+        read: false,
+      },
+    ],
+  },
+  {
+    data: {
+      id: "",
+      email: "test6@test.com",
+      fullName: "Invalid Verification token",
+      name: "invalidVerificationToken",
+      password: admin.password,
+      avatarId: null,
+      description: "",
+      country: "US",
+      businessAddress: "",
+      displayFavorites: true,
+      resetToken: "",
+      jwtVersion: 0,
+      stripeId: "",
+      verificationToken: "",
+      verified: true,
+      active: true,
+      generated: false,
+    },
+    avatar: {},
+    artwork: [],
+    notifications: [
+      {
+        id: "",
+        receiverId: "",
+        link: "",
+        ref: "",
+        type: "",
+        read: false,
+      },
+    ],
+  },
+  {
+    data: {
+      id: "",
+      email: "test7@test.com",
+      fullName: "Expired Verification token",
+      name: "expiredVerificationToken",
+      password: admin.password,
+      avatarId: null,
+      description: "",
+      country: "US",
+      businessAddress: "",
+      displayFavorites: true,
+      resetToken: "",
+      jwtVersion: 0,
+      stripeId: "",
+      verificationToken: "",
+      verified: true,
+      active: true,
+      generated: false,
+    },
+    avatar: {},
+    artwork: [],
+    notifications: [
+      {
+        id: "",
+        receiverId: "",
+        link: "",
+        ref: "",
+        type: "",
+        read: false,
+      },
+    ],
   },
 ];

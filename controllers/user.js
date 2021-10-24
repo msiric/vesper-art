@@ -414,13 +414,18 @@ export const updateUserEmail = async ({
   await emailValidation.validate({ userEmail });
   const foundEmail = await fetchUserIdByEmail({ userEmail, connection });
   if (!foundEmail) {
-    const { verificationToken, verificationLink, verificationExpiry } =
-      generateVerificationToken();
+    const {
+      verificationToken,
+      verificationLink,
+      verificationExpiry,
+      verified,
+    } = generateVerificationToken();
     await editUserEmail({
       userId,
       userEmail,
       verificationToken,
       verificationExpiry,
+      verified,
       connection,
     });
     const emailValues = formatEmailContent({

@@ -70,8 +70,12 @@ export const postSignUp = async ({
   if (foundId) {
     throw createError(...formatError(errors.userAlreadyExists));
   } else {
-    const { verificationToken, verificationLink, verificationExpiry } =
-      generateVerificationToken();
+    const {
+      verificationToken,
+      verificationLink,
+      verificationExpiry,
+      verified,
+    } = generateVerificationToken();
     const hashedPassword = await argon2.hash(userPassword);
     const { userId } = generateUuids({
       userId: null,
@@ -84,6 +88,7 @@ export const postSignUp = async ({
       hashedPassword,
       verificationToken,
       verificationExpiry,
+      verified,
       connection,
     });
     const emailValues = formatEmailContent({
@@ -233,13 +238,18 @@ export const resendToken = async ({ userEmail, connection }) => {
   });
   if (!isObjectEmpty(foundUser)) {
     if (!foundUser.verified) {
-      const { verificationToken, verificationLink, verificationExpiry } =
-        generateVerificationToken();
+      const {
+        verificationToken,
+        verificationLink,
+        verificationExpiry,
+        verified,
+      } = generateVerificationToken();
       await editUserEmail({
         userId: foundUser.id,
         userEmail,
         verificationToken,
         verificationExpiry,
+        verified,
         connection,
       });
       const emailValues = formatEmailContent({
@@ -295,13 +305,18 @@ export const updateEmail = async ({
 
     const foundEmail = await fetchUserIdByEmail({ userEmail, connection });
     if (!foundEmail) {
-      const { verificationToken, verificationLink, verificationExpiry } =
-        generateVerificationToken();
+      const {
+        verificationToken,
+        verificationLink,
+        verificationExpiry,
+        verified,
+      } = generateVerificationToken();
       await editUserEmail({
         userId: foundId,
         userEmail,
         verificationToken,
         verificationExpiry,
+        verified,
         connection,
       });
       const emailValues = formatEmailContent({

@@ -13,6 +13,7 @@ const emptySectionStyles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     alignItems: "center",
     padding: "126px 0",
+    height: "100%",
     cursor: "default",
   },
   icon: {

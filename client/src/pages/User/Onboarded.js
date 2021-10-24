@@ -49,6 +49,8 @@ const Onboarded = () => {
   const globalClasses = globalStyles();
   const classes = useOnboardedStyles();
 
+  console.log("STRIPEID", stripeId, userUsername);
+
   return (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2}>
@@ -56,7 +58,7 @@ const Onboarded = () => {
           <Card>
             <CardContent className={classes.content}>
               <WelcomeIcon className={classes.icon} />
-              {!stripeId ? (
+              {stripeId ? (
                 <>
                   <Typography className={classes.heading} variant="h4">
                     Congrats on completing the onboarding process

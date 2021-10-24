@@ -268,7 +268,8 @@ export const generateVerificationToken = () => {
   const verificationToken = genUuid();
   const verificationLink = `${domain.client}/verify_token/${verificationToken}`;
   const verificationExpiry = addHours(new Date(), 1);
-  return { verificationToken, verificationLink, verificationExpiry };
+  const verified = false;
+  return { verificationToken, verificationLink, verificationExpiry, verified };
 };
 
 export const generateResetToken = () => {
