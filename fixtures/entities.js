@@ -8,6 +8,16 @@ import {
   VersionUse,
 } from "../entities/Version";
 
+const userIds = {
+  buyerId: "1a1c6859-bb73-419f-8b29-cd7817ede2f2",
+  sellerId: "8f520ed3-f211-4776-8d25-218e8a2e593d",
+};
+
+export const validUsers = [
+  { username: "Valid User 1", password: "testpassword1" },
+  { username: "Valid User 2", password: "testpassword2" },
+];
+
 const general = {
   id: "",
   ownerId: "",
@@ -31,6 +41,7 @@ const artwork = [
     general: {
       ...general,
       active: false,
+      id: "9925abab-60bf-46d7-b0cc-28443a11d879",
     },
     details: {
       title: "Inactive",
@@ -60,6 +71,7 @@ const artwork = [
     general: {
       ...general,
       visibility: ArtworkVisibility.invisible,
+      id: "1e601fdc-325d-4a20-8a2a-903f837a1c51",
     },
     details: {
       title: "Invisible",
@@ -88,6 +100,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "035d728d-f970-410a-b968-965daf0ab2c8",
     },
     details: {
       title: "Preview only",
@@ -116,6 +129,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
     },
     details: {
       title: "Free but personal",
@@ -125,6 +139,7 @@ const artwork = [
       type: VersionType.free,
       license: VersionLicense.personal,
       use: VersionUse.unavailable,
+      id: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
     },
     media: {
       source:
@@ -148,6 +163,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
     },
     details: {
       title: "Free but commercial (included)",
@@ -157,6 +173,7 @@ const artwork = [
       type: VersionType.free,
       license: VersionLicense.commercial,
       use: VersionUse.included,
+      id: "8e1f249a-cab7-428d-8874-46ea7bda867f",
     },
     media: {
       source:
@@ -180,6 +197,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "407be0a9-1b89-4fe8-9c6a-9fb785242714",
     },
     details: {
       title: "Free but commercial (separate)",
@@ -213,6 +231,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "83ded41d-f88a-43aa-a23e-2e42e052af40",
     },
     details: {
       title: "Commercial but personal",
@@ -246,6 +265,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "98706037-961c-4ba1-9eb5-ca6428d16257",
     },
     details: {
       title: "Commercial but commercial (included)",
@@ -280,6 +300,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "99edd8c8-adb9-4ee4-8e1d-7fbd17d0bd0e",
     },
     details: {
       title: "Commercial but commercial (separate)",
@@ -314,6 +335,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
     },
     details: {
       title: "Has comments",
@@ -339,17 +361,17 @@ const artwork = [
     favorites: [{}],
     comments: [
       {
-        id: "",
-        ownerId: "",
-        artworkId: "",
+        id: "07b28cd0-0aa5-4b3a-ae71-21220963e290",
+        ownerId: userIds.buyerId,
+        artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
         content: "Test comment 1",
         modified: false,
         generated: false,
       },
       {
-        id: "",
-        ownerId: "",
-        artworkId: "",
+        id: "c791d948-9bc3-4b6b-b988-6b95576dac57",
+        ownerId: userIds.buyerId,
+        artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
         content: "Test comment 2",
         modified: true,
         generated: false,
@@ -359,6 +381,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "05eb8654-94f2-4ab7-a7f8-0d69c76e3d60",
     },
     details: {
       title: "Has favorites",
@@ -393,6 +416,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "67a06ecb-849e-4010-8c62-9ed1d7f0a023",
     },
     details: {
       title: "GEISHA",
@@ -421,6 +445,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "82ca7f9d-5871-4e54-9506-9d8f6e61e3b2",
     },
     details: {
       title: "moonlight howl",
@@ -449,6 +474,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "06eef646-166a-441b-8438-38201f792188",
     },
     details: {
       title: "amalgamation",
@@ -477,6 +503,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "276699ca-4bc9-460d-9dfd-9d1d8b92ca2f",
     },
     details: {
       title: "Halloween",
@@ -505,6 +532,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "f8ccc098-1aac-46b1-9c90-952c0911c186",
     },
     details: {
       title: "Good catch",
@@ -533,6 +561,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "8f17c4d1-0b76-43f1-ba61-475118a675da",
     },
     details: {
       title: "moonhole",
@@ -561,6 +590,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "19482d41-a1fa-4256-96c6-994d9d39772e",
     },
     details: {
       title: "Sunset",
@@ -589,6 +619,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "d5a3d855-6227-49d4-9762-b380c10ceb28",
     },
     details: {
       title: "Beacon of Light",
@@ -617,6 +648,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "94726959-d876-4663-9312-d3fcb8c51bcd",
     },
     details: {
       title: "MYSTIC NIGHT",
@@ -645,6 +677,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "0a09b1cb-ee58-4097-a350-9c34d7c9004e",
     },
     details: {
       title: "monke",
@@ -673,6 +706,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "a944d911-3112-482c-9e1d-fe146967de6c",
     },
     details: {
       title: "Daydreaming",
@@ -701,6 +735,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "2caaec9d-8b00-4fc4-b55c-39e8c853e70b",
     },
     details: {
       title: "Colourful",
@@ -729,6 +764,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "2cf427da-2ee2-41d4-a1f2-481bea582e24",
     },
     details: {
       title: "Independence",
@@ -757,6 +793,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "861c1e7b-422d-4af3-9068-232a238d3061",
     },
     details: {
       title: "pspspspspspspspspspsps",
@@ -785,6 +822,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "4fc624c7-cd7e-4429-bdbb-41d9cf7eab3a",
     },
     details: {
       title: "Revelation",
@@ -813,6 +851,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "1632b845-c852-49e2-919a-88c32da4b0aa",
     },
     details: {
       title: "I want you",
@@ -841,6 +880,7 @@ const artwork = [
   {
     general: {
       ...general,
+      id: "6f9e5df9-0240-4ade-90dd-5b2cbc87177e",
     },
     details: {
       title: "swimming with the fishes",
@@ -868,7 +908,12 @@ const artwork = [
   },
 ];
 
+const halfLength = Math.ceil(artwork.length / 2);
+const firstHalf = artwork.slice(0, halfLength);
+const secondHalf = artwork.slice(halfLength, artwork.length);
+
 const avatar = {
+  id: "90f5798d-5c76-46b3-9079-cb415ea104f4",
   source:
     "https://vesper-testing.s3.eu-central-1.amazonaws.com/userMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636386.png",
   width: "898",
@@ -880,15 +925,15 @@ const avatar = {
 const orders = [
   {
     details: {
-      id: "",
-      buyerId: "",
-      sellerId: "",
-      artworkId: "",
-      versionId: "",
-      licenseId: "",
-      discountId: "",
-      reviewId: "",
-      intentId: "",
+      id: "a6bfc072-0653-46ba-aaad-95e3245520ce",
+      buyerId: userIds.buyerId,
+      sellerId: userIds.sellerId,
+      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
+      versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
+      licenseId: "6cb0750c-f95f-4d58-a059-e1a7d2930007",
+      discountId: null,
+      reviewId: "1b5f1c10-ccb4-4b1b-a7d1-aa2db056c021",
+      intentId: null,
       spent: 0,
       earned: 0,
       fee: 0,
@@ -896,29 +941,169 @@ const orders = [
       status: OrderStatus.completed,
     },
     license: {
-      id: "",
-      ownerId: "",
-      sellerId: "",
-      artworkId: "",
+      id: "6cb0750c-f95f-4d58-a059-e1a7d2930007",
+      ownerId: userIds.buyerId,
+      sellerId: userIds.sellerId,
+      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
       fingerprint: "",
       assignee: "",
       assigneeIdentifier: "",
       assignor: "",
       assignorIdentifier: "",
-      company: "",
-      type: "",
-      usage: "",
+      company: "unavailable",
+      type: "personal",
+      usage: "individual",
       active: true,
       price: 0,
     },
     review: {
-      id: "",
-      orderId: "",
-      artworkId: "",
-      reviewerId: "",
-      revieweeId: "",
+      id: "1b5f1c10-ccb4-4b1b-a7d1-aa2db056c021",
+      orderId: "a6bfc072-0653-46ba-aaad-95e3245520ce",
+      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
+      reviewerId: userIds.buyerId,
+      revieweeId: userIds.sellerId,
       rating: 5,
     },
+  },
+  {
+    details: {
+      id: "e6fbbcb4-c2bb-4a17-8ef8-b95eb281f4f3",
+      buyerId: userIds.buyerId,
+      sellerId: userIds.sellerId,
+      artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
+      versionId: "8e1f249a-cab7-428d-8874-46ea7bda867f",
+      licenseId: "83e3c321-ce40-4cf3-a513-ba72ffa233d3",
+      discountId: null,
+      reviewId: null,
+      intentId: null,
+      spent: 0,
+      earned: 0,
+      fee: 0,
+      type: OrderType.free,
+      status: OrderStatus.completed,
+    },
+    license: {
+      id: "83e3c321-ce40-4cf3-a513-ba72ffa233d3",
+      ownerId: userIds.buyerId,
+      sellerId: userIds.sellerId,
+      artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
+      fingerprint: "",
+      assignee: "",
+      assigneeIdentifier: "",
+      assignor: "",
+      assignorIdentifier: "",
+      company: "unavailable",
+      type: "commercial",
+      usage: "individual",
+      active: true,
+      price: 0,
+    },
+    review: null,
+  },
+  {
+    details: {
+      id: "959784bd-aecf-4f42-abc1-459d1f61de4a",
+      buyerId: userIds.buyerId,
+      sellerId: userIds.sellerId,
+      artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
+      versionId: "8e1f249a-cab7-428d-8874-46ea7bda867f",
+      licenseId: "d9dd2327-0a0a-4ef4-98b4-9c55f848009d",
+      discountId: null,
+      reviewId: null,
+      intentId: null,
+      spent: 0,
+      earned: 0,
+      fee: 0,
+      type: OrderType.free,
+      status: OrderStatus.completed,
+    },
+    license: {
+      id: "d9dd2327-0a0a-4ef4-98b4-9c55f848009d",
+      ownerId: userIds.buyerId,
+      sellerId: userIds.sellerId,
+      artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
+      fingerprint: "",
+      assignee: "",
+      assigneeIdentifier: "",
+      assignor: "",
+      assignorIdentifier: "",
+      company: "Test",
+      type: "commercial",
+      usage: "business",
+      active: true,
+      price: 0,
+    },
+    review: null,
+  },
+  {
+    details: {
+      id: "1f8b6161-f170-440c-bcfb-e3d63419e37b",
+      buyerId: userIds.buyerId,
+      sellerId: userIds.sellerId,
+      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
+      versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
+      licenseId: "5790d473-2a07-46ae-ba3a-6eac7fbf63e7",
+      discountId: null,
+      reviewId: null,
+      intentId: null,
+      spent: 0,
+      earned: 0,
+      fee: 0,
+      type: OrderType.free,
+      status: OrderStatus.completed,
+    },
+    license: {
+      id: "5790d473-2a07-46ae-ba3a-6eac7fbf63e7",
+      ownerId: userIds.buyerId,
+      sellerId: userIds.sellerId,
+      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
+      fingerprint: "",
+      assignee: "",
+      assigneeIdentifier: "",
+      assignor: "",
+      assignorIdentifier: "",
+      company: "unavailable",
+      type: "personal",
+      usage: "individual",
+      active: true,
+      price: 0,
+    },
+    review: null,
+  },
+  {
+    details: {
+      id: "5409cc0b-cd19-4ef5-b441-cfe261c2c420",
+      buyerId: userIds.buyerId,
+      sellerId: userIds.sellerId,
+      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
+      versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
+      licenseId: "b0bea3c5-4209-4efc-9ceb-de25ebfe8617",
+      discountId: null,
+      reviewId: null,
+      intentId: null,
+      spent: 0,
+      earned: 0,
+      fee: 0,
+      type: OrderType.free,
+      status: OrderStatus.completed,
+    },
+    license: {
+      id: "b0bea3c5-4209-4efc-9ceb-de25ebfe8617",
+      ownerId: userIds.buyerId,
+      sellerId: userIds.sellerId,
+      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
+      fingerprint: "",
+      assignee: "",
+      assigneeIdentifier: "",
+      assignor: "",
+      assignorIdentifier: "",
+      company: "Test",
+      type: "personal",
+      usage: "business",
+      active: true,
+      price: 0,
+    },
+    review: null,
   },
 ];
 
@@ -927,12 +1112,12 @@ export const entities = [
   {
     data: {
       id: "",
-      email: "garmonbozia05@gmail.com",
+      email: "valid@test.com",
       fullName: "Valid user",
-      name: admin.username,
-      password: admin.password,
+      name: validUsers[0].username,
+      password: validUsers[0].password,
       avatarId: null,
-      description: "Just vibin'",
+      description: "Enabled favorites display",
       country: "HR",
       businessAddress: "",
       displayFavorites: true,
@@ -956,7 +1141,7 @@ export const entities = [
         ...avatar,
       },
     },
-    artwork: artwork.map((item) => ({
+    artwork: firstHalf.map((item) => ({
       data: {
         ...item.general,
       },
@@ -1002,11 +1187,67 @@ export const entities = [
     })),
     notifications: [
       {
-        id: "",
-        receiverId: "",
-        link: "",
+        id: "9df26e9f-52a5-4d98-8c3d-49bf9b560296",
+        receiverId: userIds.sellerId,
+        link: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
+        ref: "07b28cd0-0aa5-4b3a-ae71-21220963e290",
+        type: "comment",
+        read: true,
+      },
+      {
+        id: "ffcb187e-9fbd-4551-8c69-ae8a7bc0de27",
+        receiverId: userIds.sellerId,
+        link: "a6bfc072-0653-46ba-aaad-95e3245520ce",
         ref: "",
-        type: "",
+        type: "order",
+        read: true,
+      },
+      {
+        id: "645feee5-3387-473d-bc76-ebfd137cba5c",
+        receiverId: userIds.sellerId,
+        link: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
+        ref: "c791d948-9bc3-4b6b-b988-6b95576dac57",
+        type: "comment",
+        read: true,
+      },
+      {
+        id: "0e30bf73-ee6a-426c-b1d7-e6c8b72271eb",
+        receiverId: userIds.sellerId,
+        link: "e6fbbcb4-c2bb-4a17-8ef8-b95eb281f4f3",
+        ref: "",
+        type: "order",
+        read: false,
+      },
+      {
+        id: "463a07e6-c1fb-4ef2-b17e-a81f8f499be0",
+        receiverId: userIds.sellerId,
+        link: "959784bd-aecf-4f42-abc1-459d1f61de4a",
+        ref: "",
+        type: "order",
+        read: false,
+      },
+      {
+        id: "7667b325-150b-4cf5-9627-65c529a98094",
+        receiverId: userIds.sellerId,
+        link: "1f8b6161-f170-440c-bcfb-e3d63419e37b",
+        ref: "",
+        type: "order",
+        read: false,
+      },
+      {
+        id: "3149bd11-df7c-44d1-88c3-947a20ef9409",
+        receiverId: userIds.sellerId,
+        link: "5409cc0b-cd19-4ef5-b441-cfe261c2c420",
+        ref: "",
+        type: "order",
+        read: false,
+      },
+      {
+        id: "f5654734-6b3d-49da-a09a-8040b8dcc4b6",
+        receiverId: userIds.sellerId,
+        link: "a6bfc072-0653-46ba-aaad-95e3245520ce",
+        ref: "1b5f1c10-ccb4-4b1b-a7d1-aa2db056c021",
+        type: "review",
         read: false,
       },
     ],
@@ -1014,13 +1255,13 @@ export const entities = [
   {
     data: {
       id: "",
-      email: "test@test.com",
-      fullName: "No display favorites",
-      name: "noDisplayFavorites",
-      password: admin.password,
+      email: "valid2@test.com",
+      fullName: "Valid user 2",
+      name: validUsers[1].username,
+      password: validUsers[1].password,
       avatarId: null,
-      description: "Just vibin'",
-      country: "FR",
+      description: "Disabled favorites display",
+      country: "US",
       businessAddress: "",
       displayFavorites: false,
       resetToken: "",
@@ -1031,9 +1272,19 @@ export const entities = [
       active: true,
       generated: false,
     },
-    avatar: {},
-    // $TODO Split artwork
-    artwork: artwork.map((item) => ({
+    avatar: {
+      data: {
+        id: "",
+        ownerId: "",
+        source: "",
+        orientation: "",
+        dominant: "",
+        height: "",
+        width: "",
+        ...avatar,
+      },
+    },
+    artwork: secondHalf.map((item) => ({
       data: {
         ...item.general,
       },
@@ -1077,16 +1328,7 @@ export const entities = [
         },
       },
     })),
-    notifications: [
-      {
-        id: "",
-        receiverId: "",
-        link: "",
-        ref: "",
-        type: "",
-        read: false,
-      },
-    ],
+    notifications: [],
   },
   {
     data: {
@@ -1114,16 +1356,7 @@ export const entities = [
     },
     avatar: {},
     artwork: [],
-    notifications: [
-      {
-        id: "",
-        receiverId: "",
-        link: "",
-        ref: "",
-        type: "",
-        read: false,
-      },
-    ],
+    notifications: [],
   },
   {
     data: {
@@ -1147,16 +1380,7 @@ export const entities = [
     },
     avatar: {},
     artwork: [],
-    notifications: [
-      {
-        id: "",
-        receiverId: "",
-        link: "",
-        ref: "",
-        type: "",
-        read: false,
-      },
-    ],
+    notifications: [],
   },
   {
     data: {
@@ -1180,16 +1404,7 @@ export const entities = [
     },
     avatar: {},
     artwork: [],
-    notifications: [
-      {
-        id: "",
-        receiverId: "",
-        link: "",
-        ref: "",
-        type: "",
-        read: false,
-      },
-    ],
+    notifications: [],
   },
   {
     data: {
@@ -1213,16 +1428,7 @@ export const entities = [
     },
     avatar: {},
     artwork: [],
-    notifications: [
-      {
-        id: "",
-        receiverId: "",
-        link: "",
-        ref: "",
-        type: "",
-        read: false,
-      },
-    ],
+    notifications: [],
   },
   {
     data: {
@@ -1246,16 +1452,7 @@ export const entities = [
     },
     avatar: {},
     artwork: [],
-    notifications: [
-      {
-        id: "",
-        receiverId: "",
-        link: "",
-        ref: "",
-        type: "",
-        read: false,
-      },
-    ],
+    notifications: [],
   },
   {
     data: {
@@ -1279,16 +1476,7 @@ export const entities = [
     },
     avatar: {},
     artwork: [],
-    notifications: [
-      {
-        id: "",
-        receiverId: "",
-        link: "",
-        ref: "",
-        type: "",
-        read: false,
-      },
-    ],
+    notifications: [],
   },
   {
     data: {
@@ -1312,15 +1500,6 @@ export const entities = [
     },
     avatar: {},
     artwork: [],
-    notifications: [
-      {
-        id: "",
-        receiverId: "",
-        link: "",
-        ref: "",
-        type: "",
-        read: false,
-      },
-    ],
+    notifications: [],
   },
 ];
