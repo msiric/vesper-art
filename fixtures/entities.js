@@ -8,7 +8,25 @@ import {
   VersionUse,
 } from "../entities/Version";
 
-const validUsers = {
+const general = {
+  id: "",
+  ownerId: "",
+  currentId: "",
+  active: true,
+  visibility: ArtworkVisibility.visible,
+  generated: true,
+};
+
+const version = {
+  availability: VersionAvailability.available,
+  type: VersionType.unavailable,
+  license: VersionLicense.unavailable,
+  use: VersionUse.unavailable,
+  personal: "0",
+  commercial: "0",
+};
+
+export const validUsers = {
   buyer: {
     id: "1a1c6859-bb73-419f-8b29-cd7817ede2f2",
     email: "validuser2@test.com",
@@ -29,137 +47,52 @@ const validUsers = {
   },
 };
 
-const general = {
-  id: "",
-  ownerId: "",
-  currentId: "",
-  active: true,
-  visibility: ArtworkVisibility.visible,
-  generated: true,
-};
-
-const version = {
-  availability: VersionAvailability.available,
-  type: VersionType.unavailable,
-  license: VersionLicense.unavailable,
-  use: VersionUse.unavailable,
-  personal: "0",
-  commercial: "0",
-};
-
-const artwork = [
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      active: false,
-      id: "9925abab-60bf-46d7-b0cc-28443a11d879",
-      currentId: "e496e2b7-c8b2-40d9-b9ab-2545493c0b92",
+export const entities = {
+  Favorite: [
+    {
+      id: "0f19c0dd-9ba4-4e7f-8e37-4254e0935c92",
+      ownerId: validUsers.buyer.id,
+      artworkId: "05eb8654-94f2-4ab7-a7f8-0d69c76e3d60",
     },
-    details: {
+  ],
+  Comment: [
+    {
+      id: "07b28cd0-0aa5-4b3a-ae71-21220963e290",
+      ownerId: validUsers.buyer.id,
+      artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
+      content: "Test comment 1",
+      modified: false,
+      generated: false,
+    },
+    {
+      id: "c791d948-9bc3-4b6b-b988-6b95576dac57",
+      ownerId: validUsers.buyer.id,
+      artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
+      content: "Test comment 2",
+      modified: true,
+      generated: false,
+    },
+  ],
+  Version: [
+    {
       title: "Inactive",
       description: "",
       id: "e496e2b7-c8b2-40d9-b9ab-2545493c0b92",
       ...version,
     },
-    media: {
-      id: "f5bd1fb5-e642-4a69-9b18-4633be97f360",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636387.jpg",
-      width: "1920",
-      height: "1920",
-      dominant: "#8FA891",
-      orientation: "square",
-    },
-    cover: {
-      id: "0dbec246-6908-4670-a945-0f9243e928a9",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636387.jpg",
-      width: "640",
-      height: "640",
-      dominant: "#8FA891",
-      orientation: "square",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      visibility: ArtworkVisibility.invisible,
-      id: "1e601fdc-325d-4a20-8a2a-903f837a1c51",
-      currentId: "bef42511-7482-4b6f-8b52-f388dff28446",
-    },
-    details: {
+    {
       title: "Invisible",
       description: "",
       id: "bef42511-7482-4b6f-8b52-f388dff28446",
       ...version,
     },
-    media: {
-      id: "cc4e2911-2ba7-4d1d-a438-cacbbf2c060c",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636388.jpg",
-      width: "1920",
-      height: "1920",
-      dominant: "#DAD9DB",
-      orientation: "square",
-    },
-    cover: {
-      id: "f3773b83-bd77-4cd4-a3f0-fbf51e406363",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636388.jpg",
-      width: "640",
-      height: "640",
-      dominant: "#DAD9DB",
-      orientation: "square",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "035d728d-f970-410a-b968-965daf0ab2c8",
-      currentId: "e78bd174-6fe6-46ad-a257-541c28d661ab",
-    },
-    details: {
+    {
       title: "Preview only",
       description: "",
       id: "e78bd174-6fe6-46ad-a257-541c28d661ab",
       ...version,
     },
-    media: {
-      id: "7d96d5f9-baa4-45f8-9215-105e3ca3055c",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636389.png",
-      width: "1920",
-      height: "1920",
-      dominant: "#E37324",
-      orientation: "square",
-    },
-    cover: {
-      id: "95773a89-1684-42d7-9b68-da7004288a7c",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636389.png",
-      width: "640",
-      height: "640",
-      dominant: "#E37324",
-      orientation: "square",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
-      currentId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
-    },
-    details: {
+    {
       title: "Free but personal",
       description: "",
       id: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
@@ -170,35 +103,7 @@ const artwork = [
       use: VersionUse.unavailable,
       id: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
     },
-    media: {
-      id: "4839ae00-9912-47a0-af16-95bc01fdf12d",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636390.png",
-      width: "1920",
-      height: "1352",
-      dominant: "#040404",
-      orientation: "landscape",
-    },
-    cover: {
-      id: "95391f32-a3df-4a4c-9b40-654d1f9efc83",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636390.png",
-      width: "640",
-      height: "451",
-      dominant: "#040404",
-      orientation: "landscape",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
-      currentId: "8e1f249a-cab7-428d-8874-46ea7bda867f",
-    },
-    details: {
+    {
       title: "Free but commercial (included)",
       description: "",
       id: "8e1f249a-cab7-428d-8874-46ea7bda867f",
@@ -209,35 +114,7 @@ const artwork = [
       use: VersionUse.included,
       id: "8e1f249a-cab7-428d-8874-46ea7bda867f",
     },
-    media: {
-      id: "db6cf923-c619-4e5c-be10-8768046714ed",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636391.jpg",
-      width: "1491",
-      height: "1920",
-      dominant: "#C9A08B",
-      orientation: "portrait",
-    },
-    cover: {
-      id: "ec2bdf5c-dd93-4452-a633-d75800e48b9f",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636391.jpg",
-      width: "640",
-      height: "824",
-      dominant: "#C9A08B",
-      orientation: "portrait",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "407be0a9-1b89-4fe8-9c6a-9fb785242714",
-      currentId: "20503bf8-e664-4352-91f7-8ca067de6381",
-    },
-    details: {
+    {
       title: "Free but commercial (separate)",
       description: "",
       id: "20503bf8-e664-4352-91f7-8ca067de6381",
@@ -248,35 +125,7 @@ const artwork = [
       use: VersionUse.separate,
       commercial: 20,
     },
-    media: {
-      id: "c9b2ebd2-e092-4126-b4aa-bbd60f423db5",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636392.jpg",
-      width: "2000",
-      height: "1175",
-      dominant: "#21616B",
-      orientation: "landscape",
-    },
-    cover: {
-      id: "891793d0-aca2-4128-ac74-4bfc81d9cea8",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636392.jpg",
-      width: "640",
-      height: "376",
-      dominant: "#21616B",
-      orientation: "landscape",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "83ded41d-f88a-43aa-a23e-2e42e052af40",
-      currentId: "276ee587-2281-4ca9-8aee-962fa390b7b0",
-    },
-    details: {
+    {
       title: "Commercial but personal",
       description: "",
       id: "276ee587-2281-4ca9-8aee-962fa390b7b0",
@@ -287,35 +136,7 @@ const artwork = [
       use: VersionUse.unavailable,
       personal: 10,
     },
-    media: {
-      id: "1a1f6698-1ef6-496b-bdc8-c3f51adbdcd9",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636393.png",
-      width: "1761",
-      height: "1920",
-      dominant: "#ADDCDE",
-      orientation: "portrait",
-    },
-    cover: {
-      id: "eb922988-3a53-4351-9faa-37d49c0df737",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636393.png",
-      width: "640",
-      height: "698",
-      dominant: "#ADDCDE",
-      orientation: "portrait",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "98706037-961c-4ba1-9eb5-ca6428d16257",
-      currentId: "031505f8-156b-4855-b207-094c00ab9783",
-    },
-    details: {
+    {
       title: "Commercial but commercial (included)",
       description: "",
       id: "031505f8-156b-4855-b207-094c00ab9783",
@@ -327,35 +148,7 @@ const artwork = [
       personal: 10,
       commercial: 10,
     },
-    media: {
-      id: "a7e9154f-9366-48d5-b082-c68b69e83a3a",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636394.jpg",
-      width: "1920",
-      height: "1496",
-      dominant: "#27221D",
-      orientation: "landscape",
-    },
-    cover: {
-      id: "47acb098-42e5-4440-9cbb-8e47c947e6b7",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636394.jpg",
-      width: "640",
-      height: "499",
-      dominant: "#27221D",
-      orientation: "landscape",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "99edd8c8-adb9-4ee4-8e1d-7fbd17d0bd0e",
-      currentId: "2e21e2e7-8a28-4d4a-adf6-fc2faf78e54c",
-    },
-    details: {
+    {
       title: "Commercial but commercial (separate)",
       description: "",
       id: "2e21e2e7-8a28-4d4a-adf6-fc2faf78e54c",
@@ -367,7 +160,195 @@ const artwork = [
       personal: 10,
       commercial: 20,
     },
-    media: {
+    {
+      title: "Has comments",
+      description: "",
+      id: "badfe210-7042-4a62-a259-c9d34554090a",
+      ...version,
+    },
+    {
+      title: "Has favorites",
+      description: "",
+      id: "1f47362c-1d0e-4ab1-bd9a-cc270bd364e8",
+      ...version,
+    },
+    {
+      title: "GEISHA",
+      description: "",
+      id: "d30858b6-c965-4661-96fb-9d2a205c006d",
+      ...version,
+    },
+    {
+      title: "moonlight howl",
+      description: "",
+      id: "d1a318d1-17ea-4069-97d7-3bfa687b50de",
+      ...version,
+    },
+    {
+      title: "amalgamation",
+      description: "",
+      id: "725aca0b-f654-49be-b8dd-9579df0c1b9c",
+      ...version,
+    },
+    {
+      title: "Halloween",
+      description: "",
+      id: "054f8813-44ea-4ca0-8790-519d07aac18a",
+      ...version,
+    },
+    {
+      title: "Good catch",
+      description: "",
+      id: "e4e4fc59-69c9-4ebb-ac1b-27c068cfbf4a",
+      ...version,
+    },
+    {
+      title: "moonhole",
+      description: "",
+      id: "9c6b4347-c039-4a07-98e0-93a8d182f642",
+      ...version,
+    },
+    {
+      title: "Sunset",
+      description: "",
+      id: "da71d000-c736-4960-a50f-f8042d6e4251",
+      ...version,
+    },
+    {
+      title: "Beacon of Light",
+      description: "",
+      id: "cb370586-8a40-4503-bf44-505b8cea75a8",
+      ...version,
+    },
+    {
+      title: "MYSTIC NIGHT",
+      description: "",
+      id: "5806e7e2-f409-42eb-aa4f-01cf7d5494fc",
+      ...version,
+    },
+    {
+      title: "monke",
+      description: "",
+      id: "29f1d86d-1128-4881-9387-af71588d4eed",
+      ...version,
+    },
+    {
+      title: "Daydreaming",
+      description: "",
+      id: "6c6dbd24-37e6-4518-bd0a-fce414a945d7",
+      ...version,
+    },
+    {
+      title: "Colourful",
+      description: "",
+      id: "0c68455e-7629-4f50-b6b5-7583400cb71a",
+      ...version,
+    },
+    {
+      title: "Independence",
+      description: "",
+      id: "e3d91413-2e70-44ef-9486-45e96409c9ca",
+      ...version,
+    },
+    {
+      title: "pspspspspspspspspspsps",
+      description: "",
+      id: "d82bfc78-0e32-44b3-a755-93027a729d16",
+      ...version,
+    },
+    {
+      title: "Revelation",
+      description: "",
+      id: "58610de1-ff6d-45ec-aac9-92b7edf069ed",
+      ...version,
+    },
+    {
+      title: "I want you",
+      description: "",
+      id: "169e7842-0dcb-4882-9389-9bf7d900b315",
+      ...version,
+    },
+    {
+      title: "swimming with the fishes",
+      description: "",
+      id: "9cf7b60d-c913-4c0f-b613-11463e58c28c",
+      ...version,
+    },
+  ],
+  Media: [
+    {
+      id: "f5bd1fb5-e642-4a69-9b18-4633be97f360",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636387.jpg",
+      width: "1920",
+      height: "1920",
+      dominant: "#8FA891",
+      orientation: "square",
+    },
+    {
+      id: "cc4e2911-2ba7-4d1d-a438-cacbbf2c060c",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636388.jpg",
+      width: "1920",
+      height: "1920",
+      dominant: "#DAD9DB",
+      orientation: "square",
+    },
+    {
+      id: "7d96d5f9-baa4-45f8-9215-105e3ca3055c",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636389.png",
+      width: "1920",
+      height: "1920",
+      dominant: "#E37324",
+      orientation: "square",
+    },
+    {
+      id: "4839ae00-9912-47a0-af16-95bc01fdf12d",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636390.png",
+      width: "1920",
+      height: "1352",
+      dominant: "#040404",
+      orientation: "landscape",
+    },
+    {
+      id: "db6cf923-c619-4e5c-be10-8768046714ed",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636391.jpg",
+      width: "1491",
+      height: "1920",
+      dominant: "#C9A08B",
+      orientation: "portrait",
+    },
+    {
+      id: "c9b2ebd2-e092-4126-b4aa-bbd60f423db5",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636392.jpg",
+      width: "2000",
+      height: "1175",
+      dominant: "#21616B",
+      orientation: "landscape",
+    },
+    {
+      id: "1a1f6698-1ef6-496b-bdc8-c3f51adbdcd9",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636393.png",
+      width: "1761",
+      height: "1920",
+      dominant: "#ADDCDE",
+      orientation: "portrait",
+    },
+    {
+      id: "a7e9154f-9366-48d5-b082-c68b69e83a3a",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636394.jpg",
+      width: "1920",
+      height: "1496",
+      dominant: "#27221D",
+      orientation: "landscape",
+    },
+    {
       id: "fa6fc0ec-c8cf-4636-bc42-af3a350588fe",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636395.png",
@@ -376,32 +357,7 @@ const artwork = [
       dominant: "#E3C3DB",
       orientation: "square",
     },
-    cover: {
-      id: "c5ac39bb-d00c-41a2-b928-7315a775571a",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636395.png",
-      width: "640",
-      height: "640",
-      dominant: "#E3C3DB",
-      orientation: "square",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
-      currentId: "badfe210-7042-4a62-a259-c9d34554090a",
-    },
-    details: {
-      title: "Has comments",
-      description: "",
-      id: "badfe210-7042-4a62-a259-c9d34554090a",
-      ...version,
-    },
-    media: {
+    {
       id: "fafde89f-ddde-4537-b041-38320b7e107a",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636396.jpg",
@@ -410,49 +366,7 @@ const artwork = [
       dominant: "#0C060C",
       orientation: "square",
     },
-    cover: {
-      id: "fcc4427b-0e32-442c-9a5e-802a4ee91aaa",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636396.jpg",
-      width: "640",
-      height: "640",
-      dominant: "#0C060C",
-      orientation: "square",
-    },
-    favorites: [{}],
-    comments: [
-      {
-        id: "07b28cd0-0aa5-4b3a-ae71-21220963e290",
-        ownerId: validUsers.buyer.id,
-        artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
-        content: "Test comment 1",
-        modified: false,
-        generated: false,
-      },
-      {
-        id: "c791d948-9bc3-4b6b-b988-6b95576dac57",
-        ownerId: validUsers.buyer.id,
-        artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
-        content: "Test comment 2",
-        modified: true,
-        generated: false,
-      },
-    ],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "05eb8654-94f2-4ab7-a7f8-0d69c76e3d60",
-      currentId: "1f47362c-1d0e-4ab1-bd9a-cc270bd364e8",
-    },
-    details: {
-      title: "Has favorites",
-      description: "",
-      id: "1f47362c-1d0e-4ab1-bd9a-cc270bd364e8",
-      ...version,
-    },
-    media: {
+    {
       id: "8399dfff-7c38-41c9-baed-84ff61b71707",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636397.jpg",
@@ -461,38 +375,7 @@ const artwork = [
       dominant: "#CFCFD2",
       orientation: "landscape",
     },
-    cover: {
-      id: "cdf5096e-5710-4523-a227-5836e9f6c8f6",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636397.jpg",
-      width: "640",
-      height: "361",
-      dominant: "#CFCFD2",
-      orientation: "landscape",
-    },
-    favorites: [
-      {
-        id: "0f19c0dd-9ba4-4e7f-8e37-4254e0935c92",
-        ownerId: validUsers.buyer.id,
-        artworkId: "05eb8654-94f2-4ab7-a7f8-0d69c76e3d60",
-      },
-    ],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "67a06ecb-849e-4010-8c62-9ed1d7f0a023",
-      currentId: "d30858b6-c965-4661-96fb-9d2a205c006d",
-    },
-    details: {
-      title: "GEISHA",
-      description: "",
-      id: "d30858b6-c965-4661-96fb-9d2a205c006d",
-      ...version,
-    },
-    media: {
+    {
       id: "bcb7d36e-47cf-4bb2-83c3-034042b8d294",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636398.png",
@@ -501,32 +384,7 @@ const artwork = [
       dominant: "#040404",
       orientation: "portrait",
     },
-    cover: {
-      id: "bd5e4fd0-0e4c-4b9e-8fb8-45200f424956",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636398.png",
-      width: "640",
-      height: "885",
-      dominant: "#040404",
-      orientation: "portrait",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "82ca7f9d-5871-4e54-9506-9d8f6e61e3b2",
-      currentId: "d1a318d1-17ea-4069-97d7-3bfa687b50de",
-    },
-    details: {
-      title: "moonlight howl",
-      description: "",
-      id: "d1a318d1-17ea-4069-97d7-3bfa687b50de",
-      ...version,
-    },
-    media: {
+    {
       id: "5257e2dc-9cb9-4709-91cb-fc9e2556f08d",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636399.jpg",
@@ -535,32 +393,7 @@ const artwork = [
       dominant: "#083B82",
       orientation: "landscape",
     },
-    cover: {
-      id: "5be456a1-85db-4708-b222-5a1b410414a9",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636399.jpg",
-      width: "640",
-      height: "359",
-      dominant: "#083B82",
-      orientation: "landscape",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.seller.id,
-      id: "06eef646-166a-441b-8438-38201f792188",
-      currentId: "725aca0b-f654-49be-b8dd-9579df0c1b9c",
-    },
-    details: {
-      title: "amalgamation",
-      description: "",
-      id: "725aca0b-f654-49be-b8dd-9579df0c1b9c",
-      ...version,
-    },
-    media: {
+    {
       id: "c95819ee-6629-4fe7-a6d6-07d2b869794c",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636400.jpg",
@@ -569,32 +402,7 @@ const artwork = [
       dominant: "#E5DAD2",
       orientation: "portrait",
     },
-    cover: {
-      id: "1427b740-fe44-410c-86df-ad7f25186181",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636400.jpg",
-      width: "640",
-      height: "904",
-      dominant: "#E5DAD2",
-      orientation: "portrait",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "276699ca-4bc9-460d-9dfd-9d1d8b92ca2f",
-      currentId: "054f8813-44ea-4ca0-8790-519d07aac18a",
-    },
-    details: {
-      title: "Halloween",
-      description: "",
-      id: "054f8813-44ea-4ca0-8790-519d07aac18a",
-      ...version,
-    },
-    media: {
+    {
       id: "c3c86bff-2403-41ef-9ed3-0217fb20259d",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636401.jpg",
@@ -603,32 +411,7 @@ const artwork = [
       dominant: "#261E1C",
       orientation: "square",
     },
-    cover: {
-      id: "0c1a078a-8b3d-4455-89fb-953aca45f133",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636401.jpg",
-      width: "640",
-      height: "640",
-      dominant: "#261E1C",
-      orientation: "square",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "f8ccc098-1aac-46b1-9c90-952c0911c186",
-      currentId: "e4e4fc59-69c9-4ebb-ac1b-27c068cfbf4a",
-    },
-    details: {
-      title: "Good catch",
-      description: "",
-      id: "e4e4fc59-69c9-4ebb-ac1b-27c068cfbf4a",
-      ...version,
-    },
-    media: {
+    {
       id: "8e50b494-5bdc-4774-93c2-661f373bc7eb",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636402.png",
@@ -637,32 +420,7 @@ const artwork = [
       dominant: "#227593",
       orientation: "portrait",
     },
-    cover: {
-      id: "0dce0a21-210b-44a9-baae-295b7f95f312",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636402.png",
-      width: "640",
-      height: "959",
-      dominant: "#227593",
-      orientation: "portrait",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "8f17c4d1-0b76-43f1-ba61-475118a675da",
-      currentId: "9c6b4347-c039-4a07-98e0-93a8d182f642",
-    },
-    details: {
-      title: "moonhole",
-      description: "",
-      id: "9c6b4347-c039-4a07-98e0-93a8d182f642",
-      ...version,
-    },
-    media: {
+    {
       id: "edc45cc7-d1cc-47a8-b811-add77b42278f",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636403.jpg",
@@ -671,32 +429,7 @@ const artwork = [
       dominant: "#040505",
       orientation: "square",
     },
-    cover: {
-      id: "372a5875-c3a0-4076-b456-7dd17b66caf6",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636403.jpg",
-      width: "640",
-      height: "640",
-      dominant: "#040505",
-      orientation: "square",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "19482d41-a1fa-4256-96c6-994d9d39772e",
-      currentId: "da71d000-c736-4960-a50f-f8042d6e4251",
-    },
-    details: {
-      title: "Sunset",
-      description: "",
-      id: "da71d000-c736-4960-a50f-f8042d6e4251",
-      ...version,
-    },
-    media: {
+    {
       id: "1eb02d21-e11b-40e3-9588-3764f3c665b2",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636404.jpg",
@@ -705,32 +438,7 @@ const artwork = [
       dominant: "#FB6904",
       orientation: "portrait",
     },
-    cover: {
-      id: "e7e324b5-cb19-478e-84c5-75ec906ff9dc",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636404.jpg",
-      width: "640",
-      height: "906",
-      dominant: "#FB6904",
-      orientation: "portrait",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "d5a3d855-6227-49d4-9762-b380c10ceb28",
-      currentId: "cb370586-8a40-4503-bf44-505b8cea75a8",
-    },
-    details: {
-      title: "Beacon of Light",
-      description: "",
-      id: "cb370586-8a40-4503-bf44-505b8cea75a8",
-      ...version,
-    },
-    media: {
+    {
       id: "5ec40a0f-b492-494b-a39f-66111f81eb24",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636405.jpg",
@@ -739,32 +447,7 @@ const artwork = [
       dominant: "#2B323A",
       orientation: "landscape",
     },
-    cover: {
-      id: "5d9f1416-2fe6-42f3-89ca-5aab71fa87a1",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636405.jpg",
-      width: "640",
-      height: "400",
-      dominant: "#2B323A",
-      orientation: "landscape",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "94726959-d876-4663-9312-d3fcb8c51bcd",
-      currentId: "5806e7e2-f409-42eb-aa4f-01cf7d5494fc",
-    },
-    details: {
-      title: "MYSTIC NIGHT",
-      description: "",
-      id: "5806e7e2-f409-42eb-aa4f-01cf7d5494fc",
-      ...version,
-    },
-    media: {
+    {
       id: "1f843b85-3a0b-41ed-b0ee-e7ee36db9e54",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636406.jpg",
@@ -773,32 +456,7 @@ const artwork = [
       dominant: "#494E58",
       orientation: "portrait",
     },
-    cover: {
-      id: "60914aeb-77e7-425e-85a8-32c44079d5b6",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636406.jpg",
-      width: "640",
-      height: "890",
-      dominant: "#494E58",
-      orientation: "portrait",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "0a09b1cb-ee58-4097-a350-9c34d7c9004e",
-      currentId: "29f1d86d-1128-4881-9387-af71588d4eed",
-    },
-    details: {
-      title: "monke",
-      description: "",
-      id: "29f1d86d-1128-4881-9387-af71588d4eed",
-      ...version,
-    },
-    media: {
+    {
       id: "6d7f1c2b-6b95-45e0-b28f-931b21cec175",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636407.png",
@@ -807,32 +465,7 @@ const artwork = [
       dominant: "#367CBA",
       orientation: "landscape",
     },
-    cover: {
-      id: "c6f364b4-0c2a-465d-9d10-d5661a1d529c",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636407.png",
-      width: "640",
-      height: "629",
-      dominant: "#367CBA",
-      orientation: "landscape",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "a944d911-3112-482c-9e1d-fe146967de6c",
-      currentId: "6c6dbd24-37e6-4518-bd0a-fce414a945d7",
-    },
-    details: {
-      title: "Daydreaming",
-      description: "",
-      id: "6c6dbd24-37e6-4518-bd0a-fce414a945d7",
-      ...version,
-    },
-    media: {
+    {
       id: "ee0e0f1d-1feb-4425-9556-f6f84c001e25",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636408.jpg",
@@ -841,32 +474,7 @@ const artwork = [
       dominant: "#040404",
       orientation: "landscape",
     },
-    cover: {
-      id: "620accab-b0ae-492a-bd73-7a1477dd3f54",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636408.jpg",
-      width: "640",
-      height: "408",
-      dominant: "#040404",
-      orientation: "landscape",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "2caaec9d-8b00-4fc4-b55c-39e8c853e70b",
-      currentId: "0c68455e-7629-4f50-b6b5-7583400cb71a",
-    },
-    details: {
-      title: "Colourful",
-      description: "",
-      id: "0c68455e-7629-4f50-b6b5-7583400cb71a",
-      ...version,
-    },
-    media: {
+    {
       id: "586d6b92-5def-4ac1-a925-2ba4506fb4b4",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636409.jpg",
@@ -875,32 +483,7 @@ const artwork = [
       dominant: "#3A3939",
       orientation: "portrait",
     },
-    cover: {
-      id: "e97c4d93-44c2-4023-84e5-9fb95261e06c",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636409.jpg",
-      width: "640",
-      height: "801",
-      dominant: "#3A3939",
-      orientation: "portrait",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "2cf427da-2ee2-41d4-a1f2-481bea582e24",
-      currentId: "e3d91413-2e70-44ef-9486-45e96409c9ca",
-    },
-    details: {
-      title: "Independence",
-      description: "",
-      id: "e3d91413-2e70-44ef-9486-45e96409c9ca",
-      ...version,
-    },
-    media: {
+    {
       id: "a7e3821a-cba7-4241-8566-f3019dc8d43c",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636410.png",
@@ -909,32 +492,7 @@ const artwork = [
       dominant: "#F53839",
       orientation: "portrait",
     },
-    cover: {
-      id: "7377c171-8898-4745-99f7-930aea02e76b",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636410.png",
-      width: "640",
-      height: "856",
-      dominant: "#F53839",
-      orientation: "portrait",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "861c1e7b-422d-4af3-9068-232a238d3061",
-      currentId: "d82bfc78-0e32-44b3-a755-93027a729d16",
-    },
-    details: {
-      title: "pspspspspspspspspspsps",
-      description: "",
-      id: "d82bfc78-0e32-44b3-a755-93027a729d16",
-      ...version,
-    },
-    media: {
+    {
       id: "219bd486-2953-4bbe-8b6b-4f028f45c096",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636411.jpg",
@@ -943,32 +501,7 @@ const artwork = [
       dominant: "#D6A34F",
       orientation: "square",
     },
-    cover: {
-      id: "4c18a853-c340-4255-9096-9d62a0b8a059",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636411.jpg",
-      width: "640",
-      height: "640",
-      dominant: "#D6A34F",
-      orientation: "square",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "4fc624c7-cd7e-4429-bdbb-41d9cf7eab3a",
-      currentId: "58610de1-ff6d-45ec-aac9-92b7edf069ed",
-    },
-    details: {
-      title: "Revelation",
-      description: "",
-      id: "58610de1-ff6d-45ec-aac9-92b7edf069ed",
-      ...version,
-    },
-    media: {
+    {
       id: "2cbaf729-ece3-4696-a755-764dd0d02a11",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636412.jpg",
@@ -977,32 +510,7 @@ const artwork = [
       dominant: "#36154B",
       orientation: "landscape",
     },
-    cover: {
-      id: "4028a26d-9ba2-48ed-8368-17d09729d6c2",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636412.jpg",
-      width: "640",
-      height: "344",
-      dominant: "#36154B",
-      orientation: "landscape",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "1632b845-c852-49e2-919a-88c32da4b0aa",
-      currentId: "169e7842-0dcb-4882-9389-9bf7d900b315",
-    },
-    details: {
-      title: "I want you",
-      description: "",
-      id: "169e7842-0dcb-4882-9389-9bf7d900b315",
-      ...version,
-    },
-    media: {
+    {
       id: "4c15d330-3df0-4dcf-9b3e-b464bbb91ff2",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636413.png",
@@ -1011,32 +519,7 @@ const artwork = [
       dominant: "#FB3434",
       orientation: "portrait",
     },
-    cover: {
-      id: "41ba45fe-926d-42ab-a019-1cd18ceac1e2",
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636413.png",
-      width: "640",
-      height: "642",
-      dominant: "#FB3434",
-      orientation: "portrait",
-    },
-    favorites: [{}],
-    comments: [{}],
-  },
-  {
-    general: {
-      ...general,
-      ownerId: validUsers.buyer.id,
-      id: "6f9e5df9-0240-4ade-90dd-5b2cbc87177e",
-      currentId: "9cf7b60d-c913-4c0f-b613-11463e58c28c",
-    },
-    details: {
-      title: "swimming with the fishes",
-      description: "",
-      id: "9cf7b60d-c913-4c0f-b613-11463e58c28c",
-      ...version,
-    },
-    media: {
+    {
       id: "bdeb05a9-328b-40d0-a476-0ce25a12220e",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636414.png",
@@ -1045,7 +528,252 @@ const artwork = [
       dominant: "#040404",
       orientation: "landscape",
     },
-    cover: {
+  ],
+  Cover: [
+    {
+      id: "0dbec246-6908-4670-a945-0f9243e928a9",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636387.jpg",
+      width: "640",
+      height: "640",
+      dominant: "#8FA891",
+      orientation: "square",
+    },
+    {
+      id: "f3773b83-bd77-4cd4-a3f0-fbf51e406363",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636388.jpg",
+      width: "640",
+      height: "640",
+      dominant: "#DAD9DB",
+      orientation: "square",
+    },
+    {
+      id: "95773a89-1684-42d7-9b68-da7004288a7c",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636389.png",
+      width: "640",
+      height: "640",
+      dominant: "#E37324",
+      orientation: "square",
+    },
+    {
+      id: "95391f32-a3df-4a4c-9b40-654d1f9efc83",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636390.png",
+      width: "640",
+      height: "451",
+      dominant: "#040404",
+      orientation: "landscape",
+    },
+    {
+      id: "ec2bdf5c-dd93-4452-a633-d75800e48b9f",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636391.jpg",
+      width: "640",
+      height: "824",
+      dominant: "#C9A08B",
+      orientation: "portrait",
+    },
+    {
+      id: "891793d0-aca2-4128-ac74-4bfc81d9cea8",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636392.jpg",
+      width: "640",
+      height: "376",
+      dominant: "#21616B",
+      orientation: "landscape",
+    },
+    {
+      id: "eb922988-3a53-4351-9faa-37d49c0df737",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636393.png",
+      width: "640",
+      height: "698",
+      dominant: "#ADDCDE",
+      orientation: "portrait",
+    },
+    {
+      id: "47acb098-42e5-4440-9cbb-8e47c947e6b7",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636394.jpg",
+      width: "640",
+      height: "499",
+      dominant: "#27221D",
+      orientation: "landscape",
+    },
+    {
+      id: "c5ac39bb-d00c-41a2-b928-7315a775571a",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636395.png",
+      width: "640",
+      height: "640",
+      dominant: "#E3C3DB",
+      orientation: "square",
+    },
+    {
+      id: "fcc4427b-0e32-442c-9a5e-802a4ee91aaa",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636396.jpg",
+      width: "640",
+      height: "640",
+      dominant: "#0C060C",
+      orientation: "square",
+    },
+    {
+      id: "cdf5096e-5710-4523-a227-5836e9f6c8f6",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636397.jpg",
+      width: "640",
+      height: "361",
+      dominant: "#CFCFD2",
+      orientation: "landscape",
+    },
+    {
+      id: "bd5e4fd0-0e4c-4b9e-8fb8-45200f424956",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636398.png",
+      width: "640",
+      height: "885",
+      dominant: "#040404",
+      orientation: "portrait",
+    },
+    {
+      id: "5be456a1-85db-4708-b222-5a1b410414a9",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636399.jpg",
+      width: "640",
+      height: "359",
+      dominant: "#083B82",
+      orientation: "landscape",
+    },
+    {
+      id: "1427b740-fe44-410c-86df-ad7f25186181",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636400.jpg",
+      width: "640",
+      height: "904",
+      dominant: "#E5DAD2",
+      orientation: "portrait",
+    },
+    {
+      id: "0c1a078a-8b3d-4455-89fb-953aca45f133",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636401.jpg",
+      width: "640",
+      height: "640",
+      dominant: "#261E1C",
+      orientation: "square",
+    },
+    {
+      id: "0dce0a21-210b-44a9-baae-295b7f95f312",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636402.png",
+      width: "640",
+      height: "959",
+      dominant: "#227593",
+      orientation: "portrait",
+    },
+    {
+      id: "372a5875-c3a0-4076-b456-7dd17b66caf6",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636403.jpg",
+      width: "640",
+      height: "640",
+      dominant: "#040505",
+      orientation: "square",
+    },
+    {
+      id: "e7e324b5-cb19-478e-84c5-75ec906ff9dc",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636404.jpg",
+      width: "640",
+      height: "906",
+      dominant: "#FB6904",
+      orientation: "portrait",
+    },
+    {
+      id: "5d9f1416-2fe6-42f3-89ca-5aab71fa87a1",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636405.jpg",
+      width: "640",
+      height: "400",
+      dominant: "#2B323A",
+      orientation: "landscape",
+    },
+    {
+      id: "60914aeb-77e7-425e-85a8-32c44079d5b6",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636406.jpg",
+      width: "640",
+      height: "890",
+      dominant: "#494E58",
+      orientation: "portrait",
+    },
+    {
+      id: "c6f364b4-0c2a-465d-9d10-d5661a1d529c",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636407.png",
+      width: "640",
+      height: "629",
+      dominant: "#367CBA",
+      orientation: "landscape",
+    },
+    {
+      id: "620accab-b0ae-492a-bd73-7a1477dd3f54",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636408.jpg",
+      width: "640",
+      height: "408",
+      dominant: "#040404",
+      orientation: "landscape",
+    },
+    {
+      id: "e97c4d93-44c2-4023-84e5-9fb95261e06c",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636409.jpg",
+      width: "640",
+      height: "801",
+      dominant: "#3A3939",
+      orientation: "portrait",
+    },
+    {
+      id: "7377c171-8898-4745-99f7-930aea02e76b",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636410.png",
+      width: "640",
+      height: "856",
+      dominant: "#F53839",
+      orientation: "portrait",
+    },
+    {
+      id: "4c18a853-c340-4255-9096-9d62a0b8a059",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636411.jpg",
+      width: "640",
+      height: "640",
+      dominant: "#D6A34F",
+      orientation: "square",
+    },
+    {
+      id: "4028a26d-9ba2-48ed-8368-17d09729d6c2",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636412.jpg",
+      width: "640",
+      height: "344",
+      dominant: "#36154B",
+      orientation: "landscape",
+    },
+    {
+      id: "41ba45fe-926d-42ab-a019-1cd18ceac1e2",
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636413.png",
+      width: "640",
+      height: "642",
+      dominant: "#FB3434",
+      orientation: "portrait",
+    },
+    {
       id: "e8e8df70-30d0-4ecf-be27-806a394ff7d7",
       source:
         "https://vesper-testing.s3.eu-central-1.amazonaws.com/artworkCovers/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636414.png",
@@ -1054,34 +782,181 @@ const artwork = [
       dominant: "#040404",
       orientation: "landscape",
     },
-    favorites: [{}],
-    comments: [{}],
-  },
-];
-
-const halfLength = Math.ceil(artwork.length / 2);
-const firstHalf = artwork.slice(0, halfLength);
-const secondHalf = artwork.slice(halfLength, artwork.length);
-
-const orders = [
-  {
-    details: {
-      id: "a6bfc072-0653-46ba-aaad-95e3245520ce",
-      buyerId: validUsers.buyer.id,
-      sellerId: validUsers.seller.id,
-      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
-      versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
-      licenseId: "6cb0750c-f95f-4d58-a059-e1a7d2930007",
-      discountId: null,
-      reviewId: "1b5f1c10-ccb4-4b1b-a7d1-aa2db056c021",
-      intentId: null,
-      spent: 0,
-      earned: 0,
-      fee: 0,
-      type: OrderType.free,
-      status: OrderStatus.completed,
+  ],
+  Artwork: [
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      active: false,
+      id: "9925abab-60bf-46d7-b0cc-28443a11d879",
+      currentId: "e496e2b7-c8b2-40d9-b9ab-2545493c0b92",
     },
-    license: {
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      visibility: ArtworkVisibility.invisible,
+      id: "1e601fdc-325d-4a20-8a2a-903f837a1c51",
+      currentId: "bef42511-7482-4b6f-8b52-f388dff28446",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "035d728d-f970-410a-b968-965daf0ab2c8",
+      currentId: "e78bd174-6fe6-46ad-a257-541c28d661ab",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
+      currentId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
+      currentId: "8e1f249a-cab7-428d-8874-46ea7bda867f",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "407be0a9-1b89-4fe8-9c6a-9fb785242714",
+      currentId: "20503bf8-e664-4352-91f7-8ca067de6381",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "83ded41d-f88a-43aa-a23e-2e42e052af40",
+      currentId: "276ee587-2281-4ca9-8aee-962fa390b7b0",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "98706037-961c-4ba1-9eb5-ca6428d16257",
+      currentId: "031505f8-156b-4855-b207-094c00ab9783",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "99edd8c8-adb9-4ee4-8e1d-7fbd17d0bd0e",
+      currentId: "2e21e2e7-8a28-4d4a-adf6-fc2faf78e54c",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
+      currentId: "badfe210-7042-4a62-a259-c9d34554090a",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "05eb8654-94f2-4ab7-a7f8-0d69c76e3d60",
+      currentId: "1f47362c-1d0e-4ab1-bd9a-cc270bd364e8",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "67a06ecb-849e-4010-8c62-9ed1d7f0a023",
+      currentId: "d30858b6-c965-4661-96fb-9d2a205c006d",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "82ca7f9d-5871-4e54-9506-9d8f6e61e3b2",
+      currentId: "d1a318d1-17ea-4069-97d7-3bfa687b50de",
+    },
+    {
+      ...general,
+      ownerId: validUsers.seller.id,
+      id: "06eef646-166a-441b-8438-38201f792188",
+      currentId: "725aca0b-f654-49be-b8dd-9579df0c1b9c",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "276699ca-4bc9-460d-9dfd-9d1d8b92ca2f",
+      currentId: "054f8813-44ea-4ca0-8790-519d07aac18a",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "f8ccc098-1aac-46b1-9c90-952c0911c186",
+      currentId: "e4e4fc59-69c9-4ebb-ac1b-27c068cfbf4a",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "8f17c4d1-0b76-43f1-ba61-475118a675da",
+      currentId: "9c6b4347-c039-4a07-98e0-93a8d182f642",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "19482d41-a1fa-4256-96c6-994d9d39772e",
+      currentId: "da71d000-c736-4960-a50f-f8042d6e4251",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "d5a3d855-6227-49d4-9762-b380c10ceb28",
+      currentId: "cb370586-8a40-4503-bf44-505b8cea75a8",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "94726959-d876-4663-9312-d3fcb8c51bcd",
+      currentId: "5806e7e2-f409-42eb-aa4f-01cf7d5494fc",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "0a09b1cb-ee58-4097-a350-9c34d7c9004e",
+      currentId: "29f1d86d-1128-4881-9387-af71588d4eed",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "a944d911-3112-482c-9e1d-fe146967de6c",
+      currentId: "6c6dbd24-37e6-4518-bd0a-fce414a945d7",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "2caaec9d-8b00-4fc4-b55c-39e8c853e70b",
+      currentId: "0c68455e-7629-4f50-b6b5-7583400cb71a",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "2cf427da-2ee2-41d4-a1f2-481bea582e24",
+      currentId: "e3d91413-2e70-44ef-9486-45e96409c9ca",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "861c1e7b-422d-4af3-9068-232a238d3061",
+      currentId: "d82bfc78-0e32-44b3-a755-93027a729d16",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "4fc624c7-cd7e-4429-bdbb-41d9cf7eab3a",
+      currentId: "58610de1-ff6d-45ec-aac9-92b7edf069ed",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "1632b845-c852-49e2-919a-88c32da4b0aa",
+      currentId: "169e7842-0dcb-4882-9389-9bf7d900b315",
+    },
+    {
+      ...general,
+      ownerId: validUsers.buyer.id,
+      id: "6f9e5df9-0240-4ade-90dd-5b2cbc87177e",
+      currentId: "9cf7b60d-c913-4c0f-b613-11463e58c28c",
+    },
+  ],
+  License: [
+    {
       id: "6cb0750c-f95f-4d58-a059-e1a7d2930007",
       ownerId: validUsers.buyer.id,
       sellerId: validUsers.seller.id,
@@ -1097,33 +972,7 @@ const orders = [
       active: true,
       price: 0,
     },
-    review: {
-      id: "1b5f1c10-ccb4-4b1b-a7d1-aa2db056c021",
-      orderId: "a6bfc072-0653-46ba-aaad-95e3245520ce",
-      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
-      reviewerId: validUsers.buyer.id,
-      revieweeId: validUsers.seller.id,
-      rating: 5,
-    },
-  },
-  {
-    details: {
-      id: "e6fbbcb4-c2bb-4a17-8ef8-b95eb281f4f3",
-      buyerId: validUsers.buyer.id,
-      sellerId: validUsers.seller.id,
-      artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
-      versionId: "8e1f249a-cab7-428d-8874-46ea7bda867f",
-      licenseId: "83e3c321-ce40-4cf3-a513-ba72ffa233d3",
-      discountId: null,
-      reviewId: null,
-      intentId: null,
-      spent: 0,
-      earned: 0,
-      fee: 0,
-      type: OrderType.free,
-      status: OrderStatus.completed,
-    },
-    license: {
+    {
       id: "83e3c321-ce40-4cf3-a513-ba72ffa233d3",
       ownerId: validUsers.buyer.id,
       sellerId: validUsers.seller.id,
@@ -1139,26 +988,7 @@ const orders = [
       active: true,
       price: 0,
     },
-    review: null,
-  },
-  {
-    details: {
-      id: "959784bd-aecf-4f42-abc1-459d1f61de4a",
-      buyerId: validUsers.buyer.id,
-      sellerId: validUsers.seller.id,
-      artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
-      versionId: "8e1f249a-cab7-428d-8874-46ea7bda867f",
-      licenseId: "d9dd2327-0a0a-4ef4-98b4-9c55f848009d",
-      discountId: null,
-      reviewId: null,
-      intentId: null,
-      spent: 0,
-      earned: 0,
-      fee: 0,
-      type: OrderType.free,
-      status: OrderStatus.completed,
-    },
-    license: {
+    {
       id: "d9dd2327-0a0a-4ef4-98b4-9c55f848009d",
       ownerId: validUsers.buyer.id,
       sellerId: validUsers.seller.id,
@@ -1174,26 +1004,7 @@ const orders = [
       active: true,
       price: 0,
     },
-    review: null,
-  },
-  {
-    details: {
-      id: "1f8b6161-f170-440c-bcfb-e3d63419e37b",
-      buyerId: validUsers.buyer.id,
-      sellerId: validUsers.seller.id,
-      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
-      versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
-      licenseId: "5790d473-2a07-46ae-ba3a-6eac7fbf63e7",
-      discountId: null,
-      reviewId: null,
-      intentId: null,
-      spent: 0,
-      earned: 0,
-      fee: 0,
-      type: OrderType.free,
-      status: OrderStatus.completed,
-    },
-    license: {
+    {
       id: "5790d473-2a07-46ae-ba3a-6eac7fbf63e7",
       ownerId: validUsers.buyer.id,
       sellerId: validUsers.seller.id,
@@ -1209,26 +1020,7 @@ const orders = [
       active: true,
       price: 0,
     },
-    review: null,
-  },
-  {
-    details: {
-      id: "5409cc0b-cd19-4ef5-b441-cfe261c2c420",
-      buyerId: validUsers.buyer.id,
-      sellerId: validUsers.seller.id,
-      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
-      versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
-      licenseId: "b0bea3c5-4209-4efc-9ceb-de25ebfe8617",
-      discountId: null,
-      reviewId: null,
-      intentId: null,
-      spent: 0,
-      earned: 0,
-      fee: 0,
-      type: OrderType.free,
-      status: OrderStatus.completed,
-    },
-    license: {
+    {
       id: "b0bea3c5-4209-4efc-9ceb-de25ebfe8617",
       ownerId: validUsers.buyer.id,
       sellerId: validUsers.seller.id,
@@ -1244,14 +1036,179 @@ const orders = [
       active: true,
       price: 0,
     },
-    review: null,
-  },
-];
-
-// $TODO MISSING STRIPE ID TESTS
-export const entities = [
-  {
-    data: {
+  ],
+  Review: [
+    {
+      id: "1b5f1c10-ccb4-4b1b-a7d1-aa2db056c021",
+      orderId: "a6bfc072-0653-46ba-aaad-95e3245520ce",
+      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
+      reviewerId: validUsers.buyer.id,
+      revieweeId: validUsers.seller.id,
+      rating: 5,
+    },
+  ],
+  Order: [
+    {
+      id: "a6bfc072-0653-46ba-aaad-95e3245520ce",
+      buyerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
+      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
+      versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
+      licenseId: "6cb0750c-f95f-4d58-a059-e1a7d2930007",
+      discountId: null,
+      reviewId: "1b5f1c10-ccb4-4b1b-a7d1-aa2db056c021",
+      intentId: null,
+      spent: 0,
+      earned: 0,
+      fee: 0,
+      type: OrderType.free,
+      status: OrderStatus.completed,
+    },
+    {
+      id: "e6fbbcb4-c2bb-4a17-8ef8-b95eb281f4f3",
+      buyerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
+      artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
+      versionId: "8e1f249a-cab7-428d-8874-46ea7bda867f",
+      licenseId: "83e3c321-ce40-4cf3-a513-ba72ffa233d3",
+      discountId: null,
+      reviewId: null,
+      intentId: null,
+      spent: 0,
+      earned: 0,
+      fee: 0,
+      type: OrderType.free,
+      status: OrderStatus.completed,
+    },
+    {
+      id: "959784bd-aecf-4f42-abc1-459d1f61de4a",
+      buyerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
+      artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
+      versionId: "8e1f249a-cab7-428d-8874-46ea7bda867f",
+      licenseId: "d9dd2327-0a0a-4ef4-98b4-9c55f848009d",
+      discountId: null,
+      reviewId: null,
+      intentId: null,
+      spent: 0,
+      earned: 0,
+      fee: 0,
+      type: OrderType.free,
+      status: OrderStatus.completed,
+    },
+    {
+      id: "1f8b6161-f170-440c-bcfb-e3d63419e37b",
+      buyerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
+      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
+      versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
+      licenseId: "5790d473-2a07-46ae-ba3a-6eac7fbf63e7",
+      discountId: null,
+      reviewId: null,
+      intentId: null,
+      spent: 0,
+      earned: 0,
+      fee: 0,
+      type: OrderType.free,
+      status: OrderStatus.completed,
+    },
+    {
+      id: "5409cc0b-cd19-4ef5-b441-cfe261c2c420",
+      buyerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
+      artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
+      versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
+      licenseId: "b0bea3c5-4209-4efc-9ceb-de25ebfe8617",
+      discountId: null,
+      reviewId: null,
+      intentId: null,
+      spent: 0,
+      earned: 0,
+      fee: 0,
+      type: OrderType.free,
+      status: OrderStatus.completed,
+    },
+  ],
+  Avatar: [
+    {
+      id: "90f5798d-5c76-46b3-9079-cb415ea104f4",
+      ownerId: validUsers.seller.id,
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/userMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636386.png",
+      width: "898",
+      height: "1280",
+      dominant: "#B9B9B9",
+      orientation: "portrait",
+    },
+  ],
+  Notification: [
+    {
+      id: "9df26e9f-52a5-4d98-8c3d-49bf9b560296",
+      receiverId: validUsers.seller.id,
+      link: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
+      ref: "07b28cd0-0aa5-4b3a-ae71-21220963e290",
+      type: "comment",
+      read: true,
+    },
+    {
+      id: "ffcb187e-9fbd-4551-8c69-ae8a7bc0de27",
+      receiverId: validUsers.seller.id,
+      link: "a6bfc072-0653-46ba-aaad-95e3245520ce",
+      ref: "",
+      type: "order",
+      read: true,
+    },
+    {
+      id: "645feee5-3387-473d-bc76-ebfd137cba5c",
+      receiverId: validUsers.seller.id,
+      link: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
+      ref: "c791d948-9bc3-4b6b-b988-6b95576dac57",
+      type: "comment",
+      read: true,
+    },
+    {
+      id: "0e30bf73-ee6a-426c-b1d7-e6c8b72271eb",
+      receiverId: validUsers.seller.id,
+      link: "e6fbbcb4-c2bb-4a17-8ef8-b95eb281f4f3",
+      ref: "",
+      type: "order",
+      read: false,
+    },
+    {
+      id: "463a07e6-c1fb-4ef2-b17e-a81f8f499be0",
+      receiverId: validUsers.seller.id,
+      link: "959784bd-aecf-4f42-abc1-459d1f61de4a",
+      ref: "",
+      type: "order",
+      read: false,
+    },
+    {
+      id: "7667b325-150b-4cf5-9627-65c529a98094",
+      receiverId: validUsers.seller.id,
+      link: "1f8b6161-f170-440c-bcfb-e3d63419e37b",
+      ref: "",
+      type: "order",
+      read: false,
+    },
+    {
+      id: "3149bd11-df7c-44d1-88c3-947a20ef9409",
+      receiverId: validUsers.seller.id,
+      link: "5409cc0b-cd19-4ef5-b441-cfe261c2c420",
+      ref: "",
+      type: "order",
+      read: false,
+    },
+    {
+      id: "f5654734-6b3d-49da-a09a-8040b8dcc4b6",
+      receiverId: validUsers.seller.id,
+      link: "a6bfc072-0653-46ba-aaad-95e3245520ce",
+      ref: "1b5f1c10-ccb4-4b1b-a7d1-aa2db056c021",
+      type: "review",
+      read: false,
+    },
+  ],
+  User: [
+    {
       id: validUsers.seller.id,
       email: validUsers.seller.email,
       fullName: validUsers.seller.name,
@@ -1270,131 +1227,7 @@ export const entities = [
       active: true,
       generated: false,
     },
-    avatar: {
-      data: {
-        id: "90f5798d-5c76-46b3-9079-cb415ea104f4",
-        ownerId: validUsers.seller.id,
-        source:
-          "https://vesper-testing.s3.eu-central-1.amazonaws.com/userMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636386.png",
-        width: "898",
-        height: "1280",
-        dominant: "#B9B9B9",
-        orientation: "portrait",
-      },
-    },
-    artwork: firstHalf.map((item) => ({
-      data: {
-        ...item.general,
-      },
-      version: {
-        data: {
-          id: "",
-          artworkId: "",
-          title: "",
-          description: "",
-          availability: "",
-          type: "",
-          license: "",
-          use: "",
-          personal: "",
-          commercial: "",
-          coverId: "",
-          mediaId: "",
-          ...item.details,
-        },
-        media: {
-          data: {
-            id: "",
-            source: "",
-            orientation: "",
-            dominant: "",
-            height: "",
-            width: "",
-            ...item.media,
-          },
-        },
-        cover: {
-          data: {
-            id: "",
-            source: "",
-            orientation: "",
-            dominant: "",
-            height: "",
-            width: "",
-            ...item.cover,
-          },
-        },
-      },
-    })),
-    notifications: [
-      {
-        id: "9df26e9f-52a5-4d98-8c3d-49bf9b560296",
-        receiverId: validUsers.seller.id,
-        link: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
-        ref: "07b28cd0-0aa5-4b3a-ae71-21220963e290",
-        type: "comment",
-        read: true,
-      },
-      {
-        id: "ffcb187e-9fbd-4551-8c69-ae8a7bc0de27",
-        receiverId: validUsers.seller.id,
-        link: "a6bfc072-0653-46ba-aaad-95e3245520ce",
-        ref: "",
-        type: "order",
-        read: true,
-      },
-      {
-        id: "645feee5-3387-473d-bc76-ebfd137cba5c",
-        receiverId: validUsers.seller.id,
-        link: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
-        ref: "c791d948-9bc3-4b6b-b988-6b95576dac57",
-        type: "comment",
-        read: true,
-      },
-      {
-        id: "0e30bf73-ee6a-426c-b1d7-e6c8b72271eb",
-        receiverId: validUsers.seller.id,
-        link: "e6fbbcb4-c2bb-4a17-8ef8-b95eb281f4f3",
-        ref: "",
-        type: "order",
-        read: false,
-      },
-      {
-        id: "463a07e6-c1fb-4ef2-b17e-a81f8f499be0",
-        receiverId: validUsers.seller.id,
-        link: "959784bd-aecf-4f42-abc1-459d1f61de4a",
-        ref: "",
-        type: "order",
-        read: false,
-      },
-      {
-        id: "7667b325-150b-4cf5-9627-65c529a98094",
-        receiverId: validUsers.seller.id,
-        link: "1f8b6161-f170-440c-bcfb-e3d63419e37b",
-        ref: "",
-        type: "order",
-        read: false,
-      },
-      {
-        id: "3149bd11-df7c-44d1-88c3-947a20ef9409",
-        receiverId: validUsers.seller.id,
-        link: "5409cc0b-cd19-4ef5-b441-cfe261c2c420",
-        ref: "",
-        type: "order",
-        read: false,
-      },
-      {
-        id: "f5654734-6b3d-49da-a09a-8040b8dcc4b6",
-        receiverId: validUsers.seller.id,
-        link: "a6bfc072-0653-46ba-aaad-95e3245520ce",
-        ref: "1b5f1c10-ccb4-4b1b-a7d1-aa2db056c021",
-        type: "review",
-        read: false,
-      },
-    ],
-  },
-  {
-    data: {
+    {
       id: validUsers.buyer.id,
       email: validUsers.buyer.email,
       fullName: validUsers.buyer.name,
@@ -1413,55 +1246,7 @@ export const entities = [
       active: true,
       generated: false,
     },
-    avatar: {},
-    artwork: secondHalf.map((item) => ({
-      data: {
-        ...item.general,
-      },
-      version: {
-        data: {
-          id: "",
-          artworkId: "",
-          title: "",
-          description: "",
-          availability: "",
-          type: "",
-          license: "",
-          use: "",
-          personal: "",
-          commercial: "",
-          coverId: "",
-          mediaId: "",
-          ...item.details,
-        },
-        media: {
-          data: {
-            id: "",
-            source: "",
-            orientation: "",
-            dominant: "",
-            height: "",
-            width: "",
-            ...item.media,
-          },
-        },
-        cover: {
-          data: {
-            id: "",
-            source: "",
-            orientation: "",
-            dominant: "",
-            height: "",
-            width: "",
-            ...item.cover,
-          },
-        },
-      },
-    })),
-    notifications: [],
-  },
-  {
-    data: {
+    {
       id: "0de54f50-0e68-43ee-b54a-a7cb4c4adeab",
       email: null,
       fullName: "",
@@ -1484,12 +1269,7 @@ export const entities = [
       created: null,
       updated: null,
     },
-    avatar: {},
-    artwork: [],
-    notifications: [],
-  },
-  {
-    data: {
+    {
       id: "a95623cd-8a45-43de-a8db-a987b8f43928",
       email: "test2@test.com",
       fullName: "Valid Reset token",
@@ -1508,12 +1288,7 @@ export const entities = [
       active: true,
       generated: false,
     },
-    avatar: {},
-    artwork: [],
-    notifications: [],
-  },
-  {
-    data: {
+    {
       id: "c509bb2b-52f6-4d04-a1c7-2578aa8c141d",
       email: "test3@test.com",
       fullName: "Invalid Reset token",
@@ -1532,12 +1307,7 @@ export const entities = [
       active: true,
       generated: false,
     },
-    avatar: {},
-    artwork: [],
-    notifications: [],
-  },
-  {
-    data: {
+    {
       id: "08e6bcea-2e9a-463e-a4d5-3aa0607962d6",
       email: "test4@test.com",
       fullName: "Expired Reset token",
@@ -1556,12 +1326,7 @@ export const entities = [
       active: true,
       generated: false,
     },
-    avatar: {},
-    artwork: [],
-    notifications: [],
-  },
-  {
-    data: {
+    {
       id: "357b63e4-6ddb-4064-9919-3e541628634f",
       email: "test5@test.com",
       fullName: "Valid Verification token",
@@ -1580,12 +1345,7 @@ export const entities = [
       active: true,
       generated: false,
     },
-    avatar: {},
-    artwork: [],
-    notifications: [],
-  },
-  {
-    data: {
+    {
       id: "a2f61848-d615-45f4-81ba-514f1b420bef",
       email: "test6@test.com",
       fullName: "Invalid Verification token",
@@ -1604,12 +1364,7 @@ export const entities = [
       active: true,
       generated: false,
     },
-    avatar: {},
-    artwork: [],
-    notifications: [],
-  },
-  {
-    data: {
+    {
       id: "26c39504-69ec-43b4-965a-43235ab9c885",
       email: "test7@test.com",
       fullName: "Expired Verification token",
@@ -1628,8 +1383,5 @@ export const entities = [
       active: true,
       generated: false,
     },
-    avatar: {},
-    artwork: [],
-    notifications: [],
-  },
-];
+  ],
+};
