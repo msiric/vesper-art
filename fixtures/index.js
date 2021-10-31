@@ -1,9 +1,15 @@
+import argon2 from "argon2";
 import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 import { upload } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
+import { Artwork } from "../entities/Artwork";
+import { Avatar } from "../entities/Avatar";
+import { Cover } from "../entities/Cover";
+import { Media } from "../entities/Media";
 import { User } from "../entities/User";
+import { Version } from "../entities/Version";
 import { uploadS3Object } from "../lib/s3";
 import {
   connectToDatabase,
@@ -11,8 +17,9 @@ import {
   releaseTransaction,
   rollbackTransaction,
 } from "../utils/database";
+import { generateUuids } from "../utils/helpers";
 import { USER_SELECTION } from "../utils/selectors";
-import { entities, validUsers } from "./entities";
+import { entities } from "./entities";
 
 const dirname = path.resolve();
 
@@ -40,13 +47,13 @@ const seedS3 = async () => {
       const {
         dominant: { r, g, b },
       } = await sharp(filePath).stats();
-      await uploadS3Object({
+      const coverLocation = await uploadS3Object({
         fileContent: fileCover,
         folderName: "artworkCovers",
         fileName,
         mimeType,
       });
-      await uploadS3Object({
+      const mediaLocation = await uploadS3Object({
         fileContent: fileMedia,
         folderName: "artworkMedia",
         fileName,
@@ -69,22 +76,94 @@ const seedS3 = async () => {
       .createQueryBuilder("user")
       .select([...USER_SELECTION["STRIPPED_INFO"]()])
       .where("user.name = :name AND user.email = :email", {
-        name: validUsers.seller.name,
-        email: validUsers.seller.email,
+        name: entities[0].data.name,
+        email: entities[0].data.email,
       })
       .getOne();
     if (isObjectEmpty(foundUser)) {
-      await connection.synchronize(true);
-      for (let item in entities) {
+      for (let user of entities) {
+        // user
+        const { userId, avatarId } = generateUuids({
+          userId: null,
+          avatarId: null,
+        });
+        const userPassword = await argon2.hash(user.data.password);
+        user.data.id = userId;
+        user.data.avatarId = avatarId;
+        user.data.password = userPassword;
+        // avatar
+        user.avatar.data.id = avatarId;
+        user.avatar.data.ownerId = userId;
+        // $TODO - handle avatar upload
+        // end of todo
+
         await connection
           .createQueryBuilder()
           .insert()
-          .into([item])
-          .values({ ...entities[item] })
+          .into(Avatar)
+          .values(user.avatar.data)
           .execute();
+        await connection
+          .createQueryBuilder()
+          .insert()
+          .into(User)
+          .values(user.data)
+          .execute();
+
+        for (let artwork of user.artwork) {
+          // artwork
+          const { artworkId, versionId, mediaId, coverId } = generateUuids({
+            artworkId: null,
+            versionId: null,
+            mediaId: null,
+            coverId: null,
+          });
+          artwork.data.id = artworkId;
+          artwork.data.ownerId = userId;
+          artwork.data.currentId = versionId;
+          // version
+          artwork.version.data.id = versionId;
+          artwork.version.data.artworkId = artworkId;
+          artwork.version.data.coverId = coverId;
+          artwork.version.data.mediaId = mediaId;
+          // media
+          artwork.version.media.data.id = mediaId;
+          // $TODO - handle media upload
+          // end of todo
+          // cover
+          artwork.version.cover.data.id = coverId;
+          // $TODO - handle cover upload
+          // end of todo
+          await Promise.all([
+            connection
+              .createQueryBuilder()
+              .insert()
+              .into(Cover)
+              .values(artwork.version.cover.data)
+              .execute(),
+            connection
+              .createQueryBuilder()
+              .insert()
+              .into(Media)
+              .values(artwork.version.media.data)
+              .execute(),
+          ]);
+          await connection
+            .createQueryBuilder()
+            .insert()
+            .into(Version)
+            .values(artwork.version.data)
+            .execute();
+          await connection
+            .createQueryBuilder()
+            .insert()
+            .into(Artwork)
+            .values(artwork.data)
+            .execute();
+        }
       }
     }
-    await seedS3();
+    /* await seedS3(); */
     await evaluateTransaction(queryRunner);
     console.log("done");
   } catch (err) {
