@@ -81,6 +81,7 @@ const seedS3 = async () => {
       })
       .getOne();
     if (isObjectEmpty(foundUser)) {
+      await connection.synchronize(true);
       for (let user of entities) {
         // user
         const { userId, avatarId } = generateUuids({
@@ -163,7 +164,7 @@ const seedS3 = async () => {
         }
       }
     }
-    /* await seedS3(); */
+    await seedS3();
     await evaluateTransaction(queryRunner);
     console.log("done");
   } catch (err) {
