@@ -8,15 +8,26 @@ import {
   VersionUse,
 } from "../entities/Version";
 
-const userIds = {
-  buyerId: "1a1c6859-bb73-419f-8b29-cd7817ede2f2",
-  sellerId: "8f520ed3-f211-4776-8d25-218e8a2e593d",
+const validUsers = {
+  buyer: {
+    id: "1a1c6859-bb73-419f-8b29-cd7817ede2f2",
+    email: "validuser2@test.com",
+    username: "validuser2",
+    name: "Valid User 2",
+    password: "testpassword2",
+    hashedPassword:
+      "$argon2i$v=19$m=4096,t=3,p=1$Togauz+7CpGQuBSZLDKJiw$GmQxPzjEj8FGXeGZcC3KNi6XKp9LdGkrULaHR+avnRY",
+  },
+  seller: {
+    id: "8f520ed3-f211-4776-8d25-218e8a2e593d",
+    email: "validuser1@test.com",
+    username: "validuser1",
+    name: "Valid User 1",
+    password: "testpassword1",
+    hashedPassword:
+      "$argon2i$v=19$m=4096,t=3,p=1$Mugr5j8reeLJu4YW/fnWvg$tKv+ETonRi2YIcLcUH6epzZE1do7tlXGAcvNCmqz9bg",
+  },
 };
-
-export const validUsers = [
-  { username: "Valid User 1", password: "testpassword1" },
-  { username: "Valid User 2", password: "testpassword2" },
-];
 
 const general = {
   id: "",
@@ -362,7 +373,7 @@ const artwork = [
     comments: [
       {
         id: "07b28cd0-0aa5-4b3a-ae71-21220963e290",
-        ownerId: userIds.buyerId,
+        ownerId: validUsers.buyer.id,
         artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
         content: "Test comment 1",
         modified: false,
@@ -370,7 +381,7 @@ const artwork = [
       },
       {
         id: "c791d948-9bc3-4b6b-b988-6b95576dac57",
-        ownerId: userIds.buyerId,
+        ownerId: validUsers.buyer.id,
         artworkId: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
         content: "Test comment 2",
         modified: true,
@@ -912,22 +923,12 @@ const halfLength = Math.ceil(artwork.length / 2);
 const firstHalf = artwork.slice(0, halfLength);
 const secondHalf = artwork.slice(halfLength, artwork.length);
 
-const avatar = {
-  id: "90f5798d-5c76-46b3-9079-cb415ea104f4",
-  source:
-    "https://vesper-testing.s3.eu-central-1.amazonaws.com/userMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636386.png",
-  width: "898",
-  height: "1280",
-  dominant: "#B9B9B9",
-  orientation: "portrait",
-};
-
 const orders = [
   {
     details: {
       id: "a6bfc072-0653-46ba-aaad-95e3245520ce",
-      buyerId: userIds.buyerId,
-      sellerId: userIds.sellerId,
+      buyerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
       artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
       versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
       licenseId: "6cb0750c-f95f-4d58-a059-e1a7d2930007",
@@ -942,8 +943,8 @@ const orders = [
     },
     license: {
       id: "6cb0750c-f95f-4d58-a059-e1a7d2930007",
-      ownerId: userIds.buyerId,
-      sellerId: userIds.sellerId,
+      ownerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
       artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
       fingerprint: "",
       assignee: "",
@@ -960,16 +961,16 @@ const orders = [
       id: "1b5f1c10-ccb4-4b1b-a7d1-aa2db056c021",
       orderId: "a6bfc072-0653-46ba-aaad-95e3245520ce",
       artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
-      reviewerId: userIds.buyerId,
-      revieweeId: userIds.sellerId,
+      reviewerId: validUsers.buyer.id,
+      revieweeId: validUsers.seller.id,
       rating: 5,
     },
   },
   {
     details: {
       id: "e6fbbcb4-c2bb-4a17-8ef8-b95eb281f4f3",
-      buyerId: userIds.buyerId,
-      sellerId: userIds.sellerId,
+      buyerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
       artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
       versionId: "8e1f249a-cab7-428d-8874-46ea7bda867f",
       licenseId: "83e3c321-ce40-4cf3-a513-ba72ffa233d3",
@@ -984,8 +985,8 @@ const orders = [
     },
     license: {
       id: "83e3c321-ce40-4cf3-a513-ba72ffa233d3",
-      ownerId: userIds.buyerId,
-      sellerId: userIds.sellerId,
+      ownerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
       artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
       fingerprint: "",
       assignee: "",
@@ -1003,8 +1004,8 @@ const orders = [
   {
     details: {
       id: "959784bd-aecf-4f42-abc1-459d1f61de4a",
-      buyerId: userIds.buyerId,
-      sellerId: userIds.sellerId,
+      buyerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
       artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
       versionId: "8e1f249a-cab7-428d-8874-46ea7bda867f",
       licenseId: "d9dd2327-0a0a-4ef4-98b4-9c55f848009d",
@@ -1019,8 +1020,8 @@ const orders = [
     },
     license: {
       id: "d9dd2327-0a0a-4ef4-98b4-9c55f848009d",
-      ownerId: userIds.buyerId,
-      sellerId: userIds.sellerId,
+      ownerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
       artworkId: "b9d8f134-ad32-4de2-a112-a56ea7d9aed6",
       fingerprint: "",
       assignee: "",
@@ -1038,8 +1039,8 @@ const orders = [
   {
     details: {
       id: "1f8b6161-f170-440c-bcfb-e3d63419e37b",
-      buyerId: userIds.buyerId,
-      sellerId: userIds.sellerId,
+      buyerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
       artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
       versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
       licenseId: "5790d473-2a07-46ae-ba3a-6eac7fbf63e7",
@@ -1054,8 +1055,8 @@ const orders = [
     },
     license: {
       id: "5790d473-2a07-46ae-ba3a-6eac7fbf63e7",
-      ownerId: userIds.buyerId,
-      sellerId: userIds.sellerId,
+      ownerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
       artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
       fingerprint: "",
       assignee: "",
@@ -1073,8 +1074,8 @@ const orders = [
   {
     details: {
       id: "5409cc0b-cd19-4ef5-b441-cfe261c2c420",
-      buyerId: userIds.buyerId,
-      sellerId: userIds.sellerId,
+      buyerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
       artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
       versionId: "ded58bf3-fdf1-4b68-9683-acab527ce3a9",
       licenseId: "b0bea3c5-4209-4efc-9ceb-de25ebfe8617",
@@ -1089,8 +1090,8 @@ const orders = [
     },
     license: {
       id: "b0bea3c5-4209-4efc-9ceb-de25ebfe8617",
-      ownerId: userIds.buyerId,
-      sellerId: userIds.sellerId,
+      ownerId: validUsers.buyer.id,
+      sellerId: validUsers.seller.id,
       artworkId: "ebd7d2c8-3f0e-4cd1-9ad1-4fb0cddb1a8e",
       fingerprint: "",
       assignee: "",
@@ -1111,11 +1112,11 @@ const orders = [
 export const entities = [
   {
     data: {
-      id: "",
-      email: "valid@test.com",
-      fullName: "Valid user",
-      name: validUsers[0].username,
-      password: validUsers[0].password,
+      id: validUsers.seller.id,
+      email: validUsers.seller.email,
+      fullName: validUsers.seller.name,
+      name: validUsers.seller.username,
+      password: validUsers.seller.hashedPassword,
       avatarId: null,
       description: "Enabled favorites display",
       country: "HR",
@@ -1131,14 +1132,13 @@ export const entities = [
     },
     avatar: {
       data: {
-        id: "",
-        ownerId: "",
-        source: "",
-        orientation: "",
-        dominant: "",
-        height: "",
-        width: "",
-        ...avatar,
+        id: "90f5798d-5c76-46b3-9079-cb415ea104f4",
+        source:
+          "https://vesper-testing.s3.eu-central-1.amazonaws.com/userMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636386.png",
+        width: "898",
+        height: "1280",
+        dominant: "#B9B9B9",
+        orientation: "portrait",
       },
     },
     artwork: firstHalf.map((item) => ({
@@ -1188,7 +1188,7 @@ export const entities = [
     notifications: [
       {
         id: "9df26e9f-52a5-4d98-8c3d-49bf9b560296",
-        receiverId: userIds.sellerId,
+        receiverId: validUsers.seller.id,
         link: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
         ref: "07b28cd0-0aa5-4b3a-ae71-21220963e290",
         type: "comment",
@@ -1196,7 +1196,7 @@ export const entities = [
       },
       {
         id: "ffcb187e-9fbd-4551-8c69-ae8a7bc0de27",
-        receiverId: userIds.sellerId,
+        receiverId: validUsers.seller.id,
         link: "a6bfc072-0653-46ba-aaad-95e3245520ce",
         ref: "",
         type: "order",
@@ -1204,7 +1204,7 @@ export const entities = [
       },
       {
         id: "645feee5-3387-473d-bc76-ebfd137cba5c",
-        receiverId: userIds.sellerId,
+        receiverId: validUsers.seller.id,
         link: "e0cc9825-8875-4c44-8327-64e5cf0e9284",
         ref: "c791d948-9bc3-4b6b-b988-6b95576dac57",
         type: "comment",
@@ -1212,7 +1212,7 @@ export const entities = [
       },
       {
         id: "0e30bf73-ee6a-426c-b1d7-e6c8b72271eb",
-        receiverId: userIds.sellerId,
+        receiverId: validUsers.seller.id,
         link: "e6fbbcb4-c2bb-4a17-8ef8-b95eb281f4f3",
         ref: "",
         type: "order",
@@ -1220,7 +1220,7 @@ export const entities = [
       },
       {
         id: "463a07e6-c1fb-4ef2-b17e-a81f8f499be0",
-        receiverId: userIds.sellerId,
+        receiverId: validUsers.seller.id,
         link: "959784bd-aecf-4f42-abc1-459d1f61de4a",
         ref: "",
         type: "order",
@@ -1228,7 +1228,7 @@ export const entities = [
       },
       {
         id: "7667b325-150b-4cf5-9627-65c529a98094",
-        receiverId: userIds.sellerId,
+        receiverId: validUsers.seller.id,
         link: "1f8b6161-f170-440c-bcfb-e3d63419e37b",
         ref: "",
         type: "order",
@@ -1236,7 +1236,7 @@ export const entities = [
       },
       {
         id: "3149bd11-df7c-44d1-88c3-947a20ef9409",
-        receiverId: userIds.sellerId,
+        receiverId: validUsers.seller.id,
         link: "5409cc0b-cd19-4ef5-b441-cfe261c2c420",
         ref: "",
         type: "order",
@@ -1244,7 +1244,7 @@ export const entities = [
       },
       {
         id: "f5654734-6b3d-49da-a09a-8040b8dcc4b6",
-        receiverId: userIds.sellerId,
+        receiverId: validUsers.seller.id,
         link: "a6bfc072-0653-46ba-aaad-95e3245520ce",
         ref: "1b5f1c10-ccb4-4b1b-a7d1-aa2db056c021",
         type: "review",
@@ -1254,11 +1254,11 @@ export const entities = [
   },
   {
     data: {
-      id: "",
-      email: "valid2@test.com",
-      fullName: "Valid user 2",
-      name: validUsers[1].username,
-      password: validUsers[1].password,
+      id: validUsers.buyer.id,
+      email: validUsers.buyer.email,
+      fullName: validUsers.buyer.name,
+      name: validUsers.buyer.username,
+      password: validUsers.buyer.hashedPassword,
       avatarId: null,
       description: "Disabled favorites display",
       country: "US",
@@ -1332,7 +1332,7 @@ export const entities = [
   },
   {
     data: {
-      id: "",
+      id: "0de54f50-0e68-43ee-b54a-a7cb4c4adeab",
       email: null,
       fullName: "",
       name: null,
@@ -1360,7 +1360,7 @@ export const entities = [
   },
   {
     data: {
-      id: "",
+      id: "a95623cd-8a45-43de-a8db-a987b8f43928",
       email: "test2@test.com",
       fullName: "Valid Reset token",
       name: "validResetToken",
@@ -1384,7 +1384,7 @@ export const entities = [
   },
   {
     data: {
-      id: "",
+      id: "c509bb2b-52f6-4d04-a1c7-2578aa8c141d",
       email: "test3@test.com",
       fullName: "Invalid Reset token",
       name: "invalidResetToken",
@@ -1408,7 +1408,7 @@ export const entities = [
   },
   {
     data: {
-      id: "",
+      id: "08e6bcea-2e9a-463e-a4d5-3aa0607962d6",
       email: "test4@test.com",
       fullName: "Expired Reset token",
       name: "expiredResetToken",
@@ -1432,7 +1432,7 @@ export const entities = [
   },
   {
     data: {
-      id: "",
+      id: "357b63e4-6ddb-4064-9919-3e541628634f",
       email: "test5@test.com",
       fullName: "Valid Verification token",
       name: "validVerificationToken",
@@ -1456,7 +1456,7 @@ export const entities = [
   },
   {
     data: {
-      id: "",
+      id: "a2f61848-d615-45f4-81ba-514f1b420bef",
       email: "test6@test.com",
       fullName: "Invalid Verification token",
       name: "invalidVerificationToken",
@@ -1480,7 +1480,7 @@ export const entities = [
   },
   {
     data: {
-      id: "",
+      id: "26c39504-69ec-43b4-965a-43235ab9c885",
       email: "test7@test.com",
       fullName: "Expired Verification token",
       name: "expiredVerificationToken",
