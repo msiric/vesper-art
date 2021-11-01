@@ -14,12 +14,7 @@ import api from "./routes/api/index";
 import stripe from "./routes/stripe/index";
 import hooks from "./routes/webhooks/index";
 import { connectToDatabase } from "./utils/database";
-import {
-  handleDelegatedError,
-  sanitizeBody,
-  sanitizeParams,
-  sanitizeQuery,
-} from "./utils/helpers";
+import { handleDelegatedError } from "./utils/helpers";
 
 const app = express();
 const dirname = path.resolve();
@@ -92,15 +87,13 @@ const dirname = path.resolve();
   // app.use(rateLimiter);
 
   // FEATURE FLAG - stripe
-  featureFlags.stripe &&
-    app.use("/webhook", sanitizeParams, sanitizeQuery, sanitizeBody, hooks);
+  featureFlags.stripe && app.use("/webhook", hooks);
 
   app.use(express.json({ type: "application/json" }));
 
-  app.use("/api", sanitizeParams, sanitizeQuery, sanitizeBody, api);
+  app.use("/api", api);
   // FEATURE FLAG - stripe
-  featureFlags.stripe &&
-    app.use("/stripe", sanitizeParams, sanitizeQuery, sanitizeBody, stripe);
+  featureFlags.stripe && app.use("/stripe", stripe);
 
   app.use(express.static(path.join(dirname, "client/build")));
   app.use(express.static(path.join(dirname, "public")));

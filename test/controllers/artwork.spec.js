@@ -749,7 +749,8 @@ describe("Artwork tests", () => {
   describe("/api/artwork/:artworkId", () => {
     it("should fetch a visible and active artwork", async () => {
       const visibleArtwork = artwork.filter(
-        (item) => (item.visibility = "visible")
+        (item) =>
+          item.visibility === ArtworkVisibility.visible && item.active === true
       );
       const res = await request(app)
         .get(`/api/artwork/${visibleArtwork[0].id}`)

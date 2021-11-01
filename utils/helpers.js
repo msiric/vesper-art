@@ -79,8 +79,19 @@ export const isPastDate = (value) =>
   (isSameDay(new Date(value), new Date()) ||
     isAfter(new Date(value), new Date())); */
 
+export const sanitizePayload = (req, res, next) => {
+  try {
+    sanitizeParams(req, res, next);
+    sanitizeQuery(req, res, next);
+    sanitizeBody(req, res, next);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const requestHandler =
   (promise, transaction, params) => async (req, res, next) => {
+    sanitizePayload(req, res, next);
     const boundParams = params ? params(req, res, next) : {};
     const userId = res.locals.user ? res.locals.user.id : null;
     const handleRequest = (result) => {
@@ -166,35 +177,24 @@ export const isAuthorized = async (req, res, next) => {
 
 export const sanitizeParams = (req, res, next) => {
   const isValid = sanitizeUrl(req.params, VALID_PARAMS);
-  if (isValid) return next();
-  return next(createError(...formatError(errors.routeParameterInvalid)));
+  if (!isValid) throw createError(...formatError(errors.routeParameterInvalid));
 };
 
 export const sanitizeQuery = (req, res, next) => {
-  if (req && res && next) {
-    const isValid = sanitizeUrl(req.query, VALID_QUERIES);
-    if (isValid) {
-      req.query = sanitizeDates(sanitizeData(req.query));
-      return next();
-    }
-    return next(createError(...formatError(errors.routeQueryInvalid)));
-  }
-  return;
+  const isValid = sanitizeUrl(req.query, VALID_QUERIES);
+  if (isValid) req.query = sanitizeDates(sanitizeData(req.query));
+  else throw createError(...formatError(errors.routeQueryInvalid));
 };
 
 export const sanitizeBody = (req, res, next) => {
-  if (req && res && next) {
-    req.body = sanitizeData(req.body);
-    return next();
-  }
-  return;
+  req.body = sanitizeData(req.body);
 };
 
 export const sanitizeUrl = (data, validKeys) => {
   for (let param in data) {
     const value = data[param];
-    if (value === "undefined") return false;
-    if (!validKeys[param] || !validKeys[param].isValid(value)) return false;
+    if (value === undefined) return false;
+    if (validKeys[param] && !validKeys[param].isValid(value)) return false;
   }
   return true;
 };
