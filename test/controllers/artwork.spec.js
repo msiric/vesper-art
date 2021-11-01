@@ -768,7 +768,7 @@ describe("Artwork tests", () => {
 
     it("should throw a 404 error if artwork is not visible", async () => {
       const invisibleArtwork = artwork.filter(
-        (item) => (item.visibility = ArtworkVisibility.invisible)
+        (item) => item.visibility === ArtworkVisibility.invisible
       );
       const res = await request(app)
         .get(`/api/artwork/${invisibleArtwork[0].id}`)
