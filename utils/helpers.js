@@ -191,13 +191,12 @@ export const sanitizeBody = (req, res, next) => {
 };
 
 export const sanitizeUrl = (data, validKeys) => {
-  let valid = true;
   for (let param in data) {
     const value = data[param];
     if (value === "undefined") return false;
-    if (validKeys[param] && !validKeys[param].isValid(value)) return false;
+    if (!validKeys[param] || !validKeys[param].isValid(value)) return false;
   }
-  return valid;
+  return true;
 };
 
 export const sanitizeData = (data) => {

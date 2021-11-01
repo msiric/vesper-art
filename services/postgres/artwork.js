@@ -39,6 +39,36 @@ export const fetchArtworkById = async ({ artworkId, connection }) => {
   return foundArtwork;
 };
 
+export const fetchAllArtworks = async ({ cursor, limit, connection }) => {
+  const queryBuilder = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork");
+  const foundArtwork = await queryBuilder
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("version.cover", "cover")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .select([
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
+    ])
+    .where(
+      `artwork.serial < 
+      ${resolveSubQuery(
+        queryBuilder,
+        "artwork",
+        Artwork,
+        cursor,
+        Number.MAX_VALUE
+      )}`
+    )
+    .orderBy("artwork.serial", "DESC")
+    .limit(limit)
+    .getMany();
+  return foundArtwork;
+};
+
 export const fetchActiveArtworks = async ({ cursor, limit, connection }) => {
   const queryBuilder = await connection
     .getRepository(Artwork)

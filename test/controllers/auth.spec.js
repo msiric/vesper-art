@@ -1,4 +1,4 @@
-import app from "../../app";
+/* import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { errors as validationErrors } from "../../common/validation";
 import { admin } from "../../config/secret";
@@ -237,11 +237,12 @@ describe("Auth tests", () => {
 
   // needs a valid user in db to finish properly
   describe("/api/auth/verify_token/:tokenId", () => {
-    /*   it("should verify user's token", async () => {
-            const res = await request(app, token).post("/api/auth/logout").send();
+    it("should verify user's token", async () => {
+      const res = await request(app, token).post("/api/auth/logout").send();
       expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.accessToken).toEqual("");
       expect(res.body.user).toEqual("");
-    }); */
+    });
   });
 });
+ */

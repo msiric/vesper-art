@@ -14,7 +14,12 @@ import api from "./routes/api/index";
 import stripe from "./routes/stripe/index";
 import hooks from "./routes/webhooks/index";
 import { connectToDatabase } from "./utils/database";
-import { sanitizeBody, sanitizeParams, sanitizeQuery } from "./utils/helpers";
+import {
+  handleDelegatedError,
+  sanitizeBody,
+  sanitizeParams,
+  sanitizeQuery,
+} from "./utils/helpers";
 
 const app = express();
 const dirname = path.resolve();
@@ -109,11 +114,9 @@ const dirname = path.resolve();
   });
 
   app.use((err, req, res, next) => {
-    res.status(err.status || statusCodes.internalError);
-    res.json({
-      status_code: err.status || statusCodes.internalError,
-      error: err.message,
-    });
+    const error = handleDelegatedError({ err });
+    res.status(error.status);
+    res.json({ ...error });
   });
 })();
 

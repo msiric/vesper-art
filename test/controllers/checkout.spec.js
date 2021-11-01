@@ -1,4 +1,4 @@
-import app from "../../app";
+/* import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { admin } from "../../config/secret";
 import { fetchUserByUsername } from "../../services/postgres/user";
@@ -56,3 +56,4 @@ describe.skip("Checkout tests", () => {
     });
   });
 });
+ */

@@ -46,7 +46,7 @@ router
 
 router
   .route("/artwork/:artworkId")
-  // $DONE works (NOTE needs to return number of favorites instead of array)
+  // $TODO $DONE works (NOTE needs to return number of favorites instead of array)
   .get(
     handler(getArtworkDetails, false, (req, res, next) => ({
       ...req.params,

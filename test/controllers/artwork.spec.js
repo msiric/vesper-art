@@ -2,15 +2,15 @@ import path from "path";
 import app from "../../app";
 import { pricing, statusCodes } from "../../common/constants";
 import { errors as validationErrors } from "../../common/validation";
-import { admin } from "../../config/secret";
-import { fetchActiveArtworks } from "../../services/postgres/artwork";
+import { ArtworkVisibility } from "../../entities/Artwork";
+import { fetchAllArtworks } from "../../services/postgres/artwork";
 import { fetchUserByUsername } from "../../services/postgres/user";
 import { createAccessToken, createRefreshToken } from "../../utils/auth";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { formatTokenData } from "../../utils/helpers";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors as logicErrors, responses } from "../../utils/statuses";
-import { artwork as artworkEntity } from "../fixtures/entities";
+import { validUsers } from "../fixtures/entities";
 import { request } from "../utils/request";
 
 const MEDIA_LOCATION = path.resolve(__dirname, "../../../test/media");
@@ -19,17 +19,20 @@ jest.useFakeTimers();
 jest.setTimeout(3 * 60 * 1000);
 
 let connection;
-let user;
+let seller;
+let buyer;
 let artwork;
-let cookie;
-let token;
+let sellerCookie;
+let sellerToken;
+let buyerCookie;
+let buyerToken;
 
 describe("Artwork tests", () => {
   beforeAll(async (done) => {
     connection = await connectToDatabase();
-    [user, artwork] = await Promise.all([
+    [seller, buyer, artwork] = await Promise.all([
       fetchUserByUsername({
-        userUsername: admin.username,
+        userUsername: validUsers.seller.username,
         selection: [
           ...USER_SELECTION["ESSENTIAL_INFO"](),
           ...USER_SELECTION["STRIPE_INFO"](),
@@ -39,11 +42,25 @@ describe("Artwork tests", () => {
         ],
         connection,
       }),
-      fetchActiveArtworks({ connection }),
+      fetchUserByUsername({
+        userUsername: validUsers.buyer.username,
+        selection: [
+          ...USER_SELECTION["ESSENTIAL_INFO"](),
+          ...USER_SELECTION["STRIPE_INFO"](),
+          ...USER_SELECTION["VERIFICATION_INFO"](),
+          ...USER_SELECTION["AUTH_INFO"](),
+          ...USER_SELECTION["LICENSE_INFO"](),
+        ],
+        connection,
+      }),
+      fetchAllArtworks({ connection }),
     ]);
-    const { tokenPayload } = formatTokenData({ user });
-    cookie = createRefreshToken({ userData: tokenPayload });
-    token = createAccessToken({ userData: tokenPayload });
+    const { tokenPayload: sellerPayload } = formatTokenData({ user: seller });
+    sellerCookie = createRefreshToken({ userData: sellerPayload });
+    sellerToken = createAccessToken({ userData: sellerPayload });
+    const { tokenPayload: buyerPayload } = formatTokenData({ user: buyer });
+    buyerCookie = createRefreshToken({ userData: buyerPayload });
+    buyerToken = createAccessToken({ userData: buyerPayload });
     done();
   });
 
@@ -57,16 +74,30 @@ describe("Artwork tests", () => {
       const res = await request(app).get("/api/artwork").query({});
       expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.artwork.length).toEqual(
-        artworkEntity.filter(
+        artwork.filter(
           (item) =>
-            item.general.visibility === "visible" &&
-            item.general.active === true
+            item.visibility === ArtworkVisibility.visible &&
+            item.active === true
         ).length
       );
     });
 
+    it("should throw a 400 error if cursor is of invalid type", async () => {
+      const res = await request(app).get("/api/artwork").query({ cursor: 0 });
+      expect(res.body.message).toEqual(logicErrors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(logicErrors.routeQueryInvalid.status);
+    });
+
+    it("should throw a 400 error if cursor is of invalid UUID version", async () => {
+      const res = await request(app)
+        .get("/api/artwork")
+        .query({ cursor: "5831028a-3af3-11ec-8d3d-0242ac130003" });
+      expect(res.body.message).toEqual(logicErrors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(logicErrors.routeQueryInvalid.status);
+    });
+
     it("should create a new artwork", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -102,7 +133,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a 400 error if media is missing", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .field("artworkTitle", "test")
         .field("artworkAvailability", "available")
@@ -118,7 +149,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if media has invalid dimensions", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -143,7 +174,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if media has an invalid extension", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -165,7 +196,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if media has an invalid ratio", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -185,7 +216,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if title is missing", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -207,7 +238,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if availability is missing", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -229,7 +260,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if availability is invalid", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -252,7 +283,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if type is missing", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -274,7 +305,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if type is invalid", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -297,7 +328,7 @@ describe("Artwork tests", () => {
     });
 
     it("should pass if type is invalid but artwork is 'preview only'", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -318,7 +349,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if license is missing", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -340,7 +371,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if license is invalid", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -363,7 +394,7 @@ describe("Artwork tests", () => {
     });
 
     it("should pass if license is invalid but artwork is 'preview only'", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -384,7 +415,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if personal is not an integer", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -405,7 +436,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if personal is below the minimum price", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -428,7 +459,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if personal is above the maximum price", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -451,7 +482,7 @@ describe("Artwork tests", () => {
     });
 
     it("should pass if personal is zero and artwork is not available/commercial/separate/personal", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -472,7 +503,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if use is missing", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -494,7 +525,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if use is invalid", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -517,7 +548,7 @@ describe("Artwork tests", () => {
     });
 
     it("should pass if use is invalid but artwork is available/personal", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -538,7 +569,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if commercial is invalid", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -561,7 +592,7 @@ describe("Artwork tests", () => {
 
     // $TODO create a user that is not onboarded
     it.skip("should throw a 422 if commercial is invalid but included and user is not onboarded", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -583,7 +614,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if commercial is not an integer", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -603,7 +634,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if commercial is below the minimum price", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -626,7 +657,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if commercial is above the maximum price", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -649,7 +680,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if commercial is below the personal license price", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -672,7 +703,7 @@ describe("Artwork tests", () => {
     });
 
     it("should pass if commercial is zero and artwork is not available/commercial/separate/personal", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -693,7 +724,7 @@ describe("Artwork tests", () => {
     });
 
     it("should throw a validation error if visibility is missing", async () => {
-      const res = await request(app, token)
+      const res = await request(app, sellerToken)
         .post("/api/artwork")
         .attach(
           "artworkMedia",
@@ -729,12 +760,15 @@ describe("Artwork tests", () => {
 
     it("should throw a validation error if artwork id is invalid", async () => {
       const res = await request(app).get("/api/artwork/invalidId").query({});
-      expect(res.statusCode).toEqual(validationErrors.invalidUUID.message);
+      expect(res.body.message).toEqual(
+        logicErrors.routeParameterInvalid.message
+      );
+      expect(res.statusCode).toEqual(logicErrors.routeParameterInvalid.status);
     });
 
     it("should throw a 404 error if artwork is not visible", async () => {
       const invisibleArtwork = artwork.filter(
-        (item) => (item.visibility = "invisible")
+        (item) => (item.visibility = ArtworkVisibility.invisible)
       );
       const res = await request(app)
         .get(`/api/artwork/${invisibleArtwork[0].id}`)
