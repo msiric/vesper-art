@@ -10,7 +10,7 @@ import { closeConnection, connectToDatabase } from "../../utils/database";
 import { formatTokenData } from "../../utils/helpers";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors as logicErrors, responses } from "../../utils/statuses";
-import { validUsers } from "../fixtures/entities";
+import { entities, validUsers } from "../fixtures/entities";
 import { request } from "../utils/request";
 
 const MEDIA_LOCATION = path.resolve(__dirname, "../../../test/media");
@@ -859,6 +859,96 @@ describe("Artwork tests", () => {
           .get(`/api/artwork/${inactiveArtwork[0].id}/edit`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.notFound);
+      });
+    });
+  });
+
+  describe("/api/artwork/:artworkId/comments", () => {
+    let artworkWithComments;
+    beforeAll(async (done) => {
+      artworkWithComments = artwork.filter(
+        (item) =>
+          item.current.title === "Has comments" ||
+          item.current.title === "Invisible"
+      );
+    });
+    describe("getArtworkComments", () => {
+      // test cursor, limit, fetching comments on invisible artwork,
+      // fetching comments on inactive artwork,
+      // fetching comments on invalid artwork id
+      it("should not fetch comments for inactive artwork", async () => {
+        const inactiveArtwork = artwork.filter((artwork) => !artwork.active);
+        const res = await request(app)
+          .get(`/api/artwork/${inactiveArtwork[0].id}/comments`)
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.comments.length).toEqual(0);
+      });
+
+      it("should not fetch comments for invisible artwork", async () => {
+        const invisibleArtwork = artworkWithComments.filter(
+          (artwork) => artwork.visibility === ArtworkVisibility.invisible
+        );
+        const res = await request(app)
+          .get(`/api/artwork/${invisibleArtwork[0].id}/comments`)
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.comments.length).toEqual(0);
+      });
+
+      it("should fetch artwork comments", async () => {
+        const visibleArtwork = artworkWithComments.filter(
+          (artwork) => artwork.visibility === ArtworkVisibility.visible
+        );
+        const res = await request(app)
+          .get(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.comments.length).toEqual(
+          entities.Comment.filter(
+            (comment) => comment.artworkId === visibleArtwork[0].id
+          ).length
+        );
+      });
+
+      it("should limit comments to 1", async () => {
+        const visibleArtwork = artworkWithComments.filter(
+          (artwork) => artwork.visibility === ArtworkVisibility.visible
+        );
+        const filteredComments = entities.Comment.filter(
+          (comment) => comment.artworkId === visibleArtwork[0].id
+        );
+        const cursor = "";
+        const limit = 1;
+        const res = await request(app)
+          .get(
+            `/api/artwork/${visibleArtwork[0].id}/comments?cursor=${cursor}&limit=${limit}`
+          )
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.comments[0].id).toEqual(
+          filteredComments[filteredComments.length - 1].id
+        );
+      });
+
+      it("should limit comments to 1 and skip the first one", async () => {
+        const visibleArtwork = artworkWithComments.filter(
+          (artwork) => artwork.visibility === ArtworkVisibility.visible
+        );
+        const filteredComments = entities.Comment.filter(
+          (comment) => comment.artworkId === visibleArtwork[0].id
+        );
+        const cursor = filteredComments[filteredComments.length - 1].id;
+        const limit = 1;
+        const res = await request(app)
+          .get(
+            `/api/artwork/${visibleArtwork[0].id}/comments?cursor=${cursor}&limit=${limit}`
+          )
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.comments[1].id).toEqual(
+          filteredComments[filteredComments.length - 2].id
+        );
       });
     });
   });

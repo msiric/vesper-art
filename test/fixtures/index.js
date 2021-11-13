@@ -75,13 +75,15 @@ const seedS3 = async () => {
       .getOne();
     if (isObjectEmpty(foundUser)) {
       await connection.synchronize(true);
-      for (let item in entities) {
-        await connection
-          .createQueryBuilder()
-          .insert()
-          .into(item)
-          .values(entities[item])
-          .execute();
+      for (let entity in entities) {
+        for (let row of entities[entity]) {
+          await connection
+            .createQueryBuilder()
+            .insert()
+            .into(entity)
+            .values(row)
+            .execute();
+        }
       }
     }
     await seedS3();

@@ -233,7 +233,7 @@ export const fetchArtworkComments = async ({
       ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
     ])
     .where(
-      `comment.artworkId = :artworkId AND artwork.visibility = :visibility AND comment.serial < 
+      `comment.artworkId = :artworkId AND artwork.active = :active AND artwork.visibility = :visibility AND comment.serial < 
       ${resolveSubQuery(
         queryBuilder,
         "comment",
@@ -243,6 +243,7 @@ export const fetchArtworkComments = async ({
       )}`,
       {
         artworkId,
+        active: ARTWORK_SELECTION["ACTIVE_STATUS"],
         visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
       }
     )
