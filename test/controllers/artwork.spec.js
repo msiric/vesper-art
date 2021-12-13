@@ -1,8 +1,9 @@
 import path from "path";
 import app from "../../app";
 import { pricing, statusCodes } from "../../common/constants";
-import { errors as validationErrors } from "../../common/validation";
+import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
+import socketApi from "../../lib/socket";
 import { fetchAllArtworks } from "../../services/postgres/artwork";
 import { fetchUserByUsername } from "../../services/postgres/user";
 import { createAccessToken, createRefreshToken } from "../../utils/auth";
@@ -28,7 +29,7 @@ let buyerCookie;
 let buyerToken;
 
 describe("Artwork tests", () => {
-  beforeAll(async (done) => {
+  beforeAll(async () => {
     connection = await connectToDatabase();
     [seller, buyer, artwork] = await Promise.all([
       fetchUserByUsername({
@@ -61,7 +62,6 @@ describe("Artwork tests", () => {
     const { tokenPayload: buyerPayload } = formatTokenData({ user: buyer });
     buyerCookie = createRefreshToken({ userData: buyerPayload });
     buyerToken = createAccessToken({ userData: buyerPayload });
-    done();
   });
 
   afterAll(async () => {
@@ -599,7 +599,7 @@ describe("Artwork tests", () => {
       });
 
       // $TODO create a user that is not onboarded
-      it.skip("should throw a 422 if commercial is invalid but included and user is not onboarded", async () => {
+      /*       it("should throw a 422 if commercial is invalid but included and user is not onboarded", async () => {
         const res = await request(app, sellerToken)
           .post("/api/artwork")
           .attach(
@@ -619,7 +619,7 @@ describe("Artwork tests", () => {
           logicErrors.stripeOnboardingIncomplete.message
         );
         expect(res.statusCode).toEqual(statusCodes.unprocessable);
-      });
+      }); */
 
       it("should throw a validation error if commercial is not an integer", async () => {
         const res = await request(app, sellerToken)
@@ -865,7 +865,7 @@ describe("Artwork tests", () => {
 
   describe("/api/artwork/:artworkId/comments", () => {
     let artworkWithComments;
-    beforeAll(async (done) => {
+    beforeAll(() => {
       artworkWithComments = artwork.filter(
         (item) =>
           item.current.title === "Has comments" ||
@@ -946,9 +946,78 @@ describe("Artwork tests", () => {
           )
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
-        expect(res.body.comments[1].id).toEqual(
-          filteredComments[filteredComments.length - 2].id
+        expect(res.body.comments[0].id).toEqual(filteredComments[0].id);
+      });
+    });
+    describe("postComment", () => {
+      it("should post a new comment and not send notification if poster owns the artwork", async () => {
+        const socketApiMock = jest
+          .spyOn(socketApi, "sendNotification")
+          .mockImplementation();
+        const visibleArtwork = artwork.filter(
+          (item) => item.active === true && item.owner.id === seller.id
         );
+        const res = await request(app, sellerToken)
+          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(socketApiMock).not.toHaveBeenCalled();
+      });
+
+      it("should post a new comment and send notification", async () => {
+        const socketApiMock = jest
+          .spyOn(socketApi, "sendNotification")
+          .mockImplementation();
+        const visibleArtwork = artwork.filter(
+          (item) => item.active === true && item.owner.id === seller.id
+        );
+        const res = await request(app, buyerToken)
+          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(socketApiMock).toHaveBeenCalled();
+      });
+
+      it("should throw a validation error if the comment content is empty", async () => {
+        const visibleArtwork = artwork.filter(
+          (item) => item.active === true && item.owner.id === seller.id
+        );
+        const res = await request(app, buyerToken)
+          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .send({ commentContent: "" });
+        expect(res.statusCode).toEqual(
+          validationErrors.commentContentRequired.status
+        );
+        expect(res.body.message).toEqual(
+          validationErrors.commentContentRequired.message
+        );
+      });
+
+      it("should throw a validation error if the comment content is too large", async () => {
+        const visibleArtwork = artwork.filter(
+          (item) => item.active === true && item.owner.id === seller.id
+        );
+        const res = await request(app, buyerToken)
+          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .send({
+            commentContent: new Array(ranges.comment.max + 2).join("a"),
+          });
+        expect(res.statusCode).toEqual(
+          validationErrors.commentContentMax.status
+        );
+        expect(res.body.message).toEqual(
+          validationErrors.commentContentMax.message
+        );
+      });
+
+      it("should throw a 404 error if the artwork is not found", async () => {
+        const inactiveArtwork = artwork.filter((item) => item.active === false);
+        const res = await request(app, buyerToken)
+          .post(`/api/artwork/${inactiveArtwork[0].id}/comments`)
+          .send({
+            commentContent: "test",
+          });
+        expect(res.statusCode).toEqual(statusCodes.notFound);
       });
     });
   });
