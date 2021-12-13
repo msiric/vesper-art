@@ -1021,6 +1021,33 @@ describe("Artwork tests", () => {
       });
     });
   });
+  describe("/api/artwork/:artworkId/comments/:commentId", () => {
+    let artworkWithComments;
+    beforeAll(() => {
+      artworkWithComments = artwork.filter(
+        (item) =>
+          item.current.title === "Has comments" ||
+          item.current.title === "Invisible"
+      );
+    });
+    describe("getComment", () => {
+      it("should fetch comment", async () => {
+        const visibleArtwork = artworkWithComments.filter(
+          (artwork) => artwork.visibility === ArtworkVisibility.visible
+        );
+        const foundComments = entities.Comment.filter(
+          (comment) => comment.artworkId === visibleArtwork[0].id
+        );
+        const res = await request(app)
+          .get(
+            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+          )
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.comment).toBeTruthy();
+      });
+    });
+  });
   // $TODO test patch artwork (same as post without the media)
   // $TODO test delete artwork
 });
