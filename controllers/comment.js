@@ -7,7 +7,7 @@ import {
   addNewComment,
   editExistingComment,
   fetchCommentById,
-  removeExistingComment,
+  removeExistingComment
 } from "../services/postgres/comment";
 import { addNewNotification } from "../services/postgres/notification";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
@@ -75,14 +75,17 @@ export const patchComment = async ({
   await commentValidation.validate({ commentContent });
   const foundArtwork = await fetchArtworkById({ artworkId, connection });
   if (!isObjectEmpty(foundArtwork)) {
-    await editExistingComment({
+    const updatedComment = await editExistingComment({
       commentId,
       artworkId,
       userId,
       commentContent,
       connection,
     });
-    return formatResponse(responses.commentUpdated);
+    if (updatedComment.affected !== 0) {
+      return formatResponse(responses.commentUpdated);
+    }
+    throw createError(...formatError(errors.commentNotFound));
   }
   throw createError(...formatError(errors.artworkNotFound));
 };

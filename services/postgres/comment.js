@@ -15,6 +15,7 @@ export const fetchCommentById = async ({
     .leftJoinAndSelect("comment.owner", "owner")
     .leftJoinAndSelect("owner.avatar", "avatar")
     .where(
+      // $TODO should artwork.active be checked as well?
       "comment.id = :commentId AND comment.artworkId = :artworkId AND artwork.visibility = :visibility",
       {
         commentId,
@@ -64,6 +65,7 @@ export const editExistingComment = async ({
     .update(Comment)
     .set({ content: commentContent, modified: true })
     .where(
+      // $TODO should artwork.active and artwork.visibility be checked as well?
       'id = :commentId AND "artworkId" = :artworkId AND "ownerId" = :userId',
       {
         commentId,

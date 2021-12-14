@@ -11,6 +11,11 @@ export const errors = {
     message: "Artwork not found",
     expose: true,
   },
+  commentNotFound: {
+    status: statusCodes.notFound,
+    message: "Comment not found",
+    expose: true,
+  },
   commercialArtworkUnavailable: {
     status: statusCodes.internalError,
     message: "Creating commercial artwork is not yet available",

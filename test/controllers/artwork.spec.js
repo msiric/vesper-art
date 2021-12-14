@@ -10,7 +10,7 @@ import { createAccessToken, createRefreshToken } from "../../utils/auth";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { formatTokenData } from "../../utils/helpers";
 import { USER_SELECTION } from "../../utils/selectors";
-import { errors as logicErrors, responses } from "../../utils/statuses";
+import { errors, errors as logicErrors, responses } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
 import { request } from "../utils/request";
 
@@ -28,6 +28,7 @@ let sellerToken;
 let buyerCookie;
 let buyerToken;
 
+// $TODO add isAuthenticated to each test
 describe("Artwork tests", () => {
   beforeAll(async () => {
     connection = await connectToDatabase();
@@ -1022,22 +1023,22 @@ describe("Artwork tests", () => {
     });
   });
   describe("/api/artwork/:artworkId/comments/:commentId", () => {
-    let artworkWithComments;
+    let artworkWithComments, visibleArtwork, foundComments;
     beforeAll(() => {
       artworkWithComments = artwork.filter(
         (item) =>
           item.current.title === "Has comments" ||
           item.current.title === "Invisible"
       );
+      visibleArtwork = artworkWithComments.filter(
+        (artwork) => artwork.visibility === ArtworkVisibility.visible
+      );
+      foundComments = entities.Comment.filter(
+        (comment) => comment.artworkId === visibleArtwork[0].id
+      );
     });
     describe("getComment", () => {
       it("should fetch comment", async () => {
-        const visibleArtwork = artworkWithComments.filter(
-          (artwork) => artwork.visibility === ArtworkVisibility.visible
-        );
-        const foundComments = entities.Comment.filter(
-          (comment) => comment.artworkId === visibleArtwork[0].id
-        );
         const res = await request(app)
           .get(
             `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
@@ -1045,6 +1046,86 @@ describe("Artwork tests", () => {
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comment).toBeTruthy();
+      });
+
+      it("should return undefined if artwork does not exist", async () => {
+        const res = await request(app)
+          .get(
+            // $TODO replace foundComments[0].id with a non-existent uuid
+            `/api/artwork/${foundComments[0].id}/comments/${foundComments[0].id}`
+          )
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.comment).toBe(undefined);
+      });
+
+      it("should return undefined if comment does not exist", async () => {
+        const res = await request(app)
+          .get(
+            // $TODO replace artworkWithComments[0].id with a non-existent uuid
+            `/api/artwork/${visibleArtwork[0].id}/comments/${artworkWithComments[0].id}`
+          )
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.comment).toBe(undefined);
+      });
+    });
+    describe("patchComment", () => {
+      it("should patch comment", async () => {
+        const res = await request(app, buyerToken)
+          .patch(
+            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+          )
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw a validation error if the comment content is too large", async () => {
+        const res = await request(app, buyerToken)
+          .patch(
+            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+          )
+          .send({
+            commentContent: new Array(ranges.comment.max + 2).join("a"),
+          });
+        expect(res.statusCode).toEqual(
+          validationErrors.commentContentMax.status
+        );
+        expect(res.body.message).toEqual(
+          validationErrors.commentContentMax.message
+        );
+      });
+
+      it("should throw a 404 error if comment is patched by non owner", async () => {
+        const res = await request(app, sellerToken)
+          .patch(
+            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+          )
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.commentNotFound.message);
+      });
+
+      it("should throw a 404 error if artwork doesn't exist", async () => {
+        const res = await request(app, buyerToken)
+          .patch(
+            // $TODO replace foundComments[0].id with a non-existent uuid
+            `/api/artwork/${foundComments[0].id}/comments/${foundComments[0].id}`
+          )
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+      });
+
+      it("should throw a 404 error if comment doesn't exist", async () => {
+        const res = await request(app, buyerToken)
+          .patch(
+            // $TODO replace foundComments[0].id with a non-existent uuid
+            `/api/artwork/${visibleArtwork[0].id}/comments/${visibleArtwork[0].id}`
+          )
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.commentNotFound.message);
       });
     });
   });
