@@ -1184,7 +1184,7 @@ describe("Artwork tests", () => {
     });
   });
 
-  describe.only("/api/artwork/:artworkId/favorites", () => {
+  describe("/api/artwork/:artworkId/favorites", () => {
     let artworkFavoritedByBuyer,
       artworkFavoritedBySeller,
       visibleArtwork,
@@ -1250,6 +1250,53 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           errors.artworkAlreadyFavorited.message
         );
+      });
+
+      it("should throw a 404 error if artwork doesn't exist", async () => {
+        const res = await request(app, buyerToken).post(
+          // $TODO replace foundFavorites[0].id with a non-existent uuid
+          `/api/artwork/${foundFavorites[0].id}/favorites`
+        );
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+      });
+    });
+    describe("unfavoriteArtwork", () => {
+      it("should unfavorite artwork", async () => {
+        const res = await request(app, buyerToken)
+          .delete(`/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`)
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.message).toEqual(responses.artworkUnfavorited.message);
+      });
+
+      it("should throw a 400 error if artwork unfavorited by non-owner", async () => {
+        const res = await request(app, sellerToken)
+          .delete(`/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`)
+          .query({});
+        expect(res.statusCode).toEqual(errors.artworkFavoritedByOwner.status);
+        expect(res.body.message).toEqual(
+          errors.artworkUnfavoritedByOwner.message
+        );
+      });
+
+      it("should throw a 400 error if unfavorited artwork is unfavorited", async () => {
+        const res = await request(app, impartialToken)
+          .delete(`/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`)
+          .query({});
+        expect(res.statusCode).toEqual(errors.artworkAlreadyUnfavorited.status);
+        expect(res.body.message).toEqual(
+          errors.artworkAlreadyUnfavorited.message
+        );
+      });
+
+      it("should throw a 404 error if artwork doesn't exist", async () => {
+        const res = await request(app, buyerToken).delete(
+          // $TODO replace foundFavorites[0].id with a non-existent uuid
+          `/api/artwork/${foundFavorites[0].id}/favorites`
+        );
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
       });
     });
   });
