@@ -1198,6 +1198,24 @@ describe("Artwork tests", () => {
         expect(res.body.favorites).toBe(0);
       });
     });
+    describe("favoriteArtwork", () => {
+      it("should favorite artwork", async () => {
+        const res = await request(app, buyerToken)
+          .post(`/api/artwork/${artworkWithFavorites[0].id}/favorites`)
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw a 400 error if artwork favorited by non-owner", async () => {
+        const res = await request(app, sellerToken)
+          .post(`/api/artwork/${artworkWithFavorites[0].id}/favorites`)
+          .query({});
+        expect(res.statusCode).toEqual(errors.artworkFavoritedByOwner.status);
+        expect(res.body.message).toEqual(
+          errors.artworkFavoritedByOwner.message
+        );
+      });
+    });
   });
   // $TODO test patch artwork (same as post without the media)
   // $TODO test delete artwork
