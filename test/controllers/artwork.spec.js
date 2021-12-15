@@ -1022,7 +1022,8 @@ describe("Artwork tests", () => {
       });
     });
   });
-  describe.only("/api/artwork/:artworkId/comments/:commentId", () => {
+
+  describe("/api/artwork/:artworkId/comments/:commentId", () => {
     let artworkWithComments, visibleArtwork, foundComments;
     beforeAll(() => {
       artworkWithComments = artwork.filter(
@@ -1163,24 +1164,38 @@ describe("Artwork tests", () => {
       });
     });
   });
+
   describe("/api/artwork/:artworkId/favorites", () => {
-    let artworkWithFavorites;
-    beforeAll(async (done) => {
+    let artworkWithFavorites, visibleArtwork, foundFavorites;
+    beforeAll(() => {
       artworkWithFavorites = artwork.filter(
         (item) => item.current.title === "Has favorites"
+      );
+      visibleArtwork = artworkWithFavorites.filter(
+        (artwork) => artwork.visibility === ArtworkVisibility.visible
+      );
+      foundFavorites = entities.Favorite.filter(
+        (favorite) => favorite.artworkId === visibleArtwork[0].id
       );
     });
     describe("getArtworkFavorites", () => {
       it("should fetch artwork favorites", async () => {
-        const res = await request(app)
+        const res = await request(app, buyerToken)
           .get(`/api/artwork/${artworkWithFavorites[0].id}/favorites`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
-        expect(res.body.favorites.length).toEqual(
-          entities.Favorite.filter(
-            (comment) => comment.artworkId === visibleArtwork[0].id
-          ).length
-        );
+        expect(res.body.favorites.length).toEqual(foundFavorites.length);
+      });
+
+      it("should return undefined if artwork does not exist", async () => {
+        const res = await request(app, buyerToken)
+          .get(
+            // $TODO replace foundFavorites[0].id with a non-existent uuid
+            `/api/artwork/${foundFavorites[0].id}/favorites`
+          )
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.favorites).toBe(undefined);
       });
     });
   });

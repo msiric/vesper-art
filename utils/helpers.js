@@ -144,7 +144,6 @@ export const isAuthenticated = async (req, res, next) => {
       ignoreExpiration: true,
     });
     const data = jwt.decode(token);
-    console.log("DATA", data);
     if (!data.active)
       return next(createError(...formatError(errors.forbiddenAccess)));
     if (!data.verified)
