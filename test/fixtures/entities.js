@@ -33,7 +33,7 @@ export const validUsers = {
     name: "Valid User 3",
     password: "testpassword3",
     hashedPassword:
-      "$argon2d$v=19$m=4096,t=3,p=1$c29tZXNhbHQ$CmY8TMQI8C3KNa/QEBO2mEC/g9+TGG1lJZ5s7yV5sBY",
+      "$argon2i$v=19$m=4096,t=3,p=1$6ZBGiFOafYoFHOD2ayfMQw$8/NQ9FzSAilhWuTfjSta7Wc7x7MJ2TNjHeuJ7n4YT8M",
   },
   buyer: {
     id: "1a1c6859-bb73-419f-8b29-cd7817ede2f2",
@@ -57,6 +57,25 @@ export const validUsers = {
 
 export const entities = {
   User: [
+    {
+      id: validUsers.impartial.id,
+      email: validUsers.impartial.email,
+      fullName: validUsers.impartial.name,
+      name: validUsers.impartial.username,
+      password: validUsers.impartial.hashedPassword,
+      avatarId: null,
+      description: "Enabled favorites display",
+      country: "EE",
+      businessAddress: "",
+      displayFavorites: true,
+      resetToken: "",
+      jwtVersion: 0,
+      stripeId: "",
+      verificationToken: "",
+      verified: true,
+      active: true,
+      generated: false,
+    },
     {
       id: validUsers.seller.id,
       email: validUsers.seller.email,

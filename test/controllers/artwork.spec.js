@@ -22,17 +22,20 @@ jest.setTimeout(3 * 60 * 1000);
 let connection;
 let seller;
 let buyer;
+let impartial;
 let artwork;
 let sellerCookie;
 let sellerToken;
 let buyerCookie;
 let buyerToken;
+let impartialCookie;
+let impartialToken;
 
 // $TODO add isAuthenticated to each test
 describe("Artwork tests", () => {
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [seller, buyer, artwork] = await Promise.all([
+    [seller, buyer, impartial, artwork] = await Promise.all([
       fetchUserByUsername({
         userUsername: validUsers.seller.username,
         selection: [
@@ -55,6 +58,17 @@ describe("Artwork tests", () => {
         ],
         connection,
       }),
+      fetchUserByUsername({
+        userUsername: validUsers.impartial.username,
+        selection: [
+          ...USER_SELECTION["ESSENTIAL_INFO"](),
+          ...USER_SELECTION["STRIPE_INFO"](),
+          ...USER_SELECTION["VERIFICATION_INFO"](),
+          ...USER_SELECTION["AUTH_INFO"](),
+          ...USER_SELECTION["LICENSE_INFO"](),
+        ],
+        connection,
+      }),
       fetchAllArtworks({ connection }),
     ]);
     const { tokenPayload: sellerPayload } = formatTokenData({ user: seller });
@@ -63,6 +77,11 @@ describe("Artwork tests", () => {
     const { tokenPayload: buyerPayload } = formatTokenData({ user: buyer });
     buyerCookie = createRefreshToken({ userData: buyerPayload });
     buyerToken = createAccessToken({ userData: buyerPayload });
+    const { tokenPayload: impartialPayload } = formatTokenData({
+      user: impartial,
+    });
+    impartialCookie = createRefreshToken({ userData: impartialPayload });
+    impartialToken = createAccessToken({ userData: impartialPayload });
   });
 
   afterAll(async () => {
@@ -1165,7 +1184,7 @@ describe("Artwork tests", () => {
     });
   });
 
-  describe("/api/artwork/:artworkId/favorites", () => {
+  describe.only("/api/artwork/:artworkId/favorites", () => {
     let artworkFavoritedByBuyer,
       artworkFavoritedBySeller,
       visibleArtwork,
@@ -1206,11 +1225,11 @@ describe("Artwork tests", () => {
     });
     describe("favoriteArtwork", () => {
       it("should favorite artwork", async () => {
-        const res = await request(app, buyerToken)
+        const res = await request(app, impartialToken)
           .post(`/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`)
           .query({});
-        expect(res.body.message).toEqual("");
         expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.message).toEqual(responses.artworkFavorited.message);
       });
 
       it("should throw a 400 error if artwork favorited by non-owner", async () => {
