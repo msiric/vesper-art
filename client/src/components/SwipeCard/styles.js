@@ -13,6 +13,7 @@ const swipeCardStyles = makeStyles((muiTheme) => ({
     "&> div> div": {
       height: "100%",
       width: "100%",
+      willChange: "initial !important",
       transition:
         "transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s !important",
     },

@@ -13,6 +13,7 @@ export const request = (app, token = null, cookie = null) => {
 
   return {
     post: hook("post"),
+    patch: hook("patch"),
     get: hook("get"),
     put: hook("put"),
     delete: hook("delete"),

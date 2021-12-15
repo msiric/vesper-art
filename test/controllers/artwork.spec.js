@@ -1,15 +1,16 @@
 import path from "path";
 import app from "../../app";
 import { pricing, statusCodes } from "../../common/constants";
-import { errors as validationErrors } from "../../common/validation";
+import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
+import socketApi from "../../lib/socket";
 import { fetchAllArtworks } from "../../services/postgres/artwork";
 import { fetchUserByUsername } from "../../services/postgres/user";
 import { createAccessToken, createRefreshToken } from "../../utils/auth";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { formatTokenData } from "../../utils/helpers";
 import { USER_SELECTION } from "../../utils/selectors";
-import { errors as logicErrors, responses } from "../../utils/statuses";
+import { errors, errors as logicErrors, responses } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
 import { request } from "../utils/request";
 
@@ -27,8 +28,9 @@ let sellerToken;
 let buyerCookie;
 let buyerToken;
 
+// $TODO add isAuthenticated to each test
 describe("Artwork tests", () => {
-  beforeAll(async (done) => {
+  beforeAll(async () => {
     connection = await connectToDatabase();
     [seller, buyer, artwork] = await Promise.all([
       fetchUserByUsername({
@@ -61,7 +63,6 @@ describe("Artwork tests", () => {
     const { tokenPayload: buyerPayload } = formatTokenData({ user: buyer });
     buyerCookie = createRefreshToken({ userData: buyerPayload });
     buyerToken = createAccessToken({ userData: buyerPayload });
-    done();
   });
 
   afterAll(async () => {
@@ -599,7 +600,7 @@ describe("Artwork tests", () => {
       });
 
       // $TODO create a user that is not onboarded
-      it.skip("should throw a 422 if commercial is invalid but included and user is not onboarded", async () => {
+      /*       it("should throw a 422 if commercial is invalid but included and user is not onboarded", async () => {
         const res = await request(app, sellerToken)
           .post("/api/artwork")
           .attach(
@@ -619,7 +620,7 @@ describe("Artwork tests", () => {
           logicErrors.stripeOnboardingIncomplete.message
         );
         expect(res.statusCode).toEqual(statusCodes.unprocessable);
-      });
+      }); */
 
       it("should throw a validation error if commercial is not an integer", async () => {
         const res = await request(app, sellerToken)
@@ -865,7 +866,7 @@ describe("Artwork tests", () => {
 
   describe("/api/artwork/:artworkId/comments", () => {
     let artworkWithComments;
-    beforeAll(async (done) => {
+    beforeAll(() => {
       artworkWithComments = artwork.filter(
         (item) =>
           item.current.title === "Has comments" ||
@@ -946,9 +947,185 @@ describe("Artwork tests", () => {
           )
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
-        expect(res.body.comments[1].id).toEqual(
-          filteredComments[filteredComments.length - 2].id
+        expect(res.body.comments[0].id).toEqual(filteredComments[0].id);
+      });
+    });
+    describe("postComment", () => {
+      it("should post a new comment and not send notification if poster owns the artwork", async () => {
+        const socketApiMock = jest
+          .spyOn(socketApi, "sendNotification")
+          .mockImplementation();
+        const visibleArtwork = artwork.filter(
+          (item) => item.active === true && item.owner.id === seller.id
         );
+        const res = await request(app, sellerToken)
+          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(socketApiMock).not.toHaveBeenCalled();
+      });
+
+      it("should post a new comment and send notification", async () => {
+        const socketApiMock = jest
+          .spyOn(socketApi, "sendNotification")
+          .mockImplementation();
+        const visibleArtwork = artwork.filter(
+          (item) => item.active === true && item.owner.id === seller.id
+        );
+        const res = await request(app, buyerToken)
+          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(socketApiMock).toHaveBeenCalled();
+      });
+
+      it("should throw a validation error if the comment content is empty", async () => {
+        const visibleArtwork = artwork.filter(
+          (item) => item.active === true && item.owner.id === seller.id
+        );
+        const res = await request(app, buyerToken)
+          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .send({ commentContent: "" });
+        expect(res.statusCode).toEqual(
+          validationErrors.commentContentRequired.status
+        );
+        expect(res.body.message).toEqual(
+          validationErrors.commentContentRequired.message
+        );
+      });
+
+      it("should throw a validation error if the comment content is too large", async () => {
+        const visibleArtwork = artwork.filter(
+          (item) => item.active === true && item.owner.id === seller.id
+        );
+        const res = await request(app, buyerToken)
+          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .send({
+            commentContent: new Array(ranges.comment.max + 2).join("a"),
+          });
+        expect(res.statusCode).toEqual(
+          validationErrors.commentContentMax.status
+        );
+        expect(res.body.message).toEqual(
+          validationErrors.commentContentMax.message
+        );
+      });
+
+      it("should throw a 404 error if the artwork is not found", async () => {
+        const inactiveArtwork = artwork.filter((item) => item.active === false);
+        const res = await request(app, buyerToken)
+          .post(`/api/artwork/${inactiveArtwork[0].id}/comments`)
+          .send({
+            commentContent: "test",
+          });
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+      });
+    });
+  });
+  describe("/api/artwork/:artworkId/comments/:commentId", () => {
+    let artworkWithComments, visibleArtwork, foundComments;
+    beforeAll(() => {
+      artworkWithComments = artwork.filter(
+        (item) =>
+          item.current.title === "Has comments" ||
+          item.current.title === "Invisible"
+      );
+      visibleArtwork = artworkWithComments.filter(
+        (artwork) => artwork.visibility === ArtworkVisibility.visible
+      );
+      foundComments = entities.Comment.filter(
+        (comment) => comment.artworkId === visibleArtwork[0].id
+      );
+    });
+    describe("getComment", () => {
+      it("should fetch comment", async () => {
+        const res = await request(app)
+          .get(
+            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+          )
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.comment).toBeTruthy();
+      });
+
+      it("should return undefined if artwork does not exist", async () => {
+        const res = await request(app)
+          .get(
+            // $TODO replace foundComments[0].id with a non-existent uuid
+            `/api/artwork/${foundComments[0].id}/comments/${foundComments[0].id}`
+          )
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.comment).toBe(undefined);
+      });
+
+      it("should return undefined if comment does not exist", async () => {
+        const res = await request(app)
+          .get(
+            // $TODO replace artworkWithComments[0].id with a non-existent uuid
+            `/api/artwork/${visibleArtwork[0].id}/comments/${artworkWithComments[0].id}`
+          )
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.comment).toBe(undefined);
+      });
+    });
+    describe("patchComment", () => {
+      it("should patch comment", async () => {
+        const res = await request(app, buyerToken)
+          .patch(
+            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+          )
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw a validation error if the comment content is too large", async () => {
+        const res = await request(app, buyerToken)
+          .patch(
+            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+          )
+          .send({
+            commentContent: new Array(ranges.comment.max + 2).join("a"),
+          });
+        expect(res.statusCode).toEqual(
+          validationErrors.commentContentMax.status
+        );
+        expect(res.body.message).toEqual(
+          validationErrors.commentContentMax.message
+        );
+      });
+
+      it("should throw a 404 error if comment is patched by non owner", async () => {
+        const res = await request(app, sellerToken)
+          .patch(
+            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+          )
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.commentNotFound.message);
+      });
+
+      it("should throw a 404 error if artwork doesn't exist", async () => {
+        const res = await request(app, buyerToken)
+          .patch(
+            // $TODO replace foundComments[0].id with a non-existent uuid
+            `/api/artwork/${foundComments[0].id}/comments/${foundComments[0].id}`
+          )
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+      });
+
+      it("should throw a 404 error if comment doesn't exist", async () => {
+        const res = await request(app, buyerToken)
+          .patch(
+            // $TODO replace foundComments[0].id with a non-existent uuid
+            `/api/artwork/${visibleArtwork[0].id}/comments/${visibleArtwork[0].id}`
+          )
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.commentNotFound.message);
       });
 
       describe("/api/artwork/:artworkId/favorites", () => {
