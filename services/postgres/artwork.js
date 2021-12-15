@@ -284,10 +284,11 @@ export const fetchFavoritesCount = async ({ artworkId, connection }) => {
     .createQueryBuilder("favorite")
     .select([...FAVORITE_SELECTION("STRIPPED_INFO")()])
     .where(
-      "favorite.artworkId = :artworkId AND artwork.visibility = :visibility",
+      "favorite.artworkId = :artworkId AND artwork.visibility = :visibility AND artwork.active = :active",
       {
         artworkId,
         visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
+        active: ARTWORK_SELECTION["ACTIVE_STATUS"],
       }
     )
     .getCount();

@@ -950,6 +950,28 @@ describe("Artwork tests", () => {
           filteredComments[filteredComments.length - 2].id
         );
       });
+
+      describe("/api/artwork/:artworkId/favorites", () => {
+        let artworkWithFavorites;
+        beforeAll(async (done) => {
+          artworkWithFavorites = artwork.filter(
+            (item) => item.current.title === "Has favorites"
+          );
+        });
+        describe("getArtworkFavorites", () => {
+          it("should fetch artwork favorites", async () => {
+            const res = await request(app)
+              .get(`/api/artwork/${artworkWithFavorites[0].id}/favorites`)
+              .query({});
+            expect(res.statusCode).toEqual(statusCodes.ok);
+            expect(res.body.favorites.length).toEqual(
+              entities.Favorite.filter(
+                (comment) => comment.artworkId === visibleArtwork[0].id
+              ).length
+            );
+          });
+        });
+      });
     });
   });
   // $TODO test patch artwork (same as post without the media)
