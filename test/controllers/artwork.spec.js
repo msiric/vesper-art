@@ -1022,7 +1022,7 @@ describe("Artwork tests", () => {
       });
     });
   });
-  describe("/api/artwork/:artworkId/comments/:commentId", () => {
+  describe.only("/api/artwork/:artworkId/comments/:commentId", () => {
     let artworkWithComments, visibleArtwork, foundComments;
     beforeAll(() => {
       artworkWithComments = artwork.filter(
@@ -1127,27 +1127,60 @@ describe("Artwork tests", () => {
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.commentNotFound.message);
       });
+    });
+    describe("deleteComment", () => {
+      it("should delete comment", async () => {
+        const res = await request(app, buyerToken).delete(
+          `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+        );
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
 
-      describe("/api/artwork/:artworkId/favorites", () => {
-        let artworkWithFavorites;
-        beforeAll(async (done) => {
-          artworkWithFavorites = artwork.filter(
-            (item) => item.current.title === "Has favorites"
-          );
-        });
-        describe("getArtworkFavorites", () => {
-          it("should fetch artwork favorites", async () => {
-            const res = await request(app)
-              .get(`/api/artwork/${artworkWithFavorites[0].id}/favorites`)
-              .query({});
-            expect(res.statusCode).toEqual(statusCodes.ok);
-            expect(res.body.favorites.length).toEqual(
-              entities.Favorite.filter(
-                (comment) => comment.artworkId === visibleArtwork[0].id
-              ).length
-            );
-          });
-        });
+      it("should throw a 404 error if comment is deleted by non owner", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+        );
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.commentNotFound.message);
+      });
+
+      it("should throw a 404 error if artwork doesn't exist", async () => {
+        const res = await request(app, buyerToken).delete(
+          // $TODO replace foundComments[0].id with a non-existent uuid
+          `/api/artwork/${foundComments[0].id}/comments/${foundComments[0].id}`
+        );
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+      });
+
+      it("should throw a 404 error if comment doesn't exist", async () => {
+        const res = await request(app, buyerToken).delete(
+          // $TODO replace foundComments[0].id with a non-existent uuid
+          `/api/artwork/${visibleArtwork[0].id}/comments/${visibleArtwork[0].id}`
+        );
+        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.commentNotFound.message);
+      });
+    });
+  });
+  describe("/api/artwork/:artworkId/favorites", () => {
+    let artworkWithFavorites;
+    beforeAll(async (done) => {
+      artworkWithFavorites = artwork.filter(
+        (item) => item.current.title === "Has favorites"
+      );
+    });
+    describe("getArtworkFavorites", () => {
+      it("should fetch artwork favorites", async () => {
+        const res = await request(app)
+          .get(`/api/artwork/${artworkWithFavorites[0].id}/favorites`)
+          .query({});
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.favorites.length).toEqual(
+          entities.Favorite.filter(
+            (comment) => comment.artworkId === visibleArtwork[0].id
+          ).length
+        );
       });
     });
   });

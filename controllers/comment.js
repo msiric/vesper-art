@@ -7,7 +7,7 @@ import {
   addNewComment,
   editExistingComment,
   fetchCommentById,
-  removeExistingComment
+  removeExistingComment,
 } from "../services/postgres/comment";
 import { addNewNotification } from "../services/postgres/notification";
 import { formatError, formatResponse, generateUuids } from "../utils/helpers";
@@ -98,13 +98,16 @@ export const deleteComment = async ({
 }) => {
   const foundArtwork = await fetchArtworkById({ artworkId, connection });
   if (!isObjectEmpty(foundArtwork)) {
-    await removeExistingComment({
+    const deletedComment = await removeExistingComment({
       commentId,
       artworkId,
       userId,
       connection,
     });
-    return formatResponse(responses.commentDeleted);
+    if (deletedComment.affected !== 0) {
+      return formatResponse(responses.commentDeleted);
+    }
+    throw createError(...formatError(errors.commentNotFound));
   }
   throw createError(...formatError(errors.artworkNotFound));
 };
