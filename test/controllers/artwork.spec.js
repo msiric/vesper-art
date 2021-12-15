@@ -1184,10 +1184,10 @@ describe("Artwork tests", () => {
           .get(`/api/artwork/${artworkWithFavorites[0].id}/favorites`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
-        expect(res.body.favorites.length).toEqual(foundFavorites.length);
+        expect(res.body.favorites).toEqual(foundFavorites.length);
       });
 
-      it("should return undefined if artwork does not exist", async () => {
+      it("should return 0 if artwork does not exist", async () => {
         const res = await request(app, buyerToken)
           .get(
             // $TODO replace foundFavorites[0].id with a non-existent uuid
@@ -1195,7 +1195,7 @@ describe("Artwork tests", () => {
           )
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
-        expect(res.body.favorites).toBe(undefined);
+        expect(res.body.favorites).toBe(0);
       });
     });
   });

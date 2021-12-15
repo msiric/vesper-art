@@ -282,15 +282,11 @@ export const fetchFavoritesCount = async ({ artworkId, connection }) => {
   const foundFavorites = await connection
     .getRepository(Favorite)
     .createQueryBuilder("favorite")
-    .select([...FAVORITE_SELECTION("STRIPPED_INFO")()])
-    .where(
-      "favorite.artworkId = :artworkId AND artwork.visibility = :visibility AND artwork.active = :active",
-      {
-        artworkId,
-        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
-        active: ARTWORK_SELECTION["ACTIVE_STATUS"],
-      }
-    )
+    // $TODO should artwork.active and artwork.visible be checked as well?
+    .select([...FAVORITE_SELECTION["STRIPPED_INFO"]()])
+    .where("favorite.artworkId = :artworkId", {
+      artworkId,
+    })
     .getCount();
   return foundFavorites;
 };
