@@ -26,6 +26,15 @@ const version = {
 };
 
 export const validUsers = {
+  impartial: {
+    id: "2bd4cb60-5b6d-467c-b2d6-434c0d3b1e33",
+    email: "validuser3@test.com",
+    username: "validuser3",
+    name: "Valid User 3",
+    password: "testpassword3",
+    hashedPassword:
+      "$argon2d$v=19$m=4096,t=3,p=1$c29tZXNhbHQ$CmY8TMQI8C3KNa/QEBO2mEC/g9+TGG1lJZ5s7yV5sBY",
+  },
   buyer: {
     id: "1a1c6859-bb73-419f-8b29-cd7817ede2f2",
     email: "validuser2@test.com",
@@ -856,12 +865,21 @@ export const entities = {
       ...version,
     },
     {
-      title: "Has favorites",
+      title: "Has favorites (buyer)",
       description: "",
       id: "1f47362c-1d0e-4ab1-bd9a-cc270bd364e8",
       artworkId: "05eb8654-94f2-4ab7-a7f8-0d69c76e3d60",
       coverId: "cdf5096e-5710-4523-a227-5836e9f6c8f6",
       mediaId: "8399dfff-7c38-41c9-baed-84ff61b71707",
+      ...version,
+    },
+    {
+      title: "Has favorites (seller)",
+      description: "",
+      id: "054f8813-44ea-4ca0-8790-519d07aac18a",
+      artworkId: "276699ca-4bc9-460d-9dfd-9d1d8b92ca2f",
+      coverId: "0c1a078a-8b3d-4455-89fb-953aca45f133",
+      mediaId: "c3c86bff-2403-41ef-9ed3-0217fb20259d",
       ...version,
     },
     {
@@ -889,15 +907,6 @@ export const entities = {
       artworkId: "06eef646-166a-441b-8438-38201f792188",
       coverId: "1427b740-fe44-410c-86df-ad7f25186181",
       mediaId: "c95819ee-6629-4fe7-a6d6-07d2b869794c",
-      ...version,
-    },
-    {
-      title: "Halloween",
-      description: "",
-      id: "054f8813-44ea-4ca0-8790-519d07aac18a",
-      artworkId: "276699ca-4bc9-460d-9dfd-9d1d8b92ca2f",
-      coverId: "0c1a078a-8b3d-4455-89fb-953aca45f133",
-      mediaId: "c3c86bff-2403-41ef-9ed3-0217fb20259d",
       ...version,
     },
     {
@@ -1221,6 +1230,11 @@ export const entities = {
       id: "0f19c0dd-9ba4-4e7f-8e37-4254e0935c92",
       ownerId: validUsers.buyer.id,
       artworkId: "05eb8654-94f2-4ab7-a7f8-0d69c76e3d60",
+    },
+    {
+      id: "2c6fcf64-daaa-4b6e-b166-11bf5fdb32fa",
+      ownerId: validUsers.seller.id,
+      artworkId: "276699ca-4bc9-460d-9dfd-9d1d8b92ca2f",
     },
   ],
   License: [

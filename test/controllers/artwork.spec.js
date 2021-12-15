@@ -1166,12 +1166,18 @@ describe("Artwork tests", () => {
   });
 
   describe("/api/artwork/:artworkId/favorites", () => {
-    let artworkWithFavorites, visibleArtwork, foundFavorites;
+    let artworkFavoritedByBuyer,
+      artworkFavoritedBySeller,
+      visibleArtwork,
+      foundFavorites;
     beforeAll(() => {
-      artworkWithFavorites = artwork.filter(
-        (item) => item.current.title === "Has favorites"
+      artworkFavoritedByBuyer = artwork.filter(
+        (item) => item.current.title === "Has favorites (buyer)"
       );
-      visibleArtwork = artworkWithFavorites.filter(
+      artworkFavoritedBySeller = artwork.filter(
+        (item) => item.current.title === "Has favorites (seller)"
+      );
+      visibleArtwork = artworkFavoritedByBuyer.filter(
         (artwork) => artwork.visibility === ArtworkVisibility.visible
       );
       foundFavorites = entities.Favorite.filter(
@@ -1181,7 +1187,7 @@ describe("Artwork tests", () => {
     describe("getArtworkFavorites", () => {
       it("should fetch artwork favorites", async () => {
         const res = await request(app, buyerToken)
-          .get(`/api/artwork/${artworkWithFavorites[0].id}/favorites`)
+          .get(`/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.favorites).toEqual(foundFavorites.length);
@@ -1201,18 +1207,29 @@ describe("Artwork tests", () => {
     describe("favoriteArtwork", () => {
       it("should favorite artwork", async () => {
         const res = await request(app, buyerToken)
-          .post(`/api/artwork/${artworkWithFavorites[0].id}/favorites`)
+          .post(`/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`)
           .query({});
+        expect(res.body.message).toEqual("");
         expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should throw a 400 error if artwork favorited by non-owner", async () => {
         const res = await request(app, sellerToken)
-          .post(`/api/artwork/${artworkWithFavorites[0].id}/favorites`)
+          .post(`/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`)
           .query({});
         expect(res.statusCode).toEqual(errors.artworkFavoritedByOwner.status);
         expect(res.body.message).toEqual(
           errors.artworkFavoritedByOwner.message
+        );
+      });
+
+      it("should throw a 400 error if already favorited artwork is favorited", async () => {
+        const res = await request(app, sellerToken)
+          .post(`/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`)
+          .query({});
+        expect(res.statusCode).toEqual(errors.artworkAlreadyFavorited.status);
+        expect(res.body.message).toEqual(
+          errors.artworkAlreadyFavorited.message
         );
       });
     });
