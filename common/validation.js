@@ -28,7 +28,7 @@ export const ranges = {
   },
   username: {
     min: 5,
-    max: 20,
+    max: 25,
   },
   artworkTitle: {
     max: 70,

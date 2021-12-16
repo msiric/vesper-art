@@ -18,7 +18,7 @@
     "transpile:watch-silent": "tsc-watch --onSuccess",
     "transpile:copy-files": "tsc && npm run copy-files",
     "seed:db": "set NODE_ENV=local&& node ./dist/fixtures/index",
-    "seed:test": "set NODE_ENV=test&& node ./dist/test/fixtures/index",
+    "seed:test": "set NODE_ENV=test&& node ./dist/tests/fixtures/index",
     "copy-files": "copyfiles ./common/assets/* ./dist",
     "postinstall": "npm run transpile:copy-files",
     "heroku-postbuild": "cd client && npm install && npm run build"

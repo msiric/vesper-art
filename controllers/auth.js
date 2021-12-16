@@ -157,6 +157,7 @@ export const postRefreshToken = async ({ req, res, next, connection }) => {
   return await refreshAccessToken(req, res, next, connection);
 };
 
+// $TODO not used?
 export const postRevokeToken = async ({ userId, connection }) => {
   await revokeAccessToken({ userId, connection });
   return formatResponse(responses.accessTokenRevoked);
