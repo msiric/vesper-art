@@ -6,12 +6,11 @@ import { ArtworkVisibility } from "../../entities/Artwork";
 import socketApi from "../../lib/socket";
 import { fetchAllArtworks } from "../../services/postgres/artwork";
 import { fetchUserByUsername } from "../../services/postgres/user";
-import { createAccessToken, createRefreshToken } from "../../utils/auth";
 import { closeConnection, connectToDatabase } from "../../utils/database";
-import { formatTokenData } from "../../utils/helpers";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, errors as logicErrors, responses } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
+import { logUserIn, unusedToken } from "../utils/helpers";
 import { request } from "../utils/request";
 
 const MEDIA_LOCATION = path.resolve(__dirname, "../../../test/media");
@@ -19,17 +18,32 @@ const MEDIA_LOCATION = path.resolve(__dirname, "../../../test/media");
 jest.useFakeTimers();
 jest.setTimeout(3 * 60 * 1000);
 
-let connection;
-let seller;
-let buyer;
-let impartial;
-let artwork;
-let sellerCookie;
-let sellerToken;
-let buyerCookie;
-let buyerToken;
-let impartialCookie;
-let impartialToken;
+let connection,
+  seller,
+  buyer,
+  impartial,
+  artwork,
+  sellerCookie,
+  sellerToken,
+  buyerCookie,
+  buyerToken,
+  impartialCookie,
+  impartialToken,
+  visibleAndActiveArtwork,
+  invisibleArtwork,
+  inactiveArtwork,
+  activeArtworkBySeller,
+  activeArtworkByBuyer,
+  activeAndInvisibleArtworkBySeller,
+  inactiveArtworkBySeller,
+  artworkWithComments,
+  visibleArtworkWithComments,
+  invisibleArtworkWithComments,
+  filteredComments,
+  artworkFavoritedByBuyer,
+  artworkFavoritedBySeller,
+  visibleArtworkWithFavorites,
+  filteredFavorites;
 
 // $TODO add isAuthenticated to each test
 describe("Artwork tests", () => {
@@ -71,17 +85,59 @@ describe("Artwork tests", () => {
       }),
       fetchAllArtworks({ connection }),
     ]);
-    const { tokenPayload: sellerPayload } = formatTokenData({ user: seller });
-    sellerCookie = createRefreshToken({ userData: sellerPayload });
-    sellerToken = createAccessToken({ userData: sellerPayload });
-    const { tokenPayload: buyerPayload } = formatTokenData({ user: buyer });
-    buyerCookie = createRefreshToken({ userData: buyerPayload });
-    buyerToken = createAccessToken({ userData: buyerPayload });
-    const { tokenPayload: impartialPayload } = formatTokenData({
-      user: impartial,
-    });
-    impartialCookie = createRefreshToken({ userData: impartialPayload });
-    impartialToken = createAccessToken({ userData: impartialPayload });
+    ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
+    ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
+    ({ cookie: impartialCookie, token: impartialToken } = logUserIn(impartial));
+
+    visibleAndActiveArtwork = artwork.filter(
+      (item) =>
+        item.visibility === ArtworkVisibility.visible && item.active === true
+    );
+    invisibleArtwork = artwork.filter(
+      (item) => item.visibility === ArtworkVisibility.invisible
+    );
+    inactiveArtwork = artwork.filter((item) => item.active === false);
+    activeArtworkBySeller = artwork.filter(
+      (item) => item.active === true && item.owner.id === seller.id
+    );
+    activeArtworkByBuyer = artwork.filter(
+      (item) => item.active === true && item.owner.id === buyer.id
+    );
+    activeAndInvisibleArtworkBySeller = artwork.filter(
+      (item) =>
+        item.visibility === ArtworkVisibility.invisible &&
+        item.active === true &&
+        item.owner.id === seller.id
+    );
+    inactiveArtworkBySeller = artwork.filter(
+      (item) => item.active === false && item.owner.id === seller.id
+    );
+    artworkWithComments = artwork.filter(
+      (item) =>
+        item.current.title === "Has comments" ||
+        item.current.title === "Invisible"
+    );
+    visibleArtworkWithComments = artworkWithComments.filter(
+      (artwork) => artwork.visibility === ArtworkVisibility.visible
+    );
+    invisibleArtworkWithComments = artworkWithComments.filter(
+      (artwork) => artwork.visibility === ArtworkVisibility.invisible
+    );
+    filteredComments = entities.Comment.filter(
+      (comment) => comment.artworkId === visibleArtworkWithComments[0].id
+    );
+    artworkFavoritedByBuyer = artwork.filter(
+      (item) => item.current.title === "Has favorites (buyer)"
+    );
+    artworkFavoritedBySeller = artwork.filter(
+      (item) => item.current.title === "Has favorites (seller)"
+    );
+    visibleArtworkWithFavorites = artworkFavoritedByBuyer.filter(
+      (artwork) => artwork.visibility === ArtworkVisibility.visible
+    );
+    filteredFavorites = entities.Favorite.filter(
+      (favorite) => favorite.artworkId === visibleArtworkWithFavorites[0].id
+    );
   });
 
   afterAll(async () => {
@@ -93,13 +149,7 @@ describe("Artwork tests", () => {
       it("should fetch active artwork", async () => {
         const res = await request(app).get("/api/artwork").query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
-        expect(res.body.artwork.length).toEqual(
-          artwork.filter(
-            (item) =>
-              item.visibility === ArtworkVisibility.visible &&
-              item.active === true
-          ).length
-        );
+        expect(res.body.artwork.length).toEqual(visibleAndActiveArtwork.length);
       });
 
       it("should throw a 400 error if cursor is of invalid type", async () => {
@@ -780,13 +830,8 @@ describe("Artwork tests", () => {
   describe("/api/artwork/:artworkId", () => {
     describe("getArtworkDetails", () => {
       it("should fetch a visible and active artwork", async () => {
-        const visibleArtwork = artwork.filter(
-          (item) =>
-            item.visibility === ArtworkVisibility.visible &&
-            item.active === true
-        );
         const res = await request(app)
-          .get(`/api/artwork/${visibleArtwork[0].id}`)
+          .get(`/api/artwork/${visibleAndActiveArtwork[0].id}`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork).toBeTruthy();
@@ -803,9 +848,6 @@ describe("Artwork tests", () => {
       });
 
       it("should throw a 404 error if artwork is not visible", async () => {
-        const invisibleArtwork = artwork.filter(
-          (item) => item.visibility === ArtworkVisibility.invisible
-        );
         const res = await request(app)
           .get(`/api/artwork/${invisibleArtwork[0].id}`)
           .query({});
@@ -813,7 +855,6 @@ describe("Artwork tests", () => {
       });
 
       it("should throw a 404 error if artwork is not active", async () => {
-        const inactiveArtwork = artwork.filter((item) => item.active === false);
         const res = await request(app)
           .get(`/api/artwork/${inactiveArtwork[0].id}`)
           .query({});
@@ -825,11 +866,8 @@ describe("Artwork tests", () => {
   describe("/api/artwork/:artworkId/edit", () => {
     describe("getArtworkEdit", () => {
       it("should fetch an active artwork if user is owner", async () => {
-        const visibleArtwork = artwork.filter(
-          (item) => item.active === true && item.owner.id === seller.id
-        );
         const res = await request(app, sellerToken)
-          .get(`/api/artwork/${visibleArtwork[0].id}/edit`)
+          .get(`/api/artwork/${activeArtworkBySeller[0].id}/edit`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork).toBeTruthy();
@@ -848,35 +886,23 @@ describe("Artwork tests", () => {
       });
 
       it("should throw a 404 error if user is not owner", async () => {
-        const visibleArtwork = artwork.filter(
-          (item) => item.active === true && item.owner.id === buyer.id
-        );
         const res = await request(app, sellerToken)
-          .get(`/api/artwork/${visibleArtwork[0].id}/edit`)
+          .get(`/api/artwork/${activeArtworkByBuyer[0].id}/edit`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.notFound);
       });
 
       it("should fetch an active artwork even if it is invisible", async () => {
-        const activeArtwork = artwork.filter(
-          (item) =>
-            item.visibility === ArtworkVisibility.invisible &&
-            item.active === true &&
-            item.owner.id === seller.id
-        );
         const res = await request(app, sellerToken)
-          .get(`/api/artwork/${activeArtwork[0].id}/edit`)
+          .get(`/api/artwork/${activeAndInvisibleArtworkBySeller[0].id}/edit`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork).toBeTruthy();
       });
 
       it("should throw a 404 error if artwork is not active", async () => {
-        const inactiveArtwork = artwork.filter(
-          (item) => item.active === false && item.owner.id === seller.id
-        );
         const res = await request(app, sellerToken)
-          .get(`/api/artwork/${inactiveArtwork[0].id}/edit`)
+          .get(`/api/artwork/${inactiveArtworkBySeller[0].id}/edit`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.notFound);
       });
@@ -884,20 +910,11 @@ describe("Artwork tests", () => {
   });
 
   describe("/api/artwork/:artworkId/comments", () => {
-    let artworkWithComments;
-    beforeAll(() => {
-      artworkWithComments = artwork.filter(
-        (item) =>
-          item.current.title === "Has comments" ||
-          item.current.title === "Invisible"
-      );
-    });
     describe("getArtworkComments", () => {
       // test cursor, limit, fetching comments on invisible artwork,
       // fetching comments on inactive artwork,
       // fetching comments on invalid artwork id
       it("should not fetch comments for inactive artwork", async () => {
-        const inactiveArtwork = artwork.filter((artwork) => !artwork.active);
         const res = await request(app)
           .get(`/api/artwork/${inactiveArtwork[0].id}/comments`)
           .query({});
@@ -906,43 +923,31 @@ describe("Artwork tests", () => {
       });
 
       it("should not fetch comments for invisible artwork", async () => {
-        const invisibleArtwork = artworkWithComments.filter(
-          (artwork) => artwork.visibility === ArtworkVisibility.invisible
-        );
         const res = await request(app)
-          .get(`/api/artwork/${invisibleArtwork[0].id}/comments`)
+          .get(`/api/artwork/${invisibleArtworkWithComments[0].id}/comments`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments.length).toEqual(0);
       });
 
       it("should fetch artwork comments", async () => {
-        const visibleArtwork = artworkWithComments.filter(
-          (artwork) => artwork.visibility === ArtworkVisibility.visible
-        );
         const res = await request(app)
-          .get(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .get(`/api/artwork/${visibleArtworkWithComments[0].id}/comments`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments.length).toEqual(
           entities.Comment.filter(
-            (comment) => comment.artworkId === visibleArtwork[0].id
+            (comment) => comment.artworkId === visibleArtworkWithComments[0].id
           ).length
         );
       });
 
       it("should limit comments to 1", async () => {
-        const visibleArtwork = artworkWithComments.filter(
-          (artwork) => artwork.visibility === ArtworkVisibility.visible
-        );
-        const filteredComments = entities.Comment.filter(
-          (comment) => comment.artworkId === visibleArtwork[0].id
-        );
         const cursor = "";
         const limit = 1;
         const res = await request(app)
           .get(
-            `/api/artwork/${visibleArtwork[0].id}/comments?cursor=${cursor}&limit=${limit}`
+            `/api/artwork/${visibleArtworkWithComments[0].id}/comments?cursor=${cursor}&limit=${limit}`
           )
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
@@ -952,17 +957,11 @@ describe("Artwork tests", () => {
       });
 
       it("should limit comments to 1 and skip the first one", async () => {
-        const visibleArtwork = artworkWithComments.filter(
-          (artwork) => artwork.visibility === ArtworkVisibility.visible
-        );
-        const filteredComments = entities.Comment.filter(
-          (comment) => comment.artworkId === visibleArtwork[0].id
-        );
         const cursor = filteredComments[filteredComments.length - 1].id;
         const limit = 1;
         const res = await request(app)
           .get(
-            `/api/artwork/${visibleArtwork[0].id}/comments?cursor=${cursor}&limit=${limit}`
+            `/api/artwork/${visibleArtworkWithComments[0].id}/comments?cursor=${cursor}&limit=${limit}`
           )
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
@@ -974,11 +973,8 @@ describe("Artwork tests", () => {
         const socketApiMock = jest
           .spyOn(socketApi, "sendNotification")
           .mockImplementation();
-        const visibleArtwork = artwork.filter(
-          (item) => item.active === true && item.owner.id === seller.id
-        );
         const res = await request(app, sellerToken)
-          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
           .send({ commentContent: "test" });
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(socketApiMock).not.toHaveBeenCalled();
@@ -988,22 +984,16 @@ describe("Artwork tests", () => {
         const socketApiMock = jest
           .spyOn(socketApi, "sendNotification")
           .mockImplementation();
-        const visibleArtwork = artwork.filter(
-          (item) => item.active === true && item.owner.id === seller.id
-        );
         const res = await request(app, buyerToken)
-          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
           .send({ commentContent: "test" });
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(socketApiMock).toHaveBeenCalled();
       });
 
       it("should throw a validation error if the comment content is empty", async () => {
-        const visibleArtwork = artwork.filter(
-          (item) => item.active === true && item.owner.id === seller.id
-        );
         const res = await request(app, buyerToken)
-          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
           .send({ commentContent: "" });
         expect(res.statusCode).toEqual(
           validationErrors.commentContentRequired.status
@@ -1014,11 +1004,8 @@ describe("Artwork tests", () => {
       });
 
       it("should throw a validation error if the comment content is too large", async () => {
-        const visibleArtwork = artwork.filter(
-          (item) => item.active === true && item.owner.id === seller.id
-        );
         const res = await request(app, buyerToken)
-          .post(`/api/artwork/${visibleArtwork[0].id}/comments`)
+          .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
           .send({
             commentContent: new Array(ranges.comment.max + 2).join("a"),
           });
@@ -1031,7 +1018,6 @@ describe("Artwork tests", () => {
       });
 
       it("should throw a 404 error if the artwork is not found", async () => {
-        const inactiveArtwork = artwork.filter((item) => item.active === false);
         const res = await request(app, buyerToken)
           .post(`/api/artwork/${inactiveArtwork[0].id}/comments`)
           .send({
@@ -1043,25 +1029,11 @@ describe("Artwork tests", () => {
   });
 
   describe("/api/artwork/:artworkId/comments/:commentId", () => {
-    let artworkWithComments, visibleArtwork, foundComments;
-    beforeAll(() => {
-      artworkWithComments = artwork.filter(
-        (item) =>
-          item.current.title === "Has comments" ||
-          item.current.title === "Invisible"
-      );
-      visibleArtwork = artworkWithComments.filter(
-        (artwork) => artwork.visibility === ArtworkVisibility.visible
-      );
-      foundComments = entities.Comment.filter(
-        (comment) => comment.artworkId === visibleArtwork[0].id
-      );
-    });
     describe("getComment", () => {
       it("should fetch comment", async () => {
         const res = await request(app)
           .get(
-            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
           )
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
@@ -1070,10 +1042,7 @@ describe("Artwork tests", () => {
 
       it("should return undefined if artwork does not exist", async () => {
         const res = await request(app)
-          .get(
-            // $TODO replace foundComments[0].id with a non-existent uuid
-            `/api/artwork/${foundComments[0].id}/comments/${foundComments[0].id}`
-          )
+          .get(`/api/artwork/${unusedToken}/comments/${filteredComments[0].id}`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comment).toBe(undefined);
@@ -1082,8 +1051,7 @@ describe("Artwork tests", () => {
       it("should return undefined if comment does not exist", async () => {
         const res = await request(app)
           .get(
-            // $TODO replace artworkWithComments[0].id with a non-existent uuid
-            `/api/artwork/${visibleArtwork[0].id}/comments/${artworkWithComments[0].id}`
+            `/api/artwork/${unusedToken}/comments/${artworkWithComments[0].id}`
           )
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
@@ -1094,7 +1062,7 @@ describe("Artwork tests", () => {
       it("should patch comment", async () => {
         const res = await request(app, buyerToken)
           .patch(
-            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
           )
           .send({ commentContent: "test" });
         expect(res.statusCode).toEqual(statusCodes.ok);
@@ -1103,7 +1071,7 @@ describe("Artwork tests", () => {
       it("should throw a validation error if the comment content is too large", async () => {
         const res = await request(app, buyerToken)
           .patch(
-            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
           )
           .send({
             commentContent: new Array(ranges.comment.max + 2).join("a"),
@@ -1119,7 +1087,7 @@ describe("Artwork tests", () => {
       it("should throw a 404 error if comment is patched by non owner", async () => {
         const res = await request(app, sellerToken)
           .patch(
-            `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
           )
           .send({ commentContent: "test" });
         expect(res.statusCode).toEqual(statusCodes.notFound);
@@ -1129,8 +1097,7 @@ describe("Artwork tests", () => {
       it("should throw a 404 error if artwork doesn't exist", async () => {
         const res = await request(app, buyerToken)
           .patch(
-            // $TODO replace foundComments[0].id with a non-existent uuid
-            `/api/artwork/${foundComments[0].id}/comments/${foundComments[0].id}`
+            `/api/artwork/${unusedToken}/comments/${filteredComments[0].id}`
           )
           .send({ commentContent: "test" });
         expect(res.statusCode).toEqual(statusCodes.notFound);
@@ -1140,8 +1107,7 @@ describe("Artwork tests", () => {
       it("should throw a 404 error if comment doesn't exist", async () => {
         const res = await request(app, buyerToken)
           .patch(
-            // $TODO replace foundComments[0].id with a non-existent uuid
-            `/api/artwork/${visibleArtwork[0].id}/comments/${visibleArtwork[0].id}`
+            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedToken}`
           )
           .send({ commentContent: "test" });
         expect(res.statusCode).toEqual(statusCodes.notFound);
@@ -1151,14 +1117,14 @@ describe("Artwork tests", () => {
     describe("deleteComment", () => {
       it("should delete comment", async () => {
         const res = await request(app, buyerToken).delete(
-          `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
         );
         expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should throw a 404 error if comment is deleted by non owner", async () => {
         const res = await request(app, sellerToken).delete(
-          `/api/artwork/${visibleArtwork[0].id}/comments/${foundComments[0].id}`
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
         );
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.commentNotFound.message);
@@ -1166,8 +1132,7 @@ describe("Artwork tests", () => {
 
       it("should throw a 404 error if artwork doesn't exist", async () => {
         const res = await request(app, buyerToken).delete(
-          // $TODO replace foundComments[0].id with a non-existent uuid
-          `/api/artwork/${foundComments[0].id}/comments/${foundComments[0].id}`
+          `/api/artwork/${unusedToken}/comments/${filteredComments[0].id}`
         );
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
@@ -1175,8 +1140,7 @@ describe("Artwork tests", () => {
 
       it("should throw a 404 error if comment doesn't exist", async () => {
         const res = await request(app, buyerToken).delete(
-          // $TODO replace foundComments[0].id with a non-existent uuid
-          `/api/artwork/${visibleArtwork[0].id}/comments/${visibleArtwork[0].id}`
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedToken}`
         );
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.commentNotFound.message);
@@ -1185,39 +1149,18 @@ describe("Artwork tests", () => {
   });
 
   describe("/api/artwork/:artworkId/favorites", () => {
-    let artworkFavoritedByBuyer,
-      artworkFavoritedBySeller,
-      visibleArtwork,
-      foundFavorites;
-    beforeAll(() => {
-      artworkFavoritedByBuyer = artwork.filter(
-        (item) => item.current.title === "Has favorites (buyer)"
-      );
-      artworkFavoritedBySeller = artwork.filter(
-        (item) => item.current.title === "Has favorites (seller)"
-      );
-      visibleArtwork = artworkFavoritedByBuyer.filter(
-        (artwork) => artwork.visibility === ArtworkVisibility.visible
-      );
-      foundFavorites = entities.Favorite.filter(
-        (favorite) => favorite.artworkId === visibleArtwork[0].id
-      );
-    });
     describe("getArtworkFavorites", () => {
       it("should fetch artwork favorites", async () => {
         const res = await request(app, buyerToken)
           .get(`/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
-        expect(res.body.favorites).toEqual(foundFavorites.length);
+        expect(res.body.favorites).toEqual(filteredFavorites.length);
       });
 
       it("should return 0 if artwork does not exist", async () => {
         const res = await request(app, buyerToken)
-          .get(
-            // $TODO replace foundFavorites[0].id with a non-existent uuid
-            `/api/artwork/${foundFavorites[0].id}/favorites`
-          )
+          .get(`/api/artwork/${unusedToken}/favorites`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.favorites).toBe(0);
@@ -1254,8 +1197,7 @@ describe("Artwork tests", () => {
 
       it("should throw a 404 error if artwork doesn't exist", async () => {
         const res = await request(app, buyerToken).post(
-          // $TODO replace foundFavorites[0].id with a non-existent uuid
-          `/api/artwork/${foundFavorites[0].id}/favorites`
+          `/api/artwork/${unusedToken}/favorites`
         );
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
@@ -1292,8 +1234,7 @@ describe("Artwork tests", () => {
 
       it("should throw a 404 error if artwork doesn't exist", async () => {
         const res = await request(app, buyerToken).delete(
-          // $TODO replace foundFavorites[0].id with a non-existent uuid
-          `/api/artwork/${foundFavorites[0].id}/favorites`
+          `/api/artwork/${unusedToken}/favorites`
         );
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
