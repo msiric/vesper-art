@@ -521,15 +521,37 @@ describe("Auth tests", () => {
     });
   });
 
-  // $TODO not implemented
-  describe("/api/auth/verify_token/:tokenId", () => {
+  describe.only("/api/auth/verify_token/:tokenId", () => {
     it("should verify user's token", async () => {
-      const res = await request(app, sellerToken)
-        .post("/api/auth/logout")
+      const res = await request(app)
+        .get(`/api/auth/verify_token/${validVerification.verificationToken}`)
         .send();
-      expect(res.statusCode).toEqual(statusCodes.ok);
-      expect(res.body.accessToken).toEqual("");
-      expect(res.body.user).toEqual("");
+      expect(res.statusCode).toEqual(responses.registerTokenVerified.status);
+      expect(res.body.message).toEqual(responses.registerTokenVerified.message);
+    });
+
+    it("should throw an error if user is authenticated", async () => {
+      const res = await request(app, validVerificationToken)
+        .get(`/api/auth/verify_token/${validVerification.verificationToken}`)
+        .send();
+      expect(res.statusCode).toEqual(errors.alreadyAuthenticated.status);
+      expect(res.body.message).toEqual(errors.alreadyAuthenticated.message);
+    });
+
+    it("should throw an error if tokenId is invalid", async () => {
+      const res = await request(app)
+        .get(`/api/auth/verify_token/${invalidVerification.verificationToken}`)
+        .send();
+      expect(res.statusCode).toEqual(errors.routeParameterInvalid.status);
+      expect(res.body.message).toEqual(errors.routeParameterInvalid.message);
+    });
+
+    it("should throw an error if token is expired", async () => {
+      const res = await request(app)
+        .get(`/api/auth/verify_token/${expiredVerification.verificationToken}`)
+        .send();
+      expect(res.statusCode).toEqual(errors.verificationTokenInvalid.status);
+      expect(res.body.message).toEqual(errors.verificationTokenInvalid.message);
     });
   });
 });
