@@ -16,6 +16,7 @@ import { request } from "../utils/request";
 const MEDIA_LOCATION = path.resolve(__dirname, "../../../tests/media");
 
 jest.useFakeTimers();
+jest.setTimeout(3 * 60 * 1000);
 
 const socketApiMock = jest
   .spyOn(socketApi, "sendNotification")
@@ -49,7 +50,7 @@ let connection,
   filteredFavorites;
 
 // $TODO add isAuthenticated to each test
-describe.skip("Artwork tests", () => {
+describe("Artwork tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();

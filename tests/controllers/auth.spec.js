@@ -11,6 +11,7 @@ import { logUserIn, unusedCookie } from "../utils/helpers";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
+jest.setTimeout(3 * 60 * 1000);
 
 const sendEmailMock = jest.spyOn(emailUtils, "sendEmail").mockImplementation();
 
@@ -389,8 +390,8 @@ describe("Auth tests", () => {
 
     it("should throw a 403 error if user is not verified", async () => {
       const res = await request(app).post("/api/auth/login").send({
-        userUsername: validVerificationUser.name,
-        userPassword: validVerificationUser.password,
+        userUsername: invalidUsers.validVerification.username,
+        userPassword: invalidUsers.validVerification.password,
       });
       expect(res.body.message).toEqual(logicErrors.userNotVerified.message);
       expect(res.statusCode).toEqual(logicErrors.userNotVerified.status);
@@ -490,7 +491,7 @@ describe("Auth tests", () => {
     });
   });
 
-  describe.only("/api/auth/verify_token/:tokenId", () => {
+  describe("/api/auth/verify_token/:tokenId", () => {
     it("should verify user's token", async () => {
       const res = await request(app)
         .get(
@@ -522,7 +523,7 @@ describe("Auth tests", () => {
     });
   });
 
-  describe.only("/api/auth/forgot_password", () => {
+  describe("/api/auth/forgot_password", () => {
     it("should send reset token", async () => {
       const res = await request(app)
         .post("/api/auth/forgot_password")
@@ -567,7 +568,7 @@ describe("Auth tests", () => {
       expect(res.body.message).toEqual(responses.passwordReset.message);
     });
   });
-  describe.only("/api/auth/reset_password/user/:userId/token/:tokenId", () => {
+  describe("/api/auth/reset_password/user/:userId/token/:tokenId", () => {
     it("should reset password", async () => {
       const res = await request(app)
         .post(
@@ -592,6 +593,45 @@ describe("Auth tests", () => {
         });
       expect(res.statusCode).toEqual(errors.alreadyAuthenticated.status);
       expect(res.body.message).toEqual(errors.alreadyAuthenticated.message);
+    });
+
+    it("should throw an error if token has the wrong user", async () => {
+      const res = await request(app)
+        .post(
+          `/api/auth/reset_password/user/${invalidUsers.expiredReset.id}/token/${invalidUsers.validReset.randomBytes}`
+        )
+        .send({
+          userPassword: "newpassword123",
+          userConfirm: "newpassword123",
+        });
+      expect(res.statusCode).toEqual(errors.resetTokenInvalid.status);
+      expect(res.body.message).toEqual(errors.resetTokenInvalid.message);
+    });
+
+    it("should throw an error if user has the wrong token", async () => {
+      const res = await request(app)
+        .post(
+          `/api/auth/reset_password/user/${invalidUsers.validReset.id}/token/${invalidUsers.expiredReset.randomBytes}`
+        )
+        .send({
+          userPassword: "newpassword123",
+          userConfirm: "newpassword123",
+        });
+      expect(res.statusCode).toEqual(errors.resetTokenInvalid.status);
+      expect(res.body.message).toEqual(errors.resetTokenInvalid.message);
+    });
+
+    it("should throw an error if user id is invalid", async () => {
+      const res = await request(app)
+        .post(
+          `/api/auth/reset_password/user/false/token/${invalidUsers.validReset.randomBytes}`
+        )
+        .send({
+          userPassword: "newpassword123",
+          userConfirm: "newpassword123",
+        });
+      expect(res.statusCode).toEqual(errors.routeParameterInvalid.status);
+      expect(res.body.message).toEqual(errors.routeParameterInvalid.message);
     });
 
     it("should throw an error if token is expired", async () => {

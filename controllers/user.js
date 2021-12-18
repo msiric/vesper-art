@@ -420,7 +420,7 @@ export const updateUserEmail = async ({
       verificationLink,
       verificationExpiry,
       verified,
-    } = await generateVerificationToken();
+    } = generateVerificationToken();
     await editUserEmail({
       userId,
       userEmail,

@@ -89,7 +89,7 @@ export const fetchUserIdByVerificationToken = async ({
   return foundUser ? foundUser.id : null;
 };
 
-export const fetchUserTokensById = async ({ userId, connection }) => {
+export const fetchUserResetTokenById = async ({ userId, connection }) => {
   const foundUser = await connection
     .getRepository(User)
     .createQueryBuilder("user")
@@ -98,10 +98,14 @@ export const fetchUserTokensById = async ({ userId, connection }) => {
       ...USER_SELECTION["AUTH_INFO"](),
       ...USER_SELECTION["VERIFICATION_INFO"](),
     ])
-    .where("user.id = :userId AND user.active = :active", {
-      userId,
-      active: USER_SELECTION["ACTIVE_STATUS"],
-    })
+    .where(
+      "user.id = :userId AND user.resetExpiry > :dateNow AND user.active = :active",
+      {
+        userId,
+        dateNow: new Date(),
+        active: USER_SELECTION["ACTIVE_STATUS"],
+      }
+    )
     .getOne();
   return foundUser;
 };

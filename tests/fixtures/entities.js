@@ -36,27 +36,27 @@ export const validUsers = {
     email: "validuser3@test.com",
     username: "validuser3",
     name: "Valid User 3",
-    password: "testpassword3",
+    password: "validuser3",
     hashedPassword:
-      "$argon2i$v=19$m=4096,t=3,p=1$6ZBGiFOafYoFHOD2ayfMQw$8/NQ9FzSAilhWuTfjSta7Wc7x7MJ2TNjHeuJ7n4YT8M",
+      "$argon2i$v=19$m=4096,t=3,p=1$+uPbenINn0fy15pawBTqDQ$GGLOJMxe6mLwUKuIy64ysr4DgMIoitzJM9d33WcnHIc",
   },
   buyer: {
     id: "1a1c6859-bb73-419f-8b29-cd7817ede2f2",
     email: "validuser2@test.com",
     username: "validuser2",
     name: "Valid User 2",
-    password: "testpassword2",
+    password: "validuser2",
     hashedPassword:
-      "$argon2i$v=19$m=4096,t=3,p=1$Togauz+7CpGQuBSZLDKJiw$GmQxPzjEj8FGXeGZcC3KNi6XKp9LdGkrULaHR+avnRY",
+      "$argon2i$v=19$m=4096,t=3,p=1$SWaWEtvYT8K8MX7zmcw5Jg$40LrrVZVOO3HYAnCT5ZrhsXLYjTJnWu7tu6yOBifuHk",
   },
   seller: {
     id: "8f520ed3-f211-4776-8d25-218e8a2e593d",
     email: "validuser1@test.com",
     username: "validuser1",
     name: "Valid User 1",
-    password: "testpassword1",
+    password: "validuser1",
     hashedPassword:
-      "$argon2i$v=19$m=4096,t=3,p=1$Mugr5j8reeLJu4YW/fnWvg$tKv+ETonRi2YIcLcUH6epzZE1do7tlXGAcvNCmqz9bg",
+      "$argon2i$v=19$m=4096,t=3,p=1$d7t7EZM/K78KSIi35RUBoA$BqGxTHMlzN2IVrARFSIfE/c6Ugf3Rys6eSlP4QndHRw",
   },
 };
 
@@ -67,13 +67,16 @@ export const invalidUsers = {
     username: null,
     name: "",
     password: "",
+    hashedPassword: "",
   },
   validReset: {
     id: "a95623cd-8a45-43de-a8db-a987b8f43928",
     email: "test2@test.com",
     username: "validResetToken",
     name: "Valid Reset token",
-    password: "test2userpassword",
+    password: "invaliduser2",
+    hashedPassword:
+      "$argon2i$v=19$m=4096,t=3,p=1$SA00WBNZa0v4XO9nf+qw9A$GsCZZJ8sUDua2SGnFLV9/FcmeRggUVuZUK1n9wTOpiw",
     randomBytes: "ec22bd54c7f0c4e9b3357fd52cac292455e0a86df05629b7a5f4524acf70",
     resetToken:
       "$argon2i$v=19$m=4096,t=3,p=1$XbbQbv2MKeeTsM/PXehRwA$c4iBP9S9Y+eCw/YemkxgEG8wjtzWmkjzuvS8CboLTDs",
@@ -83,7 +86,9 @@ export const invalidUsers = {
     email: "test3@test.com",
     username: "expiredResetToken",
     name: "Expired Reset token",
-    password: "test3userpassword",
+    password: "invaliduser3",
+    hashedPassword:
+      "$argon2i$v=19$m=4096,t=3,p=1$ac6+OonibTJrYPxEsw1efw$AXyMQ0O2Y1BQJCKFkUwTlN6D064jSFHdIxXEcKuwOw0",
     randomBytes: "5c68591d4a372988924cc8767789fa75f1f76f40f91e67dfe7aa9d8cf3dc",
     resetToken:
       "$argon2i$v=19$m=4096,t=3,p=1$OedsY0xeWjtAA0VnGNNarg$1dncmtGep2GIvYmRl6RKooMRkW34YB1TBg4tlAfJ/Z8",
@@ -93,7 +98,9 @@ export const invalidUsers = {
     email: "test4@test.com",
     username: "validVerificationToken",
     name: "Valid Verification token",
-    password: "test4userpassword",
+    password: "invaliduser4",
+    hashedPassword:
+      "$argon2i$v=19$m=4096,t=3,p=1$LvAAa7LFbjZGOnPgcEdpPw$Gxo7b4/wHoXdBmFUE6/ChFgVykmfQPZk/CWdrZJMK8Y",
     randomBytes: "8afb71f9d5acd2b7c06927f6b3575a2777a3d3e1",
     verificationToken:
       "$argon2i$v=19$m=4096,t=3,p=1$8BpdifO6cRFMOAs8mTwiIQ$L5eyEUzKlPGEokb8A7Qs9jcs9YNl357caD2KesLAzZQ",
@@ -103,7 +110,9 @@ export const invalidUsers = {
     email: "test5@test.com",
     username: "expiredVerificationToken",
     name: "Expired Verification token",
-    password: "test5userpassword",
+    password: "invaliduser5",
+    hashedPassword:
+      "$argon2i$v=19$m=4096,t=3,p=1$Kew2e0uPtDlE4vvP3IjtSg$e6mblVoZU8dkogI4hj7IRkNzFRf8gEEJfByZKg3VHO4",
     randomBytes: "8d8a181f4d7b31673a424f4054d28c07ec7e50cd",
     verificationToken:
       "$argon2i$v=19$m=4096,t=3,p=1$VKcuEZhfsqtn7d5O0HoQoQ$mb6o6gOg2gTM8dqQL0+9mssuuWRlgAK9o6X+jAsKIVA",
@@ -180,7 +189,7 @@ export const entities = {
       email: invalidUsers.deleted.email,
       fullName: invalidUsers.deleted.name,
       name: invalidUsers.deleted.username,
-      password: invalidUsers.deleted.password,
+      password: invalidUsers.deleted.hashedPassword,
       avatarId: null,
       description: "",
       country: "",
@@ -203,7 +212,7 @@ export const entities = {
       email: invalidUsers.validReset.email,
       fullName: invalidUsers.validReset.name,
       name: invalidUsers.validReset.username,
-      password: invalidUsers.validReset.password,
+      password: invalidUsers.validReset.hashedPassword,
       avatarId: null,
       description: "",
       country: "US",
@@ -223,7 +232,7 @@ export const entities = {
       email: invalidUsers.expiredReset.email,
       fullName: invalidUsers.expiredReset.name,
       name: invalidUsers.expiredReset.username,
-      password: invalidUsers.expiredReset.password,
+      password: invalidUsers.expiredReset.hashedPassword,
       avatarId: null,
       description: "",
       country: "US",
@@ -243,7 +252,7 @@ export const entities = {
       email: invalidUsers.validVerification.email,
       fullName: invalidUsers.validVerification.name,
       name: invalidUsers.validVerification.username,
-      password: invalidUsers.validVerification.password,
+      password: invalidUsers.validVerification.hashedPassword,
       avatarId: null,
       description: "",
       country: "US",
@@ -263,7 +272,7 @@ export const entities = {
       email: invalidUsers.expiredVerification.email,
       fullName: invalidUsers.expiredVerification.name,
       name: invalidUsers.expiredVerification.username,
-      password: invalidUsers.expiredVerification.password,
+      password: invalidUsers.expiredVerification.hashedPassword,
       avatarId: null,
       description: "",
       country: "US",

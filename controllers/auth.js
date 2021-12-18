@@ -26,7 +26,7 @@ import {
   fetchUserIdByEmail,
   fetchUserIdByUsername,
   fetchUserIdByVerificationToken,
-  fetchUserTokensById,
+  fetchUserResetTokenById,
 } from "../services/postgres/user";
 import {
   createAccessToken,
@@ -76,7 +76,7 @@ export const postSignUp = async ({
       verificationLink,
       verificationExpiry,
       verified,
-    } = await generateVerificationToken();
+    } = generateVerificationToken();
     const hashedPassword = await hashString(userPassword);
     const { userId } = generateUuids({
       userId: null,
@@ -218,7 +218,7 @@ export const resetPassword = async ({
   userConfirm,
   connection,
 }) => {
-  const foundUser = await fetchUserTokensById({
+  const foundUser = await fetchUserResetTokenById({
     userId,
     connection,
   });
@@ -258,7 +258,7 @@ export const resendToken = async ({ userEmail, connection }) => {
         verificationLink,
         verificationExpiry,
         verified,
-      } = await generateVerificationToken();
+      } = generateVerificationToken();
       await editUserEmail({
         userId: foundUser.id,
         userEmail,
@@ -325,7 +325,7 @@ export const updateEmail = async ({
         verificationLink,
         verificationExpiry,
         verified,
-      } = await generateVerificationToken();
+      } = generateVerificationToken();
       await editUserEmail({
         userId: foundId,
         userEmail,
