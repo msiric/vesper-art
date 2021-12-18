@@ -261,7 +261,7 @@ export const resendToken = async ({ userEmail, connection }) => {
       } = generateVerificationToken();
       await editUserEmail({
         userId: foundUser.id,
-        userEmail,
+        userEmail: foundUser.email,
         verificationToken,
         verificationExpiry,
         verified,
@@ -290,7 +290,6 @@ export const resendToken = async ({ userEmail, connection }) => {
 };
 
 export const updateEmail = async ({
-  response,
   userEmail,
   userUsername,
   userPassword,

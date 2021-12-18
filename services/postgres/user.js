@@ -157,6 +157,7 @@ export const fetchUserByEmail = async ({ userEmail, connection }) => {
     .createQueryBuilder("user")
     .select([
       ...USER_SELECTION["STRIPPED_INFO"](),
+      ...USER_SELECTION["ESSENTIAL_INFO"](),
       ...USER_SELECTION["VERIFICATION_INFO"](),
     ])
     .leftJoinAndSelect("user.avatar", "avatar")
