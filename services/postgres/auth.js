@@ -76,7 +76,7 @@ export const editUserResetToken = async ({
 };
 
 export const resetUserPassword = async ({
-  tokenId,
+  userId,
   hashedPassword,
   connection,
 }) => {
@@ -84,14 +84,10 @@ export const resetUserPassword = async ({
     .createQueryBuilder()
     .update(User)
     .set({ password: hashedPassword, resetToken: "", resetExpiry: null })
-    .where(
-      '"resetToken" = :tokenId AND "resetExpiry" > :dateNow AND active = :active',
-      {
-        tokenId,
-        dateNow: new Date(),
-        active: USER_SELECTION.ACTIVE_STATUS,
-      }
-    )
+    .where('"id" = :userId AND active = :active', {
+      userId,
+      active: USER_SELECTION.ACTIVE_STATUS,
+    })
     .execute();
   return updatedUser;
 };

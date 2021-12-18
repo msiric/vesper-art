@@ -58,7 +58,11 @@ const ResetPassword = ({ match }) => {
 
   const onSubmit = async (values) => {
     try {
-      await postReset.request({ resetToken: match.params.id, data: values });
+      await postReset.request({
+        userId: match.params.userId,
+        resetToken: match.params.tokenId,
+        data: values,
+      });
       history.push({
         pathname: "/login",
         state: { message: "Password successfully changed" },

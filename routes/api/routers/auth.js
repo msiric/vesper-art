@@ -90,7 +90,7 @@ router
   );
 
 router
-  .route("/reset_password/:tokenId")
+  .route("/reset_password/user/:userId/token/:tokenId")
   // $TODO not tested
   // implement check params token middleware?
   .post(

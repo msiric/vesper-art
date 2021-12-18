@@ -6,47 +6,41 @@ import { closeConnection, connectToDatabase } from "../../utils/database";
 import * as emailUtils from "../../utils/email";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, errors as logicErrors, responses } from "../../utils/statuses";
-import { validUsers } from "../fixtures/entities";
+import { invalidUsers, validUsers } from "../fixtures/entities";
 import { logUserIn, unusedCookie } from "../utils/helpers";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
-jest.setTimeout(3 * 60 * 1000);
+
+const sendEmailMock = jest.spyOn(emailUtils, "sendEmail").mockImplementation();
 
 let connection,
   seller,
   sellerCookie,
   sellerToken,
-  validReset,
-  validResetCookie,
-  validResetToken,
-  invalidReset,
-  invalidResetCookie,
-  invalidResetToken,
-  expiredReset,
-  expiredResetCookie,
-  expiredResetToken,
-  validVerification,
-  validVerificationCookie,
-  validVerificationToken,
-  invalidVerification,
-  invalidVerificationCookie,
-  invalidVerificationToken,
-  expiredVerification,
-  expiredVerificationCookie,
-  expiredVerificationToken;
+  validResetUser,
+  validResetUserCookie,
+  validResetUserToken,
+  expiredResetUser,
+  expiredResetUserCookie,
+  expiredResetUserToken,
+  validVerificationUser,
+  validVerificationUserCookie,
+  validVerificationUserToken,
+  expiredVerificationUser,
+  expiredVerificationUserCookie,
+  expiredVerificationUserToken;
 
 describe("Auth tests", () => {
+  beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
     [
       seller,
-      validReset,
-      invalidReset,
-      expiredReset,
-      validVerification,
-      invalidVerification,
-      expiredVerification,
+      validResetUser,
+      expiredResetUser,
+      validVerificationUser,
+      expiredVerificationUser,
     ] = await Promise.all([
       await fetchUserByUsername({
         userUsername: validUsers.seller.username,
@@ -61,17 +55,6 @@ describe("Auth tests", () => {
       }),
       await fetchUserByUsername({
         userUsername: "validResetToken",
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      await fetchUserByUsername({
-        userUsername: "invalidResetToken",
         selection: [
           ...USER_SELECTION["ESSENTIAL_INFO"](),
           ...USER_SELECTION["STRIPE_INFO"](),
@@ -104,17 +87,6 @@ describe("Auth tests", () => {
         connection,
       }),
       await fetchUserByUsername({
-        userUsername: "invalidVerificationToken",
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      await fetchUserByUsername({
         userUsername: "expiredVerificationToken",
         selection: [
           ...USER_SELECTION["ESSENTIAL_INFO"](),
@@ -127,18 +99,18 @@ describe("Auth tests", () => {
       }),
     ]);
     ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
-    ({ cookie: validResetCookie, token: validResetToken } =
-      logUserIn(validReset));
-    ({ cookie: invalidResetCookie, token: invalidResetToken } =
-      logUserIn(invalidReset));
-    ({ cookie: expiredResetCookie, token: expiredResetToken } =
-      logUserIn(expiredReset));
-    ({ cookie: validVerificationCookie, token: validVerificationToken } =
-      logUserIn(validVerification));
-    ({ cookie: invalidVerificationCookie, token: invalidVerificationToken } =
-      logUserIn(invalidVerification));
-    ({ cookie: expiredVerificationCookie, token: expiredVerificationToken } =
-      logUserIn(expiredVerification));
+    ({ cookie: validResetUserCookie, token: validResetUserToken } =
+      logUserIn(validResetUser));
+    ({ cookie: expiredResetUserCookie, token: expiredResetUserToken } =
+      logUserIn(expiredResetUser));
+    ({
+      cookie: validVerificationUserCookie,
+      token: validVerificationUserToken,
+    } = logUserIn(validVerificationUser));
+    ({
+      cookie: expiredVerificationUserCookie,
+      token: expiredVerificationUserToken,
+    } = logUserIn(expiredVerificationUser));
   });
 
   afterAll(async () => {
@@ -147,9 +119,6 @@ describe("Auth tests", () => {
 
   describe("/api/auth/signup", () => {
     it("should create a new user", async () => {
-      const sendEmailMock = jest
-        .spyOn(emailUtils, "sendEmail")
-        .mockImplementation();
       const res = await request(app).post("/api/auth/signup").send({
         userName: "Test User",
         userUsername: "testuser",
@@ -420,8 +389,8 @@ describe("Auth tests", () => {
 
     it("should throw a 403 error if user is not verified", async () => {
       const res = await request(app).post("/api/auth/login").send({
-        userUsername: validVerification.name,
-        userPassword: validVerification.password,
+        userUsername: validVerificationUser.name,
+        userPassword: validVerificationUser.password,
       });
       expect(res.body.message).toEqual(logicErrors.userNotVerified.message);
       expect(res.statusCode).toEqual(logicErrors.userNotVerified.status);
@@ -511,8 +480,8 @@ describe("Auth tests", () => {
     it("should return a 403 error if user is not verified", async () => {
       const res = await request(
         app,
-        validVerificationToken,
-        validVerificationCookie
+        validVerificationUserToken,
+        validVerificationUserCookie
       )
         .post("/api/auth/refresh_token")
         .send();
@@ -524,34 +493,178 @@ describe("Auth tests", () => {
   describe.only("/api/auth/verify_token/:tokenId", () => {
     it("should verify user's token", async () => {
       const res = await request(app)
-        .get(`/api/auth/verify_token/${validVerification.verificationToken}`)
+        .get(
+          `/api/auth/verify_token/${validVerificationUser.verificationToken}`
+        )
         .send();
       expect(res.statusCode).toEqual(responses.registerTokenVerified.status);
       expect(res.body.message).toEqual(responses.registerTokenVerified.message);
     });
 
     it("should throw an error if user is authenticated", async () => {
-      const res = await request(app, validVerificationToken)
-        .get(`/api/auth/verify_token/${validVerification.verificationToken}`)
+      const res = await request(app, validVerificationUserToken)
+        .get(
+          `/api/auth/verify_token/${validVerificationUser.verificationToken}`
+        )
         .send();
       expect(res.statusCode).toEqual(errors.alreadyAuthenticated.status);
       expect(res.body.message).toEqual(errors.alreadyAuthenticated.message);
     });
 
-    it("should throw an error if tokenId is invalid", async () => {
+    it("should throw an error if token is expired", async () => {
       const res = await request(app)
-        .get(`/api/auth/verify_token/${invalidVerification.verificationToken}`)
+        .get(
+          `/api/auth/verify_token/${expiredVerificationUser.verificationToken}`
+        )
         .send();
-      expect(res.statusCode).toEqual(errors.routeParameterInvalid.status);
-      expect(res.body.message).toEqual(errors.routeParameterInvalid.message);
+      expect(res.statusCode).toEqual(errors.verificationTokenInvalid.status);
+      expect(res.body.message).toEqual(errors.verificationTokenInvalid.message);
+    });
+  });
+
+  describe.only("/api/auth/forgot_password", () => {
+    it("should send reset token", async () => {
+      const res = await request(app)
+        .post("/api/auth/forgot_password")
+        .send({ userEmail: seller.email });
+      expect(sendEmailMock).toHaveBeenCalled();
+      expect(res.statusCode).toEqual(responses.passwordReset.status);
+      expect(res.body.message).toEqual(responses.passwordReset.message);
+    });
+
+    it("should throw an error if user is authenticated", async () => {
+      const res = await request(app, sellerToken)
+        .post("/api/auth/forgot_password")
+        .send({ userEmail: seller.email });
+      expect(res.statusCode).toEqual(errors.alreadyAuthenticated.status);
+      expect(res.body.message).toEqual(errors.alreadyAuthenticated.message);
+    });
+
+    it("should throw a validation error if email is invalid", async () => {
+      const res = await request(app)
+        .post("/api/auth/forgot_password")
+        .send({ userEmail: false });
+      expect(res.statusCode).toEqual(validationErrors.userEmailInvalid.status);
+      expect(res.body.message).toEqual(
+        validationErrors.userEmailInvalid.message
+      );
+    });
+
+    it("should throw a validation error if email is missing", async () => {
+      const res = await request(app).post("/api/auth/forgot_password").send({});
+      expect(res.statusCode).toEqual(validationErrors.userEmailRequired.status);
+      expect(res.body.message).toEqual(
+        validationErrors.userEmailRequired.message
+      );
+    });
+
+    it("should not send token if user email does not exist", async () => {
+      const res = await request(app)
+        .post("/api/auth/forgot_password")
+        .send({ userEmail: "thisuserdoesnotexist@gmail.com" });
+      expect(sendEmailMock).not.toHaveBeenCalled();
+      expect(res.statusCode).toEqual(responses.passwordReset.status);
+      expect(res.body.message).toEqual(responses.passwordReset.message);
+    });
+  });
+  describe.only("/api/auth/reset_password/user/:userId/token/:tokenId", () => {
+    it("should reset password", async () => {
+      const res = await request(app)
+        .post(
+          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+        )
+        .send({
+          userPassword: "newpassword123",
+          userConfirm: "newpassword123",
+        });
+      expect(res.statusCode).toEqual(responses.passwordUpdated.status);
+      expect(res.body.message).toEqual(responses.passwordUpdated.message);
+    });
+
+    it("should throw an error if user is authenticated", async () => {
+      const res = await request(app, validResetUserToken)
+        .post(
+          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+        )
+        .send({
+          userPassword: "newpassword123",
+          userConfirm: "newpassword123",
+        });
+      expect(res.statusCode).toEqual(errors.alreadyAuthenticated.status);
+      expect(res.body.message).toEqual(errors.alreadyAuthenticated.message);
     });
 
     it("should throw an error if token is expired", async () => {
       const res = await request(app)
-        .get(`/api/auth/verify_token/${expiredVerification.verificationToken}`)
-        .send();
-      expect(res.statusCode).toEqual(errors.verificationTokenInvalid.status);
-      expect(res.body.message).toEqual(errors.verificationTokenInvalid.message);
+        .post(
+          `/api/auth/reset_password/user/${expiredResetUser.id}/token/${invalidUsers.expiredReset.randomBytes}`
+        )
+        .send({
+          userPassword: "newpassword123",
+          userConfirm: "newpassword123",
+        });
+      expect(res.statusCode).toEqual(errors.resetTokenInvalid.status);
+      expect(res.body.message).toEqual(errors.resetTokenInvalid.message);
+    });
+
+    it("should throw an error if password is the same as the previous one", async () => {
+      const res = await request(app)
+        .post(
+          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+        )
+        .send({
+          userPassword: invalidUsers.validReset.password,
+          userConfirm: invalidUsers.validReset.password,
+        });
+      expect(res.body.message).toEqual(errors.newPasswordIdentical.message);
+      expect(res.statusCode).toEqual(errors.newPasswordIdentical.status);
+    });
+
+    it("should throw a validation error if passwords don't match", async () => {
+      const res = await request(app)
+        .post(
+          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+        )
+        .send({
+          userPassword: "User1Password",
+          userConfirm: "User2Password",
+        });
+      expect(res.body.message).toEqual(
+        validationErrors.userPasswordMismatch.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.userPasswordMismatch.status
+      );
+    });
+
+    it("should throw a validation error if password is too short", async () => {
+      const res = await request(app)
+        .post(
+          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+        )
+        .send({
+          userPassword: new Array(ranges.password.min).join("a"),
+          userConfirm: new Array(ranges.password.min).join("a"),
+        });
+      expect(res.body.message).toEqual(
+        validationErrors.userPasswordMin.message
+      );
+      expect(res.statusCode).toEqual(validationErrors.userPasswordMin.status);
+    });
+
+    it("should throw a validation error if password is too long", async () => {
+      const res = await request(app)
+        .post(
+          `/api/auth/reset_password/user/${validResetUser.id}/token/${invalidUsers.validReset.randomBytes}`
+        )
+        .send({
+          userPassword: new Array(ranges.password.max + 2).join("a"),
+          userConfirm: new Array(ranges.password.max + 2).join("a"),
+        });
+      expect(res.body.message).toEqual(
+        validationErrors.userPasswordMax.message
+      );
+      expect(res.statusCode).toEqual(validationErrors.userPasswordMax.status);
     });
   });
 });

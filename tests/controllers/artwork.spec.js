@@ -16,7 +16,10 @@ import { request } from "../utils/request";
 const MEDIA_LOCATION = path.resolve(__dirname, "../../../tests/media");
 
 jest.useFakeTimers();
-jest.setTimeout(3 * 60 * 1000);
+
+const socketApiMock = jest
+  .spyOn(socketApi, "sendNotification")
+  .mockImplementation();
 
 let connection,
   seller,
@@ -47,6 +50,7 @@ let connection,
 
 // $TODO add isAuthenticated to each test
 describe.skip("Artwork tests", () => {
+  beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
     [seller, buyer, impartial, artwork] = await Promise.all([
@@ -970,9 +974,6 @@ describe.skip("Artwork tests", () => {
     });
     describe("postComment", () => {
       it("should post a new comment and not send notification if poster owns the artwork", async () => {
-        const socketApiMock = jest
-          .spyOn(socketApi, "sendNotification")
-          .mockImplementation();
         const res = await request(app, sellerToken)
           .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
           .send({ commentContent: "test" });
@@ -981,9 +982,6 @@ describe.skip("Artwork tests", () => {
       });
 
       it("should post a new comment and send notification", async () => {
-        const socketApiMock = jest
-          .spyOn(socketApi, "sendNotification")
-          .mockImplementation();
         const res = await request(app, buyerToken)
           .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
           .send({ commentContent: "test" });

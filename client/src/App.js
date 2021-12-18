@@ -86,7 +86,7 @@ const routes = [
     type: "auth",
   },
   {
-    path: "/reset_password/:id",
+    path: "/reset_password/user/:userId/token/:tokenId",
     Component: lazy(() => import("./pages/Auth/ResetPassword")),
     exact: true,
     type: "auth",

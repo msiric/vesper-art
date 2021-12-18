@@ -1,4 +1,3 @@
-import argon2 from "argon2";
 import createError from "http-errors";
 import { isArrayEmpty, isObjectEmpty } from "../common/helpers";
 import {
@@ -58,6 +57,8 @@ import {
   formatResponse,
   generateUuids,
   generateVerificationToken,
+  hashString,
+  verifyHash,
 } from "../utils/helpers";
 import { AVATAR_SELECTION, USER_SELECTION } from "../utils/selectors";
 import { errors, responses } from "../utils/statuses";
@@ -419,7 +420,7 @@ export const updateUserEmail = async ({
       verificationLink,
       verificationExpiry,
       verified,
-    } = generateVerificationToken();
+    } = await generateVerificationToken();
     await editUserEmail({
       userId,
       userEmail,
@@ -461,13 +462,10 @@ export const updateUserPassword = async ({
     if (!foundUser.verified) {
       throw createError(...formatError(errors.userNotVerified));
     }
-    const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
+    const isCurrentValid = await verifyHash(foundUser.password, userCurrent);
     if (!isCurrentValid)
       throw createError(...formatError(errors.currentPasswordIncorrect));
-    const isPasswordValid = await argon2.verify(
-      foundUser.password,
-      userPassword
-    );
+    const isPasswordValid = await verifyHash(foundUser.password, userPassword);
     if (isPasswordValid)
       throw createError(...formatError(errors.newPasswordIdentical));
     await passwordValidation.validate({
@@ -475,7 +473,7 @@ export const updateUserPassword = async ({
       userPassword,
       userConfirm,
     });
-    const hashedPassword = await argon2.hash(userPassword);
+    const hashedPassword = await hashString(userPassword);
     await editUserPassword({ userId, hashedPassword, connection });
     return formatResponse(responses.passwordUpdated);
   }

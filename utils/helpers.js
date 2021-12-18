@@ -1,3 +1,4 @@
+import argon2 from "argon2";
 import crypto from "crypto";
 import currency from "currency.js";
 import { addHours, endOfDay, isBefore, isValid, startOfDay } from "date-fns";
@@ -45,7 +46,7 @@ const VALID_PARAMS = {
   commentId: { isValid: (value) => isValidUuid(value) },
   intentId: { isValid: (value) => isValidUuid(value) },
   orderId: { isValid: (value) => isValidUuid(value) },
-  tokenId: { isValid: (value) => isValidUuid(value) },
+  tokenId: { isValid: (value) => isValidString(value) },
   userId: { isValid: (value) => isValidUuid(value) },
   versionId: { isValid: (value) => isValidUuid(value) },
   userUsername: { isValid: (value) => isValidString(value) },
@@ -263,18 +264,24 @@ export const generateRandomBytes = ({ bytes }) => {
 };
 
 export const generateVerificationToken = () => {
-  const verificationToken = genUuid();
+  const verificationToken = generateRandomBytes({ bytes: 20 });
   const verificationLink = `${domain.client}/verify_token/${verificationToken}`;
   const verificationExpiry = addHours(new Date(), 1);
   const verified = false;
-  return { verificationToken, verificationLink, verificationExpiry, verified };
+  return {
+    verificationToken,
+    verificationLink,
+    verificationExpiry,
+    verified,
+  };
 };
 
-export const generateResetToken = () => {
-  const resetToken = generateRandomBytes({ bytes: 20 });
-  const resetLink = `${domain.client}/reset_password/${resetToken}`;
+export const generateResetToken = async ({ userId }) => {
+  const randomBytes = generateRandomBytes({ bytes: 30 });
+  const resetToken = await hashString(randomBytes);
+  const resetLink = `${domain.client}/reset_password/user/${userId}/token/${randomBytes}`;
   const resetExpiry = addHours(new Date(), 1);
-  return { resetToken, resetLink, resetExpiry };
+  return { resetToken, resetLink, resetExpiry, randomBytes };
 };
 
 export const generateLicenseFingerprint = () => {
@@ -443,3 +450,8 @@ export const formatEmailContent = ({
   ];
   return { formattedProps, formattedAttachments };
 };
+
+export const hashString = async (givenString) => await argon2.hash(givenString);
+
+export const verifyHash = async (storedHash, givenString) =>
+  await argon2.verify(storedHash, givenString);

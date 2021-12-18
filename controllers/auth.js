@@ -1,4 +1,3 @@
-import argon2 from "argon2";
 import createError from "http-errors";
 import { appName } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
@@ -23,11 +22,11 @@ import {
   editUserEmail,
   fetchUserByAuth,
   fetchUserByEmail,
-  fetchUserByResetToken,
   fetchUserIdByCreds,
   fetchUserIdByEmail,
   fetchUserIdByUsername,
   fetchUserIdByVerificationToken,
+  fetchUserTokensById,
 } from "../services/postgres/user";
 import {
   createAccessToken,
@@ -43,6 +42,8 @@ import {
   generateResetToken,
   generateUuids,
   generateVerificationToken,
+  hashString,
+  verifyHash,
 } from "../utils/helpers";
 import { errors, responses } from "../utils/statuses";
 
@@ -75,8 +76,8 @@ export const postSignUp = async ({
       verificationLink,
       verificationExpiry,
       verified,
-    } = generateVerificationToken();
-    const hashedPassword = await argon2.hash(userPassword);
+    } = await generateVerificationToken();
+    const hashedPassword = await hashString(userPassword);
     const { userId } = generateUuids({
       userId: null,
     });
@@ -130,7 +131,7 @@ export const postLogIn = async ({
     } else if (!foundUser.verified) {
       throw createError(...formatError(errors.userNotVerified));
     } else {
-      const isValid = await argon2.verify(foundUser.password, userPassword);
+      const isValid = await verifyHash(foundUser.password, userPassword);
 
       if (!isValid) {
         throw createError(...formatError(errors.userDoesNotExist));
@@ -166,7 +167,10 @@ export const postRevokeToken = async ({ userId, connection }) => {
 // needs transaction (not tested)
 // $TODO can be improved (remove fetch call and just reset verification token - check if affected rows is not 0)
 export const verifyRegisterToken = async ({ tokenId, connection }) => {
-  const foundId = await fetchUserIdByVerificationToken({ tokenId, connection });
+  const foundId = await fetchUserIdByVerificationToken({
+    tokenId,
+    connection,
+  });
   if (foundId) {
     await resetVerificationToken({ tokenId, connection });
     return formatResponse(responses.registerTokenVerified);
@@ -176,9 +180,11 @@ export const verifyRegisterToken = async ({ tokenId, connection }) => {
 
 export const forgotPassword = async ({ userEmail, connection }) => {
   await emailValidation.validate({ userEmail });
-  const { resetToken, resetLink, resetExpiry } = generateResetToken();
   const userId = await fetchUserIdByEmail({ userEmail, connection });
   if (userId) {
+    const { resetToken, resetLink, resetExpiry } = await generateResetToken({
+      userId,
+    });
     await editUserResetToken({
       userEmail,
       resetToken,
@@ -207,25 +213,32 @@ export const forgotPassword = async ({ userEmail, connection }) => {
 // needs transaction (not tested)
 export const resetPassword = async ({
   tokenId,
+  userId,
   userPassword,
   userConfirm,
   connection,
 }) => {
-  const foundUser = await fetchUserByResetToken({ tokenId, connection });
-  if (!isObjectEmpty(foundUser)) {
-    const isPasswordValid = await argon2.verify(
-      foundUser.password,
-      userPassword
-    );
-    if (isPasswordValid)
-      throw createError(...formatError(errors.newPasswordIdentical));
-    await resetValidation.validate({
-      userPassword,
-      userConfirm,
-    });
-    const hashedPassword = await argon2.hash(userPassword);
-    await resetUserPassword({ tokenId, hashedPassword, connection });
-    return formatResponse(responses.passwordUpdated);
+  const foundUser = await fetchUserTokensById({
+    userId,
+    connection,
+  });
+  if (!isObjectEmpty(foundUser) && !!foundUser.resetToken) {
+    const isValid = await verifyHash(foundUser.resetToken, tokenId);
+    if (isValid) {
+      await resetValidation.validate({
+        userPassword,
+        userConfirm,
+      });
+      const isPasswordValid = await verifyHash(
+        foundUser.password,
+        userPassword
+      );
+      if (isPasswordValid)
+        throw createError(...formatError(errors.newPasswordIdentical));
+      const hashedPassword = await hashString(userPassword);
+      await resetUserPassword({ userId, hashedPassword, connection });
+      return formatResponse(responses.passwordUpdated);
+    }
   }
   throw createError(...formatError(errors.resetTokenInvalid));
 };
@@ -245,7 +258,7 @@ export const resendToken = async ({ userEmail, connection }) => {
         verificationLink,
         verificationExpiry,
         verified,
-      } = generateVerificationToken();
+      } = await generateVerificationToken();
       await editUserEmail({
         userId: foundUser.id,
         userEmail,
@@ -298,7 +311,7 @@ export const updateEmail = async ({
     if (isObjectEmpty(foundUser)) {
       throw createError(...formatError(errors.userDoesNotExist));
     } else {
-      const isValid = await argon2.verify(foundUser.password, userPassword);
+      const isValid = await verifyHash(foundUser.password, userPassword);
 
       if (!isValid) {
         throw createError(...formatError(errors.userDoesNotExist));
@@ -312,7 +325,7 @@ export const updateEmail = async ({
         verificationLink,
         verificationExpiry,
         verified,
-      } = generateVerificationToken();
+      } = await generateVerificationToken();
       await editUserEmail({
         userId: foundId,
         userEmail,

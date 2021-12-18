@@ -1,4 +1,3 @@
-import argon2 from "argon2";
 import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";
@@ -17,7 +16,7 @@ import {
   releaseTransaction,
   rollbackTransaction,
 } from "../utils/database";
-import { generateUuids } from "../utils/helpers";
+import { generateUuids, hashString } from "../utils/helpers";
 import { USER_SELECTION } from "../utils/selectors";
 import { entities } from "./entities";
 
@@ -88,7 +87,7 @@ const seedS3 = async () => {
           userId: null,
           avatarId: null,
         });
-        const userPassword = await argon2.hash(user.data.password);
+        const userPassword = await hashString(user.data.password);
         user.data.id = userId;
         user.data.avatarId = avatarId;
         user.data.password = userPassword;
