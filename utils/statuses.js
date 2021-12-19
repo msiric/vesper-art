@@ -43,6 +43,11 @@ export const errors = {
     message: "Artwork is identical to the previous version",
     expose: true,
   },
+  artworkCheckoutByOwner: {
+    status: statusCodes.badRequest,
+    message: "Cannot purchase your own artwork",
+    expose: true,
+  },
   artworkAlreadyFavorited: {
     status: statusCodes.badRequest,
     message: "Artwork has already been favorited",

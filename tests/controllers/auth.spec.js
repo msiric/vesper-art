@@ -32,7 +32,7 @@ let connection,
   expiredVerificationUserCookie,
   expiredVerificationUserToken;
 
-describe("Auth tests", () => {
+describe.skip("Auth tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
@@ -43,7 +43,7 @@ describe("Auth tests", () => {
       validVerificationUser,
       expiredVerificationUser,
     ] = await Promise.all([
-      await fetchUserByUsername({
+      fetchUserByUsername({
         userUsername: validUsers.seller.username,
         selection: [
           ...USER_SELECTION["ESSENTIAL_INFO"](),
@@ -54,7 +54,7 @@ describe("Auth tests", () => {
         ],
         connection,
       }),
-      await fetchUserByUsername({
+      fetchUserByUsername({
         userUsername: "validResetToken",
         selection: [
           ...USER_SELECTION["ESSENTIAL_INFO"](),
@@ -65,7 +65,7 @@ describe("Auth tests", () => {
         ],
         connection,
       }),
-      await fetchUserByUsername({
+      fetchUserByUsername({
         userUsername: "expiredResetToken",
         selection: [
           ...USER_SELECTION["ESSENTIAL_INFO"](),
@@ -76,7 +76,7 @@ describe("Auth tests", () => {
         ],
         connection,
       }),
-      await fetchUserByUsername({
+      fetchUserByUsername({
         userUsername: "validVerificationToken",
         selection: [
           ...USER_SELECTION["ESSENTIAL_INFO"](),
@@ -87,7 +87,7 @@ describe("Auth tests", () => {
         ],
         connection,
       }),
-      await fetchUserByUsername({
+      fetchUserByUsername({
         userUsername: "expiredVerificationToken",
         selection: [
           ...USER_SELECTION["ESSENTIAL_INFO"](),
@@ -778,7 +778,7 @@ describe("Auth tests", () => {
     });
   });
 
-  describe.only("/api/auth/update_email", () => {
+  describe("/api/auth/update_email", () => {
     it("should update email", async () => {
       const res = await request(app).post("/api/auth/update_email").send({
         userEmail: "nonExistentEmail@mail.com",

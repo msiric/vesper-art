@@ -26,10 +26,14 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
     versionId,
     connection,
   });
+
   if (!isObjectEmpty(foundVersion)) {
-    return {
-      version: foundVersion,
-    };
+    if (foundVersion.artwork.owner.id !== userId) {
+      return {
+        version: foundVersion,
+      };
+    }
+    throw createError(...formatError(errors.artworkCheckoutByOwner));
   }
   throw createError(...formatError(errors.artworkNotFound));
 };
