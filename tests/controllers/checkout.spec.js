@@ -1,11 +1,12 @@
 import app from "../../app";
 import { statusCodes } from "../../common/constants";
 import { ArtworkVisibility } from "../../entities/Artwork";
+import { LicenseType, LicenseUsage } from "../../entities/License";
 import { fetchAllArtworks } from "../../services/postgres/artwork";
 import { fetchUserByUsername } from "../../services/postgres/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
-import { errors } from "../../utils/statuses";
+import { errors, responses } from "../../utils/statuses";
 import { validUsers } from "../fixtures/entities";
 import { logUserIn } from "../utils/helpers";
 import { request } from "../utils/request";
@@ -221,13 +222,35 @@ describe.only("Checkout tests", () => {
     });
   });
 
-  /*   describe("/api/download/:versionId", () => {
-    it("should create a new order", async () => {
-      const res = await request(app, buyerToken).post(
-        `/api/download/${visibleAndActiveArtworkBySeller[0].current.id}`
+  describe.only("/api/download/:versionId", () => {
+    it("should create a new order for a free artwork with personal license", async () => {
+      const freePersonalArtwork = visibleAndActiveArtworkBySeller.find(
+        (item) => item.current.title === "Free but personal"
       );
-      expect(res.statusCode).toEqual(responses.orderCreated.status);
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freePersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: LicenseType.personal,
+          licenseCompany: "",
+        });
       expect(res.body.message).toEqual(responses.orderCreated.message);
+      expect(res.statusCode).toEqual(responses.orderCreated.status);
     });
-  }); */
+
+    it("should throw an error if user is not authenticated", async () => {
+      const freePersonalArtwork = visibleAndActiveArtworkBySeller.find(
+        (item) => item.current.title === "Free but personal"
+      );
+      const res = await request(app)
+        .post(`/api/download/${freePersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: LicenseType.personal,
+          licenseCompany: "",
+        });
+      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+    });
+  });
 });
