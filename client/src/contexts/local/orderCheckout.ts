@@ -4,8 +4,7 @@ import {
   CardNumberElement,
 } from "@stripe/react-stripe-js";
 import create from "zustand";
-import { isObjectEmpty } from "../../../../common/helpers";
-import { getCheckout, getDiscount } from "../../services/checkout";
+import { getCheckout } from "../../services/checkout";
 import { getPurchases } from "../../services/orders";
 import { postIntent } from "../../services/stripe";
 import { resolveAsyncError } from "../../utils/helpers";
@@ -251,12 +250,8 @@ const initActions = (set, get) => ({
       const discount = get().discount.data;
       const { data } = await postIntent.request({
         versionId: version.id,
-        artworkLicense: {
-          usage: values.licenseUsage,
-          company: values.licenseCompany,
-          type: values.licenseType,
-        },
         discountId: discount ? discount.id : null,
+        ...values,
       });
       set((state) => ({
         ...state,
@@ -281,7 +276,8 @@ const initActions = (set, get) => ({
       const discount = get().discount.data;
       const version = get().version.data;
       const license = get().license;
-      if (discount && values.discountCode === null) {
+      // $TODO no longer
+      /*       if (discount && values.discountCode === null) {
         await postIntent.request({
           versionId: version.id,
           artworkLicense: {
@@ -328,7 +324,7 @@ const initActions = (set, get) => ({
         } else {
           console.log("$TODO discount does not exist");
         }
-      }
+      } */
     } catch (err) {
       console.log(err);
       set((state) => ({

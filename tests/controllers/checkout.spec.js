@@ -1,5 +1,7 @@
 import app from "../../app";
 import { statusCodes } from "../../common/constants";
+import { licenseErrors } from "../../common/helpers";
+import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
 import { LicenseType, LicenseUsage } from "../../entities/License";
 import { fetchAllArtworks } from "../../services/postgres/artwork";
@@ -8,7 +10,7 @@ import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, responses } from "../../utils/statuses";
 import { validUsers } from "../fixtures/entities";
-import { logUserIn } from "../utils/helpers";
+import { logUserIn, unusedToken } from "../utils/helpers";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
@@ -223,12 +225,28 @@ describe.only("Checkout tests", () => {
   });
 
   describe.only("/api/download/:versionId", () => {
-    it("should create a new order for a free artwork with personal license", async () => {
-      const freePersonalArtwork = visibleAndActiveArtworkBySeller.find(
+    let freeUnorderedPersonalArtwork,
+      freeUnorderedCommercialArtwork,
+      freeOrderedPersonalArtwork,
+      freeOrderedCommercialArtwork;
+    beforeAll(() => {
+      freeUnorderedPersonalArtwork = visibleAndActiveArtworkBySeller.find(
         (item) => item.current.title === "Free but personal"
       );
+      freeUnorderedCommercialArtwork = visibleAndActiveArtworkBySeller.find(
+        (item) => item.current.title === "Free but commercial (included)"
+      );
+      freeOrderedPersonalArtwork = visibleAndActiveArtworkBySeller.find(
+        (item) => item.current.title === "Free but personal (ordered)"
+      );
+      freeOrderedCommercialArtwork = visibleAndActiveArtworkBySeller.find(
+        (item) =>
+          item.current.title === "Free but commercial (included) (ordered)"
+      );
+    });
+    it("should create a new order for a free artwork with individual personal license", async () => {
       const res = await request(app, buyerToken)
-        .post(`/api/download/${freePersonalArtwork.current.id}`)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
         .send({
           licenseUsage: LicenseUsage.individual,
           licenseType: LicenseType.personal,
@@ -238,12 +256,137 @@ describe.only("Checkout tests", () => {
       expect(res.statusCode).toEqual(responses.orderCreated.status);
     });
 
-    it("should throw an error if user is not authenticated", async () => {
-      const freePersonalArtwork = visibleAndActiveArtworkBySeller.find(
-        (item) => item.current.title === "Free but personal"
+    it("should throw an error if a free (non-commercial) artwork with individual commercial license is ordered", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: LicenseType.commercial,
+          licenseCompany: "",
+        });
+      expect(res.body.message).toEqual(errors.artworkLicenseInvalid.message);
+      expect(res.statusCode).toEqual(errors.artworkLicenseInvalid.status);
+    });
+
+    it("should throw an error if a free (commercial) artwork with individual personal license is ordered", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedCommercialArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: LicenseType.personal,
+          licenseCompany: "",
+        });
+      expect(res.body.message).toEqual(errors.artworkLicenseInvalid.message);
+      expect(res.statusCode).toEqual(errors.artworkLicenseInvalid.status);
+    });
+
+    it("should create a new order for a free (commercial) artwork with individual commercial license", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedCommercialArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: LicenseType.commercial,
+          licenseCompany: "",
+        });
+      expect(res.body.message).toEqual(responses.orderCreated.message);
+      expect(res.statusCode).toEqual(responses.orderCreated.status);
+    });
+
+    it("should create a new order for a free (non-commercial) artwork with business personal license", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.business,
+          licenseType: LicenseType.personal,
+          licenseCompany: "Test",
+        });
+      expect(res.body.message).toEqual(responses.orderCreated.message);
+      expect(res.statusCode).toEqual(responses.orderCreated.status);
+    });
+
+    it("should throw an error if a free (non-commercial) artwork with business commercial license is ordered", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.business,
+          licenseType: LicenseType.commercial,
+          licenseCompany: "Test",
+        });
+      expect(res.body.message).toEqual(errors.artworkLicenseInvalid.message);
+      expect(res.statusCode).toEqual(errors.artworkLicenseInvalid.status);
+    });
+
+    it("should throw an error if free (commercial) artwork with business personal license is ordered", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedCommercialArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.business,
+          licenseType: LicenseType.personal,
+          licenseCompany: "Test",
+        });
+      expect(res.body.message).toEqual(errors.artworkLicenseInvalid.message);
+      expect(res.statusCode).toEqual(errors.artworkLicenseInvalid.status);
+    });
+
+    it("should create a new order for a free (commercial) artwork with business commercial license", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedCommercialArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.business,
+          licenseType: LicenseType.commercial,
+          licenseCompany: "Test",
+        });
+      expect(res.body.message).toEqual(responses.orderCreated.message);
+      expect(res.statusCode).toEqual(responses.orderCreated.status);
+    });
+
+    it("should throw an error if a free artwork with individual personal license already exists", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeOrderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: LicenseType.personal,
+          licenseCompany: "",
+        });
+      expect(res.body.message).toEqual(
+        errors[licenseErrors.identicalError.identifier].message
       );
+      expect(res.statusCode).toEqual(
+        errors[licenseErrors.identicalError.identifier].status
+      );
+    });
+
+    it("should create a new order for a free (commercial) artwork with business commercial license with different company name", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeOrderedCommercialArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.business,
+          licenseType: LicenseType.commercial,
+          licenseCompany: "Test 2",
+        });
+      expect(res.body.message).toEqual(responses.orderCreated.message);
+      expect(res.statusCode).toEqual(responses.orderCreated.status);
+    });
+
+    it("should throw an error if a free (commercial) artwork with business commercial license with same company name is ordered", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeOrderedCommercialArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.business,
+          licenseType: LicenseType.commercial,
+          licenseCompany: "Test",
+        });
+      expect(res.body.message).toEqual(
+        errors[licenseErrors.companyError.identifier].message
+      );
+      expect(res.statusCode).toEqual(
+        errors[licenseErrors.companyError.identifier].status
+      );
+    });
+
+    it("should throw an error if user is not authenticated", async () => {
       const res = await request(app)
-        .post(`/api/download/${freePersonalArtwork.current.id}`)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
         .send({
           licenseUsage: LicenseUsage.individual,
           licenseType: LicenseType.personal,
@@ -251,6 +394,140 @@ describe.only("Checkout tests", () => {
         });
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+    });
+
+    it("should throw an error if user is the owner", async () => {
+      const res = await request(app, sellerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: LicenseType.personal,
+          licenseCompany: "",
+        });
+      expect(res.body.message).toEqual(errors.artworkDownloadedByOwner.message);
+      expect(res.statusCode).toEqual(errors.artworkDownloadedByOwner.status);
+    });
+
+    it("should throw a validation error if usage is missing", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseType: LicenseType.personal,
+          licenseCompany: "",
+        });
+      expect(res.body.message).toEqual(
+        validationErrors.licenseUsageRequired.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.licenseUsageRequired.status
+      );
+    });
+
+    it("should throw a validation error if type is missing", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseCompany: "",
+        });
+      expect(res.body.message).toEqual(
+        validationErrors.licenseTypeRequired.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.licenseTypeRequired.status
+      );
+    });
+
+    it("should throw a validation error if company is missing when usage is 'business'", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.business,
+          licenseType: LicenseType.personal,
+        });
+      expect(res.body.message).toEqual(
+        validationErrors.licenseCompanyRequired.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.licenseCompanyRequired.status
+      );
+    });
+
+    it("should not throw a validation error if company is missing when usage is 'personal'", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: LicenseType.personal,
+        });
+      expect(res.body.message).toEqual(responses.orderCreated.message);
+      expect(res.statusCode).toEqual(responses.orderCreated.status);
+    });
+
+    it("should throw a validation error if usage is invalid", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: "invalid",
+          licenseType: LicenseType.personal,
+        });
+      expect(res.body.message).toEqual(
+        validationErrors.licenseUsageInvalid.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.licenseUsageInvalid.status
+      );
+    });
+
+    it("should throw a validation error if type is invalid", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: "invalid",
+        });
+      expect(res.body.message).toEqual(
+        validationErrors.licenseTypeInvalid.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.licenseTypeInvalid.status
+      );
+    });
+
+    it("should throw a validation error if company is too long", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.business,
+          licenseType: LicenseType.personal,
+          licenseCompany: new Array(ranges.company.max + 2).join("a"),
+        });
+      expect(res.body.message).toEqual(
+        validationErrors.licenseCompanyMax.message
+      );
+      expect(res.statusCode).toEqual(validationErrors.licenseCompanyMax.status);
+    });
+
+    it("should throw an error if version doesn't exist", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${unusedToken}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: LicenseType.personal,
+        });
+      expect(res.body.message).toEqual(errors.artworkNotFound.message);
+      expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+    });
+
+    it("should throw an error if license type is not supported", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${freeUnorderedPersonalArtwork.current.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: LicenseType.commercial,
+        });
+      expect(res.body.message).toEqual(errors.artworkLicenseInvalid.message);
+      expect(res.statusCode).toEqual(errors.artworkLicenseInvalid.status);
     });
   });
 });

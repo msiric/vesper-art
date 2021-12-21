@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { auth } from "../common/constants";
 import { tokens } from "../config/secret";
 import { fetchUserByAuth } from "../services/postgres/user";
-import { formatError, formatTokenData } from "./helpers";
+import { formatError, formatTokenData, verifyTokenValidity } from "./helpers";
 import { errors } from "./statuses";
 
 export const createAccessToken = ({ userData }) => {
@@ -20,24 +20,21 @@ export const createAccessToken = ({ userData }) => {
 
 // $TODO getConnection needs to come from one of the services
 export const updateAccessToken = async (req, res, next, connection) => {
-  const token = req.cookies.jid;
-  if (!token) throw createError(...formatError(errors.forbiddenAccess));
+  const refreshToken = req.cookies.jid;
+  if (!refreshToken) throw createError(...formatError(errors.forbiddenAccess));
 
-  let payload = null;
-  try {
-    payload = jwt.verify(token, tokens.refreshToken);
-  } catch (err) {
-    console.log(err);
-    throw createError(...formatError(errors.forbiddenAccess));
-  }
-
+  const { data } = verifyTokenValidity(
+    refreshToken,
+    tokens.refreshToken,
+    false
+  );
   // const foundUser = await User.findOne({
-  //   where: [{ id: payload.userId, active: true }],
+  //   where: [{ id: data.userId, active: true }],
   //   relations: ["avatar", "favorites", "favorites.artwork", "intents"],
   // });
 
   const foundUser = await fetchUserByAuth({
-    userId: payload.userId,
+    userId: data.userId,
     connection,
   });
 
@@ -45,7 +42,7 @@ export const updateAccessToken = async (req, res, next, connection) => {
     throw createError(...formatError(errors.forbiddenAccess));
   }
 
-  if (foundUser.jwtVersion !== payload.jwtVersion) {
+  if (foundUser.jwtVersion !== data.jwtVersion) {
     throw createError(...formatError(errors.forbiddenAccess));
   }
 

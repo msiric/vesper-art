@@ -6,10 +6,12 @@ export const getUser = {
   error: { message: "Failed to fetch account", variant: "error" },
 };
 export const postIntent = {
-  request: async ({ versionId, artworkLicense, discountId }) =>
+  request: async ({ versionId, discountId }) =>
     await ax.post(`/stripe/intent/${versionId}`, {
-      artworkLicense,
       discountId,
+      artworkUsage,
+      artworkCompany,
+      artworkType,
     }),
   success: { message: "Intent successfully saved", variant: "success" },
   error: { message: "Failed to save intent", variant: "error" },

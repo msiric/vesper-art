@@ -90,6 +90,24 @@ export const sanitizePayload = (req, res, next) => {
   }
 };
 
+export const verifyTokenValidity = (
+  publicToken,
+  privateToken,
+  shouldValidateExpiry = true
+) => {
+  try {
+    jwt.verify(publicToken, privateToken, {
+      ignoreExpiration: false,
+    });
+    const data = jwt.decode(publicToken);
+    if (shouldValidateExpiry && Date.now() >= data.exp * 1000)
+      throw createError(...formatError(errors.notAuthenticated));
+    return { data };
+  } catch (err) {
+    throw createError(...formatError(errors.forbiddenAccess));
+  }
+};
+
 export const requestHandler =
   (promise, transaction, params) => async (req, res, next) => {
     sanitizePayload(req, res, next);
@@ -137,27 +155,20 @@ export const requestHandler =
 
 export const isAuthenticated = async (req, res, next) => {
   try {
-    const authentication = req.headers["authorization"];
-    if (!authentication)
-      return next(createError(...formatError(errors.forbiddenAccess)));
-    const token = authentication.split(" ")[1];
-    jwt.verify(token, tokens.accessToken, {
-      ignoreExpiration: true,
-    });
-    const data = jwt.decode(token);
-    if (!data.active)
-      return next(createError(...formatError(errors.forbiddenAccess)));
+    const accessToken = req.headers["authorization"];
+    if (!accessToken) throw createError(...formatError(errors.forbiddenAccess));
+    const token = accessToken.split(" ")[1];
+    const { data } = verifyTokenValidity(token, tokens.accessToken);
+    if (!data.active) throw createError(...formatError(errors.forbiddenAccess));
     if (!data.verified)
-      return next(createError(...formatError(errors.forbiddenAccess)));
+      throw createError(...formatError(errors.forbiddenAccess));
     if (Date.now() >= data.exp * 1000)
-      return next(createError(...formatError(errors.notAuthenticated)));
+      throw createError(...formatError(errors.notAuthenticated));
     res.locals.user = data;
+    return next();
   } catch (err) {
-    console.log(err);
     return next(err);
   }
-
-  return next();
 };
 
 export const isNotAuthenticated = async (req, res, next) => {

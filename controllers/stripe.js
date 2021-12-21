@@ -102,12 +102,13 @@ export const getStripeUser = async ({ accountId }) => {
   throw createError(...formatError(errors.userNotFound));
 };
 
-// $TODO validacija licenci
 export const managePaymentIntent = async ({
   userId,
   versionId,
   discountId,
-  artworkLicense,
+  licenseUsage,
+  licenseCompany,
+  licenseType,
   connection,
 }) => {
   const foundUser = await fetchUserById({
@@ -154,24 +155,22 @@ export const managePaymentIntent = async ({
                 ...(shouldReinitialize && {
                   licenseAssignor: foundVersion.artwork.owner.fullName,
                 }),
-                licenseUsage: artworkLicense.usage,
-                licenseCompany: artworkLicense.company,
-                licenseType: artworkLicense.type,
+                licenseUsage,
+                licenseCompany,
+                licenseType,
+              });
+              const validationSchema = shouldReinitialize
+                ? licenseValidation.concat(actorsValidation)
+                : licenseValidation;
+              await validationSchema.validate({
+                ...licenseData,
               });
               const availableLicenses = renderCommercialLicenses({
                 version: foundVersion,
               });
               if (
-                availableLicenses.some(
-                  (item) => item.value === artworkLicense.type
-                )
+                availableLicenses.some((item) => item.value === licenseType)
               ) {
-                const validationSchema = shouldReinitialize
-                  ? licenseValidation.concat(actorsValidation)
-                  : licenseValidation;
-                await validationSchema.validate({
-                  ...licenseData,
-                });
                 const foundOrders = await fetchArtworkOrders({
                   userId,
                   versionId: foundVersion.id,

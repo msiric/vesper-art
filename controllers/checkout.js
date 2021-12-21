@@ -60,23 +60,23 @@ export const postDownload = async ({
       connection,
     });
     if (!isObjectEmpty(foundUser)) {
+      const licensePrice = foundVersion[licenseType];
+      const licenseData = formatLicenseValues({
+        licenseAssignee: foundUser.fullName,
+        licenseAssignor: foundVersion.artwork.owner.fullName,
+        licenseUsage,
+        licenseCompany,
+        licenseType,
+        licensePrice,
+      });
+      await licenseValidation
+        .concat(actorsValidation)
+        .concat(freeValidation)
+        .validate(licenseData);
       const availableLicenses = renderFreeLicenses({
         version: foundVersion,
       });
       if (availableLicenses.some((item) => item.value === licenseType)) {
-        const licensePrice = foundVersion[licenseType];
-        const licenseData = formatLicenseValues({
-          licenseAssignee: foundUser.fullName,
-          licenseAssignor: foundVersion.artwork.owner.fullName,
-          licenseUsage,
-          licenseCompany,
-          licenseType,
-          licensePrice,
-        });
-        await licenseValidation
-          .concat(actorsValidation)
-          .concat(freeValidation)
-          .validate(licenseData);
         const foundOrders = await fetchArtworkOrders({
           userId,
           versionId: foundVersion.id,

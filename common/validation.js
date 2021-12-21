@@ -343,6 +343,11 @@ export const errors = {
     message: "License company is invalid",
     expose: true,
   },
+  licenseUsageRequired: {
+    status: statusCodes.badRequest,
+    message: "License usage is required",
+    expose: true,
+  },
   licenseUsageInvalid: {
     status: statusCodes.badRequest,
     message: "License usage is invalid",
@@ -842,7 +847,7 @@ export const emailValidation = Yup.object().shape({
 export const licenseValidation = Yup.object().shape({
   licenseUsage: Yup.string()
     .typeError(errors.invalidString.message)
-    .required(errors.licenseTypeRequired.message)
+    .required(errors.licenseUsageRequired.message)
     .matches(/(individual|business)/, errors.licenseUsageInvalid.message),
   licenseCompany: Yup.string()
     .trim()
