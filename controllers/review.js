@@ -62,5 +62,5 @@ export const postReview = async ({
     }
     throw createError(...formatError(errors.reviewAlreadyExists));
   }
-  throw createError(...formatError(errors.reviewNotAllowed));
+  throw createError(...formatError(errors.orderNotFound));
 };

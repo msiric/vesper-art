@@ -168,11 +168,6 @@ export const errors = {
     message: "Review already exists for this artwork",
     expose: true,
   },
-  reviewNotAllowed: {
-    status: statusCodes.notAllowed,
-    message: "Review cannot be posted for unbought artwork",
-    expose: true,
-  },
   searchTypeInvalid: {
     status: statusCodes.badRequest,
     message: "Query type invalid",
