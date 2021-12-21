@@ -6,7 +6,7 @@ import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, responses } from "../../utils/statuses";
 import { validUsers } from "../fixtures/entities";
-import { logUserIn } from "../utils/helpers";
+import { logUserIn, unusedToken } from "../utils/helpers";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
@@ -94,6 +94,14 @@ describe.only("Notification tests", () => {
         expect(res.body.message).toEqual(responses.notificationRead.message);
       });
 
+      it("should throw an error if notification is not found", async () => {
+        const res = await request(app, sellerToken).post(
+          `/api/notifications/${unusedToken}`
+        );
+        expect(res.statusCode).toEqual(errors.notificationNotFound.status);
+        expect(res.body.message).toEqual(errors.notificationNotFound.message);
+      });
+
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).post(
           `/api/notifications/${unreadNotificationsBySeller[0].id}`
@@ -110,6 +118,14 @@ describe.only("Notification tests", () => {
         );
         expect(res.statusCode).toEqual(responses.notificationUnread.status);
         expect(res.body.message).toEqual(responses.notificationUnread.message);
+      });
+
+      it("should throw an error if notification is not found", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/notifications/${unusedToken}`
+        );
+        expect(res.statusCode).toEqual(errors.notificationNotFound.status);
+        expect(res.body.message).toEqual(errors.notificationNotFound.message);
       });
 
       it("should throw an error if user is not authenticated", async () => {

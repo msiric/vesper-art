@@ -33,6 +33,11 @@ export const errors = {
       "Please complete your Stripe account before making your artwork commercially available",
     expose: true,
   },
+  notificationNotFound: {
+    status: statusCodes.notFound,
+    message: "Notification not found",
+    expose: true,
+  },
   artworkMediaMissing: {
     status: statusCodes.badRequest,
     message: "Please attach artwork media before submitting",

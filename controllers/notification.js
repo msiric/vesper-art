@@ -1,11 +1,12 @@
+import createError from "http-errors";
 import {
   editReadNotification,
   editUnreadNotification,
   fetchExistingNotifications,
   removeAllNotifications,
 } from "../services/postgres/notification";
-import { formatResponse } from "../utils/helpers";
-import { responses } from "../utils/statuses";
+import { formatError, formatResponse } from "../utils/helpers";
+import { errors, responses } from "../utils/statuses";
 
 export const getNotifications = async ({ userId, connection }) => {
   const foundNotifications = await fetchExistingNotifications({
@@ -20,13 +21,16 @@ export const readNotification = async ({
   notificationId,
   connection,
 }) => {
-  await editReadNotification({
+  const readNotification = await editReadNotification({
     userId,
     notificationId,
     connection,
   });
+  if (readNotification.affected !== 0) {
+    return formatResponse(responses.notificationRead);
+  }
+  throw createError(...formatError(errors.notificationNotFound));
   /*   await decrementUserNotification({ userId, connection }); */
-  return formatResponse(responses.notificationRead);
 };
 
 export const unreadNotification = async ({
@@ -34,13 +38,16 @@ export const unreadNotification = async ({
   notificationId,
   connection,
 }) => {
-  await editUnreadNotification({
+  const unreadNotification = await editUnreadNotification({
     userId,
     notificationId,
     connection,
   });
+  if (unreadNotification.affected !== 0) {
+    return formatResponse(responses.notificationUnread);
+  }
+  throw createError(...formatError(errors.notificationNotFound));
   /*   await incrementUserNotification({ userId, connection }); */
-  return formatResponse(responses.notificationUnread);
 };
 
 export const deleteUserNotifications = async ({ userId, connection }) => {
