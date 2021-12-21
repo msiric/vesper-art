@@ -48,7 +48,7 @@ let connection,
   visibleAndActiveArtworkBySeller,
   visibleAndActiveArtworkByBuyer;
 
-describe.only("Checkout tests", () => {
+describe.skip("Checkout tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
@@ -224,7 +224,7 @@ describe.only("Checkout tests", () => {
     });
   });
 
-  describe.only("/api/download/:versionId", () => {
+  describe("/api/download/:versionId", () => {
     let freeUnorderedPersonalArtwork,
       freeUnorderedCommercialArtwork,
       freeOrderedPersonalArtwork,
