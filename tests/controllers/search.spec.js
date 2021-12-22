@@ -26,7 +26,7 @@ let connection,
   filteredArtwork,
   filteredUsers;
 
-describe.only("Search tests", () => {
+describe.skip("Search tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();

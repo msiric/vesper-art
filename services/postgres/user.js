@@ -417,8 +417,6 @@ export const fetchUserReviews = async ({ userId, connection }) => {
 export const fetchUserProfile = async ({
   userUsername,
   userId,
-  cursor,
-  limit,
   connection,
 }) => {
   const foundUser = await connection

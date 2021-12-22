@@ -31,15 +31,11 @@ import {
 
 const router = express.Router();
 
-router
-  .route("/users/:userUsername")
-  // $DONE works
-  .get(
-    handler(getUserProfile, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
-    }))
-  );
+router.route("/users/:userUsername").get(
+  handler(getUserProfile, false, (req, res, next) => ({
+    ...req.params,
+  }))
+);
 
 router
   .route("/users/:userId")

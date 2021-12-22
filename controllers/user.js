@@ -65,12 +65,7 @@ import { errors, responses } from "../utils/statuses";
 import { finalizeMediaUpload } from "../utils/upload";
 import { deleteUserNotifications } from "./notification";
 
-export const getUserProfile = async ({
-  userUsername,
-  cursor,
-  limit,
-  connection,
-}) => {
+export const getUserProfile = async ({ userUsername, connection }) => {
   const foundId = await fetchUserIdByUsername({
     userUsername,
     connection,
@@ -78,8 +73,6 @@ export const getUserProfile = async ({
   const foundUser = await fetchUserProfile({
     userUsername,
     userId: foundId,
-    cursor,
-    limit,
     connection,
   });
   if (!isObjectEmpty(foundUser)) return { user: foundUser };
