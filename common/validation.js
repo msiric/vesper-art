@@ -494,6 +494,11 @@ export const errors = {
     message: `Rating cannot be greater than ${ranges.reviewRating.max}`,
     expose: true,
   },
+  searchQueryRequired: {
+    status: statusCodes.badRequest,
+    message: "Search query is required",
+    expose: true,
+  },
   searchQueryMax: {
     status: statusCodes.badRequest,
     message: `Search query cannot contain more than ${ranges.searchQuery.max} characters`,
@@ -1047,6 +1052,7 @@ export const searchValidation = Yup.object().shape({
   searchQuery: Yup.string()
     .trim()
     .typeError(errors.invalidString.message)
+    .required(errors.searchQueryRequired.message)
     .max(ranges.searchQuery.max, errors.searchQueryMax.message),
   searchType: Yup.string()
     .typeError(errors.invalidString.message)

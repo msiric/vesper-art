@@ -1,11 +1,8 @@
-import createError from "http-errors";
+import { searchValidation } from "../common/validation";
 import {
   fetchArtworkResults,
   fetchUserResults,
 } from "../services/postgres/search";
-import {} from "../utils/helpers";
-import { errors } from "../utils/statuses";
-import searchValidator from "../validation/search";
 
 export const getResults = async ({
   searchQuery,
@@ -14,31 +11,23 @@ export const getResults = async ({
   limit,
   connection,
 }) => {
-  const { error } = searchValidator({ searchQuery, searchType });
-
-  let foundResults = [];
-  let foundType = null;
-  if (searchType === "artwork") {
-    foundResults = await fetchArtworkResults({
-      searchQuery,
-      cursor,
-      limit,
-      connection,
-    });
-    foundType = "artwork";
-  } else if (searchType === "users") {
-    foundResults = await fetchUserResults({
-      searchQuery,
-      cursor,
-      limit,
-      connection,
-    });
-    foundType = "users";
-  } else {
-    throw createError(...formatError(errors.searchTypeInvalid));
-  }
+  await searchValidation.validate({ searchQuery, searchType });
+  const foundResults =
+    searchType === "artwork"
+      ? await fetchArtworkResults({
+          searchQuery,
+          cursor,
+          limit,
+          connection,
+        })
+      : await fetchUserResults({
+          searchQuery,
+          cursor,
+          limit,
+          connection,
+        });
   return {
     searchData: foundResults,
-    searchDisplay: foundType,
+    searchDisplay: searchType,
   };
 };
