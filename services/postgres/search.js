@@ -31,17 +31,14 @@ export const fetchArtworkResults = async ({
       ...USER_SELECTION["STRIPPED_INFO"]("owner"),
     ])
     .where(
-      "version.title @@ plainto_tsquery(:query) AND artwork.active = :active AND artwork.visibility = :visibility",
+      "to_tsvector(version.title) @@ to_tsquery(:query) AND artwork.active = :active AND artwork.visibility = :visibility",
       {
-        query: formattedQuery,
+        query: `${formattedQuery}:*`,
         active: ARTWORK_SELECTION.ACTIVE_STATUS,
         visibility: ARTWORK_SELECTION.VISIBILITY_STATUS,
       }
     )
-    .orderBy(
-      "ts_rank(to_tsvector(version.title), plainto_tsquery(:query))",
-      "DESC"
-    )
+    .orderBy("ts_rank(to_tsvector(version.title), to_tsquery(:query))", "DESC")
     .getMany();
 
   return foundArtwork;
@@ -69,11 +66,14 @@ export const fetchUserResults = async ({
       ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
       ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
     ])
-    .where("user.name @@ plainto_tsquery(:query) AND user.active = :active", {
-      query: formattedQuery,
-      active: USER_SELECTION.ACTIVE_STATUS,
-    })
-    .orderBy("ts_rank(to_tsvector(user.name), plainto_tsquery(:query))", "DESC")
+    .where(
+      "to_tsvector(user.name) @@ to_tsquery(:query) AND user.active = :active",
+      {
+        query: `${formattedQuery}:*`,
+        active: USER_SELECTION.ACTIVE_STATUS,
+      }
+    )
+    .orderBy("ts_rank(to_tsvector(user.name), to_tsquery(:query))", "DESC")
     .getMany();
   // $TODO treba ovo odradit ranije
   for (let user of foundUsers) {

@@ -79,14 +79,14 @@ describe.only("Search tests", () => {
       expect(res.body.searchDisplay).toEqual(type.artwork);
     });
 
-    /*     it("should find users with query 'validuser'", async () => {
+    it("should find users with query 'validuser'", async () => {
       const res = await request(app).get(
         `/api/search?q=${query.users}&t=${type.users}`
       );
       expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.searchData).toHaveLength(filteredUsers.length);
       expect(res.body.searchDisplay).toEqual(type.users);
-    }); */
+    });
 
     it("should throw an error if query is missing", async () => {
       const res = await request(app).get(`/api/search?q=&t=${type.artwork}`);
