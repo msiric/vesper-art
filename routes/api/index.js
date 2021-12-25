@@ -32,7 +32,6 @@ router.use((req, res, next) => {
 });
 
 router.use((err, req, res, next) => {
-  console.log("err", err);
   const error = handleDelegatedError({ err });
   res.status(error.status);
   res.json({ ...error });

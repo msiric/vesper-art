@@ -4,8 +4,10 @@ const MIME_TYPES = {
   // $TODO add support for "image/gif",
   /*  "image/gif": { type: "gif", label: "GIF", animated: true }, */
 };
-const TRANSFORMED_WIDTH = 640;
-const ALLOWED_RATIO = 4;
+const TRANSFORMED_ARTWORK_WIDTH = 640;
+const ALLOWED_ARTWORK_RATIO = 4;
+
+const ALLOWED_AVATAR_RATIO = 1.5;
 
 export const appName = "Vesper";
 
@@ -25,19 +27,18 @@ export const upload = {
     fileSize: 10 * 1024 * 1024,
     fileDimensions: { height: 1200, width: 1200 },
     fileTransform: {
-      width: TRANSFORMED_WIDTH,
+      width: TRANSFORMED_ARTWORK_WIDTH,
       height: (fileHeight, fileWidth) =>
-        fileHeight / (fileWidth / TRANSFORMED_WIDTH),
+        fileHeight / (fileWidth / TRANSFORMED_ARTWORK_WIDTH),
     },
-    fileRatio: ALLOWED_RATIO,
+    fileRatio: ALLOWED_ARTWORK_RATIO,
     // $TODO add support for "image/gif",
     mimeTypes: MIME_TYPES,
   },
   user: {
-    fileSize: 5 * 1024 * 1024,
-    fileDimensions: { height: 150, width: 150 },
-    fileTransform: { width: 150 },
-    fileRatio: ALLOWED_RATIO,
+    fileSize: 0.1 * 1024 * 1024,
+    fileDimensions: { height: 100, width: 100 },
+    fileRatio: ALLOWED_AVATAR_RATIO,
     mimeTypes: MIME_TYPES,
   },
 };

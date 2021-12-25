@@ -50,7 +50,7 @@ let connection,
   filteredFavorites;
 
 // $TODO add isAuthenticated to each test
-describe.skip("Artwork tests", () => {
+describe("Artwork tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
@@ -279,7 +279,7 @@ describe.skip("Artwork tests", () => {
           .post("/api/artwork")
           .attach(
             "artworkMedia",
-            path.resolve(__dirname, `${MEDIA_LOCATION}/invalid_ratio.jpg`)
+            path.resolve(__dirname, `${MEDIA_LOCATION}/invalid_ratio_art.jpg`)
           )
           .field("artworkTitle", "test")
           .field("artworkAvailability", "available")

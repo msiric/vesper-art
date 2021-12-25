@@ -74,10 +74,10 @@ export const artworkS3Upload = async ({ filePath, fileName, mimeType }) => {
   };
 };
 
-export const verifyAspectRatio = ({ fileHeight, fileWidth }) => {
+export const verifyAspectRatio = ({ fileHeight, fileWidth, fileType }) => {
   const difference =
     Math.max(fileHeight, fileWidth) / Math.min(fileHeight, fileWidth);
-  return difference <= upload.artwork.fileRatio;
+  return difference <= upload[fileType].fileRatio;
 };
 
 export const verifyDimensions = async ({ filePath, fileType }) => {
@@ -118,6 +118,7 @@ export const finalizeMediaUpload = async ({
       const verifiedRatio = verifyAspectRatio({
         fileHeight: verifiedInput.dimensions.height,
         fileWidth: verifiedInput.dimensions.width,
+        fileType,
       });
       if (verifiedInput.valid) {
         if (verifiedRatio) {
