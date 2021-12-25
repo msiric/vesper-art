@@ -285,7 +285,7 @@ export const errors = {
   },
   billingCountryMax: {
     status: statusCodes.badRequest,
-    message: `Country cannot contain more than ${ranges.country.max} characters`,
+    message: `Country code cannot contain more than ${ranges.country.max} characters`,
     expose: true,
   },
   commentContentRequired: {
@@ -451,7 +451,7 @@ export const errors = {
   },
   originCountryMax: {
     status: statusCodes.badRequest,
-    message: `Country cannot contain more than ${ranges.country.max} characters`,
+    message: `Country code cannot contain more than ${ranges.country.max} characters`,
     expose: true,
   },
   userNewRequired: {
@@ -562,7 +562,7 @@ export const errors = {
   },
   userCountryMax: {
     status: statusCodes.badRequest,
-    message: `Country contain more than ${ranges.country.max} characters`,
+    message: `Country code cannot contain more than ${ranges.country.max} characters`,
     expose: true,
   },
   invalidUserCountry: {
@@ -602,7 +602,7 @@ export const errors = {
   },
 };
 
-export const validateUserCountry = (value) =>
+export const validateUserCountry = (value = "") =>
   value === "" || countries.some((item) => item.value === value);
 
 export const validateStripeCountry = (value) =>

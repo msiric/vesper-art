@@ -50,7 +50,7 @@ let connection,
   filteredFavorites;
 
 // $TODO add isAuthenticated to each test
-describe("Artwork tests", () => {
+describe.skip("Artwork tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();

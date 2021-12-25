@@ -774,23 +774,18 @@ export const removeUserAvatar = async ({ userId, avatarId, connection }) => {
 // $TODO how to conditionally update?
 export const editUserProfile = async ({
   foundUser,
-  userData,
+  userDescription = "",
+  userCountry = "",
   avatarId,
   connection,
 }) => {
-  // if (savedAvatar) foundUser.avatar = savedAvatar;
-  // if (userData.userDescription)
-  //   foundUser.description = userData.userDescription;
-  // if (userData.userCountry) foundUser.country = userData.userCountry;
-  // return await User.save(foundUser);
-
   const updatedUser = await connection
     .createQueryBuilder()
     .update(User)
     .set({
       avatarId: avatarId,
-      description: userData.userDescription,
-      country: userData.userCountry,
+      description: userDescription,
+      country: userCountry,
     })
     .where("id = :userId AND active = :active", {
       userId: foundUser.id,

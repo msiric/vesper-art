@@ -1,7 +1,7 @@
 import path from "path";
 import app from "../../app";
 import { countries, statusCodes } from "../../common/constants";
-import { errors as validationErrors } from "../../common/validation";
+import { errors as validationErrors, ranges } from "../../common/validation";
 import { fetchUserByUsername } from "../../services/postgres/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
@@ -89,7 +89,7 @@ describe.only("User tests", () => {
   });
 
   describe("/api/users/:userId", () => {
-    it("should update user with new avatar", async () => {
+    it("should update user with new avatar, description and country", async () => {
       const res = await request(app, buyerToken)
         .patch(`/api/users/${buyer.id}`)
         .attach(
@@ -98,6 +98,38 @@ describe.only("User tests", () => {
         )
         .field("userDescription", "test")
         .field("userCountry", countries[0].value);
+      expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
+      expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+    });
+
+    it("should update user with new avatar and description", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}`)
+        .attach(
+          "userMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_avatar.png`)
+        )
+        .field("userDescription", "test");
+      expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
+      expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+    });
+
+    it("should update user with new avatar and country", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}`)
+        .attach(
+          "userMedia",
+          path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_avatar.png`)
+        )
+        .field("userCountry", countries[0].value);
+      expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
+      expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+    });
+
+    it("should update user with new description and country", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}`)
+        .send({ userDescription: "test", userCountry: countries[0].value });
       expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
       expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
     });
@@ -144,10 +176,60 @@ describe.only("User tests", () => {
       expect(res.body.message).toEqual(errors.aspectRatioInvalid.message);
     });
 
-    it("should throw an error if user doesn't exist", async () => {
-      const res = await request(app).get(`/api/users/unknownUser`);
-      expect(res.statusCode).toEqual(errors.userNotFound.status);
-      expect(res.body.message).toEqual(errors.userNotFound.message);
+    it("should throw a validation error if description is too long", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}`)
+        .send({
+          userDescription: new Array(ranges.profileDescription.max + 2).join(
+            "a"
+          ),
+        });
+      expect(res.statusCode).toEqual(
+        validationErrors.userDescriptionMax.status
+      );
+      expect(res.body.message).toEqual(
+        validationErrors.userDescriptionMax.message
+      );
+    });
+
+    it("should throw a validation error if country is too long", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}`)
+        .send({
+          userCountry: "invalidCountry",
+        });
+      expect(res.statusCode).toEqual(validationErrors.userCountryMax.status);
+      expect(res.body.message).toEqual(validationErrors.userCountryMax.message);
+    });
+
+    it("should throw a validation error if country is invalid", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}`)
+        .send({
+          userCountry: "ZZ",
+        });
+      expect(res.statusCode).toEqual(
+        validationErrors.invalidUserCountry.status
+      );
+      expect(res.body.message).toEqual(
+        validationErrors.invalidUserCountry.message
+      );
+    });
+
+    it("should throw an error if user is not authenticated", async () => {
+      const res = await request(app)
+        .patch(`/api/users/${buyer.id}`)
+        .send({ userDescription: "test" });
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+    });
+
+    it("should throw an error if user is not authorized", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${seller.id}`)
+        .send({ userDescription: "test" });
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
     });
   });
 });

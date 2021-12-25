@@ -44,10 +44,10 @@ router
     [isAuthenticated, isAuthorized, multerApi.uploadUserLocal],
     handler(updateUserProfile, true, (req, res, next) => ({
       ...req.params,
+      ...req.body,
       userPath: req.file ? req.file.path : "",
       userFilename: req.file ? req.file.filename : "",
       userMimetype: req.file ? req.file.mimetype : "",
-      userData: { ...req.body },
     }))
   )
   // $TODO not tested

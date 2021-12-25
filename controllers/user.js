@@ -262,7 +262,8 @@ export const updateUserProfile = async ({
   userPath,
   userFilename,
   userMimetype,
-  userData,
+  userDescription,
+  userCountry,
   connection,
 }) => {
   // $TODO delete S3 images when not being used anymore
@@ -273,7 +274,7 @@ export const updateUserProfile = async ({
     mimeType: userMimetype,
     fileType: "user",
   });
-  await profileValidation.validate(userData);
+  await profileValidation.validate({ userDescription, userCountry });
   const foundUser = await fetchUserById({
     userId,
     selection: [
@@ -309,7 +310,8 @@ export const updateUserProfile = async ({
       }
       await editUserProfile({
         foundUser,
-        userData,
+        userDescription,
+        userCountry,
         avatarId,
         connection,
       });
@@ -319,7 +321,8 @@ export const updateUserProfile = async ({
       }
       await editUserProfile({
         foundUser,
-        userData,
+        userDescription,
+        userCountry,
         avatarId,
         connection,
       });
