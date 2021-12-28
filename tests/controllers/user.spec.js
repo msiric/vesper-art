@@ -4,8 +4,10 @@ import { countries, statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
 import { fetchAllArtworks } from "../../services/postgres/artwork";
+import * as authServices from "../../services/postgres/auth";
 import { fetchUserByUsername } from "../../services/postgres/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
+import * as emailUtils from "../../utils/email";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, responses } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
@@ -16,6 +18,11 @@ const MEDIA_LOCATION = path.resolve(__dirname, "../../../tests/media");
 
 jest.useFakeTimers();
 jest.setTimeout(3 * 60 * 1000);
+
+const sendEmailMock = jest.spyOn(emailUtils, "sendEmail").mockImplementation();
+const logUserOutMock = jest
+  .spyOn(authServices, "logUserOut")
+  .mockImplementation();
 
 let connection,
   buyer,
@@ -622,6 +629,190 @@ describe.only("User tests", () => {
         .patch(`/api/users/${buyer.id}/preferences`)
         .send({
           userFavorites: true,
+        });
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+    });
+  });
+
+  describe("/api/users/:userId/password", () => {
+    it("should patch user password", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}/password`)
+        .send({
+          userCurrent: validUsers.buyer.password,
+          userPassword: "User1Password",
+          userConfirm: "User1Password",
+        });
+      expect(res.statusCode).toEqual(responses.passwordUpdated.status);
+      expect(res.body.message).toEqual(responses.passwordUpdated.message);
+    });
+
+    it("should throw an error if password is incorrect", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}/password`)
+        .send({
+          userCurrent: "incorrectPassword",
+          userPassword: "User1Password",
+          userConfirm: "User1Password",
+        });
+      expect(res.statusCode).toEqual(errors.currentPasswordIncorrect.status);
+      expect(res.body.message).toEqual(errors.currentPasswordIncorrect.message);
+    });
+
+    it("should throw an error if password is identical to the old one", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}/password`)
+        .send({
+          userCurrent: validUsers.buyer.password,
+          userPassword: validUsers.buyer.password,
+          userConfirm: validUsers.buyer.password,
+        });
+      expect(res.statusCode).toEqual(errors.newPasswordIdentical.status);
+      expect(res.body.message).toEqual(errors.newPasswordIdentical.message);
+    });
+
+    it("should throw a validation error if passwords don't match", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}/password`)
+        .send({
+          userCurrent: validUsers.buyer.password,
+          userPassword: "User1Password",
+          userConfirm: "User2Password",
+        });
+      expect(res.statusCode).toEqual(
+        validationErrors.userPasswordMismatch.status
+      );
+      expect(res.body.message).toEqual(
+        validationErrors.userPasswordMismatch.message
+      );
+    });
+
+    it("should throw a validation error if password is too short", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}/password`)
+        .send({
+          userCurrent: validUsers.buyer.password,
+          userPassword: new Array(ranges.password.min).join("a"),
+          userConfirm: new Array(ranges.password.min).join("a"),
+        });
+      expect(res.statusCode).toEqual(validationErrors.userPasswordMin.status);
+      expect(res.body.message).toEqual(
+        validationErrors.userPasswordMin.message
+      );
+    });
+
+    it("should throw a validation error if password is too long", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}/password`)
+        .send({
+          userCurrent: validUsers.buyer.password,
+          userPassword: new Array(ranges.password.max + 2).join("a"),
+          userConfirm: new Array(ranges.password.max + 2).join("a"),
+        });
+      expect(res.statusCode).toEqual(validationErrors.userPasswordMax.status);
+      expect(res.body.message).toEqual(
+        validationErrors.userPasswordMax.message
+      );
+    });
+
+    it("should throw an error if user is not authenticated", async () => {
+      const res = await request(app)
+        .patch(`/api/users/${buyer.id}/password`)
+        .send({
+          userCurrent: validUsers.buyer.password,
+          userPassword: "User1Password",
+          userConfirm: "User1Password",
+        });
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+    });
+
+    it("should throw an error if user is not authorized", async () => {
+      const res = await request(app, sellerToken)
+        .patch(`/api/users/${buyer.id}/password`)
+        .send({
+          userCurrent: validUsers.buyer.password,
+          userPassword: "User1Password",
+          userConfirm: "User1Password",
+        });
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+    });
+  });
+
+  describe("/api/users/:userId/email", () => {
+    it("should patch user email", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}/email`)
+        .send({
+          userEmail: "test@test.com",
+        });
+      expect(sendEmailMock).toHaveBeenCalled();
+      expect(logUserOutMock).toHaveBeenCalled();
+      expect(res.statusCode).toEqual(responses.emailAddressUpdated.status);
+      expect(res.body.message).toEqual(responses.emailAddressUpdated.message);
+    });
+
+    it("should throw an error if email is taken", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}/email`)
+        .send({
+          userEmail: validUsers.seller.email,
+        });
+      expect(sendEmailMock).not.toHaveBeenCalled();
+      expect(logUserOutMock).not.toHaveBeenCalled();
+      expect(res.statusCode).toEqual(errors.emailAlreadyExists.status);
+      expect(res.body.message).toEqual(errors.emailAlreadyExists.message);
+    });
+
+    it("should throw a validation error if email is invalid", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}/email`)
+        .send({
+          userEmail: "invalidEmail",
+        });
+      expect(res.statusCode).toEqual(validationErrors.userEmailInvalid.status);
+      expect(res.body.message).toEqual(
+        validationErrors.userEmailInvalid.message
+      );
+    });
+
+    it("should throw a validation error if email is missing", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}/email`)
+        .send({});
+      expect(res.statusCode).toEqual(validationErrors.userEmailRequired.status);
+      expect(res.body.message).toEqual(
+        validationErrors.userEmailRequired.message
+      );
+    });
+
+    it("should throw a validation error if email is too long", async () => {
+      const res = await request(app, buyerToken)
+        .patch(`/api/users/${buyer.id}/email`)
+        .send({
+          userEmail: `${new Array(ranges.email.max).join("a")}@test.com`,
+        });
+      expect(res.statusCode).toEqual(validationErrors.userEmailMax.status);
+      expect(res.body.message).toEqual(validationErrors.userEmailMax.message);
+    });
+
+    it("should throw an error if user is not authenticated", async () => {
+      const res = await request(app)
+        .patch(`/api/users/${buyer.id}/email`)
+        .send({
+          userEmail: "test@test.com",
+        });
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+    });
+
+    it("should throw an error if user is not authorized", async () => {
+      const res = await request(app, sellerToken)
+        .patch(`/api/users/${buyer.id}/email`)
+        .send({
+          userEmail: "test@test.com",
         });
       expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);

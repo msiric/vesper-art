@@ -417,8 +417,9 @@ export const updateUserEmail = async ({
       emailAttachments: emailValues.formattedAttachments,
     });
     logUserOut(response);
+    return formatResponse(responses.emailAddressUpdated);
   }
-  return formatResponse(responses.emailAddressUpdated);
+  throw createError(...formatError(errors.emailAlreadyExists));
 };
 
 // needs transaction (done)
@@ -429,6 +430,11 @@ export const updateUserPassword = async ({
   userConfirm,
   connection,
 }) => {
+  await passwordValidation.validate({
+    userCurrent,
+    userPassword,
+    userConfirm,
+  });
   const foundUser = await fetchUserByAuth({ userId, connection });
   if (!isObjectEmpty(foundUser)) {
     if (!foundUser.verified) {
@@ -440,11 +446,6 @@ export const updateUserPassword = async ({
     const isPasswordValid = await verifyHash(foundUser.password, userPassword);
     if (isPasswordValid)
       throw createError(...formatError(errors.newPasswordIdentical));
-    await passwordValidation.validate({
-      userCurrent,
-      userPassword,
-      userConfirm,
-    });
     const hashedPassword = await hashString(userPassword);
     await editUserPassword({ userId, hashedPassword, connection });
     return formatResponse(responses.passwordUpdated);
