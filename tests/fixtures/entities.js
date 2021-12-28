@@ -31,6 +31,15 @@ const dates = {
 };
 
 export const validUsers = {
+  avatar: {
+    id: "aca8dc34-d806-4730-b7a0-637ee89e9f5f",
+    email: "validuser4@test.com",
+    username: "validuser4",
+    name: "Valid User 4",
+    password: "validuser4",
+    hashedPassword:
+      "$argon2i$v=19$m=4096,t=3,p=1$suU3BWWKm+g2+NyoXCbfQA$95xycab3ZFUswodbwpBL9Ftd/hH8c0klu0MHulmvp9I",
+  },
   impartial: {
     id: "2bd4cb60-5b6d-467c-b2d6-434c0d3b1e33",
     email: "validuser3@test.com",
@@ -120,7 +129,40 @@ export const invalidUsers = {
 };
 
 export const entities = {
+  Avatar: [
+    {
+      id: "c88139ed-23eb-4b47-a273-becd3c08a403",
+      ownerId: validUsers.avatar.id,
+      source:
+        "https://vesper-testing.s3.eu-central-1.amazonaws.com/userMedia/8f520ed3-f211-4776-8d25-218e8a2e593d1640709781753.png",
+      width: "512",
+      height: "512",
+      dominant: "#080808",
+      orientation: "square",
+    },
+  ],
   User: [
+    {
+      id: validUsers.avatar.id,
+      email: validUsers.avatar.email,
+      fullName: validUsers.avatar.name,
+      name: validUsers.avatar.username,
+      password: validUsers.avatar.hashedPassword,
+      avatarId: "c88139ed-23eb-4b47-a273-becd3c08a403",
+      description: "Has avatar",
+      country: "US",
+      businessAddress: "",
+      displayFavorites: true,
+      resetToken: "",
+      resetExpiry: null,
+      jwtVersion: 0,
+      stripeId: "",
+      verificationToken: "",
+      verificationExpiry: null,
+      verified: true,
+      active: true,
+      generated: false,
+    },
     {
       id: validUsers.impartial.id,
       email: validUsers.impartial.email,
@@ -1470,18 +1512,6 @@ export const entities = {
       fee: 0,
       type: OrderType.free,
       status: OrderStatus.completed,
-    },
-  ],
-  Avatar: [
-    {
-      id: "90f5798d-5c76-46b3-9079-cb415ea104f4",
-      ownerId: validUsers.seller.id,
-      source:
-        "https://vesper-testing.s3.eu-central-1.amazonaws.com/userMedia/6c5ce644-393c-4d69-ab46-8d7d00ac0a8b1627499636386.png",
-      width: "898",
-      height: "1280",
-      dominant: "#B9B9B9",
-      orientation: "portrait",
     },
   ],
   Notification: [

@@ -112,6 +112,7 @@ export const appPalette = {
   background: {
     paper: "#424242",
     default: "#303030",
+    light: "#595959",
     notification: "#313131",
   },
   border: {

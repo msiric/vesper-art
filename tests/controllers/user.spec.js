@@ -3,8 +3,10 @@ import app from "../../app";
 import { countries, statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
+import * as s3Utils from "../../lib/s3";
 import { fetchAllArtworks } from "../../services/postgres/artwork";
 import * as authServices from "../../services/postgres/auth";
+import * as userServices from "../../services/postgres/user";
 import { fetchUserByUsername } from "../../services/postgres/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import * as emailUtils from "../../utils/email";
@@ -20,9 +22,11 @@ jest.useFakeTimers();
 jest.setTimeout(3 * 60 * 1000);
 
 const sendEmailMock = jest.spyOn(emailUtils, "sendEmail").mockImplementation();
-const logUserOutMock = jest
-  .spyOn(authServices, "logUserOut")
-  .mockImplementation();
+const logUserOutMock = jest.spyOn(authServices, "logUserOut");
+const s3Mock = jest.spyOn(s3Utils, "deleteS3Object");
+const addAvatarMock = jest.spyOn(userServices, "addUserAvatar");
+const editAvatarMock = jest.spyOn(userServices, "editUserAvatar");
+const removeAvatarMock = jest.spyOn(userServices, "removeUserAvatar");
 
 let connection,
   buyer,
@@ -34,6 +38,9 @@ let connection,
   impartial,
   impartialCookie,
   impartialToken,
+  avatar,
+  avatarCookie,
+  avatarToken,
   artwork,
   artworkBySeller,
   invisibleArtworkBySeller,
@@ -47,7 +54,7 @@ describe.only("User tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [buyer, seller, impartial, artwork] = await Promise.all([
+    [buyer, seller, impartial, avatar, artwork] = await Promise.all([
       fetchUserByUsername({
         userUsername: validUsers.buyer.username,
         selection: [
@@ -81,11 +88,23 @@ describe.only("User tests", () => {
         ],
         connection,
       }),
+      fetchUserByUsername({
+        userUsername: validUsers.avatar.username,
+        selection: [
+          ...USER_SELECTION["ESSENTIAL_INFO"](),
+          ...USER_SELECTION["STRIPE_INFO"](),
+          ...USER_SELECTION["VERIFICATION_INFO"](),
+          ...USER_SELECTION["AUTH_INFO"](),
+          ...USER_SELECTION["LICENSE_INFO"](),
+        ],
+        connection,
+      }),
       fetchAllArtworks({ connection }),
     ]);
     ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
     ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
     ({ cookie: impartialCookie, token: impartialToken } = logUserIn(impartial));
+    ({ cookie: avatarCookie, token: avatarToken } = logUserIn(avatar));
 
     artworkBySeller = artwork.filter((item) => item.owner.id === seller.id);
     invisibleArtworkBySeller = artworkBySeller.filter(
@@ -172,6 +191,60 @@ describe.only("User tests", () => {
         const res = await request(app, buyerToken)
           .patch(`/api/users/${buyer.id}`)
           .send({ userDescription: "test", userCountry: countries[0].value });
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
+        expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+      });
+
+      it("should update user with new avatar and delete the old one", async () => {
+        const res = await request(app, avatarToken)
+          .patch(`/api/users/${avatar.id}`)
+          .attach(
+            "userMedia",
+            path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_avatar.png`)
+          );
+        expect(s3Mock).toHaveBeenCalled();
+        expect(addAvatarMock).not.toHaveBeenCalled();
+        expect(editAvatarMock).toHaveBeenCalled();
+        expect(removeAvatarMock).not.toHaveBeenCalled();
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
+        expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+      });
+
+      it("should update user with new avatar and not delete the old one", async () => {
+        const res = await request(app, buyerToken)
+          .patch(`/api/users/${buyer.id}`)
+          .attach(
+            "userMedia",
+            path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_avatar.png`)
+          );
+        expect(s3Mock).not.toHaveBeenCalled();
+        expect(addAvatarMock).toHaveBeenCalled();
+        expect(editAvatarMock).not.toHaveBeenCalled();
+        expect(removeAvatarMock).not.toHaveBeenCalled();
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
+        expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+      });
+
+      it("should update user with no avatar and delete the old one", async () => {
+        const res = await request(app, avatarToken).patch(
+          `/api/users/${avatar.id}`
+        );
+        expect(s3Mock).toHaveBeenCalled();
+        expect(addAvatarMock).not.toHaveBeenCalled();
+        expect(editAvatarMock).not.toHaveBeenCalled();
+        expect(removeAvatarMock).toHaveBeenCalled();
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
+        expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+      });
+
+      it("should update user with no avatar and not delete the old one", async () => {
+        const res = await request(app, buyerToken).patch(
+          `/api/users/${buyer.id}`
+        );
+        expect(s3Mock).not.toHaveBeenCalled();
+        expect(addAvatarMock).not.toHaveBeenCalled();
+        expect(editAvatarMock).not.toHaveBeenCalled();
+        expect(removeAvatarMock).not.toHaveBeenCalled();
         expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
         expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
       });

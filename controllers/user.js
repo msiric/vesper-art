@@ -242,7 +242,6 @@ export const updateUserProfile = async ({
   userCountry,
   connection,
 }) => {
-  // $TODO delete S3 images when not being used anymore
   // $TODO Validate data passed to upload
   const avatarUpload = await finalizeMediaUpload({
     filePath: userPath,

@@ -16,7 +16,7 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: artepunktTheme.palette.action.disabledBackground,
+    background: artepunktTheme.palette.background.light,
     position: "relative",
   },
   share: {
@@ -52,6 +52,7 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     width: 130,
     height: 130,
     border: `6px solid ${artepunktTheme.palette.background.paper}`,
+    background: artepunktTheme.palette.background.light,
     borderRadius: "50%",
     marginBottom: 4,
     [muiTheme.breakpoints.down("sm")]: {
