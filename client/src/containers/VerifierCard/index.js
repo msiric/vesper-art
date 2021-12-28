@@ -52,11 +52,7 @@ const VerifierCard = () => {
   return (
     <Card>
       <FormProvider control={control}>
-        <form
-          onSubmit={handleSubmit(
-            async () => await fetchLicense({ licenseData: getValues() })
-          )}
-        >
+        <form onSubmit={handleSubmit(fetchLicense)}>
           <CardContent>
             <VerifierForm errors={errors} loading={loading} />
           </CardContent>

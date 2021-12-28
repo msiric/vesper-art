@@ -1,14 +1,13 @@
 import app from "../../app";
 import { statusCodes } from "../../common/constants";
-import {
-  fetchUserByUsername,
-  fetchUserPurchases,
-  fetchUserSales,
-} from "../../services/postgres/user";
+import { errors as validationErrors, ranges } from "../../common/validation";
+import { getOrderDetails } from "../../controllers/order";
+import { fetchUserByUsername } from "../../services/postgres/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
-import { validUsers } from "../fixtures/entities";
-import { logUserIn } from "../utils/helpers";
+import { errors } from "../../utils/statuses";
+import { entities, validUsers } from "../fixtures/entities";
+import { logUserIn, unusedFingerprint } from "../utils/helpers";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
@@ -21,14 +20,16 @@ let connection,
   seller,
   sellerCookie,
   sellerToken,
-  buyerOrders,
-  sellerOrders;
+  buyerOrder,
+  sellerOrder,
+  firstLicenseByBuyer,
+  firstLicenseBySeller;
 
-describe.skip("Verifier tests", () => {
+describe.only("Verifier tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [buyer, seller, buyerOrders, sellerOrders] = await Promise.all([
+    [buyer, seller, buyerOrder, sellerOrder] = await Promise.all([
       fetchUserByUsername({
         userUsername: validUsers.buyer.username,
         selection: [
@@ -51,14 +52,25 @@ describe.skip("Verifier tests", () => {
         ],
         connection,
       }),
-      fetchUserPurchases({ userId: validUsers.buyer.id, connection }),
-      fetchUserSales({
+      getOrderDetails({
+        userId: validUsers.buyer.id,
+        orderId: entities.Order.find(
+          (item) => item.buyerId === validUsers.buyer.id
+        ).id,
+        connection,
+      }),
+      getOrderDetails({
         userId: validUsers.seller.id,
+        orderId: entities.Order.find(
+          (item) => item.sellerId === validUsers.seller.id
+        ).id,
         connection,
       }),
     ]);
     ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
     ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
+    firstLicenseByBuyer = buyerOrder.order.license;
+    firstLicenseBySeller = sellerOrder.order.license;
   });
 
   afterAll(async () => {
@@ -67,9 +79,121 @@ describe.skip("Verifier tests", () => {
 
   describe("/api/verifier", () => {
     it("should return essential license data", async () => {
-      const res = await request(app, buyerToken).post("/api/verifier").send({});
+      const res = await request(app).post("/api/verifier").send({
+        licenseFingerprint: firstLicenseByBuyer.fingerprint,
+      });
       expect(res.statusCode).toEqual(statusCodes.ok);
-      expect(res.body.license).toEqual("");
+      expect(res.body.license.fingerprint).toEqual(
+        firstLicenseByBuyer.fingerprint
+      );
+      expect(res.body.license.assignee).toBeFalsy();
+      expect(res.body.license.assignor).toBeFalsy();
+    });
+
+    it("should return buyer license data", async () => {
+      const res = await request(app).post("/api/verifier").send({
+        licenseFingerprint: firstLicenseByBuyer.fingerprint,
+        assigneeIdentifier: firstLicenseByBuyer.assigneeIdentifier,
+      });
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.license.fingerprint).toEqual(
+        firstLicenseByBuyer.fingerprint
+      );
+      expect(res.body.license.assignee).toEqual(validUsers.buyer.name);
+      expect(res.body.license.assignor).toBeFalsy();
+    });
+
+    it("should return seller license data", async () => {
+      const res = await request(app).post("/api/verifier").send({
+        licenseFingerprint: firstLicenseBySeller.fingerprint,
+        assignorIdentifier: firstLicenseBySeller.assignorIdentifier,
+      });
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.license.fingerprint).toEqual(
+        firstLicenseBySeller.fingerprint
+      );
+      expect(res.body.license.assignee).toBeFalsy();
+      expect(res.body.license.assignor).toEqual(validUsers.seller.name);
+    });
+
+    it("should return complete license data", async () => {
+      const res = await request(app).post("/api/verifier").send({
+        licenseFingerprint: firstLicenseByBuyer.fingerprint,
+        assigneeIdentifier: firstLicenseByBuyer.assigneeIdentifier,
+        assignorIdentifier: firstLicenseBySeller.assignorIdentifier,
+      });
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.license.fingerprint).toEqual(
+        firstLicenseByBuyer.fingerprint
+      );
+      expect(res.body.license.assignee).toEqual(validUsers.buyer.name);
+      expect(res.body.license.assignor).toEqual(validUsers.seller.name);
+    });
+
+    it("should throw an error if license is not found", async () => {
+      const res = await request(app).post("/api/verifier").send({
+        licenseFingerprint: unusedFingerprint,
+      });
+      expect(res.statusCode).toEqual(errors.licenseNotFound.status);
+      expect(res.body.message).toEqual(errors.licenseNotFound.message);
+    });
+
+    it("should throw a validation if fingerprint is missing", async () => {
+      const res = await request(app).post("/api/verifier").send({});
+      expect(res.statusCode).toEqual(
+        validationErrors.licenseFingerprintRequired.status
+      );
+      expect(res.body.message).toEqual(
+        validationErrors.licenseFingerprintRequired.message
+      );
+    });
+
+    it("should throw a validation if fingerprint is too long", async () => {
+      const res = await request(app)
+        .post("/api/verifier")
+        .send({
+          licenseFingerprint: new Array(
+            ranges.licenseFingerprint.exact + 2
+          ).join("a"),
+        });
+      expect(res.statusCode).toEqual(
+        validationErrors.licenseFingerprintExact.status
+      );
+      expect(res.body.message).toEqual(
+        validationErrors.licenseFingerprintExact.message
+      );
+    });
+
+    it("should throw a validation if assignee identifier is too long", async () => {
+      const res = await request(app)
+        .post("/api/verifier")
+        .send({
+          assigneeIdentifier: new Array(
+            ranges.licenseIdentifier.exact + 2
+          ).join("a"),
+        });
+      expect(res.statusCode).toEqual(
+        validationErrors.assigneeIdentifierExact.status
+      );
+      expect(res.body.message).toEqual(
+        validationErrors.assigneeIdentifierExact.message
+      );
+    });
+
+    it("should throw a validation if assignor identifier is too long", async () => {
+      const res = await request(app)
+        .post("/api/verifier")
+        .send({
+          assignorIdentifier: new Array(
+            ranges.licenseIdentifier.exact + 2
+          ).join("a"),
+        });
+      expect(res.statusCode).toEqual(
+        validationErrors.assignorIdentifierExact.status
+      );
+      expect(res.body.message).toEqual(
+        validationErrors.assignorIdentifierExact.message
+      );
     });
   });
 });

@@ -13,7 +13,7 @@ const initialState = {
 const initState = () => ({ ...initialState });
 
 const initActions = (set) => ({
-  fetchLicense: async ({ licenseData }) => {
+  fetchLicense: async (values) => {
     try {
       set((state) => ({
         ...state,
@@ -22,7 +22,7 @@ const initActions = (set) => ({
           error: { ...initialState.license.error },
         },
       }));
-      const { data } = await postVerifier.request({ data: licenseData });
+      const { data } = await postVerifier.request({ data: values });
       set((state) => ({
         ...state,
         license: { ...state.license, data: data.license, loading: false },

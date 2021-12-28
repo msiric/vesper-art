@@ -5,10 +5,21 @@ import { fetchLicenseByFingerprint } from "../services/postgres/license";
 import { formatError } from "../utils/helpers";
 import { errors } from "../utils/statuses";
 
-export const verifyLicense = async ({ licenseData, connection }) => {
-  await fingerprintValidation.validate(licenseData);
+export const verifyLicense = async ({
+  licenseFingerprint,
+  assigneeIdentifier,
+  assignorIdentifier,
+  connection,
+}) => {
+  await fingerprintValidation.validate({
+    licenseFingerprint,
+    assigneeIdentifier,
+    assignorIdentifier,
+  });
   const foundLicense = await fetchLicenseByFingerprint({
-    ...licenseData,
+    licenseFingerprint,
+    assigneeIdentifier,
+    assignorIdentifier,
     connection,
   });
   if (!isObjectEmpty(foundLicense)) {
