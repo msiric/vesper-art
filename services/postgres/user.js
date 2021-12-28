@@ -235,27 +235,6 @@ export const fetchUserByAuth = async ({ userId, connection }) => {
   return foundUser;
 };
 
-// $TODO add appropriate visiblity tag
-export const fetchSellerMedia = async ({ userId, artworkId, connection }) => {
-  const foundArtwork = await connection
-    .getRepository(Artwork)
-    .createQueryBuilder("artwork")
-    .leftJoinAndSelect("artwork.current", "version")
-    .leftJoinAndSelect("version.media", "media")
-    .select([...MEDIA_SELECTION["ESSENTIAL_INFO"]()])
-    .where(
-      "artwork.id = :artworkId AND artwork.active = :active AND artwork.ownerId = :userId",
-      {
-        artworkId,
-        active: ARTWORK_SELECTION["ACTIVE_STATUS"],
-        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
-        userId,
-      }
-    )
-    .getOne();
-  return foundArtwork && foundArtwork.current ? foundArtwork.current.media : {};
-};
-
 // $Needs testing (mongo -> postgres)
 // $TODO remove @AfterLoad for earned, spent and fee
 export const fetchUserPurchases = async ({

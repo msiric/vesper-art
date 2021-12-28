@@ -350,13 +350,15 @@ export const formatResponse = ({ status, message, expose, ...rest }) => ({
 
 export const handleDelegatedError = ({ err }) => {
   const validationError = "ValidationError";
+  const multerError = "MulterError";
+  const knownErrors = [validationError, multerError];
+
   return {
-    status:
-      err.name === validationError
-        ? statusCodes.badRequest
-        : err.status || statusCodes.internalError,
+    status: knownErrors.includes(err.name)
+      ? statusCodes.badRequest
+      : err.status || statusCodes.internalError,
     message:
-      err.name === validationError || err.expose
+      knownErrors.includes(err.name) || err.expose
         ? err.message
         : errors.internalServerError.message,
     expose: err.expose || true,

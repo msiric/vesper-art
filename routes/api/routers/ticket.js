@@ -7,6 +7,7 @@ import {
 
 const router = express.Router();
 
+// $TODO no automated tests
 // $TODO only for test (remove in prod)
 router
   .route("/contact")

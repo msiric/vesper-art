@@ -15,6 +15,7 @@ import {
   requestHandler as handler,
 } from "../../../utils/helpers";
 
+// $TODO no automated tests
 const router = express.Router();
 
 router.route("/account/:accountId").get(

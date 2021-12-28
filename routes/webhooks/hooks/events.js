@@ -4,6 +4,7 @@ import { requestHandler as handler } from "../../../utils/helpers";
 
 const router = express.Router();
 
+// $TODO no automated tests
 router.route("/events").post(
   handler(receiveWebhookEvent, true, (req, res, next) => ({
     stripeSignature: req.headers["stripe-signature"],

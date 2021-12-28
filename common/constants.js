@@ -24,6 +24,7 @@ export const unavailableMessage =
 
 export const upload = {
   artwork: {
+    // 10 megabytes
     fileSize: 10 * 1024 * 1024,
     fileDimensions: { height: 1200, width: 1200 },
     fileTransform: {
@@ -36,7 +37,8 @@ export const upload = {
     mimeTypes: MIME_TYPES,
   },
   user: {
-    fileSize: 0.1 * 1024 * 1024,
+    // 100 kilobytes
+    fileSize: 100 * 1024,
     fileDimensions: { height: 100, width: 100 },
     fileRatio: ALLOWED_AVATAR_RATIO,
     mimeTypes: MIME_TYPES,

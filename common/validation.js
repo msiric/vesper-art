@@ -925,7 +925,6 @@ export const mediaValidation = Yup.object().shape({
     )
     .test(
       "fileSize",
-      // 1048576 = 1024 * 1024
       errors.artworkMediaSize.message,
       (value) => value && value.size <= upload.artwork.fileSize
     )
@@ -1003,7 +1002,7 @@ export const originValidation = Yup.object().shape({
     .trim()
     .typeError(errors.invalidString.message)
     .required(errors.originCountryRequired.message)
-    .max(ranges.address.max, errors.originCountryMax.message)
+    .max(ranges.country.max, errors.originCountryMax.message)
     .test("isValidCountry", errors.invalidStripeCountry.message, (value) =>
       validateStripeCountry(value)
     ),

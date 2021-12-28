@@ -18,7 +18,7 @@ const Styles = makeStyles((muiTheme) => ({
       position: "absolute",
       top: 0,
       left: 0,
-      backgroundImage: `url(${Banner})`,
+      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${Banner})`,
       backgroundSize: "cover",
       backgroundPosition: "center center",
       backgroundRepeat: "no-repeat",

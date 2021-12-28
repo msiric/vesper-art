@@ -158,12 +158,3 @@ export const postCheckout = {
   success: { message: "Intent successfully stored", variant: "success" },
   error: { message: "Failed to store intent", variant: "error" },
 };
-export const getMedia = {
-  request: async ({ userId, artworkId }) =>
-    await ax.get(`/api/users/${userId}/artwork/${artworkId}/download`),
-  success: {
-    message: "Artwork media successfully fetched",
-    variant: "success",
-  },
-  error: { message: "Failed to fetch artwork media", variant: "error" },
-};

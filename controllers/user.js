@@ -15,11 +15,7 @@ import {
   removeArtworkVersion,
 } from "../services/postgres/artwork";
 import { logUserOut } from "../services/postgres/auth";
-import {
-  fetchOrdersByArtwork,
-  fetchOrdersByBuyer,
-  fetchOrdersBySeller,
-} from "../services/postgres/order";
+import { fetchOrdersByArtwork } from "../services/postgres/order";
 import { fetchStripeBalance } from "../services/postgres/stripe";
 import {
   addNewIntent,
@@ -31,7 +27,6 @@ import {
   editUserPassword,
   editUserPreferences,
   editUserProfile,
-  fetchSellerMedia,
   fetchUserArtwork,
   fetchUserByAuth,
   fetchUserById,
@@ -89,13 +84,16 @@ export const getUserArtwork = async ({
     userUsername,
     connection,
   });
-  const foundArtwork = await fetchUserArtwork({
-    userId: foundId,
-    cursor,
-    limit,
-    connection,
-  });
-  return { artwork: foundArtwork };
+  if (foundId) {
+    const foundArtwork = await fetchUserArtwork({
+      userId: foundId,
+      cursor,
+      limit,
+      connection,
+    });
+    return { artwork: foundArtwork };
+  }
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const getUserUploads = async ({ userId, cursor, limit, connection }) => {
@@ -215,28 +213,6 @@ export const getSellerStatistics = async ({ userId, connection }) => {
     return { sales: foundSales, amount, reviews: foundReviews };
   }
   throw createError(...formatError(errors.userNotFound));
-};
-
-export const getUserSales = async ({ userId, start, end, connection }) => {
-  const foundOrders = await fetchOrdersBySeller({
-    userId,
-    start,
-    end,
-    connection,
-  });
-  // $TODO change name
-  return { statistics: foundOrders };
-};
-
-export const getUserPurchases = async ({ userId, start, end, connection }) => {
-  const foundOrders = await fetchOrdersByBuyer({
-    userId,
-    start,
-    end,
-    connection,
-  });
-  // $TODO change name
-  return { statistics: foundOrders };
 };
 
 export const updateUserOrigin = async ({
@@ -484,8 +460,15 @@ export const updateUserPreferences = async ({
   connection,
 }) => {
   await preferencesValidation.validate({ userFavorites });
-  await editUserPreferences({ userId, userFavorites, connection });
-  return formatResponse(responses.preferencesUpdated);
+  const updatedUser = await editUserPreferences({
+    userId,
+    userFavorites,
+    connection,
+  });
+  if (updatedUser.affected !== 0) {
+    return formatResponse(responses.preferencesUpdated);
+  }
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const deactivateUser = async ({ userId, response, connection }) => {
@@ -545,20 +528,4 @@ export const deactivateUser = async ({ userId, response, connection }) => {
     return formatResponse(responses.userDeactivated);
   }
   throw createError(...formatError(errors.userNotFound));
-};
-
-export const getUserMedia = async ({ userId, artworkId, connection }) => {
-  const foundMedia = await fetchSellerMedia({
-    userId,
-    artworkId,
-    connection,
-  });
-  if (!isObjectEmpty(foundMedia)) {
-    const { url, file } = await getSignedS3Object({
-      fileLink: foundMedia.source,
-      folderName: "artworkMedia/",
-    });
-    return { url, file };
-  }
-  throw createError(...formatError(errors.artworkNotFound));
 };

@@ -8,12 +8,9 @@ import {
   getSellerStatistics,
   getUserArtwork,
   getUserFavorites,
-  getUserMedia,
   getUserNotifications,
   getUserOwnership,
   getUserProfile,
-  getUserPurchases,
-  getUserSales,
   getUserSettings,
   getUserUploads,
   updateUserEmail,
@@ -93,16 +90,6 @@ router
   );
 
 router
-  .route("/users/:userId/artwork/:artworkId/download")
-  // $TODO not tested
-  .get(
-    [isAuthenticated, isAuthorized],
-    handler(getUserMedia, false, (req, res, next) => ({
-      ...req.params,
-    }))
-  );
-
-router
   .route("/users/:userId/ownership")
   // $TODO not tested
   .get(
@@ -130,28 +117,6 @@ router
     [isAuthenticated, isAuthorized],
     handler(getBuyerStatistics, false, (req, res, next) => ({
       ...req.params,
-    }))
-  );
-
-router
-  .route("/users/:userId/sales")
-  // $TODO not tested
-  .get(
-    [isAuthenticated, isAuthorized],
-    handler(getUserSales, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
-    }))
-  );
-
-router
-  .route("/users/:userId/purchases")
-  // $TODO not tested
-  .get(
-    [isAuthenticated, isAuthorized],
-    handler(getUserPurchases, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
     }))
   );
 
@@ -220,7 +185,7 @@ router
       ...req.body,
     }))
   );
-
+// $TODO no automated tests
 // FEATURE FLAG - stripe
 // FEATURE FLAG - payment
 featureFlags.stripe &&
