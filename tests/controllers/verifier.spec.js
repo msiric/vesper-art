@@ -25,7 +25,7 @@ let connection,
   firstLicenseByBuyer,
   firstLicenseBySeller;
 
-describe.only("Verifier tests", () => {
+describe.skip("Verifier tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();

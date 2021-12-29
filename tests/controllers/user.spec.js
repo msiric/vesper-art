@@ -50,7 +50,7 @@ let connection,
   invisibleAndInactiveArtworkBySeller,
   visibleAndActiveArtworkBySeller;
 
-describe.skip("User tests", () => {
+describe.only("User tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
@@ -147,7 +147,6 @@ describe.skip("User tests", () => {
     });
   });
 
-  // $TODO add - should have been called
   describe("/api/users/:userId", () => {
     describe("updateUserProfile", () => {
       it("should update user with new avatar, description and country", async () => {
@@ -434,7 +433,56 @@ describe.skip("User tests", () => {
     });
   });
 
-  // $TODO refactor getUserUploads to fit both cases
+  describe("/api/users/:userId/my_artwork", () => {
+    it("should fetch user artwork", async () => {
+      const res = await request(app, sellerToken).get(
+        `/api/users/${seller.id}/my_artwork`
+      );
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.artwork).toHaveLength(activeArtworkBySeller.length);
+    });
+
+    it("should throw an error if user is not authenticated", async () => {
+      const res = await request(app).get(`/api/users/${seller.id}/my_artwork`);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+    });
+
+    it("should throw an error if user is not authorized", async () => {
+      const res = await request(app, buyerToken).get(
+        `/api/users/${seller.id}/my_artwork`
+      );
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+    });
+  });
+
+  describe("/api/users/:userId/uploads", () => {
+    it("should fetch user uploads", async () => {
+      const res = await request(app, sellerToken).get(
+        `/api/users/${seller.id}/uploads`
+      );
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.artwork).toHaveLength(
+        visibleAndActiveArtworkBySeller.length
+      );
+      expect(res.body.artwork[0].current.media).toBeTruthy();
+    });
+
+    it("should throw an error if user is not authenticated", async () => {
+      const res = await request(app).get(`/api/users/${seller.id}/uploads`);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
+      expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+    });
+
+    it("should throw an error if user is not authorized", async () => {
+      const res = await request(app, buyerToken).get(
+        `/api/users/${seller.id}/uploads`
+      );
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
+      expect(res.body.message).toEqual(errors.notAuthorized.message);
+    });
+  });
 
   describe("/api/users/:userId/ownership", () => {
     it("should fetch user artwork", async () => {

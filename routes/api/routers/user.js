@@ -6,7 +6,8 @@ import {
   deleteUserIntent,
   getBuyerStatistics,
   getSellerStatistics,
-  getUserArtwork,
+  getUserArtworkById,
+  getUserArtworkByUsername,
   getUserFavorites,
   getUserNotifications,
   getUserOwnership,
@@ -59,9 +60,8 @@ router
 router
   .route("/users/:userUsername/artwork")
   // $TODO not tested
-  // $TODO needs authentication when going to my_artwork
   .get(
-    handler(getUserArtwork, false, (req, res, next) => ({
+    handler(getUserArtworkByUsername, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -78,9 +78,19 @@ router
   );
 
 router
+  .route("/users/:userId/my_artwork")
+  // $TODO not tested
+  .get(
+    [isAuthenticated, isAuthorized],
+    handler(getUserArtworkById, false, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
+
+router
   .route("/users/:userId/uploads")
   // $TODO not tested
-  // $TODO needs authentication when going to my_artwork
   .get(
     [isAuthenticated, isAuthorized],
     handler(getUserUploads, false, (req, res, next) => ({

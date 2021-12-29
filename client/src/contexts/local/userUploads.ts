@@ -1,6 +1,6 @@
 import create from "zustand";
 import { deleteArtwork } from "../../services/artwork";
-import { getUploads } from "../../services/user";
+import { getMyArtwork } from "../../services/user";
 import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
 
 const initialState = {
@@ -25,7 +25,7 @@ const initActions = (set, get) => ({
   fetchUploads: async ({ userId }) => {
     try {
       const uploads = get().uploads;
-      const { data } = await getUploads.request({
+      const { data } = await getMyArtwork.request({
         userId,
       });
       set((state) => ({

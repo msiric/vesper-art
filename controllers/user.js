@@ -27,6 +27,7 @@ import {
   editUserPassword,
   editUserPreferences,
   editUserProfile,
+  fetchAllUserArtwork,
   fetchUserArtwork,
   fetchUserByAuth,
   fetchUserById,
@@ -74,7 +75,7 @@ export const getUserProfile = async ({ userUsername, connection }) => {
   throw createError(...formatError(errors.userNotFound));
 };
 
-export const getUserArtwork = async ({
+export const getUserArtworkByUsername = async ({
   userUsername,
   cursor,
   limit,
@@ -94,6 +95,21 @@ export const getUserArtwork = async ({
     return { artwork: foundArtwork };
   }
   throw createError(...formatError(errors.userNotFound));
+};
+
+export const getUserArtworkById = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundArtwork = await fetchAllUserArtwork({
+    userId,
+    cursor,
+    limit,
+    connection,
+  });
+  return { artwork: foundArtwork };
 };
 
 export const getUserUploads = async ({ userId, cursor, limit, connection }) => {

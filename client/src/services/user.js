@@ -56,6 +56,14 @@ export const getUploads = {
   success: { message: "User artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch user artwork", variant: "error" },
 };
+export const getMyArtwork = {
+  request: async ({ userId, cursor = "", limit = "" }) =>
+    await ax.get(
+      `/api/users/${userId}/my_artwork?cursor=${cursor}&limit=${limit}`
+    ),
+  success: { message: "User artwork successfully fetched", variant: "success" },
+  error: { message: "Failed to fetch user artwork", variant: "error" },
+};
 export const getCollection = {
   // datatable (cursor, limit not needed)
   request: async ({ userId, cursor = "", limit = "" }) =>

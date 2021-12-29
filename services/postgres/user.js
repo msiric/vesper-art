@@ -429,8 +429,41 @@ export const fetchUserProfile = async ({
   return foundUser;
 };
 
+export const fetchAllUserArtwork = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const queryBuilder = await connection
+    .getRepository(Artwork)
+    .createQueryBuilder("artwork");
+  const foundArtwork = await queryBuilder
+    .leftJoinAndSelect("artwork.current", "version")
+    .leftJoinAndSelect("artwork.owner", "owner")
+    .leftJoinAndSelect("version.cover", "cover")
+    .select([
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("owner"),
+      ...COVER_SELECTION["ESSENTIAL_INFO"](),
+    ])
+    .where(
+      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
+      ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
+      {
+        userId,
+        active: USER_SELECTION["ACTIVE_STATUS"],
+        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
+      }
+    )
+    .orderBy("artwork.serial", "ASC")
+    .limit(limit)
+    .getMany();
+  return foundArtwork;
+};
+
 // $Needs testing (mongo -> postgres)
-// $TODO add appropriate visiblity tag
 export const fetchUserArtwork = async ({
   userId,
   cursor,
@@ -503,11 +536,12 @@ export const fetchUserUploadsWithMedia = async ({
       ...MEDIA_SELECTION["ESSENTIAL_INFO"](),
     ])
     .where(
-      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.serial > 
+      `artwork.ownerId = :userId AND artwork.active = :active AND artwork.visibility = :visibility AND artwork.serial > 
       ${resolveSubQuery(queryBuilder, "artwork", Artwork, cursor, -1)}`,
       {
         userId,
         active: USER_SELECTION["ACTIVE_STATUS"],
+        visibility: ARTWORK_SELECTION["VISIBILITY_STATUS"],
       }
     )
     .orderBy("artwork.serial", "ASC")
