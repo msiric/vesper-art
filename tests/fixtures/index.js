@@ -2,7 +2,6 @@ import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 import { upload } from "../../common/constants";
-import { isObjectEmpty } from "../../common/helpers";
 import { User } from "../../entities/User";
 import { uploadS3Object } from "../../lib/s3";
 import {
@@ -73,17 +72,15 @@ const seedS3 = async () => {
         email: validUsers.seller.email,
       })
       .getOne();
-    if (isObjectEmpty(foundUser)) {
-      await connection.synchronize(true);
-      for (let entity in entities) {
-        for (let row of entities[entity]) {
-          await connection
-            .createQueryBuilder()
-            .insert()
-            .into(entity)
-            .values(row)
-            .execute();
-        }
+    await connection.synchronize(true);
+    for (let entity in entities) {
+      for (let row of entities[entity]) {
+        await connection
+          .createQueryBuilder()
+          .insert()
+          .into(entity)
+          .values(row)
+          .execute();
       }
     }
     await seedS3();

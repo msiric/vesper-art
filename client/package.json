@@ -50,7 +50,8 @@
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
-    "lint": "eslint --fix src/**/*.{js,jsx,ts,tsx}"
+    "lint": "eslint --fix --ext .js,.jsx ."
+
   },
   "eslintConfig": {
     "extends": "react-app"
