@@ -32,7 +32,7 @@ let connection,
   expiredVerificationUserCookie,
   expiredVerificationUserToken;
 
-describe.skip("Auth tests", () => {
+describe("Auth tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();

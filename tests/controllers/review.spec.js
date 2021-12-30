@@ -29,7 +29,7 @@ let connection,
   sellerOrdersWithReview,
   sellerOrdersWithoutReview;
 
-describe.skip("Review tests", () => {
+describe("Review tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();

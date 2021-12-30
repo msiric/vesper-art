@@ -25,7 +25,7 @@ let connection,
   buyerOrders,
   sellerOrders;
 
-describe.skip("Order tests", () => {
+describe("Order tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();

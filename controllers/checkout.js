@@ -28,12 +28,15 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
   });
 
   if (!isObjectEmpty(foundVersion)) {
-    if (foundVersion.artwork.owner.id !== userId) {
-      return {
-        version: foundVersion,
-      };
+    if (foundVersion.id === foundVersion.artwork.currentId) {
+      if (foundVersion.artwork.owner.id !== userId) {
+        return {
+          version: foundVersion,
+        };
+      }
+      throw createError(...formatError(errors.artworkCheckoutByOwner));
     }
-    throw createError(...formatError(errors.artworkCheckoutByOwner));
+    throw createError(...formatError(errors.artworkVersionObsolete));
   }
   throw createError(...formatError(errors.artworkNotFound));
 };
@@ -77,18 +80,17 @@ export const postDownload = async ({
         version: foundVersion,
       });
       if (availableLicenses.some((item) => item.value === licenseType)) {
-        const foundOrders = await fetchArtworkOrders({
-          userId,
-          versionId: foundVersion.id,
-          connection,
-        });
-        const licenseStatus = isLicenseValid({
-          data: licenseData,
-          orders: foundOrders,
-        });
-        if (licenseStatus.valid) {
-          // $TODO Treba li dohvacat usera?
-          if (foundVersion.id === foundVersion.artwork.currentId) {
+        if (foundVersion.id === foundVersion.artwork.currentId) {
+          const foundOrders = await fetchArtworkOrders({
+            userId,
+            artworkId: foundVersion.artwork.currentId,
+            connection,
+          });
+          const licenseStatus = isLicenseValid({
+            data: licenseData,
+            orders: foundOrders,
+          });
+          if (licenseStatus.valid) {
             if (foundVersion.artwork.owner.id !== foundUser.id) {
               const { licenseId, orderId, notificationId } = generateUuids({
                 licenseId: null,
@@ -134,7 +136,6 @@ export const postDownload = async ({
                 orderData: orderObject,
                 connection,
               });
-              // new start
               await addNewNotification({
                 notificationId,
                 notificationLink: orderId,
@@ -147,16 +148,15 @@ export const postDownload = async ({
                 foundVersion.artwork.owner.id,
                 orderId
               );
-              // new end
               return formatResponse(responses.orderCreated);
             }
             throw createError(...formatError(errors.artworkDownloadedByOwner));
           }
-          throw createError(...formatError(errors.artworkVersionObsolete));
+          throw createError(
+            ...formatError(errors[licenseStatus.state.identifier])
+          );
         }
-        throw createError(
-          ...formatError(errors[licenseStatus.state.identifier])
-        );
+        throw createError(...formatError(errors.artworkVersionObsolete));
       }
       throw createError(...formatError(errors.artworkLicenseInvalid));
     }

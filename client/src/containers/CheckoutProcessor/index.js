@@ -234,11 +234,12 @@ const CheckoutProcessor = () => {
   };
 
   useEffect(() => {
-    Promise.all([
-      fetchCheckout({ license: licenseValue, versionId }),
-      fetchOrders({ versionId }),
-    ]);
+    fetchCheckout({ license: licenseValue, versionId });
   }, []);
+
+  useEffect(() => {
+    version.artwork.id && fetchOrders({ artworkId: version.artwork.id });
+  }, [version.artwork.id]);
 
   return (
     <Grid container spacing={2} className={classes.container}>

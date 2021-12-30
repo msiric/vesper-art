@@ -48,7 +48,7 @@ let connection,
   visibleAndActiveArtworkBySeller,
   visibleAndActiveArtworkByBuyer;
 
-describe.skip("Checkout tests", () => {
+describe("Checkout tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();

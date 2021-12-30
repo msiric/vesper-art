@@ -9,15 +9,16 @@ const LicenseAlert = ({ licenseStatus }) => {
   const classes = licenseAlertStyles();
 
   return (
-    <HelpBox
-      type="alert"
-      label={
-        licenseStatus.valid
-          ? "You already own a license for this artwork"
-          : licenseStatus.state.message
-      }
-      margin="8px 0"
-    >
+    <div>
+      <HelpBox
+        type="alert"
+        label={
+          licenseStatus.valid
+            ? "You already own a license for this artwork"
+            : licenseStatus.state.message
+        }
+        margin="8px 0"
+      ></HelpBox>
       <Box className={classes.alert}>
         <Typography
           className={classes.link}
@@ -33,7 +34,7 @@ const LicenseAlert = ({ licenseStatus }) => {
             : "Click here to visit your order"}
         </Typography>
       </Box>
-    </HelpBox>
+    </div>
   );
 };
 

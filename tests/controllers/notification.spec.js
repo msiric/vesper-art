@@ -24,7 +24,7 @@ let connection,
   readNotificationsBySeller,
   unreadNotificationsBySeller;
 
-describe.skip("Notification tests", () => {
+describe("Notification tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
