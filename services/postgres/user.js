@@ -257,6 +257,7 @@ export const fetchUserPurchases = async ({
     .leftJoinAndSelect("order.seller", "seller")
     .leftJoinAndSelect("order.license", "license")
     .leftJoinAndSelect("order.version", "version")
+    .leftJoinAndSelect("order.artwork", "artwork")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
     .select([
@@ -264,6 +265,7 @@ export const fetchUserPurchases = async ({
       ...ORDER_SELECTION["BUYER_SPENT"](),
       ...USER_SELECTION["STRIPPED_INFO"]("seller"),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
       ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
       ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
@@ -357,6 +359,7 @@ export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
     .leftJoinAndSelect("order.buyer", "buyer")
     .leftJoinAndSelect("order.license", "license")
     .leftJoinAndSelect("order.version", "version")
+    .leftJoinAndSelect("order.artwork", "artwork")
     .leftJoinAndSelect("version.cover", "cover")
     .leftJoinAndSelect("order.review", "review")
     .select([
@@ -364,6 +367,7 @@ export const fetchUserSales = async ({ userId, cursor, limit, connection }) => {
       ...ORDER_SELECTION["SELLER_EARNED"](),
       ...USER_SELECTION["STRIPPED_INFO"]("buyer"),
       ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...ARTWORK_SELECTION["ESSENTIAL_INFO"](),
       ...COVER_SELECTION["ESSENTIAL_INFO"](),
       ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
       ...LICENSE_SELECTION["ESSENTIAL_INFO"](),

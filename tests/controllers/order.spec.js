@@ -94,13 +94,13 @@ describe("Order tests", () => {
     });
   });
 
-  describe("/api/orders/purchases/:versionId", () => {
+  describe("/api/orders/purchases/:artworkId", () => {
     it("should fetch artwork's orders", async () => {
       const artworkOrders = buyerOrders.filter(
-        (item) => item.version.id === buyerOrders[0].version.id
+        (item) => item.artwork.id === buyerOrders[0].artwork.id
       );
       const res = await request(app, buyerToken).get(
-        `/api/orders/purchases/${buyerOrders[0].version.id}`
+        `/api/orders/purchases/${buyerOrders[0].artwork.id}`
       );
       expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.purchases).toHaveLength(artworkOrders.length);
@@ -108,7 +108,7 @@ describe("Order tests", () => {
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(
-        `/api/orders/purchases/${buyerOrders[0].version.id}`
+        `/api/orders/purchases/${buyerOrders[0].artwork.id}`
       );
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);

@@ -50,7 +50,7 @@ let connection,
   invisibleAndInactiveArtworkBySeller,
   visibleAndActiveArtworkBySeller;
 
-describe("User tests", () => {
+describe.only("User tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
