@@ -4,9 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "set NODE_ENV=test&& npm run transpile && jest --silent ./dist",
-    "test:watch": "set NODE_ENV=test&& npm run transpile:watch-silent \"jest --watch --silent ./dist\"",
-    "test:coverage": "set NODE_ENV=test&& npm run transpile && jest --coverage --silent ./dist",
+    "test": "set NODE_ENV=test&& npm run transpile && jest --silent --runInBand ./dist",
+    "test:watch": "set NODE_ENV=test&& npm run transpile:watch-silent \"jest --watch --silent --runInBand ./dist\"",
+    "test:coverage": "set NODE_ENV=test&& npm run transpile && jest --coverage --silent --runInBand ./dist",
     "client": "cd client && npm start",
     "start": "set NODE_ENV=local&& node ./dist/bin/www",
     "start-dev": "set NODE_ENV=local&& nodemon ./dist/bin/www",

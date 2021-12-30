@@ -5,7 +5,10 @@ import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
 import { LicenseType, LicenseUsage } from "../../entities/License";
 import { fetchAllArtworks } from "../../services/postgres/artwork";
-import { fetchUserByUsername } from "../../services/postgres/user";
+import {
+  fetchUserByUsername,
+  fetchUserPurchases,
+} from "../../services/postgres/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, responses } from "../../utils/statuses";
@@ -46,7 +49,9 @@ let connection,
   activeArtworkByBuyer,
   invisibleAndInactiveArtworkBySeller,
   visibleAndActiveArtworkBySeller,
-  visibleAndActiveArtworkByBuyer;
+  visibleAndActiveArtworkByBuyer,
+  orders,
+  ordersWithMultipleVersions;
 
 describe("Checkout tests", () => {
   beforeEach(() => jest.clearAllMocks());
@@ -60,6 +65,7 @@ describe("Checkout tests", () => {
       validVerificationUser,
       expiredVerificationUser,
       artwork,
+      orders,
     ] = await Promise.all([
       fetchUserByUsername({
         userUsername: validUsers.buyer.username,
@@ -128,6 +134,7 @@ describe("Checkout tests", () => {
         connection,
       }),
       fetchAllArtworks({ connection }),
+      fetchUserPurchases({ userId: validUsers.buyer.id, connection }),
     ]);
     ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
     ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
@@ -176,6 +183,9 @@ describe("Checkout tests", () => {
       (item) =>
         item.visibility === ArtworkVisibility.visible && item.active === true
     );
+    ordersWithMultipleVersions = orders.find((item) =>
+      item.version.title.includes("V1")
+    );
   });
 
   afterAll(async () => {
@@ -197,6 +207,14 @@ describe("Checkout tests", () => {
       );
       expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+    });
+
+    it("should throw an error if user is purchasing artwork with obsolete version", async () => {
+      const res = await request(app, buyerToken).get(
+        `/api/checkout/${ordersWithMultipleVersions.version.id}`
+      );
+      expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+      expect(res.body.message).toEqual(errors.artworkNotFound.message);
     });
 
     it("should throw an error if user is purchasing own artwork", async () => {
@@ -406,6 +424,18 @@ describe("Checkout tests", () => {
         });
       expect(res.body.message).toEqual(errors.artworkDownloadedByOwner.message);
       expect(res.statusCode).toEqual(errors.artworkDownloadedByOwner.status);
+    });
+
+    it("should throw an error if user is purchasing artwork with obsolete version", async () => {
+      const res = await request(app, buyerToken)
+        .post(`/api/download/${ordersWithMultipleVersions.version.id}`)
+        .send({
+          licenseUsage: LicenseUsage.individual,
+          licenseType: LicenseType.personal,
+          licenseCompany: "",
+        });
+      expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+      expect(res.body.message).toEqual(errors.artworkNotFound.message);
     });
 
     it("should throw a validation error if usage is missing", async () => {

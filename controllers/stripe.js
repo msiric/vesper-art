@@ -173,7 +173,7 @@ export const managePaymentIntent = async ({
               ) {
                 const foundOrders = await fetchArtworkOrders({
                   userId,
-                  versionId: foundVersion.artwork.currentId,
+                  artworkId: foundVersion.artwork.id,
                   connection,
                 });
                 const licenseStatus = isLicenseValid({

@@ -4,10 +4,14 @@ import { countries, statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
 import * as s3Utils from "../../lib/s3";
+import * as artworkServices from "../../services/postgres/artwork";
 import { fetchAllArtworks } from "../../services/postgres/artwork";
 import * as authServices from "../../services/postgres/auth";
 import * as userServices from "../../services/postgres/user";
-import { fetchUserByUsername } from "../../services/postgres/user";
+import {
+  fetchUserByUsername,
+  fetchUserSales,
+} from "../../services/postgres/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import * as emailUtils from "../../utils/email";
 import { USER_SELECTION } from "../../utils/selectors";
@@ -22,11 +26,23 @@ jest.useFakeTimers();
 jest.setTimeout(3 * 60 * 1000);
 
 const sendEmailMock = jest.spyOn(emailUtils, "sendEmail").mockImplementation();
-const logUserOutMock = jest.spyOn(authServices, "logUserOut");
+
 const s3Mock = jest.spyOn(s3Utils, "deleteS3Object");
+
+const logUserOutMock = jest.spyOn(authServices, "logUserOut");
 const addAvatarMock = jest.spyOn(userServices, "addUserAvatar");
 const editAvatarMock = jest.spyOn(userServices, "editUserAvatar");
 const removeAvatarMock = jest.spyOn(userServices, "removeUserAvatar");
+
+const deactivateVersionMock = jest.spyOn(
+  artworkServices,
+  "deactivateArtworkVersion"
+);
+const deactivateArtworkMock = jest.spyOn(
+  artworkServices,
+  "deactivateExistingArtwork"
+);
+const removeVersionMock = jest.spyOn(artworkServices, "removeArtworkVersion");
 
 let connection,
   buyer,
@@ -48,13 +64,14 @@ let connection,
   visibleArtworkBySeller,
   activeArtworkBySeller,
   invisibleAndInactiveArtworkBySeller,
-  visibleAndActiveArtworkBySeller;
+  visibleAndActiveArtworkBySeller,
+  orders;
 
-describe.only("User tests", () => {
+describe("User tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [buyer, seller, impartial, avatar, artwork] = await Promise.all([
+    [buyer, seller, impartial, avatar, artwork, orders] = await Promise.all([
       fetchUserByUsername({
         userUsername: validUsers.buyer.username,
         selection: [
@@ -100,6 +117,7 @@ describe.only("User tests", () => {
         connection,
       }),
       fetchAllArtworks({ connection }),
+      fetchUserSales({ userId: validUsers.seller.id, connection }),
     ]);
     ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
     ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
@@ -369,10 +387,23 @@ describe.only("User tests", () => {
 
     // $TODO add - should have been called
     describe("deactivateUser", () => {
-      it("should deactivate user", async () => {
+      it("should deactivate buyer", async () => {
         const res = await request(app, buyerToken).delete(
           `/api/users/${buyer.id}`
         );
+        expect(res.statusCode).toEqual(responses.userDeactivated.status);
+        expect(res.body.message).toEqual(responses.userDeactivated.message);
+      });
+
+      it("should deactivate seller", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/users/${seller.id}`
+        );
+        // $TODO haveBeenCalledTimes needs to receive computed values (not hard-coded)
+        expect(deactivateVersionMock).toHaveBeenCalledTimes(10);
+        expect(s3Mock).toHaveBeenCalledTimes(20);
+        expect(deactivateArtworkMock).toHaveBeenCalledTimes(3);
+        expect(removeVersionMock).toHaveBeenCalledTimes(10);
         expect(res.statusCode).toEqual(responses.userDeactivated.status);
         expect(res.body.message).toEqual(responses.userDeactivated.message);
       });

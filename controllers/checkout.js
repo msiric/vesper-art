@@ -26,7 +26,6 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
     versionId,
     connection,
   });
-
   if (!isObjectEmpty(foundVersion)) {
     if (foundVersion.id === foundVersion.artwork.currentId) {
       if (foundVersion.artwork.owner.id !== userId) {
@@ -83,7 +82,7 @@ export const postDownload = async ({
         if (foundVersion.id === foundVersion.artwork.currentId) {
           const foundOrders = await fetchArtworkOrders({
             userId,
-            artworkId: foundVersion.artwork.currentId,
+            artworkId: foundVersion.artwork.id,
             connection,
           });
           const licenseStatus = isLicenseValid({
