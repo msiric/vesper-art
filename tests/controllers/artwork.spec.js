@@ -911,6 +911,14 @@ describe("Artwork tests", () => {
           .query({});
         expect(res.statusCode).toEqual(statusCodes.notFound);
       });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app)
+          .get(`/api/artwork/${activeArtworkBySeller[0].id}/edit`)
+          .query({});
+        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
+        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+      });
     });
   });
 
@@ -1024,6 +1032,14 @@ describe("Artwork tests", () => {
           });
         expect(res.statusCode).toEqual(statusCodes.notFound);
       });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app)
+          .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
+        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+      });
     });
   });
 
@@ -1112,7 +1128,18 @@ describe("Artwork tests", () => {
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.commentNotFound.message);
       });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app)
+          .patch(
+            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
+          )
+          .send({ commentContent: "test" });
+        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
+        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+      });
     });
+
     describe("deleteComment", () => {
       it("should delete comment", async () => {
         const res = await request(app, buyerToken).delete(
@@ -1143,6 +1170,14 @@ describe("Artwork tests", () => {
         );
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.commentNotFound.message);
+      });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app).delete(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
+        );
+        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
+        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
       });
     });
   });
@@ -1201,6 +1236,14 @@ describe("Artwork tests", () => {
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
       });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app)
+          .post(`/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`)
+          .query({});
+        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
+        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+      });
     });
     describe("unfavoriteArtwork", () => {
       it("should unfavorite artwork", async () => {
@@ -1237,6 +1280,14 @@ describe("Artwork tests", () => {
         );
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
+      });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app)
+          .delete(`/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`)
+          .query({});
+        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
+        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
       });
     });
   });
