@@ -10,6 +10,13 @@ export const unusedFingerprint = "0277eaabf6f62c5608ceee13f4e526ab4eef267c";
 
 export const fileTooLargeError = "File too large";
 
+export const findSingle = (data, identifier) =>
+  data.filter(
+    (item) =>
+      data.filter((element) => item[identifier] === element[identifier])
+        .length < 2
+  );
+
 export const logUserIn = (user) => {
   const { tokenPayload: payload } = formatTokenData({ user });
   const cookie = createRefreshToken({ userData: payload });
