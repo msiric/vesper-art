@@ -54,16 +54,9 @@ export const getArtwork = async ({ cursor, limit, connection }) => {
   return { artwork: foundArtwork };
 };
 
-export const getArtworkDetails = async ({
-  artworkId,
-  cursor,
-  limit,
-  connection,
-}) => {
+export const getArtworkDetails = async ({ artworkId, connection }) => {
   const foundArtwork = await fetchArtworkDetails({
     artworkId,
-    cursor,
-    limit,
     connection,
   });
   if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };

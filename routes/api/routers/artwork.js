@@ -50,7 +50,6 @@ router
   .get(
     handler(getArtworkDetails, false, (req, res, next) => ({
       ...req.params,
-      ...req.query,
     }))
   )
   // $TODO not tested
@@ -148,7 +147,6 @@ router
     [isAuthenticated],
     handler(unfavoriteArtwork, true, (req, res, next) => ({
       ...req.params,
-      ...req.query,
     }))
   );
 

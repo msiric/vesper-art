@@ -134,12 +134,7 @@ export const fetchVersionDetails = async ({
   return foundVersion;
 };
 
-export const fetchArtworkDetails = async ({
-  artworkId,
-  cursor,
-  limit,
-  connection,
-}) => {
+export const fetchArtworkDetails = async ({ artworkId, connection }) => {
   const foundArtwork = await connection
     .getRepository(Artwork)
     .createQueryBuilder("artwork")
