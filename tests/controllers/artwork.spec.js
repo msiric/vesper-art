@@ -184,23 +184,42 @@ describe("Artwork tests", () => {
   describe("/api/artwork", () => {
     describe("getArtwork", () => {
       it("should fetch active artwork", async () => {
-        const res = await request(app).get("/api/artwork").query({});
+        const res = await request(app).get("/api/artwork");
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork.length).toEqual(visibleAndActiveArtwork.length);
       });
 
       it("should throw a 400 error if cursor is of invalid type", async () => {
-        const res = await request(app).get("/api/artwork").query({ cursor: 0 });
+        const cursor = 0;
+        const res = await request(app).get(`/api/artwork?cursor=${cursor}`);
         expect(res.body.message).toEqual(logicErrors.routeQueryInvalid.message);
         expect(res.statusCode).toEqual(logicErrors.routeQueryInvalid.status);
       });
 
       it("should throw a 400 error if cursor is of invalid UUID version", async () => {
-        const res = await request(app)
-          .get("/api/artwork")
-          .query({ cursor: "5831028a-3af3-11ec-8d3d-0242ac130003" });
+        const cursor = "5831028a-3af3-11ec-8d3d-0242ac130003";
+        const res = await request(app).get(`/api/artwork?cursor=${cursor}`);
         expect(res.body.message).toEqual(logicErrors.routeQueryInvalid.message);
         expect(res.statusCode).toEqual(logicErrors.routeQueryInvalid.status);
+      });
+
+      it("should limit artwork to 1", async () => {
+        const limit = 1;
+        const res = await request(app).get(
+          `/api/artwork?cursor=&limit=${limit}`
+        );
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.artwork).toHaveLength(limit);
+      });
+
+      it("should limit artwork to 1 and skip the first one", async () => {
+        const cursor = visibleAndActiveArtwork[0].id;
+        const limit = 1;
+        const res = await request(app).get(
+          `/api/artwork?cursor=${cursor}&limit=${limit}`
+        );
+        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.body.artwork[0].id).toEqual(visibleAndActiveArtwork[1].id);
       });
     });
 
@@ -877,15 +896,16 @@ describe("Artwork tests", () => {
   describe("/api/artwork/:artworkId", () => {
     describe("getArtworkDetails", () => {
       it("should fetch a visible and active artwork", async () => {
-        const res = await request(app)
-          .get(`/api/artwork/${visibleAndActiveArtwork[0].id}`)
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${visibleAndActiveArtwork[0].id}`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork).toBeTruthy();
       });
 
       it("should throw a validation error if artwork id is invalid", async () => {
-        const res = await request(app).get("/api/artwork/invalidId").query({});
+        const res = await request(app).get("/api/artwork/invalidId");
         expect(res.body.message).toEqual(
           logicErrors.routeParameterInvalid.message
         );
@@ -895,16 +915,18 @@ describe("Artwork tests", () => {
       });
 
       it("should throw a 404 error if artwork is not visible", async () => {
-        const res = await request(app)
-          .get(`/api/artwork/${invisibleArtwork[0].id}`)
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${invisibleArtwork[0].id}`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.notFound);
       });
 
       it("should throw a 404 error if artwork is not active", async () => {
-        const res = await request(app)
-          .get(`/api/artwork/${inactiveArtwork[0].id}`)
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${inactiveArtwork[0].id}`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.notFound);
       });
     });
@@ -1587,17 +1609,19 @@ describe("Artwork tests", () => {
   describe("/api/artwork/:artworkId/edit", () => {
     describe("getArtworkEdit", () => {
       it("should fetch an active artwork if user is owner", async () => {
-        const res = await request(app, sellerToken)
-          .get(`/api/artwork/${activeArtworkBySeller[0].id}/edit`)
-          .query({});
+        const res = await request(app, sellerToken).get(
+          `/api/artwork/${activeArtworkBySeller[0].id}/edit`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork).toBeTruthy();
       });
 
       it("should throw a validation error if artwork id is invalid", async () => {
-        const res = await request(app, sellerToken)
-          .get("/api/artwork/invalidId/edit")
-          .query({});
+        const res = await request(app, sellerToken).get(
+          "/api/artwork/invalidId/edit"
+        );
+
         expect(res.body.message).toEqual(
           logicErrors.routeParameterInvalid.message
         );
@@ -1607,31 +1631,35 @@ describe("Artwork tests", () => {
       });
 
       it("should throw a 404 error if user is not owner", async () => {
-        const res = await request(app, sellerToken)
-          .get(`/api/artwork/${activeArtworkByBuyer[0].id}/edit`)
-          .query({});
+        const res = await request(app, sellerToken).get(
+          `/api/artwork/${activeArtworkByBuyer[0].id}/edit`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.notFound);
       });
 
       it("should fetch an active artwork even if it is invisible", async () => {
-        const res = await request(app, sellerToken)
-          .get(`/api/artwork/${activeAndInvisibleArtworkBySeller[0].id}/edit`)
-          .query({});
+        const res = await request(app, sellerToken).get(
+          `/api/artwork/${activeAndInvisibleArtworkBySeller[0].id}/edit`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork).toBeTruthy();
       });
 
       it("should throw a 404 error if artwork is not active", async () => {
-        const res = await request(app, sellerToken)
-          .get(`/api/artwork/${inactiveArtworkBySeller[0].id}/edit`)
-          .query({});
+        const res = await request(app, sellerToken).get(
+          `/api/artwork/${inactiveArtworkBySeller[0].id}/edit`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.notFound);
       });
 
       it("should throw an error if user is not authenticated", async () => {
-        const res = await request(app)
-          .get(`/api/artwork/${activeArtworkBySeller[0].id}/edit`)
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${activeArtworkBySeller[0].id}/edit`
+        );
+
         expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
         expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
       });
@@ -1644,25 +1672,28 @@ describe("Artwork tests", () => {
       // fetching comments on inactive artwork,
       // fetching comments on invalid artwork id
       it("should not fetch comments for inactive artwork", async () => {
-        const res = await request(app)
-          .get(`/api/artwork/${inactiveArtwork[0].id}/comments`)
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${inactiveArtwork[0].id}/comments`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments.length).toEqual(0);
       });
 
       it("should not fetch comments for invisible artwork", async () => {
-        const res = await request(app)
-          .get(`/api/artwork/${invisibleArtworkWithComments[0].id}/comments`)
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${invisibleArtworkWithComments[0].id}/comments`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments.length).toEqual(0);
       });
 
       it("should fetch artwork comments", async () => {
-        const res = await request(app)
-          .get(`/api/artwork/${visibleArtworkWithComments[0].id}/comments`)
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments.length).toEqual(
           entities.Comment.filter(
@@ -1672,13 +1703,11 @@ describe("Artwork tests", () => {
       });
 
       it("should limit comments to 1", async () => {
-        const cursor = "";
         const limit = 1;
-        const res = await request(app)
-          .get(
-            `/api/artwork/${visibleArtworkWithComments[0].id}/comments?cursor=${cursor}&limit=${limit}`
-          )
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments?cursor=&limit=${limit}`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments[0].id).toEqual(
           filteredComments[filteredComments.length - 1].id
@@ -1688,11 +1717,10 @@ describe("Artwork tests", () => {
       it("should limit comments to 1 and skip the first one", async () => {
         const cursor = filteredComments[filteredComments.length - 1].id;
         const limit = 1;
-        const res = await request(app)
-          .get(
-            `/api/artwork/${visibleArtworkWithComments[0].id}/comments?cursor=${cursor}&limit=${limit}`
-          )
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments?cursor=${cursor}&limit=${limit}`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments[0].id).toEqual(filteredComments[0].id);
       });
@@ -1762,29 +1790,28 @@ describe("Artwork tests", () => {
   describe("/api/artwork/:artworkId/comments/:commentId", () => {
     describe("getComment", () => {
       it("should fetch comment", async () => {
-        const res = await request(app)
-          .get(
-            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
-          )
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comment).toBeTruthy();
       });
 
       it("should return undefined if artwork does not exist", async () => {
-        const res = await request(app)
-          .get(`/api/artwork/${unusedToken}/comments/${filteredComments[0].id}`)
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${unusedToken}/comments/${filteredComments[0].id}`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comment).toBe(undefined);
       });
 
       it("should return undefined if comment does not exist", async () => {
-        const res = await request(app)
-          .get(
-            `/api/artwork/${unusedToken}/comments/${artworkWithComments[0].id}`
-          )
-          .query({});
+        const res = await request(app).get(
+          `/api/artwork/${unusedToken}/comments/${artworkWithComments[0].id}`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comment).toBe(undefined);
       });
@@ -1901,34 +1928,38 @@ describe("Artwork tests", () => {
   describe("/api/artwork/:artworkId/favorites", () => {
     describe("getArtworkFavorites", () => {
       it("should fetch artwork favorites", async () => {
-        const res = await request(app, buyerToken)
-          .get(`/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`)
-          .query({});
+        const res = await request(app, buyerToken).get(
+          `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.favorites).toEqual(filteredFavorites.length);
       });
 
       it("should return 0 if artwork does not exist", async () => {
-        const res = await request(app, buyerToken)
-          .get(`/api/artwork/${unusedToken}/favorites`)
-          .query({});
+        const res = await request(app, buyerToken).get(
+          `/api/artwork/${unusedToken}/favorites`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.favorites).toBe(0);
       });
     });
     describe("favoriteArtwork", () => {
       it("should favorite artwork", async () => {
-        const res = await request(app, impartialToken)
-          .post(`/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`)
-          .query({});
+        const res = await request(app, impartialToken).post(
+          `/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.message).toEqual(responses.artworkFavorited.message);
       });
 
       it("should throw a 400 error if artwork favorited by non-owner", async () => {
-        const res = await request(app, sellerToken)
-          .post(`/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`)
-          .query({});
+        const res = await request(app, sellerToken).post(
+          `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
+        );
+
         expect(res.statusCode).toEqual(errors.artworkFavoritedByOwner.status);
         expect(res.body.message).toEqual(
           errors.artworkFavoritedByOwner.message
@@ -1936,9 +1967,10 @@ describe("Artwork tests", () => {
       });
 
       it("should throw a 400 error if already favorited artwork is favorited", async () => {
-        const res = await request(app, sellerToken)
-          .post(`/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`)
-          .query({});
+        const res = await request(app, sellerToken).post(
+          `/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`
+        );
+
         expect(res.statusCode).toEqual(errors.artworkAlreadyFavorited.status);
         expect(res.body.message).toEqual(
           errors.artworkAlreadyFavorited.message
@@ -1954,26 +1986,29 @@ describe("Artwork tests", () => {
       });
 
       it("should throw an error if user is not authenticated", async () => {
-        const res = await request(app)
-          .post(`/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`)
-          .query({});
+        const res = await request(app).post(
+          `/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`
+        );
+
         expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
         expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
       });
     });
     describe("unfavoriteArtwork", () => {
       it("should unfavorite artwork", async () => {
-        const res = await request(app, buyerToken)
-          .delete(`/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`)
-          .query({});
+        const res = await request(app, buyerToken).delete(
+          `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
+        );
+
         expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.message).toEqual(responses.artworkUnfavorited.message);
       });
 
       it("should throw a 400 error if artwork unfavorited by non-owner", async () => {
-        const res = await request(app, sellerToken)
-          .delete(`/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`)
-          .query({});
+        const res = await request(app, sellerToken).delete(
+          `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
+        );
+
         expect(res.statusCode).toEqual(errors.artworkFavoritedByOwner.status);
         expect(res.body.message).toEqual(
           errors.artworkUnfavoritedByOwner.message
@@ -1981,9 +2016,10 @@ describe("Artwork tests", () => {
       });
 
       it("should throw a 400 error if unfavorited artwork is unfavorited", async () => {
-        const res = await request(app, impartialToken)
-          .delete(`/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`)
-          .query({});
+        const res = await request(app, impartialToken).delete(
+          `/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`
+        );
+
         expect(res.statusCode).toEqual(errors.artworkAlreadyUnfavorited.status);
         expect(res.body.message).toEqual(
           errors.artworkAlreadyUnfavorited.message
@@ -1999,9 +2035,10 @@ describe("Artwork tests", () => {
       });
 
       it("should throw an error if user is not authenticated", async () => {
-        const res = await request(app)
-          .delete(`/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`)
-          .query({});
+        const res = await request(app).delete(
+          `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
+        );
+
         expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
         expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
       });

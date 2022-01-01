@@ -1373,6 +1373,11 @@ export const entities = {
       ownerId: validUsers.seller.id,
       artworkId: "276699ca-4bc9-460d-9dfd-9d1d8b92ca2f",
     },
+    {
+      id: "033b5c59-41d1-4359-bf8c-7d6601d4f8fe",
+      ownerId: validUsers.seller.id,
+      artworkId: "8f17c4d1-0b76-43f1-ba61-475118a675da",
+    },
   ],
   License: [
     {
