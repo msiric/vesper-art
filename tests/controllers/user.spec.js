@@ -17,7 +17,14 @@ import * as emailUtils from "../../utils/email";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, responses } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
-import { fileTooLargeError, logUserIn } from "../utils/helpers";
+import {
+  fileTooLargeError,
+  findMultiOrderedArtwork,
+  findSingleOrderedArtwork,
+  findUniqueOrders,
+  findUnorderedArtwork,
+  logUserIn,
+} from "../utils/helpers";
 import { request } from "../utils/request";
 
 const MEDIA_LOCATION = path.resolve(__dirname, "../../../tests/media");
@@ -65,7 +72,10 @@ let connection,
   activeArtworkBySeller,
   invisibleAndInactiveArtworkBySeller,
   visibleAndActiveArtworkBySeller,
-  orders;
+  orders,
+  unorderedArtwork,
+  onceOrderedArtworkWithNewVersion,
+  multiOrderedArtworkWithNoNewVersions;
 
 describe("User tests", () => {
   beforeEach(() => jest.clearAllMocks());
@@ -144,6 +154,14 @@ describe("User tests", () => {
     visibleAndActiveArtworkBySeller = artworkBySeller.filter(
       (item) =>
         item.visibility === ArtworkVisibility.visible && item.active === true
+    );
+    unorderedArtwork = findUnorderedArtwork(
+      activeArtworkBySeller,
+      entities.Order
+    );
+    onceOrderedArtworkWithNewVersion = findSingleOrderedArtwork(entities.Order);
+    multiOrderedArtworkWithNoNewVersions = findUniqueOrders(
+      findMultiOrderedArtwork(entities.Order)
     );
   });
 
@@ -399,11 +417,16 @@ describe("User tests", () => {
         const res = await request(app, sellerToken).delete(
           `/api/users/${seller.id}`
         );
-        // $TODO haveBeenCalledTimes needs to receive computed values (not hard-coded)
-        expect(deactivateVersionMock).toHaveBeenCalledTimes(11);
-        expect(s3Mock).toHaveBeenCalledTimes(20);
-        expect(deactivateArtworkMock).toHaveBeenCalledTimes(3);
-        expect(removeVersionMock).toHaveBeenCalledTimes(11);
+        expect(deactivateVersionMock).toHaveBeenCalledTimes(
+          unorderedArtwork.length + onceOrderedArtworkWithNewVersion.length
+        );
+        expect(s3Mock).toHaveBeenCalledTimes(unorderedArtwork.length * 2);
+        expect(deactivateArtworkMock).toHaveBeenCalledTimes(
+          multiOrderedArtworkWithNoNewVersions.length
+        );
+        expect(removeVersionMock).toHaveBeenCalledTimes(
+          unorderedArtwork.length + onceOrderedArtworkWithNewVersion.length
+        );
         expect(res.statusCode).toEqual(responses.userDeactivated.status);
         expect(res.body.message).toEqual(responses.userDeactivated.message);
       });
@@ -522,11 +545,7 @@ describe("User tests", () => {
       );
       expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.purchases).toHaveLength(
-        entities.Order.filter(
-          (item, index, self) =>
-            self.findIndex((value) => value.artworkId === item.artworkId) ===
-            index
-        ).length
+        findUniqueOrders(entities.Order).length
       );
     });
 

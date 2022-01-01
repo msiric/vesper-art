@@ -3,6 +3,7 @@ import app from "../../app";
 import { featureFlags, pricing, statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
+import * as s3Utils from "../../lib/s3";
 import socketApi from "../../lib/socket";
 import * as artworkServices from "../../services/postgres/artwork";
 import { fetchAllArtworks } from "../../services/postgres/artwork";
@@ -13,7 +14,8 @@ import { errors, errors as logicErrors, responses } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
 import {
   findMultiOrderedArtwork,
-  findOnceOrderedArtwork,
+  findSingleOrderedArtwork,
+  findUniqueOrders,
   findUnorderedArtwork,
   logUserIn,
   unusedToken,
@@ -25,10 +27,20 @@ const MEDIA_LOCATION = path.resolve(__dirname, "../../../tests/media");
 jest.useFakeTimers();
 jest.setTimeout(3 * 60 * 1000);
 
+const s3Mock = jest.spyOn(s3Utils, "deleteS3Object");
+
 const socketApiMock = jest
   .spyOn(socketApi, "sendNotification")
   .mockImplementation();
 
+const deactivateVersionMock = jest.spyOn(
+  artworkServices,
+  "deactivateArtworkVersion"
+);
+const deactivateArtworkMock = jest.spyOn(
+  artworkServices,
+  "deactivateExistingArtwork"
+);
 const removeVersionMock = jest.spyOn(artworkServices, "removeArtworkVersion");
 
 let connection,
@@ -58,8 +70,8 @@ let connection,
   visibleArtworkWithFavorites,
   filteredFavorites,
   unorderedArtwork,
-  orderedOnceArtwork,
-  multiOrderedArtwork;
+  onceOrderedArtworkWithNewVersion,
+  multiOrderedArtworkWithNoNewVersions;
 
 // $TODO add isAuthenticated to each test
 describe("Artwork tests", () => {
@@ -159,8 +171,10 @@ describe("Artwork tests", () => {
       activeArtworkBySeller,
       entities.Order
     );
-    orderedOnceArtwork = findOnceOrderedArtwork(entities.Order);
-    multiOrderedArtwork = findMultiOrderedArtwork(entities.Order);
+    onceOrderedArtworkWithNewVersion = findSingleOrderedArtwork(entities.Order);
+    multiOrderedArtworkWithNoNewVersions = findUniqueOrders(
+      findMultiOrderedArtwork(entities.Order)
+    );
   });
 
   afterAll(async () => {
@@ -917,7 +931,9 @@ describe("Artwork tests", () => {
 
       it("should update existing artwork that was ordered once previously and has new unordered version", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${orderedOnceArtwork[0].artworkId}`)
+          .patch(
+            `/api/artwork/${onceOrderedArtworkWithNewVersion[0].artworkId}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -936,7 +952,9 @@ describe("Artwork tests", () => {
 
       it("should update existing artwork that was ordered once previously and has new ordered version", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${multiOrderedArtwork[0].artworkId}`)
+          .patch(
+            `/api/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
+          )
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1489,6 +1507,79 @@ describe("Artwork tests", () => {
           validationErrors.artworkVisibilityRequired.message
         );
         expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw an error if artwork is not found", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${unusedToken}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+        expect(res.body.message).toEqual(logicErrors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(logicErrors.artworkNotFound.status);
+      });
+    });
+
+    // $TODO Add delete method
+    describe("deleteArtwork", () => {
+      it("should delete unordered artwork", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/artwork/${unorderedArtwork[0].id}`
+        );
+        expect(deactivateVersionMock).toHaveBeenCalledTimes(1);
+        expect(s3Mock).toHaveBeenCalledTimes(2);
+        expect(removeVersionMock).toHaveBeenCalledTimes(1);
+        expect(deactivateArtworkMock).toHaveBeenCalledTimes(0);
+        expect(res.statusCode).toEqual(responses.artworkDeleted.status);
+        expect(res.body.message).toEqual(responses.artworkDeleted.message);
+      });
+
+      it("should delete ordered artwork with new unordered version", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/artwork/${onceOrderedArtworkWithNewVersion[0].artworkId}`
+        );
+        expect(deactivateVersionMock).toHaveBeenCalledTimes(1);
+        expect(s3Mock).toHaveBeenCalledTimes(0);
+        expect(removeVersionMock).toHaveBeenCalledTimes(1);
+        expect(deactivateArtworkMock).toHaveBeenCalledTimes(0);
+        expect(res.statusCode).toEqual(responses.artworkDeleted.status);
+        expect(res.body.message).toEqual(responses.artworkDeleted.message);
+      });
+
+      it("should delete ordered artwork with no new versions", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
+        );
+        expect(deactivateVersionMock).toHaveBeenCalledTimes(0);
+        expect(s3Mock).toHaveBeenCalledTimes(0);
+        expect(removeVersionMock).toHaveBeenCalledTimes(0);
+        expect(deactivateArtworkMock).toHaveBeenCalledTimes(1);
+        expect(res.statusCode).toEqual(responses.artworkDeleted.status);
+        expect(res.body.message).toEqual(responses.artworkDeleted.message);
+      });
+
+      it("should throw an error if artwork is not found", async () => {
+        const res = await request(app, sellerToken).delete(
+          `/api/artwork/${unusedToken}`
+        );
+        expect(res.statusCode).toEqual(logicErrors.artworkNotFound.status);
+        expect(res.body.message).toEqual(logicErrors.artworkNotFound.message);
+      });
+
+      it("should throw an error if user is not authenticated", async () => {
+        const res = await request(app).delete(
+          `/api/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
+        );
+        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
+        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
       });
     });
   });

@@ -288,43 +288,39 @@ export const deleteArtwork = async ({
     connection,
   });
   if (foundArtwork) {
-    // $TODO Check that artwork wasn't updated in the meantime (current === version)
-    if (true) {
-      const foundOrders = await fetchOrdersByArtwork({
-        userId,
-        artworkId: foundArtwork.id,
+    const foundOrders = await fetchOrdersByArtwork({
+      userId,
+      artworkId: foundArtwork.id,
+      connection,
+    });
+    if (isArrayEmpty(foundOrders)) {
+      const oldVersion = foundArtwork.current;
+      await deactivateArtworkVersion({ artworkId, connection });
+      await deleteS3Object({
+        fileLink: oldVersion.cover.source,
+        folderName: "artworkCovers/",
+      });
+      await deleteS3Object({
+        fileLink: oldVersion.media.source,
+        folderName: "artworkMedia/",
+      });
+      await removeArtworkVersion({
+        versionId: oldVersion.id,
         connection,
       });
-      if (isArrayEmpty(foundOrders)) {
-        const oldVersion = foundArtwork.current;
-        await deactivateArtworkVersion({ artworkId, connection });
-        await deleteS3Object({
-          fileLink: oldVersion.cover.source,
-          folderName: "artworkCovers/",
-        });
-        await deleteS3Object({
-          fileLink: oldVersion.media.source,
-          folderName: "artworkMedia/",
-        });
-        await removeArtworkVersion({
-          versionId: oldVersion.id,
-          connection,
-        });
-      } else if (
-        foundOrders.find((item) => item.versionId === foundArtwork.current.id)
-      ) {
-        await deactivateExistingArtwork({ artworkId, connection });
-      } else {
-        const oldVersion = foundArtwork.current;
-        await deactivateArtworkVersion({ artworkId, connection });
-        await removeArtworkVersion({
-          versionId: oldVersion.id,
-          connection,
-        });
-      }
-      return formatResponse(responses.artworkDeleted);
+    } else if (
+      foundOrders.some((item) => item.versionId === foundArtwork.current.id)
+    ) {
+      await deactivateExistingArtwork({ artworkId, connection });
+    } else {
+      const oldVersion = foundArtwork.current;
+      await deactivateArtworkVersion({ artworkId, connection });
+      await removeArtworkVersion({
+        versionId: oldVersion.id,
+        connection,
+      });
     }
-    throw createError(...formatError(errors.artworkVersionObsolete));
+    return formatResponse(responses.artworkDeleted);
   }
   throw createError(...formatError(errors.artworkNotFound));
 };
