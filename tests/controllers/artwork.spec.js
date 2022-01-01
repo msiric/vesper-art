@@ -1,16 +1,23 @@
 import path from "path";
 import app from "../../app";
-import { pricing, statusCodes } from "../../common/constants";
+import { featureFlags, pricing, statusCodes } from "../../common/constants";
 import { errors as validationErrors, ranges } from "../../common/validation";
 import { ArtworkVisibility } from "../../entities/Artwork";
 import socketApi from "../../lib/socket";
+import * as artworkServices from "../../services/postgres/artwork";
 import { fetchAllArtworks } from "../../services/postgres/artwork";
 import { fetchUserByUsername } from "../../services/postgres/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, errors as logicErrors, responses } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
-import { logUserIn, unusedToken } from "../utils/helpers";
+import {
+  findMultiOrderedArtwork,
+  findOnceOrderedArtwork,
+  findUnorderedArtwork,
+  logUserIn,
+  unusedToken,
+} from "../utils/helpers";
 import { request } from "../utils/request";
 
 const MEDIA_LOCATION = path.resolve(__dirname, "../../../tests/media");
@@ -21,6 +28,8 @@ jest.setTimeout(3 * 60 * 1000);
 const socketApiMock = jest
   .spyOn(socketApi, "sendNotification")
   .mockImplementation();
+
+const removeVersionMock = jest.spyOn(artworkServices, "removeArtworkVersion");
 
 let connection,
   seller,
@@ -47,7 +56,10 @@ let connection,
   artworkFavoritedByBuyer,
   artworkFavoritedBySeller,
   visibleArtworkWithFavorites,
-  filteredFavorites;
+  filteredFavorites,
+  unorderedArtwork,
+  orderedOnceArtwork,
+  multiOrderedArtwork;
 
 // $TODO add isAuthenticated to each test
 describe("Artwork tests", () => {
@@ -143,6 +155,12 @@ describe("Artwork tests", () => {
     filteredFavorites = entities.Favorite.filter(
       (favorite) => favorite.artworkId === visibleArtworkWithFavorites[0].id
     );
+    unorderedArtwork = findUnorderedArtwork(
+      activeArtworkBySeller,
+      entities.Order
+    );
+    orderedOnceArtwork = findOnceOrderedArtwork(entities.Order);
+    multiOrderedArtwork = findMultiOrderedArtwork(entities.Order);
   });
 
   afterAll(async () => {
@@ -673,8 +691,7 @@ describe("Artwork tests", () => {
         expect(res.statusCode).toEqual(statusCodes.badRequest);
       });
 
-      // $TODO create a user that is not onboarded
-      /*       it("should throw a 422 if commercial is invalid but included and user is not onboarded", async () => {
+      it("should throw an error if commercial artwork is valid but user hasn't completed the onboarding process", async () => {
         const res = await request(app, sellerToken)
           .post("/api/artwork")
           .attach(
@@ -686,15 +703,26 @@ describe("Artwork tests", () => {
           .field("artworkType", "commercial")
           .field("artworkLicense", "commercial")
           .field("artworkPersonal", 20)
-          .field("artworkUse", "included")
-          .field("artworkCommercial", "")
+          .field("artworkUse", "separate")
+          .field("artworkCommercial", 30)
           .field("artworkVisibility", "visible")
           .field("artworkDescription", "");
+
         expect(res.body.message).toEqual(
-          logicErrors.stripeOnboardingIncomplete.message
+          logicErrors[
+            featureFlags.stripe
+              ? "stripeOnboardingIncomplete"
+              : "commercialArtworkUnavailable"
+          ].message
         );
-        expect(res.statusCode).toEqual(statusCodes.unprocessable);
-      }); */
+        expect(res.statusCode).toEqual(
+          logicErrors[
+            featureFlags.stripe
+              ? "stripeOnboardingIncomplete"
+              : "commercialArtworkUnavailable"
+          ].status
+        );
+      });
 
       it("should throw a validation error if commercial is not an integer", async () => {
         const res = await request(app, sellerToken)
@@ -864,6 +892,603 @@ describe("Artwork tests", () => {
           .get(`/api/artwork/${inactiveArtwork[0].id}`)
           .query({});
         expect(res.statusCode).toEqual(statusCodes.notFound);
+      });
+    });
+
+    describe("updateArtwork", () => {
+      it("should update existing artwork that was never ordered", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${unorderedArtwork[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+        expect(removeVersionMock).toHaveBeenCalledTimes(1);
+        expect(res.body.message).toEqual(responses.artworkUpdated.message);
+        expect(res.statusCode).toEqual(responses.artworkUpdated.status);
+      });
+
+      it("should update existing artwork that was ordered once previously and has new unordered version", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${orderedOnceArtwork[0].artworkId}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+        expect(removeVersionMock).toHaveBeenCalledTimes(1);
+        expect(res.body.message).toEqual(responses.artworkUpdated.message);
+        expect(res.statusCode).toEqual(responses.artworkUpdated.status);
+      });
+
+      it("should update existing artwork that was ordered once previously and has new ordered version", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${multiOrderedArtwork[0].artworkId}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+        expect(removeVersionMock).toHaveBeenCalledTimes(0);
+        expect(res.body.message).toEqual(responses.artworkUpdated.message);
+        expect(res.statusCode).toEqual(responses.artworkUpdated.status);
+      });
+
+      it("should throw a 403 error if user is not authenticated", async () => {
+        const res = await request(app)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "available",
+            artworkLicense: "personal",
+            artworkPersonal: 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "test",
+          });
+        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(statusCodes.forbidden);
+      });
+
+      it("should throw an error if artwork is identical to the previous version", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: activeArtworkBySeller[0].current.title,
+            artworkAvailability: activeArtworkBySeller[0].current.availability,
+            artworkType: activeArtworkBySeller[0].current.type,
+            artworkLicense: activeArtworkBySeller[0].current.license,
+            artworkPersonal: activeArtworkBySeller[0].current.personal,
+            artworkUse: activeArtworkBySeller[0].current.use,
+            artworkCommercial: activeArtworkBySeller[0].current.commercial,
+            artworkDescription: activeArtworkBySeller[0].current.description,
+            artworkVisibility: activeArtworkBySeller[0].visibility,
+          });
+        expect(res.body.message).toEqual(
+          logicErrors.artworkDetailsIdentical.message
+        );
+        expect(res.statusCode).toEqual(
+          logicErrors.artworkDetailsIdentical.status
+        );
+      });
+
+      it("should throw a validation error if title is missing", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkTitleRequired.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw a validation error if availability is missing", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkAvailabilityRequired.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw a validation error if availability is invalid", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "invalid",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkAvailabilityInvalid.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw a validation error if type is missing", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkTypeRequired.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw a validation error if type is invalid", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "invalid",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkTypeInvalid.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should pass if type is invalid but artwork is 'preview only'", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "unavailable",
+            artworkType: "invalid",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(responses.artworkUpdated.message);
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw a validation error if license is missing", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkLicenseRequired.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw a validation error if license is invalid", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "invalid",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkLicenseInvalid.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should pass if license is invalid but artwork is 'preview only'", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "unavailable",
+            artworkType: "free",
+            artworkLicense: "invalid",
+            artworkPersonal: 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(responses.artworkUpdated.message);
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw a validation error if personal is not an integer", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "commercial",
+            artworkLicense: "personal",
+            artworkPersonal: "invalid",
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.invalidNumber.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw a validation error if personal is below the minimum price", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "commercial",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice - 1,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkPersonalMin.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw a validation error if personal is above the maximum price", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "commercial",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.maximumPrice + 1,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkPersonalMax.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should pass if personal is zero and artwork is not available/commercial/separate/personal", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: 0,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(responses.artworkUpdated.message);
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw a validation error if use is missing", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "commercial",
+            artworkPersonal: 0,
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkUseRequired.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw a validation error if use is invalid", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "commercial",
+            artworkPersonal: 0,
+            artworkUse: "invalid",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkUseInvalid.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should pass if use is invalid but artwork is available/personal", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: 0,
+            artworkUse: "invalid",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(responses.artworkUpdated.message);
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw a validation error if commercial is invalid", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "commercial",
+            artworkLicense: "commercial",
+            artworkPersonal: 20,
+            artworkUse: "separate",
+            artworkCommercial: 20,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkCommercialMin.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw an error if commercial artwork is valid but user hasn't completed the onboarding process", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "commercial",
+            artworkLicense: "commercial",
+            artworkPersonal: 20,
+            artworkUse: "separate",
+            artworkCommercial: 30,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          logicErrors[
+            featureFlags.stripe
+              ? "stripeOnboardingIncomplete"
+              : "commercialArtworkUnavailable"
+          ].message
+        );
+        expect(res.statusCode).toEqual(
+          logicErrors[
+            featureFlags.stripe
+              ? "stripeOnboardingIncomplete"
+              : "commercialArtworkUnavailable"
+          ].status
+        );
+      });
+
+      it("should throw a validation error if commercial is not an integer", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "commercial",
+            artworkLicense: "commercial",
+            artworkPersonal: 0,
+            artworkUse: "separate",
+            artworkCommercial: "invalid",
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.invalidNumber.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw a validation error if commercial is below the minimum price", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "commercial",
+            artworkLicense: "commercial",
+            artworkPersonal: pricing.minimumPrice,
+            artworkUse: "separate",
+            artworkCommercial: pricing.minimumPrice - 1,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkCommercialMin.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw a validation error if commercial is above the maximum price", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "commercial",
+            artworkLicense: "commercial",
+            artworkPersonal: pricing.minimumPrice,
+            artworkUse: "separate",
+            artworkCommercial: pricing.maximumPrice + 1,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkCommercialMax.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should throw a validation error if commercial is below the personal license price", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "commercial",
+            artworkLicense: "commercial",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "separate",
+            artworkCommercial: pricing.minimumPrice + 5,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkCommercialMin.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
+      });
+
+      it("should pass if commercial is zero and artwork is not available/commercial/separate/personal", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: 0,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkVisibility: "visible",
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(responses.artworkUpdated.message);
+        expect(res.statusCode).toEqual(statusCodes.ok);
+      });
+
+      it("should throw a validation error if visibility is missing", async () => {
+        const res = await request(app, sellerToken)
+          .patch(`/api/artwork/${activeArtworkBySeller[0].id}`)
+          .send({
+            artworkTitle: "test",
+            artworkAvailability: "available",
+            artworkType: "free",
+            artworkLicense: "personal",
+            artworkPersonal: pricing.minimumPrice + 10,
+            artworkUse: "included",
+            artworkCommercial: 0,
+            artworkDescription: "",
+          });
+
+        expect(res.body.message).toEqual(
+          validationErrors.artworkVisibilityRequired.message
+        );
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
       });
     });
   });

@@ -1043,7 +1043,7 @@ export const entities = {
       mediaId: "8e50b494-5bdc-4774-93c2-661f373bc7eb",
     },
     {
-      title: "Free but commercial (included) (ordered) V2",
+      title: "Free but commercial (included) (unordered) V2",
       description: "",
       id: "e4e4fc59-69c9-4ebb-ac1b-27c068cfbf4a",
       ...version,
@@ -1259,7 +1259,7 @@ export const entities = {
     },
     {
       ...general,
-      ownerId: validUsers.buyer.id,
+      ownerId: validUsers.seller.id,
       id: "f8ccc098-1aac-46b1-9c90-952c0911c186",
       currentId: "e4e4fc59-69c9-4ebb-ac1b-27c068cfbf4a",
     },

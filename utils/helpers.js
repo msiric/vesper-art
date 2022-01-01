@@ -413,18 +413,15 @@ export const formatArtworkPrices = (data) => {
   };
 };
 
-export const verifyVersionValidity = async ({
-  data,
-  foundUser,
-  foundAccount,
-}) => {
+export const verifyVersionValidity = ({ data, foundUser, foundAccount }) => {
   if (data.artworkPersonal || data.artworkCommercial) {
     // FEATURE FLAG - stripe
     if (!featureFlags.stripe) {
       throw createError(...formatError(errors.commercialArtworkUnavailable));
     }
-    if (!foundUser.stripeId)
+    if (!foundUser.stripeId) {
       throw createError(...formatError(errors.stripeOnboardingIncomplete));
+    }
     if (
       (data.artworkPersonal || data.artworkCommercial) &&
       (!foundAccount || foundAccount.capabilities.transfers !== "active")

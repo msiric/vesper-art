@@ -400,10 +400,10 @@ describe("User tests", () => {
           `/api/users/${seller.id}`
         );
         // $TODO haveBeenCalledTimes needs to receive computed values (not hard-coded)
-        expect(deactivateVersionMock).toHaveBeenCalledTimes(10);
+        expect(deactivateVersionMock).toHaveBeenCalledTimes(11);
         expect(s3Mock).toHaveBeenCalledTimes(20);
         expect(deactivateArtworkMock).toHaveBeenCalledTimes(3);
-        expect(removeVersionMock).toHaveBeenCalledTimes(10);
+        expect(removeVersionMock).toHaveBeenCalledTimes(11);
         expect(res.statusCode).toEqual(responses.userDeactivated.status);
         expect(res.body.message).toEqual(responses.userDeactivated.message);
       });

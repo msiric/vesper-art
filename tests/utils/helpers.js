@@ -10,11 +10,23 @@ export const unusedFingerprint = "0277eaabf6f62c5608ceee13f4e526ab4eef267c";
 
 export const fileTooLargeError = "File too large";
 
-export const findSingle = (data, identifier) =>
-  data.filter(
+export const findOnceOrderedArtwork = (orders) =>
+  orders.filter(
     (item) =>
-      data.filter((element) => item[identifier] === element[identifier])
-        .length < 2
+      orders.filter((element) => item.artworkId === element.artworkId).length <
+      2
+  );
+
+export const findMultiOrderedArtwork = (orders) =>
+  orders.filter(
+    (item) =>
+      orders.filter((element) => item.artworkId === element.artworkId).length >
+      1
+  );
+
+export const findUnorderedArtwork = (artworks, orders) =>
+  artworks.filter(
+    (artwork) => !orders.find((order) => artwork.id === order.artworkId)
   );
 
 export const logUserIn = (user) => {
