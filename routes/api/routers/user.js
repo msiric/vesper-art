@@ -12,6 +12,8 @@ import {
   getUserNotifications,
   getUserOwnership,
   getUserProfile,
+  getUserPurchases,
+  getUserSales,
   getUserSettings,
   getUserUploads,
   updateUserEmail,
@@ -127,6 +129,28 @@ router
     [isAuthenticated, isAuthorized],
     handler(getBuyerStatistics, false, (req, res, next) => ({
       ...req.params,
+    }))
+  );
+
+router
+  .route("/users/:userId/sales")
+  // $TODO not tested
+  .get(
+    [isAuthenticated, isAuthorized],
+    handler(getUserSales, false, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
+    }))
+  );
+
+router
+  .route("/users/:userId/purchases")
+  // $TODO not tested
+  .get(
+    [isAuthenticated, isAuthorized],
+    handler(getUserPurchases, false, (req, res, next) => ({
+      ...req.params,
+      ...req.query,
     }))
   );
 

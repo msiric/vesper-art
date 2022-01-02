@@ -166,6 +166,38 @@ export const fetchOrdersByBuyer = async ({
   return foundOrders;
 };
 
+export const fetchOrdersBySeller = async ({
+  userId,
+  start,
+  end,
+  connection,
+}) => {
+  const foundOrders = await connection
+    .getRepository(Order)
+    .createQueryBuilder("order")
+    .leftJoinAndSelect("order.buyer", "buyer")
+    .leftJoinAndSelect("order.review", "review")
+    .leftJoinAndSelect("order.version", "version")
+    .leftJoinAndSelect("order.license", "license")
+    .select([
+      ...ORDER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["STRIPPED_INFO"]("buyer"),
+      ...REVIEW_SELECTION["ESSENTIAL_INFO"](),
+      ...VERSION_SELECTION["ESSENTIAL_INFO"](),
+      ...LICENSE_SELECTION["ESSENTIAL_INFO"](),
+    ])
+    .where(
+      "order.sellerId = :userId AND order.created >= :startDate AND order.created <= :endDate",
+      {
+        userId,
+        startDate: start,
+        endDate: end,
+      }
+    )
+    .getMany();
+  return foundOrders;
+};
+
 export const fetchOrderMedia = async ({ userId, orderId, connection }) => {
   const foundOrder = await connection
     .getRepository(Order)

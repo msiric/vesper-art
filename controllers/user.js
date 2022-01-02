@@ -15,7 +15,11 @@ import {
   removeArtworkVersion,
 } from "../services/postgres/artwork";
 import { logUserOut } from "../services/postgres/auth";
-import { fetchOrdersByArtwork } from "../services/postgres/order";
+import {
+  fetchOrdersByArtwork,
+  fetchOrdersByBuyer,
+  fetchOrdersBySeller,
+} from "../services/postgres/order";
 import { fetchStripeBalance } from "../services/postgres/stripe";
 import {
   addNewIntent,
@@ -229,6 +233,28 @@ export const getSellerStatistics = async ({ userId, connection }) => {
     return { sales: foundSales, amount, reviews: foundReviews };
   }
   throw createError(...formatError(errors.userNotFound));
+};
+
+export const getUserSales = async ({ userId, start, end, connection }) => {
+  const foundOrders = await fetchOrdersBySeller({
+    userId,
+    start,
+    end,
+    connection,
+  });
+  // $TODO change name
+  return { statistics: foundOrders };
+};
+
+export const getUserPurchases = async ({ userId, start, end, connection }) => {
+  const foundOrders = await fetchOrdersByBuyer({
+    userId,
+    start,
+    end,
+    connection,
+  });
+  // $TODO change name
+  return { statistics: foundOrders };
 };
 
 export const updateUserOrigin = async ({
