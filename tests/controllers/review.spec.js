@@ -9,7 +9,7 @@ import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, responses } from "../../utils/statuses";
 import { validUsers } from "../fixtures/entities";
-import { logUserIn, unusedToken } from "../utils/helpers";
+import { logUserIn, unusedUuid } from "../utils/helpers";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
@@ -133,7 +133,7 @@ describe("Review tests", () => {
 
     it("should throw an error if order is not found", async () => {
       const res = await request(app, buyerToken)
-        .post(`/api/orders/${unusedToken}/reviews`)
+        .post(`/api/orders/${unusedUuid}/reviews`)
         .send({ reviewRating: 5 });
       expect(res.statusCode).toEqual(errors.orderNotFound.status);
       expect(res.body.message).toEqual(errors.orderNotFound.message);

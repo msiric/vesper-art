@@ -6,7 +6,7 @@ import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, responses } from "../../utils/statuses";
 import { validUsers } from "../fixtures/entities";
-import { logUserIn, unusedToken } from "../utils/helpers";
+import { logUserIn, unusedUuid } from "../utils/helpers";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
@@ -96,7 +96,7 @@ describe("Notification tests", () => {
 
       it("should throw an error if notification is not found", async () => {
         const res = await request(app, sellerToken).post(
-          `/api/notifications/${unusedToken}`
+          `/api/notifications/${unusedUuid}`
         );
         expect(res.statusCode).toEqual(errors.notificationNotFound.status);
         expect(res.body.message).toEqual(errors.notificationNotFound.message);
@@ -122,7 +122,7 @@ describe("Notification tests", () => {
 
       it("should throw an error if notification is not found", async () => {
         const res = await request(app, sellerToken).delete(
-          `/api/notifications/${unusedToken}`
+          `/api/notifications/${unusedUuid}`
         );
         expect(res.statusCode).toEqual(errors.notificationNotFound.status);
         expect(res.body.message).toEqual(errors.notificationNotFound.message);

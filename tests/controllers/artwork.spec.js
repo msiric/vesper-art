@@ -18,7 +18,7 @@ import {
   findUniqueOrders,
   findUnorderedArtwork,
   logUserIn,
-  unusedToken,
+  unusedUuid,
 } from "../utils/helpers";
 import { request } from "../utils/request";
 
@@ -1533,7 +1533,7 @@ describe("Artwork tests", () => {
 
       it("should throw an error if artwork is not found", async () => {
         const res = await request(app, sellerToken)
-          .patch(`/api/artwork/${unusedToken}`)
+          .patch(`/api/artwork/${unusedUuid}`)
           .send({
             artworkTitle: "test",
             artworkAvailability: "available",
@@ -1590,7 +1590,7 @@ describe("Artwork tests", () => {
 
       it("should throw an error if artwork is not found", async () => {
         const res = await request(app, sellerToken).delete(
-          `/api/artwork/${unusedToken}`
+          `/api/artwork/${unusedUuid}`
         );
         expect(res.statusCode).toEqual(logicErrors.artworkNotFound.status);
         expect(res.body.message).toEqual(logicErrors.artworkNotFound.message);
@@ -1800,7 +1800,7 @@ describe("Artwork tests", () => {
 
       it("should return undefined if artwork does not exist", async () => {
         const res = await request(app).get(
-          `/api/artwork/${unusedToken}/comments/${filteredComments[0].id}`
+          `/api/artwork/${unusedUuid}/comments/${filteredComments[0].id}`
         );
 
         expect(res.statusCode).toEqual(statusCodes.ok);
@@ -1809,7 +1809,7 @@ describe("Artwork tests", () => {
 
       it("should return undefined if comment does not exist", async () => {
         const res = await request(app).get(
-          `/api/artwork/${unusedToken}/comments/${artworkWithComments[0].id}`
+          `/api/artwork/${unusedUuid}/comments/${artworkWithComments[0].id}`
         );
 
         expect(res.statusCode).toEqual(statusCodes.ok);
@@ -1855,7 +1855,7 @@ describe("Artwork tests", () => {
       it("should throw a 404 error if artwork doesn't exist", async () => {
         const res = await request(app, buyerToken)
           .patch(
-            `/api/artwork/${unusedToken}/comments/${filteredComments[0].id}`
+            `/api/artwork/${unusedUuid}/comments/${filteredComments[0].id}`
           )
           .send({ commentContent: "test" });
         expect(res.statusCode).toEqual(statusCodes.notFound);
@@ -1865,7 +1865,7 @@ describe("Artwork tests", () => {
       it("should throw a 404 error if comment doesn't exist", async () => {
         const res = await request(app, buyerToken)
           .patch(
-            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedToken}`
+            `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedUuid}`
           )
           .send({ commentContent: "test" });
         expect(res.statusCode).toEqual(statusCodes.notFound);
@@ -1901,7 +1901,7 @@ describe("Artwork tests", () => {
 
       it("should throw a 404 error if artwork doesn't exist", async () => {
         const res = await request(app, buyerToken).delete(
-          `/api/artwork/${unusedToken}/comments/${filteredComments[0].id}`
+          `/api/artwork/${unusedUuid}/comments/${filteredComments[0].id}`
         );
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
@@ -1909,7 +1909,7 @@ describe("Artwork tests", () => {
 
       it("should throw a 404 error if comment doesn't exist", async () => {
         const res = await request(app, buyerToken).delete(
-          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedToken}`
+          `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedUuid}`
         );
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.commentNotFound.message);
@@ -1938,7 +1938,7 @@ describe("Artwork tests", () => {
 
       it("should return 0 if artwork does not exist", async () => {
         const res = await request(app, buyerToken).get(
-          `/api/artwork/${unusedToken}/favorites`
+          `/api/artwork/${unusedUuid}/favorites`
         );
 
         expect(res.statusCode).toEqual(statusCodes.ok);
@@ -1979,7 +1979,7 @@ describe("Artwork tests", () => {
 
       it("should throw a 404 error if artwork doesn't exist", async () => {
         const res = await request(app, buyerToken).post(
-          `/api/artwork/${unusedToken}/favorites`
+          `/api/artwork/${unusedUuid}/favorites`
         );
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
@@ -2028,7 +2028,7 @@ describe("Artwork tests", () => {
 
       it("should throw a 404 error if artwork doesn't exist", async () => {
         const res = await request(app, buyerToken).delete(
-          `/api/artwork/${unusedToken}/favorites`
+          `/api/artwork/${unusedUuid}/favorites`
         );
         expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);

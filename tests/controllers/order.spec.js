@@ -9,7 +9,7 @@ import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors } from "../../utils/statuses";
 import { validUsers } from "../fixtures/entities";
-import { logUserIn, unusedToken } from "../utils/helpers";
+import { logUserIn, unusedUuid } from "../utils/helpers";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
@@ -126,7 +126,7 @@ describe("Order tests", () => {
 
     it("should throw an error if order doesn't exist", async () => {
       const res = await request(app, buyerToken).get(
-        `/api/orders/${unusedToken}`
+        `/api/orders/${unusedUuid}`
       );
       expect(res.statusCode).toEqual(errors.orderNotFound.status);
       expect(res.body.message).toEqual(errors.orderNotFound.message);
@@ -151,7 +151,7 @@ describe("Order tests", () => {
 
     it("should throw an error if order doesn't exist", async () => {
       const res = await request(app, buyerToken).get(
-        `/api/orders/${unusedToken}/download`
+        `/api/orders/${unusedUuid}/download`
       );
       expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       expect(res.body.message).toEqual(errors.artworkNotFound.message);
