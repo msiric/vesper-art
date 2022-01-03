@@ -159,12 +159,10 @@ export const isAuthenticated = async (req, res, next) => {
     if (!accessToken) throw createError(...formatError(errors.forbiddenAccess));
     const token = accessToken.split(" ")[1];
     const { data } = verifyTokenValidity(token, tokens.accessToken);
-    console.log("we are out ", data);
     if (!data.active) throw createError(...formatError(errors.forbiddenAccess));
     if (!data.verified)
       throw createError(...formatError(errors.forbiddenAccess));
     if (Date.now() >= data.exp * 1000) {
-      console.log("we are in ", data);
       throw createError(...formatError(errors.notAuthenticated));
     }
     res.locals.user = data;
