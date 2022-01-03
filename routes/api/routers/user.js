@@ -112,47 +112,55 @@ router
     }))
   );
 
-router
-  .route("/users/:userId/statistics/sales")
-  // $TODO not tested
-  .get(
-    [isAuthenticated, isAuthorized],
-    handler(getSellerStatistics, false, (req, res, next) => ({
-      ...req.params,
-    }))
-  );
+// FEATURE FLAG - dashboard
+featureFlags.dashboard &&
+  router
+    .route("/users/:userId/statistics/sales")
+    // $TODO not tested
+    .get(
+      [isAuthenticated, isAuthorized],
+      handler(getSellerStatistics, false, (req, res, next) => ({
+        ...req.params,
+      }))
+    );
 
-router
-  .route("/users/:userId/statistics/purchases")
-  // $TODO not tested
-  .get(
-    [isAuthenticated, isAuthorized],
-    handler(getBuyerStatistics, false, (req, res, next) => ({
-      ...req.params,
-    }))
-  );
+// FEATURE FLAG - dashboard
+featureFlags.dashboard &&
+  router
+    .route("/users/:userId/statistics/purchases")
+    // $TODO not tested
+    .get(
+      [isAuthenticated, isAuthorized],
+      handler(getBuyerStatistics, false, (req, res, next) => ({
+        ...req.params,
+      }))
+    );
 
-router
-  .route("/users/:userId/sales")
-  // $TODO not tested
-  .get(
-    [isAuthenticated, isAuthorized],
-    handler(getUserSales, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
-    }))
-  );
+// FEATURE FLAG - dashboard
+featureFlags.dashboard &&
+  router
+    .route("/users/:userId/sales")
+    // $TODO not tested
+    .get(
+      [isAuthenticated, isAuthorized],
+      handler(getUserSales, false, (req, res, next) => ({
+        ...req.params,
+        ...req.query,
+      }))
+    );
 
-router
-  .route("/users/:userId/purchases")
-  // $TODO not tested
-  .get(
-    [isAuthenticated, isAuthorized],
-    handler(getUserPurchases, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
-    }))
-  );
+// FEATURE FLAG - dashboard
+featureFlags.dashboard &&
+  router
+    .route("/users/:userId/purchases")
+    // $TODO not tested
+    .get(
+      [isAuthenticated, isAuthorized],
+      handler(getUserPurchases, false, (req, res, next) => ({
+        ...req.params,
+        ...req.query,
+      }))
+    );
 
 router
   .route("/users/:userId/settings")
@@ -219,6 +227,7 @@ router
       ...req.body,
     }))
   );
+
 // $TODO no automated tests
 // FEATURE FLAG - stripe
 // FEATURE FLAG - payment

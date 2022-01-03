@@ -234,12 +234,17 @@ const routes = [
     exact: true,
     type: "protected",
   },
-  {
-    path: "/dashboard",
-    Component: lazy(() => import("./pages/User/Dashboard")),
-    exact: true,
-    type: "protected",
-  },
+  // FEATURE FLAG - dashboard
+  ...(featureFlags.dashboard
+    ? [
+        {
+          path: "/dashboard",
+          Component: lazy(() => import("./pages/User/Dashboard")),
+          exact: true,
+          type: "protected",
+        },
+      ]
+    : []),
   {
     path: "/settings",
     Component: lazy(() => import("./pages/User/Settings")),

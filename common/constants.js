@@ -17,6 +17,7 @@ export const featureFlags = {
   stripe: true,
   payment: true,
   discount: true,
+  dashboard: true,
 };
 
 export const unavailableMessage =

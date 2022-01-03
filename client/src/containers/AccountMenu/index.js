@@ -68,7 +68,8 @@ const AccountMenu = () => {
         redirectUser({ event: e, link: "/dashboard", toggleMenu, history }),
       icon: <DashboardIcon />,
       label: "Dashboard",
-      hidden: false,
+      // FEATURE FLAG - dashboard
+      hidden: !featureFlags.dashboard,
     },
     {
       handleClick: (e) =>
