@@ -7,7 +7,7 @@ import * as emailUtils from "../../utils/email";
 import { USER_SELECTION } from "../../utils/selectors";
 import { errors, errors as logicErrors, responses } from "../../utils/statuses";
 import { invalidUsers, validUsers } from "../fixtures/entities";
-import { logUserIn, unusedCookie } from "../utils/helpers";
+import { accessTokens, logUserIn, unusedCookie } from "../utils/helpers";
 import { request } from "../utils/request";
 
 jest.useFakeTimers();
@@ -444,6 +444,14 @@ describe("Auth tests", () => {
       expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.accessToken).toEqual("");
       expect(res.body.user).toEqual("");
+    });
+
+    it("should throw a 401 error if token has expired", async () => {
+      const res = await request(app, accessTokens.expiredBuyer)
+        .post("/api/auth/logout")
+        .send();
+      expect(res.body.message).toEqual(logicErrors.notAuthenticated.message);
+      expect(res.statusCode).toEqual(statusCodes.unauthorized);
     });
 
     it("should throw a 403 error if user is not authenticated", async () => {
