@@ -328,6 +328,15 @@ export const resolveSubQuery = (
         .getQuery()
     : threshold;
 
+export const resolveDateRange = ({ start, end }) => {
+  if (start && end) {
+    const startDate = startOfDay(start);
+    const endDate = endOfDay(end);
+    return { startDate, endDate };
+  }
+  throw createError(...formatError(errors.routeQueryInvalid));
+};
+
 export const calculateRating = ({ active, reviews }) =>
   active && reviews.length
     ? (

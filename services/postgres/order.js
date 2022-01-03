@@ -1,7 +1,7 @@
 import { isObjectEmpty } from "../../common/helpers";
 import { Order } from "../../entities/Order";
 import { Review } from "../../entities/Review";
-import { calculateRating } from "../../utils/helpers";
+import { calculateRating, resolveDateRange } from "../../utils/helpers";
 import {
   ARTWORK_SELECTION,
   AVATAR_SELECTION,
@@ -140,6 +140,7 @@ export const fetchOrdersByBuyer = async ({
   end,
   connection,
 }) => {
+  const { startDate, endDate } = resolveDateRange({ start, end });
   const foundOrders = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
@@ -158,8 +159,8 @@ export const fetchOrdersByBuyer = async ({
       "order.buyerId = :userId AND order.created >= :startDate AND order.created <= :endDate",
       {
         userId,
-        startDate: start,
-        endDate: end,
+        startDate,
+        endDate,
       }
     )
     .getMany();
@@ -172,6 +173,7 @@ export const fetchOrdersBySeller = async ({
   end,
   connection,
 }) => {
+  const { startDate, endDate } = resolveDateRange({ start, end });
   const foundOrders = await connection
     .getRepository(Order)
     .createQueryBuilder("order")
@@ -190,8 +192,8 @@ export const fetchOrdersBySeller = async ({
       "order.sellerId = :userId AND order.created >= :startDate AND order.created <= :endDate",
       {
         userId,
-        startDate: start,
-        endDate: end,
+        startDate,
+        endDate,
       }
     )
     .getMany();
