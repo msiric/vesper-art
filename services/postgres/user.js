@@ -315,6 +315,47 @@ export const fetchUserPurchasesWithMedia = async ({
   //   take: limit,
   // });
 
+  /*   const sqlQuery = `SELECT * FROM 
+  (
+    SELECT DISTINCT ON ("artworkId") "order"."artworkId", "order"."serial", "buyer"."name"
+    FROM "order"
+    LEFT JOIN "user" as "buyer" ON "buyer"."id" = "buyerId"
+    WHERE "order"."buyerId" = $1 ${
+      cursor
+        ? `AND "order"."serial" > (
+      SELECT "serial"
+      FROM "order"
+      WHERE "id" = $3 
+    )`
+        : ""
+    }
+    ${
+      cursor
+        ? `AND "order"."artworkId" != (
+      SELECT "artworkId"
+      FROM "order"
+      WHERE "id" = $3
+    )`
+        : ""
+    }
+    ORDER BY "order"."artworkId" ASC
+  ) as o
+  ORDER BY o.serial ASC
+  LIMIT $2`;
+  const result = await connection.manager.query(sqlQuery, [
+    userId,
+    limit,
+    ...(cursor ? [cursor] : []),
+  ]);
+  console.log("result", result); */
+
+  /* 
+  LEFT JOIN "user" ON user.id = order.buyerId
+  LEFT JOIN "version" ON version.id = order.versionId 
+  LEFT JOIN "cover" ON cover.id = version.coverId
+  LEFT JOIN "media" ON media.id = version.mediaId 
+  LEFT JOIN "review" ON review.id = order.reviewId  */
+
   const queryBuilder = await connection
     .getRepository(Order)
     .createQueryBuilder("order");
@@ -340,7 +381,30 @@ export const fetchUserPurchasesWithMedia = async ({
     )
     .limit(limit)
     .getMany();
+  console.log("result", foundPurchases);
   return foundPurchases;
+
+  /*   try {
+    const queryBuilder = await connection
+      .getRepository(Order)
+      .createQueryBuilder("order");
+    const distinctQuery = await queryBuilder
+      .distinctOn(["order.artworkId"])
+      .where(`order.buyerId = :userId`, {
+        userId,
+      });
+    console.log("test", distinctQuery.getQuery());
+    const foundPurchases = await connection
+      .createQueryBuilder()
+      .from("(" + distinctQuery.getQuery() + ")", "order")
+      .setParameters(distinctQuery.getParameters())
+      .orderBy("order_serial", "ASC")
+      .getRawMany();
+    console.log("result", foundPurchases);
+    return foundPurchases;
+  } catch (err) {
+    console.log("err", err);
+  } */
 };
 
 // $Needs testing (mongo -> postgres)

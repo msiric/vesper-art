@@ -127,8 +127,8 @@ export const requestHandler =
       try {
         const result = await promise({
           userId,
-          connection: queryRunner.manager,
           ...boundParams,
+          connection: queryRunner.manager,
         });
         await evaluateTransaction(queryRunner);
         return handleRequest(result);
@@ -143,8 +143,8 @@ export const requestHandler =
         const connection = getConnection();
         const result = await promise({
           userId,
-          connection,
           ...boundParams,
+          connection,
         });
         return handleRequest(result);
       } catch (error) {
