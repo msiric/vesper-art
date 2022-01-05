@@ -105,7 +105,6 @@ router
   .route("/users/:userId/ownership")
   // $TODO not tested
   .get(
-    [isAuthenticated, isAuthorized],
     handler(getUserOwnership, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
