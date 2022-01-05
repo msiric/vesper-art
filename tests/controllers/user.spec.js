@@ -12,7 +12,6 @@ import * as userServices from "../../services/postgres/user";
 import {
   fetchUserByUsername,
   fetchUserPurchases,
-  fetchUserPurchasesWithMedia,
   fetchUserSales,
 } from "../../services/postgres/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
@@ -78,7 +77,6 @@ let connection,
   visibleAndActiveArtworkBySeller,
   buyerPurchases,
   sellerSales,
-  buyerOwnership,
   unorderedArtwork,
   onceOrderedArtworkWithNewVersion,
   multiOrderedArtworkWithNoNewVersions,
@@ -92,68 +90,56 @@ describe("User tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
     connection = await connectToDatabase();
-    [
-      buyer,
-      seller,
-      impartial,
-      avatar,
-      artwork,
-      buyerPurchases,
-      sellerSales,
-      buyerOwnership,
-    ] = await Promise.all([
-      fetchUserByUsername({
-        userUsername: validUsers.buyer.username,
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      fetchUserByUsername({
-        userUsername: validUsers.seller.username,
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      fetchUserByUsername({
-        userUsername: validUsers.impartial.username,
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      fetchUserByUsername({
-        userUsername: validUsers.avatar.username,
-        selection: [
-          ...USER_SELECTION["ESSENTIAL_INFO"](),
-          ...USER_SELECTION["STRIPE_INFO"](),
-          ...USER_SELECTION["VERIFICATION_INFO"](),
-          ...USER_SELECTION["AUTH_INFO"](),
-          ...USER_SELECTION["LICENSE_INFO"](),
-        ],
-        connection,
-      }),
-      fetchAllArtworks({ connection }),
-      fetchUserPurchases({ userId: validUsers.buyer.id, connection }),
-      fetchUserSales({ userId: validUsers.seller.id, connection }),
-      fetchUserPurchasesWithMedia({
-        userId: validUsers.buyer.id,
-        connection,
-      }),
-    ]);
+    [buyer, seller, impartial, avatar, artwork, buyerPurchases, sellerSales] =
+      await Promise.all([
+        fetchUserByUsername({
+          userUsername: validUsers.buyer.username,
+          selection: [
+            ...USER_SELECTION["ESSENTIAL_INFO"](),
+            ...USER_SELECTION["STRIPE_INFO"](),
+            ...USER_SELECTION["VERIFICATION_INFO"](),
+            ...USER_SELECTION["AUTH_INFO"](),
+            ...USER_SELECTION["LICENSE_INFO"](),
+          ],
+          connection,
+        }),
+        fetchUserByUsername({
+          userUsername: validUsers.seller.username,
+          selection: [
+            ...USER_SELECTION["ESSENTIAL_INFO"](),
+            ...USER_SELECTION["STRIPE_INFO"](),
+            ...USER_SELECTION["VERIFICATION_INFO"](),
+            ...USER_SELECTION["AUTH_INFO"](),
+            ...USER_SELECTION["LICENSE_INFO"](),
+          ],
+          connection,
+        }),
+        fetchUserByUsername({
+          userUsername: validUsers.impartial.username,
+          selection: [
+            ...USER_SELECTION["ESSENTIAL_INFO"](),
+            ...USER_SELECTION["STRIPE_INFO"](),
+            ...USER_SELECTION["VERIFICATION_INFO"](),
+            ...USER_SELECTION["AUTH_INFO"](),
+            ...USER_SELECTION["LICENSE_INFO"](),
+          ],
+          connection,
+        }),
+        fetchUserByUsername({
+          userUsername: validUsers.avatar.username,
+          selection: [
+            ...USER_SELECTION["ESSENTIAL_INFO"](),
+            ...USER_SELECTION["STRIPE_INFO"](),
+            ...USER_SELECTION["VERIFICATION_INFO"](),
+            ...USER_SELECTION["AUTH_INFO"](),
+            ...USER_SELECTION["LICENSE_INFO"](),
+          ],
+          connection,
+        }),
+        fetchAllArtworks({ connection }),
+        fetchUserPurchases({ userId: validUsers.buyer.id, connection }),
+        fetchUserSales({ userId: validUsers.seller.id, connection }),
+      ]);
     ({ cookie: buyerCookie, token: buyerToken } = logUserIn(buyer));
     ({ cookie: sellerCookie, token: sellerToken } = logUserIn(seller));
     ({ cookie: impartialCookie, token: impartialToken } = logUserIn(impartial));
@@ -188,7 +174,7 @@ describe("User tests", () => {
     multiOrderedArtworkWithNoNewVersions = findUniqueOrders(
       findMultiOrderedArtwork(entities.Order)
     );
-    uniqueOrders = findUniqueOrders(buyerOwnership);
+    uniqueOrders = findUniqueOrders(entities.Order);
     firstOrderDate = format(new Date(sellerSales[0].created), "MM/dd/yyyy");
     lastOrderDate = format(
       new Date(sellerSales[sellerSales.length - 1].created),

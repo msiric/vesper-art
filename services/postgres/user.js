@@ -302,6 +302,7 @@ export const fetchArtworkOrders = async ({ userId, artworkId, connection }) => {
   return foundPurchases;
 };
 
+// $TODO needs to be improved
 export const fetchUserPurchasesWithMedia = async ({
   userId,
   cursor,
@@ -333,10 +334,12 @@ export const fetchUserPurchasesWithMedia = async ({
     )
     .orderBy("order.artworkId", "DESC")
     .addOrderBy("order.serial", "DESC")
-    .limit(limit)
     .getMany();
   const sortedPurchases = foundPurchases.sort((a, b) => a.created - b.created);
-  return sortedPurchases;
+  const formattedPurchases = limit
+    ? sortedPurchases.slice(0, limit)
+    : sortedPurchases;
+  return formattedPurchases;
 };
 
 // $Needs testing (mongo -> postgres)
