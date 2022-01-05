@@ -73,14 +73,14 @@ describe("Notification tests", () => {
   describe("/api/notifications", () => {
     it("should fetch buyer notifications", async () => {
       const res = await request(app, sellerToken).get("/api/notifications");
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.notifications).toHaveLength(sellerNotifications.length);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get("/api/notifications");
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
   });
 
@@ -90,24 +90,24 @@ describe("Notification tests", () => {
         const res = await request(app, sellerToken).post(
           `/api/notifications/${unreadNotificationsBySeller[0].id}`
         );
-        expect(res.statusCode).toEqual(responses.notificationRead.status);
         expect(res.body.message).toEqual(responses.notificationRead.message);
+        expect(res.statusCode).toEqual(responses.notificationRead.status);
       });
 
       it("should throw an error if notification is not found", async () => {
         const res = await request(app, sellerToken).post(
           `/api/notifications/${unusedUuid}`
         );
-        expect(res.statusCode).toEqual(errors.notificationNotFound.status);
         expect(res.body.message).toEqual(errors.notificationNotFound.message);
+        expect(res.statusCode).toEqual(errors.notificationNotFound.status);
       });
 
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).post(
           `/api/notifications/${unreadNotificationsBySeller[0].id}`
         );
-        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
         expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
     });
 
@@ -116,24 +116,24 @@ describe("Notification tests", () => {
         const res = await request(app, sellerToken).delete(
           `/api/notifications/${readNotificationsBySeller[0].id}`
         );
-        expect(res.statusCode).toEqual(responses.notificationUnread.status);
         expect(res.body.message).toEqual(responses.notificationUnread.message);
+        expect(res.statusCode).toEqual(responses.notificationUnread.status);
       });
 
       it("should throw an error if notification is not found", async () => {
         const res = await request(app, sellerToken).delete(
           `/api/notifications/${unusedUuid}`
         );
-        expect(res.statusCode).toEqual(errors.notificationNotFound.status);
         expect(res.body.message).toEqual(errors.notificationNotFound.message);
+        expect(res.statusCode).toEqual(errors.notificationNotFound.status);
       });
 
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).delete(
           `/api/notifications/${readNotificationsBySeller[0].id}`
         );
-        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
         expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
     });
   });

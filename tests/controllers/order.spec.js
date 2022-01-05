@@ -69,28 +69,28 @@ describe("Order tests", () => {
   describe("/api/orders/sales", () => {
     it("should fetch user sales", async () => {
       const res = await request(app, sellerToken).get("/api/orders/sales");
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.sales).toHaveLength(sellerOrders.length);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get("/api/orders/sales");
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
   });
 
   describe("/api/orders/purchases", () => {
     it("should fetch user purchases", async () => {
       const res = await request(app, buyerToken).get("/api/orders/purchases");
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.purchases).toHaveLength(buyerOrders.length);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get("/api/orders/purchases");
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
   });
 
@@ -102,16 +102,16 @@ describe("Order tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/orders/purchases/${buyerOrders[0].artwork.id}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.purchases).toHaveLength(artworkOrders.length);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(
         `/api/orders/purchases/${buyerOrders[0].artwork.id}`
       );
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
   });
 
@@ -120,22 +120,22 @@ describe("Order tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/orders/${buyerOrders[0].id}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.order).toBeTruthy();
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if order doesn't exist", async () => {
       const res = await request(app, buyerToken).get(
         `/api/orders/${unusedUuid}`
       );
-      expect(res.statusCode).toEqual(errors.orderNotFound.status);
       expect(res.body.message).toEqual(errors.orderNotFound.message);
+      expect(res.statusCode).toEqual(errors.orderNotFound.status);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(`/api/orders/${buyerOrders[0].id}`);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
   });
 
@@ -144,25 +144,25 @@ describe("Order tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/orders/${buyerOrders[0].id}/download`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
-      expect(res.body.url).toBeTruthy();
       expect(res.body.file).toBeTruthy();
+      expect(res.body.url).toBeTruthy();
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if order doesn't exist", async () => {
       const res = await request(app, buyerToken).get(
         `/api/orders/${unusedUuid}/download`
       );
-      expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       expect(res.body.message).toEqual(errors.artworkNotFound.message);
+      expect(res.statusCode).toEqual(errors.artworkNotFound.status);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(
         `/api/orders/${buyerOrders[0].id}/download`
       );
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
   });
 });

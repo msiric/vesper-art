@@ -197,48 +197,48 @@ describe("Checkout tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/checkout/${visibleAndActiveArtworkBySeller[0].current.id}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.version).toBeTruthy();
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(
         `/api/checkout/${visibleAndActiveArtworkBySeller[0].current.id}`
       );
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is purchasing artwork with obsolete version", async () => {
       const res = await request(app, buyerToken).get(
         `/api/checkout/${ordersWithMultipleVersions.version.id}`
       );
-      expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       expect(res.body.message).toEqual(errors.artworkNotFound.message);
+      expect(res.statusCode).toEqual(errors.artworkNotFound.status);
     });
 
     it("should throw an error if user is purchasing own artwork", async () => {
       const res = await request(app, buyerToken).get(
         `/api/checkout/${visibleAndActiveArtworkByBuyer[0].current.id}`
       );
-      expect(res.statusCode).toEqual(errors.artworkCheckoutByOwner.status);
       expect(res.body.message).toEqual(errors.artworkCheckoutByOwner.message);
+      expect(res.statusCode).toEqual(errors.artworkCheckoutByOwner.status);
     });
 
     it("should throw an error if user is purchasing invisible artwork", async () => {
       const res = await request(app, buyerToken).get(
         `/api/checkout/${invisibleArtworkBySeller[0].current.id}`
       );
-      expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       expect(res.body.message).toEqual(errors.artworkNotFound.message);
+      expect(res.statusCode).toEqual(errors.artworkNotFound.status);
     });
 
     it("should throw an error if user is purchasing inactive artwork", async () => {
       const res = await request(app, buyerToken).get(
         `/api/checkout/${inactiveArtworkBySeller[0].current.id}`
       );
-      expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       expect(res.body.message).toEqual(errors.artworkNotFound.message);
+      expect(res.statusCode).toEqual(errors.artworkNotFound.status);
     });
   });
 

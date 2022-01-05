@@ -193,14 +193,14 @@ describe("User tests", () => {
   describe("/api/users/:userUsername", () => {
     it("should find user with provided username", async () => {
       const res = await request(app).get(`/api/users/${buyer.name}`);
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.user).toBeTruthy();
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user doesn't exist", async () => {
       const res = await request(app).get(`/api/users/unknownUser`);
-      expect(res.statusCode).toEqual(errors.userNotFound.status);
       expect(res.body.message).toEqual(errors.userNotFound.message);
+      expect(res.statusCode).toEqual(errors.userNotFound.status);
     });
   });
 
@@ -215,8 +215,8 @@ describe("User tests", () => {
           )
           .field("userDescription", "test")
           .field("userCountry", countries[0].value);
-        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
         expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
       });
 
       it("should update user with new avatar and description", async () => {
@@ -227,8 +227,8 @@ describe("User tests", () => {
             path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_avatar.png`)
           )
           .field("userDescription", "test");
-        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
         expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
       });
 
       it("should update user with new avatar and country", async () => {
@@ -239,16 +239,16 @@ describe("User tests", () => {
             path.resolve(__dirname, `${MEDIA_LOCATION}/valid_file_avatar.png`)
           )
           .field("userCountry", countries[0].value);
-        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
         expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
       });
 
       it("should update user with new description and country", async () => {
         const res = await request(app, buyerToken)
           .patch(`/api/users/${buyer.id}`)
           .send({ userDescription: "test", userCountry: countries[0].value });
-        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
         expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
       });
 
       it("should update user with new avatar and delete the old one", async () => {
@@ -262,8 +262,8 @@ describe("User tests", () => {
         expect(addAvatarMock).not.toHaveBeenCalled();
         expect(editAvatarMock).toHaveBeenCalled();
         expect(removeAvatarMock).not.toHaveBeenCalled();
-        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
         expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
       });
 
       it("should update user with new avatar and not delete the old one", async () => {
@@ -277,8 +277,8 @@ describe("User tests", () => {
         expect(addAvatarMock).toHaveBeenCalled();
         expect(editAvatarMock).not.toHaveBeenCalled();
         expect(removeAvatarMock).not.toHaveBeenCalled();
-        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
         expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
       });
 
       it("should update user with no avatar and delete the old one", async () => {
@@ -289,8 +289,8 @@ describe("User tests", () => {
         expect(addAvatarMock).not.toHaveBeenCalled();
         expect(editAvatarMock).not.toHaveBeenCalled();
         expect(removeAvatarMock).toHaveBeenCalled();
-        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
         expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
       });
 
       it("should update user with no avatar and not delete the old one", async () => {
@@ -301,8 +301,8 @@ describe("User tests", () => {
         expect(addAvatarMock).not.toHaveBeenCalled();
         expect(editAvatarMock).not.toHaveBeenCalled();
         expect(removeAvatarMock).not.toHaveBeenCalled();
-        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
         expect(res.body.message).toEqual(responses.userDetailsUpdated.message);
+        expect(res.statusCode).toEqual(responses.userDetailsUpdated.status);
       });
 
       it("should throw an error if avatar has invalid dimensions", async () => {
@@ -317,8 +317,8 @@ describe("User tests", () => {
           )
           .field("userDescription", "test")
           .field("userCountry", countries[0].value);
-        expect(res.statusCode).toEqual(errors.fileDimensionsInvalid.status);
         expect(res.body.message).toEqual(errors.fileDimensionsInvalid.message);
+        expect(res.statusCode).toEqual(errors.fileDimensionsInvalid.status);
       });
 
       it("should throw an error if avatar has an invalid extension", async () => {
@@ -330,10 +330,10 @@ describe("User tests", () => {
           )
           .field("userDescription", "test")
           .field("userCountry", countries[0].value);
-        expect(res.statusCode).toEqual(validationErrors.userMediaType.status);
         expect(res.body.message).toEqual(
           validationErrors.userMediaType.message
         );
+        expect(res.statusCode).toEqual(validationErrors.userMediaType.status);
       });
 
       it("should throw an error if avatar has an invalid ratio", async () => {
@@ -348,8 +348,8 @@ describe("User tests", () => {
           )
           .field("userDescription", "test")
           .field("userCountry", countries[0].value);
-        expect(res.statusCode).toEqual(errors.aspectRatioInvalid.status);
         expect(res.body.message).toEqual(errors.aspectRatioInvalid.message);
+        expect(res.statusCode).toEqual(errors.aspectRatioInvalid.status);
       });
 
       it("should throw an error if avatar has an invalid size", async () => {
@@ -361,8 +361,8 @@ describe("User tests", () => {
           )
           .field("userDescription", "test")
           .field("userCountry", countries[0].value);
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
         expect(res.body.message).toEqual(fileTooLargeError);
+        expect(res.statusCode).toEqual(statusCodes.badRequest);
       });
 
       it("should throw a validation error if description is too long", async () => {
@@ -373,11 +373,11 @@ describe("User tests", () => {
               "a"
             ),
           });
-        expect(res.statusCode).toEqual(
-          validationErrors.userDescriptionMax.status
-        );
         expect(res.body.message).toEqual(
           validationErrors.userDescriptionMax.message
+        );
+        expect(res.statusCode).toEqual(
+          validationErrors.userDescriptionMax.status
         );
       });
 
@@ -387,10 +387,10 @@ describe("User tests", () => {
           .send({
             userCountry: "invalidCountry",
           });
-        expect(res.statusCode).toEqual(validationErrors.userCountryMax.status);
         expect(res.body.message).toEqual(
           validationErrors.userCountryMax.message
         );
+        expect(res.statusCode).toEqual(validationErrors.userCountryMax.status);
       });
 
       it("should throw a validation error if country is invalid", async () => {
@@ -399,11 +399,11 @@ describe("User tests", () => {
           .send({
             userCountry: "ZZ",
           });
-        expect(res.statusCode).toEqual(
-          validationErrors.invalidUserCountry.status
-        );
         expect(res.body.message).toEqual(
           validationErrors.invalidUserCountry.message
+        );
+        expect(res.statusCode).toEqual(
+          validationErrors.invalidUserCountry.status
         );
       });
 
@@ -411,16 +411,16 @@ describe("User tests", () => {
         const res = await request(app)
           .patch(`/api/users/${buyer.id}`)
           .send({ userDescription: "test" });
-        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
         expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
 
       it("should throw an error if user is not authorized", async () => {
         const res = await request(app, buyerToken)
           .patch(`/api/users/${seller.id}`)
           .send({ userDescription: "test" });
-        expect(res.statusCode).toEqual(errors.notAuthorized.status);
         expect(res.body.message).toEqual(errors.notAuthorized.message);
+        expect(res.statusCode).toEqual(errors.notAuthorized.status);
       });
     });
 
@@ -430,8 +430,8 @@ describe("User tests", () => {
         const res = await request(app, buyerToken).delete(
           `/api/users/${buyer.id}`
         );
-        expect(res.statusCode).toEqual(responses.userDeactivated.status);
         expect(res.body.message).toEqual(responses.userDeactivated.message);
+        expect(res.statusCode).toEqual(responses.userDeactivated.status);
       });
 
       it("should deactivate seller", async () => {
@@ -448,22 +448,22 @@ describe("User tests", () => {
         expect(removeVersionMock).toHaveBeenCalledTimes(
           unorderedArtwork.length + onceOrderedArtworkWithNewVersion.length
         );
-        expect(res.statusCode).toEqual(responses.userDeactivated.status);
         expect(res.body.message).toEqual(responses.userDeactivated.message);
+        expect(res.statusCode).toEqual(responses.userDeactivated.status);
       });
 
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).delete(`/api/users/${buyer.id}`);
-        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
         expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
 
       it("should throw an error if user is not authorized", async () => {
         const res = await request(app, buyerToken).delete(
           `/api/users/${seller.id}`
         );
-        expect(res.statusCode).toEqual(errors.notAuthorized.status);
         expect(res.body.message).toEqual(errors.notAuthorized.message);
+        expect(res.statusCode).toEqual(errors.notAuthorized.status);
       });
     });
   });
@@ -477,8 +477,8 @@ describe("User tests", () => {
     });
     it("should fetch user artwork", async () => {
       const res = await request(app).get(`/api/users/${buyer.name}/artwork`);
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.artwork).toHaveLength(userArtwork.length);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should limit user artwork to 1", async () => {
@@ -486,8 +486,8 @@ describe("User tests", () => {
       const res = await request(app).get(
         `/api/users/${buyer.name}/artwork?cursor=&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.artwork).toHaveLength(limit);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should limit user artwork to 1 and skip the first one", async () => {
@@ -496,14 +496,14 @@ describe("User tests", () => {
       const res = await request(app).get(
         `/api/users/${buyer.name}/artwork?cursor=${cursor}&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.artwork[0].id).toEqual(userArtwork[1].id);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not found", async () => {
       const res = await request(app).get(`/api/users/nonExistentUser/artwork`);
-      expect(res.statusCode).toEqual(errors.userNotFound.status);
       expect(res.body.message).toEqual(errors.userNotFound.message);
+      expect(res.statusCode).toEqual(errors.userNotFound.status);
     });
   });
 
@@ -516,8 +516,8 @@ describe("User tests", () => {
     });
     it("should fetch user favorites", async () => {
       const res = await request(app).get(`/api/users/${seller.name}/favorites`);
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.favorites).toHaveLength(userFavorites.length);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should limit user favorites to 1", async () => {
@@ -525,8 +525,8 @@ describe("User tests", () => {
       const res = await request(app).get(
         `/api/users/${seller.name}/favorites?cursor=&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.favorites).toHaveLength(limit);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should limit user favorites to 1 and skip the first one", async () => {
@@ -535,22 +535,22 @@ describe("User tests", () => {
       const res = await request(app).get(
         `/api/users/${seller.name}/favorites?cursor=${cursor}&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.favorites[0].id).toEqual(userFavorites[1].id);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not found", async () => {
       const res = await request(app).get(
         `/api/users/nonExistentUser/favorites`
       );
-      expect(res.statusCode).toEqual(errors.userNotFound.status);
       expect(res.body.message).toEqual(errors.userNotFound.message);
+      expect(res.statusCode).toEqual(errors.userNotFound.status);
     });
 
     it("should throw an error if user has disabled displaying favorites", async () => {
       const res = await request(app).get(`/api/users/${buyer.name}/favorites`);
-      expect(res.statusCode).toEqual(errors.userFavoritesNotAllowed.status);
       expect(res.body.message).toEqual(errors.userFavoritesNotAllowed.message);
+      expect(res.statusCode).toEqual(errors.userFavoritesNotAllowed.status);
     });
   });
 
@@ -559,8 +559,8 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/my_artwork`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.artwork).toHaveLength(activeArtworkBySeller.length);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should limit user artwork to 1", async () => {
@@ -568,8 +568,8 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/my_artwork?cursor=&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.artwork).toHaveLength(limit);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should limit user artwork to 1 and skip the first one", async () => {
@@ -580,22 +580,22 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/my_artwork?cursor=${cursor}&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.artwork[0].id).toEqual(sellerArtwork[1].id);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(`/api/users/${seller.id}/my_artwork`);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${seller.id}/my_artwork`
       );
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -604,11 +604,11 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/uploads`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.artwork).toHaveLength(
         visibleAndActiveArtworkBySeller.length
       );
       expect(res.body.artwork[0].current.media.source).toBeTruthy();
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should limit user uploads to 1", async () => {
@@ -616,8 +616,8 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/uploads?cursor=&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.artwork).toHaveLength(limit);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should limit user uploads to 1 and skip the first one", async () => {
@@ -628,22 +628,22 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/uploads?cursor=${cursor}&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.artwork[0].id).toEqual(sellerArtwork[1].id);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(`/api/users/${seller.id}/uploads`);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${seller.id}/uploads`
       );
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -652,9 +652,9 @@ describe("User tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/ownership`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.purchases).toHaveLength(uniqueOrders.length);
       expect(res.body.purchases[0].version.media.source).toBeTruthy();
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should limit user ownership to 1", async () => {
@@ -662,8 +662,8 @@ describe("User tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/ownership?cursor=&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.purchases).toHaveLength(limit);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
     it("should limit user ownership to 1 and skip the first one", async () => {
       const cursor = uniqueOrders[0].id;
@@ -671,22 +671,22 @@ describe("User tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/ownership?cursor=${cursor}&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.purchases[0].id).toEqual(uniqueOrders[1].id);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(`/api/users/${buyer.id}/ownership`);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${seller.id}/ownership`
       );
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -695,7 +695,6 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/statistics/sales`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.sales).toHaveLength(
         entities.Order.filter((item) => item.sellerId === seller.id).length
       );
@@ -703,22 +702,23 @@ describe("User tests", () => {
         entities.Review.filter((item) => item.revieweeId === seller.id).length
       );
       expect(res.body.amount).toBeTruthy();
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(
         `/api/users/${seller.id}/statistics/sales`
       );
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${seller.id}/statistics/sales`
       );
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -727,29 +727,29 @@ describe("User tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/statistics/purchases`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.purchases).toHaveLength(
         entities.Order.filter((item) => item.buyerId === buyer.id).length
       );
       expect(res.body.favorites).toHaveLength(
         entities.Favorite.filter((item) => item.ownerId === buyer.id).length
       );
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(
         `/api/users/${buyer.id}/statistics/purchases`
       );
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${buyer.id}/statistics/purchases`
       );
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -760,7 +760,6 @@ describe("User tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.statistics).toHaveLength(
         buyerPurchases.filter(
           (item) =>
@@ -770,14 +769,15 @@ describe("User tests", () => {
               isEqual(new Date(item.created), endDate))
         ).length
       );
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if dates are not set", async () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/purchases`
       );
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
     });
 
     it("should throw an error if start param is invalid", async () => {
@@ -786,8 +786,8 @@ describe("User tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
       );
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
     });
 
     it("should throw an error if end param is invalid", async () => {
@@ -796,8 +796,8 @@ describe("User tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
       );
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
     });
 
     it("should throw an error if start param is in the future", async () => {
@@ -806,8 +806,8 @@ describe("User tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
       );
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
     });
 
     it("should throw an error if end param is in the future", async () => {
@@ -816,22 +816,22 @@ describe("User tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/purchases?start=${start}&end=${end}`
       );
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(`/api/users/${buyer.id}/purchases`);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${buyer.id}/purchases`
       );
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -842,7 +842,6 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/sales?start=${start}&end=${end}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.statistics).toHaveLength(
         sellerSales.filter(
           (item) =>
@@ -852,14 +851,15 @@ describe("User tests", () => {
               isEqual(new Date(item.created), endDate))
         ).length
       );
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if dates are not set", async () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/sales`
       );
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
     });
 
     it("should throw an error if start param is invalid", async () => {
@@ -868,8 +868,8 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/sales?start=${start}&end=${end}`
       );
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
     });
 
     it("should throw an error if end param is invalid", async () => {
@@ -878,8 +878,8 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/sales?start=${start}&end=${end}`
       );
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
     });
 
     it("should throw an error if start param is in the future", async () => {
@@ -888,8 +888,8 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/sales?start=${start}&end=${end}`
       );
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
     });
 
     it("should throw an error if end param is in the future", async () => {
@@ -898,22 +898,22 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/sales?start=${start}&end=${end}`
       );
-      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+      expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(`/api/users/${buyer.id}/sales`);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${seller.id}/sales`
       );
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -922,22 +922,22 @@ describe("User tests", () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${buyer.id}/settings`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.user).toBeTruthy();
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(`/api/users/${buyer.id}/settings`);
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${buyer.id}/settings`
       );
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -952,8 +952,8 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/notifications`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.notifications).toHaveLength(userNotifications.length);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should limit user notifications to 1", async () => {
@@ -961,8 +961,8 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/notifications?cursor=&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.notifications).toHaveLength(limit);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should limit user notifications to 1 and skip the first one", async () => {
@@ -971,26 +971,26 @@ describe("User tests", () => {
       const res = await request(app, sellerToken).get(
         `/api/users/${seller.id}/notifications?cursor=${cursor}&limit=${limit}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.notifications[0].id).toEqual(
         userNotifications[userNotifications.length - 2].id
       );
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(
         `/api/users/${seller.id}/notifications`
       );
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
       const res = await request(app, buyerToken).get(
         `/api/users/${seller.id}/notifications`
       );
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -1001,21 +1001,21 @@ describe("User tests", () => {
         .send({
           userBusinessAddress: countries.find((item) => item.supported).value,
         });
-      expect(res.statusCode).toEqual(responses.businessAddressUpdated.status);
       expect(res.body.message).toEqual(
         responses.businessAddressUpdated.message
       );
+      expect(res.statusCode).toEqual(responses.businessAddressUpdated.status);
     });
 
     it("should throw a validation error if business address is missing", async () => {
       const res = await request(app, buyerToken)
         .patch(`/api/users/${buyer.id}/origin`)
         .send({});
-      expect(res.statusCode).toEqual(
-        validationErrors.originCountryRequired.status
-      );
       expect(res.body.message).toEqual(
         validationErrors.originCountryRequired.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.originCountryRequired.status
       );
     });
 
@@ -1025,10 +1025,10 @@ describe("User tests", () => {
         .send({
           userBusinessAddress: "invalidCountry",
         });
-      expect(res.statusCode).toEqual(validationErrors.originCountryMax.status);
       expect(res.body.message).toEqual(
         validationErrors.originCountryMax.message
       );
+      expect(res.statusCode).toEqual(validationErrors.originCountryMax.status);
     });
 
     it("should throw a validation error if business address is invalid", async () => {
@@ -1037,11 +1037,11 @@ describe("User tests", () => {
         .send({
           userBusinessAddress: "ZZ",
         });
-      expect(res.statusCode).toEqual(
-        validationErrors.invalidStripeCountry.status
-      );
       expect(res.body.message).toEqual(
         validationErrors.invalidStripeCountry.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.invalidStripeCountry.status
       );
     });
 
@@ -1051,8 +1051,8 @@ describe("User tests", () => {
         .send({
           userBusinessAddress: countries.find((item) => item.supported).value,
         });
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
@@ -1061,8 +1061,8 @@ describe("User tests", () => {
         .send({
           userBusinessAddress: countries.find((item) => item.supported).value,
         });
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -1073,8 +1073,8 @@ describe("User tests", () => {
         .send({
           userFavorites: true,
         });
-      expect(res.statusCode).toEqual(responses.preferencesUpdated.status);
       expect(res.body.message).toEqual(responses.preferencesUpdated.message);
+      expect(res.statusCode).toEqual(responses.preferencesUpdated.status);
     });
 
     it("should patch user preferences (disable favorites)", async () => {
@@ -1083,19 +1083,19 @@ describe("User tests", () => {
         .send({
           userFavorites: false,
         });
-      expect(res.statusCode).toEqual(responses.preferencesUpdated.status);
       expect(res.body.message).toEqual(responses.preferencesUpdated.message);
+      expect(res.statusCode).toEqual(responses.preferencesUpdated.status);
     });
 
     it("should throw a validation error if user favorites is missing", async () => {
       const res = await request(app, buyerToken)
         .patch(`/api/users/${buyer.id}/preferences`)
         .send({});
-      expect(res.statusCode).toEqual(
-        validationErrors.favoritesPreferenceRequired.status
-      );
       expect(res.body.message).toEqual(
         validationErrors.favoritesPreferenceRequired.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.favoritesPreferenceRequired.status
       );
     });
 
@@ -1105,8 +1105,8 @@ describe("User tests", () => {
         .send({
           userFavorites: true,
         });
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
@@ -1115,8 +1115,8 @@ describe("User tests", () => {
         .send({
           userFavorites: true,
         });
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -1129,8 +1129,8 @@ describe("User tests", () => {
           userPassword: "User1Password",
           userConfirm: "User1Password",
         });
-      expect(res.statusCode).toEqual(responses.passwordUpdated.status);
       expect(res.body.message).toEqual(responses.passwordUpdated.message);
+      expect(res.statusCode).toEqual(responses.passwordUpdated.status);
     });
 
     it("should throw an error if password is incorrect", async () => {
@@ -1141,8 +1141,8 @@ describe("User tests", () => {
           userPassword: "User1Password",
           userConfirm: "User1Password",
         });
-      expect(res.statusCode).toEqual(errors.currentPasswordIncorrect.status);
       expect(res.body.message).toEqual(errors.currentPasswordIncorrect.message);
+      expect(res.statusCode).toEqual(errors.currentPasswordIncorrect.status);
     });
 
     it("should throw an error if password is identical to the old one", async () => {
@@ -1153,8 +1153,8 @@ describe("User tests", () => {
           userPassword: validUsers.buyer.password,
           userConfirm: validUsers.buyer.password,
         });
-      expect(res.statusCode).toEqual(errors.newPasswordIdentical.status);
       expect(res.body.message).toEqual(errors.newPasswordIdentical.message);
+      expect(res.statusCode).toEqual(errors.newPasswordIdentical.status);
     });
 
     it("should throw a validation error if passwords don't match", async () => {
@@ -1165,11 +1165,11 @@ describe("User tests", () => {
           userPassword: "User1Password",
           userConfirm: "User2Password",
         });
-      expect(res.statusCode).toEqual(
-        validationErrors.userPasswordMismatch.status
-      );
       expect(res.body.message).toEqual(
         validationErrors.userPasswordMismatch.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.userPasswordMismatch.status
       );
     });
 
@@ -1181,10 +1181,10 @@ describe("User tests", () => {
           userPassword: new Array(ranges.password.min).join("a"),
           userConfirm: new Array(ranges.password.min).join("a"),
         });
-      expect(res.statusCode).toEqual(validationErrors.userPasswordMin.status);
       expect(res.body.message).toEqual(
         validationErrors.userPasswordMin.message
       );
+      expect(res.statusCode).toEqual(validationErrors.userPasswordMin.status);
     });
 
     it("should throw a validation error if password is too long", async () => {
@@ -1195,10 +1195,10 @@ describe("User tests", () => {
           userPassword: new Array(ranges.password.max + 2).join("a"),
           userConfirm: new Array(ranges.password.max + 2).join("a"),
         });
-      expect(res.statusCode).toEqual(validationErrors.userPasswordMax.status);
       expect(res.body.message).toEqual(
         validationErrors.userPasswordMax.message
       );
+      expect(res.statusCode).toEqual(validationErrors.userPasswordMax.status);
     });
 
     it("should throw an error if user is not authenticated", async () => {
@@ -1209,8 +1209,8 @@ describe("User tests", () => {
           userPassword: "User1Password",
           userConfirm: "User1Password",
         });
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
@@ -1221,8 +1221,8 @@ describe("User tests", () => {
           userPassword: "User1Password",
           userConfirm: "User1Password",
         });
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 
@@ -1235,8 +1235,8 @@ describe("User tests", () => {
         });
       expect(sendEmailMock).toHaveBeenCalled();
       expect(logUserOutMock).toHaveBeenCalled();
-      expect(res.statusCode).toEqual(responses.emailAddressUpdated.status);
       expect(res.body.message).toEqual(responses.emailAddressUpdated.message);
+      expect(res.statusCode).toEqual(responses.emailAddressUpdated.status);
     });
 
     it("should throw an error if email is taken", async () => {
@@ -1247,8 +1247,8 @@ describe("User tests", () => {
         });
       expect(sendEmailMock).not.toHaveBeenCalled();
       expect(logUserOutMock).not.toHaveBeenCalled();
-      expect(res.statusCode).toEqual(errors.emailAlreadyExists.status);
       expect(res.body.message).toEqual(errors.emailAlreadyExists.message);
+      expect(res.statusCode).toEqual(errors.emailAlreadyExists.status);
     });
 
     it("should throw a validation error if email is invalid", async () => {
@@ -1257,20 +1257,20 @@ describe("User tests", () => {
         .send({
           userEmail: "invalidEmail",
         });
-      expect(res.statusCode).toEqual(validationErrors.userEmailInvalid.status);
       expect(res.body.message).toEqual(
         validationErrors.userEmailInvalid.message
       );
+      expect(res.statusCode).toEqual(validationErrors.userEmailInvalid.status);
     });
 
     it("should throw a validation error if email is missing", async () => {
       const res = await request(app, buyerToken)
         .patch(`/api/users/${buyer.id}/email`)
         .send({});
-      expect(res.statusCode).toEqual(validationErrors.userEmailRequired.status);
       expect(res.body.message).toEqual(
         validationErrors.userEmailRequired.message
       );
+      expect(res.statusCode).toEqual(validationErrors.userEmailRequired.status);
     });
 
     it("should throw a validation error if email is too long", async () => {
@@ -1279,8 +1279,8 @@ describe("User tests", () => {
         .send({
           userEmail: `${new Array(ranges.email.max).join("a")}@test.com`,
         });
-      expect(res.statusCode).toEqual(validationErrors.userEmailMax.status);
       expect(res.body.message).toEqual(validationErrors.userEmailMax.message);
+      expect(res.statusCode).toEqual(validationErrors.userEmailMax.status);
     });
 
     it("should throw an error if user is not authenticated", async () => {
@@ -1289,8 +1289,8 @@ describe("User tests", () => {
         .send({
           userEmail: "test@test.com",
         });
-      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+      expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
     });
 
     it("should throw an error if user is not authorized", async () => {
@@ -1299,8 +1299,8 @@ describe("User tests", () => {
         .send({
           userEmail: "test@test.com",
         });
-      expect(res.statusCode).toEqual(errors.notAuthorized.status);
       expect(res.body.message).toEqual(errors.notAuthorized.message);
+      expect(res.statusCode).toEqual(errors.notAuthorized.status);
     });
   });
 });

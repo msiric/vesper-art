@@ -82,12 +82,12 @@ describe("Verifier tests", () => {
       const res = await request(app).post("/api/verifier").send({
         licenseFingerprint: firstLicenseByBuyer.fingerprint,
       });
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.license.fingerprint).toEqual(
         firstLicenseByBuyer.fingerprint
       );
       expect(res.body.license.assignee).toBeFalsy();
       expect(res.body.license.assignor).toBeFalsy();
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should return buyer license data", async () => {
@@ -95,12 +95,12 @@ describe("Verifier tests", () => {
         licenseFingerprint: firstLicenseByBuyer.fingerprint,
         assigneeIdentifier: firstLicenseByBuyer.assigneeIdentifier,
       });
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.license.fingerprint).toEqual(
         firstLicenseByBuyer.fingerprint
       );
       expect(res.body.license.assignee).toEqual(validUsers.buyer.name);
       expect(res.body.license.assignor).toBeFalsy();
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should return seller license data", async () => {
@@ -108,12 +108,12 @@ describe("Verifier tests", () => {
         licenseFingerprint: firstLicenseBySeller.fingerprint,
         assignorIdentifier: firstLicenseBySeller.assignorIdentifier,
       });
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.license.fingerprint).toEqual(
         firstLicenseBySeller.fingerprint
       );
       expect(res.body.license.assignee).toBeFalsy();
       expect(res.body.license.assignor).toEqual(validUsers.seller.name);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should return complete license data", async () => {
@@ -122,29 +122,29 @@ describe("Verifier tests", () => {
         assigneeIdentifier: firstLicenseByBuyer.assigneeIdentifier,
         assignorIdentifier: firstLicenseBySeller.assignorIdentifier,
       });
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.license.fingerprint).toEqual(
         firstLicenseByBuyer.fingerprint
       );
       expect(res.body.license.assignee).toEqual(validUsers.buyer.name);
       expect(res.body.license.assignor).toEqual(validUsers.seller.name);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if license is not found", async () => {
       const res = await request(app).post("/api/verifier").send({
         licenseFingerprint: unusedFingerprint,
       });
-      expect(res.statusCode).toEqual(errors.licenseNotFound.status);
       expect(res.body.message).toEqual(errors.licenseNotFound.message);
+      expect(res.statusCode).toEqual(errors.licenseNotFound.status);
     });
 
     it("should throw a validation if fingerprint is missing", async () => {
       const res = await request(app).post("/api/verifier").send({});
-      expect(res.statusCode).toEqual(
-        validationErrors.licenseFingerprintRequired.status
-      );
       expect(res.body.message).toEqual(
         validationErrors.licenseFingerprintRequired.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.licenseFingerprintRequired.status
       );
     });
 
@@ -156,11 +156,11 @@ describe("Verifier tests", () => {
             ranges.licenseFingerprint.exact + 2
           ).join("a"),
         });
-      expect(res.statusCode).toEqual(
-        validationErrors.licenseFingerprintExact.status
-      );
       expect(res.body.message).toEqual(
         validationErrors.licenseFingerprintExact.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.licenseFingerprintExact.status
       );
     });
 
@@ -172,11 +172,11 @@ describe("Verifier tests", () => {
             ranges.licenseIdentifier.exact + 2
           ).join("a"),
         });
-      expect(res.statusCode).toEqual(
-        validationErrors.assigneeIdentifierExact.status
-      );
       expect(res.body.message).toEqual(
         validationErrors.assigneeIdentifierExact.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.assigneeIdentifierExact.status
       );
     });
 
@@ -188,11 +188,11 @@ describe("Verifier tests", () => {
             ranges.licenseIdentifier.exact + 2
           ).join("a"),
         });
-      expect(res.statusCode).toEqual(
-        validationErrors.assignorIdentifierExact.status
-      );
       expect(res.body.message).toEqual(
         validationErrors.assignorIdentifierExact.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.assignorIdentifierExact.status
       );
     });
   });

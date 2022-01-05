@@ -74,18 +74,18 @@ describe("Search tests", () => {
       const res = await request(app).get(
         `/api/search?q=${query.artwork}&t=${type.artwork}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.searchData).toHaveLength(filteredArtwork.length);
       expect(res.body.searchDisplay).toEqual(type.artwork);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should find users with query 'validuser'", async () => {
       const res = await request(app).get(
         `/api/search?q=${query.users}&t=${type.users}`
       );
-      expect(res.statusCode).toEqual(statusCodes.ok);
       expect(res.body.searchData).toHaveLength(filteredUsers.length);
       expect(res.body.searchDisplay).toEqual(type.users);
+      expect(res.statusCode).toEqual(statusCodes.ok);
     });
 
     it("should throw an error if query is missing", async () => {
@@ -104,17 +104,17 @@ describe("Search tests", () => {
           type.artwork
         }`
       );
-      expect(res.statusCode).toEqual(validationErrors.searchQueryMax.status);
       expect(res.body.message).toEqual(validationErrors.searchQueryMax.message);
+      expect(res.statusCode).toEqual(validationErrors.searchQueryMax.status);
     });
 
     it("should throw an error if type is missing", async () => {
       const res = await request(app).get(`/api/search?q=${query.artwork}&t=`);
-      expect(res.statusCode).toEqual(
-        validationErrors.searchTypeRequired.status
-      );
       expect(res.body.message).toEqual(
         validationErrors.searchTypeRequired.message
+      );
+      expect(res.statusCode).toEqual(
+        validationErrors.searchTypeRequired.status
       );
     });
 
@@ -122,10 +122,10 @@ describe("Search tests", () => {
       const res = await request(app).get(
         `/api/search?q=${query.artwork}&t=test`
       );
-      expect(res.statusCode).toEqual(validationErrors.searchTypeInvalid.status);
       expect(res.body.message).toEqual(
         validationErrors.searchTypeInvalid.message
       );
+      expect(res.statusCode).toEqual(validationErrors.searchTypeInvalid.status);
     });
   });
 });

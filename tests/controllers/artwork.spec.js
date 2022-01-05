@@ -10,7 +10,7 @@ import { fetchAllArtworks } from "../../services/postgres/artwork";
 import { fetchUserByUsername } from "../../services/postgres/user";
 import { closeConnection, connectToDatabase } from "../../utils/database";
 import { USER_SELECTION } from "../../utils/selectors";
-import { errors, errors as logicErrors, responses } from "../../utils/statuses";
+import { errors, responses } from "../../utils/statuses";
 import { entities, validUsers } from "../fixtures/entities";
 import {
   findMultiOrderedArtwork,
@@ -73,7 +73,6 @@ let connection,
   onceOrderedArtworkWithNewVersion,
   multiOrderedArtworkWithNoNewVersions;
 
-// $TODO add isAuthenticated to each test
 describe("Artwork tests", () => {
   beforeEach(() => jest.clearAllMocks());
   beforeAll(async () => {
@@ -185,22 +184,22 @@ describe("Artwork tests", () => {
     describe("getArtwork", () => {
       it("should fetch active artwork", async () => {
         const res = await request(app).get("/api/artwork");
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork.length).toEqual(visibleAndActiveArtwork.length);
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should throw a 400 error if cursor is of invalid type", async () => {
         const cursor = 0;
         const res = await request(app).get(`/api/artwork?cursor=${cursor}`);
-        expect(res.body.message).toEqual(logicErrors.routeQueryInvalid.message);
-        expect(res.statusCode).toEqual(logicErrors.routeQueryInvalid.status);
+        expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+        expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       });
 
       it("should throw a 400 error if cursor is of invalid UUID version", async () => {
         const cursor = "5831028a-3af3-11ec-8d3d-0242ac130003";
         const res = await request(app).get(`/api/artwork?cursor=${cursor}`);
-        expect(res.body.message).toEqual(logicErrors.routeQueryInvalid.message);
-        expect(res.statusCode).toEqual(logicErrors.routeQueryInvalid.status);
+        expect(res.body.message).toEqual(errors.routeQueryInvalid.message);
+        expect(res.statusCode).toEqual(errors.routeQueryInvalid.status);
       });
 
       it("should limit artwork to 1", async () => {
@@ -208,8 +207,8 @@ describe("Artwork tests", () => {
         const res = await request(app).get(
           `/api/artwork?cursor=&limit=${limit}`
         );
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork).toHaveLength(limit);
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should limit artwork to 1 and skip the first one", async () => {
@@ -218,8 +217,8 @@ describe("Artwork tests", () => {
         const res = await request(app).get(
           `/api/artwork?cursor=${cursor}&limit=${limit}`
         );
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork[0].id).toEqual(visibleAndActiveArtwork[1].id);
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
     });
 
@@ -241,7 +240,7 @@ describe("Artwork tests", () => {
           .field("artworkVisibility", "visible")
           .field("artworkDescription", "");
         expect(res.body.message).toEqual(responses.artworkCreated.message);
-        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.statusCode).toEqual(responses.artworkCreated.status);
       });
 
       it("should throw a 403 error if user is not authenticated", async () => {
@@ -256,8 +255,8 @@ describe("Artwork tests", () => {
           artworkVisibility: "visible",
           artworkDescription: "test",
         });
-        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
-        expect(res.statusCode).toEqual(statusCodes.forbidden);
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
 
       it("should throw a 400 error if media is missing", async () => {
@@ -272,10 +271,8 @@ describe("Artwork tests", () => {
           .field("artworkCommercial", 0)
           .field("artworkVisibility", "visible")
           .field("artworkDescription", "");
-        expect(res.body.message).toEqual(
-          logicErrors.artworkMediaMissing.message
-        );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.body.message).toEqual(errors.artworkMediaMissing.message);
+        expect(res.statusCode).toEqual(errors.artworkMediaMissing.status);
       });
 
       it("should throw a validation error if media has invalid dimensions", async () => {
@@ -297,10 +294,8 @@ describe("Artwork tests", () => {
           .field("artworkCommercial", 0)
           .field("artworkVisibility", "visible")
           .field("artworkDescription", "");
-        expect(res.body.message).toEqual(
-          logicErrors.fileDimensionsInvalid.message
-        );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.body.message).toEqual(errors.fileDimensionsInvalid.message);
+        expect(res.statusCode).toEqual(errors.fileDimensionsInvalid.status);
       });
 
       it("should throw a validation error if media has an invalid extension", async () => {
@@ -322,7 +317,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkMediaType.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkMediaType.status
+        );
       });
 
       it("should throw a validation error if media has an invalid ratio", async () => {
@@ -341,10 +338,8 @@ describe("Artwork tests", () => {
           .field("artworkCommercial", 0)
           .field("artworkVisibility", "visible")
           .field("artworkDescription", "");
-        expect(res.body.message).toEqual(
-          logicErrors.aspectRatioInvalid.message
-        );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.body.message).toEqual(errors.aspectRatioInvalid.message);
+        expect(res.statusCode).toEqual(errors.aspectRatioInvalid.status);
       });
 
       it("should throw a validation error if title is missing", async () => {
@@ -366,7 +361,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkTitleRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkTitleRequired.status
+        );
       });
 
       it("should throw a validation error if availability is missing", async () => {
@@ -388,7 +385,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkAvailabilityRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkAvailabilityRequired.status
+        );
       });
 
       it("should throw a validation error if availability is invalid", async () => {
@@ -411,7 +410,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkAvailabilityInvalid.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkAvailabilityInvalid.status
+        );
       });
 
       it("should throw a validation error if type is missing", async () => {
@@ -433,7 +434,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkTypeRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkTypeRequired.status
+        );
       });
 
       it("should throw a validation error if type is invalid", async () => {
@@ -456,7 +459,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkTypeInvalid.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkTypeInvalid.status
+        );
       });
 
       it("should pass if type is invalid but artwork is 'preview only'", async () => {
@@ -477,7 +482,7 @@ describe("Artwork tests", () => {
           .field("artworkDescription", "");
 
         expect(res.body.message).toEqual(responses.artworkCreated.message);
-        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.statusCode).toEqual(responses.artworkCreated.status);
       });
 
       it("should throw a validation error if license is missing", async () => {
@@ -499,7 +504,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkLicenseRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkLicenseRequired.status
+        );
       });
 
       it("should throw a validation error if license is invalid", async () => {
@@ -522,7 +529,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkLicenseInvalid.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkLicenseInvalid.status
+        );
       });
 
       it("should pass if license is invalid but artwork is 'preview only'", async () => {
@@ -543,7 +552,7 @@ describe("Artwork tests", () => {
           .field("artworkDescription", "");
 
         expect(res.body.message).toEqual(responses.artworkCreated.message);
-        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.statusCode).toEqual(responses.artworkCreated.status);
       });
 
       it("should throw a validation error if personal is not an integer", async () => {
@@ -566,7 +575,7 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.invalidNumber.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(validationErrors.invalidNumber.status);
       });
 
       it("should throw a validation error if personal is below the minimum price", async () => {
@@ -589,7 +598,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkPersonalMin.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkPersonalMin.status
+        );
       });
 
       it("should throw a validation error if personal is above the maximum price", async () => {
@@ -612,7 +623,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkPersonalMax.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkPersonalMax.status
+        );
       });
 
       it("should pass if personal is zero and artwork is not available/commercial/separate/personal", async () => {
@@ -633,7 +646,7 @@ describe("Artwork tests", () => {
           .field("artworkDescription", "");
 
         expect(res.body.message).toEqual(responses.artworkCreated.message);
-        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.statusCode).toEqual(responses.artworkCreated.status);
       });
 
       it("should throw a validation error if use is missing", async () => {
@@ -655,7 +668,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkUseRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkUseRequired.status
+        );
       });
 
       it("should throw a validation error if use is invalid", async () => {
@@ -678,7 +693,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkUseInvalid.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkUseInvalid.status
+        );
       });
 
       it("should pass if use is invalid but artwork is available/personal", async () => {
@@ -699,7 +716,7 @@ describe("Artwork tests", () => {
           .field("artworkDescription", "");
 
         expect(res.body.message).toEqual(responses.artworkCreated.message);
-        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.statusCode).toEqual(responses.artworkCreated.status);
       });
 
       it("should throw a validation error if commercial is invalid", async () => {
@@ -721,7 +738,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkCommercialMin.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkCommercialMin.status
+        );
       });
 
       it("should throw an error if commercial artwork is valid but user hasn't completed the onboarding process", async () => {
@@ -742,14 +761,14 @@ describe("Artwork tests", () => {
           .field("artworkDescription", "");
 
         expect(res.body.message).toEqual(
-          logicErrors[
+          errors[
             featureFlags.stripe
               ? "stripeOnboardingIncomplete"
               : "commercialArtworkUnavailable"
           ].message
         );
         expect(res.statusCode).toEqual(
-          logicErrors[
+          errors[
             featureFlags.stripe
               ? "stripeOnboardingIncomplete"
               : "commercialArtworkUnavailable"
@@ -776,7 +795,7 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.invalidNumber.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(validationErrors.invalidNumber.status);
       });
 
       it("should throw a validation error if commercial is below the minimum price", async () => {
@@ -799,7 +818,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkCommercialMin.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkCommercialMin.status
+        );
       });
 
       it("should throw a validation error if commercial is above the maximum price", async () => {
@@ -822,7 +843,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkCommercialMax.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkCommercialMax.status
+        );
       });
 
       it("should throw a validation error if commercial is below the personal license price", async () => {
@@ -845,7 +868,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkCommercialMin.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkCommercialMin.status
+        );
       });
 
       it("should pass if commercial is zero and artwork is not available/commercial/separate/personal", async () => {
@@ -866,7 +891,7 @@ describe("Artwork tests", () => {
           .field("artworkDescription", "");
 
         expect(res.body.message).toEqual(responses.artworkCreated.message);
-        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.statusCode).toEqual(responses.artworkCreated.status);
       });
 
       it("should throw a validation error if visibility is missing", async () => {
@@ -888,7 +913,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkVisibilityRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkVisibilityRequired.status
+        );
       });
     });
   });
@@ -899,35 +926,30 @@ describe("Artwork tests", () => {
         const res = await request(app).get(
           `/api/artwork/${visibleAndActiveArtwork[0].id}`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork).toBeTruthy();
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should throw a validation error if artwork id is invalid", async () => {
         const res = await request(app).get("/api/artwork/invalidId");
-        expect(res.body.message).toEqual(
-          logicErrors.routeParameterInvalid.message
-        );
-        expect(res.statusCode).toEqual(
-          logicErrors.routeParameterInvalid.status
-        );
+        expect(res.body.message).toEqual(errors.routeParameterInvalid.message);
+        expect(res.statusCode).toEqual(errors.routeParameterInvalid.status);
       });
 
       it("should throw a 404 error if artwork is not visible", async () => {
         const res = await request(app).get(
           `/api/artwork/${invisibleArtwork[0].id}`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
 
       it("should throw a 404 error if artwork is not active", async () => {
         const res = await request(app).get(
           `/api/artwork/${inactiveArtwork[0].id}`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
     });
 
@@ -1007,8 +1029,8 @@ describe("Artwork tests", () => {
             artworkVisibility: "visible",
             artworkDescription: "test",
           });
-        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
-        expect(res.statusCode).toEqual(statusCodes.forbidden);
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
 
       it("should throw an error if artwork is identical to the previous version", async () => {
@@ -1026,11 +1048,9 @@ describe("Artwork tests", () => {
             artworkVisibility: activeArtworkBySeller[0].visibility,
           });
         expect(res.body.message).toEqual(
-          logicErrors.artworkDetailsIdentical.message
+          errors.artworkDetailsIdentical.message
         );
-        expect(res.statusCode).toEqual(
-          logicErrors.artworkDetailsIdentical.status
-        );
+        expect(res.statusCode).toEqual(errors.artworkDetailsIdentical.status);
       });
 
       it("should throw a validation error if title is missing", async () => {
@@ -1050,7 +1070,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkTitleRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkTitleRequired.status
+        );
       });
 
       it("should throw a validation error if availability is missing", async () => {
@@ -1070,7 +1092,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkAvailabilityRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkAvailabilityRequired.status
+        );
       });
 
       it("should throw a validation error if availability is invalid", async () => {
@@ -1091,7 +1115,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkAvailabilityInvalid.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkAvailabilityInvalid.status
+        );
       });
 
       it("should throw a validation error if type is missing", async () => {
@@ -1111,7 +1137,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkTypeRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkTypeRequired.status
+        );
       });
 
       it("should throw a validation error if type is invalid", async () => {
@@ -1132,7 +1160,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkTypeInvalid.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkTypeInvalid.status
+        );
       });
 
       it("should pass if type is invalid but artwork is 'preview only'", async () => {
@@ -1151,7 +1181,7 @@ describe("Artwork tests", () => {
           });
 
         expect(res.body.message).toEqual(responses.artworkUpdated.message);
-        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.statusCode).toEqual(responses.artworkUpdated.status);
       });
 
       it("should throw a validation error if license is missing", async () => {
@@ -1171,7 +1201,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkLicenseRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkLicenseRequired.status
+        );
       });
 
       it("should throw a validation error if license is invalid", async () => {
@@ -1192,7 +1224,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkLicenseInvalid.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkLicenseInvalid.status
+        );
       });
 
       it("should pass if license is invalid but artwork is 'preview only'", async () => {
@@ -1211,7 +1245,7 @@ describe("Artwork tests", () => {
           });
 
         expect(res.body.message).toEqual(responses.artworkUpdated.message);
-        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.statusCode).toEqual(responses.artworkUpdated.status);
       });
 
       it("should throw a validation error if personal is not an integer", async () => {
@@ -1232,7 +1266,7 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.invalidNumber.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(validationErrors.invalidNumber.status);
       });
 
       it("should throw a validation error if personal is below the minimum price", async () => {
@@ -1253,7 +1287,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkPersonalMin.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkPersonalMin.status
+        );
       });
 
       it("should throw a validation error if personal is above the maximum price", async () => {
@@ -1274,7 +1310,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkPersonalMax.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkPersonalMax.status
+        );
       });
 
       it("should pass if personal is zero and artwork is not available/commercial/separate/personal", async () => {
@@ -1293,7 +1331,7 @@ describe("Artwork tests", () => {
           });
 
         expect(res.body.message).toEqual(responses.artworkUpdated.message);
-        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.statusCode).toEqual(responses.artworkUpdated.status);
       });
 
       it("should throw a validation error if use is missing", async () => {
@@ -1313,7 +1351,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkUseRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkUseRequired.status
+        );
       });
 
       it("should throw a validation error if use is invalid", async () => {
@@ -1334,7 +1374,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkUseInvalid.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkUseInvalid.status
+        );
       });
 
       it("should pass if use is invalid but artwork is available/personal", async () => {
@@ -1353,7 +1395,7 @@ describe("Artwork tests", () => {
           });
 
         expect(res.body.message).toEqual(responses.artworkUpdated.message);
-        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.statusCode).toEqual(responses.artworkUpdated.status);
       });
 
       it("should throw a validation error if commercial is invalid", async () => {
@@ -1374,7 +1416,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkCommercialMin.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkCommercialMin.status
+        );
       });
 
       it("should throw an error if commercial artwork is valid but user hasn't completed the onboarding process", async () => {
@@ -1393,14 +1437,14 @@ describe("Artwork tests", () => {
           });
 
         expect(res.body.message).toEqual(
-          logicErrors[
+          errors[
             featureFlags.stripe
               ? "stripeOnboardingIncomplete"
               : "commercialArtworkUnavailable"
           ].message
         );
         expect(res.statusCode).toEqual(
-          logicErrors[
+          errors[
             featureFlags.stripe
               ? "stripeOnboardingIncomplete"
               : "commercialArtworkUnavailable"
@@ -1426,7 +1470,7 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.invalidNumber.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(validationErrors.invalidNumber.status);
       });
 
       it("should throw a validation error if commercial is below the minimum price", async () => {
@@ -1447,7 +1491,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkCommercialMin.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkCommercialMin.status
+        );
       });
 
       it("should throw a validation error if commercial is above the maximum price", async () => {
@@ -1468,7 +1514,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkCommercialMax.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkCommercialMax.status
+        );
       });
 
       it("should throw a validation error if commercial is below the personal license price", async () => {
@@ -1489,7 +1537,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkCommercialMin.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkCommercialMin.status
+        );
       });
 
       it("should pass if commercial is zero and artwork is not available/commercial/separate/personal", async () => {
@@ -1508,7 +1558,7 @@ describe("Artwork tests", () => {
           });
 
         expect(res.body.message).toEqual(responses.artworkUpdated.message);
-        expect(res.statusCode).toEqual(statusCodes.ok);
+        expect(res.statusCode).toEqual(responses.artworkUpdated.status);
       });
 
       it("should throw a validation error if visibility is missing", async () => {
@@ -1528,7 +1578,9 @@ describe("Artwork tests", () => {
         expect(res.body.message).toEqual(
           validationErrors.artworkVisibilityRequired.message
         );
-        expect(res.statusCode).toEqual(statusCodes.badRequest);
+        expect(res.statusCode).toEqual(
+          validationErrors.artworkVisibilityRequired.status
+        );
       });
 
       it("should throw an error if artwork is not found", async () => {
@@ -1545,8 +1597,8 @@ describe("Artwork tests", () => {
             artworkVisibility: "visible",
             artworkDescription: "",
           });
-        expect(res.body.message).toEqual(logicErrors.artworkNotFound.message);
-        expect(res.statusCode).toEqual(logicErrors.artworkNotFound.status);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
     });
 
@@ -1560,8 +1612,8 @@ describe("Artwork tests", () => {
         expect(s3Mock).toHaveBeenCalledTimes(2);
         expect(removeVersionMock).toHaveBeenCalledTimes(1);
         expect(deactivateArtworkMock).toHaveBeenCalledTimes(0);
-        expect(res.statusCode).toEqual(responses.artworkDeleted.status);
         expect(res.body.message).toEqual(responses.artworkDeleted.message);
+        expect(res.statusCode).toEqual(responses.artworkDeleted.status);
       });
 
       it("should delete ordered artwork with new unordered version", async () => {
@@ -1572,8 +1624,8 @@ describe("Artwork tests", () => {
         expect(s3Mock).toHaveBeenCalledTimes(0);
         expect(removeVersionMock).toHaveBeenCalledTimes(1);
         expect(deactivateArtworkMock).toHaveBeenCalledTimes(0);
-        expect(res.statusCode).toEqual(responses.artworkDeleted.status);
         expect(res.body.message).toEqual(responses.artworkDeleted.message);
+        expect(res.statusCode).toEqual(responses.artworkDeleted.status);
       });
 
       it("should delete ordered artwork with no new versions", async () => {
@@ -1584,24 +1636,24 @@ describe("Artwork tests", () => {
         expect(s3Mock).toHaveBeenCalledTimes(0);
         expect(removeVersionMock).toHaveBeenCalledTimes(0);
         expect(deactivateArtworkMock).toHaveBeenCalledTimes(1);
-        expect(res.statusCode).toEqual(responses.artworkDeleted.status);
         expect(res.body.message).toEqual(responses.artworkDeleted.message);
+        expect(res.statusCode).toEqual(responses.artworkDeleted.status);
       });
 
       it("should throw an error if artwork is not found", async () => {
         const res = await request(app, sellerToken).delete(
           `/api/artwork/${unusedUuid}`
         );
-        expect(res.statusCode).toEqual(logicErrors.artworkNotFound.status);
-        expect(res.body.message).toEqual(logicErrors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
       });
 
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).delete(
           `/api/artwork/${multiOrderedArtworkWithNoNewVersions[0].artworkId}`
         );
-        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
-        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
     });
   });
@@ -1613,8 +1665,8 @@ describe("Artwork tests", () => {
           `/api/artwork/${activeArtworkBySeller[0].id}/edit`
         );
 
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork).toBeTruthy();
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should throw a validation error if artwork id is invalid", async () => {
@@ -1622,20 +1674,16 @@ describe("Artwork tests", () => {
           "/api/artwork/invalidId/edit"
         );
 
-        expect(res.body.message).toEqual(
-          logicErrors.routeParameterInvalid.message
-        );
-        expect(res.statusCode).toEqual(
-          logicErrors.routeParameterInvalid.status
-        );
+        expect(res.body.message).toEqual(errors.routeParameterInvalid.message);
+        expect(res.statusCode).toEqual(errors.routeParameterInvalid.status);
       });
 
       it("should throw a 404 error if user is not owner", async () => {
         const res = await request(app, sellerToken).get(
           `/api/artwork/${activeArtworkByBuyer[0].id}/edit`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
 
       it("should fetch an active artwork even if it is invisible", async () => {
@@ -1643,25 +1691,24 @@ describe("Artwork tests", () => {
           `/api/artwork/${activeAndInvisibleArtworkBySeller[0].id}/edit`
         );
 
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.artwork).toBeTruthy();
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should throw a 404 error if artwork is not active", async () => {
         const res = await request(app, sellerToken).get(
           `/api/artwork/${inactiveArtworkBySeller[0].id}/edit`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
 
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).get(
           `/api/artwork/${activeArtworkBySeller[0].id}/edit`
         );
-
-        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
-        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
     });
   });
@@ -1675,31 +1722,28 @@ describe("Artwork tests", () => {
         const res = await request(app).get(
           `/api/artwork/${inactiveArtwork[0].id}/comments`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments.length).toEqual(0);
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should not fetch comments for invisible artwork", async () => {
         const res = await request(app).get(
           `/api/artwork/${invisibleArtworkWithComments[0].id}/comments`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments.length).toEqual(0);
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should fetch artwork comments", async () => {
         const res = await request(app).get(
           `/api/artwork/${visibleArtworkWithComments[0].id}/comments`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments.length).toEqual(
           entities.Comment.filter(
             (comment) => comment.artworkId === visibleArtworkWithComments[0].id
           ).length
         );
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should limit comments to 1", async () => {
@@ -1707,11 +1751,10 @@ describe("Artwork tests", () => {
         const res = await request(app).get(
           `/api/artwork/${visibleArtworkWithComments[0].id}/comments?cursor=&limit=${limit}`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments[0].id).toEqual(
           filteredComments[filteredComments.length - 1].id
         );
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should limit comments to 1 and skip the first one", async () => {
@@ -1720,9 +1763,8 @@ describe("Artwork tests", () => {
         const res = await request(app).get(
           `/api/artwork/${visibleArtworkWithComments[0].id}/comments?cursor=${cursor}&limit=${limit}`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comments[0].id).toEqual(filteredComments[0].id);
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
     });
     describe("postComment", () => {
@@ -1730,27 +1772,27 @@ describe("Artwork tests", () => {
         const res = await request(app, sellerToken)
           .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
           .send({ commentContent: "test" });
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(socketApiMock).not.toHaveBeenCalled();
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should post a new comment and send notification", async () => {
         const res = await request(app, buyerToken)
           .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
           .send({ commentContent: "test" });
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(socketApiMock).toHaveBeenCalled();
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should throw a validation error if the comment content is empty", async () => {
         const res = await request(app, buyerToken)
           .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
           .send({ commentContent: "" });
-        expect(res.statusCode).toEqual(
-          validationErrors.commentContentRequired.status
-        );
         expect(res.body.message).toEqual(
           validationErrors.commentContentRequired.message
+        );
+        expect(res.statusCode).toEqual(
+          validationErrors.commentContentRequired.status
         );
       });
 
@@ -1760,11 +1802,11 @@ describe("Artwork tests", () => {
           .send({
             commentContent: new Array(ranges.comment.max + 2).join("a"),
           });
-        expect(res.statusCode).toEqual(
-          validationErrors.commentContentMax.status
-        );
         expect(res.body.message).toEqual(
           validationErrors.commentContentMax.message
+        );
+        expect(res.statusCode).toEqual(
+          validationErrors.commentContentMax.status
         );
       });
 
@@ -1774,15 +1816,16 @@ describe("Artwork tests", () => {
           .send({
             commentContent: "test",
           });
-        expect(res.statusCode).toEqual(statusCodes.notFound);
+        expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
 
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app)
           .post(`/api/artwork/${activeArtworkBySeller[0].id}/comments`)
           .send({ commentContent: "test" });
-        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
-        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
     });
   });
@@ -1793,27 +1836,24 @@ describe("Artwork tests", () => {
         const res = await request(app).get(
           `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comment).toBeTruthy();
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should return undefined if artwork does not exist", async () => {
         const res = await request(app).get(
           `/api/artwork/${unusedUuid}/comments/${filteredComments[0].id}`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comment).toBe(undefined);
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should return undefined if comment does not exist", async () => {
         const res = await request(app).get(
           `/api/artwork/${unusedUuid}/comments/${artworkWithComments[0].id}`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.comment).toBe(undefined);
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
     });
     describe("patchComment", () => {
@@ -1834,11 +1874,11 @@ describe("Artwork tests", () => {
           .send({
             commentContent: new Array(ranges.comment.max + 2).join("a"),
           });
-        expect(res.statusCode).toEqual(
-          validationErrors.commentContentMax.status
-        );
         expect(res.body.message).toEqual(
           validationErrors.commentContentMax.message
+        );
+        expect(res.statusCode).toEqual(
+          validationErrors.commentContentMax.status
         );
       });
 
@@ -1848,8 +1888,8 @@ describe("Artwork tests", () => {
             `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
           )
           .send({ commentContent: "test" });
-        expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.commentNotFound.message);
+        expect(res.statusCode).toEqual(errors.commentNotFound.status);
       });
 
       it("should throw a 404 error if artwork doesn't exist", async () => {
@@ -1858,8 +1898,8 @@ describe("Artwork tests", () => {
             `/api/artwork/${unusedUuid}/comments/${filteredComments[0].id}`
           )
           .send({ commentContent: "test" });
-        expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
 
       it("should throw a 404 error if comment doesn't exist", async () => {
@@ -1868,8 +1908,8 @@ describe("Artwork tests", () => {
             `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedUuid}`
           )
           .send({ commentContent: "test" });
-        expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.commentNotFound.message);
+        expect(res.statusCode).toEqual(errors.commentNotFound.status);
       });
 
       it("should throw an error if user is not authenticated", async () => {
@@ -1878,8 +1918,8 @@ describe("Artwork tests", () => {
             `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
           )
           .send({ commentContent: "test" });
-        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
-        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
     });
 
@@ -1895,32 +1935,32 @@ describe("Artwork tests", () => {
         const res = await request(app, sellerToken).delete(
           `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
         );
-        expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.commentNotFound.message);
+        expect(res.statusCode).toEqual(errors.commentNotFound.status);
       });
 
       it("should throw a 404 error if artwork doesn't exist", async () => {
         const res = await request(app, buyerToken).delete(
           `/api/artwork/${unusedUuid}/comments/${filteredComments[0].id}`
         );
-        expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
 
       it("should throw a 404 error if comment doesn't exist", async () => {
         const res = await request(app, buyerToken).delete(
           `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${unusedUuid}`
         );
-        expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.commentNotFound.message);
+        expect(res.statusCode).toEqual(errors.commentNotFound.status);
       });
 
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).delete(
           `/api/artwork/${visibleArtworkWithComments[0].id}/comments/${filteredComments[0].id}`
         );
-        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
-        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
     });
   });
@@ -1931,18 +1971,16 @@ describe("Artwork tests", () => {
         const res = await request(app, buyerToken).get(
           `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.favorites).toEqual(filteredFavorites.length);
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
 
       it("should return 0 if artwork does not exist", async () => {
         const res = await request(app, buyerToken).get(
           `/api/artwork/${unusedUuid}/favorites`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.favorites).toBe(0);
+        expect(res.statusCode).toEqual(statusCodes.ok);
       });
     });
     describe("favoriteArtwork", () => {
@@ -1950,48 +1988,44 @@ describe("Artwork tests", () => {
         const res = await request(app, impartialToken).post(
           `/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.message).toEqual(responses.artworkFavorited.message);
+        expect(res.statusCode).toEqual(responses.artworkFavorited.status);
       });
 
       it("should throw a 400 error if artwork favorited by non-owner", async () => {
         const res = await request(app, sellerToken).post(
           `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
         );
-
-        expect(res.statusCode).toEqual(errors.artworkFavoritedByOwner.status);
         expect(res.body.message).toEqual(
           errors.artworkFavoritedByOwner.message
         );
+        expect(res.statusCode).toEqual(errors.artworkFavoritedByOwner.status);
       });
 
       it("should throw a 400 error if already favorited artwork is favorited", async () => {
         const res = await request(app, sellerToken).post(
           `/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`
         );
-
-        expect(res.statusCode).toEqual(errors.artworkAlreadyFavorited.status);
         expect(res.body.message).toEqual(
           errors.artworkAlreadyFavorited.message
         );
+        expect(res.statusCode).toEqual(errors.artworkAlreadyFavorited.status);
       });
 
       it("should throw a 404 error if artwork doesn't exist", async () => {
         const res = await request(app, buyerToken).post(
           `/api/artwork/${unusedUuid}/favorites`
         );
-        expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
 
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).post(
           `/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`
         );
-
-        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
-        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
     });
     describe("unfavoriteArtwork", () => {
@@ -1999,52 +2033,45 @@ describe("Artwork tests", () => {
         const res = await request(app, buyerToken).delete(
           `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
         );
-
-        expect(res.statusCode).toEqual(statusCodes.ok);
         expect(res.body.message).toEqual(responses.artworkUnfavorited.message);
+        expect(res.statusCode).toEqual(responses.artworkUnfavorited.status);
       });
 
       it("should throw a 400 error if artwork unfavorited by non-owner", async () => {
         const res = await request(app, sellerToken).delete(
           `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
         );
-
-        expect(res.statusCode).toEqual(errors.artworkFavoritedByOwner.status);
         expect(res.body.message).toEqual(
           errors.artworkUnfavoritedByOwner.message
         );
+        expect(res.statusCode).toEqual(errors.artworkFavoritedByOwner.status);
       });
 
       it("should throw a 400 error if unfavorited artwork is unfavorited", async () => {
         const res = await request(app, impartialToken).delete(
           `/api/artwork/${artworkFavoritedBySeller[0].id}/favorites`
         );
-
-        expect(res.statusCode).toEqual(errors.artworkAlreadyUnfavorited.status);
         expect(res.body.message).toEqual(
           errors.artworkAlreadyUnfavorited.message
         );
+        expect(res.statusCode).toEqual(errors.artworkAlreadyUnfavorited.status);
       });
 
       it("should throw a 404 error if artwork doesn't exist", async () => {
         const res = await request(app, buyerToken).delete(
           `/api/artwork/${unusedUuid}/favorites`
         );
-        expect(res.statusCode).toEqual(statusCodes.notFound);
         expect(res.body.message).toEqual(errors.artworkNotFound.message);
+        expect(res.statusCode).toEqual(errors.artworkNotFound.status);
       });
 
       it("should throw an error if user is not authenticated", async () => {
         const res = await request(app).delete(
           `/api/artwork/${artworkFavoritedByBuyer[0].id}/favorites`
         );
-
-        expect(res.statusCode).toEqual(logicErrors.forbiddenAccess.status);
-        expect(res.body.message).toEqual(logicErrors.forbiddenAccess.message);
+        expect(res.body.message).toEqual(errors.forbiddenAccess.message);
+        expect(res.statusCode).toEqual(errors.forbiddenAccess.status);
       });
     });
   });
-  // $TODO test patch artwork (same as post without the media)
-  // $TODO test delete artwork
-  // $TODO add - should have been called
 });
