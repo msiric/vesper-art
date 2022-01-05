@@ -1,10 +1,10 @@
 import express from "express";
-import { featureFlags } from "../../../common/constants.js";
-import { getCheckout, postDownload } from "../../../controllers/checkout.js";
+import { featureFlags } from "../../../common/constants";
+import { getCheckout, postDownload } from "../../../controllers/checkout";
 import {
   isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 

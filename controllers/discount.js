@@ -1,11 +1,12 @@
 import createError from "http-errors";
-import { errors } from "../common/constants";
+import { isObjectEmpty } from "../common/helpers";
 import { discountValidation } from "../common/validation";
 import {
   addNewDiscount,
   fetchDiscountByCode,
-} from "../services/postgres/discount.js";
-import {} from "../utils/helpers.js";
+} from "../services/postgres/discount";
+import { formatError, formatResponse } from "../utils/helpers";
+import { errors, responses } from "../utils/statuses";
 
 // needs transaction (done)
 // treba sredit
@@ -15,14 +16,13 @@ export const getDiscount = async ({ userId, discountCode, connection }) => {
     discountCode,
     connection,
   });
-  if (foundDiscount) {
-    return {
-      message: "Discount applied",
+  if (!isObjectEmpty(foundDiscount)) {
+    return formatResponse({
+      ...responses.discountApplied,
       payload: foundDiscount,
-      expose: true,
-    };
+    });
   }
-  throw createError(errors.notFound, "Discount not found", { expose: true });
+  throw createError(...formatError(errors.discountNotFound));
 };
 
 export const postDiscount = async ({ userId, discountData, connection }) => {

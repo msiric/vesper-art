@@ -6,8 +6,8 @@ import {
   patchPassword,
   patchPreferences,
   patchUser,
-} from "../../services/user.js";
-import { deleteEmptyValues, resolveAsyncError } from "../../utils/helpers.js";
+} from "../../services/user";
+import { resolveAsyncError } from "../../utils/helpers";
 
 const initialState = {
   user: {
@@ -49,10 +49,9 @@ const initActions = (set) => ({
     }
   },
   updateProfile: async ({ userId, values }) => {
-    const data = deleteEmptyValues(values);
     const formData = new FormData();
-    for (let value of Object.keys(data)) {
-      formData.append(value, data[value]);
+    for (let value of Object.keys(values)) {
+      formData.append(value, values[value]);
     }
     await patchUser.request({
       userId,

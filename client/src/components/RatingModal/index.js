@@ -1,19 +1,21 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
+import {
+  ArrowUpwardRounded as SubmitIcon,
+  CloseRounded as CloseIcon,
+} from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { isFormAltered } from "../../../../common/helpers";
 import { reviewValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
 import Backdrop from "../../domain/Backdrop";
 import Box from "../../domain/Box";
-import CardActions from "../../domain/CardActions";
-import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
 import Fade from "../../domain/Fade";
 import Modal from "../../domain/Modal";
 import Typography from "../../domain/Typography";
 import RatingForm from "../../forms/RatingForm";
-import SyncButton from "../SyncButton/index.js";
+import SyncButton from "../SyncButton/index";
 import ratingModalStyles from "./styles";
 
 const RatingModal = ({
@@ -26,6 +28,10 @@ const RatingModal = ({
   promptCancel,
   loading,
 }) => {
+  const setDefaultValues = () => ({
+    reviewRating: 0,
+  });
+
   const {
     handleSubmit,
     formState,
@@ -36,11 +42,14 @@ const RatingModal = ({
     getValues,
     watch,
   } = useForm({
-    defaultValues: {
-      artistRating: 0,
-    },
+    defaultValues: setDefaultValues(),
     resolver: yupResolver(reviewValidation),
   });
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   const classes = ratingModalStyles();
 
@@ -62,8 +71,8 @@ const RatingModal = ({
           <Typography className={classes.title}>{promptTitle}</Typography>
           <Divider />
           <FormProvider control={control}>
-            <form onSubmit={handleSubmit(async () => await handleConfirm)}>
-              <CardContent>
+            <form onSubmit={handleSubmit(handleConfirm)}>
+              <Box className={classes.rating}>
                 <RatingForm
                   errors={errors}
                   setValue={setValue}
@@ -72,21 +81,26 @@ const RatingModal = ({
                   watch={watch}
                   loading={loading}
                 />
-              </CardContent>
-              <CardActions className={classes.actions}>
+              </Box>
+              <Box className={classes.actions}>
                 <AsyncButton
                   type="submit"
                   fullWidth
-                  padding
                   submitting={formState.isSubmitting}
-                  startIcon={<UploadIcon />}
+                  disabled={isDisabled}
+                  startIcon={<SubmitIcon />}
                 >
                   {promptConfirm}
                 </AsyncButton>
-                <SyncButton type="button" color="dark" onClick={handleClose}>
+                <SyncButton
+                  type="button"
+                  color="dark"
+                  onClick={handleClose}
+                  startIcon={<CloseIcon />}
+                >
                   {promptCancel}
                 </SyncButton>
-              </CardActions>
+              </Box>
             </form>
           </FormProvider>
         </Box>

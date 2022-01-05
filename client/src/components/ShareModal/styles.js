@@ -6,25 +6,27 @@ const shareModalStyles = makeStyles((muiTheme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    margin: "0 12px",
   },
   content: {
     backgroundColor: muiTheme.palette.background.paper,
     boxShadow: muiTheme.shadows[5],
     padding: muiTheme.spacing(2),
-    borderRadius: muiTheme.spacing(0.5),
+    borderRadius: muiTheme.shape.borderRadius,
   },
   title: {
-    paddingBottom: muiTheme.spacing(2),
+    paddingBottom: muiTheme.spacing(1),
   },
   actions: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "column",
-    marginTop: muiTheme.spacing(4),
   },
   wrapper: {
     display: "flex",
+    marginTop: muiTheme.spacing(2),
+    marginBottom: muiTheme.spacing(3),
   },
   button: {
     display: "flex",
@@ -49,6 +51,10 @@ const shareModalStyles = makeStyles((muiTheme) => ({
           fill: `${artepunktTheme.palette.primary.main} !important`,
         },
       },
+    },
+    [muiTheme.breakpoints.down("xs")]: {
+      width: 41,
+      height: 41,
     },
   },
   copy: {

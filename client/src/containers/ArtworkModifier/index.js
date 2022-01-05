@@ -1,32 +1,34 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  AddCircleRounded as UploadIcon,
-  DeleteRounded as DeleteIcon,
+  CheckRounded as SaveIcon,
+  DeleteOutlineRounded as DeleteIcon,
 } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { featureFlags } from "../../../../common/constants";
-import { isVersionDifferent } from "../../../../common/helpers";
+import { isFormAltered } from "../../../../common/helpers";
 import { artworkValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import HelpBox from "../../components/HelpBox/index.js";
-import SyncButton from "../../components/SyncButton/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import AsyncButton from "../../components/AsyncButton/index";
+import HelpBox from "../../components/HelpBox/index";
+import SyncButton from "../../components/SyncButton/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useArtworkUpdate } from "../../contexts/local/artworkUpdate";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
-import ArtworkForm from "../../forms/ArtworkForm/index.js";
-import artworkModifierClasses from "./styles.js";
+import ArtworkForm from "../../forms/ArtworkForm/index";
+import { useArtworkValidator } from "../../hooks/useArtworkValidator";
+import artworkModifierClasses from "./styles";
 
 const ArtworkModifier = ({ paramId }) => {
   const stripeId = useUserStore((state) => state.stripeId);
 
   const artwork = useArtworkUpdate((state) => state.artwork.data);
-  const artworkLoading = useArtworkUpdate((state) => state.artwork.loading);
   const capabilities = useArtworkUpdate((state) => state.capabilities.data);
-  const loading = useArtworkUpdate((state) => state.capabilities.loading);
+  const artworkLoading = useArtworkUpdate((state) => state.artwork.loading);
+  const capabilitiesLoading = useArtworkUpdate(
+    (state) => state.capabilities.loading
+  );
   const isDeleting = useArtworkUpdate((state) => state.isDeleting);
   const fetchArtwork = useArtworkUpdate((state) => state.fetchArtwork);
   const fetchCapabilities = useArtworkUpdate(
@@ -34,6 +36,10 @@ const ArtworkModifier = ({ paramId }) => {
   );
   const updateArtwork = useArtworkUpdate((state) => state.updateArtwork);
   const toggleModal = useArtworkUpdate((state) => state.toggleModal);
+
+  const loading = artworkLoading || capabilitiesLoading;
+
+  const resolver = useArtworkValidator(artworkValidation);
 
   const setDefaultValues = () => ({
     artworkTitle: artwork.current.title,
@@ -50,7 +56,7 @@ const ArtworkModifier = ({ paramId }) => {
         ? artwork.current.commercial
         : "",
     artworkDescription: artwork.current.description,
-    artworkVisibility: artwork.current.visibility,
+    artworkVisibility: artwork.visibility,
     // artworkCategory: artwork.current.category,
     // artworkTags: artwork.current.tags || [],
   });
@@ -67,7 +73,7 @@ const ArtworkModifier = ({ paramId }) => {
     reset,
   } = useForm({
     defaultValues: setDefaultValues(),
-    resolver: yupResolver(artworkValidation),
+    resolver: resolver,
   });
 
   const history = useHistory();
@@ -97,28 +103,29 @@ const ArtworkModifier = ({ paramId }) => {
         <HelpBox type="alert" label={stripeDisabled} />
       ) : !stripeId ? (
         <HelpBox type="alert" label={notOnboarded} />
-      ) : capabilities.cardPayments === "pending" ||
-        capabilities.platformPayments === "pending" ? (
+      ) : capabilities.platformPayments === "pending" ? (
         <HelpBox type="alert" label={pendingVerification} />
-      ) : capabilities.cardPayments !== "active" ||
-        capabilities.platformPayments !== "active" ? (
+      ) : capabilities.platformPayments !== "active" ? (
         <HelpBox type="alert" label={incompleteInformation} />
       ) : null
     ) : null;
   };
 
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
+
   useEffect(() => {
     Promise.all([
       fetchArtwork({ artworkId: paramId }),
-      fetchCapabilities({ stripeId }),
+      ...(stripeId && [fetchCapabilities({ stripeId })]),
     ]);
   }, []);
 
   useEffect(() => {
     reset(setDefaultValues());
-  }, [artwork.current]);
-
-  console.log(getValues(), artwork.current);
+  }, [artwork]);
 
   return (
     <Card>
@@ -133,15 +140,14 @@ const ArtworkModifier = ({ paramId }) => {
               setValue={setValue}
               trigger={trigger}
               getValues={getValues}
-              watch={watch}
-              watchables={[
-                "artworkAvailability",
-                "artworkType",
-                "artworkLicense",
-                "artworkUse",
-              ]}
+              watchables={{
+                artworkAvailability: watchedValues.artworkAvailability,
+                artworkType: watchedValues.artworkType,
+                artworkLicense: watchedValues.artworkLicense,
+                artworkUse: watchedValues.artworkUse,
+              }}
               editable={false}
-              loading={artworkLoading}
+              loading={loading}
             />
           </CardContent>
           <CardActions className={classes.actions}>
@@ -152,12 +158,9 @@ const ArtworkModifier = ({ paramId }) => {
               color="primary"
               padding
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
               loading={loading}
-              disabled={
-                !isVersionDifferent(getValues(), artwork.current) ||
-                formState.isSubmitting
-              }
-              startIcon={<UploadIcon />}
+              startIcon={<SaveIcon />}
             >
               Publish
             </AsyncButton>

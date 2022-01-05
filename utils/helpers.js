@@ -1,12 +1,28 @@
+import argon2 from "argon2";
 import crypto from "crypto";
-import { addHours, isBefore, isValid } from "date-fns";
+import currency from "currency.js";
+import { addHours, endOfDay, isBefore, isValid, startOfDay } from "date-fns";
 import escapeHTML from "escape-html";
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import { getConnection } from "typeorm";
 import * as uuidJs from "uuid";
-import { errors } from "../common/constants";
-import { domain, uuid } from "../config/secret";
+import {
+  appName,
+  appPalette,
+  featureFlags,
+  generatedData,
+  statusCodes,
+} from "../common/constants";
+import { trimAllSpaces } from "../common/helpers";
+import { domain, tokens, uuid } from "../config/secret";
+import {
+  evaluateTransaction,
+  releaseTransaction,
+  rollbackTransaction,
+  startTransaction,
+} from "./database";
+import { errors } from "./statuses";
 
 // this way of importing allows specifying the uuid version in the config file only once and gets propagated everywhere
 const {
@@ -15,6 +31,14 @@ const {
   [uuid.import]: genUuid,
 } = uuidJs;
 
+const TRIM_KEYS = {
+  licenseCompany: true,
+};
+
+const LOWERCASE_KEYS = {
+  userEmail: true,
+};
+
 const VALID_PARAMS = {
   // better validation for stripeId?
   accountId: { isValid: (value) => isValidString(value) },
@@ -22,7 +46,7 @@ const VALID_PARAMS = {
   commentId: { isValid: (value) => isValidUuid(value) },
   intentId: { isValid: (value) => isValidUuid(value) },
   orderId: { isValid: (value) => isValidUuid(value) },
-  tokenId: { isValid: (value) => isValidUuid(value) },
+  tokenId: { isValid: (value) => isValidString(value) },
   userId: { isValid: (value) => isValidUuid(value) },
   versionId: { isValid: (value) => isValidUuid(value) },
   userUsername: { isValid: (value) => isValidString(value) },
@@ -56,8 +80,37 @@ export const isPastDate = (value) =>
   (isSameDay(new Date(value), new Date()) ||
     isAfter(new Date(value), new Date())); */
 
+export const sanitizePayload = (req, res, next) => {
+  try {
+    sanitizeParams(req, res, next);
+    sanitizeQuery(req, res, next);
+    sanitizeBody(req, res, next);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const verifyTokenValidity = (
+  publicToken,
+  privateToken,
+  shouldValidateExpiry = true
+) => {
+  try {
+    jwt.verify(publicToken, privateToken, {
+      ignoreExpiration: true,
+    });
+  } catch (err) {
+    throw createError(...formatError(errors.forbiddenAccess));
+  }
+  const data = jwt.decode(publicToken);
+  if (shouldValidateExpiry && Date.now() >= data.exp * 1000)
+    throw createError(...formatError(errors.notAuthenticated));
+  return { data };
+};
+
 export const requestHandler =
   (promise, transaction, params) => async (req, res, next) => {
+    sanitizePayload(req, res, next);
     const boundParams = params ? params(req, res, next) : {};
     const userId = res.locals.user ? res.locals.user.id : null;
     const handleRequest = (result) => {
@@ -70,36 +123,31 @@ export const requestHandler =
       return res.json({ message: "OK" });
     };
     if (transaction) {
-      const queryRunner = getConnection().createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
+      const queryRunner = await startTransaction();
       try {
         const result = await promise({
           userId,
-          connection: queryRunner.manager,
           ...boundParams,
+          connection: queryRunner.manager,
         });
-        /*  return await handleRequest(result); */
-        await queryRunner.commitTransaction();
+        await evaluateTransaction(queryRunner);
         return handleRequest(result);
       } catch (error) {
-        await queryRunner.rollbackTransaction();
-        console.log(error);
+        await rollbackTransaction(queryRunner);
         next(error);
       } finally {
-        await queryRunner.release();
+        await releaseTransaction(queryRunner);
       }
     } else {
       try {
         const connection = getConnection();
         const result = await promise({
           userId,
-          connection,
           ...boundParams,
+          connection,
         });
         return handleRequest(result);
       } catch (error) {
-        console.log(error);
         next(error);
       }
     }
@@ -107,34 +155,28 @@ export const requestHandler =
 
 export const isAuthenticated = async (req, res, next) => {
   try {
-    const authentication = req.headers["authorization"];
-    if (!authentication)
-      throw createError(errors.forbidden, "Forbidden", { expose: true });
-    const token = authentication.split(" ")[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
-      ignoreExpiration: true,
-    });
-    const data = jwt.decode(token);
-    if (Date.now() >= data.exp * 1000 || !data.active)
-      throw createError(errors.unauthorized, "Not authenticated", {
-        expose: true,
-      });
+    const accessToken = req.headers["authorization"];
+    if (!accessToken) throw createError(...formatError(errors.forbiddenAccess));
+    const token = accessToken.split(" ")[1];
+    const { data } = verifyTokenValidity(token, tokens.accessToken);
+    if (!data.active) throw createError(...formatError(errors.forbiddenAccess));
+    if (!data.verified)
+      throw createError(...formatError(errors.forbiddenAccess));
+    if (Date.now() >= data.exp * 1000) {
+      throw createError(...formatError(errors.notAuthenticated));
+    }
     res.locals.user = data;
+    return next();
   } catch (err) {
-    console.log(err);
-    next(err);
+    return next(err);
   }
-
-  return next();
 };
 
 export const isNotAuthenticated = async (req, res, next) => {
   const authentication = req.headers["authorization"];
   // $TODO ovo treba handleat tako da ne stucka frontend
   if (authentication)
-    throw createError(errors.badRequest, "Already authenticated", {
-      expose: true,
-    });
+    return next(createError(...formatError(errors.alreadyAuthenticated)));
   return next();
 };
 
@@ -142,51 +184,31 @@ export const isAuthorized = async (req, res, next) => {
   if (req.params.userId === res.locals.user.id) {
     return next();
   }
-  throw createError(errors.unauthorized, "Not authorized to request resource", {
-    expose: true,
-  });
+  return next(createError(...formatError(errors.notAuthorized)));
 };
 
 export const sanitizeParams = (req, res, next) => {
   const isValid = sanitizeUrl(req.params, VALID_PARAMS);
-  if (isValid) return next();
-  throw createError(errors.badRequest, "Invalid route parameter", {
-    expose: true,
-  });
+  if (!isValid) throw createError(...formatError(errors.routeParameterInvalid));
 };
 
 export const sanitizeQuery = (req, res, next) => {
-  if (req && res && next) {
-    const isValid = sanitizeUrl(req.query, VALID_QUERIES);
-    if (isValid) {
-      req.query = sanitizeData(req.query);
-      return next();
-    }
-    throw createError(errors.badRequest, "Invalid route query", {
-      expose: true,
-    });
-  }
-  return;
+  const isValid = sanitizeUrl(req.query, VALID_QUERIES);
+  if (isValid) req.query = sanitizeDates(sanitizeData(req.query));
+  else throw createError(...formatError(errors.routeQueryInvalid));
 };
 
 export const sanitizeBody = (req, res, next) => {
-  if (req && res && next) {
-    req.body = sanitizeData(req.body);
-    return next();
-  }
-  return;
+  req.body = sanitizeData(req.body);
 };
 
 export const sanitizeUrl = (data, validKeys) => {
-  console.log(data, validKeys);
-  let valid = true;
   for (let param in data) {
-    console.log(typeof param, param);
     const value = data[param];
-    if (value === "undefined") return false;
+    if (value === undefined) return false;
     if (validKeys[param] && !validKeys[param].isValid(value)) return false;
   }
-  return valid;
+  return true;
 };
 
 export const sanitizeData = (data) => {
@@ -200,12 +222,33 @@ export const sanitizeData = (data) => {
           });
         } else if (typeof data[key] === "object") {
           obj[key] = sanitizeData(data[key]);
+        } else if (typeof data[key] === "string") {
+          if (TRIM_KEYS[key]) {
+            data[key] = trimAllSpaces(data[key]);
+          }
+          if (LOWERCASE_KEYS[key]) {
+            data[key] = data[key].toLowerCase();
+          }
+          obj[key] = escapeHTML(data[key]);
         } else {
           obj[key] = escapeHTML(data[key]);
         }
         return obj;
       }, {})
     : data;
+};
+
+export const sanitizeDates = (data) => {
+  for (let param in data) {
+    const value = data[param];
+    if (param === "start") {
+      data[param] = startOfDay(new Date(data[param]));
+    }
+    if (param === "end") {
+      data[param] = endOfDay(new Date(data[param]));
+    }
+  }
+  return data;
 };
 
 export const checkImageOrientation = (width, height) => {
@@ -226,19 +269,48 @@ export const generateUuids = ({ ...args }) => {
   return generatedUuids;
 };
 
-export const generateVerificationToken = () => {
-  const verificationToken = genUuid();
-  const verificationLink = `${domain.client}/verify_token/${verificationToken}`;
-  const verificationExpiry = addHours(new Date(), 1);
-  return { verificationToken, verificationLink, verificationExpiry };
+export const generateRandomBytes = ({ bytes }) => {
+  const buffer = crypto.randomBytes(bytes);
+  const randomBytes = buffer.toString("hex");
+  return randomBytes;
 };
 
-export const generateResetToken = () => {
-  const buffer = crypto.randomBytes(20);
-  const resetToken = buffer.toString("hex");
-  const resetLink = `${domain.client}/reset_password/${resetToken}`;
+export const generateVerificationToken = () => {
+  const verificationToken = generateRandomBytes({ bytes: 20 });
+  const verificationLink = `${domain.client}/verify_token/${verificationToken}`;
+  const verificationExpiry = addHours(new Date(), 1);
+  const verified = false;
+  return {
+    verificationToken,
+    verificationLink,
+    verificationExpiry,
+    verified,
+  };
+};
+
+export const generateResetToken = async ({ userId }) => {
+  const randomBytes = generateRandomBytes({ bytes: 30 });
+  const resetToken = await hashString(randomBytes);
+  const resetLink = `${domain.client}/reset_password/user/${userId}/token/${randomBytes}`;
   const resetExpiry = addHours(new Date(), 1);
-  return { resetToken, resetLink, resetExpiry };
+  return { resetToken, resetLink, resetExpiry, randomBytes };
+};
+
+export const generateLicenseFingerprint = () => {
+  const licenseFingerprint = generateRandomBytes({
+    bytes: generatedData.fingerprint,
+  });
+  return { licenseFingerprint };
+};
+
+export const generateLicenseIdentifiers = () => {
+  const licenseAssigneeIdentifier = generateRandomBytes({
+    bytes: generatedData.identifier,
+  });
+  const licenseAssignorIdentifier = generateRandomBytes({
+    bytes: generatedData.identifier,
+  });
+  return { licenseAssigneeIdentifier, licenseAssignorIdentifier };
 };
 
 export const resolveSubQuery = (
@@ -257,9 +329,149 @@ export const resolveSubQuery = (
         .getQuery()
     : threshold;
 
+export const resolveDateRange = ({ start, end }) => {
+  if (start && end) {
+    const startDate = startOfDay(start);
+    const endDate = endOfDay(end);
+    return { startDate, endDate };
+  }
+  throw createError(...formatError(errors.routeQueryInvalid));
+};
+
 export const calculateRating = ({ active, reviews }) =>
   active && reviews.length
     ? (
         reviews.reduce((sum, { rating }) => sum + rating, 0) / reviews.length
       ).toFixed(2)
     : null;
+
+export const formatError = ({ status, message, expose }) => [
+  status,
+  message,
+  expose,
+];
+
+export const formatResponse = ({ status, message, expose, ...rest }) => ({
+  status,
+  message,
+  expose,
+  ...rest,
+});
+
+export const handleDelegatedError = ({ err }) => {
+  const validationError = "ValidationError";
+  const multerError = "MulterError";
+  const knownErrors = [validationError, multerError];
+
+  return {
+    status: knownErrors.includes(err.name)
+      ? statusCodes.badRequest
+      : err.status || statusCodes.internalError,
+    message:
+      knownErrors.includes(err.name) || err.expose
+        ? err.message
+        : errors.internalServerError.message,
+    expose: err.expose || true,
+  };
+};
+
+export const formatTokenData = ({ user }) => {
+  const tokenPayload = {
+    id: user.id,
+    name: user.name,
+    jwtVersion: user.jwtVersion,
+    onboarded: !!user.stripeId,
+    active: user.active,
+    verified: user.verified,
+  };
+
+  const userInfo = {
+    id: user.id,
+    name: user.name,
+    fullName: user.fullName,
+    email: user.email,
+    avatar: user.avatar,
+    notifications: user.notifications,
+    active: user.active,
+    stripeId: user.stripeId,
+    country: user.country,
+    businessAddress: user.businessAddress,
+    jwtVersion: user.jwtVersion,
+    favorites: user.favorites,
+  };
+
+  return { tokenPayload, userInfo };
+};
+
+export const formattedArtworkKeys = {
+  artworkTitle: "title",
+  artworkType: "type",
+  artworkAvailability: "availability",
+  artworkLicense: "license",
+  artworkUse: "use",
+  artworkPersonal: "personal",
+  artworkCommercial: "commercial",
+  artworkDescription: "description",
+  artworkVisibility: "visibility",
+};
+
+export const formatArtworkPrices = (data) => {
+  return {
+    ...data,
+    artworkPersonal: currency(data.artworkPersonal).intValue,
+    artworkCommercial: currency(data.artworkCommercial).intValue,
+  };
+};
+
+export const verifyVersionValidity = ({ data, foundUser, foundAccount }) => {
+  if (data.artworkPersonal || data.artworkCommercial) {
+    // FEATURE FLAG - stripe
+    if (!featureFlags.stripe) {
+      throw createError(...formatError(errors.commercialArtworkUnavailable));
+    }
+    if (!foundUser.stripeId) {
+      throw createError(...formatError(errors.stripeOnboardingIncomplete));
+    }
+    if (
+      (data.artworkPersonal || data.artworkCommercial) &&
+      (!foundAccount || foundAccount.capabilities.transfers !== "active")
+    ) {
+      throw createError(...formatError(errors.stripeAccountIncomplete));
+    }
+  }
+  return;
+};
+
+export const formatEmailContent = ({
+  replacementValues,
+  replacementAttachments,
+}) => {
+  const formattedProps = {
+    logo: `cid:logo@${appName}.com`,
+    banner: `cid:banner@${appName}.com`,
+    primary: appPalette.primary.main,
+    secondary: "#1f1f1f",
+    app: appName,
+    date: new Date().getFullYear(),
+    ...replacementValues,
+  };
+  const formattedAttachments = [
+    {
+      filename: "logo.png",
+      path: "common/assets/logo.png",
+      cid: `logo@${appName}.com`,
+    },
+    {
+      filename: "banner.jpg",
+      path: "common/assets/banner.jpg",
+      cid: `banner@${appName}.com`,
+    },
+    ...replacementAttachments,
+  ];
+  return { formattedProps, formattedAttachments };
+};
+
+export const hashString = async (givenString) => await argon2.hash(givenString);
+
+export const verifyHash = async (storedHash, givenString) =>
+  await argon2.verify(storedHash, givenString);

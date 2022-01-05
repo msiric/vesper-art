@@ -1,17 +1,17 @@
 import { makeStyles } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { hexToRgb } from "../../../../common/helpers.js";
-import GalleryPanel from "../../containers/GalleryPanel/index.js";
-import GalleryToolbar from "../../containers/GalleryToolbar/index.js";
+import { hexToRgb } from "../../../../common/helpers";
+import GalleryPanel from "../../containers/GalleryPanel/index";
+import GalleryToolbar from "../../containers/GalleryToolbar/index";
 import { useUserGallery } from "../../contexts/local/userGallery";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
-import globalStyles from "../../styles/global.js";
-import { renderUserData } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { renderUserData } from "../../utils/helpers";
 
 const useGalleryStyles = makeStyles((muiTheme) => ({
   wrapper: {
@@ -40,15 +40,15 @@ const Gallery = () => {
 
   const location = useLocation();
 
-  const formatArtwork = (artwork) => {
+  const formatArtwork = (artwork, length) => {
     const artworkIds = {};
-    const uniqueCovers = [];
-    const uniqueMedia = [];
+    const uniqueElements = [];
     const uniqueCaptions = [];
+    let counter = length;
     for (let item in artwork) {
       if (!artworkIds[artwork[item].cover]) {
         const { r, g, b } = hexToRgb(artwork[item].dominant);
-        uniqueCovers.push({
+        uniqueElements.push({
           id: item,
           cover: artwork[item].cover,
           media: artwork[item].media,
@@ -60,14 +60,8 @@ const Gallery = () => {
           },
           dominant: artwork[item].dominant,
         });
-        uniqueMedia.push({
-          src: artwork[item].media ? artwork[item].media : artwork[item].cover,
-          thumbnail: artwork[item].cover,
-          height: artwork[item].height,
-          width: artwork[item].width,
-        });
         uniqueCaptions.push({
-          id: uniqueCaptions.length,
+          id: counter,
           caption: (
             <Box className={classes.wrapper}>
               <Typography className={classes.title}>
@@ -81,11 +75,11 @@ const Gallery = () => {
           ),
         });
         artworkIds[artwork[item].cover] = true;
+        counter++;
       }
     }
     return {
-      covers: uniqueCovers,
-      media: uniqueMedia,
+      elements: uniqueElements,
       captions: uniqueCaptions,
     };
   };

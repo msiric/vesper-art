@@ -11,33 +11,29 @@ import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Link from "../../domain/Link";
 import Typography from "../../domain/Typography";
-import globalStyles from "../../styles/global.js";
 
 const RESTORATION_CARDS = [
   {
     illustration: <ForgotPassword />,
     title: "Forgot password?",
-    text:
-      "You can reset your password by receiving a reset token to your linked email",
+    text: "You can reset your password by receiving a reset token to your linked email",
     redirect: "/forgot_password",
   },
   {
     illustration: <VerifyAccount />,
     title: "Verify account?",
-    text:
-      "If you haven't received a verification token to your linked email, you can request a new one",
+    text: "If you haven't received a verification token to your linked email, you can request a new one",
     redirect: "/resend_token",
   },
   {
     illustration: <ChangeEmail />,
     title: "Change email?",
-    text:
-      "If you typed in a wrong email or you're locked out of one, you can try updating it here",
+    text: "If you typed in a wrong email or you're locked out of one, you can try updating it here",
     redirect: "/update_email",
   },
 ];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((muiTheme) => ({
   wrapper: {
     display: "flex",
     justifyContent: "center",
@@ -51,17 +47,24 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
+    margin: muiTheme.spacing(1),
+    backgroundColor: muiTheme.palette.primary.main,
+  },
+  content: {
+    padding: "12px 0",
+  },
+  actions: {
+    [muiTheme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+    },
   },
 }));
 
 const AccountRestoration = () => {
   const classes = useStyles();
-  const globalClasses = globalStyles();
 
   return (
-    <Container className={globalClasses.gridContainer}>
+    <Container>
       <Grid container className={classes.wrapper}>
         <Grid item sm={12} className={classes.headerWrapper}>
           <Avatar className={classes.avatar}>
@@ -71,15 +74,22 @@ const AccountRestoration = () => {
             Account restoration
           </Typography>
         </Grid>
+      </Grid>
+      <Grid container spacing={2} className={classes.content}>
         {RESTORATION_CARDS.map((card) => (
-          <Grid item sm={12} md={3}>
+          <Grid item xs={12} sm={4}>
             <RestorationCard {...card} />
           </Grid>
         ))}
       </Grid>
-      <Grid container>
+      <Grid container className={classes.actions}>
         <Grid item xs>
-          <Link component={RouterLink} to="/login" variant="body2">
+          <Link
+            component={RouterLink}
+            to="/login"
+            variant="body2"
+            color="secondary"
+          >
             Back to login
           </Link>
         </Grid>

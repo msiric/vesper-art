@@ -6,9 +6,18 @@ import Container from "../../domain/Container";
 import { containsErrors, renderError } from "../../utils/helpers";
 
 const Checkout = ({ location }) => {
-  const retry = useOrderCheckout((state) => state.version.error.retry);
-  const redirect = useOrderCheckout((state) => state.version.error.redirect);
-  const message = useOrderCheckout((state) => state.version.error.message);
+  const versionRetry = useOrderCheckout((state) => state.version.error.retry);
+  const versionRedirect = useOrderCheckout(
+    (state) => state.version.error.redirect
+  );
+  const versionMessage = useOrderCheckout(
+    (state) => state.version.error.message
+  );
+  const ordersRetry = useOrderCheckout((state) => state.orders.error.retry);
+  const ordersRedirect = useOrderCheckout(
+    (state) => state.orders.error.redirect
+  );
+  const ordersMessage = useOrderCheckout((state) => state.orders.error.message);
   const resetArtwork = useOrderCheckout((state) => state.resetArtwork);
 
   const reinitializeState = () => {
@@ -21,13 +30,31 @@ const Checkout = ({ location }) => {
     };
   }, []);
 
-  return !containsErrors(retry, redirect) ? (
+  return !containsErrors(
+    versionRetry,
+    versionRedirect,
+    ordersRetry,
+    ordersRedirect
+  ) ? (
     <Container key={location.key}>
       <MainHeading text={"Checkout"} />
       <CheckoutContent />
     </Container>
   ) : (
-    renderError({ retry, redirect, message })
+    renderError(
+      {
+        retry: versionRetry,
+        redirect: versionRedirect,
+        message: versionMessage,
+        reinitializeState,
+      },
+      {
+        retry: ordersRetry,
+        redirect: ordersRedirect,
+        message: ordersMessage,
+        reinitializeState,
+      }
+    )
   );
 };
 

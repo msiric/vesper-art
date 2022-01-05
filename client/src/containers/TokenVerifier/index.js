@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
-import LoadingSpinner from "../../components/LoadingSpinner/index.js";
+import LoadingSpinner from "../../components/LoadingSpinner/index";
 import { useUserToken } from "../../contexts/local/userToken";
 import Box from "../../domain/Box";
 import Grid from "../../domain/Grid";

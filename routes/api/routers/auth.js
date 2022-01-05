@@ -10,12 +10,12 @@ import {
   resetPassword,
   updateEmail,
   verifyRegisterToken,
-} from "../../../controllers/auth.js";
+} from "../../../controllers/auth";
 import {
   isAuthenticated,
   isNotAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 
@@ -63,6 +63,7 @@ router
     }))
   );
 
+// $TODO only for admin (remove in prod)
 router
   .route("/revoke_token/:userId")
   // $TODO not tested
@@ -89,7 +90,7 @@ router
   );
 
 router
-  .route("/reset_password/:tokenId")
+  .route("/reset_password/user/:userId/token/:tokenId")
   // $TODO not tested
   // implement check params token middleware?
   .post(
@@ -110,7 +111,6 @@ router.route("/resend_token").post(
 router.route("/update_email").post(
   isNotAuthenticated,
   handler(updateEmail, true, (req, res, next) => ({
-    response: res,
     ...req.body,
   }))
 );

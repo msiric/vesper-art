@@ -1,8 +1,5 @@
-import argon2 from "argon2";
-import aws from "aws-sdk";
 import createError from "http-errors";
-import { errors } from "../common/constants";
-import { isObjectEmpty } from "../common/helpers";
+import { isArrayEmpty, isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
   originValidation,
@@ -10,18 +7,20 @@ import {
   preferencesValidation,
   profileValidation,
 } from "../common/validation";
+import { renderEmail } from "../emails/template";
+import { deleteS3Object, getSignedS3Object } from "../lib/s3";
 import {
   deactivateArtworkVersion,
   deactivateExistingArtwork,
   removeArtworkVersion,
-} from "../services/postgres/artwork.js";
+} from "../services/postgres/artwork";
 import { logUserOut } from "../services/postgres/auth";
 import {
   fetchOrdersByArtwork,
   fetchOrdersByBuyer,
   fetchOrdersBySeller,
-} from "../services/postgres/order.js";
-import { fetchStripeBalance } from "../services/postgres/stripe.js";
+} from "../services/postgres/order";
+import { fetchStripeBalance } from "../services/postgres/stripe";
 import {
   addNewIntent,
   addUserAvatar,
@@ -32,7 +31,7 @@ import {
   editUserPassword,
   editUserPreferences,
   editUserProfile,
-  fetchSellerMedia,
+  fetchAllUserArtwork,
   fetchUserArtwork,
   fetchUserByAuth,
   fetchUserById,
@@ -44,28 +43,29 @@ import {
   fetchUserNotifications,
   fetchUserProfile,
   fetchUserPurchases,
+  fetchUserPurchasesWithMedia,
   fetchUserReviews,
   fetchUserSales,
+  fetchUserUploadsWithMedia,
   removeExistingIntent,
   removeUserAvatar,
-} from "../services/postgres/user.js";
-import { sendEmail } from "../utils/email.js";
-import { generateUuids, generateVerificationToken } from "../utils/helpers.js";
-import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
+} from "../services/postgres/user";
+import { sendEmail } from "../utils/email";
+import {
+  formatEmailContent,
+  formatError,
+  formatResponse,
+  generateUuids,
+  generateVerificationToken,
+  hashString,
+  verifyHash,
+} from "../utils/helpers";
+import { AVATAR_SELECTION, USER_SELECTION } from "../utils/selectors";
+import { errors, responses } from "../utils/statuses";
+import { finalizeMediaUpload } from "../utils/upload";
 import { deleteUserNotifications } from "./notification";
 
-aws.config.update({
-  secretAccessKey: process.env.S3_SECRET,
-  accessKeyId: process.env.S3_ID,
-  region: process.env.S3_REGION,
-});
-
-export const getUserProfile = async ({
-  userUsername,
-  cursor,
-  limit,
-  connection,
-}) => {
+export const getUserProfile = async ({ userUsername, connection }) => {
   const foundId = await fetchUserIdByUsername({
     userUsername,
     connection,
@@ -73,15 +73,13 @@ export const getUserProfile = async ({
   const foundUser = await fetchUserProfile({
     userUsername,
     userId: foundId,
-    cursor,
-    limit,
     connection,
   });
-  if (foundUser) return { user: foundUser };
-  throw createError(errors.notFound, "User not found", { expose: true });
+  if (!isObjectEmpty(foundUser)) return { user: foundUser };
+  throw createError(...formatError(errors.userNotFound));
 };
 
-export const getUserArtwork = async ({
+export const getUserArtworkByUsername = async ({
   userUsername,
   cursor,
   limit,
@@ -91,8 +89,26 @@ export const getUserArtwork = async ({
     userUsername,
     connection,
   });
-  const foundArtwork = await fetchUserArtwork({
-    userId: foundId,
+  if (foundId) {
+    const foundArtwork = await fetchUserArtwork({
+      userId: foundId,
+      cursor,
+      limit,
+      connection,
+    });
+    return { artwork: foundArtwork };
+  }
+  throw createError(...formatError(errors.userNotFound));
+};
+
+export const getUserArtworkById = async ({
+  userId,
+  cursor,
+  limit,
+  connection,
+}) => {
+  const foundArtwork = await fetchAllUserArtwork({
+    userId,
     cursor,
     limit,
     connection,
@@ -101,13 +117,28 @@ export const getUserArtwork = async ({
 };
 
 export const getUserUploads = async ({ userId, cursor, limit, connection }) => {
-  const foundArtwork = await fetchUserArtwork({
+  const foundArtwork = await fetchUserUploadsWithMedia({
     userId,
     cursor,
     limit,
     connection,
   });
-  return { artwork: foundArtwork };
+  const formattedUploads = await Promise.all(
+    foundArtwork.map(async (upload) => {
+      const { url, file } = await getSignedS3Object({
+        fileLink: upload.current.media.source,
+        folderName: "artworkMedia/",
+      });
+      return {
+        ...upload,
+        current: {
+          ...upload.current,
+          media: { ...upload.current.media, source: url },
+        },
+      };
+    })
+  );
+  return { artwork: formattedUploads };
 };
 
 export const getUserOwnership = async ({
@@ -116,14 +147,28 @@ export const getUserOwnership = async ({
   limit,
   connection,
 }) => {
-  const foundPurchases = await fetchUserPurchases({
+  const foundPurchases = await fetchUserPurchasesWithMedia({
     userId,
     cursor,
     limit,
     connection,
   });
-  // $TODO change name
-  return { purchases: foundPurchases };
+  const formattedPurchases = await Promise.all(
+    foundPurchases.map(async (purchase) => {
+      const { url, file } = await getSignedS3Object({
+        fileLink: purchase.version.media.source,
+        folderName: "artworkMedia/",
+      });
+      return {
+        ...purchase,
+        version: {
+          ...purchase.version,
+          media: { ...purchase.version.media, source: url },
+        },
+      };
+    })
+  );
+  return { purchases: formattedPurchases };
 };
 
 export const getUserFavorites = async ({
@@ -136,18 +181,19 @@ export const getUserFavorites = async ({
     userUsername,
     connection,
   });
-  if (foundUser.displayFavorites) {
-    const foundFavorites = await fetchUserFavorites({
-      userId: foundUser.id,
-      cursor,
-      limit,
-      connection,
-    });
-    return { favorites: foundFavorites };
+  if (!isObjectEmpty(foundUser)) {
+    if (foundUser.displayFavorites) {
+      const foundFavorites = await fetchUserFavorites({
+        userId: foundUser.id,
+        cursor,
+        limit,
+        connection,
+      });
+      return { favorites: foundFavorites };
+    }
+    throw createError(...formatError(errors.userFavoritesNotAllowed));
   }
-  throw createError(errors.notAllowed, "User keeps favorites private", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 // $TODO ne valja nista
@@ -160,11 +206,13 @@ export const getBuyerStatistics = async ({ userId, connection }) => {
     fetchUserFavorites({ userId, connection }),
     fetchUserPurchases({ userId, connection }),
   ]);
-  console.log("aaa", foundUser, foundFavorites, foundPurchases);
-  return {
-    purchases: foundPurchases,
-    favorites: foundFavorites,
-  };
+  if (!isObjectEmpty(foundUser)) {
+    return {
+      purchases: foundPurchases,
+      favorites: foundFavorites,
+    };
+  }
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const getSellerStatistics = async ({ userId, connection }) => {
@@ -176,13 +224,15 @@ export const getSellerStatistics = async ({ userId, connection }) => {
     fetchUserReviews({ userId, connection }),
     fetchUserSales({ userId, connection }),
   ]);
-  const balance = await fetchStripeBalance({
-    stripeId: foundUser.stripeId,
-    connection,
-  });
-  console.log("aaa", foundUser, foundReviews, foundSales);
-  const { amount } = balance.available[0];
-  return { sales: foundSales, amount, reviews: foundReviews };
+  if (!isObjectEmpty(foundUser)) {
+    const balance = await fetchStripeBalance({
+      stripeId: foundUser.stripeId,
+      connection,
+    });
+    const { amount } = balance.available[0];
+    return { sales: foundSales, amount, reviews: foundReviews };
+  }
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const getUserSales = async ({ userId, start, end, connection }) => {
@@ -214,15 +264,15 @@ export const updateUserOrigin = async ({
 }) => {
   await originValidation.validate({ userBusinessAddress });
   const foundUser = await fetchUserById({ userId, connection });
-  if (foundUser) {
+  if (!isObjectEmpty(foundUser)) {
     await editUserOrigin({
       userId: foundUser.id,
       userBusinessAddress,
       connection,
     });
-    return { message: "User business address updated", expose: true };
+    return formatResponse(responses.businessAddressUpdated);
   }
-  throw createError(errors.notFound, "User not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const updateUserProfile = async ({
@@ -230,10 +280,10 @@ export const updateUserProfile = async ({
   userPath,
   userFilename,
   userMimetype,
-  userData,
+  userDescription,
+  userCountry,
   connection,
 }) => {
-  // $TODO delete S3 images when not being used anymore
   // $TODO Validate data passed to upload
   const avatarUpload = await finalizeMediaUpload({
     filePath: userPath,
@@ -241,71 +291,92 @@ export const updateUserProfile = async ({
     mimeType: userMimetype,
     fileType: "user",
   });
-  await profileValidation.validate(userData);
-  const foundUser = await fetchUserById({ userId, connection });
-  let avatarId = null;
-  if (avatarUpload.fileMedia) {
-    if (foundUser.avatar) {
-      await deleteS3Object({
-        fileLink: foundUser.avatar.source,
-        folderName: "userMedia/",
-      });
-      const updatedAvatar = await editUserAvatar({
-        userId: foundUser.id,
-        avatarUpload,
-        connection,
-      });
-      avatarId = updatedAvatar.raw[0].id;
-    } else {
-      ({ avatarId } = generateUuids({
-        avatarId: null,
-      }));
-      await addUserAvatar({
+  await profileValidation.validate({ userDescription, userCountry });
+  const foundUser = await fetchUserById({
+    userId,
+    selection: [
+      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+    ],
+    connection,
+  });
+  if (!isObjectEmpty(foundUser)) {
+    let avatarId = null;
+    if (avatarUpload.fileMedia) {
+      if (foundUser.avatar) {
+        await deleteS3Object({
+          fileLink: foundUser.avatar.source,
+          folderName: "userMedia/",
+        });
+        const updatedAvatar = await editUserAvatar({
+          userId: foundUser.id,
+          avatarUpload,
+          connection,
+        });
+        avatarId = updatedAvatar.raw[0].id;
+      } else {
+        ({ avatarId } = generateUuids({
+          avatarId: null,
+        }));
+        await addUserAvatar({
+          avatarId,
+          userId: foundUser.id,
+          avatarUpload,
+          connection,
+        });
+      }
+      await editUserProfile({
+        foundUser,
+        userDescription,
+        userCountry,
         avatarId,
-        userId: foundUser.id,
-        avatarUpload,
         connection,
       });
-    }
-    await editUserProfile({
-      foundUser,
-      userData,
-      avatarId,
-      connection,
-    });
-  } else {
-    if (!foundUser.avatar) {
-      avatarId = null;
-    }
-    await editUserProfile({
-      foundUser,
-      userData,
-      avatarId,
-      connection,
-    });
-    if (foundUser.avatar) {
-      await deleteS3Object({
-        fileLink: foundUser.avatar.source,
-        folderName: "userMedia/",
-      });
-      await removeUserAvatar({
-        userId: foundUser.id,
-        avatarId: foundUser.avatar.id,
+    } else {
+      if (!foundUser.avatar) {
+        avatarId = null;
+      }
+      await editUserProfile({
+        foundUser,
+        userDescription,
+        userCountry,
+        avatarId,
         connection,
       });
+      if (foundUser.avatar) {
+        await deleteS3Object({
+          fileLink: foundUser.avatar.source,
+          folderName: "userMedia/",
+        });
+        await removeUserAvatar({
+          userId: foundUser.id,
+          avatarId: foundUser.avatar.id,
+          connection,
+        });
+      }
     }
+    return formatResponse(responses.userDetailsUpdated);
   }
-  return { message: "User details updated", expose: true };
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const getUserSettings = async ({ userId, connection }) => {
   // $TODO Minimize overhead
-  const foundUser = await fetchUserById({ userId, connection });
-  if (foundUser) {
+  const foundUser = await fetchUserById({
+    userId,
+    selection: [
+      ...USER_SELECTION["ESSENTIAL_INFO"](),
+      ...USER_SELECTION["LICENSE_INFO"](),
+      ...USER_SELECTION["DETAILED_INFO"](),
+      ...AVATAR_SELECTION["ESSENTIAL_INFO"](),
+    ],
+    connection,
+  });
+  if (!isObjectEmpty(foundUser)) {
     // $TODO change name
     return { user: foundUser };
   }
-  throw createError(errors.notFound, "User not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 export const getUserNotifications = async ({
@@ -335,7 +406,7 @@ export const createUserIntent = async ({
     intentId,
     connection,
   });
-  return { message: "Intent successfully saved" };
+  return formatResponse(responses.userIntentCreated);
 };
 
 export const deleteUserIntent = async ({ userId, intentId, connection }) => {
@@ -344,39 +415,52 @@ export const deleteUserIntent = async ({ userId, intentId, connection }) => {
     intentId,
     connection,
   });
-  return { message: "Intent successfully deleted" };
+  return formatResponse(responses.userIntentDeleted);
 };
 
 // $TODO Update user context with new data
-export const updateUserEmail = async ({ userId, userEmail, connection }) => {
+export const updateUserEmail = async ({
+  userId,
+  userEmail,
+  response,
+  connection,
+}) => {
   await emailValidation.validate({ userEmail });
-  const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
-  if (emailUsed) {
-    throw createError(
-      errors.conflict,
-      "User with provided email already exists",
-      { expose: true }
-    );
-  } else {
-    const { verificationToken, verificationLink, verificationExpiry } =
-      generateVerificationToken();
+  const foundEmail = await fetchUserIdByEmail({ userEmail, connection });
+  if (!foundEmail) {
+    const {
+      verificationToken,
+      verificationLink,
+      verificationExpiry,
+      verified,
+    } = generateVerificationToken();
     await editUserEmail({
       userId,
       userEmail,
       verificationToken,
       verificationExpiry,
+      verified,
       connection,
+    });
+    const emailValues = formatEmailContent({
+      replacementValues: {
+        heading: "Verify new email",
+        text: "You are receiving this because you have changed your email address. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
+        button: "Confirm email",
+        redirect: verificationLink,
+      },
+      replacementAttachments: [],
     });
     await sendEmail({
       emailReceiver: userEmail,
-      emailSubject: "Please confirm your email",
-      emailContent: `Hello,
-        Please click on the link to verify your email:
-
-        <a href=${verificationLink}>Click here to verify</a>`,
+      emailSubject: "Confirm your email",
+      emailContent: renderEmail({ ...emailValues.formattedProps }),
+      emailAttachments: emailValues.formattedAttachments,
     });
-    return { message: "Email address successfully updated", expose: true };
+    logUserOut(response);
+    return formatResponse(responses.emailAddressUpdated);
   }
+  throw createError(...formatError(errors.emailAlreadyExists));
 };
 
 // needs transaction (done)
@@ -387,33 +471,27 @@ export const updateUserPassword = async ({
   userConfirm,
   connection,
 }) => {
+  await passwordValidation.validate({
+    userCurrent,
+    userPassword,
+    userConfirm,
+  });
   const foundUser = await fetchUserByAuth({ userId, connection });
   if (!isObjectEmpty(foundUser)) {
-    const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
+    if (!foundUser.verified) {
+      throw createError(...formatError(errors.userNotVerified));
+    }
+    const isCurrentValid = await verifyHash(foundUser.password, userCurrent);
     if (!isCurrentValid)
-      throw createError(errors.badRequest, "Current password is incorrect", {
-        expose: true,
-      });
-    const isPasswordValid = await argon2.verify(
-      foundUser.password,
-      userPassword
-    );
+      throw createError(...formatError(errors.currentPasswordIncorrect));
+    const isPasswordValid = await verifyHash(foundUser.password, userPassword);
     if (isPasswordValid)
-      throw createError(
-        errors.badRequest,
-        "New password cannot be identical to the old one",
-        { expose: true }
-      );
-    await passwordValidation.validate({
-      userCurrent,
-      userPassword,
-      userConfirm,
-    });
-    const hashedPassword = await argon2.hash(userPassword);
+      throw createError(...formatError(errors.newPasswordIdentical));
+    const hashedPassword = await hashString(userPassword);
     await editUserPassword({ userId, hashedPassword, connection });
-    return { message: "Password updated successfully", expose: true };
+    return formatResponse(responses.passwordUpdated);
   }
-  throw createError(errors.notFound, "User not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };
 
 // needs transaction (done)
@@ -424,126 +502,24 @@ export const updateUserPreferences = async ({
   connection,
 }) => {
   await preferencesValidation.validate({ userFavorites });
-  await editUserPreferences({ userId, userFavorites, connection });
-  return { message: "Preferences updated successfully", expose: true };
+  const updatedUser = await editUserPreferences({
+    userId,
+    userFavorites,
+    connection,
+  });
+  if (updatedUser.affected !== 0) {
+    return formatResponse(responses.preferencesUpdated);
+  }
+  throw createError(...formatError(errors.userNotFound));
 };
 
-/* const deleteUser = async (req, res, next) => {
-  try {
-    const foundUser = await User.findOne({
-      $and: [{ id: res.locals.user.id }, { active: true }]
-    });
-    if (foundUser) {
-      if (foundUser.avatar.includes(foundUser.id)) {
-        const folderName = 'profileavatars/';
-        const fileName = foundUser.avatar.split('/').slice(-1)[0];
-        const filePath = folderName + fileName;
-        const s3 = new aws.S3();
-        const params = {
-          Bucket: process.env.S3_BUCKET,
-          Key: filePath
-        };
-        await s3.deleteObject(params).promise();
-      }
-      const updatedUser = await User.updateOne(
-        { id: foundUser.id },
-        {
-          $set: {
-            name: 'Deleted User',
-            password: null,
-            avatar: foundUser.gravatar(),
-            description: null,
-            facebookId: null,
-            googleId: null,
-            customWork: false,
-            verificationToken: null,
-            verified: false,
-            resetToken: null,
-            resetExpiry: null,
-            discount: null,
-            inbox: null,
-            notifications: null,
-            rating: null,
-            reviews: null,
-            favorites: null,
-            earnings: null,
-            incomingFunds: null,
-            outgoingFunds: null,
-            escrow: null,
-            active: false
-          }
-        }
-      );
-      if (updatedUser) {
-        req.logout();
-        req.connection.destroy(function(err) {
-          res.json('/');
-        });
-      } else {
-        return res.status(400).json({ message: 'User could not be deleted' });
-      }
-    } else {
-      return res.status(400).json({ message: 'User not found' });
-    }
-  } catch (err) {
-    console.log(err);
-    next(err, res);
-  }
-}; */
-
-// needs testing (better way to update already found user)
-// not tested
-// needs transaction (not tested)
-/* export const deactivateUser = async ({ userId, connection }) => {
-  const foundUser = await fetchUserById({ userId, connection });
-  if (foundUser) {
-    const foundArtwork = await fetchUserArtwork({
-      userId,
-      connection,
-    });
-    for (let artwork of foundArtwork) {
-      const foundOrder = await fetchOrderByVersion({
-        artworkId: artwork.id,
-        versionId: artwork.current.id,
-        connection,
-      });
-      if (!foundOrder.length) {
-        await deleteS3Object({
-          fileLink: artwork.current.cover.source,
-          folderName: "artworkCovers/",
-        });
-
-        await deleteS3Object({
-          fileLink: artwork.current.media.source,
-          folderName: "artworkMedia/",
-        });
-
-        await removeArtworkVersion({
-          versionId: artwork.current.id,
-          connection,
-        });
-      }
-      await deactivateExistingArtwork({ artworkId: artwork.id, connection });
-    }
-    if (foundUser.avatar) {
-      await deleteS3Object({
-        fileLink: foundUser.avatar.source,
-        folderName: "userMedia/",
-      });
-    }
-    await deactivateExistingUser({ userId: foundUser.id, connection });
-    req.logout();
-    req.connection.destroy(function (err) {
-      res.json("/");
-    });
-    return { message: "User deactivated" };
-  }
-  throw createError(400, "User not found");
-}; */
-
 export const deactivateUser = async ({ userId, response, connection }) => {
-  const foundUser = await fetchUserById({ userId, connection });
-  if (foundUser) {
+  const foundUser = await fetchUserById({
+    userId,
+    selection: [...AVATAR_SELECTION["ESSENTIAL_INFO"]()],
+    connection,
+  });
+  if (!isObjectEmpty(foundUser)) {
     const foundArtwork = await fetchUserMedia({
       userId,
       connection,
@@ -554,7 +530,7 @@ export const deactivateUser = async ({ userId, response, connection }) => {
         artworkId: artwork.id,
         connection,
       });
-      if (!foundOrders.length) {
+      if (isArrayEmpty(foundOrders)) {
         const oldVersion = artwork.current;
         await deactivateArtworkVersion({ artworkId: artwork.id, connection });
         await deleteS3Object({
@@ -591,28 +567,7 @@ export const deactivateUser = async ({ userId, response, connection }) => {
     await deleteUserNotifications({ userId: foundUser.id, connection });
     await deactivateExistingUser({ userId: foundUser.id, connection });
     logUserOut(response);
-    return { message: "User account deactivated", expose: true };
+    return formatResponse(responses.userDeactivated);
   }
-  throw createError(errors.notFound, "User not found", { expose: true });
-};
-
-export const getUserMedia = async ({ userId, artworkId, connection }) => {
-  const foundMedia = await fetchSellerMedia({
-    userId,
-    artworkId,
-    connection,
-  });
-  if (foundMedia) {
-    const s3 = new aws.S3({ signatureVersion: "v4" });
-    const file = foundMedia.source.split("/").pop();
-    const params = {
-      Bucket: process.env.S3_BUCKET,
-      Key: `artworkMedia/${file}`,
-      Expires: 60 * 3,
-    };
-    const url = s3.getSignedUrl("getObject", params);
-
-    return { url, file };
-  }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(...formatError(errors.userNotFound));
 };

@@ -9,11 +9,9 @@ import {
 } from "@material-ui/icons";
 import { SnackbarProvider } from "notistack";
 import React, { createRef } from "react";
-import SimpleReactLightbox from "simple-react-lightbox";
-import { useAppStore } from "../../contexts/global/app.js";
-import globalStyles from "../../styles/global";
-import { artepunktTheme } from "../../styles/theme.js";
-import Interceptor from "../Interceptor/Interceptor.js";
+import { useAppStore } from "../../contexts/global/app";
+import { artepunktTheme } from "../../styles/theme";
+import Interceptor from "../Interceptor";
 
 const useStyles = makeStyles(() => ({
   wrapper: {
@@ -42,7 +40,6 @@ const Provider = () => {
 
   const notistackRef = createRef();
 
-  const globalClasses = globalStyles();
   const classes = useStyles();
 
   const iconItems = {
@@ -94,10 +91,8 @@ const Provider = () => {
           </IconButton>
         )}
       >
-        <SimpleReactLightbox>
-          <CssBaseline />
-          <Interceptor />
-        </SimpleReactLightbox>
+        <CssBaseline />
+        <Interceptor />
       </SnackbarProvider>
     </ThemeProvider>
   );

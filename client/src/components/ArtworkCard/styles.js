@@ -11,20 +11,28 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     textDecoration: "none",
     boxShadow: "none",
     position: "relative",
+    minHeight: 160,
+    maxHeight: 600,
     "&:hover": {
       "& $header": {
-        height: 60,
+        height: 44,
       },
       "& $footer": {
-        height: 60,
+        height: 44,
+      },
+      "& $imageContainer": {
+        filter: "blur(6px)",
+        opacity: 0.5,
       },
     },
   },
+  imageContainer: {
+    height: "100%",
+    width: "100%",
+    transition: "opacity 0.5s, filter 0.5s",
+  },
   header: {
-    "& div": {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
+    "&>div": {
       overflow: "hidden",
       padding: 12,
     },
@@ -33,7 +41,6 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     padding: 0,
     position: "absolute",
     top: 0,
-    backgroundColor: "rgba(0,0,0,0.5)",
     transition: "height 0.5s",
     display: "flex",
     justifyContent: "left",
@@ -46,11 +53,10 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
       color: "white",
     },
     width: "100%",
+    padding: "0 12px",
     height: 0,
-    padding: 0,
     position: "absolute",
     bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.5)",
     transition: "height 0.5s",
     display: "flex",
     justifyContent: "space-between",
@@ -58,22 +64,42 @@ const artworkCardStyles = makeStyles((muiTheme) => ({
     overflow: "hidden",
     zIndex: 100,
   },
+  labelWrapper: {
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+  },
   buttonWrapper: {
     display: "flex",
   },
   title: {
     color: "white",
     textDecoration: "none",
+    fontSize: "1rem",
+    fontWeight: "bold",
     "&:hover": {
       textDecoration: "underline",
+    },
+    [muiTheme.breakpoints.down("md")]: {
+      fontSize: "0.8rem",
     },
   },
   owner: {
     color: "white",
     textDecoration: "none",
+    fontSize: "0.8rem",
     "&:hover": {
       textDecoration: "underline",
     },
+    [muiTheme.breakpoints.down("md")]: {
+      fontSize: "0.8rem",
+    },
+  },
+  priceWrapper: {
+    padding: 0,
+  },
+  price: {
+    fontSize: "0.8rem",
   },
   button: {
     color: "white",

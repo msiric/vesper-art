@@ -1,10 +1,10 @@
 import React from "react";
+import { formatArtworkPrice } from "../../../../common/helpers";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
 import Typography from "../../domain/Typography";
-import CurrencyValue from "../CurrencyValue/index.js";
-import dashboardCardStyles from "./styles.js";
+import dashboardCardStyles from "./styles";
 
 const DashboardCard = ({ currency, data, label, loading }) => {
   const classes = dashboardCardStyles();
@@ -12,17 +12,15 @@ const DashboardCard = ({ currency, data, label, loading }) => {
   return (
     <Card className={classes.container}>
       <CardContent className={classes.dataWrapper}>
-        {currency ? (
-          <CurrencyValue
-            loading={loading}
-            value={data}
-            className={classes.value}
-          />
-        ) : (
-          <Typography className={classes.data} loading={loading}>
-            {data || 0}
-          </Typography>
-        )}
+        <Typography className={classes.data} loading={loading}>
+          {formatArtworkPrice({
+            price: data,
+            prefix: currency ? "$" : "",
+            freeFormat: currency ? "$0" : 0,
+            withPrecision: currency,
+            withAbbreviation: currency,
+          })}
+        </Typography>
       </CardContent>
       <Divider />
       <CardContent className={classes.labelWrapper}>

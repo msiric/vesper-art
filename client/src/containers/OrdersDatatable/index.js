@@ -1,11 +1,11 @@
 import { Rating } from "@material-ui/lab";
 import React, { useEffect } from "react";
-import { formatDate } from "../../../../common/helpers.js";
-import ArtworkThumbnail from "../../components/ArtworkThumbnail/index.js";
-import Datatable from "../../components/DataTable/index.js";
-import EmptySection from "../../components/EmptySection/index.js";
+import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
+import ArtworkThumbnail from "../../components/ArtworkThumbnail/index";
+import Datatable from "../../components/DataTable/index";
+import EmptySection from "../../components/EmptySection/index";
 import { useUserOrders } from "../../contexts/local/userOrders";
-import { renderUserData } from "../../utils/helpers.js";
+import { renderUserData } from "../../utils/helpers";
 
 const OrdersDatatable = () => {
   const orders = useUserOrders((state) => state.orders.data);
@@ -39,19 +39,23 @@ const OrdersDatatable = () => {
         {
           name: "Title",
           options: {
-            sortCompare: (order) => (obj1, obj2) =>
-              obj1.data.localeCompare(obj2.data, "en", {
-                numeric: true,
-              }) * (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                previous.localeCompare(next, "en", {
+                  numeric: true,
+                }) * (order === "asc" ? 1 : -1),
           },
         },
         {
           name: display === "purchases" ? "Seller" : "Buyer",
           options: {
-            sortCompare: (order) => (obj1, obj2) =>
-              obj1.data.localeCompare(obj2.data, "en", {
-                numeric: true,
-              }) * (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                previous.localeCompare(next, "en", {
+                  numeric: true,
+                }) * (order === "asc" ? 1 : -1),
             customBodyRender: (value) =>
               renderUserData({ data: value, isUsername: true }),
           },
@@ -59,9 +63,23 @@ const OrdersDatatable = () => {
         {
           name: "Amount",
           options: {
-            customBodyRender: (value) => (value ? `$${value}` : "Free"),
-            sortCompare: (order) => ({ data: previous }, { data: next }) =>
-              (previous - next) * (order === "asc" ? 1 : -1),
+            customBodyRender: (value) =>
+              formatArtworkPrice({ price: value, withPrecision: true }),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                (previous - next) * (order === "asc" ? 1 : -1),
+          },
+        },
+        {
+          name: "Assignee",
+          options: {
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                previous.localeCompare(next, "en", {
+                  numeric: true,
+                }) * (order === "asc" ? 1 : -1),
           },
         },
         {
@@ -69,18 +87,22 @@ const OrdersDatatable = () => {
           options: {
             customBodyRender: (value) =>
               value ? <Rating value={value.rating} readOnly /> : "Not rated",
-            sortCompare: (order) => ({ data: previous }, { data: next }) =>
-              ((previous ? previous.rating : 0) - (next ? next.rating : 0)) *
-              (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                ((previous ? previous.rating : 0) - (next ? next.rating : 0)) *
+                (order === "asc" ? 1 : -1),
           },
         },
         {
           name: "Date",
           options: {
             customBodyRender: (value) => formatDate(value, "dd/MM/yy HH:mm"),
-            sortCompare: (order) => ({ data: previous }, { data: next }) =>
-              (new Date(previous).getTime() - new Date(next).getTime()) *
-              (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                (new Date(previous).getTime() - new Date(next).getTime()) *
+                (order === "asc" ? 1 : -1),
           },
         },
         ,
@@ -93,6 +115,11 @@ const OrdersDatatable = () => {
           ? order.seller && order.seller.name
           : order.buyer && order.buyer.name,
         display === "purchases" ? order.spent : order.earned,
+        display === "purchases"
+          ? order.license.usage === "business"
+            ? order.license.company
+            : order.license.assignee
+          : "Hidden",
         order.review,
         order.created,
       ])}
@@ -104,6 +131,7 @@ const OrdersDatatable = () => {
       searchable={true}
       pagination={true}
       addOptions={{ enabled: false, title: "", route: "" }}
+      customPadding={true}
     />
   );
 };

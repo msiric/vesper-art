@@ -1,18 +1,19 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CardActions, CardContent } from "@material-ui/core";
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
+import { CheckRounded as SaveIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import { emailValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
 import Card from "../../domain/Card";
-import EmailForm from "../../forms/EmailForm/index.js";
-import { socket } from "../Interceptor/Interceptor";
-import settingsAccountStyles from "./styles.js";
+import EmailForm from "../../forms/EmailForm/index";
+import { socket } from "../Interceptor";
+import settingsAccountStyles from "./styles";
 
 const SettingsAccount = ({ handleLogout }) => {
   const resetUser = useUserStore((state) => state.resetUser);
@@ -30,18 +31,26 @@ const SettingsAccount = ({ handleLogout }) => {
     userEmail: loading ? "" : user.email,
   });
 
-  const { handleSubmit, formState, errors, control, reset } = useForm({
-    defaultValues: setDefaultValues(),
-    resolver: yupResolver(emailValidation),
-  });
+  const { handleSubmit, getValues, formState, errors, control, watch, reset } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(emailValidation),
+    });
 
   const onSubmit = async (values) => {
-    await updateEmail({ userId: user.id, values, handleLogout });
-    socket.instance.emit("disconnectUser");
-    resetUser();
-    resetEvents();
-    history.push("/login");
+    try {
+      await updateEmail({ userId: user.id, values, handleLogout });
+      socket.instance.emit("disconnectUser");
+      resetUser();
+      resetEvents();
+      history.push("/login");
+    } catch (err) {}
   };
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   useEffect(() => {
     reset(setDefaultValues());
@@ -59,8 +68,9 @@ const SettingsAccount = ({ handleLogout }) => {
               type="submit"
               fullWidth
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
               loading={loading}
-              startIcon={<UploadIcon />}
+              startIcon={<SaveIcon />}
             >
               Save
             </AsyncButton>

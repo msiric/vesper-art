@@ -1,23 +1,22 @@
 import express from "express";
 import createError from "http-errors";
-import { errors } from "../../common/constants.js";
-import stripe from "./routers/stripe.js";
+import { statusCodes } from "../../common/constants";
+import { handleDelegatedError } from "../../utils/helpers";
+import { errors } from "../../utils/statuses";
+import stripe from "./routers/stripe";
 
 const router = express.Router();
 
 router.use("/", stripe);
 
 router.use((req, res, next) => {
-  createError(errors.internalError, "An error occurred");
+  createError(statusCodes.internalError, errors.internalServerError.message);
 });
 
 router.use((err, req, res, next) => {
-  res.status(err.status || errors.internalError);
-  res.json({
-    status_code: err.status || errors.internalError,
-    error: err.message || "An error occurred",
-    expose: !!err.expose,
-  });
+  const error = handleDelegatedError({ err });
+  res.status(error.status);
+  res.json({ ...error });
 });
 
 export default router;

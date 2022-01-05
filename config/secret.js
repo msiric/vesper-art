@@ -11,6 +11,15 @@ dotenv.config({
   path: path.resolve(__rootdir, `.env.${process.env.NODE_ENV || "local"}`),
 });
 
+export const ENV_OPTIONS = {
+  LOCAL: "local",
+  TEST: "test",
+  DEVELOPMENT: "development",
+  PRODUCTION: "production",
+};
+
+export const environment = process.env.NODE_ENV;
+
 export const domain = {
   client: process.env.CLIENT_URI || "http://localhost:3000",
   server: process.env.SERVER_URI || "http://localhost:5000",
@@ -31,15 +40,41 @@ export const stripe = {
   clientId: process.env.STRIPE_CLIENT,
   authorizeUri: process.env.STRIPE_AUTHORIZE_URI,
   tokenUri: process.env.STRIPE_TOKEN_URI,
+  webhookSecret: process.env.STRIPE_WEBHOOK,
 };
 
 export const mailer = {
+  host: process.env.MAILER_HOST,
   sender: process.env.MAILER_SENDER,
-  email: process.env.MAILER_MAIL,
-  password: process.env.MAILER_PASS,
+  secure: environment === ENV_OPTIONS.TEST ? false : true,
+  auth: {
+    user: process.env.MAILER_MAIL,
+    pass: process.env.MAILER_PASS,
+  },
+};
+
+export const aws = {
+  secretAccessKey: process.env.S3_SECRET,
+  accessKeyId: process.env.S3_ID,
+  region: process.env.S3_REGION,
+  bucket: process.env.S3_BUCKET,
+  signatureVersion: "v4",
+  expires: 180,
+};
+
+export const tokens = {
+  accessToken: process.env.ACCESS_TOKEN_SECRET,
+  accessExpiry: process.env.ACCESS_TOKEN_EXPIRY,
+  refreshToken: process.env.REFRESH_TOKEN_SECRET,
+  refreshExpiry: process.env.REFRESH_TOKEN_EXPIRY,
 };
 
 export const uuid = {
   version: 4,
   import: "v4",
+};
+
+export const admin = {
+  username: process.env.ADMIN_USERNAME,
+  password: process.env.ADMIN_PASSWORD,
 };

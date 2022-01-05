@@ -1,4 +1,4 @@
-import { ax } from "../containers/Interceptor/Interceptor.js";
+import { ax } from "../containers/Interceptor";
 
 export const getUser = {
   request: async ({ userUsername }) =>
@@ -53,6 +53,21 @@ export const getUploads = {
     await ax.get(
       `/api/users/${userId}/uploads?cursor=${cursor}&limit=${limit}`
     ),
+  success: { message: "User artwork successfully fetched", variant: "success" },
+  error: { message: "Failed to fetch user artwork", variant: "error" },
+};
+export const getMyArtwork = {
+  request: async ({ userId, cursor = "", limit = "" }) =>
+    await ax.get(
+      `/api/users/${userId}/my_artwork?cursor=${cursor}&limit=${limit}`
+    ),
+  success: { message: "User artwork successfully fetched", variant: "success" },
+  error: { message: "Failed to fetch user artwork", variant: "error" },
+};
+export const getCollection = {
+  // datatable (cursor, limit not needed)
+  request: async ({ userId, cursor = "", limit = "" }) =>
+    await ax.get(`/api/users/${userId}/collection`),
   success: { message: "User artwork successfully fetched", variant: "success" },
   error: { message: "Failed to fetch user artwork", variant: "error" },
 };
@@ -150,13 +165,4 @@ export const postCheckout = {
     await ax.post(`/api/users/${userId}/intents`, data),
   success: { message: "Intent successfully stored", variant: "success" },
   error: { message: "Failed to store intent", variant: "error" },
-};
-export const getMedia = {
-  request: async ({ userId, artworkId }) =>
-    await ax.get(`/api/users/${userId}/artwork/${artworkId}/download`),
-  success: {
-    message: "Artwork media successfully fetched",
-    variant: "success",
-  },
-  error: { message: "Failed to fetch artwork media", variant: "error" },
 };

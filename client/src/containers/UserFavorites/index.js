@@ -1,19 +1,13 @@
 import React from "react";
 import Masonry from "react-masonry-css";
-import ArtworkCard from "../../components/ArtworkCard/index.js";
-import InfiniteList from "../../components/InfiniteList/index.js";
+import { breakpointsFixedWidth } from "../../common/constants";
+import ArtworkCard from "../../components/ArtworkCard/index";
+import InfiniteList from "../../components/InfiniteList/index";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import Box from "../../domain/Box";
-import userFavoritesStyles from "./styles.js";
+import userFavoritesStyles from "./styles";
 
-const breakpointColumns = {
-  default: 4,
-  1100: 3,
-  700: 2,
-  500: 1,
-};
-
-const UserFavorites = ({ fixed }) => {
+const UserFavorites = ({ userUsername, shouldPause, type, fixed }) => {
   const elements = useUserArtwork((state) => state.favorites.data);
   const hasMore = useUserArtwork((state) => state.favorites.hasMore);
   const loading = useUserArtwork((state) => state.favorites.loading);
@@ -24,24 +18,27 @@ const UserFavorites = ({ fixed }) => {
   const classes = userFavoritesStyles();
 
   return (
-    <Box>
+    <Box className={classes.container}>
       <InfiniteList
         dataLength={elements ? elements.length : 0}
-        next={fetchFavorites}
+        next={() => fetchFavorites({ userUsername })}
         hasMore={hasMore}
-        loading={loading || fetching}
+        loading={loading}
+        fetching={fetching}
+        shouldPause={shouldPause}
         error={error.refetch}
         empty="No favorites yet"
+        type="masonry"
       >
         <Masonry
-          breakpointCols={breakpointColumns}
+          breakpointCols={breakpointsFixedWidth}
           className={classes.masonry}
           columnClassName={classes.column}
         >
           {elements.map((artwork) => (
             <ArtworkCard
               artwork={artwork}
-              type="favorite"
+              type={type}
               fixed={fixed}
               loading={loading}
             />

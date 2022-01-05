@@ -8,11 +8,19 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
+import {
+  Facebook as FacebookIcon,
+  Instagram as InstagramIcon,
+  Reddit as RedditIcon,
+  Twitter as TwitterIcon,
+} from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { appName } from "../../../../common/constants";
-import LogoDesktop from "../../assets/images/logo/logo-desktop.svg";
-import footerStyles from "./styles.js";
+import { socialLinks } from "../../common/constants";
+import LogoItem from "../../components/LogoItem";
+import IconButton from "../../domain/IconButton";
+import footerStyles from "./styles";
 
 const Footer = () => {
   const classes = footerStyles();
@@ -20,26 +28,13 @@ const Footer = () => {
   const history = useHistory();
 
   return (
-    // old
-    // <footer className={classes.footerContainer}>
-    //   <Container>
-    //     <Typography variant="body2" color="textSecondary">
-    //       {"Copyright © "}
-    //       <Link color="inherit" href="https://material-ui.com/">
-    //         Material UI
-    //       </Link>{" "}
-    //       {new Date().getFullYear()}
-    //       {"."}
-    //     </Typography>
-    //   </Container>
-    // </footer>
     <footer className={classes.container}>
-      <Toolbar>
+      <Toolbar disableGutters>
         <Container>
           <Grid container className={classes.navigation}>
             <Grid item className={classes.item}>
               <Typography variant="h6" className={classes.heading}>
-                Who are we
+                About
               </Typography>
               <List>
                 <ListItem disableGutters>
@@ -57,7 +52,7 @@ const Footer = () => {
                     component={RouterLink}
                     to="/about"
                   >
-                    About
+                    {`What is ${appName}`}
                   </Typography>
                 </ListItem>
                 <ListItem disableGutters>
@@ -94,9 +89,9 @@ const Footer = () => {
                   <Typography
                     className={classes.link}
                     component={RouterLink}
-                    to="/community_guidelines"
+                    to="/license_information"
                   >
-                    Trust &amp; safety
+                    License information
                   </Typography>
                 </ListItem>
               </List>
@@ -110,9 +105,9 @@ const Footer = () => {
                   <Typography
                     className={classes.link}
                     component={RouterLink}
-                    to="/support"
+                    to="/faq"
                   >
-                    FAQ &amp; support
+                    FAQ
                   </Typography>
                 </ListItem>
                 <ListItem disableGutters>
@@ -121,7 +116,7 @@ const Footer = () => {
                     component={RouterLink}
                     to="/contact"
                   >
-                    Contact us
+                    Reach out
                   </Typography>
                 </ListItem>
               </List>
@@ -131,35 +126,52 @@ const Footer = () => {
                 Connect
               </Typography>
               <List>
-                <Typography
-                  className={classes.link}
-                  component={RouterLink}
-                  to=""
-                ></Typography>
-                <Typography
-                  className={classes.link}
-                  component={RouterLink}
-                  to=""
-                ></Typography>
+                <IconButton
+                  aria-label="Facebook"
+                  href={socialLinks.facebook}
+                  className={classes.button}
+                >
+                  <FacebookIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="Instagram"
+                  href={socialLinks.instagram}
+                  className={classes.button}
+                >
+                  <InstagramIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="Twitter"
+                  href={socialLinks.twitter}
+                  className={classes.button}
+                >
+                  <TwitterIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="Reddit"
+                  href={socialLinks.reddit}
+                  className={classes.button}
+                >
+                  <RedditIcon />
+                </IconButton>
               </List>
             </Grid>
           </Grid>
           <Divider />
-          <Grid container className={classes.dislaimers}>
+          <Grid container className={classes.disclaimers}>
             <Grid item xs={12} sm={6} className={classes.copyright}>
-              <img
-                src={LogoDesktop}
-                alt="Logo"
-                onClick={() => history.push("/")}
-                className={classes.logo}
-              />
+              <LogoItem />
               <Typography className={classes.link} component={RouterLink} to="">
                 Copyright &copy; {new Date().getFullYear()}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} className={classes.disclosures}>
-              <Link to={""}>Privacy Policy</Link>{" "}
-              <Link to={""}>Terms of Service</Link>{" "}
+              <Link component={RouterLink} to="/privacy_policy">
+                Privacy Policy
+              </Link>
+              <Link component={RouterLink} to={"/terms_of_service"}>
+                Terms of Service
+              </Link>
             </Grid>
           </Grid>
         </Container>

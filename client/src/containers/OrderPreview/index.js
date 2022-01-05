@@ -1,12 +1,11 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import ImageWrapper from "../../components/ImageWrapper/index.js";
+import ImageWrapper from "../../components/ImageWrapper/index";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
-import Divider from "../../domain/Divider";
 import Typography from "../../domain/Typography";
-import orderPreviewStyles from "./styles.js";
+import orderPreviewStyles from "./styles";
 
 const OrderPreview = () => {
   const version = useOrderDetails((state) => state.order.data.version);
@@ -16,7 +15,7 @@ const OrderPreview = () => {
   const classes = orderPreviewStyles();
 
   return (
-    <Card>
+    <Card className={classes.container}>
       <Box className={classes.wrapper}>
         <ImageWrapper
           height={version.cover.height || 500}
@@ -25,13 +24,12 @@ const OrderPreview = () => {
           loading={loading}
         />
       </Box>
-      <Divider />
       <Box>
         <Typography className={classes.title} loading={loading}>{`${
           version.title
         }, ${new Date(version.created).getFullYear()}`}</Typography>
         <Typography variant="body2" loading={loading}>
-          {version.description || "Loading..."}
+          {version.description || "No description"}
         </Typography>
       </Box>
     </Card>

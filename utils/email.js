@@ -1,35 +1,34 @@
 import createError from "http-errors";
 import nodemailer from "nodemailer";
-import { errors } from "../common/constants.js";
-import { mailer } from "../config/secret.js";
+import { mailer } from "../config/secret";
+import { formatError } from "./helpers";
+import { errors } from "./statuses";
 
 export const sendEmail = async ({
   emailSender = mailer.sender,
   emailReceiver,
   emailSubject,
   emailContent,
+  emailAttachments,
 }) => {
   try {
     const smtpTransport = nodemailer.createTransport({
       // smtp.zoho.com or smtp.zoho.eu for eu data server
-      host: "smtp.zoho.eu",
-      secure: true,
-      auth: {
-        user: mailer.email,
-        pass: mailer.password,
-      },
+      host: mailer.host,
+      secure: mailer.secure,
+      auth: mailer.auth,
     });
     const mailOptions = {
       from: emailSender,
       to: emailReceiver,
       subject: emailSubject,
       html: emailContent,
+      attachments: emailAttachments,
     };
-    await smtpTransport.sendMail(mailOptions);
+    const sentEmail = await smtpTransport.sendMail(mailOptions);
+    return sentEmail;
   } catch (err) {
     console.log(err);
-    throw createError(errors.internalError, "Email failed to send", {
-      expose: true,
-    });
+    throw createError(...formatError(errors.emailNotSent));
   }
 };

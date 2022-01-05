@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import MainHeading from "../../components/MainHeading/index.js";
-import ArtworkCreator from "../../containers/ArtworkCreator/index.js";
+import MainHeading from "../../components/MainHeading/index";
+import ArtworkCreator from "../../containers/ArtworkCreator/index";
 import { useArtworkCreate } from "../../contexts/local/artworkCreate";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import globalStyles from "../../styles/global.js";
-import { containsErrors, renderError } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const AddArtwork = () => {
   const retry = useArtworkCreate((state) => state.capabilities.error.retry);
@@ -31,18 +31,13 @@ const AddArtwork = () => {
 
   return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
-      <Grid container spacing={2}>
-        <Grid item sm={12}>
-          <MainHeading
-            text="Add artwork"
-            className={globalClasses.mainHeading}
-          />
-          <ArtworkCreator />
-        </Grid>
+      <Grid item sm={12}>
+        <MainHeading text="Add artwork" className={globalClasses.mainHeading} />
+        <ArtworkCreator />
       </Grid>
     </Container>
   ) : (
-    renderError({ retry, redirect, message })
+    renderError({ retry, redirect, message, reinitializeState })
   );
 };
 

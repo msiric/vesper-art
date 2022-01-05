@@ -5,10 +5,16 @@ const helpBoxStyles = makeStyles((muiTheme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "column",
     border: "1px solid",
-    borderRadius: 4,
+    borderRadius: muiTheme.shape.borderRadius,
     padding: 8,
     width: "100%",
+  },
+  wrapper: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   label: {
     fontWeight: "bold",

@@ -7,7 +7,11 @@ import {
   patchComment,
   postComment,
 } from "../../services/artwork";
-import { resolveAsyncError, resolvePaginationId } from "../../utils/helpers";
+import {
+  resolveAsyncError,
+  resolvePaginationId,
+  scrollToHighlight,
+} from "../../utils/helpers";
 
 const initialState = {
   comments: {
@@ -38,14 +42,6 @@ const initialState = {
     open: false,
   },
   isDeleting: false,
-};
-
-const scrollToHighlight = (highlightRef) => {
-  if (highlightRef.current)
-    highlightRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
 };
 
 const fetchHighlight = async (artworkId, commentId) => {
@@ -128,18 +124,15 @@ const initActions = (set, get) => ({
         cursor: comments.cursor,
         limit: comments.limit,
       });
-      const {
-        highlightData,
-        foundHighlight,
-        fetchedHighlight,
-      } = await resolveHighlight(
-        artworkId,
-        comments,
-        data.comments,
-        query,
-        highlight,
-        enqueueSnackbar
-      );
+      const { highlightData, foundHighlight, fetchedHighlight } =
+        await resolveHighlight(
+          artworkId,
+          comments,
+          data.comments,
+          query,
+          highlight,
+          enqueueSnackbar
+        );
       set((state) => ({
         ...state,
         comments: {
@@ -227,10 +220,7 @@ const initActions = (set, get) => ({
     try {
       set((state) => ({
         ...state,
-        comments: {
-          ...state.comments,
-          isDeleting: true,
-        },
+        isDeleting: true,
       }));
       await deleteComment.request({
         artworkId,

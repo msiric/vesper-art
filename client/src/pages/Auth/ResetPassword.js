@@ -1,24 +1,24 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { makeStyles } from "@material-ui/core/styles";
-import { KeyboardRounded as ResetAvatar } from "@material-ui/icons";
+import {
+  KeyboardRounded as ResetAvatar,
+  RotateLeftOutlined as PasswordIcon,
+} from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link, useHistory } from "react-router-dom";
-import { passwordValidation } from "../../../../common/validation";
+import { useHistory } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
+import { resetValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton";
-import SyncButton from "../../components/SyncButton";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
-import CardActions from "../../domain/CardActions";
-import CardContent from "../../domain/CardContent";
 import Container from "../../domain/Container";
 import Typography from "../../domain/Typography";
-import EditPasswordForm from "../../forms/PasswordForm/index.js";
-import { postReset } from "../../services/auth.js";
+import ResetPasswordForm from "../../forms/ResetForm";
+import { postReset } from "../../services/auth";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
-    marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -27,13 +27,17 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
   },
-  actions: {
-    display: "flex",
-    justifyContent: "space-between",
+  form: {
+    width: "100%",
   },
 }));
 
 const ResetPassword = ({ match }) => {
+  const setDefaultValues = () => ({
+    userPassword: "",
+    userConfirm: "",
+  });
+
   const {
     handleSubmit,
     formState,
@@ -44,12 +48,8 @@ const ResetPassword = ({ match }) => {
     getValues,
     watch,
   } = useForm({
-    defaultValues: {
-      userCurrent: "",
-      userPassword: "",
-      userConfirm: "",
-    },
-    resolver: yupResolver(passwordValidation),
+    defaultValues: setDefaultValues(),
+    resolver: yupResolver(resetValidation),
   });
 
   const history = useHistory();
@@ -58,7 +58,11 @@ const ResetPassword = ({ match }) => {
 
   const onSubmit = async (values) => {
     try {
-      await postReset.request({ resetToken: match.params.id, data: values });
+      await postReset.request({
+        userId: match.params.userId,
+        resetToken: match.params.tokenId,
+        data: values,
+      });
       history.push({
         pathname: "/login",
         state: { message: "Password successfully changed" },
@@ -67,6 +71,11 @@ const ResetPassword = ({ match }) => {
       console.log(err);
     }
   };
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   return (
     <Container component="main" maxWidth="xs">
@@ -77,26 +86,25 @@ const ResetPassword = ({ match }) => {
         <Typography component="h1" variant="h5">
           Reset your password
         </Typography>
-
         <FormProvider control={control}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <CardContent>
-              <EditPasswordForm
-                errors={errors}
-                setValue={setValue}
-                trigger={trigger}
-                getValues={getValues}
-                watch={watch}
-              />
-            </CardContent>
-            <CardActions className={classes.actions}>
-              <SyncButton component={Link} to="/login" color="primary">
-                Log in
-              </SyncButton>
-              <AsyncButton type="submit" disabled={formState.isSubmitting}>
-                Reset password
-              </AsyncButton>
-            </CardActions>
+          <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+            <ResetPasswordForm
+              errors={errors}
+              setValue={setValue}
+              trigger={trigger}
+              getValues={getValues}
+              watch={watch}
+            />
+            <AsyncButton
+              type="submit"
+              fullWidth
+              padding
+              submitting={formState.isSubmitting}
+              disabled={isDisabled}
+              startIcon={<PasswordIcon />}
+            >
+              Reset password
+            </AsyncButton>
           </form>
         </FormProvider>
       </Box>

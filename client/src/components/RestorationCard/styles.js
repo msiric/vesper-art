@@ -2,10 +2,19 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const restorationCardStyles = makeStyles((muiTheme) => ({
   container: {
-    margin: 24,
+    background: "transparent",
+    boxShadow: "none",
+    border: "1px solid",
+    margin: "12px 0",
+    [muiTheme.breakpoints.down("xs")]: {
+      margin: "12px 15%",
+    },
+    [muiTheme.breakpoints.down(450)]: {
+      margin: "12px 0",
+    },
   },
   wrapper: {
-    padding: "32px 24px",
+    padding: 12,
   },
   illustration: {
     width: "55%",
@@ -32,7 +41,7 @@ const restorationCardStyles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     alignItems: "center",
     textAlign: "center",
-    padding: 0,
+    padding: "0 10px",
     "&>h2": {
       fontWeight: "bold",
     },

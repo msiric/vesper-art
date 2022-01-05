@@ -1,12 +1,12 @@
 import createError from "http-errors";
-import { errors } from "../common/constants";
 import {
   formatArtworkValues,
+  isArrayEmpty,
+  isFormAltered,
   isObjectEmpty,
-  isVersionDifferent,
-  verifyVersionValidity,
 } from "../common/helpers";
 import { artworkValidation } from "../common/validation";
+import { deleteS3Object } from "../lib/s3";
 import {
   addNewArtwork,
   addNewCover,
@@ -17,25 +17,33 @@ import {
   deactivateExistingArtwork,
   fetchActiveArtworks,
   fetchArtworkById,
-  fetchArtworkByOwner,
   fetchArtworkComments,
   fetchArtworkDetails,
+  fetchArtworkEdit,
   fetchArtworkMedia,
   fetchFavoriteByParents,
   fetchFavoritesCount,
-  fetchUserArtworks,
   removeArtworkVersion,
   removeExistingFavorite,
   updateArtworkVersion,
-} from "../services/postgres/artwork.js";
+} from "../services/postgres/artwork";
 import {
   fetchOrderByVersion,
   fetchOrdersByArtwork,
-} from "../services/postgres/order.js";
-import { fetchStripeAccount } from "../services/postgres/stripe.js";
-import { fetchUserById } from "../services/postgres/user.js";
-import { generateUuids } from "../utils/helpers.js";
-import { deleteS3Object, finalizeMediaUpload } from "../utils/upload.js";
+} from "../services/postgres/order";
+import { fetchStripeAccount } from "../services/postgres/stripe";
+import { fetchUserById } from "../services/postgres/user";
+import {
+  formatArtworkPrices,
+  formatError,
+  formatResponse,
+  formattedArtworkKeys,
+  generateUuids,
+  verifyVersionValidity,
+} from "../utils/helpers";
+import { USER_SELECTION } from "../utils/selectors";
+import { errors, responses } from "../utils/statuses";
+import { finalizeMediaUpload } from "../utils/upload";
 
 export const getArtwork = async ({ cursor, limit, connection }) => {
   const foundArtwork = await fetchActiveArtworks({
@@ -46,21 +54,23 @@ export const getArtwork = async ({ cursor, limit, connection }) => {
   return { artwork: foundArtwork };
 };
 
-// $TODO how to handle limiting comments?
-export const getArtworkDetails = async ({
-  artworkId,
-  cursor,
-  limit,
-  connection,
-}) => {
+export const getArtworkDetails = async ({ artworkId, connection }) => {
   const foundArtwork = await fetchArtworkDetails({
     artworkId,
-    cursor,
-    limit,
     connection,
   });
   if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(...formatError(errors.artworkNotFound));
+};
+
+export const getArtworkEdit = async ({ userId, artworkId, connection }) => {
+  const foundArtwork = await fetchArtworkEdit({
+    userId,
+    artworkId,
+    connection,
+  });
+  if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const getArtworkComments = async ({
@@ -76,27 +86,6 @@ export const getArtworkComments = async ({
     connection,
   });
   return { comments: foundComments };
-};
-
-// $TODO handle in user controller?
-export const getUserArtwork = async ({ userId, cursor, limit, connection }) => {
-  const foundArtwork = await fetchUserArtworks({
-    userId,
-    cursor,
-    limit,
-    connection,
-  });
-  return { artwork: foundArtwork };
-};
-
-export const editArtwork = async ({ userId, artworkId, connection }) => {
-  const foundArtwork = await fetchArtworkByOwner({
-    artworkId,
-    userId,
-    connection,
-  });
-  if (!isObjectEmpty(foundArtwork)) return { artwork: foundArtwork };
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
 };
 
 export const postNewArtwork = async ({
@@ -122,62 +111,61 @@ export const postNewArtwork = async ({
     artworkUpload.fileDominant &&
     artworkUpload.fileOrientation
   ) {
-    const formattedData = formatArtworkValues(artworkData);
-    await artworkValidation.validate(formattedData);
+    const alteredData = formatArtworkValues(artworkData);
+    await artworkValidation.validate(alteredData);
+    const formattedData = formatArtworkPrices(alteredData);
     const foundUser = await fetchUserById({
       userId,
+      selection: [...USER_SELECTION["STRIPE_INFO"]()],
       connection,
     });
-    const foundAccount = foundUser.stripeId
-      ? await fetchStripeAccount({
-          accountId: foundUser.stripeId,
-        })
-      : null;
-    verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
-    const { coverId, mediaId, versionId, artworkId } = generateUuids({
-      coverId: null,
-      mediaId: null,
-      versionId: null,
-      artworkId: null,
-    });
-    await addNewCover({
-      coverId,
-      artworkUpload,
-      connection,
-    });
-    await addNewMedia({
-      mediaId,
-      artworkUpload,
-      connection,
-    });
-    await addNewVersion({
-      versionId,
-      artworkId,
-      coverId,
-      mediaId,
-      userId,
-      prevArtwork: { cover: null, media: null, artwork: null },
-      artworkData: formattedData,
-      connection,
-    });
-    await addNewArtwork({
-      artworkId,
-      versionId,
-      userId,
-      connection,
-    });
-    return { message: "Artwork published successfully", expose: true };
+    if (!isObjectEmpty(foundUser)) {
+      const foundAccount = foundUser.stripeId
+        ? await fetchStripeAccount({
+            accountId: foundUser.stripeId,
+          })
+        : null;
+      verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
+      const { coverId, mediaId, versionId, artworkId } = generateUuids({
+        coverId: null,
+        mediaId: null,
+        versionId: null,
+        artworkId: null,
+      });
+      await addNewCover({
+        coverId,
+        artworkUpload,
+        connection,
+      });
+      await addNewMedia({
+        mediaId,
+        artworkUpload,
+        connection,
+      });
+      await addNewVersion({
+        versionId,
+        artworkId,
+        coverId,
+        mediaId,
+        userId,
+        prevArtwork: { cover: null, media: null, artwork: null },
+        artworkData: formattedData,
+        connection,
+      });
+      await addNewArtwork({
+        artworkId,
+        versionId,
+        userId,
+        artworkVisibility: formattedData.artworkVisibility,
+        connection,
+      });
+      return formatResponse(responses.artworkCreated);
+    }
+    throw createError(...formatError(errors.userNotFound));
   }
-  throw createError(
-    errors.badRequest,
-    "Please attach artwork media before submitting",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.artworkMediaMissing));
 };
 
-// $TODO
-// does it work in all cases?
-// needs testing
 export const updateArtwork = async ({
   userId,
   artworkId,
@@ -191,85 +179,96 @@ export const updateArtwork = async ({
     mimeType: artworkMimetype,
     fileType: "artwork",
   }); */
-  const formattedData = formatArtworkValues(artworkData);
-  await artworkValidation.validate(formattedData);
+  const alteredData = formatArtworkValues(artworkData);
+  await artworkValidation.validate(alteredData);
+  const formattedData = formatArtworkPrices(alteredData);
   const foundArtwork = await fetchArtworkMedia({
     artworkId,
     userId,
     connection,
   });
-  if (foundArtwork) {
-    const shouldUpdate = isVersionDifferent(
-      formattedData,
-      foundArtwork.current
+  if (!isObjectEmpty(foundArtwork)) {
+    const shouldUpdate = isFormAltered(
+      { ...formattedData, artworkVisibility: null },
+      { ...foundArtwork.current, visibility: null },
+      formattedArtworkKeys
     );
-    if (shouldUpdate) {
+    const visibilityChanged =
+      formattedData.artworkVisibility !== foundArtwork.visibility;
+    if (shouldUpdate || visibilityChanged) {
       const foundUser = await fetchUserById({
         userId,
+        selection: [...USER_SELECTION["STRIPE_INFO"]()],
         connection,
       });
-      const foundAccount = foundUser.stripeId
-        ? await fetchStripeAccount({
-            accountId: foundUser.stripeId,
-          })
-        : null;
-      verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
-      const { coverId, mediaId, versionId } = generateUuids({
-        coverId: null,
-        mediaId: null,
-        versionId: null,
-      });
-      const savedVersion = await addNewVersion({
-        versionId,
-        coverId: foundArtwork.current.cover.id,
-        mediaId: foundArtwork.current.media.id,
-        artworkId,
-        prevArtwork: foundArtwork.current,
-        artworkData: formattedData,
-        connection,
-      });
-      const foundOrder = await fetchOrderByVersion({
-        artworkId: foundArtwork.id,
-        versionId: foundArtwork.current.id,
-        connection,
-      });
-      const oldVersion = foundArtwork.current;
-      const savedArtwork = await updateArtworkVersion({
-        artworkId: foundArtwork.id,
-        currentId: versionId,
-        connection,
-      });
-      if (!foundOrder) {
-        /*         if (formattedData.artworkCover && formattedData.artworkMedia) {
+      if (!isObjectEmpty(foundUser)) {
+        const foundAccount = foundUser.stripeId
+          ? await fetchStripeAccount({
+              accountId: foundUser.stripeId,
+            })
+          : null;
+        verifyVersionValidity({ data: formattedData, foundUser, foundAccount });
+        if (shouldUpdate) {
+          const { coverId, mediaId, versionId } = generateUuids({
+            coverId: null,
+            mediaId: null,
+            versionId: null,
+          });
+          const savedVersion = await addNewVersion({
+            versionId,
+            coverId: foundArtwork.current.cover.id,
+            mediaId: foundArtwork.current.media.id,
+            artworkId,
+            prevArtwork: foundArtwork.current,
+            artworkData: formattedData,
+            connection,
+          });
+          const foundOrder = await fetchOrderByVersion({
+            artworkId: foundArtwork.id,
+            versionId: foundArtwork.current.id,
+            connection,
+          });
+          const oldVersion = foundArtwork.current;
+          const savedArtwork = await updateArtworkVersion({
+            artworkId: foundArtwork.id,
+            currentId: versionId,
+            artworkVisibility: formattedData.artworkVisibility,
+            connection,
+          });
+          if (!foundOrder) {
+            /*         if (formattedData.artworkCover && formattedData.artworkMedia) {
           await deleteS3Object({
             fileLink: oldVersion.cover.source,
             folderName: "artworkCovers/",
           });
-
+  
           await deleteS3Object({
             fileLink: oldVersion.media.source,
             folderName: "artworkMedia/",
           });
         } */
-        await removeArtworkVersion({
-          versionId: oldVersion.id,
-          connection,
-        });
+            await removeArtworkVersion({
+              versionId: oldVersion.id,
+              connection,
+            });
+          }
+        } else if (visibilityChanged) {
+          const savedArtwork = await updateArtworkVersion({
+            artworkId: foundArtwork.id,
+            currentId: foundArtwork.current.id,
+            artworkVisibility: formattedData.artworkVisibility,
+            connection,
+          });
+        }
+        return formatResponse(responses.artworkUpdated);
       }
-      return { message: "Artwork updated successfully", expose: true };
+      throw createError(...formatError(errors.userNotFound));
     }
-    throw createError(
-      errors.badRequest,
-      "Artwork is identical to the previous version",
-      { expose: true }
-    );
+    throw createError(...formatError(errors.artworkDetailsIdentical));
   }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
-// $TODO
-// does it work in all cases?
-// needs testing
 export const deleteArtwork = async ({
   userId,
   artworkId,
@@ -282,47 +281,41 @@ export const deleteArtwork = async ({
     connection,
   });
   if (foundArtwork) {
-    // $TODO Check that artwork wasn't updated in the meantime (current === version)
-    if (true) {
-      const foundOrders = await fetchOrdersByArtwork({
-        userId,
-        artworkId: foundArtwork.id,
+    const foundOrders = await fetchOrdersByArtwork({
+      userId,
+      artworkId: foundArtwork.id,
+      connection,
+    });
+    if (isArrayEmpty(foundOrders)) {
+      const oldVersion = foundArtwork.current;
+      await deactivateArtworkVersion({ artworkId, connection });
+      await deleteS3Object({
+        fileLink: oldVersion.cover.source,
+        folderName: "artworkCovers/",
+      });
+      await deleteS3Object({
+        fileLink: oldVersion.media.source,
+        folderName: "artworkMedia/",
+      });
+      await removeArtworkVersion({
+        versionId: oldVersion.id,
         connection,
       });
-      if (!foundOrders.length) {
-        const oldVersion = foundArtwork.current;
-        await deactivateArtworkVersion({ artworkId, connection });
-        await deleteS3Object({
-          fileLink: oldVersion.cover.source,
-          folderName: "artworkCovers/",
-        });
-        await deleteS3Object({
-          fileLink: oldVersion.media.source,
-          folderName: "artworkMedia/",
-        });
-        await removeArtworkVersion({
-          versionId: oldVersion.id,
-          connection,
-        });
-      } else if (
-        foundOrders.find((item) => item.versionId === foundArtwork.current.id)
-      ) {
-        await deactivateExistingArtwork({ artworkId, connection });
-      } else {
-        const oldVersion = foundArtwork.current;
-        await deactivateArtworkVersion({ artworkId, connection });
-        await removeArtworkVersion({
-          versionId: oldVersion.id,
-          connection,
-        });
-      }
-      return { message: "Artwork deleted successfully", expose: true };
+    } else if (
+      foundOrders.some((item) => item.versionId === foundArtwork.current.id)
+    ) {
+      await deactivateExistingArtwork({ artworkId, connection });
+    } else {
+      const oldVersion = foundArtwork.current;
+      await deactivateArtworkVersion({ artworkId, connection });
+      await removeArtworkVersion({
+        versionId: oldVersion.id,
+        connection,
+      });
     }
-    throw createError(errors.badRequest, "Artwork has a newer version", {
-      expose: true,
-    });
+    return formatResponse(responses.artworkDeleted);
   }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const fetchArtworkFavorites = async ({ artworkId, connection }) => {
@@ -333,7 +326,6 @@ export const fetchArtworkFavorites = async ({ artworkId, connection }) => {
   return { favorites: foundFavorites };
 };
 
-// needs transaction (done)
 export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
   const [foundFavorite, foundArtwork] = await Promise.all([
     fetchFavoriteByParents({
@@ -343,26 +335,25 @@ export const favoriteArtwork = async ({ userId, artworkId, connection }) => {
     }),
     fetchArtworkById({ artworkId, connection }),
   ]);
-  if (foundArtwork.owner.id !== userId) {
-    if (!foundFavorite) {
-      const { favoriteId } = generateUuids({
-        favoriteId: null,
-      });
-      const savedFavorite = await addNewFavorite({
-        favoriteId,
-        userId,
-        artworkId,
-        connection,
-      });
-      return { message: "Artwork favorited" };
+  if (!isObjectEmpty(foundArtwork)) {
+    if (foundArtwork.ownerId !== userId) {
+      if (isObjectEmpty(foundFavorite)) {
+        const { favoriteId } = generateUuids({
+          favoriteId: null,
+        });
+        await addNewFavorite({
+          favoriteId,
+          userId,
+          artworkId,
+          connection,
+        });
+        return formatResponse(responses.artworkFavorited);
+      }
+      throw createError(...formatError(errors.artworkAlreadyFavorited));
     }
-    throw createError(errors.badRequest, "Artwork has already been favorited", {
-      expose: true,
-    });
+    throw createError(...formatError(errors.artworkFavoritedByOwner));
   }
-  throw createError(errors.badRequest, "Cannot favorite your own artwork", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
@@ -374,48 +365,18 @@ export const unfavoriteArtwork = async ({ userId, artworkId, connection }) => {
     }),
     fetchArtworkById({ artworkId, connection }),
   ]);
-  if (foundArtwork.owner.id !== userId) {
-    if (foundFavorite) {
-      await removeExistingFavorite({
-        favoriteId: foundFavorite.id,
-        connection,
-      });
-      return { message: "Artwork unfavorited" };
+  if (!isObjectEmpty(foundArtwork)) {
+    if (foundArtwork.ownerId !== userId) {
+      if (!isObjectEmpty(foundFavorite)) {
+        await removeExistingFavorite({
+          favoriteId: foundFavorite.id,
+          connection,
+        });
+        return formatResponse(responses.artworkUnfavorited);
+      }
+      throw createError(...formatError(errors.artworkAlreadyUnfavorited));
     }
-    throw createError(
-      errors.badRequest,
-      "Artwork has already been unfavorited",
-      { expose: true }
-    );
+    throw createError(...formatError(errors.artworkUnfavoritedByOwner));
   }
-  throw createError(errors.badRequest, "Cannot unfavorite your own artwork", {
-    expose: true,
-  });
+  throw createError(...formatError(errors.artworkNotFound));
 };
-
-// needs transaction (done)
-// $TODO validacija licenci?
-
-// Not used?
-// export const saveLicense = async ({
-//   userId,
-//   artworkId,
-//   license,
-//   connection,
-// }) => {
-//   const foundArtwork = await fetchArtworkDetails({ artworkId, connection });
-//   if (foundArtwork) {
-//     const { licenseId } = generateUuids({
-//       licenseId: null,
-//     });
-//     const savedLicense = await addNewLicense({
-//       licenseId,
-//       artworkId: foundArtwork.ic,
-//       licenseData: license,
-//       userId,
-//       connection,
-//     });
-//     return { message: "License saved", license: license };
-//   }
-//   throw createError(400, "Artwork not found");
-// };

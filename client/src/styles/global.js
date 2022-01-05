@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
-import { artepunktTheme } from "./theme.js";
+import { artepunktTheme } from "./theme";
 
-const GlobalStyles = makeStyles((muiTheme) => ({
+const globalStyles = makeStyles((muiTheme) => ({
   gridContainer: {
     padding: artepunktTheme.padding.containerLg,
     margin: artepunktTheme.margin.containerLg,
@@ -10,11 +10,14 @@ const GlobalStyles = makeStyles((muiTheme) => ({
       margin: artepunktTheme.margin.containerSm,
     },
   },
+  largeContainer: {
+    maxWidth: 2600,
+  },
+  smallContainer: {
+    maxWidth: 768,
+  },
   bottomSpacing: {
     marginBottom: artepunktTheme.spacing.grid,
-  },
-  rightSpacing: {
-    marginRight: artepunktTheme.spacing.grid,
   },
   responsiveSpacing: {
     marginRight: 0,
@@ -28,57 +31,122 @@ const GlobalStyles = makeStyles((muiTheme) => ({
       marginBottom: artepunktTheme.spacing.grid,
     },
   },
-  elementSpacing: {
-    margin: artepunktTheme.margin.elementLg,
-    [muiTheme.breakpoints.down("sm")]: {
-      margin: artepunktTheme.margin.elementSm,
-    },
-  },
   elementWidth: {
     width: "100%",
   },
   mainHeading: {
     marginBottom: 24,
   },
-  dropdownOption: {
-    [muiTheme.breakpoints.down("sm")]: {
-      width: "100%",
-    },
-  },
-  searchQuery: {
-    margin: 0,
-  },
-  searchType: {
-    display: "none",
-  },
   "@global": {
     ".illustrationPrimary": {
       fill: artepunktTheme.palette.primary.main,
     },
-    ".SRLElementWrapper": {
-      opacity: ({ isDownloading }) =>
-        isDownloading ? "0.3 !important" : "1 !important",
-      "&:last-of-type": {
-        "&::after": {
-          display: ({ isDownloading }) => (isDownloading ? "block" : "none"),
-          content: '""',
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          marginTop: -30,
-          marginLeft: -30,
-          width: 50,
-          height: 50,
-          borderRadius: 50,
-          border: `5px solid ${artepunktTheme.palette.primary.main}`,
-          borderTopColor: "black",
-          animation: `$loading 2s linear infinite`,
-          zIndex: 10000,
+    // $TODO gadljivo
+    ".VerifierTable": {
+      display: "flex",
+      "& thead, tbody": {
+        display: "flex",
+        width: "100%",
+      },
+      "& tr": {
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        height: "100%",
+        borderTop: "solid 2px rgba(0, 0, 0, 0.15) !important",
+        "& th:first-child": {
+          minHeight: 76,
+        },
+        "& td:first-child": {
+          minHeight: 76,
+        },
+      },
+      "& td, th": {
+        width: "calc(100%)",
+        display: "inline-block",
+        fontSize: "16px",
+        boxSizing: "border-box",
+        border: "none",
+        minHeight: 54,
+        height: "100%",
+      },
+      [muiTheme.breakpoints.down(959.95)]: {
+        "& thead": {
+          display: "none",
+        },
+        "& td": {
+          minHeight: "auto",
+        },
+        "& tr": {
+          "& th:first-child": {
+            minHeight: "auto !important",
+          },
+          "& td:first-child": {
+            minHeight: "auto !important",
+          },
         },
       },
     },
+    ".MuiTableCell-root": {
+      background: "transparent !important",
+    },
+    ".MuiTableCell-footer": {
+      borderTop: "1px solid rgb(81, 81, 81)",
+      borderBottom: "none !important",
+    },
+    ".MuiTableRow-root": {
+      borderBottom: "none !important",
+    },
+    ".MuiTableRow-root:last-of-type > .MuiTableCell-body": {
+      borderBottom: "none !important",
+    },
     ".MuiTableCell-body": {
       cursor: ({ hoverable }) => (hoverable ? "pointer" : "auto"),
+    },
+    ".MuiSelect-select:focus": {
+      borderRadius: artepunktTheme.shape.borderRadius,
+    },
+    ".MuiTablePagination-toolbar": {
+      [muiTheme.breakpoints.down("xs")]: {
+        display: "flex",
+        flexDirection: "column",
+        padding: 0,
+        marginTop: 10,
+      },
+    },
+    ".MuiTablePagination-actions": {
+      [muiTheme.breakpoints.down("xs")]: {
+        marginLeft: 0,
+        marginRight: 0,
+      },
+    },
+    ".MuiTablePagination-selectRoot": {
+      [muiTheme.breakpoints.down("xs")]: {
+        marginLeft: "0 !important",
+        marginRight: "0 !important",
+      },
+    },
+    ".MuiTableCell-footer > div": {
+      [muiTheme.breakpoints.down("xs")]: {
+        justifyContent: "center",
+      },
+    },
+    ".NoTableFooter .MuiTableBody-root>tr:nth-child(odd)": {
+      background: "transparent",
+    },
+    ".MuiTimelineItem-alignAlternate:nth-child(even) .MuiTimelineItem-content":
+      {
+        paddingLeft: 0,
+        textAlign: "left",
+      },
+    ".MuiTimelineItem-alignAlternate:nth-child(odd) .MuiTimelineItem-content": {
+      paddingRight: 0,
+    },
+    "[class*='MUIDataTableSearch-main']": {
+      [muiTheme.breakpoints.down("xs")]: {
+        display: "flex",
+        justifyContent: "center",
+      },
     },
     "@keyframes loading": {
       "0%": {
@@ -91,4 +159,4 @@ const GlobalStyles = makeStyles((muiTheme) => ({
   },
 }));
 
-export default GlobalStyles;
+export default globalStyles;

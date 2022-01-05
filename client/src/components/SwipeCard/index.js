@@ -4,7 +4,6 @@ import AppBar from "../../domain/AppBar";
 import Box from "../../domain/Box";
 import Tab from "../../domain/Tab";
 import Tabs from "../../domain/Tabs";
-import Typography from "../../domain/Typography";
 import LoadingSpinner from "../LoadingSpinner";
 import swipeCardStyles from "./styles";
 
@@ -13,7 +12,7 @@ const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
 
   return (
     <Box className={classes.container} m={margin}>
-      <AppBar position="static" color="transparent" className={classes.bar}>
+      <AppBar position="static" color="inherit" className={classes.bar}>
         <Tabs
           value={tabs.value}
           onChange={(e, value) => handleTabsChange({ index: value })}
@@ -40,16 +39,18 @@ const SwipeCard = ({ tabs, handleTabsChange, margin, loading }) => {
           {tabs.items
             .filter((tab) => tab.display === true)
             .map((item, index) => (
-              <Box className={classes.wrapper} hidden={tabs.value !== index}>
+              <Box
+                className={`${classes.wrapper} ${
+                  tabs.value !== index && classes.hidden
+                }`}
+              >
                 {item.loading ? (
                   <LoadingSpinner />
                 ) : item.iterable ? (
                   item.content ? (
                     item.component
                   ) : (
-                    <Typography variant="h6" align="center">
-                      {item.error}
-                    </Typography>
+                    item.error
                   )
                 ) : (
                   item.component

@@ -1,11 +1,12 @@
+import { DeleteOutlineRounded as DeleteIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
-import PromptModal from "../../components/PromptModal/index.js";
-import ArtworkDatatable from "../../containers/ArtworkDatatable/index.js";
+import PromptModal from "../../components/PromptModal/index";
+import ArtworkDatatable from "../../containers/ArtworkDatatable/index";
 import { useUserUploads } from "../../contexts/local/userUploads";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import globalStyles from "../../styles/global.js";
-import { containsErrors, renderError } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const MyArtwork = ({}) => {
   const modal = useUserUploads((state) => state.modal);
@@ -49,10 +50,11 @@ const MyArtwork = ({}) => {
         promptConfirm="Delete"
         promptCancel="Cancel"
         isSubmitting={isDeleting}
+        startIcon={<DeleteIcon />}
       />
     </Container>
   ) : (
-    renderError({ retry, redirect, message })
+    renderError({ retry, redirect, message, reinitializeState })
   );
 };
 

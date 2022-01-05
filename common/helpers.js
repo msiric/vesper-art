@@ -1,8 +1,28 @@
 import currency from "currency.js";
 import * as fns from "date-fns";
-import createError from "http-errors";
-import { errors, featureFlags } from "./constants";
+import abbreviate from "number-abbreviate";
 const { format } = fns;
+
+export const licenseErrors = {
+  companyError: {
+    message: "There is already a license assigned to the provided company",
+    identifier: "licenseCompanyExists",
+  },
+  identicalError: {
+    message: "There is already an identical license assigned to you",
+    identifier: "licenseAlreadyExists",
+  },
+  supersededError: {
+    message:
+      "There is already a commercial license assigned to you which supersedes the currently selected license type",
+    identifier: "licenseTypeSuperseded",
+  },
+};
+
+export const trimAllSpaces = (value) =>
+  typeof value === "string"
+    ? value.replace(/^\s+|\s+$/g, "").replace(/\s+/g, " ")
+    : value;
 
 export const formatDate = (date, form = "dd/MM/yy HH:mm") => {
   return format(new Date(date), form);
@@ -37,58 +57,69 @@ export const isObjectEmpty = (object) => {
   return true;
 };
 
-export const verifyVersionValidity = async ({
-  data,
-  foundUser,
-  foundAccount,
-}) => {
-  if (data.artworkPersonal || data.artworkCommercial) {
-    if (!foundUser)
-      throw createError(errors.notFound, "User not found", { expose: true });
-    if (!featureFlags.stripe) {
-      // FEATURE FLAG - stripe
-      throw createError(
-        errors.internalError,
-        "Creating commercial artwork is not yet available",
-        { expose: true }
-      );
-    }
-    if (!foundUser.stripeId)
-      throw createError(
-        errors.unprocessable,
-        "Please complete the Stripe onboarding process before making your artwork commercially available",
-        { expose: true }
-      );
-    if (
-      (data.artworkPersonal || data.artworkCommercial) &&
-      (foundAccount.capabilities.card_payments !== "active" ||
-        foundAccount.capabilities.transfers !== "active")
-    ) {
-      throw createError(
-        errors.unprocessable,
-        "Please complete your Stripe account before making your artwork commercially available",
-        { expose: true }
-      );
-    }
-  }
-  return;
+export const isPositiveInteger = (value) => {
+  const convertedValue = parseInt(value);
+  return (
+    convertedValue !== NaN &&
+    Number.isInteger(convertedValue) &&
+    convertedValue > 0
+  );
 };
 
-export const isVersionDifferent = (currentValues, savedValues) => {
-  const mapper = {
-    artworkTitle: "title",
-    artworkType: "type",
-    artworkAvailability: "availability",
-    artworkLicense: "license",
-    artworkUse: "use",
-    artworkPersonal: "personal",
-    artworkCommercial: "commercial",
-    artworkDescription: "description",
-    artworkVisibility: "visibility",
-  };
-  for (let item of Object.keys(currentValues)) {
-    if (savedValues[mapper[item]] !== currentValues[item]) {
-      return true;
+export const isLicenseValid = ({ data, orders }) => {
+  const filteredUsage = orders.filter(
+    (order) => order.license.usage === data.licenseUsage
+  );
+  if (filteredUsage.length) {
+    if (data.licenseUsage === "business") {
+      const filteredCompany = filteredUsage.filter(
+        (order) => order.license.company === trimAllSpaces(data.licenseCompany)
+      );
+      if (!filteredCompany.length) {
+        return {
+          valid: true,
+          state: { message: "", identifier: "" },
+          ref: {},
+        };
+      }
+      return {
+        valid: false,
+        state: licenseErrors.companyError,
+        ref: filteredCompany[0] || {},
+      };
+    }
+    const filteredType = filteredUsage.filter(
+      (order) => order.license.type === data.licenseType
+    );
+    if (filteredType.length) {
+      return {
+        valid: false,
+        state: licenseErrors.identicalError,
+        ref: filteredType[0] || {},
+      };
+    }
+    if (data.licenseType !== "commercial") {
+      return {
+        valid: false,
+        state: licenseErrors.supersededError,
+        ref: filteredType[0] || {},
+      };
+    }
+    return { valid: true, state: { message: "", identifier: "" }, ref: {} };
+  }
+  return { valid: true, state: { message: "", identifier: "" }, ref: {} };
+};
+
+export const isFormAltered = (currentValues, defaultValues, mapper = null) => {
+  for (let item in currentValues) {
+    if (mapper) {
+      if (currentValues[item] !== defaultValues[mapper[item]]) {
+        return true;
+      }
+    } else {
+      if (currentValues[item] !== defaultValues[item]) {
+        return true;
+      }
     }
   }
   return false;
@@ -96,7 +127,7 @@ export const isVersionDifferent = (currentValues, savedValues) => {
 
 export const renderFreeLicenses = ({ version }) => {
   return [
-    ...(version.type === "free" && version.use === "separate"
+    ...(version.type === "free" && version.use !== "included"
       ? [
           {
             value: "personal",
@@ -118,7 +149,7 @@ export const renderFreeLicenses = ({ version }) => {
 
 export const renderCommercialLicenses = ({ version }) => {
   return [
-    ...(version.type === "commercial"
+    ...(version.type === "commercial" && version.use !== "included"
       ? [
           {
             value: "personal",
@@ -127,7 +158,8 @@ export const renderCommercialLicenses = ({ version }) => {
         ]
       : []),
 
-    ...(version.license === "commercial" && version.use === "separate"
+    ...((version.license === "commercial" && version.use === "separate") ||
+    (version.type === "commercial" && version.use === "included")
       ? [
           {
             value: "commercial",
@@ -164,27 +196,59 @@ export const formatArtworkValues = (data) => {
       data.artworkAvailability === "available"
         ? data.artworkLicense
         : "unavailable",
+    artworkPersonal:
+      data.artworkAvailability === "available" &&
+      data.artworkType === "commercial"
+        ? data.artworkPersonal
+        : 0,
     artworkUse:
       data.artworkAvailability === "available" &&
       data.artworkLicense === "commercial"
         ? data.artworkUse
         : "unavailable",
-    artworkPersonal:
-      data.artworkAvailability === "available" &&
-      data.artworkType === "commercial"
-        ? data.artworkUse === "separate" || data.artworkLicense === "personal"
-          ? currency(data.artworkPersonal).intValue
-          : 0
-        : 0,
     artworkCommercial:
+      data.artworkAvailability === "available" &&
       data.artworkLicense === "commercial"
-        ? data.artworkAvailability === "available" &&
-          data.artworkLicense === "commercial" &&
-          data.artworkUse === "separate"
-          ? currency(data.artworkCommercial).intValue
-          : currency(data.artworkPersonal).intValue
+        ? data.artworkUse === "separate"
+          ? data.artworkCommercial
+          : data.artworkPersonal
         : 0,
     // $TODO restore after tags are implemented
     // artworkTags: JSON.parse(data.artworkTags),
   };
 };
+
+export const formatLicenseValues = (data) => {
+  return {
+    ...data,
+    licenseCompany:
+      data.licenseUsage === "business" ? data.licenseCompany : "unavailable",
+  };
+};
+
+export const formatMimeTypes = (values) => {
+  const mimeTypes = Object.keys(values);
+  return mimeTypes
+    .map((item, index) =>
+      index === mimeTypes.length - 1
+        ? `${values[item].label}.`
+        : `${values[item].label}, `
+    )
+    .join("");
+};
+
+export const formatArtworkPrice = ({
+  price,
+  prefix = "$",
+  freeFormat = "Free",
+  withPrecision = false,
+  withAbbreviation = false,
+}) =>
+  price && price > 0
+    ? withAbbreviation
+      ? `${prefix}${abbreviate(price, 2)}`
+      : `${prefix}${currency(price, {
+          separator: ",",
+          precision: withPrecision ? 2 : 0,
+        }).format()}`
+    : freeFormat;

@@ -4,7 +4,7 @@ import FormControl from "../../domain/FormControl";
 import FormControlLabel from "../../domain/FormControlLabel";
 import FormHelperText from "../../domain/FormHelperText";
 import Rating from "../../domain/Rating";
-import ratingInputStyles from "./styles.js";
+import ratingInputStyles from "./styles";
 
 const Input = ({
   name,
@@ -21,13 +21,12 @@ const Input = ({
   return (
     <FormControl variant="outlined" margin="dense" fullWidth>
       <FormControlLabel
+        className={classes.wrapper}
         control={
           <Rating
             {...props}
             value={value}
-            onChange={(e, value) =>
-              setValue(name, value || 0, { shouldValidate: true })
-            }
+            onChange={(e, value) => setValue(name, value || 0)}
             size="large"
             loading={loading}
           />

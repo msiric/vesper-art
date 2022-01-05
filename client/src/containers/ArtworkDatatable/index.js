@@ -1,17 +1,18 @@
 import {
-  DeleteRounded as DeleteIcon,
-  EditRounded as EditIcon,
+  DeleteOutlineRounded as DeleteIcon,
+  EditOutlined as EditIcon,
 } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { formatDate } from "../../../../common/helpers.js";
-import ArtworkThumbnail from "../../components/ArtworkThumbnail/index.js";
-import Datatable from "../../components/DataTable/index.js";
-import EmptySection from "../../components/EmptySection/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
+import ArtworkThumbnail from "../../components/ArtworkThumbnail/index";
+import Datatable from "../../components/DataTable/index";
+import EmptySection from "../../components/EmptySection/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useUserUploads } from "../../contexts/local/userUploads";
 import Box from "../../domain/Box";
 import IconButton from "../../domain/IconButton";
+import { capitalizeWord } from "../../utils/helpers";
 
 const ArtworkDatatable = () => {
   const userId = useUserStore((state) => state.id);
@@ -74,52 +75,70 @@ const ArtworkDatatable = () => {
         {
           name: "Title",
           options: {
-            sortCompare: (order) => (obj1, obj2) =>
-              obj1.data.localeCompare(obj2.data, "en", {
-                numeric: true,
-              }) * (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                previous.localeCompare(next, "en", {
+                  numeric: true,
+                }) * (order === "asc" ? 1 : -1),
           },
         },
-        "Availability",
         {
           name: "Type",
           options: {
-            customBodyRender: (value, tableMeta, updateValue) => value || "/",
+            customBodyRender: (value) =>
+              capitalizeWord({
+                value: value === "unavailable" ? "preview only" : value,
+              }) || "/",
           },
         },
         {
           name: "Personal license",
           options: {
-            customBodyRender: (value, tableMeta, updateValue) =>
-              value.use === "included"
-                ? "/"
-                : value.amount
-                ? `$${value.amount}`
-                : "Free",
-            sortCompare: (order) => ({ data: previous }, { data: next }) =>
-              (previous.amount - next.amount) * (order === "asc" ? 1 : -1),
+            customBodyRender: (value) =>
+              formatArtworkPrice({
+                price: value.amount,
+              }),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                (previous.amount - next.amount) * (order === "asc" ? 1 : -1),
           },
         },
         {
           name: "Commercial license",
           options: {
-            customBodyRender: (value, tableMeta, updateValue) =>
-              value.license === "personal"
-                ? "/"
-                : value.amount
-                ? `$${value.amount}`
-                : "Free",
-            sortCompare: (order) => ({ data: previous }, { data: next }) =>
-              (previous.amount - next.amount) * (order === "asc" ? 1 : -1),
+            customBodyRender: (value) =>
+              formatArtworkPrice({
+                price: value.amount,
+              }),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                (previous.amount - next.amount) * (order === "asc" ? 1 : -1),
+          },
+        },
+        {
+          name: "Visibility",
+          options: {
+            customBodyRender: (value) => capitalizeWord({ value }) || "/",
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                previous.localeCompare(next, "en", {
+                  numeric: true,
+                }) * (order === "asc" ? 1 : -1),
           },
         },
         {
           name: "Date",
           options: {
             customBodyRender: (value) => formatDate(value, "dd/MM/yy HH:mm"),
-            sortCompare: (order) => ({ data: previous }, { data: next }) =>
-              (new Date(previous).getTime() - new Date(next).getTime()) *
-              (order === "asc" ? 1 : -1),
+            sortCompare:
+              (order) =>
+              ({ data: previous }, { data: next }) =>
+                (new Date(previous).getTime() - new Date(next).getTime()) *
+                (order === "asc" ? 1 : -1),
           },
         },
         {
@@ -133,13 +152,18 @@ const ArtworkDatatable = () => {
         artwork.id,
         artwork.current.cover.source,
         artwork.current.title,
-        artwork.current.availability,
         artwork.current.type,
-        { use: artwork.current.use, amount: artwork.current.personal },
         {
-          license: artwork.current.license,
-          amount: artwork.current.commercial,
+          amount: artwork.current.personal,
+          availability: artwork.current.availability,
+          use: artwork.current.use,
         },
+        {
+          amount: artwork.current.commercial,
+          availability: artwork.current.availability,
+          use: artwork.current.use,
+        },
+        artwork.visibility,
         artwork.current.created,
         actionsColumn(artwork.id),
       ])}
@@ -157,6 +181,7 @@ const ArtworkDatatable = () => {
         title: "Add artwork",
         route: "artwork/add",
       }}
+      customPadding={true}
     />
   );
 };

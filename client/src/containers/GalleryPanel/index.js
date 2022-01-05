@@ -1,23 +1,16 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
-import { SRLWrapper, useLightbox } from "simple-react-lightbox";
-import ImageWrapper from "../../components/ImageWrapper/index.js";
+import SimpleReactLightbox, { SRLWrapper } from "simple-react-lightbox";
+import { breakpointsFixedWidth } from "../../common/constants";
+import ImageWrapper from "../../components/ImageWrapper/index";
 import InfiniteList from "../../components/InfiniteList";
-import { useUserStore } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user";
 import { useUserGallery } from "../../contexts/local/userGallery";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
-import globalStyles from "../../styles/global.js";
-import { artepunktTheme } from "../../styles/theme.js";
-import galleryPanelStyles from "./styles.js";
-
-const breakpointColumns = {
-  default: 4,
-  1100: 3,
-  700: 2,
-  500: 1,
-};
+import { artepunktTheme } from "../../styles/theme";
+import galleryPanelStyles from "./styles";
 
 const GalleryPanel = ({ formatArtwork }) => {
   const userId = useUserStore((state) => state.id);
@@ -28,35 +21,13 @@ const GalleryPanel = ({ formatArtwork }) => {
   const fetching = useUserGallery((state) => state[display].fetching);
   const hasMore = useUserGallery((state) => state[display].hasMore);
   const error = useUserGallery((state) => state[display].error);
-  const selection = useUserGallery((state) => state[display]);
-  const index = useUserGallery((state) => state.index);
-  const media = useUserGallery((state) => state.media);
-  const covers = useUserGallery((state) => state.covers);
-  const isDownloading = useUserGallery((state) => state.isDownloading);
+  const elements = useUserGallery((state) => state.elements);
   const captions = useUserGallery((state) => state.captions);
   const fetchUser = useUserGallery((state) => state.fetchUser);
-  const toggleGallery = useUserGallery((state) => state.toggleGallery);
 
   const history = useHistory();
 
-  const globalClasses = globalStyles({ isDownloading });
   const classes = galleryPanelStyles();
-
-  const { openLightbox } = useLightbox();
-
-  const callbacks = {
-    onSlideChange: (slide) =>
-      toggleGallery({
-        userId,
-        item: {
-          cover: slide.slides.current.thumbnail,
-          media: slide.slides.current.source,
-        },
-        index: slide.index,
-        openLightbox,
-        formatArtwork,
-      }),
-  };
 
   const options = {
     buttons: {
@@ -80,61 +51,49 @@ const GalleryPanel = ({ formatArtwork }) => {
     },
   };
 
-  useEffect(() => {
-    if (index !== null) {
-      openLightbox(index);
-    }
-  }, [selection]);
+  const masonryElement = (
+    <Masonry
+      breakpointCols={breakpointsFixedWidth}
+      className={classes.masonry}
+      columnClassName={classes.column}
+    >
+      {elements.map((item) => (
+        <Card className={classes.card} key={item.id}>
+          <ImageWrapper
+            height={item.height}
+            source={item.media}
+            placeholder={item.dominant}
+            shouldCover={true}
+            loading={loading}
+          />
+        </Card>
+      ))}
+    </Masonry>
+  );
 
   return (
-    <Box>
+    <Box className={classes.container}>
       <InfiniteList
-        dataLength={covers.length}
+        dataLength={elements.length}
         next={() => fetchUser({ userId, userUsername, formatArtwork })}
         hasMore={hasMore}
-        loading={loading || fetching}
+        loading={loading}
+        fetching={fetching}
         error={error.refetch}
         empty="No artwork in your gallery"
+        type="masonry"
       >
-        <Masonry
-          breakpointCols={breakpointColumns}
-          className={classes.masonry}
-          columnClassName={classes.column}
-        >
-          {covers.map((item, idx) => (
-            <Card
-              className={classes.card}
-              onClick={() =>
-                toggleGallery({
-                  userId,
-                  item,
-                  index: idx,
-                  openLightbox,
-                  formatArtwork,
-                })
-              }
-            >
-              {
-                <ImageWrapper
-                  height={item.height}
-                  source={item.media ? item.media : item.cover}
-                  cover={item.cover}
-                  placeholder={item.dominant}
-                  loading={idx === index && isDownloading ? true : false}
-                />
-              }
-            </Card>
+        {!loading &&
+          (!fetching ? (
+            <SimpleReactLightbox>
+              <SRLWrapper options={options} customCaptions={captions}>
+                {masonryElement}
+              </SRLWrapper>
+            </SimpleReactLightbox>
+          ) : (
+            masonryElement
           ))}
-        </Masonry>
       </InfiniteList>
-      {!isDownloading && !loading && (
-        <SRLWrapper
-          images={media}
-          callbacks={callbacks}
-          options={options}
-          customCaptions={captions}
-        ></SRLWrapper>
-      )}
     </Box>
   );
 };

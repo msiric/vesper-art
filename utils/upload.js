@@ -1,40 +1,31 @@
-import aws from "aws-sdk";
+import gifResize from "@gumlet/gif-resize";
 import fs from "fs";
 import createError from "http-errors";
 import imageSize from "image-size";
 import sharp from "sharp";
-import { upload } from "../common/constants";
-import { errors } from "../common/constants.js";
-import { rgbToHex } from "../common/helpers.js";
-import { checkImageOrientation } from "./helpers.js";
+import { statusCodes, upload } from "../common/constants";
+import { rgbToHex } from "../common/helpers";
+import { errors as validationErrors } from "../common/validation";
+import { uploadS3Object } from "../lib/s3";
+import { checkImageOrientation, formatError } from "./helpers";
+import { errors } from "./statuses";
 
-aws.config.update({
-  secretAccessKey: process.env.S3_SECRET,
-  accessKeyId: process.env.S3_ID,
-  region: process.env.S3_REGION,
-});
-
-const SHARP_FORMATS = {
-  "image/png": { type: "png", animated: false },
-  "image/jpg": { type: "jpeg", animated: false },
-  "image/jpeg": { type: "jpeg", animated: false },
-  "image/gif": { type: "gif", animated: true },
-};
-
-const ALLOWED_RATIO = 5;
+const isGif = (mimeType) => mimeType === "image/gif";
 
 export const userS3Upload = async ({ filePath, fileName, mimeType }) => {
-  const sharpMedia = await sharp(filePath, {
-    animated: SHARP_FORMATS[mimeType].animated,
-  })
-    [SHARP_FORMATS[mimeType].type]()
-    .toBuffer();
+  const fileMedia = isGif(mimeType)
+    ? await fs.promises.readFile(filePath)
+    : await sharp(filePath, {
+        animated: upload.user.mimeTypes[mimeType].animated,
+      })
+        [upload.user.mimeTypes[mimeType].type]()
+        .toBuffer();
   const {
     dominant: { r, g, b },
   } = await sharp(filePath).stats();
   const userDominant = rgbToHex(r, g, b);
   const userMediaPath = await uploadS3Object({
-    fileContent: sharpMedia,
+    fileContent: fileMedia,
     folderName: "userMedia",
     fileName,
     mimeType,
@@ -43,29 +34,35 @@ export const userS3Upload = async ({ filePath, fileName, mimeType }) => {
 };
 
 export const artworkS3Upload = async ({ filePath, fileName, mimeType }) => {
-  const sharpMedia = await sharp(filePath, {
-    animated: SHARP_FORMATS[mimeType].animated,
-  })
-    [SHARP_FORMATS[mimeType].type]()
-    .toBuffer();
-  const sharpCover = await sharp(filePath, {
-    animated: SHARP_FORMATS[mimeType].animated,
-  })
-    .resize(upload.artwork.fileTransform.width)
-    [SHARP_FORMATS[mimeType].type]({ quality: 100 })
-    .toBuffer();
+  const fileMedia = isGif(mimeType)
+    ? await fs.promises.readFile(filePath)
+    : await sharp(filePath, {
+        animated: upload.artwork.mimeTypes[mimeType].animated,
+      })
+        [upload.artwork.mimeTypes[mimeType].type]()
+        .toBuffer();
+  const fileCover = isGif(mimeType)
+    ? await gifResize({
+        width: upload.artwork.fileTransform.width,
+      })(fileMedia)
+    : await sharp(filePath, {
+        animated: upload.artwork.mimeTypes[mimeType].animated,
+      })
+        .resize(upload.artwork.fileTransform.width)
+        [upload.artwork.mimeTypes[mimeType].type]({ quality: 100 })
+        .toBuffer();
   const {
     dominant: { r, g, b },
   } = await sharp(filePath).stats();
   const artworkDominant = rgbToHex(r, g, b);
   const artworkCoverPath = await uploadS3Object({
-    fileContent: sharpCover,
+    fileContent: fileCover,
     folderName: "artworkCovers",
     fileName,
     mimeType,
   });
   const artworkMediaPath = await uploadS3Object({
-    fileContent: sharpMedia,
+    fileContent: fileMedia,
     folderName: "artworkMedia",
     fileName,
     mimeType,
@@ -77,10 +74,10 @@ export const artworkS3Upload = async ({ filePath, fileName, mimeType }) => {
   };
 };
 
-export const verifyAspectRatio = async ({ fileHeight, fileWidth }) => {
+export const verifyAspectRatio = ({ fileHeight, fileWidth, fileType }) => {
   const difference =
     Math.max(fileHeight, fileWidth) / Math.min(fileHeight, fileWidth);
-  return difference <= ALLOWED_RATIO;
+  return difference <= upload[fileType].fileRatio;
 };
 
 export const verifyDimensions = async ({ filePath, fileType }) => {
@@ -121,6 +118,7 @@ export const finalizeMediaUpload = async ({
       const verifiedRatio = verifyAspectRatio({
         fileHeight: verifiedInput.dimensions.height,
         fileWidth: verifiedInput.dimensions.width,
+        fileType,
       });
       if (verifiedInput.valid) {
         if (verifiedRatio) {
@@ -141,39 +139,30 @@ export const finalizeMediaUpload = async ({
           return fileUpload;
         }
         deleteFileLocally({ filePath });
-        throw createError(errors.badRequest, "File aspect ratio is not valid", {
-          expose: true,
-        });
+        throw createError(...formatError(errors.aspectRatioInvalid));
       }
       deleteFileLocally({ filePath });
-      throw createError(errors.badRequest, "File dimensions are not valid", {
-        expose: true,
-      });
+      throw createError(...formatError(errors.fileDimensionsInvalid));
     } else {
       return fileUpload;
     }
   } catch (err) {
     deleteFileLocally({ filePath });
-    throw createError(errors.internalError, err, { expose: true });
+    throw createError(statusCodes.internalError, err, { expose: true });
   }
 };
 
 export const artworkFileFilter = (req, file, cb) => {
-  if (upload.artwork.mimeTypes.includes(file.mimetype)) cb(null, true);
+  if (Object.keys(upload.artwork.mimeTypes).includes(file.mimetype))
+    cb(null, true);
   else
-    cb(
-      new Error("Invalid mime type, only JPEG, PNG and GIF files are allowed"),
-      false
-    );
+    cb(createError(...formatError(validationErrors.artworkMediaType)), false);
 };
 
 export const userFileFilter = (req, file, cb) => {
-  if (upload.user.mimeTypes.includes(file.mimetype)) cb(null, true);
-  else
-    cb(
-      new Error("Invalid mime type, only JPEG, PNG and GIF files are allowed"),
-      false
-    );
+  if (Object.keys(upload.user.mimeTypes).includes(file.mimetype))
+    cb(null, true);
+  else cb(createError(...formatError(validationErrors.userMediaType)), false);
 };
 
 export const dimensionsFilter = ({ fileHeight, fileWidth, fileType }) => {
@@ -183,34 +172,4 @@ export const dimensionsFilter = ({ fileHeight, fileWidth, fileType }) => {
   )
     return false;
   return true;
-};
-
-export const uploadS3Object = async ({
-  fileContent,
-  folderName,
-  fileName,
-  mimeType,
-}) => {
-  const fullPath = `${folderName}/${fileName}`;
-  const s3 = new aws.S3();
-  const params = {
-    Bucket: process.env.S3_BUCKET,
-    Key: fullPath,
-    Body: fileContent,
-    ACL: "public-read",
-    ContentType: mimeType,
-  };
-  const uploadedFile = await s3.upload(params).promise();
-  return uploadedFile.Location;
-};
-
-export const deleteS3Object = async ({ fileLink, folderName }) => {
-  const fileName = fileLink.split("/").slice(-1)[0];
-  const filePath = folderName + fileName;
-  const s3 = new aws.S3();
-  const params = {
-    Bucket: process.env.S3_BUCKET,
-    Key: filePath,
-  };
-  await s3.deleteObject(params).promise();
 };

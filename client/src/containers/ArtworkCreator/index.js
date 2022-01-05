@@ -1,19 +1,23 @@
-import { yupResolver } from "@hookform/resolvers/yup";
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
+import { ArrowUpwardRounded as SubmitIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
-import { featureFlags, pricing } from "../../../../common/constants.js";
-import { addArtwork, artworkValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import HelpBox from "../../components/HelpBox/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import { featureFlags, pricing } from "../../../../common/constants";
+import { isFormAltered } from "../../../../common/helpers";
+import {
+  artworkValidation,
+  mediaValidation,
+} from "../../../../common/validation";
+import AsyncButton from "../../components/AsyncButton/index";
+import HelpBox from "../../components/HelpBox/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useArtworkCreate } from "../../contexts/local/artworkCreate";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
-import ArtworkForm from "../../forms/ArtworkForm/index.js";
-import artworkCreatorStyles from "./styles.js";
+import ArtworkForm from "../../forms/ArtworkForm/index";
+import { useArtworkValidator } from "../../hooks/useArtworkValidator";
+import artworkCreatorStyles from "./styles";
 
 const ArtworkCreator = () => {
   const stripeId = useUserStore((state) => state.stripeId);
@@ -25,9 +29,28 @@ const ArtworkCreator = () => {
   );
   const createArtwork = useArtworkCreate((state) => state.createArtwork);
 
+  const resolver = useArtworkValidator(
+    artworkValidation.concat(mediaValidation)
+  );
+
   const history = useHistory();
 
   const classes = artworkCreatorStyles();
+
+  const setDefaultValues = () => ({
+    artworkMedia: null,
+    artworkTitle: "",
+    artworkType: "",
+    artworkAvailability: "",
+    artworkLicense: "",
+    artworkUse: "",
+    artworkPersonal: pricing.minimumPrice,
+    artworkCommercial: pricing.minimumPrice + 10,
+    artworkVisibility: "",
+    artworkDescription: "",
+    // artworkCategory: "",
+    // artworkTags: [],
+  });
 
   const {
     handleSubmit,
@@ -40,22 +63,14 @@ const ArtworkCreator = () => {
     watch,
     reset,
   } = useForm({
-    defaultValues: {
-      artworkMedia: "",
-      artworkTitle: "",
-      artworkType: "",
-      artworkAvailability: "",
-      artworkLicense: "",
-      artworkUse: "",
-      artworkPersonal: pricing.minimumPrice,
-      artworkCommercial: pricing.minimumPrice + 10,
-      artworkVisibility: "",
-      artworkDescription: "",
-      // artworkCategory: "",
-      // artworkTags: [],
-    },
-    resolver: yupResolver(artworkValidation.concat(addArtwork)),
+    defaultValues: setDefaultValues(),
+    resolver,
   });
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   const onSubmit = async (values) => {
     await createArtwork({ values });
@@ -80,11 +95,9 @@ const ArtworkCreator = () => {
         <HelpBox type="alert" label={stripeDisabled} />
       ) : !stripeId ? (
         <HelpBox type="alert" label={notOnboarded} />
-      ) : capabilities.cardPayments === "pending" ||
-        capabilities.platformPayments === "pending" ? (
+      ) : capabilities.platformPayments === "pending" ? (
         <HelpBox type="alert" label={pendingVerification} />
-      ) : capabilities.cardPayments !== "active" ||
-        capabilities.platformPayments !== "active" ? (
+      ) : capabilities.platformPayments !== "active" ? (
         <HelpBox type="alert" label={incompleteInformation} />
       ) : null
     ) : null;
@@ -107,13 +120,12 @@ const ArtworkCreator = () => {
               setValue={setValue}
               trigger={trigger}
               getValues={getValues}
-              watch={watch}
-              watchables={[
-                "artworkAvailability",
-                "artworkType",
-                "artworkLicense",
-                "artworkUse",
-              ]}
+              watchables={{
+                artworkAvailability: watchedValues.artworkAvailability,
+                artworkType: watchedValues.artworkType,
+                artworkLicense: watchedValues.artworkLicense,
+                artworkUse: watchedValues.artworkUse,
+              }}
               editable={true}
               loading={loading}
             />
@@ -126,8 +138,9 @@ const ArtworkCreator = () => {
               color="primary"
               padding
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
               loading={loading}
-              startIcon={<UploadIcon />}
+              startIcon={<SubmitIcon />}
             >
               Publish
             </AsyncButton>

@@ -1,14 +1,15 @@
 import { makeStyles } from "@material-ui/core";
+import { DeleteOutlineRounded as DeleteIcon } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import MainHeading from "../../components/MainHeading/index.js";
-import PromptModal from "../../components/PromptModal/index.js";
+import MainHeading from "../../components/MainHeading/index";
+import PromptModal from "../../components/PromptModal/index";
 import ArtworkModifier from "../../containers/ArtworkModifier";
 import { useArtworkUpdate } from "../../contexts/local/artworkUpdate";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import globalStyles from "../../styles/global.js";
-import { containsErrors, renderError } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const useEditorStyles = makeStyles((muiTheme) => ({
   wrapper: {
@@ -73,20 +74,18 @@ const EditArtwork = ({ match }) => {
     capabilitiesRedirect
   ) ? (
     <Container className={globalClasses.gridContainer}>
-      <Grid container spacing={2}>
-        {artworkLoading || capabilitiesLoading || artwork.id ? (
-          <Grid item sm={12} className={classes.wrapper}>
-            <MainHeading
-              text="Edit artwork"
-              className={globalClasses.mainHeading}
-            />
-            <ArtworkModifier paramId={paramId} />
-          </Grid>
-        ) : (
-          // $TODO push to home and display error notification
-          "Ne postoji"
-        )}
-      </Grid>
+      {artworkLoading || capabilitiesLoading || artwork.id ? (
+        <Grid item sm={12} className={classes.wrapper}>
+          <MainHeading
+            text="Edit artwork"
+            className={globalClasses.mainHeading}
+          />
+          <ArtworkModifier paramId={paramId} />
+        </Grid>
+      ) : (
+        // $TODO push to home and display error notification
+        "Ne postoji"
+      )}
       <PromptModal
         open={modal.open}
         handleConfirm={handleDeleteArtwork}
@@ -96,6 +95,7 @@ const EditArtwork = ({ match }) => {
         promptConfirm="Delete"
         promptCancel="Cancel"
         isSubmitting={isDeleting}
+        startIcon={<DeleteIcon />}
       />
     </Container>
   ) : (

@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
-import { artepunktTheme } from "../../styles/theme.js";
+import { artepunktTheme } from "../../styles/theme";
 
 const profileBannerStyles = makeStyles((muiTheme) => ({
   container: {
@@ -16,10 +16,19 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: artepunktTheme.palette.action.disabledBackground,
+    background: artepunktTheme.palette.background.light,
+    position: "relative",
+  },
+  share: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
   },
   content: {
     padding: 24, // $TODO add global padding
+    [muiTheme.breakpoints.down("xs")]: {
+      padding: 12,
+    },
   },
   infoWrapper: {
     display: "flex",
@@ -27,10 +36,10 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     justifyContent: "flex-start",
     marginTop: "-70px",
     [muiTheme.breakpoints.down("sm")]: {
-      marginTop: "-45px",
+      marginTop: "-52px",
     },
     [muiTheme.breakpoints.down("xs")]: {
-      marginTop: "-32.5px",
+      marginTop: "-34px",
     },
   },
   avatarWrapper: {
@@ -43,6 +52,7 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     width: 130,
     height: 130,
     border: `6px solid ${artepunktTheme.palette.background.paper}`,
+    background: artepunktTheme.palette.background.light,
     borderRadius: "50%",
     marginBottom: 4,
     [muiTheme.breakpoints.down("sm")]: {
@@ -59,12 +69,12 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     alignItems: "flex-start",
     justifyContent: "center",
     flexDirection: "column",
-    marginTop: "12px",
+    flexGrow: 1,
+    marginTop: "20px",
     marginLeft: "12px",
     [muiTheme.breakpoints.down("sm")]: {
-      marginTop: "24px",
+      marginTop: "10px",
       marginLeft: "10px",
-      maxWidth: "52%",
     },
     [muiTheme.breakpoints.down("xs")]: {
       marginTop: "16px",
@@ -83,7 +93,7 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
       whiteSpace: "nowrap",
       overflow: "hidden",
       textOverflow: "ellipsis",
-      maxWidth: "100%",
+      maxWidth: "95%",
     },
   },
   detailsWrapper: {
@@ -96,16 +106,17 @@ const profileBannerStyles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
+    [muiTheme.breakpoints.down("xs")]: {
+      marginRight: 4,
+    },
   },
   icon: {
     marginRight: 3,
   },
-  share: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    marginTop: "6px",
-    flexGrow: "1",
+  value: {
+    [muiTheme.breakpoints.down("xs")]: {
+      fontSize: 12,
+    },
   },
   descriptionWrapper: {
     display: "flex",

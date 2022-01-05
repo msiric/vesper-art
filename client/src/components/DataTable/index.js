@@ -38,6 +38,8 @@ const DataTable = ({
   searchable,
   pagination,
   addOptions,
+  customPadding,
+  className,
 }) => {
   const [displayedData, setDisplayedData] = useState([null]);
   const [responsive, setResponsive] = useState("simple");
@@ -73,9 +75,14 @@ const DataTable = ({
       setDisplayedData(data.displayData),
     textLabels: {
       body: {
-        noMatch: loading ? <LoadingSpinner styles={classes.spinner} /> : empty,
+        noMatch: loading ? (
+          <LoadingSpinner customPadding={customPadding} />
+        ) : (
+          empty
+        ),
       },
     },
+    setTableProps: () => ({ className }),
   };
 
   return (

@@ -1,15 +1,16 @@
 import express from "express";
 import {
+  getBoughtArtwork,
   getBoughtOrders,
   getOrderDetails,
   getOrderMedia,
   getSoldOrders,
-} from "../../../controllers/order.js";
-import { postReview } from "../../../controllers/review.js";
+} from "../../../controllers/order";
+import { postReview } from "../../../controllers/review";
 import {
   isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 
@@ -27,6 +28,16 @@ router
   .get(
     isAuthenticated,
     handler(getBoughtOrders, false, (req, res, next) => ({}))
+  );
+
+router
+  .route("/orders/purchases/:artworkId")
+  // $TODO not tested
+  .get(
+    isAuthenticated,
+    handler(getBoughtArtwork, false, (req, res, next) => ({
+      ...req.params,
+    }))
   );
 
 router

@@ -1,6 +1,5 @@
 import { Ticket } from "../../entities/Ticket";
 
-// $Needs testing (mongo -> postgres)
 export const addNewTicket = async ({
   ticketId,
   userId,
@@ -8,14 +7,6 @@ export const addNewTicket = async ({
   ticketBody,
   connection,
 }) => {
-  /*   const newTicket = new Ticket();
-  newTicket.owner = userId;
-  newTicket.title = ticketTitle;
-  newTicket.body = ticketBody;
-  newTicket.attachment = ""; // $TODO
-  newTicket.status = "In progress";
-  return await Ticket.save(newTicket); */
-
   const savedTicket = await connection
     .createQueryBuilder()
     .insert()
@@ -31,6 +22,5 @@ export const addNewTicket = async ({
       },
     ])
     .execute();
-  console.log(savedTicket);
   return savedTicket;
 };

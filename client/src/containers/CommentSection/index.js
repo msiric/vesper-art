@@ -1,13 +1,17 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
+import {
+  ArrowUpwardRounded as SubmitIcon,
+  DeleteOutlineRounded as DeleteIcon,
+} from "@material-ui/icons";
 import { useSnackbar } from "notistack";
 import queryString from "query-string";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import { commentValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import CommentCard from "../../components/CommentCard/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
+import CommentCard from "../../components/CommentCard/index";
 import CommentPopover from "../../components/CommentPopover";
 import InfiniteList from "../../components/InfiniteList";
 import MainHeading from "../../components/MainHeading";
@@ -20,9 +24,9 @@ import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
 import List from "../../domain/List";
-import AddCommentForm from "../../forms/CommentForm/index.js";
+import CommentForm from "../../forms/CommentForm/index";
 import useVisibleElement from "../../hooks/useVisibleElement";
-import commentSectionStyles from "./styles.js";
+import commentSectionStyles from "./styles";
 
 const CommentSection = ({
   paramId,
@@ -67,19 +71,20 @@ const CommentSection = ({
   const query = queryString.parse(location.search);
   const classes = commentSectionStyles();
 
-  const {
-    getValues,
-    handleSubmit,
-    formState,
-    errors,
-    control,
-    reset,
-  } = useForm({
-    defaultValues: {
-      commentContent: "",
-    },
-    resolver: yupResolver(commentValidation),
+  const setDefaultValues = () => ({
+    commentContent: "",
   });
+
+  const { getValues, handleSubmit, formState, errors, control, watch, reset } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(commentValidation),
+    });
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   useEffect(() => {
     if (
@@ -100,7 +105,6 @@ const CommentSection = ({
     <Card>
       <CardContent>
         <MainHeading text="Comments" className={classes.heading} />
-        <Divider />
         <FormProvider control={control}>
           <form
             onSubmit={handleSubmit(
@@ -117,14 +121,15 @@ const CommentSection = ({
                 })
             )}
           >
-            <AddCommentForm errors={errors} loading={loading} />
+            <CommentForm errors={errors} loading={loading} />
             <AsyncButton
               type="submit"
               fullWidth
               padding
               submitting={formState.isSubmitting}
+              disabled={isDisabled}
               loading={loading}
-              startIcon={<UploadIcon />}
+              startIcon={<SubmitIcon />}
             >
               Post
             </AsyncButton>
@@ -137,9 +142,11 @@ const CommentSection = ({
             fetchComments({ artworkId, query, highlightRef, enqueueSnackbar })
           }
           hasMore={hasMore}
-          loading={loading || fetching}
+          loading={loading}
+          fetching={fetching}
           error={error.refetch}
           empty="No comments yet"
+          type="list"
         >
           <List ref={commentsRef} className={classes.list} disablePadding>
             <Box>
@@ -193,6 +200,7 @@ const CommentSection = ({
         promptConfirm="Delete"
         promptCancel="Cancel"
         isSubmitting={isDeleting}
+        startIcon={<DeleteIcon />}
       />
     </Card>
   );

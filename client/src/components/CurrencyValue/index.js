@@ -1,7 +1,7 @@
 import React from "react";
 import NumberFormat from "react-number-format";
-import SkeletonWrapper from "../SkeletonWrapper/index.js";
-import currencyValueStyles from "./styles.js";
+import SkeletonWrapper from "../SkeletonWrapper/index";
+import currencyValueStyles from "./styles";
 
 const CurrencyValue = ({
   loading = false,
@@ -10,6 +10,7 @@ const CurrencyValue = ({
   thousandSeparator = true,
   decimalScale = 2,
   prefix = "$",
+  onValueChange,
   ...props
 }) => {
   const classes = currencyValueStyles();
@@ -17,12 +18,14 @@ const CurrencyValue = ({
   return (
     <SkeletonWrapper variant="text" loading={loading}>
       <NumberFormat
+        {...props}
         value={value}
         displayType={displayType}
         thousandSeparator={thousandSeparator}
         decimalScale={decimalScale}
         prefix={prefix}
-        {...props}
+        onChange={() => null}
+        onValueChange={onValueChange}
       />
     </SkeletonWrapper>
   );

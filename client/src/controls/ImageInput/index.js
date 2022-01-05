@@ -10,8 +10,8 @@ import Box from "../../domain/Box";
 import CircularProgress from "../../domain/CircularProgress";
 import IconButton from "../../domain/IconButton";
 import Typography from "../../domain/Typography";
-import { artepunktTheme } from "../../styles/theme.js";
-import imageInputStyles from "./styles.js";
+import { artepunktTheme } from "../../styles/theme";
+import imageInputStyles from "./styles";
 
 const Input = ({
   name,
@@ -22,10 +22,10 @@ const Input = ({
   title,
   preview,
   shape,
-  height,
-  width,
+  variant,
   noEmpty,
   editable,
+  isDynamic = false,
   loading = false,
 }) => {
   const [state, setState] = useState({
@@ -38,13 +38,13 @@ const Input = ({
   const classes = imageInputStyles({ editable });
 
   useEffect(() => {
-    if (preview && !state.imagePreviewUrl)
+    if (!loading && preview && !state.imagePreviewUrl)
       setState((prevState) => ({
         ...prevState,
         file: preview,
         imagePreviewUrl: preview,
       }));
-  }, [preview]);
+  }, [preview, loading]);
 
   const showFileUpload = async (e) => {
     if (editable) {
@@ -103,12 +103,15 @@ const Input = ({
           {title}
         </Typography>
       )}
-
       <Avatar
-        className={classes.avatar}
+        className={`${classes.avatar} ${isDynamic ? classes.artwork : ""} ${
+          isDynamic && loading ? classes.sizing : ""
+        } ${isDynamic && (!state.file || error) ? classes.minHeight : ""}`}
         onClick={showFileUpload}
         shape={shape}
-        style={{ height, width }}
+        variant={variant}
+        width={isDynamic ? "100%" : ""}
+        maxWidth={isDynamic ? 650 : ""}
         loading={loading}
       >
         {state.loading ? (
@@ -136,7 +139,9 @@ const Input = ({
         )}
         {state.file && (
           <img
-            className={classes.preview}
+            className={`${classes.preview} ${
+              isDynamic ? classes.artworkPreview : ""
+            } ${error ? classes.hidden : ""}`}
             src={state.imagePreviewUrl}
             alt="..."
           />
@@ -146,7 +151,6 @@ const Input = ({
         <Typography
           variant="caption"
           color={artepunktTheme.palette.error.main}
-          noWrap
           className={classes.helper}
         >
           {helperText}

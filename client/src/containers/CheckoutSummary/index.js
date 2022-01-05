@@ -1,26 +1,30 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { AddCircleRounded as UploadIcon } from "@material-ui/icons";
+import {
+  ArrowUpwardRounded as SubmitIcon,
+  RemoveRounded as RemoveIcon,
+} from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { featureFlags, payment } from "../../../../common/constants";
+import { isFormAltered } from "../../../../common/helpers";
 import { discountValidation } from "../../../../common/validation";
-import AsyncButton from "../../components/AsyncButton/index.js";
-import CheckoutCard from "../../components/CheckoutCard/index.js";
-import CheckoutItem from "../../components/CheckoutItem/index.js";
-import ListItems from "../../components/ListItems/index.js";
+import AsyncButton from "../../components/AsyncButton/index";
+import CheckoutCard from "../../components/CheckoutCard/index";
+import CheckoutItem from "../../components/CheckoutItem/index";
+import ListItems from "../../components/ListItems/index";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import Divider from "../../domain/Divider";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
-import DiscountForm from "../../forms/DiscountForm/index.js";
-import checkoutSummaryStyles from "./styles.js";
+import DiscountForm from "../../forms/DiscountForm/index";
+import checkoutSummaryStyles from "./styles";
 
 const CheckoutSummary = ({
   version,
-  license,
+  watchables,
   discount,
   handleDiscountChange,
   loading,
@@ -28,6 +32,8 @@ const CheckoutSummary = ({
   paying,
   step,
 }) => {
+  const { licenseType } = watchables;
+
   const [state, setState] = useState({
     summary: {
       license: null,
@@ -93,6 +99,10 @@ const CheckoutSummary = ({
     />,
   ];
 
+  const setDefaultValues = () => ({
+    discountCode: "",
+  });
+
   const {
     handleSubmit,
     formState,
@@ -103,11 +113,14 @@ const CheckoutSummary = ({
     getValues,
     watch,
   } = useForm({
-    defaultValues: {
-      discountCode: "",
-    },
+    defaultValues: setDefaultValues(),
     resolver: yupResolver(discountValidation),
   });
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   const onSubmit = async (values) => await handleDiscountChange({ values });
 
@@ -116,8 +129,8 @@ const CheckoutSummary = ({
   const classes = checkoutSummaryStyles();
 
   const recalculateValues = () => {
-    const selectedLicense = license;
-    const selectedAmount = version[license];
+    const selectedLicense = licenseType;
+    const selectedAmount = version[licenseType];
     const calculatedPrice = selectedLicense ? selectedAmount : 0;
     const calculatedFee = selectedAmount
       ? (
@@ -162,7 +175,7 @@ const CheckoutSummary = ({
     if (version.id) {
       recalculateValues();
     }
-  }, [version, license, discount]);
+  }, [version, licenseType, discount]);
 
   return (
     <Card className={classes.container}>
@@ -190,6 +203,7 @@ const CheckoutSummary = ({
               onClick={() =>
                 handleDiscountChange({ values: { discountCode: null } })
               }
+              startIcon={<RemoveIcon />}
             >
               Remove discount
             </AsyncButton>
@@ -203,8 +217,8 @@ const CheckoutSummary = ({
                   submitting={formState.isSubmitting}
                   loading={loading}
                   submitting={submitting}
-                  disabled={paying}
-                  startIcon={<UploadIcon />}
+                  disabled={isDisabled || paying}
+                  startIcon={<SubmitIcon />}
                 >
                   Apply
                 </AsyncButton>

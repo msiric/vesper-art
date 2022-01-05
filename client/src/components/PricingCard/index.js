@@ -1,12 +1,13 @@
 import {
   CheckRounded as CheckIcon,
-  EditRounded as EditIcon,
-  GetAppRounded as DownloadIcon,
-  ShoppingCartRounded as PurchaseIcon,
+  EditOutlined as EditIcon,
+  GetAppOutlined as DownloadIcon,
+  ShoppingCartOutlined as PurchaseIcon,
 } from "@material-ui/icons";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { featureFlags } from "../../../../common/constants";
+import { formatArtworkPrice } from "../../../../common/helpers";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardContent from "../../domain/CardContent";
@@ -16,8 +17,9 @@ import ListItem from "../../domain/ListItem";
 import ListItemIcon from "../../domain/ListItemIcon";
 import ListItemText from "../../domain/ListItemText";
 import Typography from "../../domain/Typography";
-import SyncButton from "../SyncButton/index.js";
-import pricingCardStyles from "./styles.js";
+import AsyncButton from "../AsyncButton";
+import SyncButton from "../SyncButton/index";
+import pricingCardStyles from "./styles";
 
 const PricingCard = ({
   artworkId,
@@ -30,6 +32,7 @@ const PricingCard = ({
   handlePurchase,
   handleModalOpen,
   loading,
+  submitting,
 }) => {
   const classes = pricingCardStyles();
 
@@ -37,13 +40,15 @@ const PricingCard = ({
     <Card className={classes.container}>
       <CardContent className={classes.content}>
         <Box loading={loading} className={classes.dataWrapper}>
-          {price ? (
+          {!!price && (
             <Typography variant="h5" color="textSecondary">
               $
             </Typography>
-          ) : null}
+          )}
           <Box className={classes.priceWrapper}>
-            <Typography className={classes.price}>{price || "Free"}</Typography>
+            <Typography className={classes.price}>
+              {formatArtworkPrice({ price, prefix: "", freeFormat: "Free" })}
+            </Typography>
           </Box>
         </Box>
         <Divider />
@@ -79,9 +84,13 @@ const PricingCard = ({
               Purchase
             </SyncButton>
           ) : (
-            <SyncButton startIcon={<DownloadIcon />} onClick={handleModalOpen}>
+            <AsyncButton
+              startIcon={<DownloadIcon />}
+              onClick={handleModalOpen}
+              submitting={submitting}
+            >
               Download
-            </SyncButton>
+            </AsyncButton>
           )
         ) : (
           <SyncButton

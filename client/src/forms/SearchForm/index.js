@@ -1,18 +1,27 @@
 import { Box, IconButton, InputAdornment } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   AccountBoxRounded as UserIcon,
   ImageRounded as ArtworkIcon,
   SearchRounded as SearchIcon,
 } from "@material-ui/icons";
 import React from "react";
-import { useEventsStore } from "../../contexts/global/events.js";
-import TextInput from "../../controls/TextInput/index.js";
-import useGlobalStyles from "../../styles/global";
+import { useEventsStore } from "../../contexts/global/events";
+import TextInput from "../../controls/TextInput/index";
+
+const searchFormStyles = makeStyles((muiTheme) => ({
+  searchQuery: {
+    margin: 0,
+  },
+  searchType: {
+    display: "none !important",
+  },
+}));
 
 const SearchForm = ({ handleToggle, getValues, setValue, loading }) => {
   const search = useEventsStore((state) => state.search);
 
-  const globalClasses = useGlobalStyles();
+  const classes = searchFormStyles();
 
   return (
     <Box>
@@ -22,7 +31,7 @@ const SearchForm = ({ handleToggle, getValues, setValue, loading }) => {
         setValue={setValue}
         placeholder="Search..."
         loading={loading}
-        className={globalClasses.searchQuery}
+        className={classes.searchQuery}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -54,7 +63,7 @@ const SearchForm = ({ handleToggle, getValues, setValue, loading }) => {
       <TextInput
         name="searchType"
         type="hidden"
-        className={globalClasses.searchType}
+        className={classes.searchType}
       />
     </Box>
   );

@@ -13,6 +13,11 @@ import {
 import { User } from "./User";
 import { Version } from "./Version";
 
+export enum ArtworkVisibility {
+  visible = "visible",
+  invisible = "invisible",
+}
+
 @Entity()
 export class Artwork extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -37,6 +42,12 @@ export class Artwork extends BaseEntity {
 
   @Column()
   active: boolean;
+
+  @Column({
+    type: "enum",
+    enum: ArtworkVisibility,
+  })
+  visibility: ArtworkVisibility;
 
   @Column()
   generated: boolean;

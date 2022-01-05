@@ -2,7 +2,7 @@ import * as React from "react";
 import RangeDelimiter from "../../domain/RangeDelimiter";
 import RangePicker from "../../domain/RangePicker";
 import TextField from "../../domain/TextField";
-import rangeInputStyles from "./styles.js";
+import rangeInputStyles from "./styles";
 
 // $TODO Treba sredit
 const RangeInput = ({
@@ -19,8 +19,11 @@ const RangeInput = ({
       startText={fromLabel}
       endText={toLabel}
       value={selectedDate}
-      onChange={(date) => handleChange(date)}
+      onChange={() => null}
+      onAccept={(date) => handleChange(date)}
       inputFormat="dd/MM/yyyy"
+      autoOk={false}
+      disableFuture={true}
       loading={loading}
       renderInput={(startProps, endProps) => (
         <>

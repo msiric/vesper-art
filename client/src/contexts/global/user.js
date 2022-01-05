@@ -14,6 +14,7 @@ const initialState = {
   token: null,
   id: null,
   name: null,
+  fullName: null,
   email: null,
   avatar: null,
   height: null,
@@ -22,7 +23,6 @@ const initialState = {
   country: null,
   anchor: null,
   favorites: {},
-  intents: {},
 };
 
 const initState = () => ({
@@ -35,12 +35,12 @@ const initActions = (set, get) => ({
     token,
     id,
     name,
+    fullName,
     email,
     avatar,
     stripeId,
     country,
     favorites,
-    intents,
   }) => {
     set((state) => ({
       ...state,
@@ -48,23 +48,15 @@ const initActions = (set, get) => ({
       token,
       id,
       name,
+      fullName,
       email,
       avatar,
       stripeId,
       country,
       favorites,
-      intents,
     }));
   },
-  updateUser: ({
-    token,
-    email,
-    avatar,
-    stripeId,
-    country,
-    favorites,
-    intents,
-  }) => {
+  updateUser: ({ token, email, avatar, stripeId, country, favorites }) => {
     set((state) => ({
       ...state,
       token,
@@ -73,7 +65,6 @@ const initActions = (set, get) => ({
       stripeId,
       country,
       favorites,
-      intents,
     }));
   },
   updateToken: ({ token }) => {
@@ -109,16 +100,13 @@ const initActions = (set, get) => ({
           token: response.accessToken,
           id: response.user.id,
           name: response.user.name,
+          fullName: response.user.fullName,
           email: response.user.email,
           avatar: response.user.avatar,
           stripeId: response.user.stripeId,
           country: response.user.country,
           favorites: response.user.favorites.reduce((object, item) => {
             object[item.artworkId] = true;
-            return object;
-          }, {}),
-          intents: response.user.intents.reduce((object, item) => {
-            object[item.artworkId] = item.intentId;
             return object;
           }, {}),
         });
@@ -196,7 +184,7 @@ const initActions = (set, get) => ({
       toggleMenu({ event: window.event });
       resetUser();
       resetEvents();
-      history.push("/login");
+      history.push(window.location.pathname);
     } catch (err) {
       console.log(err);
     }

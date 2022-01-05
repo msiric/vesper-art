@@ -1,14 +1,14 @@
 import express from "express";
-import { featureFlags } from "../../../common/constants.js";
+import { featureFlags } from "../../../common/constants";
 import {
   createUserIntent,
   deactivateUser,
   deleteUserIntent,
   getBuyerStatistics,
   getSellerStatistics,
-  getUserArtwork,
+  getUserArtworkById,
+  getUserArtworkByUsername,
   getUserFavorites,
-  getUserMedia,
   getUserNotifications,
   getUserOwnership,
   getUserProfile,
@@ -21,25 +21,21 @@ import {
   updateUserPassword,
   updateUserPreferences,
   updateUserProfile,
-} from "../../../controllers/user.js";
-import multerApi from "../../../lib/multer.js";
+} from "../../../controllers/user";
+import multerApi from "../../../lib/multer";
 import {
   isAuthenticated,
   isAuthorized,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 
-router
-  .route("/users/:userUsername")
-  // $DONE works
-  .get(
-    handler(getUserProfile, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
-    }))
-  );
+router.route("/users/:userUsername").get(
+  handler(getUserProfile, false, (req, res, next) => ({
+    ...req.params,
+  }))
+);
 
 router
   .route("/users/:userId")
@@ -48,10 +44,10 @@ router
     [isAuthenticated, isAuthorized, multerApi.uploadUserLocal],
     handler(updateUserProfile, true, (req, res, next) => ({
       ...req.params,
+      ...req.body,
       userPath: req.file ? req.file.path : "",
       userFilename: req.file ? req.file.filename : "",
       userMimetype: req.file ? req.file.mimetype : "",
-      userData: { ...req.body },
     }))
   )
   // $TODO not tested
@@ -66,9 +62,8 @@ router
 router
   .route("/users/:userUsername/artwork")
   // $TODO not tested
-  // $TODO needs authentication when going to my_artwork
   .get(
-    handler(getUserArtwork, false, (req, res, next) => ({
+    handler(getUserArtworkByUsername, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
@@ -85,24 +80,24 @@ router
   );
 
 router
-  .route("/users/:userId/uploads")
+  .route("/users/:userId/my_artwork")
   // $TODO not tested
-  // $TODO needs authentication when going to my_artwork
   .get(
     [isAuthenticated, isAuthorized],
-    handler(getUserUploads, false, (req, res, next) => ({
+    handler(getUserArtworkById, false, (req, res, next) => ({
       ...req.params,
       ...req.query,
     }))
   );
 
 router
-  .route("/users/:userId/artwork/:artworkId/download")
+  .route("/users/:userId/uploads")
   // $TODO not tested
   .get(
     [isAuthenticated, isAuthorized],
-    handler(getUserMedia, false, (req, res, next) => ({
+    handler(getUserUploads, false, (req, res, next) => ({
       ...req.params,
+      ...req.query,
     }))
   );
 
@@ -117,47 +112,55 @@ router
     }))
   );
 
-router
-  .route("/users/:userId/statistics/sales")
-  // $TODO not tested
-  .get(
-    [isAuthenticated, isAuthorized],
-    handler(getSellerStatistics, false, (req, res, next) => ({
-      ...req.params,
-    }))
-  );
+// FEATURE FLAG - dashboard
+featureFlags.dashboard &&
+  router
+    .route("/users/:userId/statistics/sales")
+    // $TODO not tested
+    .get(
+      [isAuthenticated, isAuthorized],
+      handler(getSellerStatistics, false, (req, res, next) => ({
+        ...req.params,
+      }))
+    );
 
-router
-  .route("/users/:userId/statistics/purchases")
-  // $TODO not tested
-  .get(
-    [isAuthenticated, isAuthorized],
-    handler(getBuyerStatistics, false, (req, res, next) => ({
-      ...req.params,
-    }))
-  );
+// FEATURE FLAG - dashboard
+featureFlags.dashboard &&
+  router
+    .route("/users/:userId/statistics/purchases")
+    // $TODO not tested
+    .get(
+      [isAuthenticated, isAuthorized],
+      handler(getBuyerStatistics, false, (req, res, next) => ({
+        ...req.params,
+      }))
+    );
 
-router
-  .route("/users/:userId/sales")
-  // $TODO not tested
-  .get(
-    [isAuthenticated, isAuthorized],
-    handler(getUserSales, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
-    }))
-  );
+// FEATURE FLAG - dashboard
+featureFlags.dashboard &&
+  router
+    .route("/users/:userId/sales")
+    // $TODO not tested
+    .get(
+      [isAuthenticated, isAuthorized],
+      handler(getUserSales, false, (req, res, next) => ({
+        ...req.params,
+        ...req.query,
+      }))
+    );
 
-router
-  .route("/users/:userId/purchases")
-  // $TODO not tested
-  .get(
-    [isAuthenticated, isAuthorized],
-    handler(getUserPurchases, false, (req, res, next) => ({
-      ...req.params,
-      ...req.query,
-    }))
-  );
+// FEATURE FLAG - dashboard
+featureFlags.dashboard &&
+  router
+    .route("/users/:userId/purchases")
+    // $TODO not tested
+    .get(
+      [isAuthenticated, isAuthorized],
+      handler(getUserPurchases, false, (req, res, next) => ({
+        ...req.params,
+        ...req.query,
+      }))
+    );
 
 router
   .route("/users/:userId/settings")
@@ -210,6 +213,7 @@ router
     handler(updateUserEmail, true, (req, res, next) => ({
       ...req.params,
       ...req.body,
+      response: res,
     }))
   );
 
@@ -224,6 +228,7 @@ router
     }))
   );
 
+// $TODO no automated tests
 // FEATURE FLAG - stripe
 // FEATURE FLAG - payment
 featureFlags.stripe &&

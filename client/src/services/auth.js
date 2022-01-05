@@ -1,4 +1,4 @@
-import { ax } from "../containers/Interceptor/Interceptor.js";
+import { ax } from "../containers/Interceptor";
 
 export const postRecover = {
   request: async ({ data }) => await ax.post("/api/auth/forgot_password", data),
@@ -11,10 +11,26 @@ export const postLogin = {
   error: { message: "Failed to log in user", variant: "error" },
 };
 export const postReset = {
-  request: async ({ resetToken, data }) =>
-    await ax.post(`/api/auth/reset_password/${resetToken}`, data),
+  request: async ({ userId, resetToken, data }) =>
+    await ax.post(
+      `/api/auth/reset_password/user/${userId}/token/${resetToken}`,
+      data
+    ),
   success: { message: "Password successfully reset", variant: "success" },
   error: { message: "Failed to reset password", variant: "error" },
+};
+export const postRefresh = {
+  request: async () =>
+    await ax.post("/api/auth/refresh_token", {
+      headers: {
+        credentials: "include",
+      },
+    }),
+  success: {
+    message: "Access token successfully refreshed",
+    variant: "success",
+  },
+  error: { message: "Failed to refresh access token", variant: "error" },
 };
 export const postSignup = {
   request: async ({ data }) => await ax.post("/api/auth/signup", data),

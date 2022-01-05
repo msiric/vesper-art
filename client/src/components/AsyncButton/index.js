@@ -12,6 +12,7 @@ const AsyncButton = ({
   color = "primary",
   handleClick,
   padding,
+  fullWidth,
   children,
   ...props
 }) => {
@@ -24,6 +25,7 @@ const AsyncButton = ({
         outline={variant}
         onClick={handleClick}
         disabled={submitting || disabled}
+        fullWidth={fullWidth}
         loading={loading}
         {...props}
       >

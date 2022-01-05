@@ -1,6 +1,4 @@
-import Stripe from "stripe";
-
-const stripe = Stripe(process.env.STRIPE_SECRET);
+import { stripe } from "../../lib/stripe";
 
 export const constructStripeEvent = async ({
   stripeBody,
@@ -58,7 +56,6 @@ export const constructStripeIntent = async ({
     amount: intentAmount,
     currency: intentCurrency,
     application_fee_amount: intentFee,
-    on_behalf_of: sellerId,
     transfer_data: {
       destination: sellerId,
     },

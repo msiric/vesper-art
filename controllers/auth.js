@@ -1,14 +1,14 @@
-import argon2 from "argon2";
 import createError from "http-errors";
-import { errors } from "../common/constants";
+import { appName } from "../common/constants";
 import { isObjectEmpty } from "../common/helpers";
 import {
   emailValidation,
   loginValidation,
-  passwordValidation,
   recoveryValidation,
+  resetValidation,
   signupValidation,
 } from "../common/validation";
+import { renderEmail } from "../emails/template.js";
 import {
   addNewUser,
   editUserResetToken,
@@ -17,31 +17,39 @@ import {
   resetUserPassword,
   resetVerificationToken,
   revokeAccessToken,
-} from "../services/postgres/auth.js";
+} from "../services/postgres/auth";
 import {
   editUserEmail,
   fetchUserByAuth,
   fetchUserByEmail,
-  fetchUserByResetToken,
   fetchUserIdByCreds,
   fetchUserIdByEmail,
   fetchUserIdByUsername,
   fetchUserIdByVerificationToken,
-} from "../services/postgres/user.js";
+  fetchUserResetTokenById,
+} from "../services/postgres/user";
 import {
   createAccessToken,
   createRefreshToken,
   sendRefreshToken,
-} from "../utils/auth.js";
-import { sendEmail } from "../utils/email.js";
+} from "../utils/auth";
+import { sendEmail } from "../utils/email";
 import {
+  formatEmailContent,
+  formatError,
+  formatResponse,
+  formatTokenData,
   generateResetToken,
   generateUuids,
   generateVerificationToken,
-} from "../utils/helpers.js";
+  hashString,
+  verifyHash,
+} from "../utils/helpers";
+import { errors, responses } from "../utils/statuses";
 
 // needs transaction (not tested)
 export const postSignUp = async ({
+  userName,
   userEmail,
   userUsername,
   userPassword,
@@ -49,6 +57,7 @@ export const postSignUp = async ({
   connection,
 }) => {
   await signupValidation.validate({
+    userName,
     userEmail,
     userUsername,
     userPassword,
@@ -56,39 +65,49 @@ export const postSignUp = async ({
   });
   const foundId = await fetchUserIdByCreds({
     userUsername,
+    userEmail,
     connection,
   });
   if (foundId) {
-    throw createError(
-      errors.conflict,
-      "Account with that email/username already exists",
-      { expose: true }
-    );
+    throw createError(...formatError(errors.userAlreadyExists));
   } else {
-    const { verificationToken, verificationLink, verificationExpiry } =
-      generateVerificationToken();
-    const hashedPassword = await argon2.hash(userPassword);
+    const {
+      verificationToken,
+      verificationLink,
+      verificationExpiry,
+      verified,
+    } = generateVerificationToken();
+    const hashedPassword = await hashString(userPassword);
     const { userId } = generateUuids({
       userId: null,
     });
     await addNewUser({
       userId,
       userEmail,
+      userName,
       userUsername,
       hashedPassword,
       verificationToken,
       verificationExpiry,
+      verified,
       connection,
+    });
+    const emailValues = formatEmailContent({
+      replacementValues: {
+        heading: `You are one step away from joining ${appName}`,
+        text: "Please click on the button below to verify your email",
+        button: "Confirm email",
+        redirect: verificationLink,
+      },
+      replacementAttachments: [],
     });
     await sendEmail({
       emailReceiver: userEmail,
-      emailSubject: "Please confirm your email",
-      emailContent: `Hello,
-        Please click on the link to verify your email:
-
-        <a href=${verificationLink}>Click here to verify</a>`,
+      emailSubject: "Confirm your email",
+      emailContent: renderEmail({ ...emailValues.formattedProps }),
+      emailAttachments: emailValues.formattedAttachments,
     });
-    return { message: "Verify your email address", expose: true };
+    return formatResponse(responses.userSignedUp);
   }
 };
 
@@ -108,53 +127,18 @@ export const postLogIn = async ({
     const foundUser = await fetchUserByAuth({ userId: foundId, connection });
 
     if (isObjectEmpty(foundUser)) {
-      throw createError(
-        errors.notFound,
-        "Account with provided credentials does not exist",
-        { expose: true }
-      );
-    } else if (!foundUser.active) {
-      throw createError(errors.gone, "Account is no longer active", {
-        expose: true,
-      });
+      throw createError(...formatError(errors.userDoesNotExist));
     } else if (!foundUser.verified) {
-      throw createError(errors.unauthorized, "Please verify your account", {
-        expose: true,
-      });
+      throw createError(...formatError(errors.userNotVerified));
     } else {
-      const isValid = await argon2.verify(foundUser.password, userPassword);
+      const isValid = await verifyHash(foundUser.password, userPassword);
 
       if (!isValid) {
-        throw createError(
-          errors.notFound,
-          "Account with provided credentials does not exist",
-          { expose: true }
-        );
+        throw createError(...formatError(errors.userDoesNotExist));
       }
     }
 
-    const tokenPayload = {
-      id: foundUser.id,
-      name: foundUser.name,
-      jwtVersion: foundUser.jwtVersion,
-      onboarded: !!foundUser.stripeId,
-      active: foundUser.active,
-    };
-
-    const userInfo = {
-      id: foundUser.id,
-      name: foundUser.name,
-      email: foundUser.email,
-      avatar: foundUser.avatar,
-      notifications: foundUser.notifications,
-      active: foundUser.active,
-      stripeId: foundUser.stripeId,
-      country: foundUser.country,
-      businessAddress: foundUser.businessAddress,
-      jwtVersion: foundUser.jwtVersion,
-      favorites: foundUser.favorites,
-      intents: foundUser.intents,
-    };
+    const { tokenPayload, userInfo } = formatTokenData({ user: foundUser });
 
     sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
 
@@ -163,11 +147,7 @@ export const postLogIn = async ({
       user: userInfo,
     };
   }
-  throw createError(
-    errors.notFound,
-    "Account with provided credentials does not exist",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.userDoesNotExist));
 };
 
 export const postLogOut = ({ res, connection }) => {
@@ -178,84 +158,89 @@ export const postRefreshToken = async ({ req, res, next, connection }) => {
   return await refreshAccessToken(req, res, next, connection);
 };
 
+// $TODO not used?
 export const postRevokeToken = async ({ userId, connection }) => {
   await revokeAccessToken({ userId, connection });
-  return { message: "Token successfully revoked" };
+  return formatResponse(responses.accessTokenRevoked);
 };
 
 // needs transaction (not tested)
+// $TODO can be improved (remove fetch call and just reset verification token - check if affected rows is not 0)
 export const verifyRegisterToken = async ({ tokenId, connection }) => {
-  const foundId = await fetchUserIdByVerificationToken({ tokenId, connection });
+  const foundId = await fetchUserIdByVerificationToken({
+    tokenId,
+    connection,
+  });
   if (foundId) {
     await resetVerificationToken({ tokenId, connection });
-    return { message: "Token successfully verified", expose: true };
+    return formatResponse(responses.registerTokenVerified);
   }
-  throw createError(
-    errors.badRequest,
-    "Verification token is invalid or has expired",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.verificationTokenInvalid));
 };
 
 export const forgotPassword = async ({ userEmail, connection }) => {
   await emailValidation.validate({ userEmail });
-  const { resetToken, resetLink, resetExpiry } = generateResetToken();
-  await editUserResetToken({
-    userEmail,
-    resetToken,
-    resetExpiry,
-    connection,
-  });
-  await sendEmail({
-    emailReceiver: userEmail,
-    emailSubject: "Reset your password",
-    emailContent: `You are receiving this because you have requested to reset the password for your account.
-          Please click on the following link, or paste this into your browser to complete the process:
-          
-          <a href="${resetLink}"</a>`,
-  });
-  return { message: "Password reset", expose: true };
+  const userId = await fetchUserIdByEmail({ userEmail, connection });
+  if (userId) {
+    const { resetToken, resetLink, resetExpiry } = await generateResetToken({
+      userId,
+    });
+    await editUserResetToken({
+      userEmail,
+      resetToken,
+      resetExpiry,
+      connection,
+    });
+    const emailValues = formatEmailContent({
+      replacementValues: {
+        heading: "Reset your password",
+        text: "You are receiving this because you have requested to reset the password for your account. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
+        button: "Reset password",
+        redirect: resetLink,
+      },
+      replacementAttachments: [],
+    });
+    await sendEmail({
+      emailReceiver: userEmail,
+      emailSubject: "Reset your password",
+      emailContent: renderEmail({ ...emailValues.formattedProps }),
+      emailAttachments: emailValues.formattedAttachments,
+    });
+  }
+  return formatResponse(responses.passwordReset);
 };
 
 // needs transaction (not tested)
 export const resetPassword = async ({
   tokenId,
-  userCurrent,
+  userId,
   userPassword,
   userConfirm,
   connection,
 }) => {
-  const foundUser = await fetchUserByResetToken({ tokenId, connection });
-  if (!isObjectEmpty(foundUser)) {
-    const isCurrentValid = await argon2.verify(foundUser.password, userCurrent);
-    if (!isCurrentValid)
-      throw createError(errors.badRequest, "Current password is incorrect", {
-        expose: true,
+  const foundUser = await fetchUserResetTokenById({
+    userId,
+    connection,
+  });
+  if (!isObjectEmpty(foundUser) && !!foundUser.resetToken) {
+    const isValid = await verifyHash(foundUser.resetToken, tokenId);
+    if (isValid) {
+      await resetValidation.validate({
+        userPassword,
+        userConfirm,
       });
-    const isPasswordValid = await argon2.verify(
-      foundUser.password,
-      userPassword
-    );
-    if (isPasswordValid)
-      throw createError(
-        errors.badRequest,
-        "New password cannot be identical to the old one",
-        { expose: true }
+      const isPasswordValid = await verifyHash(
+        foundUser.password,
+        userPassword
       );
-    await passwordValidation.validate({
-      userCurrent,
-      userPassword,
-      userConfirm,
-    });
-    const hashedPassword = await argon2.hash(userPassword);
-    await resetUserPassword({ tokenId, hashedPassword, connection });
-    return { message: "Password updated successfully", expose: true };
+      if (isPasswordValid)
+        throw createError(...formatError(errors.newPasswordIdentical));
+      const hashedPassword = await hashString(userPassword);
+      await resetUserPassword({ userId, hashedPassword, connection });
+      return formatResponse(responses.passwordUpdated);
+    }
   }
-  throw createError(
-    errors.badRequest,
-    "Reset token is invalid or has expired",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.resetTokenInvalid));
 };
 
 export const resendToken = async ({ userEmail, connection }) => {
@@ -268,38 +253,43 @@ export const resendToken = async ({ userEmail, connection }) => {
   });
   if (!isObjectEmpty(foundUser)) {
     if (!foundUser.verified) {
-      const { verificationToken, verificationLink, verificationExpiry } =
-        generateVerificationToken();
+      const {
+        verificationToken,
+        verificationLink,
+        verificationExpiry,
+        verified,
+      } = generateVerificationToken();
       await editUserEmail({
         userId: foundUser.id,
-        userEmail,
+        userEmail: foundUser.email,
         verificationToken,
         verificationExpiry,
+        verified,
         connection,
+      });
+      const emailValues = formatEmailContent({
+        replacementValues: {
+          heading: "Confirm your email",
+          text: "You are receiving this because you have requested a new verification token to verify your account. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
+          button: "Verify account",
+          redirect: verificationLink,
+        },
+        replacementAttachments: [],
       });
       await sendEmail({
         emailReceiver: userEmail,
-        emailSubject: "Please confirm your email",
-        emailContent: `Hello,
-          Please click on the link to verify your email:
-  
-          <a href=${verificationLink}>Click here to verify</a>`,
+        emailSubject: "Verify your account",
+        emailContent: renderEmail({ ...emailValues.formattedProps }),
+        emailAttachments: emailValues.formattedAttachments,
       });
-      return { message: "Verification link successfully sent", expose: true };
+    } else {
+      throw createError(...formatError(errors.userAlreadyVerified));
     }
-    throw createError(errors.badRequest, "Account is already verified", {
-      expose: true,
-    });
   }
-  throw createError(
-    errors.notFound,
-    "Account with provided email does not exist",
-    { expose: true }
-  );
+  return formatResponse(responses.verificationTokenResent);
 };
 
 export const updateEmail = async ({
-  response,
   userEmail,
   userUsername,
   userPassword,
@@ -318,63 +308,48 @@ export const updateEmail = async ({
     const foundUser = await fetchUserByAuth({ userId: foundId, connection });
 
     if (isObjectEmpty(foundUser)) {
-      throw createError(
-        errors.notFound,
-        "Account with provided credentials does not exist",
-        { expose: true }
-      );
-    } else if (!foundUser.active) {
-      throw createError(errors.gone, "Account is no longer active", {
-        expose: true,
-      });
-    } else if (foundUser.verified) {
-      throw createError(errors.badRequest, "Account is already verified", {
-        expose: true,
-      });
+      throw createError(...formatError(errors.userDoesNotExist));
     } else {
-      const isValid = await argon2.verify(foundUser.password, userPassword);
+      const isValid = await verifyHash(foundUser.password, userPassword);
 
       if (!isValid) {
-        throw createError(
-          errors.notFound,
-          "Account with provided credentials does not exist",
-          { expose: true }
-        );
+        throw createError(...formatError(errors.userDoesNotExist));
       }
     }
 
-    const emailUsed = await fetchUserIdByEmail({ userEmail, connection });
-    if (emailUsed) {
-      throw createError(
-        errors.conflict,
-        "User with provided email already exists",
-        { expose: true }
-      );
-    } else {
-      const { verificationToken, verificationLink, verificationExpiry } =
-        generateVerificationToken();
+    const foundEmail = await fetchUserIdByEmail({ userEmail, connection });
+    if (!foundEmail) {
+      const {
+        verificationToken,
+        verificationLink,
+        verificationExpiry,
+        verified,
+      } = generateVerificationToken();
       await editUserEmail({
         userId: foundId,
         userEmail,
         verificationToken,
         verificationExpiry,
+        verified,
         connection,
+      });
+      const emailValues = formatEmailContent({
+        replacementValues: {
+          heading: "Verify new email",
+          text: "You are receiving this because you have changed your email address. Please click on the button below to continue. If you don't recognize this action, please ignore this email.",
+          button: "Confirm email",
+          redirect: verificationLink,
+        },
+        replacementAttachments: [],
       });
       await sendEmail({
         emailReceiver: userEmail,
-        emailSubject: "Please confirm your email",
-        emailContent: `Hello,
-        Please click on the link to verify your email:
-  
-        <a href=${verificationLink}>Click here to verify</a>`,
+        emailSubject: "Confirm your email",
+        emailContent: renderEmail({ ...emailValues.formattedProps }),
+        emailAttachments: emailValues.formattedAttachments,
       });
-      logUserOut(response);
-      return { message: "Email address successfully updated", expose: true };
     }
+    return formatResponse(responses.emailAddressUpdated);
   }
-  throw createError(
-    errors.notFound,
-    "Account with provided credentials does not exist",
-    { expose: true }
-  );
+  throw createError(...formatError(errors.userDoesNotExist));
 };

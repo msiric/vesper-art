@@ -1,29 +1,48 @@
-const TRANSFORMED_WIDTH = 640;
+const MIME_TYPES = {
+  "image/jpeg": { type: "jpeg", label: "JPG", animated: false },
+  "image/png": { type: "png", label: "PNG", animated: false },
+  // $TODO add support for "image/gif",
+  /*  "image/gif": { type: "gif", label: "GIF", animated: true }, */
+};
+const TRANSFORMED_ARTWORK_WIDTH = 640;
+const ALLOWED_ARTWORK_RATIO = 4;
 
-export const appName = "Diagon";
+const ALLOWED_AVATAR_RATIO = 1.5;
+
+export const appName = "Vesper";
+
+export const domainName = "vesperart.co";
 
 export const featureFlags = {
   stripe: true,
   payment: true,
   discount: true,
+  dashboard: true,
 };
+
+export const unavailableMessage =
+  "Please note that information regarding purchasing and selling licenses for commercial artwork is not currently applicable. This feature is not yet available and is coming soon.";
 
 export const upload = {
   artwork: {
+    // 10 megabytes
     fileSize: 10 * 1024 * 1024,
     fileDimensions: { height: 1200, width: 1200 },
     fileTransform: {
-      width: TRANSFORMED_WIDTH,
+      width: TRANSFORMED_ARTWORK_WIDTH,
       height: (fileHeight, fileWidth) =>
-        fileHeight / (fileWidth / TRANSFORMED_WIDTH),
+        fileHeight / (fileWidth / TRANSFORMED_ARTWORK_WIDTH),
     },
-    mimeTypes: ["image/jpg", "image/jpeg", "image/gif", "image/png"],
+    fileRatio: ALLOWED_ARTWORK_RATIO,
+    // $TODO add support for "image/gif",
+    mimeTypes: MIME_TYPES,
   },
   user: {
-    fileSize: 5 * 1024 * 1024,
-    fileDimensions: { height: 150, width: 150 },
-    fileTransform: { width: 150 },
-    mimeTypes: ["image/jpg", "image/jpeg", "image/png"],
+    // 100 kilobytes
+    fileSize: 100 * 1024,
+    fileDimensions: { height: 100, width: 100 },
+    fileRatio: ALLOWED_AVATAR_RATIO,
+    mimeTypes: MIME_TYPES,
   },
 };
 
@@ -44,7 +63,13 @@ export const payment = featureFlags.stripe
     }
   : {};
 
-export const errors = {
+export const auth = {
+  refreshEndpoint: "/api/auth/refresh_token",
+  errorMessage: "Network Error",
+  loginMessage: "Forbidden",
+};
+
+export const statusCodes = {
   ok: 200,
   created: 201,
   noContent: 204,
@@ -60,6 +85,40 @@ export const errors = {
   unprocessable: 422,
   tooManyRequests: 429,
   internalError: 500,
+};
+
+export const usernames = {
+  admin: true,
+  administrator: true,
+  mod: true,
+  moderator: true,
+};
+
+export const generatedData = {
+  fingerprint: 20,
+  identifier: 10,
+};
+
+export const appPalette = {
+  type: "dark",
+  primary: { main: "#d68024", alt: "#9BCECB" },
+  secondary: { main: "#fff8f0", alt: "#304de6" },
+  success: { main: "#7ad624", alt: "#08333B" },
+  info: { main: "#247ad6", alt: "#F0F2F2" },
+  warning: { main: "#d3d624", alt: "#F79A3E" },
+  error: { main: "#d62724", alt: "#F4C0BD" },
+  muted: { main: "#e9ebed", alt: "#c2c8cc" },
+  light: { main: "#f8f9f9", alt: "#d8dcde" },
+  dark: { main: "#2e3942", alt: "#87929e" },
+  background: {
+    paper: "#424242",
+    default: "#303030",
+    light: "#595959",
+    notification: "#313131",
+  },
+  border: {
+    main: "#545454",
+  },
 };
 
 export const countries = [

@@ -1,18 +1,18 @@
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useEffect, useRef } from "react";
-import DownloadCard from "../../containers/DownloadCard/index.js";
-import LicenseCard from "../../containers/LicenseCard/index.js";
-import OrderCard from "../../containers/OrderCard/index.js";
-import OrderPreview from "../../containers/OrderPreview/index.js";
-import RatingWrapper from "../../containers/RatingWrapper/index.js";
-import ReviewCard from "../../containers/ReviewCard/index.js";
-import UserSection from "../../containers/UserSection/index.js";
+import DownloadCard from "../../containers/DownloadCard/index";
+import LicenseCard from "../../containers/LicenseCard/index";
+import OrderCard from "../../containers/OrderCard/index";
+import OrderPreview from "../../containers/OrderPreview/index";
+import RatingWrapper from "../../containers/RatingWrapper/index";
+import ReviewCard from "../../containers/ReviewCard/index";
+import UserSection from "../../containers/UserSection/index";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
 import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import globalStyles from "../../styles/global.js";
-import { containsErrors, renderError } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const useOrderStyles = makeStyles((muiTheme) => ({
   container: {
@@ -92,7 +92,7 @@ const Order = ({ match }) => {
       <RatingWrapper paramId={paramId} />
     </Container>
   ) : (
-    renderError({ retry, redirect, message })
+    renderError({ retry, redirect, message, reinitializeState })
   );
 };
 

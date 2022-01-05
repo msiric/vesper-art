@@ -1,8 +1,8 @@
 import { Box } from "@material-ui/core";
 import React from "react";
-import TextInput from "../../controls/TextInput/index.js";
+import TextInput from "../../controls/TextInput/index";
 
-const AddCommentForm = ({ errors, loading }) => {
+const CommentForm = ({ errors, loading }) => {
   const classes = {};
 
   return (
@@ -18,4 +18,4 @@ const AddCommentForm = ({ errors, loading }) => {
   );
 };
 
-export default AddCommentForm;
+export default CommentForm;

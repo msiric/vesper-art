@@ -206,7 +206,7 @@ const initActions = (set, get) => ({
       }));
     }
   },
-  readNotification: async ({ event, id }) => {
+  readNotification: async ({ event = window.event, id }) => {
     try {
       event.stopPropagation();
       set((state) => ({
@@ -234,7 +234,7 @@ const initActions = (set, get) => ({
       console.log(err);
     }
   },
-  unreadNotification: async ({ event, id }) => {
+  unreadNotification: async ({ event = window.event, id }) => {
     try {
       event.stopPropagation();
       set((state) => ({

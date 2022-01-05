@@ -1,6 +1,9 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const galleryPanelStyles = makeStyles((muiTheme) => ({
+  container: {
+    padding: "16px 0",
+  },
   card: {
     display: "flex",
     justifyContent: "center",
@@ -13,6 +16,8 @@ const galleryPanelStyles = makeStyles((muiTheme) => ({
     width: "auto",
   },
   column: {
+    display: "flex",
+    flexDirection: "column",
     paddingLeft: 24,
     "&:first-child": {
       paddingLeft: 0,

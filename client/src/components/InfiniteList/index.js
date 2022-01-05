@@ -2,6 +2,7 @@ import { AutorenewRounded as RefetchIcon } from "@material-ui/icons";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Box from "../../domain/Box";
+import LinearProgress from "../../domain/LinearProgress";
 import Typography from "../../domain/Typography";
 import AsyncButton from "../AsyncButton";
 import EmptySection from "../EmptySection";
@@ -15,33 +16,46 @@ const InfiniteList = ({
   next,
   hasMore,
   loading,
+  fetching,
   error,
   empty,
   height,
+  type,
+  customPadding,
+  shouldPause = false,
   children,
   ...props
 }) => {
-  const classes = infiniteListStyles({ height });
+  const classes = infiniteListStyles();
 
   return (
     <InfiniteScroll
       dataLength={dataLength}
-      next={!loading ? next : () => []}
-      hasMore={hasMore}
-      loader={!error && <LoadingSpinner styles={classes.spinner} />}
+      next={!loading && !fetching ? next : () => []}
+      hasMore={!shouldPause && hasMore}
+      loader={
+        !error && (
+          <LoadingSpinner
+            styles={!customPadding && classes.spinner}
+            customPadding={customPadding}
+          />
+        )
+      }
       className={classes.wrapper}
       height={height}
       {...props}
     >
+      {type === "masonry" && loading && <LinearProgress />}
       {children}
-      {!loading && !dataLength ? <EmptySection label={empty} /> : null}
+      {!loading && !fetching && !dataLength && !error ? (
+        <EmptySection label={empty} />
+      ) : null}
       {error && (
         <Box className={classes.error}>
           <Typography>Error fetching data</Typography>
           <AsyncButton
             type="button"
             padding
-            loading={false}
             startIcon={<RefetchIcon />}
             onClick={next}
           >

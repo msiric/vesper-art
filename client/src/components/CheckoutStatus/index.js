@@ -1,13 +1,15 @@
 import {
-  SentimentVeryDissatisfied,
-  SentimentVerySatisfied,
+  ArrowBackRounded as BackIcon,
+  PhotoLibraryOutlined as OrdersIcon,
+  SentimentVeryDissatisfied as ErrorIcon,
+  SentimentVerySatisfied as SuccessIcon,
 } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import Grid from "../../domain/Grid";
 import Typography from "../../domain/Typography";
-import SyncButton from "../SyncButton/index.js";
-import checkoutStatusStyles from "./styles.js";
+import SyncButton from "../SyncButton/index";
+import checkoutStatusStyles from "./styles";
 
 const CheckoutStatus = ({ success, message, version }) => {
   const history = useHistory();
@@ -25,12 +27,9 @@ const CheckoutStatus = ({ success, message, version }) => {
   return (
     <Grid container className={classes.container}>
       {success ? (
-        <SentimentVerySatisfied color="primary" className={classes.sentiment} />
+        <SuccessIcon color="primary" className={classes.sentiment} />
       ) : (
-        <SentimentVeryDissatisfied
-          color="error"
-          className={classes.sentiment}
-        />
+        <ErrorIcon color="error" className={classes.sentiment} />
       )}
       <Typography variant="h5" className={classes.message}>
         {message}
@@ -38,6 +37,7 @@ const CheckoutStatus = ({ success, message, version }) => {
       <SyncButton
         color="primary"
         onClick={success ? handleSuccessRedirect : handleErrorRedirect}
+        startIcon={success ? <OrdersIcon /> : <BackIcon />}
       >
         {success ? "View orders" : "Go back"}
       </SyncButton>

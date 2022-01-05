@@ -57,11 +57,7 @@ const initActions = (set, get) => ({
         formData.append(value, data[value]);
       }
     }
-    try {
-      await postArtwork.request({ data: formData });
-    } catch (err) {
-      console.log(err);
-    }
+    await postArtwork.request({ data: formData });
   },
   resetCapabilities: () => {
     set({ ...initialState });

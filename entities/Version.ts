@@ -41,11 +41,6 @@ export enum VersionUse {
   unavailable = "unavailable",
 }
 
-export enum VersionVisibility {
-  visible = "visible",
-  invisible = "invisible",
-}
-
 @Entity()
 export class Version extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -117,14 +112,6 @@ export class Version extends BaseEntity {
 
   @Column()
   mediaId: string;
-
-  @Column({
-    type: "enum",
-    enum: VersionVisibility,
-    // $TODO temp nullable, remove later
-    nullable: true,
-  })
-  visibility: VersionVisibility;
 
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;

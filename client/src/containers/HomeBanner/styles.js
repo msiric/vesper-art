@@ -1,5 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 import Banner from "../../assets/images/banner/banner.jpg";
+import { artepunktTheme } from "../../styles/theme";
 
 const Styles = makeStyles((muiTheme) => ({
   banner: {
@@ -17,7 +18,7 @@ const Styles = makeStyles((muiTheme) => ({
       position: "absolute",
       top: 0,
       left: 0,
-      backgroundImage: `url(${Banner})`,
+      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${Banner})`,
       backgroundSize: "cover",
       backgroundPosition: "center center",
       backgroundRepeat: "no-repeat",
@@ -42,12 +43,36 @@ const Styles = makeStyles((muiTheme) => ({
     width: "100%",
     marginBottom: 16,
     padding: 16,
+    [muiTheme.breakpoints.down("md")]: {
+      padding: 0,
+    },
+  },
+  beta: {
+    position: "absolute",
+    top: "10px",
+    right: "-40px",
+    transform: "rotateY(0deg) rotate(45deg)",
+    background: "white",
+    width: 136,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  message: {
+    color: artepunktTheme.palette.primary.main,
+    fontSize: 24,
   },
   bannerHeading: {
     textAlign: "center",
     fontSize: 24,
     fontWeight: "bold",
     width: "60%",
+    [muiTheme.breakpoints.down("md")]: {
+      width: "80%",
+    },
+    [muiTheme.breakpoints.down("xs")]: {
+      width: "100%",
+    },
   },
   bannerActions: {
     display: "flex",
@@ -65,12 +90,17 @@ const Styles = makeStyles((muiTheme) => ({
     width: "100%",
     height: "100%",
     padding: "0 32px",
-  },
-  verifierIcon: {
-    fontSize: 56,
-    marginBottom: 12,
+    [muiTheme.breakpoints.down("md")]: {
+      padding: 0,
+    },
   },
   verifierHeading: {
+    fontSize: 24,
+    marginBottom: 8,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  verifierText: {
     textAlign: "center",
   },
   verifierButton: {

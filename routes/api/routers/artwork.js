@@ -6,21 +6,22 @@ import {
   getArtwork,
   getArtworkComments,
   getArtworkDetails,
+  getArtworkEdit,
   postNewArtwork,
   unfavoriteArtwork,
   updateArtwork,
-} from "../../../controllers/artwork.js";
+} from "../../../controllers/artwork";
 import {
   deleteComment,
   getComment,
   patchComment,
   postComment,
-} from "../../../controllers/comment.js";
-import multerApi from "../../../lib/multer.js";
+} from "../../../controllers/comment";
+import multerApi from "../../../lib/multer";
 import {
   isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
 const router = express.Router();
 
@@ -45,11 +46,10 @@ router
 
 router
   .route("/artwork/:artworkId")
-  // $DONE works (NOTE needs to return number of favorites instead of array)
+  // $TODO $DONE works (NOTE needs to return number of favorites instead of array)
   .get(
     handler(getArtworkDetails, false, (req, res, next) => ({
       ...req.params,
-      ...req.query,
     }))
   )
   // $TODO not tested
@@ -79,6 +79,13 @@ router
     }))
   );
 
+router.route("/artwork/:artworkId/edit").get(
+  [isAuthenticated],
+  handler(getArtworkEdit, false, (req, res, next) => ({
+    ...req.params,
+  }))
+);
+
 router
   .route("/artwork/:artworkId/comments")
   // $TODO not tested
@@ -101,7 +108,6 @@ router
   .route("/artwork/:artworkId/comments/:commentId")
   // $TODO not tested
   .get(
-    [isAuthenticated],
     handler(getComment, false, (req, res, next) => ({
       ...req.params,
     }))
@@ -125,7 +131,6 @@ router
 router
   .route("/artwork/:artworkId/favorites")
   .get(
-    [isAuthenticated],
     handler(fetchArtworkFavorites, false, (req, res, next) => ({
       ...req.params,
     }))
@@ -142,7 +147,6 @@ router
     [isAuthenticated],
     handler(unfavoriteArtwork, true, (req, res, next) => ({
       ...req.params,
-      ...req.query,
     }))
   );
 

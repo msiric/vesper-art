@@ -1,20 +1,14 @@
-import aws from "aws-sdk";
 import createError from "http-errors";
-import { errors } from "../common/constants.js";
+import { isObjectEmpty } from "../common/helpers";
+import { getSignedS3Object } from "../lib/s3";
+import { fetchOrderDetails, fetchOrderMedia } from "../services/postgres/order";
 import {
-  fetchOrderDetails,
-  fetchOrderMedia,
-} from "../services/postgres/order.js";
-import {
+  fetchArtworkOrders,
   fetchUserPurchases,
   fetchUserSales,
-} from "../services/postgres/user.js";
-
-aws.config.update({
-  secretAccessKey: process.env.S3_SECRET,
-  accessKeyId: process.env.S3_ID,
-  region: process.env.S3_REGION,
-});
+} from "../services/postgres/user";
+import { formatError } from "../utils/helpers";
+import { errors } from "../utils/statuses";
 
 // ovo je test za novi checkout (trenutno delayed)
 // $TODO validacija licenci
@@ -38,45 +32,25 @@ export const getBoughtOrders = async ({ userId, connection }) => {
   return { purchases: foundPurchases };
 };
 
+export const getBoughtArtwork = async ({ userId, artworkId, connection }) => {
+  const foundPurchases = await fetchArtworkOrders({
+    userId,
+    artworkId,
+    connection,
+  });
+  return { purchases: foundPurchases };
+};
+
 export const getOrderDetails = async ({ userId, orderId, connection }) => {
   const foundOrder = await fetchOrderDetails({
     userId,
     orderId,
     connection,
   });
-  if (foundOrder) {
-    // let decreaseNotif = false;
-    // notif
-    // if (req.query.ref) {
-    //   const foundNotif = await Notification.findById({
-    //     id: req.query.ref,
-    //   }).session(session);
-    //   if (foundNotif) {
-    //     let changed = false;
-    //     foundNotif.receivers.forEach(function (receiver) {
-    //       if (receiver.user.equals(res.locals.user.id)) {
-    //         if (receiver.read === false) {
-    //           receiver.read = true;
-    //           changed = true;
-    //         }
-    //       }
-    //     });
-    //     if (changed) {
-    //       await foundNotif.save({ session });
-    //       await User.updateOne(
-    //         {
-    //           id: res.locals.user.id,
-    //         },
-    //         { $inc: { notifications: -1 } },
-    //         { useFindAndModify: false }
-    //       ).session(session);
-    //       decreaseNotif = true;
-    //     }
-    //   }
-    // }
+  if (!isObjectEmpty(foundOrder)) {
     return { order: foundOrder };
   }
-  throw createError(errors.notFound, "Order not found", { expose: true });
+  throw createError(...formatError(errors.orderNotFound));
 };
 
 export const getOrderMedia = async ({ userId, orderId, connection }) => {
@@ -85,17 +59,12 @@ export const getOrderMedia = async ({ userId, orderId, connection }) => {
     orderId,
     connection,
   });
-  if (foundMedia) {
-    const s3 = new aws.S3({ signatureVersion: "v4" });
-    const file = foundMedia.source.split("/").pop();
-    const params = {
-      Bucket: process.env.S3_BUCKET,
-      Key: `artworkMedia/${file}`,
-      Expires: 60 * 3,
-    };
-    const url = s3.getSignedUrl("getObject", params);
-
+  if (!isObjectEmpty(foundMedia)) {
+    const { url, file } = await getSignedS3Object({
+      fileLink: foundMedia.source,
+      folderName: "artworkMedia/",
+    });
     return { url, file };
   }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(...formatError(errors.artworkNotFound));
 };

@@ -1,3 +1,4 @@
+import { CloseRounded as CloseIcon } from "@material-ui/icons";
 import React from "react";
 import Backdrop from "../../domain/Backdrop";
 import Box from "../../domain/Box";
@@ -17,7 +18,9 @@ const PromptModal = ({
   promptTitle,
   promptConfirm,
   promptCancel,
+  isDisabled,
   isSubmitting,
+  startIcon,
   children,
 }) => {
   const classes = promptModalStyles();
@@ -38,18 +41,25 @@ const PromptModal = ({
       <Fade in={open}>
         <Box className={classes.content}>
           <Typography className={classes.title}>{promptTitle}</Typography>
-          <Divider />
+          <Divider className={classes.divider} />
           {children && <Box>{children}</Box>}
           <Box className={classes.actions}>
             <AsyncButton
               type="submit"
+              disabled={isDisabled}
               submitting={isSubmitting}
               onClick={handleConfirm}
+              startIcon={startIcon}
               fullWidth
             >
               {promptConfirm}
             </AsyncButton>
-            <SyncButton type="button" color="dark" onClick={handleClose}>
+            <SyncButton
+              type="button"
+              color="dark"
+              onClick={handleClose}
+              startIcon={<CloseIcon />}
+            >
               {promptCancel}
             </SyncButton>
           </Box>

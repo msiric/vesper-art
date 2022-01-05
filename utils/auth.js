@@ -1,75 +1,56 @@
+import createError from "http-errors";
 import jwt from "jsonwebtoken";
+import { auth } from "../common/constants";
+import { tokens } from "../config/secret";
 import { fetchUserByAuth } from "../services/postgres/user";
+import { formatError, formatTokenData, verifyTokenValidity } from "./helpers";
+import { errors } from "./statuses";
 
 export const createAccessToken = ({ userData }) => {
   return jwt.sign(
     {
-      id: userData.id,
-      name: userData.name,
-      onboarded: userData.onboarded,
-      jwtVersion: userData.jwtVersion,
-      active: userData.active,
+      ...userData,
     },
-    process.env.ACCESS_TOKEN_SECRET,
+    tokens.accessToken,
     {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+      expiresIn: tokens.accessExpiry,
     }
   );
 };
 
 // $TODO getConnection needs to come from one of the services
 export const updateAccessToken = async (req, res, next, connection) => {
-  const token = req.cookies.jid;
-  if (!token) return { ok: false, accessToken: "" };
+  const refreshToken = req.cookies.jid;
+  if (!refreshToken) throw createError(...formatError(errors.forbiddenAccess));
 
-  let payload = null;
-  try {
-    payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-  } catch (err) {
-    console.log(err);
-    return { ok: false, accessToken: "" };
-  }
-
+  const { data } = verifyTokenValidity(
+    refreshToken,
+    tokens.refreshToken,
+    false
+  );
   // const foundUser = await User.findOne({
-  //   where: [{ id: payload.userId, active: true }],
+  //   where: [{ id: data.userId, active: true }],
   //   relations: ["avatar", "favorites", "favorites.artwork", "intents"],
   // });
 
   const foundUser = await fetchUserByAuth({
-    userId: payload.userId,
+    userId: data.userId,
     connection,
   });
 
   if (!foundUser) {
-    return { ok: false, accessToken: "" };
+    throw createError(...formatError(errors.forbiddenAccess));
   }
 
-  if (foundUser.jwtVersion !== payload.jwtVersion) {
-    return { ok: false, accessToken: "" };
+  if (foundUser.jwtVersion !== data.jwtVersion) {
+    throw createError(...formatError(errors.forbiddenAccess));
   }
 
-  const tokenPayload = {
-    id: foundUser.id,
-    name: foundUser.name,
-    jwtVersion: foundUser.jwtVersion,
-    onboarded: !!foundUser.stripeId,
-    active: foundUser.active,
-  };
+  if (!foundUser.verified) {
+    throw createError(...formatError(errors.userNotVerified));
+  }
 
-  const userInfo = {
-    id: foundUser.id,
-    name: foundUser.name,
-    email: foundUser.email,
-    avatar: foundUser.avatar,
-    notifications: foundUser.notifications,
-    active: foundUser.active,
-    stripeId: foundUser.stripeId,
-    country: foundUser.country,
-    businessAddress: foundUser.businessAddress,
-    jwtVersion: foundUser.jwtVersion,
-    favorites: foundUser.favorites,
-    intents: foundUser.intents,
-  };
+  const { tokenPayload, userInfo } = formatTokenData({ user: foundUser });
 
   sendRefreshToken(res, createRefreshToken({ userData: tokenPayload }));
 
@@ -83,9 +64,9 @@ export const updateAccessToken = async (req, res, next, connection) => {
 export const createRefreshToken = ({ userData }) => {
   return jwt.sign(
     { userId: userData.id, jwtVersion: userData.jwtVersion },
-    process.env.REFRESH_TOKEN_SECRET,
+    tokens.refreshToken,
     {
-      expiresIn: "7d",
+      expiresIn: tokens.refreshExpiry,
     }
   );
 };
@@ -93,6 +74,6 @@ export const createRefreshToken = ({ userData }) => {
 export const sendRefreshToken = (res, refreshToken) => {
   return res.cookie("jid", refreshToken, {
     httpOnly: true,
-    path: "api/auth/refresh_token",
+    path: auth.refreshEndpoint,
   });
 };

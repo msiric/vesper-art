@@ -1,19 +1,30 @@
-import { withSnackbar } from "notistack";
 import React from "react";
-import { formatDate, isObjectEmpty } from "../../../../common/helpers";
+import {
+  formatArtworkPrice,
+  formatDate,
+  isObjectEmpty,
+} from "../../../../common/helpers";
 import DataTable from "../../components/DataTable";
 import EmptySection from "../../components/EmptySection";
 import SubHeading from "../../components/SubHeading";
 import { useLicenseVerifier } from "../../contexts/local/licenseVerifier";
+import Card from "../../domain/Card";
+import licenseSectionStyles from "./styles";
 
 const LicenseSection = () => {
   const license = useLicenseVerifier((state) => state.license.data);
   const loading = useLicenseVerifier((state) => state.license.loading);
 
+  const classes = licenseSectionStyles();
+
   return loading || !license ? (
-    <EmptySection label="Enter license fingerprint to inspect the details" />
+    <Card className={classes.emptyWrapper}>
+      <EmptySection label="Enter license fingerprint to inspect the details" />
+    </Card>
   ) : isObjectEmpty(license) ? (
-    <EmptySection label="License not found" />
+    <Card>
+      <EmptySection label="License not found" />
+    </Card>
   ) : (
     <DataTable
       title={<SubHeading text="License" loading={loading} />}
@@ -37,7 +48,25 @@ const LicenseSection = () => {
           },
         },
         {
+          name: "Buyer",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Seller",
+          options: {
+            sort: false,
+          },
+        },
+        {
           name: "Assignee",
+          options: {
+            sort: false,
+          },
+        },
+        {
+          name: "Assignor",
           options: {
             sort: false,
           },
@@ -46,12 +75,7 @@ const LicenseSection = () => {
           name: "Value",
           options: {
             sort: false,
-            customBodyRender: (value, tableMeta, updateValue) =>
-              typeof value !== "undefined"
-                ? value
-                  ? `$${value}`
-                  : "Free"
-                : null,
+            customBodyRender: (value) => formatArtworkPrice({ price: value }),
           },
         },
         {
@@ -66,7 +90,12 @@ const LicenseSection = () => {
           license.id,
           license.fingerprint,
           license.type,
-          license.assignee,
+          license.owner.name,
+          license.artwork.owner.name,
+          license.usage === "business"
+            ? license.company || "Hidden"
+            : license.assignee || "Hidden",
+          license.assignor || "Hidden",
           license.price,
           license.created && formatDate(license.created, "dd/MM/yy HH:mm"),
         ],
@@ -79,8 +108,9 @@ const LicenseSection = () => {
       searchable={false}
       pagination={false}
       addOptions={{ enabled: false, title: "", route: "" }}
+      className="NoTableFooter VerifierTable"
     />
   );
 };
 
-export default withSnackbar(LicenseSection);
+export default LicenseSection;

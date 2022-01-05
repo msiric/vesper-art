@@ -1,16 +1,15 @@
 import React, { useEffect } from "react";
-import EmptySection from "../../components/EmptySection/index.js";
-import SwipeCard from "../../components/SwipeCard/index.js";
+import EmptySection from "../../components/EmptySection/index";
+import SwipeCard from "../../components/SwipeCard/index";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import { useUserProfile } from "../../contexts/local/userProfile";
 import Box from "../../domain/Box";
+import Card from "../../domain/Card";
 import Grid from "../../domain/Grid";
-import Paper from "../../domain/Paper";
-import useVisibleElement from "../../hooks/useVisibleElement.js";
-import globalStyles from "../../styles/global.js";
-import UserArtwork from "../UserArtwork/index.js";
-import UserFavorites from "../UserFavorites/index.js";
-import profileArtworkStyles from "./styles.js";
+import useVisibleElement from "../../hooks/useVisibleElement";
+import UserArtwork from "../UserArtwork/index";
+import UserFavorites from "../UserFavorites/index";
+import profileArtworkStyles from "./styles";
 
 const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const profile = useUserProfile((state) => state.profile.data);
@@ -25,15 +24,16 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   const fetchFavorites = useUserArtwork((state) => state.fetchFavorites);
   const changeTab = useUserArtwork((state) => state.changeTab);
 
+  const userUsername = paramId;
+
   const isVisible = useVisibleElement(artworkRef, artworkFetched.current);
 
-  const globalClasses = globalStyles();
   const classes = profileArtworkStyles();
 
   useEffect(() => {
     if (!artworkFetched.current && isVisible) {
       fetchArtwork({
-        userUsername: paramId,
+        userUsername,
       });
       artworkFetched.current = true;
     }
@@ -42,14 +42,14 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
   useEffect(() => {
     if (!tabs.revealed && tabs.value === 1) {
       fetchFavorites({
-        userUsername: paramId,
+        userUsername,
       });
     }
   }, [tabs.value]);
 
   return (
     <Grid item xs={12}>
-      <Paper ref={artworkRef} className={classes.paper}>
+      <Card ref={artworkRef} className={classes.paper}>
         <SwipeCard
           tabs={{
             value: tabs.value,
@@ -71,11 +71,10 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 component: (
                   <Box className={classes.wrapper}>
                     <UserArtwork
-                      elements={artwork}
-                      hasMore={null}
-                      loadMore={fetchArtwork}
+                      userUsername={userUsername}
                       type="artwork"
                       fixed={true}
+                      shouldPause={tabs.value !== 0}
                     />
                   </Box>
                 ),
@@ -98,11 +97,10 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
                 component: (
                   <Box className={classes.wrapper}>
                     <UserFavorites
-                      elements={favorites}
-                      hasMore={null}
-                      loadMore={fetchFavorites}
-                      type="artwork"
+                      userUsername={userUsername}
+                      type="favorite"
                       fixed={true}
+                      shouldPause={tabs.value !== 1}
                     />
                   </Box>
                 ),
@@ -123,7 +121,7 @@ const ProfileArtwork = ({ paramId, artworkRef, artworkFetched }) => {
           handleTabsChange={changeTab}
           loading={loading || artworkLoading}
         />
-      </Paper>
+      </Card>
     </Grid>
   );
 };

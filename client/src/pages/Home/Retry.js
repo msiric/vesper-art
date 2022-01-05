@@ -1,22 +1,56 @@
+import { makeStyles } from "@material-ui/core";
+import { ReplayRounded as RetryIcon } from "@material-ui/icons";
 import React from "react";
-import Box from "../../domain/Box";
+import { ReactComponent as RedirectUser } from "../../assets/images/illustrations/server_error.svg";
+import MainHeading from "../../components/MainHeading";
+import SyncButton from "../../components/SyncButton";
+import Card from "../../domain/Card";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import Typography from "../../domain/Typography";
-import globalStyles from "../../styles/global.js";
+import globalStyles from "../../styles/global";
 
-const Retry = () => {
+const useRetryStyles = makeStyles((muiTheme) => ({
+  illustration: {
+    maxHeight: 350,
+    height: "100%",
+    width: "100%",
+    marginTop: muiTheme.spacing(4),
+  },
+  wrapper: {
+    width: "100%",
+  },
+  card: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 32,
+    marginTop: muiTheme.spacing(2),
+  },
+  button: {
+    marginTop: muiTheme.spacing(4),
+  },
+}));
+
+const Retry = ({ message, reinitializeState = window.location.reload }) => {
   const globalClasses = globalStyles();
+  const classes = useRetryStyles();
 
   return (
     <Container className={globalClasses.gridContainer}>
-      <Grid container spacing={2}>
-        <Grid item sm={12}>
-          <Box>
-            <Typography fontWeight="bold" ml={2} fontSize={24}>
-              An error occurred
-            </Typography>
-          </Box>
+      <Grid container>
+        <Grid item sm={12} className={classes.wrapper}>
+          <Card className={classes.card}>
+            <MainHeading text="An error occurred" />
+            <RedirectUser className={classes.illustration} />
+            <SyncButton
+              onClick={reinitializeState}
+              startIcon={<RetryIcon />}
+              className={classes.button}
+            >
+              Try again
+            </SyncButton>
+          </Card>
         </Grid>
       </Grid>
     </Container>

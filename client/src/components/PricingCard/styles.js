@@ -4,6 +4,7 @@ const pricingCardStyles = makeStyles((muiTheme) => ({
   container: {
     width: "100%",
     height: "100%",
+    boxShadow: "none",
   },
   content: {
     padding: "0 32px",

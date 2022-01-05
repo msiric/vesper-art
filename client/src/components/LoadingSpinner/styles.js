@@ -6,6 +6,7 @@ const loadingSpinnerStyles = makeStyles((muiTheme) => ({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
+    maxWidth: "100%",
   },
   item: {
     display: "flex",
@@ -19,6 +20,9 @@ const loadingSpinnerStyles = makeStyles((muiTheme) => ({
     "&>svg": {
       color: "rgba(255, 255, 255, 0.31)",
     },
+  },
+  customPadding: {
+    padding: "154px 0",
   },
 }));
 

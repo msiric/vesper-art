@@ -25,7 +25,6 @@ const artworkActionsStyles = makeStyles((muiTheme) => ({
     marginRight: "3px",
   },
   footer: {
-    padding: "14px",
     width: "100%",
     display: "flex",
     justifyContent: "space-evenly",

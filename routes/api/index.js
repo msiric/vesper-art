@@ -1,16 +1,18 @@
 import express from "express";
 import createError from "http-errors";
-import { errors } from "../../common/constants.js";
-import artwork from "./routers/artwork.js";
-import auth from "./routers/auth.js";
-import checkout from "./routers/checkout.js";
-import discount from "./routers/discount.js";
-import notification from "./routers/notification.js";
-import order from "./routers/order.js";
-import search from "./routers/search.js";
-import ticket from "./routers/ticket.js";
-import user from "./routers/user.js";
-import verifier from "./routers/verifier.js";
+import { statusCodes } from "../../common/constants";
+import { handleDelegatedError } from "../../utils/helpers";
+import { errors } from "../../utils/statuses";
+import artwork from "./routers/artwork";
+import auth from "./routers/auth";
+import checkout from "./routers/checkout";
+import discount from "./routers/discount";
+import notification from "./routers/notification";
+import order from "./routers/order";
+import search from "./routers/search";
+import ticket from "./routers/ticket";
+import user from "./routers/user";
+import verifier from "./routers/verifier";
 
 const router = express.Router();
 
@@ -26,16 +28,13 @@ router.use("/", search);
 router.use("/auth", auth);
 
 router.use((req, res, next) => {
-  createError(errors.internalError, "An error occurred");
+  createError(statusCodes.internalError, errors.internalServerError.message);
 });
 
 router.use((err, req, res, next) => {
-  res.status(err.status || errors.internalError);
-  res.json({
-    status_code: err.status || errors.internalError,
-    error: err.message || "An error occurred",
-    expose: !!err.expose,
-  });
+  const error = handleDelegatedError({ err });
+  res.status(error.status);
+  res.json({ ...error });
 });
 
 export default router;

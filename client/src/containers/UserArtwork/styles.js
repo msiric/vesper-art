@@ -11,6 +11,8 @@ const userArtworkStyles = makeStyles((muiTheme) => ({
     width: "auto",
   },
   column: {
+    display: "flex",
+    flexDirection: "column",
     paddingLeft: 24,
     "&:first-child": {
       paddingLeft: 0,

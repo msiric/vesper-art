@@ -23,6 +23,7 @@ import {
   spacing,
   typography,
 } from "@material-ui/system";
+import { appPalette } from "../../../common/constants";
 
 export const Container = styled(MuiContainer)(compose(spacing, flexbox));
 export const Grid = styled(MuiGrid)(compose(spacing, flexbox));
@@ -53,6 +54,7 @@ export const Avatar = styled(MuiAvatar)(compose(sizing, spacing, borders));
 export const artepunktTheme = createMuiTheme({
   typography: {
     fontFamily: [
+      "Plus Jakarta Display",
       "Poppins",
       "system-ui",
       "-apple-system",
@@ -68,26 +70,7 @@ export const artepunktTheme = createMuiTheme({
     ].join(","),
     fontSize: 14,
   },
-  palette: {
-    type: "dark",
-    primary: { main: "#d68024", alt: "#9BCECB" },
-    secondary: { main: "#04b9a7", alt: "#304de6" },
-    success: { main: "#7ad624", alt: "#08333B" },
-    info: { main: "#247ad6", alt: "#F0F2F2" },
-    warning: { main: "#d3d624", alt: "#F79A3E" },
-    error: { main: "#d62724", alt: "#F4C0BD" },
-    muted: { main: "#e9ebed", alt: "#c2c8cc" },
-    light: { main: "#f8f9f9", alt: "#d8dcde" },
-    dark: { main: "#2e3942", alt: "#87929e" },
-    background: {
-      paper: "#424242",
-      default: "#303030",
-      notification: "#313131",
-    },
-    border: {
-      main: "#545454",
-    },
-  },
+  palette: { ...appPalette },
   padding: {
     containerLg: 24,
     containerSm: 12,
@@ -112,6 +95,7 @@ export const artepunktTheme = createMuiTheme({
       elevation: 6,
     },
   },
+  shape: { borderRadius: 20 },
 });
 
 artepunktTheme.spacing.grid = artepunktTheme.spacing.unit * 2;
@@ -132,6 +116,12 @@ artepunktTheme.overrides.MuiToolbar = {
   },
 };
 
+artepunktTheme.overrides.MuiDivider = {
+  root: {
+    width: "100%",
+  },
+};
+
 artepunktTheme.overrides.MUIDataTableHeadCell = {
   contentWrapper: {
     "& > .MuiButton-textPrimary": {
@@ -140,12 +130,6 @@ artepunktTheme.overrides.MUIDataTableHeadCell = {
         backgroundColor: "rgba(255, 255, 255, 0.08)",
       },
     },
-  },
-};
-
-artepunktTheme.overrides.MUIDataTableBodyCell = {
-  root: {
-    wordBreak: "break-word",
   },
 };
 
@@ -235,6 +219,7 @@ artepunktTheme.overrides.MuiFormHelperText = {
 
 artepunktTheme.overrides.MuiTableBody = {
   root: {
+    wordBreak: "break-word",
     "&>tr:nth-child(odd)": {
       backgroundColor: "#3d3d3d",
     },

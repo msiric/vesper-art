@@ -1,9 +1,15 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CheckRounded as CheckIcon } from "@material-ui/icons";
+import {
+  CheckRounded as CheckIcon,
+  CreditCardRounded as PayIcon,
+  NavigateBeforeRounded as BackIcon,
+  NavigateNextRounded as NextIcon,
+} from "@material-ui/icons";
 import { useElements, useStripe } from "@stripe/react-stripe-js";
 import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useHistory, useLocation, useParams } from "react-router-dom";
+import { isFormAltered, isLicenseValid } from "../../../../common/helpers";
 import {
   billingValidation,
   emptyValidation,
@@ -12,27 +18,22 @@ import {
 import AsyncButton from "../../components/AsyncButton";
 import CheckoutStatus from "../../components/CheckoutStatus";
 import CheckoutStepper from "../../components/CheckoutStepper";
+import LicenseAlert from "../../components/LicenseAlert";
 import ListItems from "../../components/ListItems";
 import SyncButton from "../../components/SyncButton";
-import CheckoutSummary from "../../containers/CheckoutSummary/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import CheckoutSummary from "../../containers/CheckoutSummary/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useOrderCheckout } from "../../contexts/local/orderCheckout";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import CardActions from "../../domain/CardActions";
 import CardContent from "../../domain/CardContent";
 import Grid from "../../domain/Grid";
-import BillingForm from "../../forms/BillingForm/index.js";
-import LicenseForm from "../../forms/LicenseForm/index.js";
-import PaymentForm from "../../forms/PaymentForm/index.js";
-import globalStyles from "../../styles/global.js";
-import checkoutProcessorStyles from "./styles.js";
-
-const checkoutValidation = [
-  licenseValidation,
-  billingValidation,
-  emptyValidation,
-];
+import BillingForm from "../../forms/BillingForm/index";
+import LicenseForm from "../../forms/LicenseForm/index";
+import PaymentForm from "../../forms/PaymentForm/index";
+import { useLicenseValidator } from "../../hooks/useLicenseValidator";
+import checkoutProcessorStyles from "./styles";
 
 const STEPS = [
   "License information",
@@ -43,8 +44,10 @@ const STEPS = [
 const CheckoutProcessor = () => {
   const { id: versionId } = useParams();
 
-  const userIntents = useUserStore((state) => state.intents);
+  const userName = useUserStore((state) => state.fullName);
+
   const version = useOrderCheckout((state) => state.version.data);
+  const orders = useOrderCheckout((state) => state.orders.data);
   const intent = useOrderCheckout((state) => state.intent.data);
   const discount = useOrderCheckout((state) => state.discount.data);
   const license = useOrderCheckout((state) => state.license);
@@ -53,11 +56,13 @@ const CheckoutProcessor = () => {
   const paymentSuccess = useOrderCheckout((state) => state.payment.success);
   const paymentMessage = useOrderCheckout((state) => state.payment.message);
   const versionLoading = useOrderCheckout((state) => state.version.loading);
+  const ordersLoading = useOrderCheckout((state) => state.orders.loading);
   const intentLoading = useOrderCheckout((state) => state.intent.loading);
   const discountLoading = useOrderCheckout((state) => state.discount.loading);
   const changeDiscount = useOrderCheckout((state) => state.changeDiscount);
   const changeStep = useOrderCheckout((state) => state.changeStep);
   const fetchCheckout = useOrderCheckout((state) => state.fetchCheckout);
+  const fetchOrders = useOrderCheckout((state) => state.fetchOrders);
   const saveIntent = useOrderCheckout((state) => state.saveIntent);
   const submitPayment = useOrderCheckout((state) => state.submitPayment);
   const reflectErrors = useOrderCheckout((state) => state.reflectErrors);
@@ -70,8 +75,30 @@ const CheckoutProcessor = () => {
   const licenseValue =
     location.state && location.state.license ? location.state.license : license;
 
-  const globalClasses = globalStyles();
+  const initialLoading = versionLoading || ordersLoading;
+
   const classes = checkoutProcessorStyles();
+
+  const licenseResolver = useLicenseValidator(licenseValidation);
+
+  const checkoutValidation = [
+    emptyValidation,
+    billingValidation,
+    emptyValidation,
+  ];
+
+  const setDefaultValues = () => ({
+    licenseUsage: "",
+    licenseCompany: "",
+    licenseType: licenseValue,
+    billingName: "",
+    billingSurname: "",
+    billingEmail: "",
+    billingAddress: "",
+    billingZip: "",
+    billingCity: "",
+    billingCountry: "",
+  });
 
   const {
     handleSubmit,
@@ -84,23 +111,25 @@ const CheckoutProcessor = () => {
     watch,
     reset,
   } = useForm({
-    defaultValues: {
-      licenseType: licenseValue,
-      licenseAssignee: "",
-      licenseCompany: "",
-      billingName: "",
-      billingSurname: "",
-      billingEmail: "",
-      billingAddress: "",
-      billingZip: "",
-      billingCity: "",
-      billingCountry: "",
-    },
-    resolver: yupResolver(checkoutValidation[step.current]),
+    defaultValues: setDefaultValues(),
+    resolver:
+      step.current === 0
+        ? licenseResolver
+        : yupResolver(checkoutValidation[step.current]),
     shouldUnregister: false,
   });
 
-  const licenseType = watch("licenseType");
+  const watchedValues = watch();
+
+  const licenseStatus = isLicenseValid({
+    data: getValues(),
+    orders,
+  });
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) ||
+    formState.isSubmitting ||
+    !licenseStatus.valid;
 
   const licenseOptions =
     license === "personal"
@@ -152,7 +181,7 @@ const CheckoutProcessor = () => {
         changeStep,
       });
     } else if (isFirstStep) {
-      await saveIntent({ values, userIntents, changeStep });
+      await saveIntent({ values, changeStep });
     } else {
       changeStep({ value: 1 });
     }
@@ -164,7 +193,11 @@ const CheckoutProcessor = () => {
         return (
           <LicenseForm
             version={version}
+            userName={userName}
             isFree={false}
+            watchables={{
+              licenseUsage: watchedValues.licenseUsage,
+            }}
             errors={errors}
             loading={intentLoading}
           />
@@ -204,17 +237,24 @@ const CheckoutProcessor = () => {
     fetchCheckout({ license: licenseValue, versionId });
   }, []);
 
+  useEffect(() => {
+    version.artwork.id && fetchOrders({ artworkId: version.artwork.id });
+  }, [version.artwork.id]);
+
   return (
     <Grid container spacing={2} className={classes.container}>
-      {versionLoading || version.id ? (
+      {initialLoading || version.id ? (
         <>
           <Grid item xs={12} md={8}>
             <FormProvider control={control}>
               <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
                 <Card elevation={5} className={classes.card}>
                   <CardContent className={classes.content}>
+                    {!!orders.length && (
+                      <LicenseAlert licenseStatus={licenseStatus} />
+                    )}
                     {stripe ? (
-                      <Box>
+                      <Box className={classes.wrapper}>
                         {step.current !== STEPS.length && (
                           <CheckoutStepper step={step} />
                         )}
@@ -223,7 +263,7 @@ const CheckoutProcessor = () => {
                           {step.current === 0 && (
                             <ListItems
                               items={licenseOptions}
-                              loading={versionLoading}
+                              loading={initialLoading}
                             />
                           )}
                         </Box>
@@ -237,15 +277,23 @@ const CheckoutProcessor = () => {
                           step.current === 0 || intentLoading || discountLoading
                         }
                         onClick={() => changeStep({ value: -1 })}
-                        loading={versionLoading}
+                        loading={initialLoading}
+                        startIcon={<BackIcon />}
                       >
                         Back
                       </SyncButton>
                       <AsyncButton
                         type="submit"
-                        loading={versionLoading}
+                        loading={initialLoading}
                         submitting={formState.isSubmitting}
-                        disabled={discountLoading}
+                        disabled={isDisabled || discountLoading}
+                        startIcon={
+                          step.current === step.length - 1 ? (
+                            <PayIcon />
+                          ) : (
+                            <NextIcon />
+                          )
+                        }
                       >
                         {step.current === step.length - 1 ? "Pay" : "Next"}
                       </AsyncButton>
@@ -258,15 +306,14 @@ const CheckoutProcessor = () => {
           <Grid item xs={12} md={4}>
             <CheckoutSummary
               version={version}
-              license={licenseType}
+              watchables={{ licenseType: watchedValues.licenseType }}
               discount={discount}
               handleDiscountChange={changeDiscount}
-              loading={versionLoading}
+              loading={initialLoading}
               submitting={discountLoading}
               paying={intentLoading}
               step={step}
             />
-            <br />
           </Grid>
         </>
       ) : (

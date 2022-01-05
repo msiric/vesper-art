@@ -1,63 +1,70 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { makeStyles } from "@material-ui/core/styles";
-import { VpnKeyRounded as RecoveryAvatar } from "@material-ui/icons";
+import {
+  NavigateBeforeRounded as BackIcon,
+  SendOutlined as SendIcon,
+  VpnKeyRounded as RecoveryAvatar,
+} from "@material-ui/icons";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { isFormAltered } from "../../../../common/helpers";
 import { emailValidation } from "../../../../common/validation";
 import AsyncButton from "../../components/AsyncButton";
 import Avatar from "../../domain/Avatar";
 import Box from "../../domain/Box";
-import CardActions from "../../domain/CardActions";
-import CardContent from "../../domain/CardContent";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
 import Link from "../../domain/Link";
 import Typography from "../../domain/Typography";
-import EmailForm from "../../forms/EmailForm/index.js";
-import { postRecover } from "../../services/auth.js";
+import EmailForm from "../../forms/EmailForm/index";
+import { postRecover } from "../../services/auth";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((muiTheme) => ({
   wrapper: {
-    marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
   avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
+    margin: muiTheme.spacing(1),
+    backgroundColor: muiTheme.palette.primary.main,
+  },
+  form: {
+    width: "100%",
   },
   actions: {
-    display: "flex",
-    justifyContent: "space-between",
+    [muiTheme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+    },
   },
 }));
 
 const ForgotPassword = () => {
-  const { handleSubmit, formState, errors, control } = useForm({
-    defaultValues: {
-      userEmail: "",
-    },
-    resolver: yupResolver(emailValidation),
+  const setDefaultValues = () => ({
+    userEmail: "",
   });
+
+  const { handleSubmit, getValues, formState, errors, watch, control } =
+    useForm({
+      defaultValues: setDefaultValues(),
+      resolver: yupResolver(emailValidation),
+    });
+
+  const watchedValues = watch();
+
+  const isDisabled =
+    !isFormAltered(getValues(), setDefaultValues()) || formState.isSubmitting;
 
   const history = useHistory();
   const classes = useStyles();
 
   const onSubmit = async (values) => {
-    try {
-      await postRecover.request({ data: values });
-      history.push({
-        pathname: "/login",
-        state: { message: "Reset link sent to your email" },
-      });
-    } catch (err) {
-      history.push({
-        pathname: "/",
-        state: { message: "An error occurred" },
-      });
-    }
+    await postRecover.request({ data: values });
+    history.push({
+      pathname: "/login",
+      state: { message: "Reset link sent to your email" },
+    });
   };
 
   return (
@@ -70,26 +77,26 @@ const ForgotPassword = () => {
           Recover your password
         </Typography>
         <FormProvider control={control}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <CardContent>
-              <EmailForm errors={errors} />
-            </CardContent>
-            <CardActions className={classes.actions}>
-              <AsyncButton
-                type="submit"
-                fullWidth
-                className={classes.submit}
-                disabled={formState.isSubmitting}
-              >
-                Send recovery link
-              </AsyncButton>
-            </CardActions>
-            <Grid container>
+          <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+            <EmailForm errors={errors} />
+            <AsyncButton
+              type="submit"
+              fullWidth
+              padding
+              submitting={formState.isSubmitting}
+              disabled={isDisabled}
+              startIcon={<SendIcon />}
+            >
+              Send recovery link
+            </AsyncButton>
+            <Grid container className={classes.actions}>
               <Grid item xs>
                 <Link
                   component={RouterLink}
                   to="/account_restoration"
                   variant="body2"
+                  color="secondary"
+                  startIcon={<BackIcon />}
                 >
                   Back to account restoration
                 </Link>

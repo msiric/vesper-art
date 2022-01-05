@@ -1,12 +1,11 @@
 import React from "react";
-import { formatDate } from "../../../../common/helpers.js";
-import Datatable from "../../components/DataTable/index.js";
-import EmptySection from "../../components/EmptySection/index.js";
-import SubHeading from "../../components/SubHeading/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import { formatArtworkPrice, formatDate } from "../../../../common/helpers";
+import Datatable from "../../components/DataTable/index";
+import EmptySection from "../../components/EmptySection/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useOrderDetails } from "../../contexts/local/orderDetails";
-import { renderUserData } from "../../utils/helpers.js";
-import orderCardStyles from "./styles.js";
+import { renderUserData } from "../../utils/helpers";
+import orderCardStyles from "./styles";
 
 const OrderCard = () => {
   const userId = useUserStore((state) => state.id);
@@ -21,7 +20,7 @@ const OrderCard = () => {
 
   return (
     <Datatable
-      title={<SubHeading text="Order" loading={loading} />}
+      title="Order"
       columns={[
         {
           name: "Order Id",
@@ -56,11 +55,7 @@ const OrderCard = () => {
           options: {
             sort: false,
             customBodyRender: (value) =>
-              typeof value !== "undefined"
-                ? value
-                  ? `$${value}`
-                  : "Free"
-                : null,
+              formatArtworkPrice({ price: value, withPrecision: true }),
           },
         },
         {
@@ -71,14 +66,18 @@ const OrderCard = () => {
         },
       ]}
       data={[
-        [
-          order.id,
-          order.buyer.name,
-          order.seller.name,
-          order.discount,
-          isSeller() ? order.earned : order.spent,
-          order.created && formatDate(order.created, "dd/MM/yy HH:mm"),
-        ],
+        ...(!loading
+          ? [
+              [
+                order.id,
+                order.buyer.name,
+                order.seller.name,
+                order.discount,
+                isSeller() ? order.earned : order.spent,
+                order.created && formatDate(order.created, "dd/MM/yy HH:mm"),
+              ],
+            ]
+          : []),
       ]}
       empty={<EmptySection label="Order not found" loading={loading} />}
       loading={loading}
@@ -88,6 +87,7 @@ const OrderCard = () => {
       searchable={false}
       pagination={false}
       addOptions={{ enabled: false, title: "", route: "" }}
+      className="NoTableFooter"
     />
   );
 };

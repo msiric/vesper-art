@@ -1,10 +1,11 @@
+import { DeleteForeverOutlined as DeactivateIcon } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import PromptModal from "../../components/PromptModal/index.js";
+import PromptModal from "../../components/PromptModal/index";
 import { useEventsStore } from "../../contexts/global/events";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserSettings } from "../../contexts/local/userSettings";
-import { socket } from "../Interceptor/Interceptor";
+import { socket } from "../Interceptor";
 
 const SettingsWrapper = ({ location }) => {
   const resetUser = useUserStore((state) => state.resetUser);
@@ -40,6 +41,7 @@ const SettingsWrapper = ({ location }) => {
       promptConfirm="Deactivate"
       promptCancel="Cancel"
       isSubmitting={isDeactivating}
+      startIcon={<DeactivateIcon />}
     />
   );
 };

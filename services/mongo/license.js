@@ -1,4 +1,4 @@
-import License from "../../models/license.js";
+import License from "../../models/license";
 
 export const fetchLicenseByFingerprint = async ({
   licenseFingerprint,

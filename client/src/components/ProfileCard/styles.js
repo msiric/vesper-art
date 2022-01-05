@@ -3,6 +3,7 @@ import { artepunktTheme } from "../../styles/theme";
 
 const profileCardStyles = makeStyles((muiTheme) => ({
   container: {
+    height: "100%",
     width: "100%",
     display: "flex",
     flexDirection: "column",
@@ -14,16 +15,14 @@ const profileCardStyles = makeStyles((muiTheme) => ({
     position: "relative",
   },
   wrapper: {
-    width: "100px",
-    height: "100px",
     overflow: "hidden",
     marginTop: 24,
     display: "flex",
   },
   avatar: {
     textAlign: "center",
-    width: "100%",
-    height: "100%",
+    width: "100px",
+    height: "100px",
   },
   name: {
     marginTop: 10,

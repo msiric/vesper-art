@@ -1,11 +1,6 @@
-import { ticketValidation } from "../common/validation";
-import { addNewTicket } from "../services/postgres/ticket.js";
-import { sendEmail } from "../utils/email.js";
-import { generateUuids } from "../utils/helpers.js";
-
 // how to handle transactions?
 // treba sredit
-export const postTicket = async ({
+/* export const postTicket = async ({
   userId,
   userEmail,
   ticketTitle,
@@ -28,5 +23,5 @@ export const postTicket = async ({
     emailSubject: `Support ticket (#${ticketId}): ${ticketTitle}`,
     emailContent: ticketBody,
   });
-  return { message: "Ticket successfully created" };
-};
+  return { message: "Ticket successfully created", expose: true };
+}; */

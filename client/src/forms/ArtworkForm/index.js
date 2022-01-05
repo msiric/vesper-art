@@ -1,11 +1,12 @@
 import { Box } from "@material-ui/core";
 import React from "react";
-import { featureFlags } from "../../../../common/constants.js";
-import { useUserStore } from "../../contexts/global/user.js";
-import ImageInput from "../../controls/ImageInput/index.js";
-import PriceInput from "../../controls/PriceInput/index.js";
-import SelectInput from "../../controls/SelectInput/index.js";
-import TextInput from "../../controls/TextInput/index.js";
+import { featureFlags, upload } from "../../../../common/constants";
+import UploadPopover from "../../components/UploadPopover";
+import { useUserStore } from "../../contexts/global/user";
+import ImageInput from "../../controls/ImageInput/index";
+import PriceInput from "../../controls/PriceInput/index";
+import SelectInput from "../../controls/SelectInput/index";
+import TextInput from "../../controls/TextInput/index";
 
 const ArtworkForm = ({
   capabilities,
@@ -14,28 +15,20 @@ const ArtworkForm = ({
   setValue,
   trigger,
   getValues,
-  watch,
   watchables,
   editable,
   loading,
 }) => {
   const stripeId = useUserStore((state) => state.stripeId);
 
-  const {
-    artworkAvailability,
-    artworkType,
-    artworkLicense,
-    artworkUse,
-  } = watchables.length ? watch(watchables) : watch();
+  const { artworkAvailability, artworkType, artworkLicense, artworkUse } =
+    watchables;
 
   // FEATURE FLAG - stripe
   const isDisabled =
     !featureFlags.stripe ||
-    (stripeId &&
-      !(
-        capabilities.cardPayments === "active" &&
-        capabilities.platformPayments === "active"
-      ));
+    !stripeId ||
+    (stripeId && !(capabilities.platformPayments === "active"));
 
   return (
     <Box>
@@ -47,12 +40,27 @@ const ArtworkForm = ({
         errors={errors}
         preview={preview}
         shape="square"
+        variant="square"
         height={400}
         width="100%"
         noEmpty={false}
         editable={editable}
+        isDynamic={true}
         loading={loading}
       />
+      {editable && (
+        <UploadPopover
+          label="What kind of file to upload?"
+          size={upload.artwork.fileSize / 1024 / 1024}
+          dimensions={{
+            height: upload.artwork.fileDimensions.height,
+            width: upload.artwork.fileDimensions.width,
+          }}
+          aspectRatio={upload.artwork.fileRatio}
+          types={upload.artwork.mimeTypes}
+          loading={loading}
+        />
+      )}
       <Box>
         <TextInput
           name="artworkTitle"
@@ -105,18 +113,25 @@ const ArtworkForm = ({
             loading={loading}
           />
         )}
-        {artworkAvailability === "available" &&
-          artworkType === "commercial" && (
-            <PriceInput
+        {artworkAvailability === "available" && artworkType === "commercial" && (
+          <PriceInput
+            name="artworkPersonal"
+            value={getValues("artworkPersonal")}
+            setValue={setValue}
+            trigger={trigger}
+            label="Personal license price"
+            errors={errors}
+            loading={loading}
+          />
+          /*             <TextInput
               name="artworkPersonal"
-              value={getValues("artworkPersonal")}
-              setValue={setValue}
-              trigger={trigger}
+              type="text"
               label="Personal license price"
+              adornment="$"
               errors={errors}
               loading={loading}
-            />
-          )}
+            /> */
+        )}
         {artworkAvailability === "available" &&
           artworkLicense === "commercial" && (
             <SelectInput
@@ -156,6 +171,14 @@ const ArtworkForm = ({
               errors={errors}
               loading={loading}
             />
+            /*             <TextInput
+              name="artworkCommercial"
+              type="text"
+              label="Commercial license price"
+              adornment="$"
+              errors={errors}
+              loading={loading}
+            /> */
           )}
         <SelectInput
           name="artworkVisibility"

@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import Artwork from "../../models/artwork.js";
-import License from "../../models/license.js";
-import Version from "../../models/version.js";
+import Artwork from "../../models/artwork";
+import License from "../../models/license";
+import Version from "../../models/version";
 
 export const fetchArtworkById = async ({ artworkId, session = null }) => {
   return await Artwork.findOne({

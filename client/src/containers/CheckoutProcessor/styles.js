@@ -7,6 +7,9 @@ const checkoutProcessorStyles = makeStyles((muiTheme) => ({
   form: {
     height: "100%",
   },
+  wrapper: {
+    height: "100%",
+  },
   card: {
     height: "100%",
     display: "flex",

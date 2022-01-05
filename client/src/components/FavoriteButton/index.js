@@ -3,17 +3,18 @@ import {
   FavoriteRounded as FavoritedIcon,
 } from "@material-ui/icons";
 import React, { useState } from "react";
-import { useUserStore } from "../../contexts/global/user.js";
+import { useUserStore } from "../../contexts/global/user";
 import IconButton from "../../domain/IconButton";
-import { deleteFavorite, postFavorite } from "../../services/artwork.js";
-import AsyncButton from "../AsyncButton/index.js";
-import favoriteButtonStyles from "./styles.js";
+import { deleteFavorite, postFavorite } from "../../services/artwork";
+import AsyncButton from "../AsyncButton/index";
+import favoriteButtonStyles from "./styles";
 
 const FavoriteButton = ({
   artwork,
   favorited,
   labeled,
   handleCallback,
+  fontSize = "medium",
   ...props
 }) => {
   const [state, setState] = useState({ loading: false });
@@ -57,8 +58,14 @@ const FavoriteButton = ({
 
   return labeled ? (
     <AsyncButton
-      startIcon={favorited ? <FavoritedIcon /> : <FavoriteIcon />}
-      disabled={state.loading}
+      startIcon={
+        favorited ? (
+          <FavoritedIcon fontSize={fontSize} />
+        ) : (
+          <FavoriteIcon fontSize={fontSize} />
+        )
+      }
+      submitting={state.loading}
       onClick={() =>
         favorited
           ? handleUnsaveArtwork(artwork.id)
@@ -79,7 +86,11 @@ const FavoriteButton = ({
       disabled={state.loading}
       {...props}
     >
-      {favorited ? <FavoritedIcon /> : <FavoriteIcon />}
+      {favorited ? (
+        <FavoritedIcon fontSize={fontSize} />
+      ) : (
+        <FavoriteIcon fontSize={fontSize} />
+      )}
     </IconButton>
   );
 };

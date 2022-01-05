@@ -1,6 +1,6 @@
 import create from "zustand";
-import { getDownload, getOrder, postReview } from "../../services/orders.js";
-import { resolveAsyncError } from "../../utils/helpers.js";
+import { getDownload, getOrder, postReview } from "../../services/orders";
+import { resolveAsyncError, scrollToHighlight } from "../../utils/helpers";
 
 const initialState = {
   order: {
@@ -18,14 +18,6 @@ const initialState = {
   modal: {
     open: false,
   },
-};
-
-const scrollToHighlight = (highlightRef) => {
-  if (highlightRef.current)
-    highlightRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
 };
 
 const initState = () => ({ ...initialState });
@@ -69,16 +61,16 @@ const initActions = (set, get) => ({
   submitRating: async ({ orderId, userId, values }) => {
     await postReview.request({
       orderId,
-      reviewRating: values.artistRating,
+      reviewRating: values.reviewRating,
     });
     const order = get().order.data;
     const newRating = order.seller.rating
       ? (
           (order.seller.rating * order.seller.reviews.length +
-            values.artistRating) /
+            values.reviewRating) /
           (order.seller.reviews.length + 1)
         ).toFixed(2)
-      : order.seller.rating;
+      : values.reviewRating.toFixed(2);
     set((state) => ({
       ...state,
       order: {
@@ -93,7 +85,7 @@ const initActions = (set, get) => ({
             order: order.id,
             artwork: order.artwork.id,
             owner: userId,
-            rating: values.artistRating,
+            rating: values.reviewRating,
           },
         },
       },

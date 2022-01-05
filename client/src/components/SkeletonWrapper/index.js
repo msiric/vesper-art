@@ -5,6 +5,7 @@ import skeletonWrapperStyles from "./styles";
 const SkeletonWrapper = ({
   animation = "wave",
   variant = "text",
+  style,
   loading,
   children,
   ...props
@@ -17,6 +18,7 @@ const SkeletonWrapper = ({
       animation={animation}
       {...props}
       className={classes.wrapper}
+      style={{ ...style }}
     >
       {children}
     </Skeleton>

@@ -1,5 +1,5 @@
-import Notification from "../../models/notification.js";
-import User from "../../models/user.js";
+import Notification from "../../models/notification";
+import User from "../../models/user";
 
 export const addNewNotification = async ({
   notificationLink,

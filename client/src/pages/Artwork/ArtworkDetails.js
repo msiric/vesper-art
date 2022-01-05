@@ -1,17 +1,17 @@
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useEffect, useRef } from "react";
-import ArtistSection from "../../containers/ArtistSection/index.js";
-import ArtworkActions from "../../containers/ArtworkActions/index.js";
-import ArtworkInfo from "../../containers/ArtworkInfo/index.js";
-import ArtworkPreview from "../../containers/ArtworkPreview/index.js";
-import CommentSection from "../../containers/CommentSection/index.js";
+import ArtistSection from "../../containers/ArtistSection/index";
+import ArtworkActions from "../../containers/ArtworkActions/index";
+import ArtworkInfo from "../../containers/ArtworkInfo/index";
+import ArtworkPreview from "../../containers/ArtworkPreview/index";
+import CommentSection from "../../containers/CommentSection/index";
 import { useArtworkComments } from "../../contexts/local/artworkComments";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import globalStyles from "../../styles/global.js";
-import { containsErrors, renderError } from "../../utils/helpers.js";
+import globalStyles from "../../styles/global";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const useArtworkStyles = makeStyles((muiTheme) => ({
   stickyWrapper: {
@@ -40,6 +40,9 @@ const useArtworkStyles = makeStyles((muiTheme) => ({
   },
   container: {
     position: "relative",
+  },
+  item: {
+    width: "100%",
   },
   previewWrapper: {
     display: "flex",
@@ -89,7 +92,7 @@ const ArtworkDetails = ({ match }) => {
   return !containsErrors(retry, redirect) ? (
     <Container className={globalClasses.gridContainer}>
       <Grid container spacing={2} className={classes.container}>
-        <Grid item sm={12} md={8}>
+        <Grid item sm={12} md={8} className={classes.item}>
           <Box className={classes.previewWrapper}>
             <ArtworkPreview paramId={paramId} />
           </Box>
@@ -124,7 +127,7 @@ const ArtworkDetails = ({ match }) => {
       </Grid>
     </Container>
   ) : (
-    renderError({ retry, redirect, message })
+    renderError({ retry, redirect, message, reinitializeState })
   );
 };
 

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import mongooseDeepPopulate from "mongoose-deep-populate";
 import fuzzySearch from "mongoose-fuzzy-searching";
-import { formatAmount } from "../common/helpers.js";
+import { formatAmount } from "../common/helpers";
 
 const deepPopulate = mongooseDeepPopulate(mongoose);
 

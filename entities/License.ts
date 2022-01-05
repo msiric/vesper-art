@@ -19,6 +19,11 @@ export enum LicenseType {
   commercial = "commercial",
 }
 
+export enum LicenseUsage {
+  individual = "individual",
+  business = "business",
+}
+
 @Entity()
 export class License extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -34,6 +39,12 @@ export class License extends BaseEntity {
   @Column()
   ownerId: string;
 
+  @ManyToOne(() => User)
+  seller: User;
+
+  @Column()
+  sellerId: string;
+
   @ManyToOne(() => Artwork)
   @JoinColumn()
   artwork: Artwork;
@@ -48,6 +59,15 @@ export class License extends BaseEntity {
   assignee: string;
 
   @Column()
+  assigneeIdentifier: string;
+
+  @Column()
+  assignor: string;
+
+  @Column()
+  assignorIdentifier: string;
+
+  @Column()
   company: string;
 
   @Column({
@@ -55,6 +75,14 @@ export class License extends BaseEntity {
     enum: LicenseType,
   })
   type: LicenseType;
+
+  // $TODO temp nullable, remove later
+  @Column({
+    type: "enum",
+    enum: LicenseUsage,
+    nullable: true,
+  })
+  usage: LicenseUsage;
 
   @Column()
   active: boolean;

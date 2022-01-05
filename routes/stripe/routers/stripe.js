@@ -1,4 +1,3 @@
-import bodyParser from "body-parser";
 import express from "express";
 import { featureFlags } from "../../../common/constants";
 import {
@@ -8,24 +7,16 @@ import {
   getStripeUser,
   managePaymentIntent,
   onboardUser,
-  receiveWebhookEvent,
   redirectToDashboard,
   redirectToStripe,
-} from "../../../controllers/stripe.js";
+} from "../../../controllers/stripe";
 import {
   isAuthenticated,
   requestHandler as handler,
-} from "../../../utils/helpers.js";
+} from "../../../utils/helpers";
 
+// $TODO no automated tests
 const router = express.Router();
-
-// $TODO Bolje to treba
-router.route("/hooks", bodyParser.raw({ type: "application/json" })).post(
-  handler(receiveWebhookEvent, true, (req, res, next) => ({
-    stripeSignature: req.headers["stripe-signature"],
-    stripeBody: req.rawBody,
-  }))
-);
 
 router.route("/account/:accountId").get(
   isAuthenticated,

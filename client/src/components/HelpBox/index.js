@@ -7,9 +7,9 @@ import {
 import React from "react";
 import Box from "../../domain/Box";
 import Typography from "../../domain/Typography";
-import helpBoxStyles from "./styles.js";
+import helpBoxStyles from "./styles";
 
-const HelpBox = ({ type, label, margin = 0 }) => {
+const HelpBox = ({ type, label, margin = 0, children }) => {
   const classes = helpBoxStyles();
 
   const renderIcon = (type) => {
@@ -29,8 +29,11 @@ const HelpBox = ({ type, label, margin = 0 }) => {
 
   return (
     <Box className={classes.container} style={{ margin }}>
-      {renderIcon(type)}
-      <Typography className={classes.label}>{label}</Typography>
+      <Box className={classes.wrapper}>
+        {renderIcon(type)}
+        <Typography className={classes.label}>{label}</Typography>
+      </Box>
+      <Box>{children}</Box>
     </Box>
   );
 };

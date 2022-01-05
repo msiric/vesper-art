@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
-import { artepunktTheme } from "../../styles/theme.js";
+import { artepunktTheme } from "../../styles/theme";
 
 const imageInputStyles = makeStyles((muiTheme) => ({
   container: {
@@ -17,7 +17,8 @@ const imageInputStyles = makeStyles((muiTheme) => ({
   },
   avatar: {
     cursor: ({ editable }) => (editable ? "pointer" : "auto"),
-    height: "100%",
+    height: 150,
+    width: 150,
     maxWidth: 600,
     position: "relative",
     backgroundColor: "transparent",
@@ -29,11 +30,27 @@ const imageInputStyles = makeStyles((muiTheme) => ({
       },
     },
   },
+  artwork: {
+    height: "100%",
+    width: "100%",
+  },
+  sizing: {
+    paddingTop: "70%",
+  },
+  minHeight: {
+    minHeight: 400,
+    [muiTheme.breakpoints.down("xs")]: {
+      minHeight: 250,
+    },
+  },
   preview: {
-    maxWidth: "100%",
+    maxWidth: 750,
+    width: "100%",
     height: "100%",
     objectFit: "cover",
-    position: "absolute",
+  },
+  artworkPreview: {
+    objectFit: "contain",
   },
   input: {
     position: "absolute",
@@ -72,9 +89,13 @@ const imageInputStyles = makeStyles((muiTheme) => ({
   },
   helper: {
     marginTop: 3,
+    textAlign: "center",
   },
   icon: {
     color: "white",
+  },
+  hidden: {
+    display: "none",
   },
 }));
 

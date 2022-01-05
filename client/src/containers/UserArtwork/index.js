@@ -1,20 +1,14 @@
 import React from "react";
 import Masonry from "react-masonry-css";
-import ArtworkCard from "../../components/ArtworkCard/index.js";
-import InfiniteList from "../../components/InfiniteList/index.js";
+import { breakpointsFixedWidth } from "../../common/constants";
+import ArtworkCard from "../../components/ArtworkCard/index";
+import InfiniteList from "../../components/InfiniteList/index";
 import { useUserArtwork } from "../../contexts/local/userArtwork";
 import { useUserProfile } from "../../contexts/local/userProfile";
 import Box from "../../domain/Box";
-import userArtworkStyles from "./styles.js";
+import userArtworkStyles from "./styles";
 
-const breakpointColumns = {
-  default: 4,
-  1100: 3,
-  700: 2,
-  500: 1,
-};
-
-const UserArtwork = ({ type, fixed }) => {
+const UserArtwork = ({ userUsername, shouldPause, type, fixed }) => {
   const loading = useUserProfile((state) => state.profile.loading);
 
   const elements = useUserArtwork((state) => state.artwork.data);
@@ -29,14 +23,17 @@ const UserArtwork = ({ type, fixed }) => {
     <Box className={classes.container}>
       <InfiniteList
         dataLength={elements ? elements.length : 0}
-        next={fetchArtwork}
+        next={() => fetchArtwork({ userUsername })}
         hasMore={hasMore}
-        loading={loading || fetching}
+        loading={loading}
+        fetching={fetching}
+        shouldPause={shouldPause}
         error={error.refetch}
         empty="No artwork yet"
+        type="masonry"
       >
         <Masonry
-          breakpointCols={breakpointColumns}
+          breakpointCols={breakpointsFixedWidth}
           className={classes.masonry}
           columnClassName={classes.column}
         >

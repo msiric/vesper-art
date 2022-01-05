@@ -9,13 +9,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import DashboardCard from "../../components/DashboardCard/index.js";
-import { useUserStore } from "../../contexts/global/user.js";
+import DashboardCard from "../../components/DashboardCard/index";
+import { useUserStore } from "../../contexts/global/user";
 import { useUserStats } from "../../contexts/local/userStats";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Grid from "../../domain/Grid";
-import dashboardVisualizationStyles from "./styles.js";
+import dashboardVisualizationStyles from "./styles";
 
 const DashboardVisualization = () => {
   const userId = useUserStore((state) => state.id);

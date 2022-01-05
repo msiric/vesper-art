@@ -1,16 +1,17 @@
 import createError from "http-errors";
-import { errors } from "../common/constants";
+import { isObjectEmpty } from "../common/helpers";
 import { commentValidation } from "../common/validation";
-import socketApi from "../lib/socket.js";
-import { fetchArtworkById } from "../services/postgres/artwork.js";
+import socketApi from "../lib/socket";
+import { fetchArtworkById } from "../services/postgres/artwork";
 import {
   addNewComment,
   editExistingComment,
   fetchCommentById,
   removeExistingComment,
-} from "../services/postgres/comment.js";
-import { addNewNotification } from "../services/postgres/notification.js";
-import { generateUuids } from "../utils/helpers.js";
+} from "../services/postgres/comment";
+import { addNewNotification } from "../services/postgres/notification";
+import { formatError, formatResponse, generateUuids } from "../utils/helpers";
+import { errors, responses } from "../utils/statuses";
 
 export const getComment = async ({ artworkId, commentId, connection }) => {
   const foundComment = await fetchCommentById({
@@ -29,9 +30,7 @@ export const postComment = async ({
 }) => {
   await commentValidation.validate({ commentContent });
   const foundArtwork = await fetchArtworkById({ artworkId, connection });
-  if (!foundArtwork) {
-    throw createError(errors.notFound, "Artwork not found", { expose: true });
-  } else {
+  if (!isObjectEmpty(foundArtwork)) {
     const { commentId, notificationId } = generateUuids({
       commentId: null,
       notificationId: null,
@@ -43,27 +42,27 @@ export const postComment = async ({
       commentContent,
       connection,
     });
-    if (userId !== foundArtwork.owner.id) {
+    if (userId !== foundArtwork.ownerId) {
       const savedNotification = await addNewNotification({
         notificationId,
         notificationLink: foundArtwork.id,
         notificationRef: commentId,
         notificationType: "comment",
-        notificationReceiver: foundArtwork.owner.id,
+        notificationReceiver: foundArtwork.ownerId,
         connection,
       });
       socketApi.sendNotification(
-        foundArtwork.owner.id,
+        foundArtwork.ownerId,
         // $TODO maybe this can be done better
         savedNotification.raw[0]
       );
     }
-    return {
-      message: "Comment posted successfully",
+    return formatResponse({
+      ...responses.commentCreated,
       payload: savedComment.raw[0],
-      expose: true,
-    };
+    });
   }
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const patchComment = async ({
@@ -74,14 +73,21 @@ export const patchComment = async ({
   connection,
 }) => {
   await commentValidation.validate({ commentContent });
-  await editExistingComment({
-    commentId,
-    artworkId,
-    userId,
-    commentContent,
-    connection,
-  });
-  return { message: "Comment updated successfully", expose: true };
+  const foundArtwork = await fetchArtworkById({ artworkId, connection });
+  if (!isObjectEmpty(foundArtwork)) {
+    const updatedComment = await editExistingComment({
+      commentId,
+      artworkId,
+      userId,
+      commentContent,
+      connection,
+    });
+    if (updatedComment.affected !== 0) {
+      return formatResponse(responses.commentUpdated);
+    }
+    throw createError(...formatError(errors.commentNotFound));
+  }
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 export const deleteComment = async ({
@@ -90,11 +96,18 @@ export const deleteComment = async ({
   commentId,
   connection,
 }) => {
-  await removeExistingComment({
-    commentId,
-    artworkId,
-    userId,
-    connection,
-  });
-  return { message: "Comment deleted successfully", expose: true };
+  const foundArtwork = await fetchArtworkById({ artworkId, connection });
+  if (!isObjectEmpty(foundArtwork)) {
+    const deletedComment = await removeExistingComment({
+      commentId,
+      artworkId,
+      userId,
+      connection,
+    });
+    if (deletedComment.affected !== 0) {
+      return formatResponse(responses.commentDeleted);
+    }
+    throw createError(...formatError(errors.commentNotFound));
+  }
+  throw createError(...formatError(errors.artworkNotFound));
 };

@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import ImageWrapper from "../../components/ImageWrapper/index.js";
+import ImageWrapper from "../../components/ImageWrapper/index";
 import { useArtworkDetails } from "../../contexts/local/artworkDetails";
 import Box from "../../domain/Box";
 import Card from "../../domain/Card";
 import Divider from "../../domain/Divider";
 import Typography from "../../domain/Typography";
-import artworkPreviewStyles from "./styles.js";
+import artworkPreviewStyles from "./styles";
 
 const ArtworkPreview = ({ paramId }) => {
   const version = useArtworkDetails((state) => state.artwork.data.current);
@@ -23,26 +23,23 @@ const ArtworkPreview = ({ paramId }) => {
 
   return (
     <Card className={classes.container}>
-      <Box className={classes.titleWrapper}>
-        <Typography loading={loading} className={classes.title}>{`${
-          version.title
-        }, ${new Date(version.created).getFullYear()}`}</Typography>
-      </Box>
-      <Divider />
       <Box className={classes.imageWrapper}>
         <ImageWrapper
           height={version.height || 500}
           source={version.cover.source}
           placeholder={version.cover.dominant}
+          addOverlay={true}
           loading={loading}
         />
       </Box>
       <Box>
-        <Divider />
-        <br />
+        <Typography loading={loading} className={classes.title}>{`${
+          version.title
+        }, ${new Date(version.created).getFullYear()}`}</Typography>
         <Typography loading={loading} className={classes.description}>
-          {version.description}
+          {version.description || "No description"}
         </Typography>
+        <Divider />
         <Box className={classes.disclaimerWrapper}>
           <Typography
             variant="body2"

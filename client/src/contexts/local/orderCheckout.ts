@@ -4,8 +4,8 @@ import {
   CardNumberElement,
 } from "@stripe/react-stripe-js";
 import create from "zustand";
-import { isObjectEmpty } from "../../../../common/helpers";
-import { getCheckout, getDiscount } from "../../services/checkout";
+import { getCheckout } from "../../services/checkout";
+import { getPurchases } from "../../services/orders";
 import { postIntent } from "../../services/stripe";
 import { resolveAsyncError } from "../../utils/helpers";
 
@@ -20,6 +20,11 @@ const initialState = {
   version: {
     data: { artwork: { owner: {} }, cover: {}, media: {} },
     loading: true,
+    error: { retry: false, redirect: false, message: "" },
+  },
+  orders: {
+    data: [],
+    loading: false,
     error: { retry: false, redirect: false, message: "" },
   },
   license: "",
@@ -68,6 +73,41 @@ const initActions = (set, get) => ({
         ...state,
         version: {
           ...state.version,
+          loading: false,
+          error: resolveAsyncError(err),
+        },
+      }));
+    }
+  },
+  fetchOrders: async ({ artworkId }) => {
+    try {
+      set((state) => ({
+        ...state,
+        orders: {
+          ...state.orders,
+          loading: true,
+        },
+      }));
+      const { data } = await getPurchases.request({
+        artworkId,
+      });
+      set((state) => ({
+        ...state,
+        orders: {
+          data: data.purchases,
+          loading: false,
+          error: { ...initialState.orders.error },
+        },
+        modal: {
+          ...state.modal,
+          open: true,
+        },
+      }));
+    } catch (err) {
+      set((state) => ({
+        ...state,
+        orders: {
+          ...state.orders,
           loading: false,
           error: resolveAsyncError(err),
         },
@@ -210,14 +250,9 @@ const initActions = (set, get) => ({
       const discount = get().discount.data;
       const { data } = await postIntent.request({
         versionId: version.id,
-        artworkLicense: {
-          assignee: values.licenseAssignee,
-          company: values.licenseCompany,
-          type: values.licenseType,
-        },
         discountId: discount ? discount.id : null,
+        ...values,
       });
-
       set((state) => ({
         ...state,
         secret: data.intent.secret,
@@ -241,7 +276,8 @@ const initActions = (set, get) => ({
       const discount = get().discount.data;
       const version = get().version.data;
       const license = get().license;
-      if (discount && values.discountCode === null) {
+      // $TODO no longer
+      /*       if (discount && values.discountCode === null) {
         await postIntent.request({
           versionId: version.id,
           artworkLicense: {
@@ -288,7 +324,7 @@ const initActions = (set, get) => ({
         } else {
           console.log("$TODO discount does not exist");
         }
-      }
+      } */
     } catch (err) {
       console.log(err);
       set((state) => ({

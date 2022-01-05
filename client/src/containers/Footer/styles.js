@@ -30,7 +30,7 @@ const footerStyles = makeStyles((muiTheme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "18px 0",
+    height: 75,
   },
   copyright: {
     display: "flex",
@@ -64,6 +64,14 @@ const footerStyles = makeStyles((muiTheme) => ({
     },
     [muiTheme.breakpoints.down("sm")]: {
       justifyContent: "center",
+    },
+  },
+  button: {
+    color: "white",
+    padding: 0,
+    margin: "8px 16px 8px 0",
+    "&:last-child": {
+      margin: "8px 0",
     },
   },
 }));

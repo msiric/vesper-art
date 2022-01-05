@@ -1,9 +1,9 @@
 import React from "react";
-import TokenVerifier from "../../containers/TokenVerifier/index.js";
+import TokenVerifier from "../../containers/TokenVerifier/index";
 import { useUserToken } from "../../contexts/local/userToken";
 import Container from "../../domain/Container";
 import Grid from "../../domain/Grid";
-import { containsErrors, renderError } from "../../utils/helpers.js";
+import { containsErrors, renderError } from "../../utils/helpers";
 
 const VerifyToken = ({ match, location }) => {
   const retry = useUserToken((state) => state.token.error.retry);

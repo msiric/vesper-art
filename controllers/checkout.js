@@ -1,23 +1,43 @@
 import createError from "http-errors";
-import { errors } from "../common/constants";
-import { renderFreeLicenses } from "../common/helpers";
-import { downloadValidation, licenseValidation } from "../common/validation";
-import socketApi from "../lib/socket.js";
-import { fetchVersionDetails } from "../services/postgres/artwork.js";
+import {
+  formatLicenseValues,
+  isLicenseValid,
+  isObjectEmpty,
+  renderFreeLicenses,
+} from "../common/helpers";
+import {
+  actorsValidation,
+  freeValidation,
+  licenseValidation,
+  orderValidation,
+} from "../common/validation";
+import socketApi from "../lib/socket";
+import { fetchVersionDetails } from "../services/postgres/artwork";
 import { addNewLicense } from "../services/postgres/license";
-import { addNewNotification } from "../services/postgres/notification.js";
-import { addNewOrder } from "../services/postgres/order.js";
-import { fetchUserById } from "../services/postgres/user.js";
-import { generateUuids } from "../utils/helpers.js";
+import { addNewNotification } from "../services/postgres/notification";
+import { addNewOrder } from "../services/postgres/order";
+import { fetchArtworkOrders, fetchUserById } from "../services/postgres/user";
+import { formatError, formatResponse, generateUuids } from "../utils/helpers";
+import { USER_SELECTION } from "../utils/selectors";
+import { errors, responses } from "../utils/statuses";
 
 export const getCheckout = async ({ userId, versionId, connection }) => {
-  const foundVersion = await fetchVersionDetails({ versionId, connection });
-  if (foundVersion && foundVersion.artwork.active) {
-    return {
-      version: foundVersion,
-    };
+  const foundVersion = await fetchVersionDetails({
+    versionId,
+    connection,
+  });
+  if (!isObjectEmpty(foundVersion)) {
+    if (foundVersion.id === foundVersion.artwork.currentId) {
+      if (foundVersion.artwork.owner.id !== userId) {
+        return {
+          version: foundVersion,
+        };
+      }
+      throw createError(...formatError(errors.artworkCheckoutByOwner));
+    }
+    throw createError(...formatError(errors.artworkVersionObsolete));
   }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(...formatError(errors.artworkNotFound));
 };
 
 // $TODO not good
@@ -25,47 +45,66 @@ export const getCheckout = async ({ userId, versionId, connection }) => {
 export const postDownload = async ({
   userId,
   versionId,
-  licenseAssignee,
+  licenseUsage,
   licenseCompany,
   licenseType,
   connection,
 }) => {
-  const foundVersion = await fetchVersionDetails({ versionId, connection });
-  if (foundVersion && foundVersion.artwork.active) {
-    await licenseValidation.validate({
-      licenseAssignee,
-      licenseCompany,
-      licenseType,
+  const foundVersion = await fetchVersionDetails({
+    versionId,
+    selection: [...USER_SELECTION["LICENSE_INFO"]("owner")],
+    connection,
+  });
+  if (!isObjectEmpty(foundVersion)) {
+    const foundUser = await fetchUserById({
+      userId,
+      selection: [...USER_SELECTION["LICENSE_INFO"]()],
+      connection,
     });
-    const availableLicenses = renderFreeLicenses({
-      version: foundVersion,
-    });
-    if (availableLicenses.some((item) => item.value === licenseType)) {
+    if (!isObjectEmpty(foundUser)) {
       const licensePrice = foundVersion[licenseType];
-      // $TODO Treba li dohvacat usera?
-      const foundUser = await fetchUserById({ userId, connection });
-      if (foundVersion.artwork.active) {
+      const licenseData = formatLicenseValues({
+        licenseAssignee: foundUser.fullName,
+        licenseAssignor: foundVersion.artwork.owner.fullName,
+        licenseUsage,
+        licenseCompany,
+        licenseType,
+        licensePrice,
+      });
+      await licenseValidation
+        .concat(actorsValidation)
+        .concat(freeValidation)
+        .validate(licenseData);
+      const availableLicenses = renderFreeLicenses({
+        version: foundVersion,
+      });
+      if (availableLicenses.some((item) => item.value === licenseType)) {
         if (foundVersion.id === foundVersion.artwork.currentId) {
-          if (foundVersion.artwork.owner.id !== foundUser.id) {
-            if (foundUser && foundUser.active) {
+          const foundOrders = await fetchArtworkOrders({
+            userId,
+            artworkId: foundVersion.artwork.id,
+            connection,
+          });
+          const licenseStatus = isLicenseValid({
+            data: licenseData,
+            orders: foundOrders,
+          });
+          if (licenseStatus.valid) {
+            if (foundVersion.artwork.owner.id !== foundUser.id) {
               const { licenseId, orderId, notificationId } = generateUuids({
                 licenseId: null,
                 orderId: null,
                 notificationId: null,
               });
-              const savedLicense = await addNewLicense({
+              await addNewLicense({
                 licenseId,
                 userId: foundUser.id,
+                sellerId: foundVersion.artwork.owner.id,
                 artworkId: foundVersion.artwork.id,
-                licenseData: {
-                  licenseAssignee,
-                  licenseCompany,
-                  licenseType,
-                  licensePrice,
-                },
+                licenseData,
                 connection,
               });
-              await downloadValidation.validate({
+              await orderValidation.validate({
                 orderBuyer: foundUser.id,
                 orderSeller: foundVersion.artwork.owner.id,
                 orderArtwork: foundVersion.artwork.id,
@@ -96,7 +135,6 @@ export const postDownload = async ({
                 orderData: orderObject,
                 connection,
               });
-              // new start
               await addNewNotification({
                 notificationId,
                 notificationLink: orderId,
@@ -109,30 +147,19 @@ export const postDownload = async ({
                 foundVersion.artwork.owner.id,
                 orderId
               );
-              // new end
-              return { message: "Order completed successfully", expose: true };
+              return formatResponse(responses.orderCreated);
             }
-            throw createError(errors.notFound, "User not found", {
-              expose: true,
-            });
+            throw createError(...formatError(errors.artworkDownloadedByOwner));
           }
           throw createError(
-            errors.badRequest,
-            "You are the owner of this artwork",
-            { expose: true }
+            ...formatError(errors[licenseStatus.state.identifier])
           );
         }
-        throw createError(errors.badRequest, "Artwork version is obsolete", {
-          expose: true,
-        });
+        throw createError(...formatError(errors.artworkVersionObsolete));
       }
-      throw createError(errors.gone, "Artwork is no longer active", {
-        expose: true,
-      });
+      throw createError(...formatError(errors.artworkLicenseInvalid));
     }
-    throw createError(errors.badRequest, "License is not valid", {
-      expose: true,
-    });
+    throw createError(...formatError(errors.userNotFound));
   }
-  throw createError(errors.notFound, "Artwork not found", { expose: true });
+  throw createError(...formatError(errors.artworkNotFound));
 };

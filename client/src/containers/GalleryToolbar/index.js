@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
-import DropdownItems from "../../components/DropdownItems/index.js";
-import MainHeading from "../../components/MainHeading/index.js";
+import DropdownItems from "../../components/DropdownItems/index";
+import MainHeading from "../../components/MainHeading/index";
 import { useUserStore } from "../../contexts/global/user";
 import { useUserGallery } from "../../contexts/local/userGallery";
 import Box from "../../domain/Box";
-import galleryToolbarStyles from "./styles.js";
+import galleryToolbarStyles from "./styles";
 
 const GalleryToolbar = ({ formatArtwork, location }) => {
   const userId = useUserStore((state) => state.id);

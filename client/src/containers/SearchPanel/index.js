@@ -1,19 +1,13 @@
 import React, { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { useLocation } from "react-router-dom";
-import ArtworkCard from "../../components/ArtworkCard/index.js";
-import InfiniteList from "../../components/InfiniteList/index.js";
-import ProfileCard from "../../components/ProfileCard/index.js";
+import { breakpointsFullWidth } from "../../common/constants";
+import ArtworkCard from "../../components/ArtworkCard/index";
+import InfiniteList from "../../components/InfiniteList/index";
+import ProfileCard from "../../components/ProfileCard/index";
 import { useSearchResults } from "../../contexts/local/searchResults";
 import Box from "../../domain/Box";
-import searchPanelStyles from "./styles.js";
-
-const breakpointColumns = {
-  default: 4,
-  1100: 3,
-  700: 2,
-  500: 1,
-};
+import searchPanelStyles from "./styles";
 
 const SearchPanel = ({ type }) => {
   const elements = useSearchResults((state) => state[type].data);
@@ -37,12 +31,14 @@ const SearchPanel = ({ type }) => {
         dataLength={elements ? elements.length : 0}
         next={fetchResults}
         hasMore={hasMore}
-        loading={loading || fetching}
+        loading={loading}
+        fetching={fetching}
         error={error.refetch}
         empty="No results matched your query"
+        type="masonry"
       >
         <Masonry
-          breakpointCols={breakpointColumns}
+          breakpointCols={breakpointsFullWidth}
           className={classes.masonry}
           columnClassName={classes.column}
         >
