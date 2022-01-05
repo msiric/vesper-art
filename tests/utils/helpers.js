@@ -37,10 +37,13 @@ export const findUnorderedArtwork = (artworks, orders) =>
   );
 
 export const findUniqueOrders = (orders) =>
-  orders.filter(
-    (item, index, self) =>
-      self.findIndex((value) => value.artworkId === item.artworkId) === index
-  );
+  [...orders]
+    .reverse()
+    .filter(
+      (item, index, self) =>
+        self.findIndex((value) => value.artworkId === item.artworkId) === index
+    )
+    .reverse();
 
 export const logUserIn = (user) => {
   const { tokenPayload: payload } = formatTokenData({ user });

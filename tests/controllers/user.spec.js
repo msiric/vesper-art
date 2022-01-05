@@ -82,6 +82,7 @@ let connection,
   unorderedArtwork,
   onceOrderedArtworkWithNewVersion,
   multiOrderedArtworkWithNoNewVersions,
+  uniqueOrders,
   firstOrderDate,
   lastOrderDate,
   startDate,
@@ -187,6 +188,7 @@ describe("User tests", () => {
     multiOrderedArtworkWithNoNewVersions = findUniqueOrders(
       findMultiOrderedArtwork(entities.Order)
     );
+    uniqueOrders = findUniqueOrders(buyerOwnership);
     firstOrderDate = format(new Date(sellerSales[0].created), "MM/dd/yyyy");
     lastOrderDate = format(
       new Date(sellerSales[sellerSales.length - 1].created),
@@ -620,7 +622,7 @@ describe("User tests", () => {
       expect(res.body.artwork).toHaveLength(
         visibleAndActiveArtworkBySeller.length
       );
-      expect(res.body.artwork[0].current.media).toBeTruthy();
+      expect(res.body.artwork[0].current.media.source).toBeTruthy();
     });
 
     it("should limit user uploads to 1", async () => {
@@ -665,28 +667,27 @@ describe("User tests", () => {
         `/api/users/${buyer.id}/ownership`
       );
       expect(res.statusCode).toEqual(statusCodes.ok);
-      expect(res.body.purchases).toHaveLength(buyerOwnership.length);
+      expect(res.body.purchases).toHaveLength(uniqueOrders.length);
+      expect(res.body.purchases[0].version.media.source).toBeTruthy();
     });
 
-    // $TODO distinctOn needs to be improved (lazy loading might return the same artwork from a different order)
-    // it("should limit user ownership to 1", async () => {
-    //   const limit = 1;
-    //   const res = await request(app, buyerToken).get(
-    //     `/api/users/${buyer.id}/ownership?cursor=&limit=${limit}`
-    //   );
-    //   expect(res.statusCode).toEqual(statusCodes.ok);
-    //   expect(res.body.purchases).toHaveLength(limit);
-    // });
-
-    // it("should limit user ownership to 1 and skip the first one", async () => {
-    //   const cursor = buyerOwnership[0].id;
-    //   const limit = 1;
-    //   const res = await request(app, buyerToken).get(
-    //     `/api/users/${buyer.id}/ownership?cursor=${cursor}&limit=${limit}`
-    //   );
-    //   expect(res.statusCode).toEqual(statusCodes.ok);
-    //   expect(res.body.purchases[0].id).toEqual(buyerOwnership[1].id);
-    // });
+    it("should limit user ownership to 1", async () => {
+      const limit = 1;
+      const res = await request(app, buyerToken).get(
+        `/api/users/${buyer.id}/ownership?cursor=&limit=${limit}`
+      );
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.purchases).toHaveLength(limit);
+    });
+    it("should limit user ownership to 1 and skip the first one", async () => {
+      const cursor = uniqueOrders[0].id;
+      const limit = 1;
+      const res = await request(app, buyerToken).get(
+        `/api/users/${buyer.id}/ownership?cursor=${cursor}&limit=${limit}`
+      );
+      expect(res.statusCode).toEqual(statusCodes.ok);
+      expect(res.body.purchases[0].id).toEqual(uniqueOrders[1].id);
+    });
 
     it("should throw an error if user is not authenticated", async () => {
       const res = await request(app).get(`/api/users/${buyer.id}/ownership`);
