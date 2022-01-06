@@ -147,7 +147,7 @@ const initActions = (set, get) => ({
     const target = event ? event.currentTarget : null;
     const notifications = get().notifications;
     if (
-      fetching ||
+      (fetching && !notifications.opened) ||
       (notifications.items.length < notifications.limit &&
         !notifications.opened)
     ) {
@@ -155,7 +155,8 @@ const initActions = (set, get) => ({
         ...state,
         notifications: {
           ...state.notifications,
-          ...(!fetching && { anchor: target }),
+          anchor: target,
+          opened: true,
           loading: !state.notifications.initialized,
           fetching: state.notifications.initialized,
         },
@@ -176,7 +177,6 @@ const initActions = (set, get) => ({
                 ? false
                 : true,
             cursor: resolvePaginationId(data.notifications),
-            opened: true,
             loading: false,
             fetching: false,
             initialized: true,
@@ -200,8 +200,6 @@ const initActions = (set, get) => ({
         notifications: {
           ...state.notifications,
           anchor: state.notifications.anchor ? null : target,
-          loading: false,
-          fetching: false,
         },
       }));
     }
