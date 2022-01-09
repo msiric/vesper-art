@@ -25,7 +25,7 @@ const SettingsProfile = () => {
   const fetchSettings = useUserSettings((state) => state.fetchSettings);
 
   const setDefaultValues = () => ({
-    userMedia: "",
+    userMedia: loading ? "" : user.avatar || "",
     userDescription: loading ? "" : user.description || "",
     userCountry: loading ? "" : user.country || "",
   });

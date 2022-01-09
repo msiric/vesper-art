@@ -49,7 +49,7 @@ const Input = ({
   const showFileUpload = async (e) => {
     if (editable) {
       if (!error && state.file && !noEmpty) {
-        setValue(name, null);
+        setValue(name, "");
         setState((prevState) => ({ ...prevState, file: null }));
         await trigger(name);
       } else if (fileUpload) {
