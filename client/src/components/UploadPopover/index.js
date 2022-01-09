@@ -10,6 +10,7 @@ import popperStyles from "./styles";
 const UploadPopover = ({
   label,
   size,
+  type,
   dimensions,
   aspectRatio,
   types,
@@ -53,9 +54,9 @@ const UploadPopover = ({
         transition
       >
         <Paper className={classes.wrapper}>
-          <Typography>{`Make sure the size of your artwork doesn't exceed ${size} MB.`}</Typography>
+          <Typography>{`Make sure the size of your ${type} doesn't exceed ${size}.`}</Typography>
           <Typography>{`Minimum file dimensions are: ${dimensions.height}x${dimensions.width}.`}</Typography>
-          <Typography>{`Allowed file aspect ratios range from 1:1 all the way to ${aspectRatio}:1`}</Typography>
+          <Typography>{`Allowed file aspect ratios range from 1:1 to ${aspectRatio}:1`}</Typography>
           <Typography>{`Allowed file types are: ${formatMimeTypes(
             types
           )}`}</Typography>

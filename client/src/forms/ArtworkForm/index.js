@@ -1,6 +1,7 @@
 import { Box } from "@material-ui/core";
 import React from "react";
 import { featureFlags, upload } from "../../../../common/constants";
+import { formatBytes } from "../../../../common/helpers";
 import UploadPopover from "../../components/UploadPopover";
 import { useUserStore } from "../../contexts/global/user";
 import ImageInput from "../../controls/ImageInput/index";
@@ -51,7 +52,8 @@ const ArtworkForm = ({
       {editable && (
         <UploadPopover
           label="What kind of file to upload?"
-          size={upload.artwork.fileSize / 1024 / 1024}
+          size={formatBytes(upload.artwork.fileSize)}
+          type="artwork"
           dimensions={{
             height: upload.artwork.fileDimensions.height,
             width: upload.artwork.fileDimensions.width,

@@ -7,7 +7,7 @@ import {
   upload,
   usernames,
 } from "./constants";
-import { formatArtworkPrice, formatMimeTypes } from "./helpers";
+import { formatArtworkPrice, formatBytes, formatMimeTypes } from "./helpers";
 
 export const ranges = {
   firstName: {
@@ -417,9 +417,9 @@ export const errors = {
   },
   artworkMediaSize: {
     status: statusCodes.badRequest,
-    message: `File needs to be less than ${
-      upload.artwork.fileSize / 1048576
-    }MB`,
+    message: `File cannot be greater than ${formatBytes(
+      upload.artwork.fileSize
+    )}`,
     expose: true,
   },
   userMediaType: {
@@ -431,7 +431,7 @@ export const errors = {
   },
   userMediaSize: {
     status: statusCodes.badRequest,
-    message: `File needs to be less than ${upload.user.fileSize / 1048576}MB`,
+    message: `File cannot be greater than ${formatBytes(upload.user.fileSize)}`,
     expose: true,
   },
   orderIntentInvalid: {

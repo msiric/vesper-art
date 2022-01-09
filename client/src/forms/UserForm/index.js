@@ -1,6 +1,8 @@
 import { Box } from "@material-ui/core";
 import React from "react";
-import { countries } from "../../../../common/constants";
+import { countries, upload } from "../../../../common/constants";
+import { formatBytes } from "../../../../common/helpers";
+import UploadPopover from "../../components/UploadPopover";
 import AutocompleteInput from "../../controls/AutocompleteInput/index";
 import ImageInput from "../../controls/ImageInput/index";
 import TextInput from "../../controls/TextInput/index";
@@ -32,6 +34,18 @@ const EditUserForm = ({
         width={150}
         noEmpty={false}
         editable={editable}
+        loading={loading}
+      />
+      <UploadPopover
+        label="What kind of file to upload?"
+        size={formatBytes(upload.user.fileSize)}
+        type="avatar"
+        dimensions={{
+          height: upload.user.fileDimensions.height,
+          width: upload.user.fileDimensions.width,
+        }}
+        aspectRatio={upload.user.fileRatio}
+        types={upload.user.mimeTypes}
         loading={loading}
       />
       <Box>
