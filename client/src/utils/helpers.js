@@ -1,6 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { featureFlags, statusCodes } from "../../../common/constants";
+import { auth, featureFlags, statusCodes } from "../../../common/constants";
 import Redirect from "../pages/Home/Redirect";
 import Retry from "../pages/Home/Retry";
 
@@ -22,19 +22,20 @@ export const resolvePaginationId = (data) => {
 };
 
 export const resolveAsyncError = (err, isInfinite = false) => {
-  console.log(err);
-  console.log(err.response);
+  console.log("err", err);
+  console.log("res", err.response);
+  console.log("mes", err.message);
+
+  let errorType = "retry";
   if (err && err.response) {
     const statusCode = err.response.data.status;
     const notFound = statusCode === statusCodes.notFound;
-    const errorObj = isInfinite
-      ? { refetch: true, message: "" }
-      : notFound
-      ? { redirect: true, message: "" }
-      : { retry: true, message: "" };
-    return errorObj;
+    errorType = isInfinite ? "refetch" : notFound ? "redirect" : "retry";
+  } else if (err && err.message) {
+    const networkError = err.message === auth.networkMessage;
+    errorType = isInfinite && networkError ? "refetch" : "retry";
   }
-  return;
+  return { [errorType]: true, message: "" };
 };
 
 export const displayValidLicense = (use, type) => {

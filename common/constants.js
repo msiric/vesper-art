@@ -65,7 +65,7 @@ export const payment = featureFlags.stripe
 
 export const auth = {
   refreshEndpoint: "/api/auth/refresh_token",
-  errorMessage: "Network Error",
+  networkMessage: "Network Error",
   loginMessage: "Forbidden",
 };
 

@@ -126,10 +126,7 @@ const Interceptor = () => {
           handleAuthError();
           return Promise.reject(error);
         }
-        if (
-          error.message === auth.errorMessage ||
-          (error.response && error.response.status === 401)
-        ) {
+        if (error.response && error.response.status === 401) {
           if (socket && socket.instance) socket.instance.emit("disconnectUser");
           const { data } = await postRefresh.request();
           updateUser({
